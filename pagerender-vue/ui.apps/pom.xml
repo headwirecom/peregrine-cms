@@ -23,15 +23,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>felib</artifactId>
-        <groupId>com.peregrine.felib</groupId>
+        <artifactId>pagerender-vue</artifactId>
+        <groupId>com.peregrine.pagerender</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ui.apps</artifactId>
+    <artifactId>pagerender.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
-    <name>peregrine-felib - UI Apps</name>
+    <name>peregrine vuejs page renderer - UI Apps</name>
     <description>
         This is an empty JCR Package where the JCR Content
         can be deployed with.
@@ -47,9 +47,17 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>felib.core</artifactId>
+            <artifactId>pagerender.core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.eirslett/frontend-maven-plugin -->
+        <dependency>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -82,6 +90,46 @@
         </resources>
 
         <plugins>
+
+            <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.4</version>
+
+            <executions>
+                <execution>
+                    <id>install node and npm</id>
+                    <goals>
+                        <goal>install-node-and-npm</goal>
+                    </goals>
+                    <configuration>
+                        <nodeVersion>v6.10.2</nodeVersion>
+                    </configuration>
+                </execution>
+
+                <execution>
+                    <id>npm install</id>
+                    <goals>
+                        <goal>npm</goal>
+                    </goals>
+                    <!-- Optional configuration which provides for running any npm command -->
+                    <configuration>
+                        <arguments>install</arguments>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>npm run build</id>
+                    <goals>
+                        <goal>npm</goal>
+                    </goals>
+                    <configuration>
+                        <arguments>run build</arguments>
+                    </configuration>
+                </execution>
+            </executions>
+            </plugin>
+
+
             <plugin>
                 <groupId>com.day.jcr.vault</groupId>
                 <artifactId>content-package-maven-plugin</artifactId>
@@ -116,11 +164,11 @@
                                     <goal>package</goal>
                                 </goals>
                                 <configuration>
-                                    <embeddedTarget>/apps/felib/install</embeddedTarget>
+                                    <embeddedTarget>/apps/pagerender/vue/install</embeddedTarget>
                                     <embeddeds>
                                         <embedded>
                                             <groupId>${project.groupId}</groupId>
-                                            <artifactId>felib.core</artifactId>
+                                            <artifactId>pagerender.core</artifactId>
                                             <filter>true</filter>
                                         </embedded>
                                     </embeddeds>

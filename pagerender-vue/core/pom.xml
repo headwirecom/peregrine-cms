@@ -22,16 +22,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>felib</artifactId>
-        <groupId>com.peregrine.felib</groupId>
+        <artifactId>pagerender-vue</artifactId>
+        <groupId>com.peregrine.pagerender</groupId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>felib.core</artifactId>
+    <artifactId>pagerender.core</artifactId>
     <packaging>bundle</packaging>
 
-    <name>peregrine-felib - Core</name>
+    <name>peregrine vuejs page renderer - Core</name>
     <description>
         This is an empty OSGi Bundle which can be used
         to compile and deploy OSGi Services to Sling.
@@ -53,7 +53,7 @@
                 <configuration>
                     <instructions>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Sling-Model-Packages>com.peregrine.felib.models</Sling-Model-Packages>
+                        <Sling-Model-Packages>com.peregrine.pagerender.vue.models</Sling-Model-Packages>
                         <_dsannotations>*</_dsannotations>
                         <_metatypeannotations>*</_metatypeannotations>
                         <_removeheaders>
@@ -141,18 +141,26 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.8.4</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <artifactId>commons-io</artifactId>
-            <version>2.5</version>
-            <groupId>commons-io</groupId>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
+
+        <dependency>
+            <artifactId>core</artifactId>
+            <groupId>com.peregrine.nodetypes</groupId>
+            <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <profiles>

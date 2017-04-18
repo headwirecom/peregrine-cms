@@ -23,15 +23,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>felib</artifactId>
-        <groupId>com.peregrine.felib</groupId>
+        <artifactId>nodetypes</artifactId>
+        <groupId>com.peregrine.nodetypes</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>ui.apps</artifactId>
     <packaging>content-package</packaging>
 
-    <name>peregrine-felib - UI Apps</name>
+    <name>peregrine default node types - UI Apps</name>
     <description>
         This is an empty JCR Package where the JCR Content
         can be deployed with.
@@ -47,7 +47,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>felib.core</artifactId>
+            <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -116,11 +116,11 @@
                                     <goal>package</goal>
                                 </goals>
                                 <configuration>
-                                    <embeddedTarget>/apps/felib/install</embeddedTarget>
+                                    <embeddedTarget>/apps/per/install</embeddedTarget>
                                     <embeddeds>
                                         <embedded>
                                             <groupId>${project.groupId}</groupId>
-                                            <artifactId>felib.core</artifactId>
+                                            <artifactId>core</artifactId>
                                             <filter>true</filter>
                                         </embedded>
                                     </embeddeds>

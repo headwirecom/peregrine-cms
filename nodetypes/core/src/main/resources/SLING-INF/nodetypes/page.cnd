@@ -1,0 +1,6 @@
+<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
+
+[per:Page] > nt:hierarchyNode
+  orderable primaryitem jcr:content
+  + jcr:content (nt:base) = nt:unstructured
+  + * (nt:base) = nt:base version

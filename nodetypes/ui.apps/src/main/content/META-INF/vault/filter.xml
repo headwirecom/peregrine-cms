@@ -13,16 +13,15 @@
         filter list and add filter entries until all of the app provides
         nodes are included but none of the customer generatedd nodes.
 
-        Also any sub pckage of this module needs to exclude /apps/felib/install
+        Also any sub pckage of this module needs to exclude /apps/per/install
         folder otherwise they wipe all installed bundles.
     -->
-    <filter root="/etc/felibs/example"/>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
-        as it is in the '/apps/felib/install' folder (see the 'all'
+        as it is in the '/apps/per/install' folder (see the 'all'
         package).
     -->
-    <filter root="/apps/felib">
-        <exclude pattern="/apps/felib/install/.*"/>
+    <filter root="/apps/per">
+        <exclude pattern="/apps/per/install/.*"/>
     </filter>
 </workspaceFilter>

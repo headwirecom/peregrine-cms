@@ -20,12 +20,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.peregrine.felib</groupId>
-    <artifactId>felib</artifactId>
+    <groupId>com.peregrine.nodetypes</groupId>
+    <artifactId>nodetypes</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <description>peregrine-felib Parent POM</description>
+    <description>peregrine default node types Parent POM</description>
 
     <!--
         ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'
@@ -401,6 +401,20 @@
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>2.6</version>
+            </dependency>
+
+            <dependency>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.5</version>
+                <groupId>org.apache.commons</groupId>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <artifactId>guava</artifactId>
+                <version>15.0</version>
+                <groupId>com.google.guava</groupId>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Basic dependencies for Unit Tests -->

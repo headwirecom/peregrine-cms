@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>${resource.jcr:title}</title>
+
+    <sly data-sly-include="styles.html"></sly>
+
+    <sly data-sly-list="${resource.siteCSS}">
+        <link rel="stylesheet" href="${item}" type="text/css">
+    </sly>
+
+</head>
+<body>
+
+
+<div id="peregrine-app">
+    <span v-bind:class="{ loadedHide: status }">loading.. </span>
+    <span v-cloak>
+        <component v-bind:is="page.component" v-bind:model="page"></component>
+    </span>
+</div>
+
+<sly data-sly-list="${resource.siteJS}">
+    <script type="text/javascript" src="${item}"></script>
+</sly>
+
+<sly data-sly-include="renderer.html"></sly>
+<script>
+    loadContent(document.location, true);
+</script>
+</body>
+</html>
