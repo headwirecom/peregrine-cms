@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>peregrinecms-base</artifactId>
+    <packaging>content-package</packaging>
+    <groupId>com.peregrinecms</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <j2v8.version>4.6.0</j2v8.version>
+        <sling.host>localhost</sling.host>
+        <sling.port>8080</sling.port>
+        <sling.user>admin</sling.user>
+        <sling.password>admin</sling.password>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <swagger.ui.version>3.0.5</swagger.ui.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.day.jcr.vault</groupId>
+            <artifactId>content-package-maven-plugin</artifactId>
+            <version>0.0.24</version>
+        </dependency>
+        <dependency>
+            <groupId>com.headwire.sling</groupId>
+            <artifactId>sling-swagger-ui</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <type>content-package</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.headwire.sling</groupId>
+            <artifactId>sling-node-project</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <type>content-package</type>
+        </dependency>
+
+    </dependencies>
+
+    <name>Peregrine CMS - Base</name>
+    <description>
+        base package for the peregrine cms
+    </description>
+
+    <build>
+        <resources>
+            <!-- define the resources that will go into the package -->
+            <resource>
+                <!--
+                we want to keep some of the META-INF files and not configure
+                everything in the plugin.
+                -->
+                <directory>${basedir}/src/main/content/META-INF</directory>
+                <targetPath>../vault-work/META-INF</targetPath>
+            </resource>
+            <resource>
+                <!-- add the swagger-ui main screen to the project -->
+                <directory>${basedir}/src/main/content/jcr_root</directory>
+                <excludes>
+                    <!-- exclude .vlt control files and other undesired resources in the package -->
+                    <exclude>**/.vlt</exclude>
+                    <exclude>**/.vltignore</exclude>
+                    <exclude>**/.gitignore</exclude>
+                    <exclude>**/*.iml</exclude>
+                    <exclude>**/.classpath</exclude>
+                    <exclude>**/.project</exclude>
+                    <exclude>**/.settings</exclude>
+                    <exclude>**/.DS_Store</exclude>
+                    <exclude>**/target/**</exclude>
+                    <exclude>**/pom.xml</exclude>
+                </excludes>
+            </resource>
+            <!-- add the swagger ui dist folder to the project -->
+        </resources>
+
+        <plugins>
+            <!-- configuration for upload into the sling instance -->
+            <plugin>
+                <groupId>com.day.jcr.vault</groupId>
+                <artifactId>content-package-maven-plugin</artifactId>
+                <version>0.0.24</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <targetURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</targetURL>
+                    <userId>${sling.user}</userId>
+                    <password>${sling.password}</password>
+                    <useProxy>false</useProxy>
+                    <failOnMissingEmbed>true</failOnMissingEmbed>
+                    <failOnError>true</failOnError>
+                    <group>com.headwire.sling</group>
+                    <subPackages>
+                        <subPackage>
+                            <groupId>com.headwire.sling</groupId>
+                            <artifactId>sling-swagger-ui</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
+                        <subPackage>
+                            <groupId>com.headwire.sling</groupId>
+                            <artifactId>sling-node-project</artifactId>
+                            <filter>true</filter>
+                        </subPackage>
+                    </subPackages>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
+    <profiles>
+
+        <!-- profile to deploy package to sling -->
+        <profile>
+            <id>autoInstallPackage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.day.jcr.vault</groupId>
+                        <artifactId>content-package-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-package</id>
+                                <goals>
+                                    <goal>install</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- == profiles to install j2v8 ================================================= -->
+        <profile>
+            <id>installJ2V8Unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <groupId>com.eclipsesource.j2v8</groupId>
+                            <artifactId>j2v8_linux_x86_64</artifactId>
+                            <version>${j2v8.version}</version>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-file</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installJ2V8Mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <groupId>com.eclipsesource.j2v8</groupId>
+                            <artifactId>j2v8_macosx_x86_64</artifactId>
+                            <version>${j2v8.version}</version>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-file</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installJ2V8Windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <groupId>com.eclipsesource.j2v8</groupId>
+                            <artifactId>j2v8_win32_x86_64</artifactId>
+                            <version>${j2v8.version}</version>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-file</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
+    <!-- adobe repositories for plugins -->
+    <repositories>
+        <repository>
+            <id>adobe-public-releases</id>
+            <name>Adobe Public Repository</name>
+            <url>https://repo.adobe.com/nexus/content/groups/public</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>adobe-public-releases</id>
+            <name>Adobe Public Repository</name>
+            <url>https://repo.adobe.com/nexus/content/groups/public</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
