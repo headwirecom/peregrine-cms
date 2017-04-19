@@ -17,7 +17,6 @@
 
 
 <div id="peregrine-app">
-    <span v-bind:class="{ loadedHide: status }">loading.. </span>
     <span v-cloak>
         <component v-bind:is="page.component" v-bind:model="page"></component>
     </span>
