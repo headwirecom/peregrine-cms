@@ -1,5 +1,5 @@
 <template>
-<div v-html="model.text"></div>
+<p v-html="model.text"></p>
 </template>
 
 <script>

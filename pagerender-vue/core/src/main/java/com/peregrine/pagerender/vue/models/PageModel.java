@@ -32,7 +32,6 @@ public class PageModel extends Container {
         if(page != null) {
             Resource parentPage = page.getParent();
             if(parentPage != null) {
-                System.out.println(parentPage.getResourceType());
                 if("per:Page".equals(parentPage.getResourceType())) {
                     Resource child =  parentPage.getChild("jcr:content");
                     return child;
@@ -53,30 +52,29 @@ public class PageModel extends Container {
 
     public String[] getSiteCSS() {
         if(siteCSS == null) {
-            Resource parentContent = getParentContent(getResource());
-            while(parentContent != null) {
-                ValueMap props = ResourceUtil.getValueMap(parentContent);
-                Object value = props.get("siteCSS");
-                if(value != null) {
-                    return (String[]) value;
-                }
-                parentContent = getParentContent(parentContent);
-            }
+            String[] value = getInheritedProperty("siteCSS");
+            if (value != null) return value;
         }
         return siteCSS;
     }
 
+    private String[] getInheritedProperty(String propertyName) {
+        Resource parentContent = getParentContent(getResource());
+        while(parentContent != null) {
+            ValueMap props = ResourceUtil.getValueMap(parentContent);
+            Object value = props.get(propertyName);
+            if(value != null) {
+                return (String[]) value;
+            }
+            parentContent = getParentContent(parentContent);
+        }
+        return new String[]{};
+    }
+
     public String[] getSiteJS() {
         if(siteJS == null) {
-            Resource parentContent = getParentContent(getResource());
-            while(parentContent != null) {
-                ValueMap props = ResourceUtil.getValueMap(parentContent);
-                Object value = props.get("siteJS");
-                if(value != null) {
-                    return (String[]) value;
-                }
-                parentContent = getParentContent(parentContent);
-            }
+            String[] value = getInheritedProperty("siteJS");
+            if (value != null) return value;
         }
         return siteJS;
     }

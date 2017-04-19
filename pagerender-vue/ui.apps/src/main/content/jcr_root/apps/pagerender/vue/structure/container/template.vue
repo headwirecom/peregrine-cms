@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="container">
     <div v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
     </div>
