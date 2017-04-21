@@ -3,3 +3,4 @@ js/adminComponentsCol.js
 js/adminComponentsIconlist.js
 js/adminComponentsRow.js
 js/adminComponentsToolingpage.js
+js/loader.js
