@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1492612471659
+Bnd-LastModified: 1492750350453
 Build-Jdk: 1.8.0_111
 Built-By: rr
 Bundle-Description: This is an empty OSGi Bundle which can be used      

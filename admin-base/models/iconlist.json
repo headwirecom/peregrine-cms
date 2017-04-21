@@ -1,20 +1,21 @@
 {
 	"definitions": {
-
-		"Component": {
-			type: 'object',
-			properties: {
-				component: { type: string },
-				path: { type: string },
-			}
-		},
-
-		"Container": {
-			type: 'object',
-			properties: {
-				children: { type: array, items: { type: Component }}
+		"Iconlist": {
+			"type": "object",
+			"properties": {
+				"component": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"path": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"source": {
+					"type": "string",
+					"source": "inject"
+				}
 			}
 		}
-
 	}
 }
