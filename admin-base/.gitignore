@@ -1,0 +1,9 @@
+.idea
+target/
+*.iml
+.classpath
+.project
+.settings/
+node
+node_modules
+Readme.md

@@ -1,0 +1,20 @@
+{
+	"definitions": {
+
+		"Component": {
+			type: 'object',
+			properties: {
+				component: { type: string },
+				path: { type: string },
+			}
+		},
+
+		"Container": {
+			type: 'object',
+			properties: {
+				children: { type: array, items: { type: Component }}
+			}
+		}
+
+	}
+}
