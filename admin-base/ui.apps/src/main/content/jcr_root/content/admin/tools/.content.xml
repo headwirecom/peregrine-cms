@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="pagerender/vue/structure/container">
+    <pages jcr:primaryType="nt:unstructured" jcr:title="Sites" sling:resourceType="admin/components/iconaction"
+           jcr:description="edit and manage the sites and pages of this peregrine instantance"
+           action="/content/admin/pages"/>
+    <articles jcr:primaryType="nt:unstructured" jcr:title="Articles" sling:resourceType="admin/components/iconaction"
+              jcr:description="edit and manage articles (common content fragments for all sites)"
+              action="/content/admin/articles"/>
+    <assets jcr:primaryType="nt:unstructured" jcr:title="Assets" sling:resourceType="admin/components/iconaction"
+            jcr:description="peregrine asset management"
+            action="/content/admin/assets"/>
+    <templates jcr:primaryType="nt:unstructured" jcr:title="Templates" sling:resourceType="admin/components/iconaction"
+               jcr:description="edit and manage templates"
+               action="/content/admin/templates"/>
+    <config jcr:primaryType="nt:unstructured" jcr:title="Configuration" sling:resourceType="admin/components/iconaction"
+            jcr:description="configuration"
+            action="/content/admin/config"/>
+</jcr:root>

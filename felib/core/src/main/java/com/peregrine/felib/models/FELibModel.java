@@ -35,8 +35,14 @@ public class FELibModel {
                         if(line.startsWith("base=")) {
                             String path = line.substring(5);
                             basePath = node.getPath()+"/"+path;
+                            if(path.startsWith("/")) {
+                                basePath = path;
+                            }
                         } else {
                             String filePath = basePath+"/"+line;
+                            if(line.startsWith("/")) {
+                                filePath = line;
+                            }
                             Resource file = rr.getResource(filePath);
                             if(file != null) {
                                 InputStream is = file.adaptTo(InputStream.class);

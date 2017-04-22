@@ -1,2 +1,7 @@
+com\peregrine\admin\models\DebuggerModel.class
+com\peregrine\admin\models\IconactionModel.class
+com\peregrine\admin\models\ExplorerModel.class
 com\peregrine\admin\models\IconlistModel.class
 com\peregrine\admin\models\PageModel.class
+com\peregrine\admin\models\PathfieldModel.class
+com\peregrine\admin\models\ColModel.class

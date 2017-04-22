@@ -48,6 +48,9 @@ public class PageModel extends Container {
     @Inject @Named("jcr:title")
     private String title;
 
+    @Inject @Named("jcr:description")
+    private String description;
+
     public String[] getSiteCSS() {
         if(siteCSS == null) {
             String[] value = getInheritedProperty("siteCSS");
@@ -80,4 +83,9 @@ public class PageModel extends Container {
     public String getTitle() {
         return title;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
 }

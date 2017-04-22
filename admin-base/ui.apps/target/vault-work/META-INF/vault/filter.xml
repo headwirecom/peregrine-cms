@@ -18,6 +18,10 @@
     -->
     <filter root="/content/admin"/>
     <filter root="/etc/felibs/admin"/>
+    <filter root="/content/templates">
+        <include pattern="/content/templates/jcr:content.*"/>
+        <exclude pattern="/content/templates/.*"/>
+    </filter>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
         as it is in the '/apps/admin/install' folder (see the 'all'

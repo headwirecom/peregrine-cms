@@ -1,3 +1,2 @@
-test.js
-../../js/pagerenderVueComponentsBase.js
-test.js
+/etc/felibs/pagerender-vue/js/pagerenderVueStructureContainer.js
+/etc/felibs/pagerender-vue/js/pagerenderVueComponentsBase.js

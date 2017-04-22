@@ -1,0 +1,31 @@
+{
+	"definitions": {
+		"Iconaction": {
+			"type": "object",
+			"properties": {
+				"component": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"path": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"title": {
+					"type": "string",
+					"source": "inject",
+					"sourceName": "jcr:title"
+				},
+              "description": {
+                "type": "string",
+                "source": "inject",
+                "sourceName": "jcr:description"
+              },
+				"action": {
+					"type": "string",
+					"source": "inject"
+				}
+			}
+		}
+	}
+}

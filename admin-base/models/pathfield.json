@@ -1,0 +1,25 @@
+{
+	"definitions": {
+		"Pathfield": {
+			"type": "object",
+			"properties": {
+				"component": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"path": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"dataFrom": {
+					"type": "string",
+					"source": "inject"
+				},
+				"dataDefault": {
+					"type": "string",
+					"source": "inject"
+				}
+			}
+		}
+	}
+}

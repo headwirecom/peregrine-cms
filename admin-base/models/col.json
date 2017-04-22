@@ -1,0 +1,21 @@
+{
+	"definitions": {
+		"Col": {
+			"type": "object",
+			"properties": {
+				"component": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"path": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"classes": {
+					"type": "string",
+					"source": "inject"
+				}
+			}
+		}
+	}
+}
