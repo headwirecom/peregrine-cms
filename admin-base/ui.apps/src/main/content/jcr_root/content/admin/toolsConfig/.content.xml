@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="pagerender/vue/structure/container">
+    <components jcr:primaryType="nt:unstructured" jcr:title="Components" sling:resourceType="admin/components/iconaction"
+           jcr:description="explore the components available in this instance"
+           action="/content/admin/config/components"/>
+    <felibs jcr:primaryType="nt:unstructured" jcr:title="Front End Libraries" sling:resourceType="admin/components/iconaction"
+                jcr:description="see all the front end libraries available in this instance"
+                action="/content/admin/config/felibs"/>
+    <querytool jcr:primaryType="nt:unstructured" jcr:title="JCR Query Tool" sling:resourceType="admin/components/iconaction"
+            jcr:description="for developers, query the jcr repository"
+            action="/content/admin/config/querytool"/>
+</jcr:root>

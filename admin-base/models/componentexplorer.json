@@ -1,0 +1,21 @@
+{
+	"definitions": {
+		"Componentexplorer": {
+			"type": "object",
+			"properties": {
+				"component": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"path": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"source": {
+					"type": "string",
+					"source": "inject"
+				}
+			}
+		}
+	}
+}
