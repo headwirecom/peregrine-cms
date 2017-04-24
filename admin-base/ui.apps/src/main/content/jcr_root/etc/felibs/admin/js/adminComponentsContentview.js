@@ -20,7 +20,6 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             var editview = this.$el.children['editview'];
             var editable = this.$el.children['editviewoverlay'].children['editable'];
 
-
             var targetEl = editview.contentWindow.document.elementFromPoint(posX, posY);
 
             while(!targetEl.getAttribute('data-per-path')) {
@@ -73,6 +72,10 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
                 }
             }
 
+        },
+
+        showComponentEdit: function(me, target) {
+            perHelperModelAction('editComponent', target);
         }
     }
 };

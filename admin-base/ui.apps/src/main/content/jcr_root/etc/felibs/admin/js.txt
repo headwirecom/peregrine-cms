@@ -19,3 +19,4 @@ js/adminComponentsToolingpage.js
 js/loader.js
 js/modelLoader.js
 js/perHelpers.js
+js/vfg-core.js

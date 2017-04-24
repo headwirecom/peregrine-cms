@@ -57,6 +57,14 @@ var modelActions = {
             console.error('was not able to open edit view for', target)
         })
 
+    },
+
+    editComponent: function(target) {
+        peregrineAdminApp.$set(perAdminView.state.editor, 'path', target);
+        console.log(document.getElementById('editview').contentWindow['perView'])
+        peregrineAdminApp.$set(perAdminView, 'pageView', document.getElementById('editview').contentWindow['perView']);
+        var content = perHelperFindNodeFromPath(perAdminView.pageView.page, target)
+        loadData('/component', content.component)
     }
 }
 
