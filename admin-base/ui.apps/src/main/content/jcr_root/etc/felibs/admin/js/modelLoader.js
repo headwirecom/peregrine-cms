@@ -1,6 +1,17 @@
 var dataLoaders = new Array()
 var pending = new Array()
 
+function setData(target, name, value) {
+
+    if(peregrineAdminApp) {
+            peregrineAdminApp.$set(target, name , value)
+    } else {
+        target[name] = value
+    }
+
+
+}
+
 function messageIfEmpty() {
     console.log('all pending data loaded')
     initPeregrineApp()
@@ -22,6 +33,33 @@ dataLoaders['/admin/tools'] = function() {
               console.error("error getting '/admin/tools'", error);
                delete pending['/admin/tools']
                messageIfEmpty()
+          })
+}
+
+dataLoaders['/admin/components'] = function() {
+    console.log('data loader for /admin/components called')
+
+    setData(perAdminView.admin, 'components', {})
+    axios.get('/bin/search?q=select * from per:Component order by jcr:path').then(function (response) {
+        if(!perAdminView.admin) perAdminView.admin = {}
+        setData(perAdminView.admin, 'components', response.data)
+    }).catch(function(error) {
+              console.error("error getting '/admin/components'", error);
+          })
+}
+
+dataLoaders['/admin/toolsConfig'] = function() {
+    console.log('data loader for /admin/toolsConfig called')
+
+    axios.get('/content/admin/toolsConfig.model.json').then(function (response) {
+        if(!perAdminView.admin) perAdminView.admin = {}
+        if(peregrineAdminApp) {
+            peregrineAdminApp.$set(perAdminView.admin, 'toolsConfig', response.data.children)
+        } else {
+            perAdminView.admin.tools = response.data.children
+        }
+    }).catch(function(error) {
+              console.error("error getting '/admin/toolsConfig'", error);
           })
 }
 

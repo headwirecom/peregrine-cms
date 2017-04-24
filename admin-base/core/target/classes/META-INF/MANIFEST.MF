@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1493039705308
+Bnd-LastModified: 1493062290636
 Build-Jdk: 1.8.0_91
 Built-By: rr
 Bundle-Description: This is an empty OSGi Bundle which can be used      
@@ -16,9 +16,16 @@ Bundle-Version: 1.0.0.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin
 Export-Package: com.peregrine.admin.models;uses:="com.peregrine.nodetype
  s.models,org.apache.sling.api.resource,org.apache.sling.models.annotati
- ons";version="1.0.0.SNAPSHOT"
+ ons";version="1.0.0.SNAPSHOT",com.peregrine.admin.servlets;uses:="javax
+ .servlet,org.apache.sling.api,org.apache.sling.api.servlets";version="1
+ .0.0.SNAPSHOT"
 Import-Package: com.peregrine.nodetypes.models;version="[1.0,2)",javax.i
- nject,org.apache.sling.api.resource;version="[2.1,3)",org.apache.sling.
- models.annotations;version="[1.4,2)"
+ nject,javax.jcr;version="[2.0,3)",javax.jcr.query;version="[2.0,3)",jav
+ ax.servlet;version="[3.1,4)",org.apache.sling.api;version="[2.1,3)",org
+ .apache.sling.api.resource;version="[2.1,3)",org.apache.sling.api.servl
+ ets;version="[2.1,3)",org.apache.sling.models.annotations;version="[1.4
+ ,2)",org.slf4j;version="[1.5,2)"
+Service-Component: OSGI-INF/com.peregrine.admin.servlets.SearchServlet.x
+ ml
 Sling-Model-Packages: com.peregrine.admin.models
 Tool: Bnd-2.1.0.20130426-122213
