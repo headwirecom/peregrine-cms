@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1492881977401
-Build-Jdk: 1.8.0_91
+Bnd-LastModified: 1492970317597
+Build-Jdk: 1.8.0_111
 Built-By: rr
 Bundle-Description: This is an empty OSGi Bundle which can be used      
    to compile and deploy OSGi Services to Sling.        This Bundle can 

@@ -1,5 +1,5 @@
 <template>
-<div class="row">
+<div class="row" v-bind:data-per-path="model.path">
     <template v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
     </template>

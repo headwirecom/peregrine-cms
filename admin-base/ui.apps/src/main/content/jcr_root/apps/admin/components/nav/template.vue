@@ -1,5 +1,5 @@
 <template>
-<nav>
+<nav v-bind:data-per-path="model.path">
     <div class="nav-wrapper indigo">
       <div class="brand-logo">
       <admin-components-action v-bind:command="'selectPath'" v-bind:title="'home'" v-bind:target="'/content/admin'"></admin-components-action>
@@ -9,7 +9,6 @@
         <!-- other tools go here -->
       </ul>
     </div>
-  </nav>
 </nav>
 </template>
 

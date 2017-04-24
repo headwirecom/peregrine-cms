@@ -27,7 +27,7 @@
                 <col2 jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/col" classes="col s2 fullheight z-depth-2">
                     <structure jcr:primaryType="nt:unstructured"
-                               sling:resourceType="pagerender/vue/components/base" text="components"/>
+                               sling:resourceType="admin/components/componentlist" text="components"/>
                 </col2>
 
             </row>

@@ -1,7 +1,7 @@
 var cmpAdminComponentsExplorer = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"container"},[_c('admin-components-action',{attrs:{"target":_vm.parentPath,"title":_vm.parentPath,"command":'selectPath',"classes":"btn"}}),(_vm.pt)?_c('div',[(_vm.pt)?_c('ul',{staticClass:"collection"},_vm._l((_vm.pt.children),function(child){return (child.resourceType === 'per:Page')?_c('a',{staticClass:"collection-item"},[_c('admin-components-action',{attrs:{"target":child.path,"title":child.name,"command":'selectPath'}}),_vm._v("  "),_c('a',{staticClass:"secondary-content",attrs:{"traget":"viewer","href":child.path + '.html'}},[_c('i',{staticClass:"material-icons"},[_vm._v("send")])]),_vm._v("  "),_c('admin-components-action',{attrs:{"target":child.path,"command":'editPage',"classes":"secondary-content"}},[_c('i',{staticClass:"material-icons"},[_vm._v("edit")])])],1):_vm._e()})):_vm._e(),_c('admin-components-action',{attrs:{"target":_vm.pt.path,"title":'add page',"command":'addPage'}})],1):_vm._e()],1)},staticRenderFns: [],
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"container"},[_vm._l((_vm.pathSegments),function(segment){return [_c('admin-components-action',{attrs:{"target":segment.path,"title":segment.name,"command":'selectPath',"classes":"btn waves-effect waves-light"}})]}),(_vm.pt)?_c('div',[(_vm.pt)?_c('ul',{staticClass:"collection"},_vm._l((_vm.pt.children),function(child){return (child.resourceType === 'per:Page')?_c('a',{staticClass:"collection-item"},[_c('admin-components-action',{attrs:{"target":child.path,"title":child.name,"command":'selectPath'}}),_vm._v("  "),_c('a',{staticClass:"secondary-content",attrs:{"traget":"viewer","href":child.path + '.html'}},[_c('i',{staticClass:"material-icons"},[_vm._v("send")])]),_vm._v("  "),_c('admin-components-action',{attrs:{"target":child.path,"command":'editPage',"classes":"secondary-content"}},[_c('i',{staticClass:"material-icons"},[_vm._v("edit")])])],1):_vm._e()})):_vm._e(),_c('admin-components-action',{attrs:{"target":_vm.pt.path,"title":'add page',"command":'addPage'}})],1):_vm._e()],2)},staticRenderFns: [],
     props: ['model']
     ,
     data: function() {
@@ -31,6 +31,14 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             var segments = this.$data.path.value.toString().split('/');
             var joined = segments.slice(0, segments.length -1).join('/');
             return joined
+        },
+        pathSegments: function() {
+            var segments = this.$data.path.value.toString().split('/');
+            var ret = [];
+            for(var i = 1; i < segments.length; i++) {
+                ret.push( { name: segments[i], path: segments.slice(0, i+1).join('/') } );
+            }
+            return ret;
         }
     },
     methods: {

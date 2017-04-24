@@ -1,6 +1,8 @@
 <template>
 <div class="container">
-    <admin-components-action v-bind:target="parentPath" v-bind:title="parentPath" v-bind:command="'selectPath'" classes="btn"></admin-components-action>
+    <template v-for="segment in pathSegments">
+        <admin-components-action v-bind:target="segment.path" v-bind:title="segment.name" v-bind:command="'selectPath'" classes="btn waves-effect waves-light"></admin-components-action>
+    </template>
     <div v-if="pt">
     <ul v-if="pt" class="collection">
         <a class="collection-item" v-for="child in pt.children" v-if="child.resourceType === 'per:Page'">
@@ -47,6 +49,14 @@
                 var segments = this.$data.path.value.toString().split('/')
                 var joined = segments.slice(0, segments.length -1).join('/')
                 return joined
+            },
+            pathSegments: function() {
+                var segments = this.$data.path.value.toString().split('/')
+                var ret = []
+                for(var i = 1; i < segments.length; i++) {
+                    ret.push( { name: segments[i], path: segments.slice(0, i+1).join('/') } )
+                }
+                return ret;
             }
         },
         methods: {
