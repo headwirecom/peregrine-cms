@@ -1,8 +1,7 @@
 <template>
     <div>
         <p>editor</p>
-        {{this.$root.$data.state.editor}}
-        <vue-form-generator :schema="schema" :model="formdata" :options="formOptions"></vue-form-generator>
+        <vue-form-generator v-if="this.$root.$data.state.editor" :schema="this.$root.$data.state.editor.dialog" :model="formdata" :options="formOptions"></vue-form-generator>
     </div>
 </template>
 
@@ -20,22 +19,7 @@
               status: true
             },
 
-            schema:{ fields:[{
-               type: "input",
-               inputType: "text",
-               label: "ID (disabled text field)",
-               model: "id",
-               readonly: true,
-               disabled: true
-            },{
-               type: "input",
-               inputType: "text",
-               label: "Name",
-               model: "name",
-               placeholder: "Your name",
-               featured: true,
-               required: true
-            }]},
+            schema: {},
 
             formOptions: {
               validateAfterLoad: true,

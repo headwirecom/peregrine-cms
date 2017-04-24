@@ -89,6 +89,15 @@ dataLoaders['/pages'] = function(target) {
         })
 }
 
+dataLoaders['/component'] = function(target) {
+
+    var component = '/apps/'+target.split('-').join('/')+'/dialog.json'
+    axios.get(component).then( function(res) {
+        peregrineAdminApp.$set(perAdminView.state.editor, 'dialog', res.data)
+    })
+
+}
+
 function loadData(path, target) {
 
     pending['/admin/tools'] = true
