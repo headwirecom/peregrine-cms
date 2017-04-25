@@ -1,0 +1,17 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.peregrine</groupId>
+  <artifactId>cms</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nodetypes</module>
+    <module>base</module>
+    <module>felib</module>
+    <module>pagerender-vue</module>
+    <module>admin-base</module>
+    <module>example-vue-site</module>
+  </modules>
+
+</project>
