@@ -1,33 +1,47 @@
 <template>
     <div>
         <p>editor</p>
-        <vue-form-generator v-if="this.$root.$data.state.editor" :schema="this.$root.$data.state.editor.dialog" :model="formdata" :options="formOptions"></vue-form-generator>
+        <form>
+        <vue-form-generator
+            v-if="this.$root.$data.state.editor"
+            :schema="this.$root.$data.state.editor.dialog"
+            :model="getModel(this.$root.$data.state.editor.path)"
+            :options="formOptions">
+        </vue-form-generator>
+        <button v-if="this.$root.$data.state.editor.path" class="btn" v-on:click.stop.prevent="onOk">ok</button>
+        </form>
     </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
-        data: function() { return {
-
-            formdata:{
-              id: 1,
-              name: "John Doe",
-              password: "J0hnD03!x4",
-              skills: ["Javascript", "VueJS"],
-              email: "john.doe@gmail.com",
-              status: true
+        methods: {
+            getModel: function(path) {
+                if(path) {
+                    if(perAdminView.pageView.page) {
+                        return perHelperFindNodeFromPath(perAdminView.pageView.page, path)
+                    }
+                }
+                return {}
             },
+            onOk: function(e) {
+                perHelperModelAction('saveEdit', perAdminView.state.editor.path)
+            }
+        },
+        data: function() {
 
-            schema: {},
+            var test = 'hello'
+            return {
 
             formOptions: {
               validateAfterLoad: true,
               validateAfterChanged: true
             }
+
           }
       },
-      mounted: function() {
+      beforeMount: function() {
         if(!perAdminView.state.editor) this.$set(perAdminView.state, 'editor', { })
       }
     }

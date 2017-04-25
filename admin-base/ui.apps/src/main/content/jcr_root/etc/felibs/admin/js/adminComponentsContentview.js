@@ -1,7 +1,7 @@
 var cmpAdminComponentsContentview = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"fullheight"},[_c('div',{staticStyle:{"position":"absolute"},attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"dragleave":_vm.leftArea}},[_c('div',{staticStyle:{"position":"absolute","border":"solid 1px blue","width":"10px","height":"10px"},attrs:{"id":"editable"}})]),_c('iframe',{staticStyle:{"padding-top":"2px"},attrs:{"id":"editview","src":"/content/sites/example.html","width":"100%","height":"100%","frameborder":"0"}})],1)},staticRenderFns: [],
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"fullheight"},[_c('div',{staticStyle:{"position":"absolute"},attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"drop":_vm.drop}},[_c('div',{staticStyle:{"position":"absolute","border":"solid 1px blue","width":"10px","height":"10px"},attrs:{"id":"editable"}})]),_c('iframe',{staticStyle:{"padding-top":"2px"},attrs:{"id":"editview","src":"/content/sites/example.html","width":"100%","height":"100%","frameborder":"0"}})],1)},staticRenderFns: [],
     props: ['model'],
     mounted: function() {
         var rect = this.$el.children['editview'].getBoundingClientRect();
@@ -10,8 +10,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
         overlay.style.height = ''+rect.height+'px';
     },
     methods: {
-        click: function(e) {
-
+        getTargetEl: function(e) {
             var elRect = this.$el.getBoundingClientRect();
 
             var posX = e.clientX - elRect.left;
@@ -26,7 +25,11 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
                 targetEl = targetEl.parent;
                 if(!targetEl) { break; }
             }
+            return targetEl
+        },
+        click: function(e) {
 
+            var targetEl = this.getTargetEl(e);
             if(targetEl) {
                 perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'));
             }
@@ -75,7 +78,19 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
         },
 
         showComponentEdit: function(me, target) {
+            console.log('>>>>>>>', target);
             perHelperModelAction('editComponent', target);
+        },
+
+        drop: function(e) {
+            var editable = this.$el.children['editviewoverlay'].children['editable'];
+            editable.style.display = 'none';
+
+            var targetEl = this.getTargetEl(e);
+
+            var componentPath = e.dataTransfer.getData('component');
+
+            perHelperModelAction('addComponentToPath', { path: targetEl.getAttribute('data-per-path'), component: componentPath});
         }
     }
 };

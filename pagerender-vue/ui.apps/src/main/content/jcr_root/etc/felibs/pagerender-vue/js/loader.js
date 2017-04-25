@@ -24,11 +24,21 @@ var perView = {};
 var loadedComponents = {};
 var peregrineApp;
 
+function getPerView() {
+
+    if(window.parent) {
+        if(window.parent.perAdminView) {
+            return window.parent.perAdminView.pageView
+        }
+    }
+    return perView
+}
+
 <!-- initialization of peregrine vuejs renderer -->
 function initPeregrineApp() {
     peregrineApp = new Vue({
         el: '#peregrine-app',
-        data: perView
+        data: getPerView()
     });
 }
 
@@ -65,17 +75,20 @@ function walkTreeAndLoad(node) {
 function loadContent(path, firstTime = false) {
     console.log('loading content for %s', path)
     var dataUrl = (""+path).substring(0, (""+path).indexOf('.html')) + '.data.json';
-    perView.status = undefined;
+    getPerView().status = undefined;
     axios.get(dataUrl).then(function (response) {
         console.log('got data for %s', path)
         walkTreeAndLoad(response.data)
+
+        loadComponent('pagerender-vue-components-placeholder')
+
         if(firstTime) {
-            perView.page = response.data;
-            perView.status = 'loaded';
+            getPerView().page = response.data;
+            getPerView().status = 'loaded';
             initPeregrineApp();
         } else {
-            perView.page = response.data;
-            perView.status = 'loaded';
+            getPerView().page = response.data;
+            getPerView().status = 'loaded';
         }
         if(document.location !== path) {
             history.pushState({peregrinevue:true, path: path}, path, path)

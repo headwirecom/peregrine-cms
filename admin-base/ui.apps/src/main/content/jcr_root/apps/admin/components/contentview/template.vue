@@ -1,6 +1,6 @@
 <template>
     <div class="fullheight">
-        <div id="editviewoverlay" style="position: absolute;" v-on:click="click" v-on:dragover="dragOver" v-on:dragleave="leftArea">
+        <div id="editviewoverlay" style="position: absolute;" v-on:click="click" v-on:dragover="dragOver" v-on:drop="drop">
             <div id="editable" style="position: absolute; border: solid 1px blue; width: 10px; height: 10px;"></div>
         </div>
         <iframe id="editview" src="/content/sites/example.html" width="100%" height="100%" frameborder="0" style="padding-top: 2px"></iframe>
@@ -17,8 +17,7 @@ export default {
         overlay.style.height = ''+rect.height+'px'
     },
     methods: {
-        click: function(e) {
-
+        getTargetEl: function(e) {
             var elRect = this.$el.getBoundingClientRect()
 
             var posX = e.clientX - elRect.left
@@ -33,7 +32,11 @@ export default {
                 targetEl = targetEl.parent
                 if(!targetEl) { break; }
             }
+            return targetEl
+        },
+        click: function(e) {
 
+            var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
@@ -82,7 +85,19 @@ export default {
         },
 
         showComponentEdit: function(me, target) {
+            console.log('>>>>>>>', target)
             perHelperModelAction('editComponent', target)
+        },
+
+        drop: function(e) {
+            var editable = this.$el.children['editviewoverlay'].children['editable']
+            editable.style.display = 'none'
+
+            var targetEl = this.getTargetEl(e)
+
+            var componentPath = e.dataTransfer.getData('component')
+
+            perHelperModelAction('addComponentToPath', { path: targetEl.getAttribute('data-per-path'), component: componentPath})
         }
     }
 }
