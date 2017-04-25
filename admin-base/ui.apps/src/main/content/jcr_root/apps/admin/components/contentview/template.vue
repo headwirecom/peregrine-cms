@@ -3,7 +3,7 @@
         <div id="editviewoverlay" style="position: absolute;" v-on:click="click" v-on:dragover="dragOver" v-on:drop="drop">
             <div id="editable" style="position: absolute; border: solid 1px blue; width: 10px; height: 10px;"></div>
         </div>
-        <iframe id="editview" src="/content/sites/example.html" width="100%" height="100%" frameborder="0" style="padding-top: 2px"></iframe>
+        <iframe id="editview" v-bind:src="pagePath" width="100%" height="100%" frameborder="0" style="padding-top: 2px"></iframe>
     </div>
 </template>
 
@@ -11,12 +11,25 @@
 export default {
     props: ['model'],
     mounted: function() {
-        var rect = this.$el.children['editview'].getBoundingClientRect()
-        var overlay = this.$el.children['editviewoverlay']
-        overlay.style.width = ''+rect.width+'px'
-        overlay.style.height = ''+rect.height+'px'
+        this.resizeOverlay()
+        window.addEventListener('resize', this.resizeOverlay)
+    },
+    beforeDestroy: function () {
+      window.removeEventListener('resize', this.resizeOverlay)
+    },
+    computed: {
+        pagePath: function() {
+            return perAdminView.pageView.path + '.html'
+        }
     },
     methods: {
+
+        resizeOverlay: function(event) {
+            var rect = this.$el.children['editview'].getBoundingClientRect()
+            var overlay = this.$el.children['editviewoverlay']
+            overlay.style.width = ''+(rect.width-20)+'px'
+            overlay.style.height = ''+(rect.height-20)+'px'
+        },
         getTargetEl: function(e) {
             var elRect = this.$el.getBoundingClientRect()
 
@@ -27,6 +40,7 @@ export default {
             var editable = this.$el.children['editviewoverlay'].children['editable']
 
             var targetEl = editview.contentWindow.document.elementFromPoint(posX, posY)
+            if(!targetEl) return
 
             while(!targetEl.getAttribute('data-per-path')) {
                 targetEl = targetEl.parent
@@ -35,7 +49,7 @@ export default {
             return targetEl
         },
         click: function(e) {
-
+            if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
@@ -85,7 +99,6 @@ export default {
         },
 
         showComponentEdit: function(me, target) {
-            console.log('>>>>>>>', target)
             perHelperModelAction('editComponent', target)
         },
 

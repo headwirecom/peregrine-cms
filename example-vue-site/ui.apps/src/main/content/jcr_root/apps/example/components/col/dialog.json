@@ -1,0 +1,8 @@
+{ "fields":[{
+  "type": "input",
+  "inputType": "input",
+  "label": "Classes",
+  "model": "classes",
+  "rows": 5,
+  "placeholder": "test"
+}]}

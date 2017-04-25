@@ -74,5 +74,6 @@
                 perHelperModelAction('editPage', target )
             }
         }
+
     }
 </script>

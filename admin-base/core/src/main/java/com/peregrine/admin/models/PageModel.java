@@ -51,6 +51,9 @@ public class PageModel extends Container {
     @Inject @Named("jcr:description")
     private String description;
 
+    @Inject
+    private String[] suffixToParameter;
+
     public String[] getSiteCSS() {
         if(siteCSS == null) {
             String[] value = getInheritedProperty("siteCSS");
@@ -88,4 +91,7 @@ public class PageModel extends Container {
         return description;
     }
 
+    public String[] getSuffixToParameter() {
+        return suffixToParameter;
+    }
 }

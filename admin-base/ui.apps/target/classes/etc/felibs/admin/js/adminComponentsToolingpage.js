@@ -5,7 +5,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
     props: [ 'model' ],
     methods: {
         selectPath: function(me, target) {
-            loadContent(target);
+            loadContent(target+'.html');
         },
         editPage: function(me, target) {
             console.log('edit page');

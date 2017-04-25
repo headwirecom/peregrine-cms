@@ -8,7 +8,7 @@
             :model="getModel(this.$root.$data.state.editor.path)"
             :options="formOptions">
         </vue-form-generator>
-        <button v-if="this.$root.$data.state.editor.path" class="btn" v-on:click.stop.prevent="onOk">ok</button>
+        <button v-if="this.$root.$data.state.editor.dialog" class="btn" v-on:click.stop.prevent="onOk">ok</button>
         </form>
     </div>
 </template>
@@ -31,7 +31,6 @@
         },
         data: function() {
 
-            var test = 'hello'
             return {
 
             formOptions: {

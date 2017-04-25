@@ -94,6 +94,13 @@ dataLoaders['/component'] = function(target) {
     var component = '/apps/'+target.split('-').join('/')+'/dialog.json'
     axios.get(component).then( function(res) {
         peregrineAdminApp.$set(perAdminView.state.editor, 'dialog', res.data)
+//        peregrineAdminApp.$set(perAdminView.state.editor, 'path', target)
+
+    }).catch( function(error) {
+        console.log('assuming no dialog available for', target)
+        peregrineAdminApp.$set(perAdminView.state.editor, 'path', undefined)
+        peregrineAdminApp.$set(perAdminView.state.editor, 'dialog', undefined)
+
     })
 
 }

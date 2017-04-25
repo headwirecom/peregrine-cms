@@ -1,5 +1,6 @@
 function perHelperFindNodeFromPath(node, path) {
 
+    if(node.path === path) return node
     if(node.children) {
         for(var i = 0; i < node.children.length; i++) {
             if(node.children[i].path === path) {
@@ -23,6 +24,19 @@ function perHelperAction(component, command, target) {
             perHelperAction(component.$parent, command, target)
         }
     }
+}
+
+function perHelperSet(node, path, value) {
+
+    path = path.slice(1).split('/').reverse()
+    while(path.length > 1) {
+        var segment = path.pop()
+        if(!node[segment]) {
+            node[segment] = {}
+        }
+        node = node[segment]
+    }
+    node[path[0]] = value
 }
 
 
@@ -52,8 +66,9 @@ var modelActions = {
     editPage: function(target) {
         console.log('editPage: loading', target)
         axios.get(target+'.data.json').then(function (response) {
-                perAdminView.pageView = response.data
-                loadContent('/content/admin/pages/edit.html')
+                perAdminView.pageView.page = response.data
+                perAdminView.pageView.path = target
+                loadContent('/content/admin/pages/edit.html/path//'+target)
         }).catch(function(ex) {
             console.error('was not able to open edit view for', target)
         })
@@ -61,9 +76,9 @@ var modelActions = {
     },
 
     editComponent: function(target) {
-        peregrineAdminApp.$set(perAdminView.state.editor, 'path', target);
         var content = perHelperFindNodeFromPath(perAdminView.pageView.page, target)
         loadData('/component', content.component)
+        peregrineAdminApp.$set(perAdminView.state.editor, 'path', target)
     },
 
     saveEdit: function(target) {
@@ -79,15 +94,15 @@ var modelActions = {
 
         axios.post(target, data).then( function(res) {
             peregrineAdminApp.$set(perAdminView.state, 'editor', {})
+            peregrineAdminApp.$set(perAdminView.state.editor, 'path', undefined)
         }).catch(function(error) {
             console.error('update component failed', error)
+            peregrineAdminApp.$set(perAdminView.state.editor, 'path', undefined)
         })
     },
 
     addComponentToPath: function(target) {
 
-        console.log('>>> target path',target.path)
-        console.log('>>> target cmp ', target.component)
         var content = perHelperFindNodeFromPath(perAdminView.pageView.page, target.path)
         var component = target.component.split('/').slice(2).join('-')
         var componentPath = target.component.split('/').slice(2).join('/')

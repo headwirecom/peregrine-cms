@@ -4,7 +4,7 @@
 <comment>admin base - UI Apps</comment>
 <entry key="createdBy">rr</entry>
 <entry key="name">admin-base.ui.apps</entry>
-<entry key="created">2017-04-25T11:00:09.092-0700</entry>
+<entry key="created">2017-04-25T15:23:07.971-0700</entry>
 <entry key="groupId">com.peregrine.admin</entry>
 <entry key="version">1.0-SNAPSHOT</entry>
 <entry key="requiresRoot">false</entry>

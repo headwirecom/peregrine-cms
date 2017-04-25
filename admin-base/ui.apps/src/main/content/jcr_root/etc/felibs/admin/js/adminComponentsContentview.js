@@ -1,15 +1,28 @@
 var cmpAdminComponentsContentview = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"fullheight"},[_c('div',{staticStyle:{"position":"absolute"},attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"drop":_vm.drop}},[_c('div',{staticStyle:{"position":"absolute","border":"solid 1px blue","width":"10px","height":"10px"},attrs:{"id":"editable"}})]),_c('iframe',{staticStyle:{"padding-top":"2px"},attrs:{"id":"editview","src":"/content/sites/example.html","width":"100%","height":"100%","frameborder":"0"}})],1)},staticRenderFns: [],
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"fullheight"},[_c('div',{staticStyle:{"position":"absolute"},attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"drop":_vm.drop}},[_c('div',{staticStyle:{"position":"absolute","border":"solid 1px blue","width":"10px","height":"10px"},attrs:{"id":"editable"}})]),_c('iframe',{staticStyle:{"padding-top":"2px"},attrs:{"id":"editview","src":_vm.pagePath,"width":"100%","height":"100%","frameborder":"0"}})],1)},staticRenderFns: [],
     props: ['model'],
     mounted: function() {
-        var rect = this.$el.children['editview'].getBoundingClientRect();
-        var overlay = this.$el.children['editviewoverlay'];
-        overlay.style.width = ''+rect.width+'px';
-        overlay.style.height = ''+rect.height+'px';
+        this.resizeOverlay();
+        window.addEventListener('resize', this.resizeOverlay);
+    },
+    beforeDestroy: function () {
+      window.removeEventListener('resize', this.resizeOverlay);
+    },
+    computed: {
+        pagePath: function() {
+            return perAdminView.pageView.path + '.html'
+        }
     },
     methods: {
+
+        resizeOverlay: function(event) {
+            var rect = this.$el.children['editview'].getBoundingClientRect();
+            var overlay = this.$el.children['editviewoverlay'];
+            overlay.style.width = ''+(rect.width-20)+'px';
+            overlay.style.height = ''+(rect.height-20)+'px';
+        },
         getTargetEl: function(e) {
             var elRect = this.$el.getBoundingClientRect();
 
@@ -20,6 +33,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             var editable = this.$el.children['editviewoverlay'].children['editable'];
 
             var targetEl = editview.contentWindow.document.elementFromPoint(posX, posY);
+            if(!targetEl) { return }
 
             while(!targetEl.getAttribute('data-per-path')) {
                 targetEl = targetEl.parent;
@@ -28,7 +42,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             return targetEl
         },
         click: function(e) {
-
+            if(!e) { return }
             var targetEl = this.getTargetEl(e);
             if(targetEl) {
                 perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'));
@@ -78,7 +92,6 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
         },
 
         showComponentEdit: function(me, target) {
-            console.log('>>>>>>>', target);
             perHelperModelAction('editComponent', target);
         },
 
