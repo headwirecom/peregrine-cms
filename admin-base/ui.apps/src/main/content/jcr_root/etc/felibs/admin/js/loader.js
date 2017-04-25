@@ -37,9 +37,9 @@ function initPeregrineApp() {
 
     // hack to check keys in pending
     var loading = false
-    for(key in pending) {
-        loading = true
-    }
+//    for(key in pending) {
+//        loading = true
+//    }
 
     if(!loading && !peregrineAdminApp) {
         console.log('initialize vue')

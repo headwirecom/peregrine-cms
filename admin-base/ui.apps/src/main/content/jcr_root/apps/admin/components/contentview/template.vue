@@ -27,7 +27,6 @@ export default {
             var editview = this.$el.children['editview']
             var editable = this.$el.children['editviewoverlay'].children['editable']
 
-
             var targetEl = editview.contentWindow.document.elementFromPoint(posX, posY)
 
             while(!targetEl.getAttribute('data-per-path')) {
@@ -80,6 +79,10 @@ export default {
                 }
             }
 
+        },
+
+        showComponentEdit: function(me, target) {
+            perHelperModelAction('editComponent', target)
         }
     }
 }

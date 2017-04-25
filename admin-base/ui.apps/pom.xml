@@ -111,7 +111,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <!-- Optional configuration which provides for running any npm command -->
+                        <!-- Optional config which provides for running any npm command -->
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>

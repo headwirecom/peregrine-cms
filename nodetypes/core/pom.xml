@@ -68,7 +68,9 @@
 
                         <Sling-Nodetypes>
                             SLING-INF/nodetypes/pagecontent.cnd,
-                            SLING-INF/nodetypes/page.cnd
+                            SLING-INF/nodetypes/page.cnd,
+                            SLING-INF/nodetypes/component.cnd,
+                            SLING-INF/nodetypes/felib.cnd
                         </Sling-Nodetypes>
 
                     </instructions>

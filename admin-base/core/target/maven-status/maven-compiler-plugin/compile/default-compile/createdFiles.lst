@@ -4,4 +4,6 @@ com\peregrine\admin\models\ExplorerModel.class
 com\peregrine\admin\models\IconlistModel.class
 com\peregrine\admin\models\PageModel.class
 com\peregrine\admin\models\PathfieldModel.class
+com\peregrine\admin\servlets\SearchServlet.class
 com\peregrine\admin\models\ColModel.class
+com\peregrine\admin\models\ComponentexplorerModel.class

@@ -16,6 +16,7 @@
                jcr:description="edit and manage templates"
                action="/content/admin/templates"/>
     <config jcr:primaryType="nt:unstructured" jcr:title="Configuration" sling:resourceType="admin/components/iconaction"
-            jcr:description="configuration"
-            action="/content/admin/config"/>
+               jcr:description="configuration management"
+               action="/content/admin/config"/>
+    <config/>
 </jcr:root>
