@@ -15,7 +15,7 @@ java -jar org.apache.sling.launchpad-9-SNAPSHOT.jar
 Build and install PER:CMS into the running Apache Sling-9 instance
 
 ```aidl
-nodetypes           > mvn clean install
+nodetypes           > mvn clean install -PautoInstallPackage
 base                > mvn clean install -PautoInstallPackage
 felib               > mvn clean install -PautoInstallPackage
 pagerender-vue      > mvn clean install -PautoInstallPackage
