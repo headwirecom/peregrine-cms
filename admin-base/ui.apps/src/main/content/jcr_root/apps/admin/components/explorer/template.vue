@@ -16,6 +16,9 @@
         </a>
     </ul>
     <admin-components-action v-bind:model="{ target: pt.path, title: 'add page', command: 'addPage' }"></admin-components-action>
+    <template v-for="child in model.children">
+        <component v-bind:is="child.component" v-bind:model="child"></component>
+    </template>
     </div>
 </div>
 </template>
