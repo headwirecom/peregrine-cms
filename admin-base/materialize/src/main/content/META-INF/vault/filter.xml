@@ -17,5 +17,6 @@
         folder otherwise they wipe all installed bundles.
     -->
     <filter root="/etc/felibs/materialize"/>
+    <filter root="/etc/felibs/fonts"/>
 
 </workspaceFilter>

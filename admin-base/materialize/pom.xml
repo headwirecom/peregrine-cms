@@ -72,6 +72,10 @@
                 <targetPath>../vault-work/META-INF</targetPath>
             </resource>
             <resource>
+                <directory>${basedir}/materialize-src/fonts</directory>
+                <targetPath>${basedir}/src/main/content/jcr_root/etc/felibs/fonts</targetPath>
+            </resource>
+            <resource>
                 <directory>${basedir}/src/main/content/jcr_root</directory>
                 <excludes>
                     <!-- exclude .vlt control files in the package -->

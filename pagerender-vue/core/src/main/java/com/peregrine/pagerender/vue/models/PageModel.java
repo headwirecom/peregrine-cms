@@ -63,9 +63,7 @@ public class PageModel extends Container {
             if (value != null && value.length != 0) return value;
             if (getTemplate() != null) {
                 PageModel templatePageModel = getTamplatePageModel();
-                System.out.println(templatePageModel);
                 if(templatePageModel != null) {
-                    System.out.println(templatePageModel.getSiteCSS());
                     return templatePageModel.getSiteCSS();
                 }
             }
@@ -74,7 +72,6 @@ public class PageModel extends Container {
     }
 
     private PageModel getTamplatePageModel() {
-        System.out.println(getTemplate()+"/jcr:content");
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate()+"/jcr:content");
         return (PageModel) modelFactory.getModelFromResource(templateResource);
     }
