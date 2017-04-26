@@ -13,7 +13,7 @@
              sling:resourceType="admin/components/nav"/>
 
             <pathfield jcr:primaryType="nt:unstructured"
-                 sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/pages" dataDefault="/content/templates"/>
+                 sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/templates" dataDefault="/content/templates"/>
 
             <explorer jcr:primaryType="nt:unstructured"
                        sling:resourceType="admin/components/explorer" dataFrom="/state/tools/pages"/>
