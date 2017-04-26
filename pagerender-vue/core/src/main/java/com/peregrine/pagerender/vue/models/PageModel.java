@@ -9,6 +9,7 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.factory.ModelFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,41 +43,76 @@ public class PageModel extends Container {
     }
 
     @Inject
+    private ModelFactory modelFactory;
+
+    @Inject
     private String[] siteCSS;
 
     @Inject
     private String[] siteJS;
+
+    @Inject @Named("template")
+    private String template;
 
     @Inject @Named("jcr:title")
     private String title;
 
     public String[] getSiteCSS() {
         if(siteCSS == null) {
-            String[] value = getInheritedProperty("siteCSS");
-            if (value != null) return value;
+            String[] value = (String[]) getInheritedProperty("siteCSS");
+            if (value != null && value.length != 0) return value;
+            if (getTemplate() != null) {
+                PageModel templatePageModel = getTamplatePageModel();
+                System.out.println(templatePageModel);
+                if(templatePageModel != null) {
+                    System.out.println(templatePageModel.getSiteCSS());
+                    return templatePageModel.getSiteCSS();
+                }
+            }
         }
         return siteCSS;
     }
 
-    private String[] getInheritedProperty(String propertyName) {
+    private PageModel getTamplatePageModel() {
+        System.out.println(getTemplate()+"/jcr:content");
+        Resource templateResource = getResource().getResourceResolver().getResource(getTemplate()+"/jcr:content");
+        return (PageModel) modelFactory.getModelFromResource(templateResource);
+    }
+
+    private Object getInheritedProperty(String propertyName) {
         Resource parentContent = getParentContent(getResource());
         while(parentContent != null) {
             ValueMap props = ResourceUtil.getValueMap(parentContent);
             Object value = props.get(propertyName);
             if(value != null) {
-                return (String[]) value;
+                return value;
             }
             parentContent = getParentContent(parentContent);
         }
-        return new String[]{};
+        return null;
     }
 
     public String[] getSiteJS() {
         if(siteJS == null) {
-            String[] value = getInheritedProperty("siteJS");
-            if (value != null) return value;
+            String[] value = (String[]) getInheritedProperty("siteJS");
+            if (value != null && value.length != 0) return value;
+            PageModel templatePageModel = getTamplatePageModel();
+            if(templatePageModel != null) {
+                return templatePageModel.getSiteJS();
+            }
         }
         return siteJS;
+    }
+
+    public String getTemplate() {
+        if(template == null) {
+            String value = (String) getInheritedProperty("template");
+            if (value != null) {
+                this.template = template;
+                return value;
+            }
+        }
+        return template;
     }
 
     public String getTitle() {

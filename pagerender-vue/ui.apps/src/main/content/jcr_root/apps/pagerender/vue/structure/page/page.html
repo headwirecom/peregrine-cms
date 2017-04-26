@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><sly data-sly-use.helper="apps.pagerender.vue.structure.page.Helper"/>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -8,7 +8,7 @@
 
     <sly data-sly-include="styles.html"></sly>
 
-    <sly data-sly-list="${resource.siteCSS}">
+    <sly data-sly-list="${helper.model.siteCSS}">
         <link rel="stylesheet" href="${item}" type="text/css">
     </sly>
 
@@ -22,7 +22,7 @@
     </span>
 </div>
 
-<sly data-sly-list="${resource.siteJS}">
+<sly data-sly-list="${helper.model.siteJS}">
     <script type="text/javascript" src="${item}"></script>
 </sly>
 

@@ -71,6 +71,63 @@ function walkTreeAndLoad(node) {
 
 }
 
+function mergeRecursive(obj1, obj2) {
+
+     for (var p in obj2) {
+         try {
+             // Property in destination object set; update its value.
+             if ( typeof obj2[p] === 'object' ) {
+                 if(obj2[p] instanceof Array) {
+                     for(var pos = 0; pos < obj2[p].length; pos++) {
+                        if(typeof obj2[p][pos] === 'object') {
+                            var found = false
+                            var path = obj2[p][pos].path
+                            for(var i = 0; i < obj1[p].length; i++) {
+                                if(obj1[p][i].path === path) {
+                                    obj1[p][i] = mergeRecursive(obj1[p][i], obj2[p][pos])
+                                    break
+                                }
+                            }
+                            if(!found) {
+                                obj1[p].push(obj2[p][pos])
+                            }
+                        }
+                     }
+                 } else {
+                     obj1[p] = mergeRecursive(obj1[p], obj2[p]);
+                 }
+             } else {
+                 obj1[p] = obj2[p];
+
+             }
+
+         } catch(e) {
+             // Property in destination object not set; create it and set its value.
+             obj1[p] = obj2[p];
+
+         }
+     }
+
+     return obj1
+
+}
+
+function processLoadedContent(data, path, firstTime) {
+        walkTreeAndLoad(data)
+
+        loadComponent('pagerender-vue-components-placeholder')
+        console.log(JSON.stringify(data))
+        getPerView().page = data;
+        getPerView().status = 'loaded';
+        if(firstTime) {
+            initPeregrineApp();
+        }
+
+        if(document.location !== path) {
+            history.pushState({peregrinevue:true, path: path}, path, path)
+        }
+}
+
 <!-- simple data loader -->
 function loadContent(path, firstTime = false) {
     console.log('loading content for %s', path)
@@ -78,21 +135,25 @@ function loadContent(path, firstTime = false) {
     getPerView().status = undefined;
     axios.get(dataUrl).then(function (response) {
         console.log('got data for %s', path)
-        walkTreeAndLoad(response.data)
 
-        loadComponent('pagerender-vue-components-placeholder')
+        if(response.data.template) {
 
-        if(firstTime) {
-            getPerView().page = response.data;
-            getPerView().status = 'loaded';
-            initPeregrineApp();
+            var pageData = response.data
+            console.log(JSON.stringify(pageData, true, 2))
+
+            axios.get(response.data.template+'.data.json').then(function(response) {
+
+                var templateData = response.data
+                var mergedData = mergeRecursive(templateData, pageData)
+
+                processLoadedContent(mergedData, path, firstTime)
+            }).catch(function(error) {
+                      console.log("error getting %s %j", dataUrl, error);
+            })
         } else {
-            getPerView().page = response.data;
-            getPerView().status = 'loaded';
+            processLoadedContent(response.data, path, firstTime)
         }
-        if(document.location !== path) {
-            history.pushState({peregrinevue:true, path: path}, path, path)
-        }
+
     }).catch(function(error) {
         console.log("error getting %s %j", dataUrl, error);
     });
