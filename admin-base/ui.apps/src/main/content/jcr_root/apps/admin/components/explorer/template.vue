@@ -61,7 +61,7 @@
         },
         methods: {
             selectPath: function(me, target) {
-                perHelperModelAction('selectToolsPagesPath', target)
+                perHelperModelAction('selectToolsPagesPath', { selected: target, path: me.model.dataFrom })
             },
             viewPage: function(me, target) {
                 alert(target)

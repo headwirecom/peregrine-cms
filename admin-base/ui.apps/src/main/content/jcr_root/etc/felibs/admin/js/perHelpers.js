@@ -43,8 +43,9 @@ function perHelperSet(node, path, value) {
 var modelActions = {
 
     selectToolsPagesPath: function(target) {
-        loadData('/pages', target)
-        perAdminView.state.tools.pages.value = target;
+        loadData('/pages', target.selected)
+        console.log(target)
+        perHelperSet(perAdminView, target.path+'/value', target.selected)
     },
 
     createPage: function(target) {
