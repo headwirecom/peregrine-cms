@@ -26,7 +26,7 @@
                 return {}
             },
             onOk: function(e) {
-                perHelperModelAction('saveEdit', perAdminView.state.editor.path)
+                perHelperModelAction('saveEdit', { pagePath: perAdminView.pageView.path, path: perAdminView.state.editor.path } )
             }
         },
         data: function() {

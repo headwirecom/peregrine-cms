@@ -13,7 +13,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             return {}
         },
         onOk: function(e) {
-            perHelperModelAction('saveEdit', perAdminView.state.editor.path);
+            perHelperModelAction('saveEdit', { pagePath: perAdminView.pageView.path, path: perAdminView.state.editor.path } );
         }
     },
     data: function() {

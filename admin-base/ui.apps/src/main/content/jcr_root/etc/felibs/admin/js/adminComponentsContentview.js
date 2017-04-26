@@ -103,7 +103,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
 
             var componentPath = e.dataTransfer.getData('component');
 
-            perHelperModelAction('addComponentToPath', { path: targetEl.getAttribute('data-per-path'), component: componentPath});
+            perHelperModelAction('addComponentToPath', { pagePath : perAdminView.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath});
         }
     }
 };

@@ -82,7 +82,7 @@ var modelActions = {
     },
 
     saveEdit: function(target) {
-        var content = perHelperFindNodeFromPath(perAdminView.pageView.page, target)
+        var content = perHelperFindNodeFromPath(perAdminView.pageView.page, target.path)
         var nodeData = JSON.parse(JSON.stringify(content))
         delete nodeData['children']
         nodeData['sling:resourceType'] = content.component.split('-').join('/')
@@ -92,7 +92,7 @@ var modelActions = {
         data.append(':replaceProperties', 'true')
         data.append(':content', JSON.stringify(nodeData))
 
-        axios.post(target, data).then( function(res) {
+        axios.post(target.pagePath + target.path, data).then( function(res) {
             peregrineAdminApp.$set(perAdminView.state, 'editor', {})
             peregrineAdminApp.$set(perAdminView.state.editor, 'path', undefined)
         }).catch(function(error) {
@@ -118,7 +118,7 @@ var modelActions = {
 
         data.append(':content', JSON.stringify({ 'jcr:primaryType': 'nt:unstructured', 'sling:resourceType': componentPath }))
 
-        axios.post(target.path, data).then( function(res) {
+        axios.post(target.pagePath + target.path, data).then( function(res) {
             console.log(JSON.stringify(res.data, true, 2))
             content.children.push({path: target.path, component: component, text: 'edit me'})
         }).catch(function(error) {

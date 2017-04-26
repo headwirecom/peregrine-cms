@@ -24,7 +24,13 @@ public class AbstractComponent implements IComponent {
     }
 
     public String getPath() {
-        return resource.getPath();
+        String path = resource.getPath();
+        int jcrContentIndex = path.indexOf("/jcr:content");
+        if(jcrContentIndex >= 0) {
+            return path.substring(jcrContentIndex);
+        } else {
+            return path;
+        }
     }
 
     public String getComponent() {

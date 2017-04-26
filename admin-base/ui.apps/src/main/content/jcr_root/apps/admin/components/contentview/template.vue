@@ -110,7 +110,7 @@ export default {
 
             var componentPath = e.dataTransfer.getData('component')
 
-            perHelperModelAction('addComponentToPath', { path: targetEl.getAttribute('data-per-path'), component: componentPath})
+            perHelperModelAction('addComponentToPath', { pagePath : perAdminView.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath})
         }
     }
 }
