@@ -1,21 +1,21 @@
 <template>
 <div class="container">
     <template v-for="segment in pathSegments">
-        <admin-components-action v-bind:target="segment.path" v-bind:title="segment.name" v-bind:command="'selectPath'" classes="btn waves-effect waves-light"></admin-components-action>
+        <admin-components-action v-bind:model="{ target: segment.path, title: segment.name, command: 'selectPath', classes: 'btn waves-effect waves-light'}"></admin-components-action>
     </template>
     <div v-if="pt">
     <ul v-if="pt" class="collection">
         <a class="collection-item" v-for="child in pt.children" v-if="child.resourceType === 'per:Page'">
-    <admin-components-action v-bind:target="child.path" v-bind:title="child.name" v-bind:command="'selectPath'"></admin-components-action>
+    <admin-components-action v-bind:model="{ target: child.path, title: child.name, command: 'selectPath' }"></admin-components-action>
     &nbsp;
     <a traget="viewer" v-bind:href="child.path + '.html'" class="secondary-content"><i class="material-icons">send</i></a>
     &nbsp;
-    <admin-components-action v-bind:target="child.path" v-bind:command="'editPage'" classes="secondary-content">
+    <admin-components-action v-bind:model="{ target: child.path, command: 'editPage', classes: 'secondary-content'}">
         <i class="material-icons">edit</i>
     </admin-components-action>
         </a>
     </ul>
-    <admin-components-action v-bind:target="pt.path" v-bind:title="'add page'" v-bind:command="'addPage'"></admin-components-action>
+    <admin-components-action v-bind:model="{ target: pt.path, title: 'add page', command: 'addPage' }"></admin-components-action>
     </div>
 </div>
 </template>

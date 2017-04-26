@@ -1,0 +1,29 @@
+{
+	"definitions": {
+		"Action": {
+			"type": "object",
+			"properties": {
+				"component": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"path": {
+					"type": "string",
+					"source": "ignore"
+				},
+				"title": {
+					"type": "string",
+					"source": "inject"
+				},
+				"target": {
+					"type": "string",
+					"source": "inject"
+				},
+				"command": {
+					"type": "string",
+					"source": "inject"
+				}
+			}
+		}
+	}
+}

@@ -1,13 +1,14 @@
 <template>
-    <a v-bind:href="target" v-on:click.stop.prevent="action" v-bind:class="classes">{{title}}<slot></slot></a>
+    <a v-bind:href="model.target" v-on:click.stop.prevent="action" v-bind:class="model.classes">{{model.title}}<slot></slot></a>
 </template>
 
 <script>
 export default {
-    props: ['title', 'command', 'target', 'classes' ],
+    props: ['model' ],
     methods: {
         action: function(e) {
-            perHelperAction(this, this.command, this.target)
+            console.log(this.model)
+            perHelperAction(this, this.model.command, this.model.target)
         }
     }
 }

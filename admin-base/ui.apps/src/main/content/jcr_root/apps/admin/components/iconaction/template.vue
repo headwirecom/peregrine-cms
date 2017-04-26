@@ -7,7 +7,7 @@
                 {{model.description}}
             </p>
             <div class="card-action">
-    <admin-components-action v-bind:target="model.action" v-bind:title="'explore'" v-bind:command="'selectPath'"></admin-components-action>
+    <admin-components-action v-bind:model="{ target: model.action, command: 'selectPath', title: 'explore' }"></admin-components-action>
             </div>
         </div>
     </div>
