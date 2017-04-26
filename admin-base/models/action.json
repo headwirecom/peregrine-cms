@@ -22,6 +22,10 @@
 				"command": {
 					"type": "string",
 					"source": "inject"
+				},
+				"type": {
+					"type": "string",
+					"source": "inject"
 				}
 			}
 		}

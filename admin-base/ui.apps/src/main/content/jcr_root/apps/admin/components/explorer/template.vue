@@ -15,7 +15,7 @@
     </admin-components-action>
         </a>
     </ul>
-    <admin-components-action v-bind:model="{ target: pt.path, title: 'add page', command: 'addPage' }"></admin-components-action>
+
     <template v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
     </template>
@@ -70,8 +70,8 @@
                 alert(target)
             },
             addPage: function(me, target) {
-                var pageName = prompt('add page')
-                perHelperModelAction('createPage', { parent: target, name: pageName })
+                var pageName = prompt('add page at '+me.pt.path)
+                perHelperModelAction('createPage', { parent: me.pt.path, name: pageName })
             },
             editPage: function(me, target) {
                 perHelperModelAction('editPage', target )

@@ -1,6 +1,7 @@
 package com.peregrine.admin.models;
 
 import com.peregrine.nodetypes.models.AbstractComponent;
+import com.peregrine.nodetypes.models.Container;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
@@ -55,7 +56,7 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class ExplorerModel extends AbstractComponent {
+public class ExplorerModel extends Container {
 
     public ExplorerModel(Resource r) { super(r); }
 

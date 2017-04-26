@@ -7,7 +7,7 @@
             sling:resourceType="admin/components/toolingpage"
             jcr:title="tools"
             jcr:description="admin base Content Root"
-            siteCSS="[http://fonts.googleapis.com/icon?family=Material+Icons,https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css]"
+            siteCSS="[http://fonts.googleapis.com/icon?family=Material+Icons,/etc/felibs/materialize/materialize.css]"
             siteJS="[https://code.jquery.com/jquery-2.1.1.min.js,https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js]"
     >
         <nav jcr:primaryType="nt:unstructured"

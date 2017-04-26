@@ -426,6 +426,7 @@
     </dependencyManagement>
   <modules>
     <module>core</module>
+      <module>materialize</module>
     <module>ui.apps</module>
   </modules>
 </project>
