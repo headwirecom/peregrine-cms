@@ -38,8 +38,19 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
         showHide: function(me, name) {
             console.log('showHide of', name, 'called');
             perAdminView.state[name] = !perAdminView.state[name];
-        }
+        },
 
+        getPinnedForComponent: function(name) {
+            name = name+'Pinned';
+            if(perAdminView.state[name] === undefined) { this.$root.$set(perAdminView.state, name, true); }
+            return perAdminView.state[name] ? 'flex: 1; height: 100%; padding: 0 0.75rem;' : 'width: 0px;'
+        },
+
+        togglePinned: function(me, name) {
+            name = name+'Pinned';
+            console.log('togglePinned of', name, 'called');
+            perAdminView.state[name] = !perAdminView.state[name];
+        }
     }
 };
 

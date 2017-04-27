@@ -1,7 +1,7 @@
 <template>
 <div v-bind:style="elementStyle">
-<a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)">show data</a>
-<a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" style="position: fixed; bottom: 20px; left: 0; background-color: black; color: white;">hide data</a>
+<a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" title="show data" class="toggle-debugger"><i class="material-icons">keyboard_arrow_right</i></a>
+<a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" title="hide data" class="toggle-debugger-visible"><i class="material-icons">keyboard_arrow_left</i></a>
 <pre v-if="visible">
 {{jsonview}}
 </pre>
@@ -20,7 +20,7 @@
                 if(this.visible) {
                     return "position: fixed; bottom: 0; left: 0; top: 0; right: 0; height: 100%; width: 100%; overflow: scroll; background-color: black; color: white;"
                 } else {
-                    return "position: fixed; bottom: 20px; left: 0;"
+                    return "position: fixed; bottom: 60px; left: 0;"
                 }
             }
 
@@ -38,3 +38,25 @@
         }
     }
 </script>
+
+<style>
+.toggle-debugger {
+    width: 2rem;
+    height: 40px;
+    position: absolute;
+    border: 1px solid #cfd8dc;
+    border-left: 0;
+    background-color: #eceff1 !important;
+}
+
+.toggle-debugger-visible {
+    width: 2rem;
+    height: 40px;
+    bottom: 6px;
+    position: absolute;
+    border: 1px solid #cfd8dc;
+    border-left: 0;
+    background-color: #eceff1 !important;
+}
+
+</style>
