@@ -18,7 +18,7 @@
             <explorer jcr:primaryType="nt:unstructured"
                        sling:resourceType="admin/components/explorer" dataFrom="/state/tools/articles">
                 <add jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/action" target="" type="icon" title="add" command="addPage"/>
+                     sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addPage" icon="add"/>
             </explorer>
 
             <jsonview jcr:primaryType="nt:unstructured"

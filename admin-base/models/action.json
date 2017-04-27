@@ -26,6 +26,10 @@
 				"type": {
 					"type": "string",
 					"source": "inject"
+				},
+				"icon": {
+					"type": "string",
+					"source": "inject"
 				}
 			}
 		}
