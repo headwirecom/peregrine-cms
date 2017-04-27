@@ -53,7 +53,7 @@ function initPeregrineApp() {
 <!-- dynamic component initializer -->
 function loadComponent(name) {
     if(!loadedComponents[name]) {
-        console.info('loading vuejs component %s', name)
+//        console.info('loading vuejs component %s', name)
         var segments = name.split('-')
         for(var i = 0; i < segments.length; i++) {
             segments[i] = segments[i].charAt(0).toUpperCase() + segments[i].slice(1)
@@ -63,7 +63,7 @@ function loadComponent(name) {
         }
         loadedComponents[name] = true
     } else {
-        console.info('component %s already present', name)
+//        console.info('component %s already present', name)
     }
 }
 

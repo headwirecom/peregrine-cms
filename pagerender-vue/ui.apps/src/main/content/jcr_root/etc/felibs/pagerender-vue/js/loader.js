@@ -45,7 +45,7 @@ function initPeregrineApp() {
 <!-- dynamic component initializer -->
 function loadComponent(name) {
     if(!loadedComponents[name]) {
-        console.info('loading vuejs component %s', name)
+//        console.info('loading vuejs component %s', name)
         var segments = name.split('-')
         for(var i = 0; i < segments.length; i++) {
             segments[i] = segments[i].charAt(0).toUpperCase() + segments[i].slice(1)
@@ -55,7 +55,7 @@ function loadComponent(name) {
         }
         loadedComponents[name] = true
     } else {
-        console.info('component %s already present', name)
+//        console.info('component %s already present', name)
     }
 }
 
@@ -116,7 +116,6 @@ function processLoadedContent(data, path, firstTime) {
         walkTreeAndLoad(data)
 
         loadComponent('pagerender-vue-components-placeholder')
-        console.log(JSON.stringify(data))
         getPerView().page = data;
         getPerView().status = 'loaded';
         if(firstTime) {
@@ -139,7 +138,6 @@ function loadContent(path, firstTime = false) {
         if(response.data.template) {
 
             var pageData = response.data
-            console.log(JSON.stringify(pageData, true, 2))
 
             axios.get(response.data.template+'.data.json').then(function(response) {
 

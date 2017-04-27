@@ -18,6 +18,7 @@
     -->
     <filter root="/content/sites/example"/>
     <filter root="/content/templates/example"/>
+    <filter root="/conf/sites/example"/>
     <filter root="/etc/felibs/examplesite"/>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed

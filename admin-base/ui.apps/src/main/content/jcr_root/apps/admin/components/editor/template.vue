@@ -45,3 +45,13 @@
       }
     }
 </script>
+
+<style>
+    fieldset.vue-form-generator {
+        border: none;
+    }
+
+    textarea {
+        height: inherit;
+    }
+</style>

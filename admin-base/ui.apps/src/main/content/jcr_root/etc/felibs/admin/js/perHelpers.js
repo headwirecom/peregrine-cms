@@ -121,10 +121,17 @@ var modelActions = {
 
         axios.post(target.pagePath + target.path, data).then( function(res) {
             console.log(JSON.stringify(res.data, true, 2))
-            content.children.push({path: target.path, component: component, text: 'edit me'})
+            var resPath = res.data.path.slice(res.data.path.indexOf('/jcr:content'))
+            content.children.push({path: resPath, component: component, text: 'edit me'})
         }).catch(function(error) {
             console.error('insert component failed', error)
         })
+
+    },
+
+    getConfig: function(target) {
+
+        loadData('/conf/sites', target)
 
     }
 
