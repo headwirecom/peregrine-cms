@@ -1,0 +1,13 @@
+.component-explorer {
+	height: 90%;
+	.slide-fade-enter-active {
+	  transition: all .3s ease;
+	}
+	.slide-fade-leave-active {
+	  transition: all .3s ease;
+	}
+	.slide-fade-enter, .slide-fade-leave-to{
+	  transform: translateX(240px);
+	  opacity: 0;
+	}
+}
