@@ -1,5 +1,46 @@
 .component-explorer {
 	height: 90%;
+	position: relative;
+
+	.toggle-content-explorer {
+		width: 40px; 
+		height: 40px; 
+		position: absolute;
+		left: -40px;
+		top: 50px;
+		.material-icons {
+			font-size: 40px;
+		}
+	}
+	.collection { 
+		overflow: auto;
+		border: 0;
+		a.collection-item {
+			padding-left: 0;
+			background: none;
+			border-color: #cfd8dc;
+			color: $link-color;
+			cursor: grab;
+	    cursor: -moz-grab;
+	    cursor: -webkit-grab;
+			&:hover,
+			&:focus,
+			&:active {
+				background-color: #fff;
+			}
+			&:active {
+				cursor: grabbing;
+		    cursor: -moz-grabbing;
+		    cursor: -webkit-grabbing;
+			}
+			.material-icons {
+				color: #b0bec5;
+				vertical-align: middle;
+				margin-right: 0.5rem;
+			}
+		}
+	}
+
 	.slide-fade-enter-active {
 	  transition: all .3s ease;
 	}
