@@ -1,14 +1,16 @@
 <template>
-    <div style="height: 90%; ">
+    <div class="component-explorer blue-grey lighten-5">
 
-        <div style="position: relative; top: 10px; width: 30px; height: 0px;" v-bind:class="showHideClass">
-            <div style="width: 30px; height: 30px; background: silver;">
-            <admin-components-action v-bind:model="{ target: 'components', command: 'showHide' }"><i class="material-icons">list</i></admin-components-action></div>
+        <div class="toggle-content-explorer blue-grey lighten-5">
+            <admin-components-action v-bind:model="{ target: 'components', command: 'showHide' }">
+                <i class="material-icons">keyboard_arrow_left</i>
+            </admin-components-action>
         </div>
+
         <div v-if="isVisible">
-            <p>components</p>
-            <div v-if="this.$root.$data.admin.components" class="collection" style="overflow: auto;">
-               <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList()">{{cmp.path.split('/')[2]}} {{cmp.name}}</a>
+            <span class="panel-title">Components</span>
+            <div v-if="this.$root.$data.admin.components" class="collection">
+               <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList()"><i class="material-icons">drag_handle</i> {{cmp.path.split('/')[2]}} {{cmp.name}}</a>
             </div>
         </div>
         <div v-else>
