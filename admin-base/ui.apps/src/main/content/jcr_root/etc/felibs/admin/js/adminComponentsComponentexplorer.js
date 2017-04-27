@@ -1,7 +1,7 @@
 var cmpAdminComponentsComponentexplorer = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"component-explorer blue-grey lighten-5"},[_c('div',{staticClass:"toggle-content-explorer blue-grey lighten-5"},[_c('admin-components-action',{attrs:{"model":{ target: 'components', command: 'showHide' }}},[_c('i',{staticClass:"material-icons"},[_vm._v("keyboard_arrow_left")])])],1),(_vm.isVisible)?_c('div',[_c('span',{staticClass:"panel-title"},[_vm._v("Components")]),(this.$root.$data.admin.components)?_c('div',{staticClass:"collection"},_vm._l((_vm.componentList()),function(cmp){return _c('a',{staticClass:"collection-item",attrs:{"draggable":"true"},on:{"dragstart":function($event){_vm.onDragStart(cmp, $event);}}},[_c('i',{staticClass:"material-icons"},[_vm._v("drag_handle")]),_vm._v(" "+_vm._s(cmp.path.split('/')[2])+" "+_vm._s(cmp.name))])})):_vm._e()]):_c('div',[_vm._v("loading")])])},staticRenderFns: [],
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"component-explorer blue-grey lighten-5"},[_c('div',{staticClass:"toggle-content-explorer blue-grey lighten-5"},[_c('admin-components-action',{attrs:{"model":{ target: 'components', command: 'showHide' }}},[_c('i',{staticClass:"material-icons"},[_vm._v(_vm._s(_vm.showHideClass))])])],1),(_vm.isVisible)?_c('div',[_c('span',{staticClass:"panel-title"},[_vm._v("Components")]),(this.$root.$data.admin.components)?_c('div',{staticClass:"collection"},_vm._l((_vm.componentList()),function(cmp){return _c('a',{staticClass:"collection-item",attrs:{"draggable":"true"},on:{"dragstart":function($event){_vm.onDragStart(cmp, $event);}}},[_c('i',{staticClass:"material-icons"},[_vm._v("drag_handle")]),_vm._v(" "+_vm._s(cmp.path.split('/')[2])+" "+_vm._s(cmp.name))])})):_vm._e()]):_c('div',[_vm._v("loading")])])},staticRenderFns: [],
     props: ['model'],
     computed: {
         isVisible: function() {
@@ -9,7 +9,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
         },
 
         showHideClass: function() {
-            return this.$root.$data.state.components ? 'comp-visible' : 'comp-hidden'
+            return this.$root.$data.state.components ? 'keyboard_arrow_right' : 'keyboard_arrow_left'
 
         }
     },
