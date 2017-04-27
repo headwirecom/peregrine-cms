@@ -126,6 +126,12 @@ var modelActions = {
             console.error('insert component failed', error)
         })
 
+    },
+
+    getConfig: function(target) {
+
+        loadData('/conf/sites', target)
+
     }
 
 }

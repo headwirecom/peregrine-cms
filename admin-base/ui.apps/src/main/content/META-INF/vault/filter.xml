@@ -30,6 +30,10 @@
         <include pattern="/content/articles/jcr:content.*"/>
         <exclude pattern="/content/articles/.*"/>
     </filter>
+    <filter root="/conf/sites">
+        <include pattern="/conf/sites/jcr:content.*"/>
+        <exclude pattern="/conf/sites/.*"/>
+    </filter>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
         as it is in the '/apps/admin/install' folder (see the 'all'

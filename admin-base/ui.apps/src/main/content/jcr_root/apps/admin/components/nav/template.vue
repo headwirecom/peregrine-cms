@@ -6,7 +6,7 @@
       &nbsp; &gt; {{ vueRoot.adminPage.title}}
       </div>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <!-- other tools go here -->
+        <li>{{this.$root.$data.state.user}}</li>
       </ul>
     </div>
 </nav>

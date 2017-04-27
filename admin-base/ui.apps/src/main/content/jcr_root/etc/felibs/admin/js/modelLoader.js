@@ -102,13 +102,31 @@ dataLoaders['/component'] = function(target) {
         peregrineAdminApp.$set(perAdminView.state.editor, 'dialog', undefined)
 
     })
+}
 
+dataLoaders['/conf/sites'] = function(target) {
+
+    console.log('trying to load configuration for', target)
+    peregrineAdminApp.$set(perAdminView.admin, 'currentPageConfig', {})
+    axios.get(target + '/jcr:content/template.json').then(function( response) {
+        var template = response.data.template
+        if(template) {
+            axios.get('/conf/sites/'+target.split('/')[3]+
+            '/'+template.split('/').slice(2).join('/')+'.json').then(function( response) {
+                //console.log(response.data)
+                peregrineAdminApp.$set(perAdminView.admin, 'currentPageConfig', response.data)
+            })
+        }
+    }).then(function(err) {
+        // assuming property template does not exist, ignoring
+    })
 }
 
 function checkAccess(callback) {
 
     axios.get('/system/sling/info.sessionInfo.json').then( function(response) {
         var user = response.data.userID
+        peregrineAdminApp.$set(perAdminView.state, 'user', user)
         console.log('user check:', user)
         if(user === 'anonymous') {
             document.location = '/system/sling/form/login?resource='+document.location.pathname

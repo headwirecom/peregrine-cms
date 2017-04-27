@@ -3,13 +3,14 @@
         <div id="editviewoverlay" style="position: absolute;" v-on:click="click" v-on:dragover="dragOver" v-on:drop="drop">
             <div id="editable" style="position: absolute; border: solid 1px blue; width: 10px; height: 10px;"></div>
         </div>
-        <iframe id="editview" v-bind:src="pagePath" width="100%" height="100%" frameborder="0" style="padding-top: 2px"></iframe>
+        <iframe id="editview" v-bind:src="pagePath" width="100%" height="100%" frameborder="0" style="padding-top: 2px" v-on:load="editViewLoaded"></iframe>
     </div>
 </template>
 
 <script>
 export default {
     props: ['model'],
+
     mounted: function() {
         this.resizeOverlay()
         window.addEventListener('resize', this.resizeOverlay)
@@ -23,6 +24,9 @@ export default {
         }
     },
     methods: {
+        editViewLoaded: function(ev) {
+            perHelperModelAction('getConfig', perAdminView.pageView.path)
+        },
 
         resizeOverlay: function(event) {
             var rect = this.$el.children['editview'].getBoundingClientRect()
