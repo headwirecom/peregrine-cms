@@ -3,12 +3,16 @@
 	position: relative;
 
 	.toggle-content-explorer {
-		width: 40px; 
+		width: 2rem; 
 		height: 40px; 
 		position: absolute;
-		left: -40px;
-		top: 50px;
+		left: -2rem;
+		top: 1rem;
+		border: 1px solid #cfd8dc;
+		border-right: 0;
 		.material-icons {
+			position: relative;
+			left: -.25rem;
 			font-size: 40px;
 		}
 	}
