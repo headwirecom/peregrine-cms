@@ -11,6 +11,9 @@
                <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList()">{{cmp.path.split('/')[2]}} {{cmp.name}}</a>
             </div>
         </div>
+        <div v-else>
+            loading
+        </div>
     </div>
 </template>
 

@@ -9,7 +9,7 @@
                v-bind:model="getChildByPath('editor')">
     </component>
 
-    <component class="z-depth-2 fullheight" v-bind:style="getStyleForComponent('components')" v-bind:is="getChildByPath('components').component"
+    <component class="z-depth-2" v-bind:style="getStyleForComponent('components')" v-bind:is="getChildByPath('components').component"
                v-bind:model="getChildByPath('components')">
     </component>
 </div>
