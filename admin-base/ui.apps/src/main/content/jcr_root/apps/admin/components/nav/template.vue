@@ -1,9 +1,15 @@
 <template>
 <nav v-bind:data-per-path="model.path">
-    <div class="nav-wrapper indigo">
+    <div class="nav-wrapper blue-grey darken-3">
       <div class="brand-logo">
-      <admin-components-action v-bind:model="{ command: 'selectPath', title: 'home', target: '/content/admin' }"></admin-components-action>
-      &nbsp; &gt; {{ vueRoot.adminPage.title}}
+        <admin-components-action 
+          v-bind:model="{ 
+            command: 'selectPath', 
+            title: 'home', 
+            target: '/content/admin' 
+          }">
+        </admin-components-action>
+        &raquo; {{ vueRoot.adminPage.title}}
       </div>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <!-- other tools go here -->
