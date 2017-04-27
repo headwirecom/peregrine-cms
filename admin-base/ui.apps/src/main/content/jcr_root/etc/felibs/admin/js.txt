@@ -16,6 +16,7 @@ js/adminComponentsPathfield.js
 js/adminComponentsQuerytool.js
 js/adminComponentsRow.js
 js/adminComponentsToolingpage.js
+js/adminComponentsWorkspace.js
 js/loader.js
 js/modelLoader.js
 js/perHelpers.js
