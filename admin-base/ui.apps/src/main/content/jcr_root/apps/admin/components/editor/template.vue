@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <p>editor</p>
+    <div class="blue-grey lighten-5">
+        <span class="panel-title">Editor</span>
         <form>
         <vue-form-generator
             v-if="this.$root.$data.state.editor"
