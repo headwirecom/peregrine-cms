@@ -39,6 +39,10 @@ import javax.inject.Named;
     "type": {
       "type": "string",
       "source": "inject"
+    },
+    "icon": {
+      "type": "string",
+      "source": "inject"
     }
   },
   "propertyNames": [
@@ -47,7 +51,8 @@ import javax.inject.Named;
     "title",
     "target",
     "command",
-    "type"
+    "type",
+    "icon"
   ],
   "modelName": "Action",
   "package": "com.peregrine.admin.models",
@@ -91,6 +96,10 @@ private String command;
 @Inject
 private String type;
 
+/* {"type":"string","source":"inject"} */
+@Inject
+private String icon;
+
 
 //GEN]
 
@@ -113,6 +122,11 @@ return command;
 /* {"type":"string","source":"inject"} */
 public String getType() {
 return type;
+}
+
+/* {"type":"string","source":"inject"} */
+public String getIcon() {
+return icon;
 }
 
 
