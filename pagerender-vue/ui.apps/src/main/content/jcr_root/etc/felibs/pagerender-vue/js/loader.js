@@ -116,7 +116,6 @@ function processLoadedContent(data, path, firstTime) {
         walkTreeAndLoad(data)
 
         loadComponent('pagerender-vue-components-placeholder')
-        console.log(JSON.stringify(data))
         getPerView().page = data;
         getPerView().status = 'loaded';
         if(firstTime) {
@@ -139,7 +138,6 @@ function loadContent(path, firstTime = false) {
         if(response.data.template) {
 
             var pageData = response.data
-            console.log(JSON.stringify(pageData, true, 2))
 
             axios.get(response.data.template+'.data.json').then(function(response) {
 
