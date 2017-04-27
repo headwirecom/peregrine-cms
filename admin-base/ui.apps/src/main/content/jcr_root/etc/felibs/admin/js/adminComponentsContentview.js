@@ -1,7 +1,7 @@
 var cmpAdminComponentsContentview = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"fullheight"},[_c('div',{staticStyle:{"position":"absolute"},attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"drop":_vm.drop}},[_c('div',{staticStyle:{"position":"absolute","border":"solid 1px blue","width":"10px","height":"10px","background-color":"silver","opaque":"50%"},attrs:{"id":"editable"}})]),_c('iframe',{staticStyle:{"padding-top":"2px"},attrs:{"id":"editview","src":_vm.pagePath,"width":"100%","height":"100%","frameborder":"0"},on:{"load":_vm.editViewLoaded}})],1)},staticRenderFns: [],
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"fullheight"},[_c('div',{staticStyle:{"position":"absolute"},attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"drop":_vm.drop}},[_c('div',{staticStyle:{"position":"absolute","border":"solid 1px blue","width":"10px","height":"10px","background-color":"silver","opaque":"50%","display":"none"},attrs:{"id":"editable"}})]),_c('iframe',{staticStyle:{"padding-top":"2px"},attrs:{"id":"editview","src":_vm.pagePath,"width":"100%","height":"100%","frameborder":"0"},on:{"load":_vm.editViewLoaded}})],1)},staticRenderFns: [],
     props: ['model'],
 
     mounted: function() {
