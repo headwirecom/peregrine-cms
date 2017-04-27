@@ -5,10 +5,10 @@
     </template>
     <div v-if="pt">
     <ul v-if="pt" class="collection">
-        <a class="collection-item" v-for="child in pt.children" v-if="child.resourceType === 'per:Page'">
+        <a class="collection-item" v-for="child in pt.children" v-if="checkIfAllowed(child.resourceType)">
     <admin-components-action v-bind:model="{ target: child.path, title: child.name, command: 'selectPath' }"></admin-components-action>
     &nbsp;
-    <a traget="viewer" v-bind:href="child.path + '.html'" class="secondary-content"><i class="material-icons">send</i></a>
+    <a traget="viewer" v-bind:href="viewUrl(child.path)" class="secondary-content"><i class="material-icons">send</i></a>
     &nbsp;
     <admin-components-action v-bind:model="{ target: child.path, command: 'editPage', classes: 'secondary-content'}">
         <i class="material-icons">edit</i>
@@ -63,6 +63,17 @@
             }
         },
         methods: {
+            viewUrl: function(path) {
+                var segments = path.split('/')
+                var last = segments.pop()
+                if(last.indexOf('.') >= 0) {
+                    return path
+                }
+                return path + '.html'
+            },
+            checkIfAllowed: function(resourceType) {
+                return ['nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page'].indexOf(resourceType) >= 0
+            },
             selectPath: function(me, target) {
                 perHelperModelAction('selectToolsPagesPath', { selected: target, path: me.model.dataFrom })
             },

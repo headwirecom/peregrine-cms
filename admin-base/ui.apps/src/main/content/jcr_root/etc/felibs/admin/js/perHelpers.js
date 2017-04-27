@@ -133,6 +133,26 @@ var modelActions = {
 
         loadData('/conf/sites', target)
 
+    },
+
+    uploadFiles: function(target) {
+
+        var path = target.path
+        var files = target.files
+
+        console.log('uploading files to', path)
+        console.log(files)
+
+        var data = new FormData()
+        for(var i = 0; i < files.length; i++) {
+            var file = files[i]
+            data.append(file.name, file, file.name)
+        }
+
+        axios.post(path, data).then( function(response) {
+            console.log(response.data)
+            loadData('/pages', path)
+        })
     }
 
 }

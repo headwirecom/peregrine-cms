@@ -9,6 +9,7 @@ js/adminComponentsContentview.js
 js/adminComponentsDebugger.js
 js/adminComponentsEditor.js
 js/adminComponentsExplorer.js
+js/adminComponentsFileupload.js
 js/adminComponentsIconaction.js
 js/adminComponentsIconlist.js
 js/adminComponentsNav.js
