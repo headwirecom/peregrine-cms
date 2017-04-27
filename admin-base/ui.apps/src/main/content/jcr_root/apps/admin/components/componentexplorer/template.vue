@@ -61,13 +61,3 @@
         }
     }
 </script>
-
-<style>
-    .comp-visible {
-        left: -42px
-    }
-
-    .comp-hidden {
-        left: -30px
-    }
-</style>
