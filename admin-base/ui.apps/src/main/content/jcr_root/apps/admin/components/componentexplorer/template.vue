@@ -3,7 +3,7 @@
 
         <div class="toggle-content-explorer blue-grey lighten-5">
             <admin-components-action v-bind:model="{ target: 'components', command: 'showHide' }">
-                <i class="material-icons">keyboard_arrow_left</i>
+                <i class="material-icons">{{showHideClass}}</i>
             </admin-components-action>
         </div>
 
@@ -28,7 +28,7 @@
             },
 
             showHideClass: function() {
-                return this.$root.$data.state.components ? 'comp-visible' : 'comp-hidden'
+                return this.$root.$data.state.components ? 'keyboard_arrow_right' : 'keyboard_arrow_left'
 
             }
         },
