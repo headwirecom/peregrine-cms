@@ -105,19 +105,35 @@ dataLoaders['/component'] = function(target) {
 
 }
 
+function checkAccess(callback) {
+
+    axios.get('/system/sling/info.sessionInfo.json').then( function(response) {
+        var user = response.data.userID
+        console.log('user check:', user)
+        if(user === 'anonymous') {
+            document.location = '/system/sling/form/login?resource='+document.location.pathname
+        }
+        callback()
+    })
+    return true;
+}
+
 function loadData(path, target) {
 
-    pending['/admin/tools'] = true
-    console.log('loading data for:', path)
-    var loader = dataLoaders[path]
-    if(loader) {
-        if(target) {
-            loader(target)
+    var access = checkAccess( function() {
+        pending['/admin/tools'] = true
+        console.log('loading data for:', path)
+        var loader = dataLoaders[path]
+        if(loader) {
+            if(target) {
+                loader(target)
+            } else {
+                loader()
+            }
         } else {
-            loader()
+            console.error('no data loader for', path)
         }
-    } else {
-        console.error('no data loader for', path)
-    }
+    })
+
 
 }
