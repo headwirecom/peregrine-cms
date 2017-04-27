@@ -51,7 +51,7 @@
             showHide: function(me, name) {
                 console.log('showHide of', name, 'called')
                 perAdminView.state[name] = !perAdminView.state[name]
-            }
+            },
 
             getPinnedForComponent: function(name) {
                 name = name+'Pinned'
