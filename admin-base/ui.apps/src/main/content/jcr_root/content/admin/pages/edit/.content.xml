@@ -12,31 +12,22 @@
             <nav jcr:primaryType="nt:unstructured"
                  sling:resourceType="admin/components/nav"/>
 
-            <row jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/row">
+            <workspace jcr:primaryType="nt:unstructured"
+                     sling:resourceType="admin/components/workspace">
 
-                <col jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/col" classes="col s1 fullheight z-depth-2">
                     <structure jcr:primaryType="nt:unstructured"
                                sling:resourceType="pagerender/vue/components/base" text="structure"/>
-                </col>
-                <col1 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/col" classes="col s7 fullheight z-depth-0">
-                    <structure jcr:primaryType="nt:unstructured"
-                               sling:resourceType="admin/components/contentview" text="content"/>
-                </col1>
-                <col2 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/col" classes="col s2 fullheight z-depth-2">
-                    <structure jcr:primaryType="nt:unstructured"
-                               sling:resourceType="admin/components/editor" text="content"/>
-                </col2>
-                <col3 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/col" classes="col s2 fullheight z-depth-2">
-                    <structure jcr:primaryType="nt:unstructured"
-                               sling:resourceType="admin/components/componentexplorer" text="components" source="/admin/components"/>
-                </col3>
 
-            </row>
+                    <contentview jcr:primaryType="nt:unstructured"
+                               sling:resourceType="admin/components/contentview" text="content"/>
+
+                    <editor jcr:primaryType="nt:unstructured"
+                               sling:resourceType="admin/components/editor" text="content"/>
+
+                    <components jcr:primaryType="nt:unstructured"
+                               sling:resourceType="admin/components/componentexplorer" text="components" source="/admin/components"/>
+
+            </workspace>
 
             <jsonview jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/debugger" dataFrom="/"/>

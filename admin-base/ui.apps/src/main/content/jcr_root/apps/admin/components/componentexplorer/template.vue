@@ -1,8 +1,15 @@
 <template>
     <div style="height: 90%; ">
-        <p>components</p>
-        <div v-if="this.$root.$data.admin.components" class="collection" style="height: 100%; overflow: auto;">
-           <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList()">{{cmp.path.split('/')[2]}} {{cmp.name}}</a>
+
+        <div style="position: relative; top: 10px; width: 30px; height: 0px;" v-bind:class="showHideClass">
+            <div style="width: 30px; height: 30px; background: silver;">
+            <admin-components-action v-bind:model="{ target: 'components', command: 'showHide' }"><i class="material-icons">list</i></admin-components-action></div>
+        </div>
+        <div v-if="isVisible">
+            <p>components</p>
+            <div v-if="this.$root.$data.admin.components" class="collection" style="overflow: auto;">
+               <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList()">{{cmp.path.split('/')[2]}} {{cmp.name}}</a>
+            </div>
         </div>
     </div>
 </template>
@@ -10,6 +17,16 @@
 <script>
     export default {
         props: ['model'],
+        computed: {
+            isVisible: function() {
+                return this.$root.$data.state.components
+            },
+
+            showHideClass: function() {
+                return this.$root.$data.state.components ? 'comp-visible' : 'comp-hidden'
+
+            }
+        },
         methods: {
             onDragStart: function(cmp, ev) {
                 if(ev) {
@@ -39,3 +56,13 @@
         }
     }
 </script>
+
+<style>
+    .comp-visible {
+        left: -42px
+    }
+
+    .comp-hidden {
+        left: -30px
+    }
+</style>
