@@ -18,5 +18,8 @@
     <config jcr:primaryType="nt:unstructured" jcr:title="Configuration" sling:resourceType="admin/components/iconaction"
                jcr:description="configuration management"
                action="/content/admin/config"/>
+    <docs jcr:primaryType="nt:unstructured" jcr:title="Documentation" sling:resourceType="admin/components/iconaction"
+            jcr:description="view the peregrine documentation"
+            action="/content/admin/docs"/>
     <config/>
 </jcr:root>

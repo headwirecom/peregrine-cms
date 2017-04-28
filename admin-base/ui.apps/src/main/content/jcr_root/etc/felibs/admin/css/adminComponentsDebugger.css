@@ -1,0 +1,62 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.toggle-debugger {
+    width: 2rem;
+    height: 40px;
+    position: absolute;
+    border: 1px solid #cfd8dc;
+    border-left: 0;
+    background-color: #eceff1 !important;
+}
+
+.toggle-debugger-visible {
+    width: 2rem;
+    height: 40px;
+    bottom: 6px;
+    position: absolute;
+    border: 1px solid #cfd8dc;
+    border-left: 0;
+    background-color: #eceff1 !important;
+}
+
+
