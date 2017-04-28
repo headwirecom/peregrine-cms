@@ -1,4 +1,4 @@
-<!-- hook up routing of links -->
+/** hook up routing of links **/
 //window.onclick = function(ev) {
 //    var currentServer = window.location.protocol+'//'+window.location.host+'/'
 //    if(ev.target.toString().startsWith(currentServer)) {
@@ -19,7 +19,7 @@
 //
 //}
 
-<!-- variable to hold view of page -->
+/** variable to hold view of page **/
 var perAdminView = {
     state: {},
     pageView: {},
@@ -32,7 +32,7 @@ var perAdminView = {
 var loadedComponents = {};
 var peregrineAdminApp;
 
-<!-- initialization of peregrine vuejs renderer -->
+/** initialization of peregrine vuejs renderer **/
 function initPeregrineApp() {
 
     // hack to check keys in pending
@@ -50,7 +50,7 @@ function initPeregrineApp() {
     }
 }
 
-<!-- dynamic component initializer -->
+/** dynamic component initializer **/
 function loadComponent(name) {
     if(!loadedComponents[name]) {
 //        console.info('loading vuejs component %s', name)
@@ -67,7 +67,7 @@ function loadComponent(name) {
     }
 }
 
-<!-- tree walker -->
+/** tree walker **/
 function walkTreeAndLoad(node) {
 
     if(node.component) loadComponent(node.component)
@@ -121,7 +121,7 @@ function suffixParamsToModel(suffixParams, mappers) {
 
 }
 
-<!-- simple data loader -->
+/** simple data loader **/
 function loadContent(initialPath, firstTime = false) {
     console.log('loading content for %s', initialPath)
     var pathInfo = makePathInfo(initialPath.toString())

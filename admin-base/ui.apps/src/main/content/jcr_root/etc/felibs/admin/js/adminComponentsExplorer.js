@@ -1,9 +1,20 @@
 var cmpAdminComponentsExplorer = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"container"},[_vm._l((_vm.pathSegments),function(segment){return [_c('admin-components-action',{attrs:{"model":{ target: segment.path, title: segment.name, command: 'selectPath', classes: 'btn waves-effect waves-light'}}})]}),(_vm.pt)?_c('div',[(_vm.pt)?_c('ul',{staticClass:"collection"},_vm._l((_vm.pt.children),function(child){return (_vm.checkIfAllowed(child.resourceType))?_c('a',{staticClass:"collection-item"},[_c('admin-components-action',{attrs:{"model":{ target: child.path, title: child.name, command: 'selectPath' }}}),_vm._v("  "),_c('a',{staticClass:"secondary-content",attrs:{"traget":"viewer","href":_vm.viewUrl(child.path)}},[_c('i',{staticClass:"material-icons"},[_vm._v("send")])]),_vm._v("  "),_c('admin-components-action',{attrs:{"model":{ target: child.path, command: 'editPage', classes: 'secondary-content'}}},[_c('i',{staticClass:"material-icons"},[_vm._v("edit")])])],1):_vm._e()})):_vm._e(),_vm._l((_vm.model.children),function(child){return [_c(child.component,{tag:"component",attrs:{"model":child}})]})],2):_vm._e()],2)},staticRenderFns: [],
-    props: ['model']
-    ,
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"explorer container"},[_vm._l((_vm.pathSegments),function(segment){return [_c('admin-components-action',{attrs:{"model":{ 
+                target: segment.path, 
+                title: segment.name, 
+                command: 'selectPath', 
+                classes: 'btn waves-effect waves-light blue-grey darken-3'
+            }}})]}),(_vm.pt)?_c('div',[(_vm.pt)?_c('ul',{staticClass:"collection"},_vm._l((_vm.pt.children),function(child){return (_vm.checkIfAllowed(child.resourceType))?_c('a',{staticClass:"collection-item"},[_c('admin-components-action',{attrs:{"model":{ 
+                        target: child.path, 
+                        title: child.name, 
+                        command: 'selectPath' 
+                    }}}),_c('div',{staticClass:"secondary-content"},[_c('admin-components-action',{attrs:{"model":{ 
+                            target: child.path, 
+                            command: 'editPage'
+                        }}},[_c('i',{staticClass:"material-icons"},[_vm._v("edit")])]),_c('span',[_c('a',{attrs:{"traget":"viewer","href":_vm.viewUrl(child.path)}},[_c('i',{staticClass:"material-icons"},[_vm._v("visibility")])])])],1)],1):_vm._e()})):_vm._e(),_vm._l((_vm.model.children),function(child){return [_c(child.component,{tag:"component",attrs:{"model":child}})]})],2):_vm._e()],2)},staticRenderFns: [],
+    props: ['model'],
     data: function() {
         var this$1 = this;
 

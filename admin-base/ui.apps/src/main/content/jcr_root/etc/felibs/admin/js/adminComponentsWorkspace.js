@@ -1,14 +1,13 @@
 var cmpAdminComponentsWorkspace = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticStyle:{"width":"100%","height":"90%","display":"flex","margin-bottom":"0px"}},[_c(_vm.getChildByPath('contentview').component,{tag:"component",staticStyle:{"flex":"4","height":"100%"},attrs:{"model":_vm.getChildByPath('contentview')}}),_c(_vm.getChildByPath('editor').component,{tag:"component",staticClass:"z-depth-2",staticStyle:{"padding":"0 0.75rem"},style:(_vm.getEditorStyle()),attrs:{"model":_vm.getChildByPath('editor')}}),_c(_vm.getChildByPath('components').component,{tag:"component",staticClass:"z-depth-2",style:(_vm.getStyleForComponent('components')),attrs:{"model":_vm.getChildByPath('components')}})],1)},staticRenderFns: [],
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticStyle:{"width":"100%","height":"90%","display":"flex","margin-bottom":"0px"}},[_c(_vm.getChildByPath('contentview').component,{tag:"component",staticStyle:{"flex":"4","height":"100%"},attrs:{"model":_vm.getChildByPath('contentview')}}),_c(_vm.getChildByPath('editor').component,{tag:"component",staticClass:"z-depth-2",staticStyle:{"padding":"0 0.75rem"},style:(_vm.getEditorStyle()),attrs:{"model":_vm.getChildByPath('editor')}}),_c(_vm.getChildByPath('components').component,{tag:"component",class:_vm.getComponentExplorerClasses(),attrs:{"model":_vm.getChildByPath('components')}})],1)},staticRenderFns: [],
     props: ['model'],
-    updated: function() {
+    updated: function updated() {
         this.$children[0].resizeOverlay();
     },
     methods: {
-
-        getChildByPath: function(childName) {
+        getChildByPath: function getChildByPath(childName) {
             var this$1 = this;
 
             var path = this.model.path+'/'+childName;
@@ -22,7 +21,7 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             return null
         },
 
-        getEditorStyle: function() {
+        getEditorStyle: function getEditorStyle() {
             if(perAdminView.state.editor && perAdminView.state.editor.dialog) {
                 return 'flex: 1;'
             } else {
@@ -30,26 +29,35 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             }
         },
 
-        getStyleForComponent: function(name) {
+        getStyleForComponent: function getStyleForComponent(name) {
             if(perAdminView.state[name] === undefined) { this.$root.$set(perAdminView.state, name, true); }
             return perAdminView.state[name] ? 'flex: 1; height: 100%; padding: 0 0.75rem;' : 'width: 0px;'
         },
 
-        showHide: function(me, name) {
+        // maybe rename to "toggleStateProp"
+        showHide: function showHide(me, name) {
             console.log('showHide of', name, 'called');
             perAdminView.state[name] = !perAdminView.state[name];
         },
 
-        getPinnedForComponent: function(name) {
-            name = name+'Pinned';
-            if(perAdminView.state[name] === undefined) { this.$root.$set(perAdminView.state, name, true); }
-            return perAdminView.state[name] ? 'flex: 1; height: 100%; padding: 0 0.75rem;' : 'width: 0px;'
-        },
+        getComponentExplorerClasses: function getComponentExplorerClasses() {
+            // componentExplorerVisible: true/false
+            // componentExplorerPinned: true/false
+            if(perAdminView.state.componentExplorerVisible === undefined) { 
+                this.$root.$set(perAdminView.state, 'componentExplorerVisible', true); 
+            }
+            if(perAdminView.state.componentExplorerPinned === undefined) { 
+                this.$root.$set(perAdminView.state, 'componentExplorerPinned', false); 
+            }
 
-        togglePinned: function(me, name) {
-            name = name+'Pinned';
-            console.log('togglePinned of', name, 'called');
-            perAdminView.state[name] = !perAdminView.state[name];
+            var classes = 'component-explorer blue-grey lighten-5 z-depth-2';
+            if(perAdminView.state.componentExplorerVisible){
+                classes = classes + ' visible';
+            }
+            if(perAdminView.state.componentExplorerPinned){
+                classes = classes + ' pinned';
+            }
+            return classes
         }
     }
 };

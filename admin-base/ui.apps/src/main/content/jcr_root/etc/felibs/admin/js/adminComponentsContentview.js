@@ -37,17 +37,20 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             var editable = this.$el.children['editviewoverlay'].children['editable'];
 
             var targetEl = editview.contentWindow.document.elementFromPoint(posX, posY);
+            console.log('>>> getTargetEl', targetEl);
             if(!targetEl) { return }
 
             while(!targetEl.getAttribute('data-per-path')) {
-                targetEl = targetEl.parent;
+                targetEl = targetEl.parentElement;
                 if(!targetEl) { break; }
             }
             return targetEl
         },
         click: function(e) {
+            console.log('>>> click event',e);
             if(!e) { return }
             var targetEl = this.getTargetEl(e);
+            console.log('>>> target     ',targetEl);
             if(targetEl) {
                 perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'));
             }
