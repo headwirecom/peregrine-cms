@@ -1,0 +1,27 @@
+.explorer {
+	.collection {
+		border: 0;
+		a.collection-item {
+			background: none;
+			border-color: #cfd8dc;
+			&:hover,
+			&:focus,
+			&:active {
+				background-color: #fff;
+			}
+		}
+	}
+	.secondary-content {
+		color: $primary-color-dark;
+		span {
+			display: inline-block;
+			padding: 0 1rem;
+			a {
+				display: inline-block;
+			}
+			&:last-child {
+				border-left: 1px solid #cfd8dc;
+			}
+		}
+	}
+}
