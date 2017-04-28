@@ -17,33 +17,21 @@
             <row jcr:primaryType="nt:unstructured"
                  sling:resourceType="admin/components/row">
 
-                <col1 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/col"
-                      classes="col s4"
-                >
 
-                    <text jcr:primaryType="nt:unstructured"
-                          sling:resourceType="pagerender/vue/components/base"
-                          text="for authors"/>
-                </col1>
-                <col2 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/col"
-                      classes="col s4"
-                >
+                    <pages1 jcr:primaryType="nt:unstructured" jcr:title="For Authors" sling:resourceType="admin/components/iconaction"
+                           jcr:description="Learn about how to use peregrine-cms in day to day editing."
+                           action="/content/admin/docs"/>
 
-                    <text jcr:primaryType="nt:unstructured"
-                          sling:resourceType="pagerender/vue/components/base"
-                          text="for developers"/>
-                </col2>
-                <col3 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/col"
-                      classes="col s4"
-                >
 
-                    <text jcr:primaryType="nt:unstructured"
-                          sling:resourceType="pagerender/vue/components/base"
-                          text="for administrators"/>
-                </col3>
+                    <pages2 jcr:primaryType="nt:unstructured" jcr:title="For Developers" sling:resourceType="admin/components/iconaction"
+                           jcr:description="Get ready to build and enhance peregrine-cms"
+                           action="/content/admin/pages"/>
+
+
+                    <pages3 jcr:primaryType="nt:unstructured" jcr:title="For Administrators" sling:resourceType="admin/components/iconaction"
+                           jcr:description="Learn on how to manage peregrine-cms instances"
+                           action="/content/admin/pages"/>
+
             </row>
 
         </content>
