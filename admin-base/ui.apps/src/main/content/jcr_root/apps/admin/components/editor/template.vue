@@ -1,12 +1,12 @@
 <template>
-    <div class="blue-grey lighten-5">
+    <div class="editor-panel blue-grey lighten-5">
         <span class="panel-title">Editor</span>
         <form>
         <vue-form-generator
-            v-if="this.$root.$data.state.editor"
-            :schema="this.$root.$data.state.editor.dialog"
-            :model="getModel(this.$root.$data.state.editor.path)"
-            :options="formOptions">
+            v-if           = "this.$root.$data.state.editor"
+            v-bind:schema  = "this.$root.$data.state.editor.dialog"
+            v-bind:model   = "getModel(this.$root.$data.state.editor.path)"
+            v-bind:options = "formOptions">
         </vue-form-generator>
         <button v-if="this.$root.$data.state.editor.dialog" class="btn" v-on:click.stop.prevent="onOk">ok</button>
         </form>
@@ -30,9 +30,7 @@
             }
         },
         data: function() {
-
             return {
-
             formOptions: {
               validateAfterLoad: true,
               validateAfterChanged: true
@@ -45,13 +43,3 @@
       }
     }
 </script>
-
-<style>
-    fieldset.vue-form-generator {
-        border: none;
-    }
-
-    textarea {
-        height: inherit;
-    }
-</style>
