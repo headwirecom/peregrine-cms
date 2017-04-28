@@ -1,0 +1,19 @@
+.editor-panel {
+	  fieldset.vue-form-generator {
+    	border: none;
+    	padding: 0;
+    	.form-group {
+    		label {
+    			color: $primary-color-dark;
+    		}
+	    	.form-control {
+	    		padding: 0.5rem;
+	    		border-color: #cfd8dc;
+	    		border-radius: 0;
+	    	}
+	    }
+    }
+    textarea {
+    	height: inherit;
+    }
+}
