@@ -1,7 +1,7 @@
 .component-explorer {
 	height: 90%;
 	position: relative;
-
+	width: 0;
 	.toggle-content-explorer {
 		width: 2rem; 
 		height: 40px; 
@@ -14,6 +14,21 @@
 			position: relative;
 			left: -.25rem;
 			font-size: 40px;
+		}
+	}
+	.pin-content-explorer {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		.btn {
+			font-size: 0.75rem;
+			padding: 0 1rem;
+			height: 2rem;
+			line-height: 2rem;
+			margin-right: 0;
+			.material-icons {
+				vertical-align: middle;
+			}
 		}
 	}
 	.collection { 
@@ -43,6 +58,19 @@
 				margin-right: 0.5rem;
 			}
 		}
+	}
+	&.visible {
+		position: absolute;
+		width: 18rem;
+		padding: 0 0.75rem;	
+		right: 0;
+	}
+	&.pinned {
+			position: relative !important;
+			width: 18rem;
+			box-shadow: none !important;
+			height: 100%; 
+			border-left: 1px solid #cfd8dc;
 	}
 
 	.slide-fade-enter-active {

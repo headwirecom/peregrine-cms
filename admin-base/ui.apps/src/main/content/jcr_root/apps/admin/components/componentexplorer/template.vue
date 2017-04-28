@@ -1,13 +1,26 @@
 <template>
-    <div class="component-explorer blue-grey lighten-5">
-
-        <div class="toggle-content-explorer blue-grey lighten-5">
-            <admin-components-action v-bind:model="{ target: 'components', command: 'showHide' }">
-                <i class="material-icons">{{showHideClass}}</i>
+    <div>
+        <div v-if="!isPinned" class="toggle-content-explorer blue-grey lighten-5">
+            <admin-components-action v-bind:model="{ 
+                target: 'componentExplorerVisible', 
+                command: 'showHide' 
+            }">
+                <i class="material-icons">{{isVisible ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</i>
             </admin-components-action>
         </div>
 
         <div v-if="isVisible">
+            <admin-components-action 
+                class="pin-content-explorer"
+                v-bind:model="{ 
+                    target: 'componentExplorerPinned', 
+                    command: 'showHide', 
+                    title: isPinned ? 'unpin' : 'pin', 
+                    classes: 'waves-effect waves-light btn blue-grey darken-3'
+                }">
+                <i class="material-icons">{{isPinned ? 'location_off' : 'location_on'}}</i>
+            </admin-components-action>
+
             <span class="panel-title">Components</span>
             <div v-if="this.$root.$data.admin.components" class="collection">
                <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList()"><i class="material-icons">drag_handle</i> {{cmp.path.split('/')[2]}} {{cmp.name}}</a>
@@ -24,12 +37,10 @@
         props: ['model'],
         computed: {
             isVisible: function() {
-                return this.$root.$data.state.components
+                return this.$root.$data.state.componentExplorerVisible
             },
-
-            showHideClass: function() {
-                return this.$root.$data.state.components ? 'keyboard_arrow_right' : 'keyboard_arrow_left'
-
+            isPinned: function() {
+                return this.$root.$data.state.componentExplorerPinned
             }
         },
         methods: {
