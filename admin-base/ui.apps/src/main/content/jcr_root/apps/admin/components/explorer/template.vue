@@ -1,32 +1,58 @@
 <template>
-<div class="container">
+<div class="explorer container">
     <template v-for="segment in pathSegments">
-        <admin-components-action v-bind:model="{ target: segment.path, title: segment.name, command: 'selectPath', classes: 'btn waves-effect waves-light'}"></admin-components-action>
+        <admin-components-action 
+            v-bind:model="{ 
+                target: segment.path, 
+                title: segment.name, 
+                command: 'selectPath', 
+                classes: 'btn waves-effect waves-light blue-grey darken-3'
+            }">
+        </admin-components-action>
     </template>
     <div v-if="pt">
-    <ul v-if="pt" class="collection">
-        <a class="collection-item" v-for="child in pt.children" v-if="checkIfAllowed(child.resourceType)">
-    <admin-components-action v-bind:model="{ target: child.path, title: child.name, command: 'selectPath' }"></admin-components-action>
-    &nbsp;
-    <a traget="viewer" v-bind:href="viewUrl(child.path)" class="secondary-content"><i class="material-icons">send</i></a>
-    &nbsp;
-    <admin-components-action v-bind:model="{ target: child.path, command: 'editPage', classes: 'secondary-content'}">
-        <i class="material-icons">edit</i>
-    </admin-components-action>
-        </a>
-    </ul>
+        <ul v-if="pt" class="collection">
+            <a 
+                class ="collection-item" 
+                v-for ="child in pt.children" 
+                v-if  ="checkIfAllowed(child.resourceType)">
+                <admin-components-action 
+                    v-bind:model="{ 
+                        target: child.path, 
+                        title: child.name, 
+                        command: 'selectPath' 
+                    }">
+                </admin-components-action>
 
-    <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
+                <div class="secondary-content">
+                    <admin-components-action 
+                        v-bind:model="{ 
+                            target: child.path, 
+                            command: 'editPage'
+                        }">
+                        <i class="material-icons">edit</i>
+                    </admin-components-action>
+                    <span>
+                        <a 
+                            traget      ="viewer" 
+                            v-bind:href ="viewUrl(child.path)">
+                            <i class="material-icons">visibility</i>
+                        </a>
+                    </span>
+                </div>
+            </a>
+        </ul>
+
+        <template v-for="child in model.children">
+            <component v-bind:is="child.component" v-bind:model="child"></component>
+        </template>
     </div>
 </div>
 </template>
 
 <script>
     export default {
-        props: ['model']
-        ,
+        props: ['model'],
         data: function() {
             var dataFrom    = this.model.dataFrom
 
