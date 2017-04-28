@@ -1,0 +1,25 @@
+.peregrine-workspace {
+	position: absolute;
+	top: 64px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex; 
+	overflow: hidden;
+	.peregrine-content-view {
+		flex: 4;
+		position: relative;
+		height: 100%;
+		overflow: scroll;
+	}
+	#editviewoverlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2000px;
+	}
+	#editview {
+		height: 2000px;
+	}
+}
