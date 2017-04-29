@@ -17,9 +17,18 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		height: 2000px;
+		min-height: 100%;
+		#editable {
+			position: absolute; 
+			border: solid 1px blue; 
+			width: 10px; height: 10px; 
+			background-color: silver; 
+			opaque: 50%; 
+			display: none;
+		}
 	}
 	#editview {
-		height: 2000px;
+		width: 100%;
+		min-height: 100%;
 	}
 }
