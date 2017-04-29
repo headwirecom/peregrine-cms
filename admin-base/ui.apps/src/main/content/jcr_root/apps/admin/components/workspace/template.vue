@@ -1,7 +1,6 @@
 <template>
-    <div class="" style="width: 100%; height: 90%; display: flex; margin-bottom: 0px">
+    <div class="peregrine-workspace">
         <component 
-            style        ="flex: 4; height: 100%;" 
             v-bind:is    ="getChildByPath('contentview').component"
             v-bind:model ="getChildByPath('contentview')">
         </component>
@@ -67,7 +66,7 @@
                     this.$root.$set(perAdminView.state, 'componentExplorerVisible', true) 
                 }
                 if(perAdminView.state.componentExplorerPinned === undefined) { 
-                    this.$root.$set(perAdminView.state, 'componentExplorerPinned', false) 
+                    this.$root.$set(perAdminView.state, 'componentExplorerPinned', true) 
                 }
 
                 var classes = 'component-explorer blue-grey lighten-5 z-depth-2'
