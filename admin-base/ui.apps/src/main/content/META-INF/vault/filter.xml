@@ -16,6 +16,7 @@
         Also any sub pckage of this module needs to exclude /apps/admin/install
         folder otherwise they wipe all installed bundles.
     -->
+    <filter root="/api/admin"/>
     <filter root="/content/admin"/>
     <filter root="/etc/felibs/admin"/>
     <filter root="/content/templates">
