@@ -41,7 +41,17 @@ public class ListServlet extends SlingSafeMethodsServlet {
             IOException {
 
         String suffix = request.getRequestPathInfo().getSuffix();
-        Resource res = request.getResourceResolver().getResource("/content/admin/tools");
+
+        if("/tools".equals(suffix)) {
+            getJSONFromResource(request, response, "/content/admin/tools");
+        } else if("/tools/config".equals(suffix)) {
+            getJSONFromResource(request, response, "/content/admin/toolsConfig");
+        }
+
+    }
+
+    private void getJSONFromResource(SlingHttpServletRequest request, SlingHttpServletResponse response, String resourcePath) throws IOException {
+        Resource res = request.getResourceResolver().getResource(resourcePath);
         try {
             String out = modelFactory.exportModelForResource(res, "jackson", String.class, Collections.<String, String> emptyMap());
             response.getWriter().write(out.toString());
@@ -50,7 +60,6 @@ public class ListServlet extends SlingSafeMethodsServlet {
         } catch (MissingExporterException e) {
             log.error("no exporter 'jackson' defined", e);
         }
-
     }
 
 }
