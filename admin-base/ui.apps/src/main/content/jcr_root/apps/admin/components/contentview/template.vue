@@ -1,9 +1,20 @@
 <template>
-    <div class="fullheight">
-        <div id="editviewoverlay" style="position: absolute;" v-on:click="click" v-on:dragover="dragOver" v-on:drop="drop">
-            <div id="editable" style="position: absolute; border: solid 1px blue; width: 10px; height: 10px; background-color: silver; opaque: 50%; display: none;"></div>
+    <div class="peregrine-content-view">
+        <div 
+            id            = "editviewoverlay" 
+            v-bind:style  = "`height: ${editViewHeight}`" 
+            v-on:click    = "click" 
+            v-on:dragover = "dragOver" 
+            v-on:drop     = "drop">
+            <div id="editable"></div>
         </div>
-        <iframe id="editview" v-bind:src="pagePath" width="100%" height="100%" frameborder="0" style="padding-top: 2px" v-on:load="editViewLoaded"></iframe>
+        <iframe 
+            id           = "editview" 
+            v-bind:style = "`height: ${editViewHeight}`" 
+            v-bind:src   = "pagePath" 
+            v-on:load    = "editViewLoaded"
+            frameborder  = "0">
+        </iframe>
     </div>
 </template>
 
@@ -12,28 +23,58 @@ export default {
     props: ['model'],
 
     mounted: function() {
-        this.resizeOverlay()
-        window.addEventListener('resize', this.resizeOverlay)
+        console.log('===== mounted: set initial state =====')
+        this.$root.$set(perAdminView.state, 'editViewHeight',  'auto') 
     },
+
     beforeDestroy: function () {
-      window.removeEventListener('resize', this.resizeOverlay)
+        console.log('===== beforeDestroy: remove state =====')
+        this.$root.$delete(perAdminView.state, 'editViewHeight') 
     },
+
     computed: {
         pagePath: function() {
             return perAdminView.pageView.path + '.html'
+        },
+        editViewHeight: function() {
+            return perAdminView.state.editViewHeight
         }
     },
     methods: {
+        setEditViewHeight: function(height){
+            console.log('===== METHOD: setEditViewHeight =====')
+            perAdminView.state.editViewHeight = height + 'px'
+        },
+
+        getIframeHeight: function(id) {
+            console.log('===== METHOD: getIframeHeight =====')
+            var iframe = this.$el.children[id]
+            return iframe.contentDocument.body.clientHeight;
+        },
+
         editViewLoaded: function(ev) {
+            console.log('===== METHOD: editViewLoaded =====')
             perHelperModelAction('getConfig', perAdminView.pageView.path)
+
+            /* 
+                this method should be called from the component in the iframe 
+                once data has been returned, and we can remove the timeout...
+            */
+            var self = this
+            setTimeout(function(){ 
+                self.setEditViewHeight(self.getIframeHeight('editview'))
+            }, 1000);
         },
 
         resizeOverlay: function(event) {
-            var rect = this.$el.children['editview'].getBoundingClientRect()
-            var overlay = this.$el.children['editviewoverlay']
-            overlay.style.width = ''+(rect.width-20)+'px'
-            overlay.style.height = ''+(rect.height-20)+'px'
+            console.log('===== METHOD: resizeOverlay =====')
+            console.log('unsure what is calling this method...')
+            // var rect = this.$el.children['editview'].getBoundingClientRect()
+            // var overlay = this.$el.children['editviewoverlay']
+            // overlay.style.width = ''+(rect.width-20)+'px'
+            // overlay.style.height = ''+(rect.height-20)+'px'
         },
+
         getTargetEl: function(e) {
             var elRect = this.$el.getBoundingClientRect()
 
@@ -118,6 +159,15 @@ export default {
             var componentPath = e.dataTransfer.getData('component')
 
             perHelperModelAction('addComponentToPath', { pagePath : perAdminView.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath})
+
+            /* 
+                this method should be called from the component in the iframe 
+                once the component has been added, and we can remove the timeout...
+            */
+            var self = this
+            setTimeout(function(){ 
+                self.setEditViewHeight(self.getIframeHeight('editview'))
+            }, 1000);
         }
     }
 }
