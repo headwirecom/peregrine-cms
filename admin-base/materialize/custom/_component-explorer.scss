@@ -61,13 +61,15 @@
 	}
 	&.visible {
 		position: absolute;
-		width: 18rem;
+		width: auto;
+		flex: 1;
 		padding: 0 0.75rem;	
 		right: 0;
 	}
 	&.pinned {
 			position: relative !important;
-			width: 18rem;
+			width: auto;
+			flex: 1;
 			box-shadow: none !important;
 			height: 100%; 
 			border-left: 1px solid #cfd8dc;
