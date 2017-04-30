@@ -122,8 +122,9 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
+                        <phase>compile</phase>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>run build examplesite</arguments>
                         </configuration>
                     </execution>
                 </executions>
