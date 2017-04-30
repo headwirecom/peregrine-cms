@@ -18,7 +18,7 @@ js/adminComponentsQuerytool.js
 js/adminComponentsRow.js
 js/adminComponentsToolingpage.js
 js/adminComponentsWorkspace.js
-js/loader.js
+js/loader.old
 js/modelLoader.js
 js/perHelpers.js
 js/vfg-core.js

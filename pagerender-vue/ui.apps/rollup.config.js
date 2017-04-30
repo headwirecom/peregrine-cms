@@ -5,6 +5,6 @@ export default {
 	moduleName: '$peregrineApp',
 	plugins: [ buble() ],
 	targets: [
-		{dest: 'target/perview.js', format: 'iife' }
+		{dest: 'target/classes/etc/felibs/pagerender-vue/js/perview.js', format: 'iife' }
 	]
 }

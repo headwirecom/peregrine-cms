@@ -9,6 +9,16 @@ import { pagePathToDataPath, componentNameToVarName } from './util.js'
 let view
 let loadedComponents = []
 
+let perVueApp = null
+
+function initPeregrineApp() {
+
+    perVueApp = new Vue({
+        el: '#peregrine-app',
+        data: getPerView()
+    });
+}
+
 function registerViewImpl(v) {
     view = v
 }
@@ -18,6 +28,10 @@ function getView() {
         return window.parent.perAdminView.pageView
     }
     return view
+}
+
+function getPerView() {
+    return getView()
 }
 
 function loadComponentImpl(name) {
@@ -49,15 +63,16 @@ function walkTreeAndLoad(node) {
 function processLoadedContent(data, path, firstTime) {
     walkTreeAndLoad(data)
 
+    console.log('first time', firstTime)
     getPerView().page = data;
     getPerView().status = 'loaded';
     if(firstTime) {
         initPeregrineApp();
     }
 
-    // if(document.location !== path) {
-    //     history.pushState({peregrinevue:true, path: path}, path, path)
-    // }
+    if(document.location !== path) {
+        history.pushState({peregrinevue:true, path: path}, path, path)
+    }
 }
 
 function loadContentImpl(path, firstTime) {
@@ -97,7 +112,7 @@ var peregrineApp = {
         registerViewImpl(view)
     },
 
-    loadContent: function(path, firstTime = true) {
+    loadContent: function(path, firstTime = false) {
         loadContentImpl(path, firstTime)
     },
 
@@ -107,6 +122,10 @@ var peregrineApp = {
 
     loadComponent: function(name) {
         loadComponentImpl(name)
+    },
+
+    getPerVueApp: function() {
+        return perVueApp
     }
 
 }

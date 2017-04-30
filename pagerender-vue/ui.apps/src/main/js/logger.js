@@ -20,6 +20,11 @@ class Logger {
     debug() {
         console.log(arguments)
     }
+
+    error() {
+        console.log(arguments)
+    }
+
 }
 
 function getLogger(name) {
