@@ -24,9 +24,7 @@
 <script>
     export default {
         props: ['model'],
-        updated() {
-            this.$children[0].resizeOverlay()
-        },
+
         methods: {
             getChildByPath(childName) {
                 var path = this.model.path+'/'+childName
@@ -61,20 +59,13 @@
   
             getComponentExplorerClasses() {
                 // componentExplorerVisible: true/false
-                // componentExplorerPinned: true/false
                 if(perAdminView.state.componentExplorerVisible === undefined) { 
                     this.$root.$set(perAdminView.state, 'componentExplorerVisible', true) 
-                }
-                if(perAdminView.state.componentExplorerPinned === undefined) { 
-                    this.$root.$set(perAdminView.state, 'componentExplorerPinned', true) 
                 }
 
                 var classes = 'component-explorer blue-grey lighten-5 z-depth-2'
                 if(perAdminView.state.componentExplorerVisible){
                     classes = classes + ' visible'
-                }
-                if(perAdminView.state.componentExplorerPinned){
-                    classes = classes + ' pinned'
                 }
                 return classes
             }

@@ -2,17 +2,15 @@
     <div class="peregrine-content-view">
         <div 
             id            = "editviewoverlay" 
-            v-bind:style  = "`height: ${editViewHeight}`" 
             v-on:click    = "click"
             v-on:mousemove= "mouseMove"
             v-on:mouseout = "leftArea"
             v-on:dragover = "dragOver"
             v-on:drop     = "drop">
             <div id="editable"></div>
-            </div>
+        </div>
         <iframe 
             id           = "editview" 
-            v-bind:style = "`height: ${editViewHeight}`" 
             v-bind:src   = "pagePath" 
             v-on:load    = "editViewLoaded"
             frameborder  = "0"></iframe>
@@ -56,32 +54,12 @@ export default {
         editViewLoaded: function(ev) {
             console.log('===== METHOD: editViewLoaded =====')
             perHelperModelAction('getConfig', perAdminView.pageView.path)
-
-            var iframeBody = ev.target.contentDocument.body
-            console.log('iframeBody: ', iframeBody)
-            var self = this
-
-            // create an observer to check for 'pace-done' class in iframe body
-            var observer = new MutationObserver(function(mutations) {
-                console.log('mutations: ', mutations);
-                mutations.forEach(function(mutation) {
-                    console.log('observer mutation: ', mutation);
-                    if(mutation.target.classList.contains('pace-done')){
-                        console.log('vue app inside iframe has loaded!')
-                        self.setEditViewHeight(self.getIframeHeight('editview'))
-                        // stop observing
-                        observer.disconnect()
-                    }
-                })
-            })
-            // start observing
-            observer.observe(iframeBody, { attributes: true })
         },
 
         resizeOverlay: function(event) {
             console.log('===== METHOD: resizeOverlay =====')
-            console.log('unsure what is calling this method...')
             // var rect = this.$el.children['editview'].getBoundingClientRect()
+            // console.log('rect: ', rect)
             // var overlay = this.$el.children['editviewoverlay']
             // overlay.style.width = ''+(rect.width-20)+'px'
             // overlay.style.height = ''+(rect.height-20)+'px'
