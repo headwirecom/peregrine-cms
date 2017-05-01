@@ -8,7 +8,7 @@
         <div :class= "getRightPanelClasses()">
 
             <admin-components-action v-bind:model="{ 
-                classes: 'toggle-right-panel blue-grey lighten-5',
+                classes: 'toggle-right-panel',
                 target: 'rightPanelVisible', 
                 command: 'showHide' 
             }">
@@ -55,14 +55,9 @@
                 return null
             },
 
-            getStyleForComponent(name) {
-                if(perAdminView.state[name] === undefined) { this.$root.$set(perAdminView.state, name, true) }
-                return perAdminView.state[name] ? 'flex: 1; height: 100%; padding: 0 0.75rem;' : 'width: 0px;'
-            },
-
             // maybe rename to "toggleStateProp"
             showHide(me, name) {
-                console.log('showHide of', name, 'called')
+                console.log('showHide of ', name, ' called')
                 perAdminView.state[name] = !perAdminView.state[name]
             },
   
