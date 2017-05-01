@@ -3,8 +3,10 @@
         <div 
             id            = "editviewoverlay" 
             v-bind:style  = "`height: ${editViewHeight}`" 
-            v-on:click    = "click" 
-            v-on:dragover = "dragOver" 
+            v-on:click    = "click"
+            v-on:mousemove= "mouseMove"
+            v-on:mouseout = "leftArea"
+            v-on:dragover = "dragOver"
             v-on:drop     = "drop">
             <div id="editable"></div>
         </div>
@@ -75,17 +77,23 @@ export default {
             // overlay.style.height = ''+(rect.height-20)+'px'
         },
 
-        getTargetEl: function(e) {
+        getPosFromMouse: function(e) {
             var elRect = this.$el.getBoundingClientRect()
 
             var posX = e.clientX - elRect.left
             var posY = e.clientY - elRect.top
 
+            return {x: posX, y: posY }
+        },
+
+        getTargetEl: function(e) {
+
+            var pos = this.getPosFromMouse(e)
+
             var editview = this.$el.children['editview']
             var editable = this.$el.children['editviewoverlay'].children['editable']
 
-            var targetEl = editview.contentWindow.document.elementFromPoint(posX, posY)
-            console.log('>>> getTargetEl', targetEl)
+            var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
             if(!targetEl) return
 
             while(!targetEl.getAttribute('data-per-path')) {
@@ -94,53 +102,55 @@ export default {
             }
             return targetEl
         },
+
         click: function(e) {
-            console.log('>>> click event',e)
             if(!e) return
             var targetEl = this.getTargetEl(e)
-            console.log('>>> target     ',targetEl)
             if(targetEl) {
                 perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
 
         leftArea: function(e) {
-//            var editable = this.$el.children['editviewoverlay'].children['editable']
-//            editable.style.display = 'none'
+            var editable = this.$el.children['editviewoverlay'].children['editable']
+            editable.style.display = 'none'
+        },
+
+        setStyle: function(editable, targetBox, name, border) {
+            editable.style.top = targetBox.top+'px'
+            editable.style.left = targetBox.left+'px'
+            editable.style.width = targetBox.width+'px'
+            editable.style.height = targetBox.height+'px'
+            editable.style.display = 'block'
+            editable.style['border'] = 'none'
+            editable.style['border-top'] = 'none'
+            editable.style['border-bottom'] = 'none'
+            editable.style['border'+name] = border
+        },
+
+        mouseMove: function(e) {
+            if(!e) return
+            var targetEl = this.getTargetEl(e)
+            if(targetEl) {
+                var targetBox = targetEl.getBoundingClientRect()
+                this.setStyle(editable, targetBox, '', '1px solid red')
+            }
         },
 
         dragOver: function(e) {
             e.preventDefault()
+            var targetEl = this.getTargetEl(e)
 
-            var elRect = this.$el.getBoundingClientRect()
-
-            var posX = e.clientX - elRect.left
-            var posY = e.clientY - elRect.top
-
-
-            var editview = this.$el.children['editview']
-            var editable = this.$el.children['editviewoverlay'].children['editable']
-
-
-           var targetEl = editview.contentWindow.document.elementFromPoint(posX, posY)
-
-            while(!targetEl.getAttribute('data-per-path')) {
-                targetEl = targetEl.parent
-                if(!targetEl) { break; }
-            }
 
             if(targetEl) {
-                if(targetEl.getAttribute('data-per-path') !== this.currentPath) {
-                    console.log(targetEl.getAttribute('data-per-path'))
-                    var targetBox = targetEl.getBoundingClientRect()
+                var pos = this.getPosFromMouse(e)
+                var targetBox = targetEl.getBoundingClientRect()
 
-                    editable.style.top = targetBox.top+'px'
-                    editable.style.left = targetBox.left+'px'
-                    editable.style.width = targetBox.width+'px'
-                    editable.style.height = targetBox.height+'px'
-                    editable.style.display = 'block'
-
-                    this.currentPath = targetEl.getAttribute('data-per-path')
+                var y = pos.y - targetBox.top
+                if(y < targetBox.height/2) {
+                    this.setStyle(editable, targetBox, '-top', '1px solid red')
+                } else {
+                    this.setStyle(editable, targetBox, '-bottom', '1px solid red')
                 }
             }
 
