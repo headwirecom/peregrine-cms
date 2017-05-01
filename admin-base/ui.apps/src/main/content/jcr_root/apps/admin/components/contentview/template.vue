@@ -21,36 +21,12 @@
 export default {
     props: ['model'],
 
-    mounted: function() {
-        console.log('===== mounted: set initial state =====')
-        this.$root.$set(perAdminView.state, 'editViewHeight',  'auto') 
-    },
-
-    beforeDestroy: function () {
-        console.log('===== beforeDestroy: remove state =====')
-        this.$root.$delete(perAdminView.state, 'editViewHeight') 
-    },
-
     computed: {
         pagePath: function() {
             return perAdminView.pageView.path + '.html'
-        },
-        editViewHeight: function() {
-            return perAdminView.state.editViewHeight
         }
     },
     methods: {
-        setEditViewHeight: function(height){
-            console.log('===== METHOD: setEditViewHeight =====')
-            perAdminView.state.editViewHeight = height + 'px'
-        },
-
-        getIframeHeight: function(id) {
-            console.log('===== METHOD: getIframeHeight =====')
-            var iframe = this.$el.children[id]
-            return iframe.contentDocument.body.clientHeight;
-        },
-
         editViewLoaded: function(ev) {
             console.log('===== METHOD: editViewLoaded =====')
             perHelperModelAction('getConfig', perAdminView.pageView.path)
@@ -86,6 +62,11 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
+                perAdminView.state.editorVisible = true
+                // open right panel if not already open
+                if(!perAdminView.state.rightPanelVisible){
+                    perAdminView.state.rightPanelVisible = true
+                }
                 perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
