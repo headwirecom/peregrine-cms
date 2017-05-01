@@ -7,14 +7,13 @@
             v-on:dragover = "dragOver" 
             v-on:drop     = "drop">
             <div id="editable"></div>
-        </div>
+            </div>
         <iframe 
             id           = "editview" 
             v-bind:style = "`height: ${editViewHeight}`" 
             v-bind:src   = "pagePath" 
             v-on:load    = "editViewLoaded"
-            frameborder  = "0">
-        </iframe>
+            frameborder  = "0"></iframe>
     </div>
 </template>
 
@@ -56,14 +55,25 @@ export default {
             console.log('===== METHOD: editViewLoaded =====')
             perHelperModelAction('getConfig', perAdminView.pageView.path)
 
-            /* 
-                this method should be called from the component in the iframe 
-                once data has been returned, and we can remove the timeout...
-            */
+            var iframeBody = ev.target.contentDocument.body
+            console.log('iframeBody: ', iframeBody)
             var self = this
-            setTimeout(function(){ 
-                self.setEditViewHeight(self.getIframeHeight('editview'))
-            }, 1000);
+
+            // create an observer to check for 'pace-done' class in iframe body
+            var observer = new MutationObserver(function(mutations) {
+                console.log('mutations: ', mutations);
+                mutations.forEach(function(mutation) {
+                    console.log('observer mutation: ', mutation);
+                    if(mutation.target.classList.contains('pace-done')){
+                        console.log('vue app inside iframe has loaded!')
+                        self.setEditViewHeight(self.getIframeHeight('editview'))
+                        // stop observing
+                        observer.disconnect()
+                    }
+                })
+            })
+            // start observing
+            observer.observe(iframeBody, { attributes: true })
         },
 
         resizeOverlay: function(event) {
@@ -94,6 +104,7 @@ export default {
             }
             return targetEl
         },
+
         click: function(e) {
             console.log('>>> click event',e)
             if(!e) return
