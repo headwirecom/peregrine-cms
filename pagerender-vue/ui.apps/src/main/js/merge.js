@@ -1,5 +1,5 @@
-import logger from './logger.js'
-var log = logger.logger('merge').setDebugLevel()
+import { LoggerFactory } from './logger.js'
+let log = LoggerFactory.logger('merge').setDebugLevel()
 
 export default function (obj1, obj2) {
 

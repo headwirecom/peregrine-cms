@@ -1,5 +1,5 @@
-import logger from './logger.js'
-let log = logger.logger('peregrineApp').setDebugLevel()
+import { LoggerFactory } from './logger.js'
+let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 
 import state from './state.js'
 import merge from './merge.js'
@@ -63,7 +63,7 @@ function walkTreeAndLoad(node) {
 function processLoadedContent(data, path, firstTime) {
     walkTreeAndLoad(data)
 
-    console.log('first time', firstTime)
+    log.debug('first time', firstTime)
     getPerView().page = data;
     getPerView().status = 'loaded';
     if(firstTime) {

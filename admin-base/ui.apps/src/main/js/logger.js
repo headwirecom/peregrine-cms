@@ -41,27 +41,27 @@ export class Logger {
         this.displayName = displayName
     }
 
-    setOffLevel() {
+    setLevelOff() {
         return this.setLevel(LogLevel.OFF)
     }
 
-    setErrorLevel() {
+    setLevelError() {
         return this.setLevel(LogLevel.ERROR)
     }
 
-    setWarnLevel() {
+    setLevelWarn() {
         return this.setLevel(LogLevel.WARN)
     }
 
-    setInfoLevel() {
+    setLevelInfo() {
         return this.setLevel(LogLevel.INFO)
     }
 
-    setDebugLevel() {
+    setLevelDebug() {
         return this.setLevel(LogLevel.DEBUG)
     }
 
-    setFineLevel() {
+    setLevelFine() {
         return setLevel(LogLevel.FINE)
     }
 

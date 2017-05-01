@@ -1,5 +1,5 @@
-import logger from './logger.js'
-var log = logger.logger('peregrineApp').setDebugLevel()
+import { LoggerFactory } from './logger.js'
+let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 
 import $peregrineApp from './peregrineApp.js'
 

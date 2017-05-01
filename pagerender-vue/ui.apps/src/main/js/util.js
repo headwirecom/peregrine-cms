@@ -1,5 +1,5 @@
-import logger from './logger.js'
-var log = logger.logger('util').setDebugLevel()
+import { LoggerFactory } from './logger.js'
+let log = LoggerFactory.logger('util').setDebugLevel()
 
 import { DATA_EXTENSION, COMPONENT_PREFIX } from './constants.js'
 

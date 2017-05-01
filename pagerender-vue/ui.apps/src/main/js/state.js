@@ -1,5 +1,5 @@
-import logger from './logger.js'
-var log = logger.logger('state').setDebugLevel()
+import { LoggerFactory } from './logger.js'
+let log = LoggerFactory.logger('state').setDebugLevel()
 
 
 window.onclick = function(ev) {
