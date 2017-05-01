@@ -16,6 +16,7 @@
         Also any sub pckage of this module needs to exclude /apps/admin/install
         folder otherwise they wipe all installed bundles.
     -->
+    <filter root="/api/admin"/>
     <filter root="/content/admin"/>
     <filter root="/etc/felibs/admin"/>
     <filter root="/content/templates">
@@ -26,9 +27,9 @@
         <include pattern="/content/assets/jcr:content.*"/>
         <exclude pattern="/content/assets/.*"/>
     </filter>
-    <filter root="/content/articles">
-        <include pattern="/content/articles/jcr:content.*"/>
-        <exclude pattern="/content/articles/.*"/>
+    <filter root="/content/objects">
+        <include pattern="/content/objects/jcr:content.*"/>
+        <exclude pattern="/content/objects/.*"/>
     </filter>
     <filter root="/conf/sites">
         <include pattern="/conf/sites/jcr:content.*"/>

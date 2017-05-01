@@ -28,7 +28,9 @@
 
 <sly data-sly-include="renderer.html"></sly>
 <script>
-    loadContent(document.location, true);
+    var $perView = {};
+    $peregrineApp.registerView($perView)
+    $peregrineApp.loadContent(document.location.toString(), true)
 </script>
 </body>
 </html>

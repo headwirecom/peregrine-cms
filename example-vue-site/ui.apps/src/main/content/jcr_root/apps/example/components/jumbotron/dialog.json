@@ -1,0 +1,14 @@
+{ "fields":[{
+  "type": "input",
+  "inputType": "text",
+  "label": "title",
+  "model": "title",
+  "placeholder": "enter a title"
+},
+  {
+    "type": "textArea",
+    "label": "text",
+    "model": "text",
+    "rows": 5,
+    "placeholder": "enter a text"
+  }]}

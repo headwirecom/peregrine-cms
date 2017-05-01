@@ -57,6 +57,16 @@ public class PageModel extends Container {
     @Inject @Named("jcr:title")
     private String title;
 
+    public String getSiteRoot() {
+        String path = getPagePath();
+        String[] segments = path.split("/");
+        return String.join("/", segments[0], segments[1], segments[2], segments[3]);
+    }
+
+    public String getPagePath() {
+        return getResource().getParent().getPath();
+    }
+
     public String[] getSiteCSS() {
         if(siteCSS == null) {
             String[] value = (String[]) getInheritedProperty("siteCSS");

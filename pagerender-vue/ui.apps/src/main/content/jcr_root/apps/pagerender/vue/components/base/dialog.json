@@ -2,6 +2,6 @@
   "type": "textArea",
   "label": "Text",
   "model": "text",
-  "rows": 5,
+  "rows": 10,
   "placeholder": "test"
 }]}

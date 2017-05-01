@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./src/main/scripts/build.js"
+    "build": "node ../../buildscripts/buildvue.js examplesite"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fs-extra": "^3.0.0",
     "rollup": "^0.41.6",
     "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-vue": "^2.3.1",

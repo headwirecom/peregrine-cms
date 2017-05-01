@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./src/main/scripts/build.js"
+    "build": "node ../../buildscripts/buildvue.js admin"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "fs-extra": "^2.1.2",
     "request": "^2.81.0",
