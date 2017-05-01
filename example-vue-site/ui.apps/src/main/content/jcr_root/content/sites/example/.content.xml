@@ -9,6 +9,11 @@
             jcr:title="peregrine cms"
             template="/content/templates/example"
     >
+        <jumbotron jcr:primaryType="nt:unstructured"
+                   sling:resourceType="example/components/jumbotron"
+                   title="hello"
+                   text="world"/>
+
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">
 
@@ -35,6 +40,7 @@
                 </col1>
 
             </row>
+
 
         </content>
 
