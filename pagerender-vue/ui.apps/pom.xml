@@ -124,6 +124,9 @@
                     </goals>
                     <phase>compile</phase>
                     <configuration>
+                        <environmentVariables>
+                            <NODE_PATH>./node_modules</NODE_PATH>
+                        </environmentVariables>
                         <arguments>run build</arguments>
                     </configuration>
                 </execution>
