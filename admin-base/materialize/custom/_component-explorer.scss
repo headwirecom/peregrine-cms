@@ -1,43 +1,14 @@
 .component-explorer {
-	height: 90%;
-	position: relative;
-	width: 0;
-	.toggle-content-explorer {
-		width: 2rem; 
-		height: 40px; 
-		position: absolute;
-		left: -2rem;
-		top: 1rem;
-		border: 1px solid #cfd8dc;
-		border-right: 0;
-		.material-icons {
-			position: relative;
-			left: -.25rem;
-			font-size: 40px;
-		}
-	}
-	.pin-content-explorer {
-		position: absolute;
-		top: 0.75rem;
-		right: 0.75rem;
-		.btn {
-			font-size: 0.75rem;
-			padding: 0 1rem;
-			height: 2rem;
-			line-height: 2rem;
-			margin-right: 0;
-			.material-icons {
-				vertical-align: middle;
-			}
-		}
-	}
+	height: 100%;
+	padding: 0 0.75rem;
+	overflow: auto;
 	.collection { 
 		overflow: auto;
 		border: 0;
 		a.collection-item {
 			padding-left: 0;
 			background: none;
-			border-color: #cfd8dc;
+			border-color: $blue-grey-lighten-4;
 			color: $link-color;
 			cursor: grab;
 	    cursor: -moz-grab;
@@ -58,25 +29,5 @@
 				margin-right: 0.5rem;
 			}
 		}
-	}
-	&.visible {
-		position: relative;
-		width: auto;
-		flex: 1;
-		padding: 0 0.75rem;	
-		box-shadow: none !important;
-		height: 100%; 
-		border-left: 1px solid #cfd8dc;
-	}
-
-	.slide-fade-enter-active {
-	  transition: all .3s ease;
-	}
-	.slide-fade-leave-active {
-	  transition: all .3s ease;
-	}
-	.slide-fade-enter, .slide-fade-leave-to{
-	  transform: translateX(240px);
-	  opacity: 0;
 	}
 }
