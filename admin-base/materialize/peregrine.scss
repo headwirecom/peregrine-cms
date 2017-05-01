@@ -1,10 +1,11 @@
 @charset "UTF-8";
 
 @import "materialize-src/sass/materialize.scss";
+@import "custom/variables";
 @import "custom/global";
 @import "custom/typography";
 @import "custom/workspace";
 @import "custom/explorer";
 @import "custom/navbar";
-@import "custom/component-explorer";
+@import "custom/right-panel.scss";
 @import "custom/editor-panel";
