@@ -1,0 +1,25 @@
+{ "fields":[
+{
+  "type": "input",
+  "inputType": "text",
+  "label": "image",
+  "model": "imagePath",
+  "rows": 5,
+  "placeholder": "select path"
+},
+{
+  "type": "input",
+  "inputType": "text",
+  "label": "title",
+  "model": "title",
+  "placeholder": "enter a title"
+}
+,
+{
+  "type": "textArea",
+  "label": "caption",
+  "model": "caption",
+  "rows": 5,
+  "placeholder": "enter a text"
+}
+]}

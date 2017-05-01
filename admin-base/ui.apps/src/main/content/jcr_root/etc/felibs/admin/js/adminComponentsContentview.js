@@ -1,32 +1,62 @@
 var cmpAdminComponentsContentview = (function () {
 'use strict';
 
-var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"fullheight"},[_c('div',{staticStyle:{"position":"absolute"},attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"drop":_vm.drop}},[_c('div',{staticStyle:{"position":"absolute","border":"solid 1px blue","width":"10px","height":"10px","background-color":"silver","opaque":"50%","display":"none"},attrs:{"id":"editable"}})]),_c('iframe',{staticStyle:{"padding-top":"2px"},attrs:{"id":"editview","src":_vm.pagePath,"width":"100%","height":"100%","frameborder":"0"},on:{"load":_vm.editViewLoaded}})],1)},staticRenderFns: [],
+var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"peregrine-content-view"},[_c('div',{style:(("height: " + (_vm.editViewHeight))),attrs:{"id":"editviewoverlay"},on:{"click":_vm.click,"dragover":_vm.dragOver,"drop":_vm.drop}},[_c('div',{attrs:{"id":"editable"}})]),_c('iframe',{style:(("height: " + (_vm.editViewHeight))),attrs:{"id":"editview","src":_vm.pagePath,"frameborder":"0"},on:{"load":_vm.editViewLoaded}})],1)},staticRenderFns: [],
     props: ['model'],
 
     mounted: function() {
-        this.resizeOverlay();
-        window.addEventListener('resize', this.resizeOverlay);
+        console.log('===== mounted: set initial state =====');
+        this.$root.$set(perAdminView.state, 'editViewHeight',  'auto'); 
     },
+
     beforeDestroy: function () {
-      window.removeEventListener('resize', this.resizeOverlay);
+        console.log('===== beforeDestroy: remove state =====');
+        this.$root.$delete(perAdminView.state, 'editViewHeight'); 
     },
+
     computed: {
         pagePath: function() {
             return perAdminView.pageView.path + '.html'
+        },
+        editViewHeight: function() {
+            return perAdminView.state.editViewHeight
         }
     },
     methods: {
+        setEditViewHeight: function(height){
+            console.log('===== METHOD: setEditViewHeight =====');
+            perAdminView.state.editViewHeight = height + 'px';
+        },
+
+        getIframeHeight: function(id) {
+            console.log('===== METHOD: getIframeHeight =====');
+            var iframe = this.$el.children[id];
+            return iframe.contentDocument.body.clientHeight;
+        },
+
         editViewLoaded: function(ev) {
+            console.log('===== METHOD: editViewLoaded =====');
             perHelperModelAction('getConfig', perAdminView.pageView.path);
+
+            /* 
+                this method should be called from the component in the iframe 
+                once data has been returned, and we can remove the timeout...
+            */
+            var self = this;
+            setTimeout(function(){ 
+                self.setEditViewHeight(self.getIframeHeight('editview'));
+            }, 1000);
         },
 
         resizeOverlay: function(event) {
-            var rect = this.$el.children['editview'].getBoundingClientRect();
-            var overlay = this.$el.children['editviewoverlay'];
-            overlay.style.width = ''+(rect.width-20)+'px';
-            overlay.style.height = ''+(rect.height-20)+'px';
+            console.log('===== METHOD: resizeOverlay =====');
+            console.log('unsure what is calling this method...');
+            // var rect = this.$el.children['editview'].getBoundingClientRect()
+            // var overlay = this.$el.children['editviewoverlay']
+            // overlay.style.width = ''+(rect.width-20)+'px'
+            // overlay.style.height = ''+(rect.height-20)+'px'
         },
+
         getTargetEl: function(e) {
             var elRect = this.$el.getBoundingClientRect();
 
@@ -111,6 +141,15 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             var componentPath = e.dataTransfer.getData('component');
 
             perHelperModelAction('addComponentToPath', { pagePath : perAdminView.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath});
+
+            /* 
+                this method should be called from the component in the iframe 
+                once the component has been added, and we can remove the timeout...
+            */
+            var self = this;
+            setTimeout(function(){ 
+                self.setEditViewHeight(self.getIframeHeight('editview'));
+            }, 1000);
         }
     }
 };
