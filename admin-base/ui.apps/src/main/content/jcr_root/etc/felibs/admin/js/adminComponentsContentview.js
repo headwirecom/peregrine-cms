@@ -121,7 +121,6 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
             e.preventDefault();
             var targetEl = this.getTargetEl(e);
 
-
             if(targetEl) {
                 var pos = this.getPosFromMouse(e);
                 var targetBox = targetEl.getBoundingClientRect();
@@ -132,6 +131,8 @@ var template = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c
                 } else {
                     this.setStyle(editable, targetBox, '-bottom', '1px solid red');
                 }
+            } else {
+                this.leftArea();
             }
 
         },

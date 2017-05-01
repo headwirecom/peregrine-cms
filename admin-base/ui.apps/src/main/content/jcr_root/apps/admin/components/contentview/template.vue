@@ -6,7 +6,6 @@
             v-on:click    = "click"
             v-on:mousemove= "mouseMove"
             v-on:mouseout = "leftArea"
-            v-on:dragout  = "leftArea"
             v-on:dragover = "dragOver"
             v-on:drop     = "drop">
             <div id="editable"></div>
@@ -152,6 +151,8 @@ export default {
                 } else {
                     this.setStyle(editable, targetBox, '-bottom', '1px solid red')
                 }
+            } else {
+                this.leftArea()
             }
 
         },
