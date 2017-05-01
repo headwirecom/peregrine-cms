@@ -6,6 +6,7 @@
             v-on:click    = "click"
             v-on:mousemove= "mouseMove"
             v-on:mouseout = "leftArea"
+            v-on:dragout  = "leftArea"
             v-on:dragover = "dragOver"
             v-on:drop     = "drop">
             <div id="editable"></div>
@@ -140,7 +141,6 @@ export default {
         dragOver: function(e) {
             e.preventDefault()
             var targetEl = this.getTargetEl(e)
-
 
             if(targetEl) {
                 var pos = this.getPosFromMouse(e)
