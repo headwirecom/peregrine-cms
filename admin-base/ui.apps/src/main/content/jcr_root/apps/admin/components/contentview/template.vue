@@ -56,15 +56,6 @@ export default {
             perHelperModelAction('getConfig', perAdminView.pageView.path)
         },
 
-        resizeOverlay: function(event) {
-            console.log('===== METHOD: resizeOverlay =====')
-            // var rect = this.$el.children['editview'].getBoundingClientRect()
-            // console.log('rect: ', rect)
-            // var overlay = this.$el.children['editviewoverlay']
-            // overlay.style.width = ''+(rect.width-20)+'px'
-            // overlay.style.height = ''+(rect.height-20)+'px'
-        },
-
         getPosFromMouse: function(e) {
             var elRect = this.$el.getBoundingClientRect()
 
