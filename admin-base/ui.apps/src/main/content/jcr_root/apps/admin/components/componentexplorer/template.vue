@@ -10,14 +10,6 @@
 <script>
     export default {
         props: ['model'],
-        computed: {
-            isVisible: function() {
-                return this.$root.$data.state.componentExplorerVisible
-            }
-            // isPinned: function() {
-            //     return this.$root.$data.state.componentExplorerPinned
-            // }
-        },
         methods: {
             onDragStart: function(cmp, ev) {
                 if(ev) {
