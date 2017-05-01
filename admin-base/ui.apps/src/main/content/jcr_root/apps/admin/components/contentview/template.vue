@@ -28,7 +28,6 @@ export default {
     },
     methods: {
         editViewLoaded: function(ev) {
-            console.log('===== METHOD: editViewLoaded =====')
             perHelperModelAction('getConfig', perAdminView.pageView.path)
         },
 
@@ -130,15 +129,6 @@ export default {
             var componentPath = e.dataTransfer.getData('component')
 
             perHelperModelAction('addComponentToPath', { pagePath : perAdminView.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath})
-
-            /* 
-                this method should be called from the component in the iframe 
-                once the component has been added, and we can remove the timeout...
-            */
-            var self = this
-            setTimeout(function(){ 
-                self.setEditViewHeight(self.getIframeHeight('editview'))
-            }, 1000);
         }
     }
 }
