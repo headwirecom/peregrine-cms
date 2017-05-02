@@ -3,6 +3,7 @@
         <div 
             id            = "editviewoverlay" 
             v-on:click    = "click"
+            v-on:mousewheel = "scrollEditView"
             v-on:mousemove= "mouseMove"
             v-on:mouseout = "leftArea"
             v-on:dragover = "dragOver"
@@ -29,6 +30,18 @@ export default {
     methods: {
         editViewLoaded: function(ev) {
             perHelperModelAction('getConfig', perAdminView.pageView.path)
+        },
+
+        scrollEditView(ev){
+            var timer = null
+            var editViewOverlay = ev.target
+            editViewOverlay.style['pointer-events'] = 'none'
+            if(timer !== null) {
+                clearTimeout(timer)        
+            }
+            timer = setTimeout(function() {
+                editViewOverlay.style['pointer-events'] = 'auto'
+            }, 150)
         },
 
         getPosFromMouse: function(e) {
@@ -89,6 +102,7 @@ export default {
 
         mouseMove: function(e) {
             if(!e) return
+            if(perAdminView.state.editorVisible) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 var targetBox = targetEl.getBoundingClientRect()
