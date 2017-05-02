@@ -13,8 +13,7 @@
 
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">
-            <componentsexplorer jcr:primaryType="nt:unstructured"
-                                sling:resourceType="admin/components/componentexplorer"/>
+
         </content>
 
         <jsonview jcr:primaryType="nt:unstructured"

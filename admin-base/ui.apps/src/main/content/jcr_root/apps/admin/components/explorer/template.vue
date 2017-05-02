@@ -19,13 +19,13 @@
                 <admin-components-action 
                     v-bind:model="{ 
                         target: child.path, 
-                        title: child.name, 
+                        title: child.resourceType+' '+child.name,
                         command: 'selectPath' 
                     }">
                 </admin-components-action>
 
                 <div class="secondary-content">
-                    <admin-components-action 
+                    <admin-components-action v-show="editable(child)"
                         v-bind:model="{ 
                             target: child.path, 
                             command: 'editPage'
@@ -33,9 +33,18 @@
                         <i class="material-icons">edit</i>
                     </admin-components-action>
                     <span>
+                        <admin-components-action
+                            v-bind:model="{
+                                target: child.path,
+                                command: 'deletePage'
+                            }">
+                            <i class="material-icons">delete</i>
+                        </admin-components-action>
+                    </span>
+                    <span v-show="viewable(child)">
                         <a 
-                            traget      ="viewer" 
-                            v-bind:href ="viewUrl(child.path)">
+                            target      ="viewer"
+                            v-bind:href ="viewUrl(child)">
                             <i class="material-icons">visibility</i>
                         </a>
                     </span>
@@ -53,26 +62,15 @@
 <script>
     export default {
         props: ['model'],
-        data: function() {
-            var dataFrom    = this.model.dataFrom
-
-            var segments = dataFrom.split('/').slice(1)
-
-            var node = this.$root.$data
-            for(var i = 0; i < segments.length; i++) {
-                var next = node[segments[i]]
-                if(!next) {
-                    next = this.$root.$set(node, segments[i], {})
-                }
-                node = next
-            }
-
-            return { path: node }
-        },
         computed: {
+            path: function() {
+                var dataFrom    = this.model.dataFrom
+                var node = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
+                return node
+            },
             pt: function() {
-                console.log(this.$data.path.value)
-                return perHelperFindNodeFromPath(this.$root.$data.pages, this.$data.path.value)
+                var node = this.path
+                return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, node)
             },
             parentPath: function() {
                 var segments = this.$data.path.value.toString().split('/')
@@ -80,7 +78,7 @@
                 return joined
             },
             pathSegments: function() {
-                var segments = this.$data.path.value.toString().split('/')
+                var segments = this.path.toString().split('/')
                 var ret = []
                 for(var i = 1; i < segments.length; i++) {
                     ret.push( { name: segments[i], path: segments.slice(0, i+1).join('/') } )
@@ -89,29 +87,54 @@
             }
         },
         methods: {
-            viewUrl: function(path) {
+            editable: function(child) {
+                return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
+            },
+            viewable: function(child) {
+                return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
+            },
+            viewUrl: function(child) {
+                var path = child.path
                 var segments = path.split('/')
                 var last = segments.pop()
                 if(last.indexOf('.') >= 0) {
                     return path
                 }
-                return path + '.html'
+                if(child.resourceType === 'per:Page') {
+                    return path + '.html'
+                }
+                return path + '.json'
             },
             checkIfAllowed: function(resourceType) {
-                return ['nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page'].indexOf(resourceType) >= 0
+                return ['nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
             selectPath: function(me, target) {
-                perHelperModelAction('selectToolsPagesPath', { selected: target, path: me.model.dataFrom })
+                $perAdminApp.stateAction('selectToolsNodesPath', { selected: target, path: me.model.dataFrom })
             },
             viewPage: function(me, target) {
                 alert(target)
             },
             addPage: function(me, target) {
                 var pageName = prompt('add page at '+me.pt.path)
-                perHelperModelAction('createPage', { parent: me.pt.path, name: pageName })
+                $perAdminApp.stateAction('createPage', { parent: me.pt.path, name: pageName, template: '/content/templates/example' })
+            },
+            addFolder: function(me, target) {
+                var folderName = prompt('add folder at '+me.pt.path)
+                $perAdminApp.stateAction('createFolder', { parent: me.pt.path, name: folderName })
+            },
+            addTemplate: function(me, target) {
+                var templateName = prompt('add template at '+me.pt.path)
+                $perAdminApp.stateAction('createTemplate', { parent: me.pt.path, name: templateName })
+            },
+            addObject: function(me, target) {
+                var objectName = prompt('add object at '+me.pt.path)
+                $perAdminApp.stateAction('createObject', { parent: me.pt.path, name: objectName, template: 'example/objects/sample' })
+            },
+            deletePage: function(me, target) {
+                $perAdminApp.stateAction('deletePage', target)
             },
             editPage: function(me, target) {
-                perHelperModelAction('editPage', target )
+                $perAdminApp.stateAction('editPage', target )
             }
         }
 

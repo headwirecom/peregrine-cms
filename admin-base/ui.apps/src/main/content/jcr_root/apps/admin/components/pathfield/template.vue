@@ -1,6 +1,6 @@
 <template>
 <div>
-    <input v-model.lazy="path.value">
+    <input v-model.lazy="path">
 </div>
 </template>
 
@@ -8,26 +8,12 @@
     export default {
         props: ['model']
         ,
-        data: function() {
-            var dataDefault = this.model.dataDefault
+        computed: {
+            path: function() {
             var dataFrom    = this.model.dataFrom
-
-            var segments = dataFrom.split('/').slice(1)
-
-            var node = this.$root.$data
-            for(var i = 0; i < segments.length; i++) {
-                var next = node[segments[i]]
-                if(!next) {
-                    next = this.$root.$set(node, segments[i], {})
-                }
-                node = next
+            var node = $perAdminApp.getNodeFrom(this.$root.$data, dataFrom)
+            return node
             }
-            if(!node.value) {
-                this.$root.$set(node, 'value', dataDefault.toString())
-                loadData('/pages', dataDefault.toString())
-            }
-
-            return { path: node }
         }
     }
 </script>

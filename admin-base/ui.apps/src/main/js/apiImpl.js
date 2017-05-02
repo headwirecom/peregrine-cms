@@ -1,15 +1,15 @@
-var axios = require('axios')
+// var axios = require('axios')
 
 import { LoggerFactory } from './logger'
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
-const API_BASE = 'http://admin:admin@localhost:8080/api'
+const API_BASE = '/api'
 
 let callbacks
 
 function fetch(path) {
 
-    logger.debug('fetch() ', path)
+    logger.fine('fetch() ', path)
     return axios.get(API_BASE+path).then( (response) => {
         return new Promise( (resolve, reject) => {
             resolve(response.data)
@@ -23,14 +23,19 @@ function fetch(path) {
 
 function getOrCreate(obj, path) {
 
-    var segments = path.split('/').slice(1).reverse()
+    if(path === '/') {
+        // do nothing, requesting root
+    }
+    else {
+        var segments = path.split('/').slice(1).reverse()
 
-    while(segments.length > 0) {
-        var segment = segments.pop()
-        if(!obj[segment]) {
-            obj[segment] = {}
+        while(segments.length > 0) {
+            var segment = segments.pop()
+            if(!obj[segment]) {
+                obj[segment] = {}
+            }
+            obj = obj[segment]
         }
-        obj = obj[segment]
     }
 
     return obj
@@ -56,7 +61,7 @@ class PerAdminImpl {
     populateTools() {
         return new Promise( (resolve, reject) => {
             fetch('/admin/list.json/tools')
-                .then( (data) => populateView('/admin', 'tools', data) )
+                .then( (data) => populateView('/admin', 'tools', data.children) )
                 .then(() => resolve() )
                 .catch( (error) => {
                     logger.error('call populateTools() failed')
@@ -67,8 +72,24 @@ class PerAdminImpl {
 
     populateToolsConfig() {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/list/tools/config')
-                .then( (data) => populateView('/admin', 'toolsConfig', data) )
+            fetch('/admin/list.json/tools/config')
+                .then( (data) => populateView('/admin', 'toolsConfig', data.children) )
+                .then(() => resolve() )
+        })
+    }
+
+    populateUser() {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/access.json')
+                .then( (data) => populateView('/state', 'user', data.userID) )
+                .then(() => resolve() )
+        })
+    }
+
+    populateContent(path) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/content.json'+path)
+                .then( (data) => populateView('/', 'adminPageStaged', data) )
                 .then(() => resolve() )
         })
     }
@@ -83,8 +104,8 @@ class PerAdminImpl {
 
     populateNodesForBrowser(path, includeParents = false) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/nodes/path//'+path+'//includeParents/'+includeParents)
-                .then( (data) => populateViw('/admin', 'pages', data) )
+            fetch('/admin/nodes.json/path//'+path+'//includeParents//'+includeParents)
+                .then( (data) => populateView('/admin', 'nodes', data) )
                 .then(() => resolve() )
         })
     }
@@ -105,6 +126,56 @@ class PerAdminImpl {
         })
     }
 
+    createPage(parentPath, name, templatePath) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/createPage.json/path//'+parentPath+'//name//'+name+'//templatePath//'+templatePath)
+                .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
+        })
+    }
+
+    deletePage(path) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/deletePage.json/path//'+path)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
+    createTemplate(parentPath, name) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/createTemplate.json/path//'+parentPath+'//name//'+name)
+                .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
+        })
+    }
+
+    createFolder(parentPath, name) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/createFolder.json/path//'+parentPath+'//name//'+name)
+                .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
+        })
+    }
+
+    uploadFiles(path, files) {
+        return new Promise( (resolve, reject) => {
+
+                logger.fine('uploading files to', path)
+                logger.fine(files)
+
+                var data = new FormData()
+                for(var i = 0; i < files.length; i++) {
+                    var file = files[i]
+                    data.append(file.name, file, file.name)
+                }
+
+                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data).then( (response) => {
+                        logger.fine(response.data)
+                        this.populateNodesForBrowser(path) })
+                    .then( () => resolve() )
+        })
+    }
 }
 
 export default PerAdminImpl

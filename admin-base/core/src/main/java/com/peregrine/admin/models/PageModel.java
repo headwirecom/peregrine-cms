@@ -52,6 +52,15 @@ public class PageModel extends Container {
     private String description;
 
     @Inject
+    private String dataFrom;
+
+    @Inject
+    private String dataDefault;
+
+    @Inject
+    private String[] loaders;
+
+    @Inject
     private String[] suffixToParameter;
 
     public String[] getSiteCSS() {
@@ -89,6 +98,16 @@ public class PageModel extends Container {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getDataFrom() {
+        return dataFrom;
+    }
+    public String getDataDefault() {
+        return dataDefault;
+    }
+    public String[] getLoaders() {
+        return loaders;
     }
 
     public String[] getSuffixToParameter() {

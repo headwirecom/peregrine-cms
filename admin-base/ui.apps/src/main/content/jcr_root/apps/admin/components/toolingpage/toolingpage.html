@@ -29,7 +29,22 @@
 
 <sly data-sly-include="renderer.html"></sly>
 <script>
-    loadContent(document.location, true);
+    // switch between old and new implementation
+    var newImpl = true
+    var $perAdminView = {}
+
+    if(newImpl) {
+        // define a couple of extra vue components that are used by components
+        // but not in the tree of auto loaded components
+        $perAdminApp.loadComponent('admin-components-iconaction')
+        $perAdminApp.loadComponent('admin-components-action')
+
+        // init peregrine admin app
+        $perAdminApp.init($perAdminView)
+        $perAdminApp.loadContent(document.location.pathname, true)
+    } else {
+        loadContent(document.location, true);
+    }
 </script>
 </body>
 </html>
