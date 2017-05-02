@@ -1,13 +1,13 @@
 <template>
     <div class="peregrine-workspace">
-        <component 
+
+        <component
             v-bind:is    = "getChildByPath('contentview').component"
             v-bind:model = "getChildByPath('contentview')">
         </component>
 
-        <div :class= "getRightPanelClasses()">
-
-            <admin-components-action v-bind:model="{ 
+        <div :class= "getRightPanelClasses">
+            <admin-components-action v-bind:model="{
                 classes: 'toggle-right-panel',
                 target: 'rightPanelVisible', 
                 command: 'showHide' 
@@ -15,13 +15,13 @@
                 <i class="material-icons">{{isVisible ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</i>
             </admin-components-action>
 
-            <component 
+            <component
                 v-if         = "editorVisible"
                 v-bind:is    = "getChildByPath('editor').component"
                 v-bind:model = "getChildByPath('editor')">
             </component>
 
-            <component 
+            <component
                 v-else
                 v-bind:is    = "getChildByPath('components').component"
                 v-bind:model = "getChildByPath('components')">
@@ -34,12 +34,17 @@
     export default {
         props: ['model'],
         beforeMount(){
-            this.$root.$set(perAdminView.state, 'rightPanelVisible', true)
-            this.$root.$set(perAdminView.state, 'editorVisible', false)
+//            $perAdminApp.getNodeFromViewWithDefault('/state/editorVisible', true)
+//            this.$root.$set(perAdminView.state, 'rightPanelVisible', true)
+//            this.$root.$set(perAdminView.state, 'editorVisible', false)
         },
         computed: {
-            editorVisible(){
-                return perAdminView.state.editorVisible
+            editorVisible: function() {
+                return $perAdminApp.getNodeFromView('/state/editorVisible') === true
+            },
+            getRightPanelClasses: function() {
+                // rightPanelVisible: true/false
+                return `right-panel ${$perAdminApp.getNodeFromView('/state/rightPanelVisible') ? 'visible' : ''}`
             }
         },
         methods: {
@@ -58,13 +63,14 @@
             // maybe rename to "toggleStateProp"
             showHide(me, name) {
                 console.log('showHide of ', name, ' called')
-                perAdminView.state[name] = !perAdminView.state[name]
-            },
-  
-            getRightPanelClasses() {
-                // rightPanelVisible: true/false
-                return `right-panel ${perAdminView.state.rightPanelVisible ? 'visible' : ''}`
+                var state = $perAdminApp.getView().state
+                if(state[name] || state[name] === false) {
+                    me.$root.$set(state, name, true)
+                } else {
+                    me.$root.$set(state, name, false)
+                }
             }
+  
         }
     }
 </script>

@@ -2,7 +2,7 @@
     <div class="component-explorer">
         <span class="panel-title">Components</span>
         <div v-if="this.$root.$data.admin.components" class="collection">
-           <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList()"><i class="material-icons">drag_handle</i> {{cmp.path.split('/')[2]}} {{cmp.name}}</a>
+           <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList"><i class="material-icons">drag_handle</i> {{cmp.path.split('/')[2]}} {{cmp.name}}</a>
         </div>
     </div>
 </template>
@@ -10,16 +10,11 @@
 <script>
     export default {
         props: ['model'],
-        methods: {
-            onDragStart: function(cmp, ev) {
-                if(ev) {
-                    ev.dataTransfer.setData('component', cmp.path)
-                }
-            },
-            componentList: function() {
+        computed: {
+            componentList: function () {
                 if(!this.$root.$data.admin.components) return {}
-                if(!this.$root.$data.admin.currentPageConfig) return {}
-                var allowedComponents = this.$root.$data.admin.currentPageConfig.allowedComponents
+                // if(!this.$root.$data.admin.currentPageConfig) return {}
+                var allowedComponents = ['/apps/example', '/apps/pagerender'] // this.$root.$data.admin.currentPageConfig.allowedComponents
                 var list = this.$root.$data.admin.components.data
                 if(!list || !allowedComponents) return {}
 
@@ -34,6 +29,13 @@
                     }
                 }
                 return ret
+            }
+        },
+        methods: {
+            onDragStart: function(cmp, ev) {
+                if(ev) {
+                    ev.dataTransfer.setData('component', cmp.path)
+                }
             }
         }
     }

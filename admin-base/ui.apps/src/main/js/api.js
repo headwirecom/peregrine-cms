@@ -41,9 +41,14 @@ class PerApi {
         return impl.populateComponentDefinitionFromNode(path)
     }
 
+    populatePageView(path) {
+        return impl.populatePageView(path)
+    }
+
     populateByName(name) {
         if(name === '/admin/tools') return this.populateTools()
         if(name === '/admin/toolsConfig') return this.populateToolsConfig()
+        if(name === '/admin/components') return this.populateComponents()
         return Promise.reject('populateByName for '+name+' is not defined')
     }
 

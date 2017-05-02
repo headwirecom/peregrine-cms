@@ -96,7 +96,7 @@ class PerAdminImpl {
 
     populateComponents() {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/components')
+            fetch('/admin/components.json')
                 .then( (data) => populateView('/admin', 'components', data) )
                 .then( () => resolve() )
         })
@@ -122,6 +122,14 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             fetch('/admin/componentDefinition/path//'+path)
                 .then( (data) => populateView('/admin/componentDefinitions', data.name, data.config) )
+                .then( () => resolve() )
+        })
+    }
+
+    populatePageView(path) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/node.json/path//'+path)
+                .then( (data) => populateView('/pageView', 'page', data) )
                 .then( () => resolve() )
         })
     }

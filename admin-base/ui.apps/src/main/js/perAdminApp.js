@@ -94,8 +94,13 @@ function processLoaders(loaders) {
                     logger.fine('loading data with', loader[0], loader[1])
                     var pathFrom = loader[1]
                     var dataToLoad = getNodeFromImpl(view, pathFrom)
-                    logger.fine(getNodeFromImpl(view, pathFrom))
-                    promises.push(api[loader[0]](dataToLoad))
+                    logger.fine(dataToLoad)
+                    if(api[loader[0]]) {
+                        promises.push(api[loader[0]](dataToLoad))
+                    } else {
+                        logger.error('missing', loader[0])
+                        reject('missing ' + loader[0]+' '+dataToLoad)
+                    }
                 }
             }
         }
@@ -120,15 +125,18 @@ function loadContentImpl(initialPath, firstTime) {
                 .then( function (data) {
                     logger.fine('got data for', path)
                     walkTreeAndLoad(view.adminPageStaged).then( function() {
-                        view.status = 'loaded';
+                        if(firstTime) {
+                            suffixParamsToModel(pathInfo.suffixParams, view.adminPageStaged.suffixToParameter)
+                        }
 
                         processLoaders(view.adminPageStaged.loaders).then( () => {
                             if(firstTime) {
-                                suffixParamsToModel(pathInfo.suffixParams, view.adminPageStaged.suffixToParameter)
                                 view.adminPage = view.adminPageStaged
+                                view.status = 'loaded';
                                 initPeregrineApp();
                             } else {
                                 view.adminPage = view.adminPageStaged
+                                view.status = 'loaded';
                             }
                             delete view.adminPageStaged
 
@@ -165,6 +173,10 @@ function stateActionImpl(name, target) {
 
 function getNodeFromImpl(node, path) {
     return get(node, path)
+}
+
+function getNodeFromWithDefaultImpl(node, path, value) {
+    return get(node, path, value)
 }
 
 function findNodeFromPathImpl(node, path) {
@@ -225,6 +237,14 @@ var PerAdminApp = {
 
     getNodeFrom(node, path) {
         return getNodeFromImpl(node, path)
+    },
+
+    getNodeFromView(path) {
+        return getNodeFromImpl(this.getView(), path)
+    },
+
+    getNodeFromViewWithDefault(path, value) {
+        return getNodeFromWithDefaultImpl(this.getView(), path, value)
     },
 
     findNodeFromPath(node, path) {

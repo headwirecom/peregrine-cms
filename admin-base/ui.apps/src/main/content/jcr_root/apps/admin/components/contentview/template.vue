@@ -24,12 +24,12 @@ export default {
 
     computed: {
         pagePath: function() {
-            return perAdminView.pageView.path + '.html'
+            return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
         }
     },
     methods: {
         editViewLoaded: function(ev) {
-            perHelperModelAction('getConfig', perAdminView.pageView.path)
+            // perHelperModelAction('getConfig', perAdminView.pageView.path)
         },
 
         scrollEditView(ev){
@@ -74,12 +74,12 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-                perAdminView.state.editorVisible = true
+                $perAdminApp.getView().state.editorVisible = true
                 // open right panel if not already open
-                if(!perAdminView.state.rightPanelVisible){
-                    perAdminView.state.rightPanelVisible = true
-                }
-                perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
+//                if(!perAdminView.state.rightPanelVisible){
+//                    perAdminView.state.rightPanelVisible = true
+//                }
+                $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
 
@@ -102,7 +102,7 @@ export default {
 
         mouseMove: function(e) {
             if(!e) return
-            if(perAdminView.state.editorVisible) return
+            if($perAdminApp.getNodeFromView('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 var targetBox = targetEl.getBoundingClientRect()
@@ -131,7 +131,7 @@ export default {
         },
 
         showComponentEdit: function(me, target) {
-            perHelperModelAction('editComponent', target)
+            $perAdminApp.stateAction('editComponent', target)
         },
 
         drop: function(e) {
