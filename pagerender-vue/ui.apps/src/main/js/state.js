@@ -29,10 +29,11 @@ window.onclick = function(ev) {
 }
 window.onpopstate = function(e){
     if(e.state) {
-        log.debug("onpopstate:" + e.state.path);
+        log.debug("ONPOPSTATE : " + e.state.path);
         $peregrineApp.loadContent(e.state.path, false, true)
     } else {
-        log.debug(e)
+        log.warn(e);
+        $peregrineApp.loadContent((document.location? document.location.href : null), false, true)
     }
 }
 

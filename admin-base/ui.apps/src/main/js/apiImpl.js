@@ -220,9 +220,13 @@ class PerAdminImpl {
     }
 
     insertNodeAt(path, component, drop) {
+        logger.debug(arguments)
         return new Promise( (resolve, reject) => {
-            log.fine(arguments)
-            resolve()
+
+            fetch('/admin/insertNodeAt.json/path//'+path+'//component//'+component+'//drop//'+drop)
+                .then( function(data) {
+                    resolve(data)
+            })
         })
     }
 

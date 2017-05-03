@@ -6,7 +6,7 @@
 export default {
     props: [ 'model'],
     mounted: function() {
-        if(window.parent && window.parent.perAdminView) {
+        if(window.parent && window.parent.$perAdminView) {
             var box = this.$el.getBoundingClientRect()
             if(box.width === 0 || box.height === 0) {
                 var div = document.createElement('div')
