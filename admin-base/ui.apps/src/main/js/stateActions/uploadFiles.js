@@ -1,5 +1,5 @@
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('uploadFiles').setLevelFine()
+let log = LoggerFactory.logger('uploadFiles').setLevelDebug()
 
 export default function(me, target) {
 

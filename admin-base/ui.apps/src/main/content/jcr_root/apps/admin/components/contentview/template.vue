@@ -130,10 +130,6 @@ export default {
 
         },
 
-        showComponentEdit: function(me, target) {
-            $perAdminApp.stateAction('editComponent', target)
-        },
-
         drop: function(e) {
             var editable = this.$el.children['editviewoverlay'].children['editable']
             editable.style.display = 'none'
