@@ -19,9 +19,8 @@
                 <admin-components-action 
                     v-bind:model="{ 
                         target: child.path, 
-                        title: child.resourceType+' '+child.name,
-                        command: 'selectPath' 
-                    }">
+                        command: 'selectPath'
+                    }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
                 </admin-components-action>
 
                 <div class="secondary-content">
@@ -104,6 +103,15 @@
                     return path + '.html'
                 }
                 return path + '.json'
+            },
+            nodeTypeToIcon: function(nodeType) {
+
+                if(nodeType === 'per:Page')     return 'restore_page'
+                if(nodeType === 'per:Object')   return 'layers'
+                if(nodeType === 'nt:file')      return 'restore_page'
+                if(nodeType === 'sling:Folder') return 'folder'
+                if(nodeType === 'sling:OrderedFolder') return 'folder'
+                return 'unknown'
             },
             checkIfAllowed: function(resourceType) {
                 return ['nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
