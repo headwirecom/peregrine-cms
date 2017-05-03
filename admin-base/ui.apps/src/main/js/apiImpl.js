@@ -218,6 +218,14 @@ class PerAdminImpl {
 
         })
     }
+
+    insertNodeAt(path, component, drop) {
+        return new Promise( (resolve, reject) => {
+            log.fine
+            resolve()
+        })
+    }
+
 }
 
 export default PerAdminImpl

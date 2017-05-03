@@ -79,6 +79,11 @@ class PerApi {
     savePageEdit(path, node) {
         return impl.savePageEdit(path, node)
     }
+
+    insertNodeAt(path, component, drop) {
+        return impl.insertNodeAt(path, component, drop)
+    }
+
 }
 
 export default PerApi

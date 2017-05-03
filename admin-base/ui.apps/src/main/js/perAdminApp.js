@@ -1,5 +1,5 @@
 import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('perAdminApp').setLevelFine()
+let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
 
 import PeregrineApi from './api'
 import PerAdminImpl from './apiImpl'

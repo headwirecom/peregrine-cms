@@ -25,7 +25,7 @@ function registerViewImpl(v) {
 
 function getView() {
     if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
-        log.debug("getVIEW() - window.parent.perAdminView.pageView");
+        log.fine("getVIEW() - window.parent.perAdminView.pageView");
         return window.parent.$perAdminView.pageView
     }
     return view
@@ -37,7 +37,7 @@ function getPerView() {
 
 function loadComponentImpl(name) {
     if(!loadedComponents[name]) {
-        log.debug('loading component', name)
+        log.fine('loading component', name)
 
         var varName = componentNameToVarName(name)
         if(window[varName]) {
@@ -46,7 +46,7 @@ function loadComponentImpl(name) {
         loadedComponents[name] = true
 
     } else {
-        log.debug('component %s already loaded', name)
+        log.fine('component %s already loaded', name)
     }
 
 
@@ -66,7 +66,7 @@ function walkTreeAndLoad(node) {
 function processLoadedContent(data, path, firstTime, fromPopState) {
     walkTreeAndLoad(data)
 
-    log.debug('first time', firstTime)
+    log.fine('first time', firstTime)
     getPerView().page = data;
     getPerView().status = 'loaded';
     if(firstTime) {
@@ -74,19 +74,19 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     }
 
     if(document.location !== path && !fromPopState) {
-        log.debug("pushState : "+path);
+        log.fine("pushState : "+path);
         history.pushState({peregrinevue:true, path: path}, path, path)
     }
 }
 
 function loadContentImpl(path, firstTime, fromPopState) {
 
-    log.debug('loading content for', path, firstTime, fromPopState)
+    log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
     getPerView().status = undefined;
     axios.get(dataUrl).then(function (response) {
-        log.debug('got data for', path)
+        log.fine('got data for', path)
 
         if(response.data.template) {
 

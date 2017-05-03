@@ -12,6 +12,7 @@ import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
 import editComponent from './stateActions/editComponent'
 import savePageEdit from './stateActions/savePageEdit'
+import addComponentToPath from './stateActions/addComponentToPath'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createPage'] = createPage
@@ -22,6 +23,7 @@ actions['uploadFiles'] = uploadFiles
 actions['editPage'] = editPage
 actions['editComponent'] = editComponent
 actions['savePageEdit'] = savePageEdit
+actions['addComponentToPath'] = addComponentToPath
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

@@ -13,7 +13,6 @@
         <iframe 
             id           = "editview" 
             v-bind:src   = "pagePath" 
-            v-on:load    = "editViewLoaded"
             frameborder  = "0"></iframe>
     </div>
 </template>
@@ -28,10 +27,6 @@ export default {
         }
     },
     methods: {
-        editViewLoaded: function(ev) {
-            // perHelperModelAction('getConfig', perAdminView.pageView.path)
-        },
-
         scrollEditView(ev){
             var timer = null
             var editViewOverlay = ev.target
@@ -74,11 +69,6 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-//                $perAdminApp.getView().state.editorVisible = true
-                // open right panel if not already open
-//                if(!perAdminView.state.rightPanelVisible){
-//                    perAdminView.state.rightPanelVisible = true
-//                }
                 $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
@@ -103,6 +93,7 @@ export default {
         mouseMove: function(e) {
             if(!e) return
             if($perAdminApp.getNodeFromView('/state/editorVisible')) return
+
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 var targetBox = targetEl.getBoundingClientRect()
@@ -117,14 +108,23 @@ export default {
             if(targetEl) {
                 var pos = this.getPosFromMouse(e)
                 var targetBox = targetEl.getBoundingClientRect()
+                var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
-                var y = pos.y - targetBox.top
-                if(y < targetBox.height/2) {
-                    this.setStyle(editable, targetBox, '-top', '1px solid red')
+                if(isDropTarget) {
+                    this.dropPosition = 'into'
+                    this.setStyle(editable, targetBox, '', '1px solid red')
                 } else {
-                    this.setStyle(editable, targetBox, '-bottom', '1px solid red')
+                    var y = pos.y - targetBox.top
+                    if(y < targetBox.height/2) {
+                        this.dropPosition = 'before'
+                        this.setStyle(editable, targetBox, '-top', '1px solid red')
+                    } else {
+                        this.dropPosition = 'after'
+                        this.setStyle(editable, targetBox, '-bottom', '1px solid red')
+                    }
                 }
             } else {
+                this.dropPosition = 'none'
                 this.leftArea()
             }
 
@@ -142,7 +142,8 @@ export default {
 
             var componentPath = e.dataTransfer.getData('component')
 
-            perHelperModelAction('addComponentToPath', { pagePath : perAdminView.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath})
+            var view = $perAdminApp.getView()
+            $perAdminApp.stateAction('addComponentToPath', { pagePath : view.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath, drop: this.dropPosition})
         }
     }
 }

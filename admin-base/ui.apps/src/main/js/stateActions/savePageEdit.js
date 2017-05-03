@@ -1,5 +1,5 @@
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('savePageEdit').setLevelFine()
+let log = LoggerFactory.logger('savePageEdit').setLevelDebug()
 
 import { set } from '../utils'
 

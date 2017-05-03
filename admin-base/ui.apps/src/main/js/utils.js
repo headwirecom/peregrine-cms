@@ -1,5 +1,5 @@
 import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('utils').setLevelDebug()
+let logger = LoggerFactory.logger('utils').setLevelFine()
 
 import { DATA_EXTENSION, COMPONENT_PREFIX } from './constants.js'
 
@@ -92,4 +92,14 @@ export function get(node, path, value) {
         }
     }
     return node[path[0]]
+}
+
+export function parentPath(path) {
+    logger.fine('parentPath()',path)
+    let segments = path.split('/')
+    let name = segments.pop()
+    let parentPath = segments.join('/')
+    let ret ={ parentPath: parentPath, name: name }
+    logger.fine('parentPath() res:',ret)
+    return ret
 }
