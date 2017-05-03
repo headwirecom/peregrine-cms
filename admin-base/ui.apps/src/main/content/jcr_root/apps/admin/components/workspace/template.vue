@@ -1,31 +1,89 @@
 <template>
     <div class="peregrine-workspace">
-        <component 
-            v-bind:is    ="getChildByPath('contentview').component"
-            v-bind:model ="getChildByPath('contentview')">
+
+
+        <component
+                v-bind:is    = "getChildByPath('contentview').component"
+                v-bind:model = "getChildByPath('contentview')">
         </component>
 
-        <component 
-            class        ="z-depth-2" 
-            style        ="padding: 0 0.75rem;" 
-            v-bind:style ="getEditorStyle()" 
-            v-bind:is    ="getChildByPath('editor').component"
-            v-bind:model ="getChildByPath('editor')">
+        <div :class="getRightPanelClasses">
+
+            <admin-components-action v-bind:model="{
+                classes: 'toggle-right-panel',
+                target: 'rightPanelVisible',
+                command: 'showHide'
+            }">
+                press
+            </admin-components-action>
+
+            <component
+                    v-if         = "state.editorVisible"
+                    v-bind:is    = "getChildByPath('editor').component"
+                    v-bind:model = "getChildByPath('editor')">
+            </component>
+
+            <component
+                    v-bind:is    = "getChildByPath('components').component"
+                    v-bind:model = "getChildByPath('components')">
+            </component>
+        </div>
+
+        <!--
+        <component
+            v-bind:is    = "getChildByPath('contentview').component"
+            v-bind:model = "getChildByPath('contentview')">
         </component>
 
-        <component 
-            v-bind:class ="getComponentExplorerClasses()" 
-            v-bind:is    ="getChildByPath('components').component"
-            v-bind:model ="getChildByPath('components')">
-        </component>
+        <div :class= "getRightPanelClasses">
+            {{this.$root.$data.state}}
+            <admin-components-action v-bind:model="{
+                classes: 'toggle-right-panel',
+                target: 'rightPanelVisible', 
+                command: 'showHide' 
+            }">
+                <i class="material-icons">{{isVisible ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</i>
+            </admin-components-action>
+
+            <component
+                v-if         = "editorVisible"
+                v-bind:is    = "getChildByPath('editor').component"
+                v-bind:model = "getChildByPath('editor')">
+            </component>
+
+            <component
+                v-else
+                v-bind:is    = "getChildByPath('components').component"
+                v-bind:model = "getChildByPath('components')">
+            </component>
+        </div>
+        -->
     </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
-        updated() {
-            this.$children[0].resizeOverlay()
+//        beforeMount(){
+//
+//            $perAdminApp.getNodeFromView('/state')['rightPanelVisible'] = true // .$set($perAdminApp.getView().state,'rightPanelVisible', true)
+//            this.$root.$data.state.rightPanelVisible = true
+////            $perAdminView.state.rightPanelVisible = true
+////            $perAdminApp.getNodeFromViewWithDefault('/state/editorVisible', true)
+////            this.$root.$set(perAdminView.state, 'rightPanelVisible', true)
+////            this.$root.$set(perAdminView.state, 'editorVisible', false)
+//        },
+        computed: {
+            state: function() {
+                return $perAdminApp.getView().state
+            },
+            editorVisible: function() {
+                return $perAdminApp.getNodeFromView('/state/editorVisible')
+            },
+            getRightPanelClasses: function() {
+                // rightPanelVisible: true/false
+                return `right-panel ${$perAdminView.state.rightPanelVisible ? 'visible' : ''}`
+            }
         },
         methods: {
             getChildByPath(childName) {
@@ -40,44 +98,15 @@
                 return null
             },
 
-            getEditorStyle() {
-                if(perAdminView.state.editor && perAdminView.state.editor.dialog) {
-                    return 'flex: 1;'
-                } else {
-                    return 'width: 0px; display: none'
-                }
-            },
-
-            getStyleForComponent(name) {
-                if(perAdminView.state[name] === undefined) { this.$root.$set(perAdminView.state, name, true) }
-                return perAdminView.state[name] ? 'flex: 1; height: 100%; padding: 0 0.75rem;' : 'width: 0px;'
-            },
-
             // maybe rename to "toggleStateProp"
             showHide(me, name) {
-                console.log('showHide of', name, 'called')
-                perAdminView.state[name] = !perAdminView.state[name]
-            },
-  
-            getComponentExplorerClasses() {
-                // componentExplorerVisible: true/false
-                // componentExplorerPinned: true/false
-                if(perAdminView.state.componentExplorerVisible === undefined) { 
-                    this.$root.$set(perAdminView.state, 'componentExplorerVisible', true) 
+                if($perAdminApp.getView().state.rightPanelVisible === undefined) {
+                    $perAdminApp.getApp().$set($perAdminApp.getView().state,'rightPanelVisible', true)
+                    return
                 }
-                if(perAdminView.state.componentExplorerPinned === undefined) { 
-                    this.$root.$set(perAdminView.state, 'componentExplorerPinned', true) 
-                }
-
-                var classes = 'component-explorer blue-grey lighten-5 z-depth-2'
-                if(perAdminView.state.componentExplorerVisible){
-                    classes = classes + ' visible'
-                }
-                if(perAdminView.state.componentExplorerPinned){
-                    classes = classes + ' pinned'
-                }
-                return classes
+                $perAdminView.state.rightPanelVisible = $perAdminView.state.rightPanelVisible ? false: true
             }
+  
         }
     }
 </script>

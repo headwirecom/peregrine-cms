@@ -25,7 +25,7 @@ export default {
     props: ['model' ],
     methods: {
         action: function(e) {
-            perHelperAction(this, this.model.command, this.model.target)
+            $perAdminApp.action(this, this.model.command, this.model.target)
         }
     }
 }

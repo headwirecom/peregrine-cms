@@ -1,5 +1,8 @@
 .editor-panel {
-	  fieldset.vue-form-generator {
+    height: 100%;
+    padding: 0 0.75rem 0.75rem;
+    overflow: auto;
+    fieldset.vue-form-generator {
     	border: none;
     	padding: 0;
     	.form-group {
@@ -8,7 +11,7 @@
     		}
 	    	.form-control {
 	    		padding: 0.5rem;
-	    		border-color: #cfd8dc;
+	    		border-color: $blue-grey-lighten-4;
 	    		border-radius: 0;
 	    	}
 	    }

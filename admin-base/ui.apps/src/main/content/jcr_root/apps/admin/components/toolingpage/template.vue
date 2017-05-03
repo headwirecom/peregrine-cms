@@ -11,7 +11,7 @@ export default {
     props: [ 'model' ],
     methods: {
         selectPath: function(me, target) {
-            loadContent(target+'.html')
+            $perAdminApp.loadContent(target+'.html')
         },
         editPage: function(me, target) {
             console.log('edit page')

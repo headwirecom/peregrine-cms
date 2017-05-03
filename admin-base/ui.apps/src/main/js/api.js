@@ -9,12 +9,20 @@ class PerApi {
         impl = implementation
     }
 
+    populateUser() {
+        return impl.populateUser()
+    }
+
     populateTools() {
         return impl.populateTools()
     }
 
     populateToolsConfig() {
         return impl.populateToolsConfig()
+    }
+
+    populateContent(path) {
+        return impl.populateContent(path)
     }
 
     populateComponents() {
@@ -31,6 +39,37 @@ class PerApi {
 
     populateComponentDefinitionFromNode(path) {
         return impl.populateComponentDefinitionFromNode(path)
+    }
+
+    populatePageView(path) {
+        return impl.populatePageView(path)
+    }
+
+    populateByName(name) {
+        if(name === '/admin/tools') return this.populateTools()
+        if(name === '/admin/toolsConfig') return this.populateToolsConfig()
+        if(name === '/admin/components') return this.populateComponents()
+        return Promise.reject('populateByName for '+name+' is not defined')
+    }
+
+    createPage(parentPath, name, templatePath) {
+        return impl.createPage(parentPath, name, templatePath)
+    }
+
+    deletePage(path) {
+        return impl.deletePage(path)
+    }
+
+    createTemplate(parentPath, name) {
+        return impl.createTemplate(parentPath, name)
+    }
+
+    createFolder(parentPath, name) {
+        return impl.createFolder(parentPath, name)
+    }
+
+    uploadFiles(path, files) {
+        return impl.uploadFiles(path, files)
     }
 }
 

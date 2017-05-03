@@ -2,8 +2,8 @@
     <div class="peregrine-content-view">
         <div 
             id            = "editviewoverlay" 
-            v-bind:style  = "`height: ${editViewHeight}`" 
             v-on:click    = "click"
+            v-on:mousewheel = "scrollEditView"
             v-on:mousemove= "mouseMove"
             v-on:mouseout = "leftArea"
             v-on:dragover = "dragOver"
@@ -12,11 +12,9 @@
         </div>
         <iframe 
             id           = "editview" 
-            v-bind:style = "`height: ${editViewHeight}`" 
             v-bind:src   = "pagePath" 
             v-on:load    = "editViewLoaded"
-            frameborder  = "0">
-        </iframe>
+            frameborder  = "0"></iframe>
     </div>
 </template>
 
@@ -24,57 +22,26 @@
 export default {
     props: ['model'],
 
-    mounted: function() {
-        console.log('===== mounted: set initial state =====')
-        this.$root.$set(perAdminView.state, 'editViewHeight',  'auto') 
-    },
-
-    beforeDestroy: function () {
-        console.log('===== beforeDestroy: remove state =====')
-        this.$root.$delete(perAdminView.state, 'editViewHeight') 
-    },
-
     computed: {
         pagePath: function() {
-            return perAdminView.pageView.path + '.html'
-        },
-        editViewHeight: function() {
-            return perAdminView.state.editViewHeight
+            return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
         }
     },
     methods: {
-        setEditViewHeight: function(height){
-            console.log('===== METHOD: setEditViewHeight =====')
-            perAdminView.state.editViewHeight = height + 'px'
-        },
-
-        getIframeHeight: function(id) {
-            console.log('===== METHOD: getIframeHeight =====')
-            var iframe = this.$el.children[id]
-            return iframe.contentDocument.body.clientHeight;
-        },
-
         editViewLoaded: function(ev) {
-            console.log('===== METHOD: editViewLoaded =====')
-            perHelperModelAction('getConfig', perAdminView.pageView.path)
-
-            /* 
-                this method should be called from the component in the iframe 
-                once data has been returned, and we can remove the timeout...
-            */
-            var self = this
-            setTimeout(function(){ 
-                self.setEditViewHeight(self.getIframeHeight('editview'))
-            }, 1000);
+            // perHelperModelAction('getConfig', perAdminView.pageView.path)
         },
 
-        resizeOverlay: function(event) {
-            console.log('===== METHOD: resizeOverlay =====')
-            console.log('unsure what is calling this method...')
-            // var rect = this.$el.children['editview'].getBoundingClientRect()
-            // var overlay = this.$el.children['editviewoverlay']
-            // overlay.style.width = ''+(rect.width-20)+'px'
-            // overlay.style.height = ''+(rect.height-20)+'px'
+        scrollEditView(ev){
+            var timer = null
+            var editViewOverlay = ev.target
+            editViewOverlay.style['pointer-events'] = 'none'
+            if(timer !== null) {
+                clearTimeout(timer)        
+            }
+            timer = setTimeout(function() {
+                editViewOverlay.style['pointer-events'] = 'auto'
+            }, 150)
         },
 
         getPosFromMouse: function(e) {
@@ -107,7 +74,12 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-                perHelperAction(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
+                $perAdminApp.getView().state.editorVisible = true
+                // open right panel if not already open
+//                if(!perAdminView.state.rightPanelVisible){
+//                    perAdminView.state.rightPanelVisible = true
+//                }
+                $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
 
@@ -130,6 +102,7 @@ export default {
 
         mouseMove: function(e) {
             if(!e) return
+            if($perAdminApp.getNodeFromView('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 var targetBox = targetEl.getBoundingClientRect()
@@ -158,7 +131,7 @@ export default {
         },
 
         showComponentEdit: function(me, target) {
-            perHelperModelAction('editComponent', target)
+            $perAdminApp.stateAction('editComponent', target)
         },
 
         drop: function(e) {
@@ -170,15 +143,6 @@ export default {
             var componentPath = e.dataTransfer.getData('component')
 
             perHelperModelAction('addComponentToPath', { pagePath : perAdminView.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath})
-
-            /* 
-                this method should be called from the component in the iframe 
-                once the component has been added, and we can remove the timeout...
-            */
-            var self = this
-            setTimeout(function(){ 
-                self.setEditViewHeight(self.getIframeHeight('editview'))
-            }, 1000);
         }
     }
 }

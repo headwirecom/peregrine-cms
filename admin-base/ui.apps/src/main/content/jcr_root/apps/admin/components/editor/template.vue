@@ -26,6 +26,7 @@
                 return {}
             },
             onOk: function(e) {
+                perAdminView.state.editorVisible = false
                 perHelperModelAction('saveEdit', { pagePath: perAdminView.pageView.path, path: perAdminView.state.editor.path } )
             }
         },

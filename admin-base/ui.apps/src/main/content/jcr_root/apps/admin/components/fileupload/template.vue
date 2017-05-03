@@ -33,7 +33,7 @@ export default {
 
     }, methods: {
         uploadFile: function() {
-            perHelperModelAction('uploadFiles', { path: perAdminView.state.tools.assets.value, files: this.$el.children[0].files })
+            $perAdminApp.stateAction('uploadFiles', { path: $perAdminApp.getView().state.tools.assets, files: this.$el.children[0].files })
         }
     }
 }

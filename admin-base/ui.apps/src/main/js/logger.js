@@ -62,7 +62,7 @@ export class Logger {
     }
 
     setLevelFine() {
-        return setLevel(LogLevel.FINE)
+        return this.setLevel(LogLevel.FINE)
     }
 
     applyTo(method, level, args) {

@@ -28,7 +28,6 @@
         <exclude pattern="/content/assets/.*"/>
     </filter>
     <filter root="/content/objects">
-        <include pattern="/content/objects/jcr:content.*"/>
         <exclude pattern="/content/objects/.*"/>
     </filter>
     <filter root="/conf/sites">
