@@ -73,8 +73,8 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
         initPeregrineApp();
     }
 
-    if(document.location !== path && !fromPopState) {
-        log.fine("pushState : "+path);
+    if(document.location !== path && !fromPopState && !firstTime) {
+        log.debug("PUSHSTATE : "+path);
         history.pushState({peregrinevue:true, path: path}, path, path)
     }
 }
