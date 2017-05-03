@@ -180,7 +180,7 @@ function getNodeFromWithDefaultImpl(node, path, value) {
 function findNodeFromPathImpl(node, path) {
 
 //    logger.debug(path)
-//    logger.debug(JSON.stringify(node, true, 2))
+//    logger.debug(JSON.stringify(readNode, true, 2))
 
     if(node.path === path) return node
     if(node.children) {
