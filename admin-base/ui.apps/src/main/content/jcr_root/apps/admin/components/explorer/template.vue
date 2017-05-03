@@ -24,29 +24,29 @@
                 </admin-components-action>
 
                 <div class="secondary-content">
-                    <admin-components-action v-show="editable(child)"
+                    <admin-components-action v-if="editable(child)"
                         v-bind:model="{ 
                             target: child.path, 
                             command: 'editPage'
                         }">
                         <i class="material-icons">edit</i>
                     </admin-components-action>
-                    <span>
-                        <admin-components-action
-                            v-bind:model="{
-                                target: child.path,
-                                command: 'deletePage'
-                            }">
-                            <i class="material-icons">delete</i>
-                        </admin-components-action>
-                    </span>
-                    <span v-show="viewable(child)">
+
+                    <span v-if="viewable(child)">
                         <a 
                             target      ="viewer"
                             v-bind:href ="viewUrl(child)">
                             <i class="material-icons">visibility</i>
                         </a>
                     </span>
+
+                    <admin-components-action
+                        v-bind:model="{
+                            target: child.path,
+                            command: 'deletePage'
+                        }">
+                        <i class="material-icons">delete</i>
+                    </admin-components-action>
                 </div>
             </a>
         </ul>

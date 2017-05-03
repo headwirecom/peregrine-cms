@@ -1,0 +1,24 @@
+#file_upload {
+	display: inline-block;
+	padding: 7.5px;
+	background-color: $blue-grey-lighten-4;
+	color: $blue-gray;
+
+	.file-upload-inner {
+		border: 2px dashed $blue-gray-darken-1;
+		text-align: center;
+		padding: 30px 15px;
+		.material-icons {
+			width: 100%;
+			font-size: 80px;
+		}
+		.file-upload-text {
+			width: 100%;
+			font-size: 20px;
+		}
+	}
+	
+	&.is-dragover {
+		background-color: $blue-grey-lighten-3;
+	}
+}
