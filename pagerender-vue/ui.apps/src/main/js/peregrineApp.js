@@ -26,7 +26,7 @@ function registerViewImpl(v) {
 function getView() {
     if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
         log.debug("getVIEW() - window.parent.perAdminView.pageView");
-        return window.parent.perAdminView.pageView
+        return window.parent.$perAdminView.pageView
     }
     return view
 }
