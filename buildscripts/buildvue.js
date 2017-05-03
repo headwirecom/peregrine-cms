@@ -13,9 +13,11 @@ var felibName = ''
 if(process.argv.length >= 3) {
     felibName = process.argv[2]
 } else {
-    console.log('please provide a anme for the felib to use')
+    console.log('please provide a name for the felib to use')
     process.exit(-1)
 }
+
+console.log('building felib', felibName)
 
 var basePath = './src/main/content/jcr_root/apps'
 var distBasePath = './target/classes/etc/felibs/'+felibName
@@ -120,3 +122,7 @@ vueFiles.forEach( function(file) {
     compileComponent(file)
 
 })
+
+if(process.argv[3]) {
+    console.log('upload')
+}

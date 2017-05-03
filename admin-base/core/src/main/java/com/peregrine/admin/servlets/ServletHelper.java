@@ -2,6 +2,7 @@ package com.peregrine.admin.servlets;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,4 +28,39 @@ public class ServletHelper {
 
     }
 
+    public static String componentPathToName(String path) {
+        String[] segments = path.split("/");
+        StringBuilder sb = new StringBuilder();
+        for(int i = 2; i < segments.length; i++) {
+            if(i != 2) {
+                sb.append("-");
+            }
+            sb.append(segments[i]);
+        }
+        return sb.toString();
+    }
+
+    public static void echo(InputStream input, PrintWriter writer) throws IOException {
+        char[] buffer = new char[1024];
+        InputStreamReader reader = new InputStreamReader(input);
+        int chars = reader.read(buffer);
+        while(chars > 0) {
+            writer.write(buffer, 0, chars);
+            chars = reader.read(buffer);
+        }
+        reader.close();
+    }
+
+    public static StringWriter asString(InputStream input) throws IOException {
+        StringWriter writer = new StringWriter();
+        char[] buffer = new char[1024];
+        InputStreamReader reader = new InputStreamReader(input);
+        int chars = reader.read(buffer);
+        while(chars > 0) {
+            writer.write(buffer, 0, chars);
+            chars = reader.read(buffer);
+        }
+        reader.close();
+        return writer;
+    }
 }

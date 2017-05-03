@@ -14,7 +14,7 @@
                 target: 'rightPanelVisible',
                 command: 'showHide'
             }">
-                press
+                <i class="material-icons">{{state.rightPanelVisible ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</i>
             </admin-components-action>
 
             <component
@@ -24,6 +24,7 @@
             </component>
 
             <component
+                    v-else
                     v-bind:is    = "getChildByPath('components').component"
                     v-bind:model = "getChildByPath('components')">
             </component>

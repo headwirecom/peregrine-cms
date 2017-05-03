@@ -2,13 +2,13 @@
     <div class="editor-panel blue-grey lighten-5">
         <span class="panel-title">Editor</span>
         <form>
+
         <vue-form-generator
-            v-if           = "this.$root.$data.state.editor"
-            v-bind:schema  = "this.$root.$data.state.editor.dialog"
-            v-bind:model   = "getModel(this.$root.$data.state.editor.path)"
+            v-bind:schema  = "schema"
+            v-bind:model   = "dataModel"
             v-bind:options = "formOptions">
         </vue-form-generator>
-        <button v-if="this.$root.$data.state.editor.dialog" class="btn" v-on:click.stop.prevent="onOk">ok</button>
+        <button class="btn" v-on:click.stop.prevent="onOk">ok</button>
         </form>
     </div>
 </template>
@@ -16,18 +16,25 @@
 <script>
     export default {
         props: ['model'],
-        methods: {
-            getModel: function(path) {
-                if(path) {
-                    if(perAdminView.pageView.page) {
-                        return perHelperFindNodeFromPath(perAdminView.pageView.page, path)
-                    }
-                }
-                return {}
+        computed: {
+            schema: function() {
+                var view = $perAdminApp.getView()
+                var component = view.state.editor.component
+                var schema = view.admin.componentDefinitions[component]
+                return schema
             },
+            dataModel: function() {
+                var view = $perAdminApp.getView()
+                var path = view.state.editor.path
+                var model = $perAdminApp.findNodeFromPath(view.pageView.page, path)
+                return model
+            }
+
+        },
+        methods: {
             onOk: function(e) {
-                perAdminView.state.editorVisible = false
-                perHelperModelAction('saveEdit', { pagePath: perAdminView.pageView.path, path: perAdminView.state.editor.path } )
+                var view = $perAdminApp.getView()
+                $perAdminApp.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
             }
         },
         data: function() {
@@ -38,9 +45,10 @@
             }
 
           }
-      },
-      beforeMount: function() {
-        if(!perAdminView.state.editor) this.$set(perAdminView.state, 'editor', { })
       }
+//      ,
+//      beforeMount: function() {
+//        if(!perAdminView.state.editor) this.$set(perAdminView.state, 'editor', { })
+//      }
     }
 </script>

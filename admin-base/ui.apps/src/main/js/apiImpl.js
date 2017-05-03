@@ -110,19 +110,23 @@ class PerAdminImpl {
         })
     }
 
-    populateComponentDefinition(component) {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/components/'+component)
-                .then( (data) => populateView('/admin/componentDefinitions', component, data) )
-                .then( () => resolve() )
-        })
-    }
+    // populateComponentDefinition(component) {
+    //     return new Promise( (resolve, reject) => {
+    //         fetch('/admin/components/'+component)
+    //             .then( (data) => populateView('/admin/componentDefinitions', component, data) )
+    //             .then( () => resolve() )
+    //     })
+    // }
 
     populateComponentDefinitionFromNode(path) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/componentDefinition/path//'+path)
-                .then( (data) => populateView('/admin/componentDefinitions', data.name, data.config) )
-                .then( () => resolve() )
+            var name;
+            fetch('/admin/componentDefinition.json/path//'+path)
+                .then( (data) => {
+                    name = data.name
+                    populateView('/admin/componentDefinitions', data.name, data.model)
+                })
+                .then( () => resolve(name) )
         })
     }
 
@@ -182,6 +186,36 @@ class PerAdminImpl {
                         logger.fine(response.data)
                         this.populateNodesForBrowser(path) })
                     .then( () => resolve() )
+        })
+    }
+
+    setInitialPageEditorState() {
+        return new Promise( (resolve, reject) => {
+            populateView('/state', 'editorVisible', false)
+            populateView('/state', 'rightPanelVisible', true)
+            resolve()
+        })
+    }
+
+    savePageEdit(path, node) {
+        return new Promise( (resolve, reject) => {
+
+            // convert to a new object
+            let nodeData = JSON.parse(JSON.stringify(node))
+            delete nodeData['children']
+            let data = new FormData();
+
+            data.append(':operation', 'import')
+            data.append(':contentType', 'json')
+            data.append(':replaceProperties', 'true')
+            data.append(':content', JSON.stringify(nodeData))
+
+            nodeData['sling:resourceType'] = node.component.split('-').join('/')
+
+            axios.post(path + node.path, data).then( function(res) {
+                resolve()
+            })
+
         })
     }
 }

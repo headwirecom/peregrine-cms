@@ -74,7 +74,7 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-                $perAdminApp.getView().state.editorVisible = true
+//                $perAdminApp.getView().state.editorVisible = true
                 // open right panel if not already open
 //                if(!perAdminView.state.rightPanelVisible){
 //                    perAdminView.state.rightPanelVisible = true

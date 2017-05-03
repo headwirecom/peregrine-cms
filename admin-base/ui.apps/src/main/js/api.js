@@ -45,6 +45,10 @@ class PerApi {
         return impl.populatePageView(path)
     }
 
+    setInitialPageEditorState() {
+        return impl.setInitialPageEditorState()
+    }
+
     populateByName(name) {
         if(name === '/admin/tools') return this.populateTools()
         if(name === '/admin/toolsConfig') return this.populateToolsConfig()
@@ -70,6 +74,10 @@ class PerApi {
 
     uploadFiles(path, files) {
         return impl.uploadFiles(path, files)
+    }
+
+    savePageEdit(path, node) {
+        return impl.savePageEdit(path, node)
     }
 }
 

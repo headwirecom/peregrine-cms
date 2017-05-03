@@ -10,6 +10,8 @@ import createTemplate from './stateActions/createTemplate'
 import createFolder from './stateActions/createFolder'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
+import editComponent from './stateActions/editComponent'
+import savePageEdit from './stateActions/savePageEdit'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createPage'] = createPage
@@ -18,8 +20,11 @@ actions['createTemplate'] = createTemplate
 actions['createFolder'] = createFolder
 actions['uploadFiles'] = uploadFiles
 actions['editPage'] = editPage
+actions['editComponent'] = editComponent
+actions['savePageEdit'] = savePageEdit
 
-function nopAction(me, target) {
+function noopAction(me, target) {
+    log.error('state action noop with target:', target)
 }
 
 export default function getStateAction(name) {
@@ -29,7 +34,7 @@ export default function getStateAction(name) {
         return actions[name]
     } else {
         log.error('stateAction', name, 'missing')
-        return nopAction
+        return noopAction
     }
 
 }
