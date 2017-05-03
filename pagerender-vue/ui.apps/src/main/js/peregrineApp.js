@@ -24,7 +24,7 @@ function registerViewImpl(v) {
 }
 
 function getView() {
-    if(window && window.parent && window.parent.perAdminView && window.parent.perAdminView.pageView) {
+    if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
         log.debug("getVIEW() - window.parent.perAdminView.pageView");
         return window.parent.perAdminView.pageView
     }
@@ -63,7 +63,7 @@ function walkTreeAndLoad(node) {
     }
 }
 
-function processLoadedContent(data, path, firstTime) {
+function processLoadedContent(data, path, firstTime, fromPopState) {
     walkTreeAndLoad(data)
 
     log.debug('first time', firstTime)
@@ -73,15 +73,15 @@ function processLoadedContent(data, path, firstTime) {
         initPeregrineApp();
     }
 
-    if(document.location !== path) {
+    if(document.location !== path && !fromPopState) {
         log.debug("pushState : "+path);
         history.pushState({peregrinevue:true, path: path}, path, path)
     }
 }
 
-function loadContentImpl(path, firstTime) {
+function loadContentImpl(path, firstTime, fromPopState) {
 
-    log.debug('loading content for', path)
+    log.debug('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
     getPerView().status = undefined;
@@ -97,12 +97,12 @@ function loadContentImpl(path, firstTime) {
                 var templateData = response.data
                 var mergedData = merge(templateData, pageData)
                 //merging nav, footer and content together with pageData
-                processLoadedContent(mergedData, path, firstTime)
+                processLoadedContent(mergedData, path, firstTime, fromPopState)
             }).catch(function(error) {
                 log.error("error getting %s %j", dataUrl, error);
             })
         } else {
-            processLoadedContent(response.data, path, firstTime)
+            processLoadedContent(response.data, path, firstTime, fromPopState)
         }
 
     }).catch(function(error) {
@@ -116,8 +116,8 @@ var peregrineApp = {
         registerViewImpl(view)
     },
 
-    loadContent: function(path, firstTime = false) {
-        loadContentImpl(path, firstTime)
+    loadContent: function(path, firstTime = false, fromPopState = false) {
+        loadContentImpl(path, firstTime, fromPopState)
     },
 
     logger: function(name) {

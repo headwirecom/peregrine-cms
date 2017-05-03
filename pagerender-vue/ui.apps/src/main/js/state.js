@@ -28,8 +28,12 @@ window.onclick = function(ev) {
     return false
 }
 window.onpopstate = function(e){
-  log.debug("onpopstate:" + e.state.path);
-  $peregrineApp.loadContent(e.state.path, false)
+    if(e.state) {
+        log.debug("onpopstate:" + e.state.path);
+        $peregrineApp.loadContent(e.state.path, false, true)
+    } else {
+        log.debug(e)
+    }
 }
 
 
