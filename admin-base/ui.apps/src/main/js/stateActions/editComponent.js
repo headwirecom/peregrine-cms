@@ -1,5 +1,5 @@
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('editPage').setLevelFine()
+let log = LoggerFactory.logger('editComponent').setLevelFine()
 
 import { set } from '../utils'
 

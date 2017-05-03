@@ -221,7 +221,7 @@ class PerAdminImpl {
 
     insertNodeAt(path, component, drop) {
         return new Promise( (resolve, reject) => {
-            log.fine
+            log.fine(arguments)
             resolve()
         })
     }

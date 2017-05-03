@@ -34,6 +34,8 @@
         methods: {
             onOk: function(e) {
                 var view = $perAdminApp.getView()
+                console.log(view.pageView.path)
+                console.log(view.state.editor.path)
                 $perAdminApp.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
             }
         },

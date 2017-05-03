@@ -1,5 +1,5 @@
 import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('utils').setLevelFine()
+let logger = LoggerFactory.logger('utils').setLevelDebug()
 
 import { DATA_EXTENSION, COMPONENT_PREFIX } from './constants.js'
 
@@ -47,14 +47,16 @@ export function pagePathToDataPath(path) {
 
 export function set(node, path, value) {
 
+    if(path === '/state/editorVisible') logger.setLevelFine()
     var vue = $perAdminApp.getApp()
-
+    logger.fine('vueInstance?', path, vue != undefined)
     path = path.slice(1).split('/').reverse()
     while(path.length > 1) {
         var segment = path.pop()
+        logger.fine(segment)
         if(!node[segment]) {
             if(vue) {
-                vue.$set(node, segment, {})
+                Vue.set(node, segment, {})
             } else {
                 node[segment] = {}
             }
@@ -62,11 +64,13 @@ export function set(node, path, value) {
         node = node[segment]
     }
     if(vue) {
-        vue.$set(node, path[0], value)
+        Vue.set(node, path[0], value)
+        logger.fine(node)
     }
     else {
         node[path[0]] = value
     }
+    logger.setLevelDebug()
 }
 
 export function get(node, path, value) {
@@ -77,7 +81,7 @@ export function get(node, path, value) {
         var segment = path.pop()
         if(!node[segment]) {
             if(vue) {
-                vue.$set(node, segment, {})
+                Vue.set(node, segment, {})
             } else {
                 node[segment] = {}
             }
@@ -86,7 +90,7 @@ export function get(node, path, value) {
     }
     if(value && !node[path[0]]) {
         if(vue) {
-            vue.$set(node, path[0], value)
+            Vue.set(node, path[0], value)
         } else {
             node[path[0]] = value
         }
