@@ -25,6 +25,7 @@ function registerViewImpl(v) {
 
 function getView() {
     if(window && window.parent && window.parent.perAdminView && window.parent.perAdminView.pageView) {
+        log.debug("getVIEW() - window.parent.perAdminView.pageView");
         return window.parent.perAdminView.pageView
     }
     return view
@@ -47,6 +48,8 @@ function loadComponentImpl(name) {
     } else {
         log.debug('component %s already loaded', name)
     }
+
+
 }
 
 
@@ -71,6 +74,7 @@ function processLoadedContent(data, path, firstTime) {
     }
 
     if(document.location !== path) {
+        log.debug("pushState : "+path);
         history.pushState({peregrinevue:true, path: path}, path, path)
     }
 }
@@ -92,7 +96,7 @@ function loadContentImpl(path, firstTime) {
 
                 var templateData = response.data
                 var mergedData = merge(templateData, pageData)
-
+                //merging nav, footer and content together with pageData
                 processLoadedContent(mergedData, path, firstTime)
             }).catch(function(error) {
                 log.error("error getting %s %j", dataUrl, error);
