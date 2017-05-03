@@ -20,8 +20,11 @@ export default function(me, target) {
         log.error('addComponentToPath() target.drop not in allowed values - value was', target.drop)
     }
     if(targetNode) {
-        me.getApi().insertNodeAt(targetNode.pagePath+targetNode.path, target.component, target.drop)
+        me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
             .then( (data) => {
+                if(target.drop === 'into') {
+                    Vue.set(targetNode, 'children', data.children)
+                }
                 log.fine(data)
             })
     }

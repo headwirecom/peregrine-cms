@@ -47,13 +47,10 @@ export function pagePathToDataPath(path) {
 
 export function set(node, path, value) {
 
-    if(path === '/state/editorVisible') logger.setLevelFine()
     var vue = $perAdminApp.getApp()
-    logger.fine('vueInstance?', path, vue != undefined)
     path = path.slice(1).split('/').reverse()
     while(path.length > 1) {
         var segment = path.pop()
-        logger.fine(segment)
         if(!node[segment]) {
             if(vue) {
                 Vue.set(node, segment, {})
@@ -65,12 +62,10 @@ export function set(node, path, value) {
     }
     if(vue) {
         Vue.set(node, path[0], value)
-        logger.fine(node)
     }
     else {
         node[path[0]] = value
     }
-    logger.setLevelDebug()
 }
 
 export function get(node, path, value) {
