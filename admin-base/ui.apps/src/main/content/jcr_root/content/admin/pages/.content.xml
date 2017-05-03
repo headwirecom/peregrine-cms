@@ -7,7 +7,7 @@
             sling:resourceType="admin/components/toolingpage"
             jcr:title="pages"
             jcr:description="admin base Content Root"
-            suffixToParam="[path,/state/tools/pages]"
+            suffixToParameter="[path,/state/tools/pages]"
             dataFrom="/state/tools/pages" dataDefault="/content/sites"
             loaders="[populateNodesForBrowser:/state/tools/pages]"
     >

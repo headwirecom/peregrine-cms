@@ -11,7 +11,7 @@ export default {
     computed: {
         isEditMode: function() {
             if(window.parent) {
-                if(window.parent.perAdminView) {
+                if(window.parent.$perAdminApp) {
                     return true
                 }
             }

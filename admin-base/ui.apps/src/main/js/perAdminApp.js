@@ -1,5 +1,5 @@
 import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
+let logger = LoggerFactory.logger('perAdminApp').setLevelFine()
 
 import PeregrineApi from './api'
 import PerAdminImpl from './apiImpl'
@@ -125,9 +125,7 @@ function loadContentImpl(initialPath, firstTime) {
                 .then( function (data) {
                     logger.fine('got data for', path)
                     walkTreeAndLoad(view.adminPageStaged).then( function() {
-                        if(firstTime) {
-                            suffixParamsToModel(pathInfo.suffixParams, view.adminPageStaged.suffixToParameter)
-                        }
+                        suffixParamsToModel(pathInfo.suffixParams, view.adminPageStaged.suffixToParameter)
 
                         processLoaders(view.adminPageStaged.loaders).then( () => {
                             if(firstTime) {
