@@ -203,6 +203,10 @@ var PerAdminApp = {
         api = new PeregrineApi(new PerAdminImpl(PerAdminApp))
     },
 
+    getLoggers() {
+        return LoggerFactory.getLoggers()
+    },
+
     getLogger(name) {
         if(!name) return logger
         logger.fine('getting logger for',name)

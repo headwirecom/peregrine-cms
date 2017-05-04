@@ -137,6 +137,10 @@ export class LoggerFactory {
         return new LoggerFactory().getLogger(name)
     }
 
+    static getLoggers() {
+        return new LoggerFactory().loggers
+    }
+
     getLogger(name) {
         var logger = this.loggers[name]
         if(!logger) {
