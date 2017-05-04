@@ -1,5 +1,5 @@
 <template>
-<div v-bind:style="elementStyle" class="debugger">
+<div v-bind:style="elementStyle" class="debugger z-depth-5">
     <a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" title="show data" class="toggle-debugger"><i class="material-icons">keyboard_arrow_right</i></a>
     <a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" title="hide data" class="toggle-debugger-visible"><i class="material-icons">keyboard_arrow_left</i></a>
     <div v-if="visible">
@@ -65,7 +65,6 @@
                 this.$forceUpdate()
             },
             changeLogLevel: function(name) {
-                alert('changeLogLevel '+name)
                 let logger = $perAdminApp.getLogger(name)
                 logger.level = ( logger.level + 1) % 6
                 this.$forceUpdate()
@@ -93,7 +92,13 @@
     border-left: 0;
     background-color: #eceff1 !important;
 }
-    .debugger a {
-        color: white
-    }
+
+.debugger {
+    z-index: 2;
+    color: white;
+}
+
+.debugger a {
+    color: white;
+}
 </style>
