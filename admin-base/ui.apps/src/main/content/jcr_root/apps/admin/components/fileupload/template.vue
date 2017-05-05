@@ -5,18 +5,18 @@
       action="" 
       enctype="multipart/form-data"
       v-bind:class="dragStateClass"
-      v-on:submit.prevent="uploadFile"
-      v-on:drag.prevent="stopPropagation"
-      v-on:dragstart.prevent="stopPropagation"
-      v-on:dragover.prevent="addDragOverClass"
-      v-on:dragenter.prevent="addDragOverClass"
-      v-on:dragleave.prevent="removeDragOverClass"
-      v-on:dragend.prevent="removeDragOverClass"
-      v-on:drop.prevent="onDropFile">
-        <div class="file-upload-inner">
-          <i class="material-icons">file_download</i>
-          <span class="file-upload-text">Drag files here</span>
-        </div>
+      v-on:submit.prevent    ="uploadFile"
+      v-on:drag.prevent      ="stopPropagation"
+      v-on:dragstart.prevent ="stopPropagation"
+      v-on:dragover.prevent  ="addDragOverClass"
+      v-on:dragenter.prevent ="addDragOverClass"
+      v-on:dragleave.prevent ="removeDragOverClass"
+      v-on:dragend.prevent   ="removeDragOverClass"
+      v-on:drop.prevent      ="onDropFile">
+      <div class="file-upload-inner">
+        <i class="material-icons">file_download</i>
+        <span class="file-upload-text">Drag files anywhere</span>
+      </div>
     </form>
 </template>
 
