@@ -162,6 +162,12 @@
         </dependency>
 
         <dependency>
+            <artifactId>org.apache.felix.http.jetty</artifactId>
+            <version>3.4.2</version>
+            <groupId>org.apache.felix</groupId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>

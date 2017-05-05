@@ -24,4 +24,5 @@
     <filter root="/apps/per">
         <exclude pattern="/apps/per/install/.*"/>
     </filter>
+    <filter root="/apps/runmodes"/>
 </workspaceFilter>

@@ -2,6 +2,7 @@ package com.peregrine.admin.servlets;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
@@ -42,7 +43,14 @@ public class ContentServlet extends SlingSafeMethodsServlet {
 
         String suffix = request.getRequestPathInfo().getSuffix();
 
-        response.sendRedirect(suffix);
+        if(suffix.endsWith(".data.json")) {
+            suffix = suffix.substring(0, suffix.indexOf(".data.json"));
+        }
+        Resource res = request.getResourceResolver().getResource(suffix);
+        RequestDispatcherOptions rdOtions = new RequestDispatcherOptions(
+                RequestDispatcherOptions.OPT_REPLACE_SELECTORS + "=data"
+        );
+        request.getRequestDispatcher(res, rdOtions).forward(request, response);
 
     }
 
