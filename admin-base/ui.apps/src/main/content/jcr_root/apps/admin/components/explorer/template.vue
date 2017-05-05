@@ -16,10 +16,18 @@
                 class ="collection-item" 
                 v-for ="child in pt.children" 
                 v-if  ="checkIfAllowed(child.resourceType)">
-                <admin-components-action 
+                <admin-components-action
+                    v-if="child.resourceType !== 'nt:file'"
                     v-bind:model="{ 
                         target: child.path, 
                         command: 'selectPath'
+                    }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
+                </admin-components-action>
+                <admin-components-action
+                        v-else
+                        v-bind:model="{
+                        target: child.path,
+                        command: 'editPage'
                     }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
                 </admin-components-action>
 
@@ -106,9 +114,9 @@
             },
             nodeTypeToIcon: function(nodeType) {
 
-                if(nodeType === 'per:Page')     return 'restore_page'
+                if(nodeType === 'per:Page')     return 'insert_drive_file'
                 if(nodeType === 'per:Object')   return 'layers'
-                if(nodeType === 'nt:file')      return 'restore_page'
+                if(nodeType === 'nt:file')      return 'insert_drive_file'
                 if(nodeType === 'sling:Folder') return 'folder'
                 if(nodeType === 'sling:OrderedFolder') return 'folder'
                 return 'unknown'
