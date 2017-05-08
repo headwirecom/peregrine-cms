@@ -1,5 +1,5 @@
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('addComponentToPath').setLevelFine()
+let log = LoggerFactory.logger('addComponentToPath').setLevelDebug()
 
 import { parentPath } from '../utils'
 

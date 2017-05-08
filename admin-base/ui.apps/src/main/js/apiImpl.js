@@ -45,7 +45,12 @@ function populateView(path, name, data) {
 
     return new Promise( (resolve, reject) => {
         var obj = getOrCreate(callbacks.getView(), path)
-        obj[name] = data
+        let vue = callbacks.getApp()
+        if(vue && path !== '/') {
+            Vue.set(obj, name, data)
+        } else {
+            obj[name] = data
+        }
         resolve()
     })
 

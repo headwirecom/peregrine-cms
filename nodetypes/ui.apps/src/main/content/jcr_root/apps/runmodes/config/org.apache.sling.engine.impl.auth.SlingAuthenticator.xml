@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="sling:OsgiConfig"
+          osgi.http.whiteboard.context.select="(osgi.http.whiteboard.context.name=*)"
+          osgi.http.whiteboard.listener="true"
+          auth.sudo.cookie="sling.sudo"
+          auth.sudo.parameter="sudo"
+          auth.annonymous="false"
+          sling.auth.requirements="[-/system/sling/login,-/content/sites,-/content/assets,-/content/templates,-/etc/felibs]"
+          sling.auth.anonymous.user=""
+          auth.http="preemtive"
+          auth.http.realm="peregrine cms"
+          auth.uri.suffix="/j_security_check"
+/>

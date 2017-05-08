@@ -27,10 +27,11 @@
 </sly>
 
 <sly data-sly-include="renderer.html"></sly>
+
 <script>
     var $perView = {};
     $peregrineApp.registerView($perView)
-    $peregrineApp.loadContent(document.location.toString(), true)
+    $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
 </script>
 </body>
 </html>

@@ -9,7 +9,7 @@
 
         <div :class="getRightPanelClasses">
 
-            <admin-components-action v-bind:model="{
+            <admin-components-action v-if="!state.editorVisible" v-bind:model="{
                 classes: 'toggle-right-panel',
                 target: 'rightPanelVisible',
                 command: 'showHide'
@@ -106,8 +106,14 @@
                     return
                 }
                 $perAdminView.state.rightPanelVisible = $perAdminView.state.rightPanelVisible ? false: true
-            }
-  
+            },
+
+            showComponentEdit(me, target) {
+                if(!me.state.editorVisible) {
+                    $perAdminApp.stateAction('editComponent', target)
+                }
+            },
+
         }
     }
 </script>
