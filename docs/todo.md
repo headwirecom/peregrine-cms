@@ -12,18 +12,10 @@
 
 ## editor
 
-- needs to move back to iframe just the hight of the window as otherwise this 
-causes issues (for example if the footer is pegged to the bottom of the screen)
 - need to make sure selection in editor is correct when scrolled, currently the wrong
 component gets selected
-- mouse hover state, we need to show what woud be selected
-- remove placeholders and hae a better indication on where something would be dropped
 - support for touch (does currently not work)
 - ability to move components
-- ability to add components between other components
-- ability to delete components
-- ability to cancel edit
-- move right side tools to tabs?
 - add asset viewer
 - add path field
 - support inline editing
@@ -56,7 +48,7 @@ component gets selected
 
 - javascript test framework
 - overall auto docs framework (javascript, java, swagger)
-- jenkins, npm and nexus server for the project
+- npm and nexus server for the project
 - marketplace? 
 
 ## documentation
