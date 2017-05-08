@@ -64,6 +64,10 @@ class PerApi {
         return impl.deletePage(path)
     }
 
+    deletePageNode(path, nodePath) {
+        return impl.deletePageNode(path, nodePath)
+    }
+
     createTemplate(parentPath, name) {
         return impl.createTemplate(parentPath, name)
     }

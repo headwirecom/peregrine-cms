@@ -135,7 +135,6 @@ export default {
             editable.style.display = 'none'
 
             var targetEl = this.getTargetEl(e)
-
             var componentPath = e.dataTransfer.getData('component')
 
             var view = $perAdminApp.getView()

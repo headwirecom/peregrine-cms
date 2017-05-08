@@ -19,10 +19,15 @@
 
             <explorer jcr:primaryType="nt:unstructured"
                        sling:resourceType="admin/components/explorer" dataFrom="/state/tools/objects">
-                <addFolder jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="add"/>
-                <addObject jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/action" target="" type="icon" title="add object" command="addObject" icon="add"/>
+                <actions jcr:primaryType="nt:unstructured">
+                    <addFolder jcr:primaryType="nt:unstructured"
+                               sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder"/>
+                    <addObject jcr:primaryType="nt:unstructured"
+                               sling:resourceType="admin/components/action" target="" type="icon" title="add object" command="addObject" icon="add"/>
+                </actions>
+                <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/objectview">
+
+                </edit>
             </explorer>
 
             <jsonview jcr:primaryType="nt:unstructured"

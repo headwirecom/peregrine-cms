@@ -8,7 +8,9 @@
             v-bind:model   = "dataModel"
             v-bind:options = "formOptions">
         </vue-form-generator>
-        <button class="btn" v-on:click.stop.prevent="onOk">ok</button>
+        <button class="btn-flat" v-on:click.stop.prevent="onOk">ok</button>
+        <button class="btn-flat" v-on:click.stop.prevent="onCancel">cancel</button>
+        <button class="btn-flat" v-on:click.stop.prevent="onDelete">delete</button>
         </form>
     </div>
 </template>
@@ -34,10 +36,17 @@
         methods: {
             onOk: function(e) {
                 var view = $perAdminApp.getView()
-                console.log(view.pageView.path)
-                console.log(view.state.editor.path)
                 $perAdminApp.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
+            },
+            onCancel: function(e) {
+                var view = $perAdminApp.getView()
+                $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
+            },
+            onDelete: function(e) {
+                var view = $perAdminApp.getView()
+                $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
             }
+
         },
         data: function() {
             return {
