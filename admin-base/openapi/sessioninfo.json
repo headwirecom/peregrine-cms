@@ -1,0 +1,58 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "contact": {
+      "email": "apiinfo@peregrine-cms.com",
+      "name": "Api Information Team",
+      "url": "https://api.peregrine-cms.com"
+    },
+    "description": "a simple echo end point, takes a param, returns it",
+    "license": {
+      "name": "Apache-2.0"
+    },
+    "title": "echo",
+    "version": "1.0"
+  },
+  "basePath": "/system/sling",
+  "produces": ["application/json"],
+  "paths": {
+    "/info.sessionInfo.json": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "returns the user id",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authType": {
+                  "type": "string"
+                },
+                "userID": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "default case, used to handle all errors for now",
+            "schema": {
+              "type": "object",
+              "required": [
+                "message",
+                "code"
+              ],
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

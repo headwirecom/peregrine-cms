@@ -1,0 +1,112 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "contact": {
+      "email": "apiinfo@peregrine-cms.com",
+      "name": "Api Information Team",
+      "url": "https://api.peregrine-cms.com"
+    },
+    "description": "a simple echo end point, takes a param, returns it",
+    "license": {
+      "name": "Apache-2.0"
+    },
+    "title": "echo",
+    "version": "1.0"
+  },
+  "basePath": "/api/admin",
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/access.json": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "returns the user id and if available the authentication type",
+            "schema": {
+              "type": "object",
+              "required": [
+                "userID"
+              ],
+              "properties": {
+                "authType": {
+                  "type": "string"
+                },
+                "userID": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/componentDefinition.json": {
+      "get": {
+        "parameters": [{
+          "description": "the name of the component we want to get information about",
+          "name": "name",
+          "type": "string",
+          "in": "query"
+        },{
+          "description": "the path to a content node to look up the corresponding component",
+          "name": "path",
+          "type": "string",
+          "in": "query"
+        }],
+        "responses": {
+          "200": {
+            "description": "get a component definition",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "path": { "type": "string" },
+                "name": { "type": "string" },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/content": {
+
+    },
+    "/createFolder": {
+
+    },
+    "/createObject": {
+
+    },
+    "/createPage": {
+
+    },
+    "/deletePage": {
+
+    },
+    "/createTemplate": {
+
+    },
+    "/insertNode": {
+
+    },
+    "/list": {
+
+    },
+    "/node": {
+
+    },
+    "/nodes": {
+
+    }
+  }
+}
