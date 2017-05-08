@@ -175,7 +175,14 @@ class PerAdminImpl {
         })
     }
 
-    uploadFiles(path, files) {
+    uploadFiles(path, files, cb) {
+        var config = {
+          onUploadProgress: progressEvent => {
+            var percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+            cb(percentCompleted)
+          }
+        }
+
         return new Promise( (resolve, reject) => {
 
                 logger.fine('uploading files to', path)
@@ -187,7 +194,7 @@ class PerAdminImpl {
                     data.append(file.name, file, file.name)
                 }
 
-                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data).then( (response) => {
+                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data, config).then( (response) => {
                         logger.fine(response.data)
                         this.populateNodesForBrowser(path) })
                     .then( () => resolve() )
