@@ -8,9 +8,9 @@
             v-bind:model   = "dataModel"
             v-bind:options = "formOptions">
         </vue-form-generator>
-        <button class="btn" v-on:click.stop.prevent="onOk">ok</button>
-        <button class="btn" v-on:click.stop.prevent="onCancel">cancel</button>
-        <button class="btn" v-on:click.stop.prevent="onDelete">delete</button>
+        <button class="btn-flat" v-on:click.stop.prevent="onOk">ok</button>
+        <button class="btn-flat" v-on:click.stop.prevent="onCancel">cancel</button>
+        <button class="btn-flat" v-on:click.stop.prevent="onDelete">delete</button>
         </form>
     </div>
 </template>
