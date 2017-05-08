@@ -76,8 +76,8 @@ class PerApi {
         return impl.createFolder(parentPath, name)
     }
 
-    uploadFiles(path, files) {
-        return impl.uploadFiles(path, files)
+    uploadFiles(path, files, cb) {
+        return impl.uploadFiles(path, files, cb)
     }
 
     savePageEdit(path, node) {

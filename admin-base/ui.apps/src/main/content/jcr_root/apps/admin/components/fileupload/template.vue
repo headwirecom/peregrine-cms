@@ -14,8 +14,17 @@
       v-on:dragend.prevent   ="removeDragOverClass"
       v-on:drop.prevent      ="onDropFile">
       <div class="file-upload-inner">
-        <i class="material-icons">file_download</i>
-        <span class="file-upload-text">Drag files anywhere</span>
+        <template v-if="uploadProgress">
+          <div v-if="uploadStatus" class="file-upload-status">
+            <i class="material-icons" v-on:click="hideUploadStatus">clear</i>
+            {{uploadStatus}}
+          </div>
+          <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress>
+        </template>
+        <template v-else>
+          <i class="material-icons">file_download</i>
+          <span class="file-upload-text">Drag files anywhere</span>
+        </template>
       </div>
     </form>
 </template>
@@ -26,6 +35,8 @@ export default {
   data() {
     return {
       dragStateClass: '',
+      uploadProgress: 0,
+      uploadStatus: false,
       formModel: { file: '' },
       schema: { 
         fields: [
@@ -71,8 +82,23 @@ export default {
     uploadFile(files) {
       $perAdminApp.stateAction('uploadFiles', { 
         path: $perAdminApp.getView().state.tools.assets, 
-        files: files
-      })
+        files: files,
+        cb: this.setPercentCompleted
+      })    
+    },
+    setPercentCompleted(percentCompleted){
+      console.log('percentCompleted: ', percentCompleted)
+      this.uploadProgress = percentCompleted 
+      if(percentCompleted === 100){
+        this.showUploadStatus('Success! File uploaded.')
+      }
+    },
+    showUploadStatus(msg){
+      this.uploadStatus = msg
+    },
+    hideUploadStatus(){
+      this.uploadStatus = false
+      this.uploadProgress = 0
     }
   }
 }

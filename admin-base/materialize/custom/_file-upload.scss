@@ -5,17 +5,16 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background-color: #fff;
 	color: $blue-gray;
 
 	.file-upload-inner {
 		position: absolute;
 		bottom: 0;
-		left: 0;
-		right: 0;
-		width: 100%;
+		left: 50%;
+		width: 400px;
+		margin-left: -200px;
 		text-align: center;
-		padding: 30px 15px;
+		padding: 15px;
 		.material-icons {
 			color: $blue-grey-lighten-2;
 			width: 100%;
@@ -25,10 +24,22 @@
 			width: 100%;
 			font-size: 20px;
 		}
+		.file-upload-progress {
+			display: inline-block;
+			width: 100%;
+		}
+		.file-upload-status {
+			.material-icons {
+				cursor: pointer;
+			}
+		}
 	}
 	
 	&.is-dragover {
-		background-color: $blue-grey-lighten-5;
-		cursor: move;
+		background-color: rgba(255,255,255,.5);
+		z-index: 1;
+		.file-upload-inner {
+			display: block;
+		}
 	}
 }
