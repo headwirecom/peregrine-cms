@@ -36,20 +36,14 @@
         methods: {
             onOk: function(e) {
                 var view = $perAdminApp.getView()
-                console.log(view.pageView.path)
-                console.log(view.state.editor.path)
                 $perAdminApp.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
             },
             onCancel: function(e) {
                 var view = $perAdminApp.getView()
-                console.log(view.pageView.path)
-                console.log(view.state.editor.path)
                 $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
             },
             onDelete: function(e) {
                 var view = $perAdminApp.getView()
-                console.log(view.pageView.path)
-                console.log(view.state.editor.path)
                 $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
             }
 
