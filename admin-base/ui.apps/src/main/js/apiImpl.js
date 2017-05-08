@@ -159,6 +159,14 @@ class PerAdminImpl {
         })
     }
 
+    deletePageNode(path, nodePath) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/deleteNode.json/path//'+nodePath)
+                .then( (data) => this.populatePageView(path) )
+                .then( () => resolve() )
+        })
+    }
+
     createTemplate(parentPath, name) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/createTemplate.json/path//'+parentPath+'//name//'+name)
