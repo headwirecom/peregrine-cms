@@ -5,4 +5,5 @@
           jcr:title="sample"
           sling:resourceType="example/objects/sample"
 >
+    <id jcr:primaryType="nt:unstructured" test="bla"></id>
 </jcr:root>

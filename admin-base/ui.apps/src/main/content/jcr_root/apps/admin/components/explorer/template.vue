@@ -3,7 +3,7 @@
     <template v-for="segment in pathSegments">
         <admin-components-action 
             v-bind:model="{ 
-                target: segment.path, 
+                target: { path: segment.path },
                 title: segment.name, 
                 command: 'selectPath', 
                 classes: 'btn waves-effect waves-light blue-grey darken-3'
@@ -19,7 +19,7 @@
                 <admin-components-action
                     v-if="child.resourceType !== 'nt:file'"
                     v-bind:model="{ 
-                        target: child.path, 
+                        target: child,
                         command: 'selectPath'
                     }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
                 </admin-components-action>
@@ -59,10 +59,13 @@
             </a>
         </ul>
 
-        <template v-for="child in model.children">
-            <component v-bind:is="child.component" v-bind:model="child"></component>
-        </template>
     </div>
+    <div v-if="hasEdit">
+        <component v-bind:is="model.children[1].component" v-bind:model="model.children[1]"></component>
+    </div>
+    <template v-for="child in model.children[0].children">
+        <component v-bind:is="child.component" v-bind:model="child"></component>
+    </template>
 </div>
 </template>
 
@@ -91,6 +94,9 @@
                     ret.push( { name: segments[i], path: segments.slice(0, i+1).join('/') } )
                 }
                 return ret;
+            },
+            hasEdit: function() {
+                return this.model.children[1]
             }
         },
         methods: {
@@ -125,7 +131,14 @@
                 return ['nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
             selectPath: function(me, target) {
-                $perAdminApp.stateAction('selectToolsNodesPath', { selected: target, path: me.model.dataFrom })
+                let resourceType = target.resourceType
+                if(resourceType) {
+                    if(resourceType === 'per:Object') {
+                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
+                        return
+                    }
+                }
+                $perAdminApp.stateAction('selectToolsNodesPath', { selected: target.path, path: me.model.dataFrom })
             },
             viewPage: function(me, target) {
                 alert(target)
