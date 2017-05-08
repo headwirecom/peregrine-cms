@@ -10,12 +10,14 @@ export default function(me, target) {
     let view = me.getView()
 
     let targetNode = null
+    let targetNodeUpdate = null
     if(target.drop === 'into') {
         targetNode = me.findNodeFromPath(view.pageView.page, target.path)
+        targetNodeUpdate = targetNode
     } else if(target.drop === 'before' || target.drop === 'after') {
         var path = parentPath(target.path)
-        log.fine('insert at', path.parentPath, target.drop, path.name)
-        targetNode = me.findNodeFromPath(view.pageView.page, path.parentPath)
+        targetNodeUpdate = me.findNodeFromPath(view.pageView.page, path.parentPath)
+        targetNode = me.findNodeFromPath(view.pageView.page, target.path)
     } else {
         log.error('addComponentToPath() target.drop not in allowed values - value was', target.drop)
     }
@@ -23,7 +25,11 @@ export default function(me, target) {
         me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
             .then( (data) => {
                 if(target.drop === 'into') {
-                    Vue.set(targetNode, 'children', data.children)
+                    Vue.set(targetNodeUpdate, 'children', data.children)
+                }
+                else if(target.drop === 'before' || target.drop === 'after')
+                {
+                    Vue.set(targetNodeUpdate, 'children', data.children)
                 }
                 log.fine(data)
             })

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.servlet.Servlet;
@@ -61,6 +62,37 @@ public class InsertNodeAt extends SlingSafeMethodsServlet {
                 node.setProperty("sling:resourceType", component);
                 session.save();
                 response.sendRedirect(path+".model.json");
+            } else if("before".equals(drop)) {
+                Node node = session.getNode(path);
+                Node parent = node.getParent();
+                Node newNode = parent.addNode("n"+UUID.randomUUID(), "nt:unstructured");
+                newNode.setProperty("sling:resourceType", component);
+                parent.orderBefore(newNode.getName(), node.getName());
+                session.save();
+                response.sendRedirect(parent.getPath()+".model.json");
+
+            } else if("after".equals(drop)) {
+                Node node = session.getNode(path);
+                Node parent = node.getParent();
+                Node newNode = parent.addNode("n"+UUID.randomUUID(), "nt:unstructured");
+                newNode.setProperty("sling:resourceType", component);
+                Node after = null;
+                for (NodeIterator it = parent.getNodes(); it.hasNext(); ) {
+                    Node child = (Node) it.next();
+                    if(child.getPath().equals(node.getPath())) {
+                        if(it.hasNext()) {
+                            after = (Node) it.next();
+                            break;
+                        }
+                    }
+                }
+                if(after != null) {
+                    // if we are inserting in the last position then we are already at the right place
+                    parent.orderBefore(newNode.getName(), after.getName());
+                }
+                session.save();
+                response.sendRedirect(parent.getPath()+".model.json");
+
             }
         } catch (RepositoryException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
