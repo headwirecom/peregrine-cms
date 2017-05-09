@@ -96,6 +96,9 @@ export default {
 
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
+                if(targetEl.getAttribute('data-per-droptarget')) {
+                    targetEl = targetEl.parentElement
+                }
                 var targetBox = targetEl.getBoundingClientRect()
                 this.setStyle(editable, targetBox, '', '1px solid red')
             }
