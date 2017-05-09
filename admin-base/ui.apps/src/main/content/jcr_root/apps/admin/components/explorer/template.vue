@@ -147,8 +147,7 @@
                 alert(target)
             },
             addPage: function(me, target) {
-                var pageName = prompt('add page at '+me.pt.path)
-                $perAdminApp.stateAction('createPage', { parent: me.pt.path, name: pageName, template: '/content/templates/example' })
+                $perAdminApp.stateAction('createPageWizard', me.pt.path)
             },
             addFolder: function(me, target) {
                 var folderName = prompt('add folder at '+me.pt.path)
