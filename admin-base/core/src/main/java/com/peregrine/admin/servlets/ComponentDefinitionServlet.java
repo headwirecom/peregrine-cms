@@ -52,16 +52,20 @@ public class ComponentDefinitionServlet extends SlingSafeMethodsServlet {
         String componentPath = "/apps/"+resource.getValueMap().get("sling:resourceType", String.class);
         Resource component = rr.getResource(componentPath);
         Resource dialog = component.getChild("dialog.json");
-
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(response.getWriter());
         jg.writeStartObject();
         jg.writeStringField("path", componentPath);
         jg.writeStringField("name", ServletHelper.componentPathToName(componentPath));
-        jg.writeRaw(",\"model\": ");
-        jg.writeRaw(ServletHelper.asString(dialog.adaptTo(InputStream.class)).toString());
+        if(dialog == null) {
+
+        } else {
+            jg.writeRaw(",\"model\": ");
+            jg.writeRaw(ServletHelper.asString(dialog.adaptTo(InputStream.class)).toString());
+        }
         jg.writeEndObject();
         jg.close();
+
 
     }
 
