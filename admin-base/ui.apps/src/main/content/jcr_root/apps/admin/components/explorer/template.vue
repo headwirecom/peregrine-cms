@@ -126,7 +126,6 @@
             },
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
-                console.log(resourceType)
                 if(resourceType) {
                     if(resourceType === 'per:Object') {
                         me.selectedObject = target.path
