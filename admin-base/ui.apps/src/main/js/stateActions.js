@@ -19,6 +19,7 @@ import selectObject from './stateActions/selectObject'
 import unselectObject from './stateActions/unselectObject'
 import saveObjectEdit from './stateActions/saveObjectEdit'
 import createObject from './stateActions/createObject'
+import selectAsset from './stateActions/selectAsset'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createPage'] = createPage
@@ -36,6 +37,7 @@ actions['selectObject'] = selectObject
 actions['unselectObject'] = unselectObject
 actions['saveObjectEdit'] = saveObjectEdit
 actions['createObject'] = createObject
+actions['selectAsset'] = selectAsset
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

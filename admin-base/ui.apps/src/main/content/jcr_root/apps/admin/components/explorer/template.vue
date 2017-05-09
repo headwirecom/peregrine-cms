@@ -18,17 +18,9 @@
                 v-for ="child in pt.children" 
                 v-if  ="checkIfAllowed(child.resourceType)">
                 <admin-components-action
-                    v-if="child.resourceType !== 'nt:file'"
-                    v-bind:model="{ 
+                    v-bind:model="{
                         target: child,
                         command: 'selectPath'
-                    }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
-                </admin-components-action>
-                <admin-components-action
-                        v-else
-                        v-bind:model="{
-                        target: child.path,
-                        command: 'editPage'
                     }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
                 </admin-components-action>
 
@@ -134,10 +126,16 @@
             },
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
+                console.log(resourceType)
                 if(resourceType) {
                     if(resourceType === 'per:Object') {
                         me.selectedObject = target.path
                         $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
+                        return
+                    }
+                    if(resourceType === 'nt:file') {
+                        me.selectedObject = target.path
+                        $perAdminApp.stateAction('selectAsset', { selected: target.path })
                         return
                     }
                 }
