@@ -41,6 +41,10 @@ class PerApi {
         return impl.populateComponentDefinitionFromNode(path)
     }
 
+    populateObject(path, target, name) {
+        return impl.populateObject(path, target, name)
+    }
+
     populatePageView(path) {
         return impl.populatePageView(path)
     }
@@ -72,6 +76,10 @@ class PerApi {
         return impl.createTemplate(parentPath, name)
     }
 
+    createObject(parentPath, name, templatePath) {
+        return impl.createObject(parentPath, name, templatePath)
+    }
+
     createFolder(parentPath, name) {
         return impl.createFolder(parentPath, name)
     }
@@ -82,6 +90,10 @@ class PerApi {
 
     savePageEdit(path, node) {
         return impl.savePageEdit(path, node)
+    }
+
+    saveObjectEdit(path, node) {
+        return impl.saveObjectEdit(path, node)
     }
 
     insertNodeAt(path, component, drop) {

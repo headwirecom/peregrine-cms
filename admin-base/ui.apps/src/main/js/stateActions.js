@@ -16,6 +16,9 @@ import deletePageNode from './stateActions/deletePageNode'
 import cancelPageEdit from './stateActions/cancelPageEdit'
 import addComponentToPath from './stateActions/addComponentToPath'
 import selectObject from './stateActions/selectObject'
+import unselectObject from './stateActions/unselectObject'
+import saveObjectEdit from './stateActions/saveObjectEdit'
+import createObject from './stateActions/createObject'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createPage'] = createPage
@@ -30,6 +33,9 @@ actions['addComponentToPath'] = addComponentToPath
 actions['deletePageNode'] = deletePageNode
 actions['cancelPageEdit'] = cancelPageEdit
 actions['selectObject'] = selectObject
+actions['unselectObject'] = unselectObject
+actions['saveObjectEdit'] = saveObjectEdit
+actions['createObject'] = createObject
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

@@ -55,7 +55,7 @@ public class CreateObjectServlet extends SlingSafeMethodsServlet {
         Session session = request.getResourceResolver().adaptTo(Session.class);
         try {
             Node node = session.getRootNode().addNode(parentPath.substring(1)+"/"+params.get("name"), "per:Object");
-            node.setProperty("sling:resourceType", params.get("template"));
+            node.setProperty("sling:resourceType", params.get("templatePath"));
             node.setProperty("jcr:title", params.get("name"));
             session.save();
             response.setStatus(HttpServletResponse.SC_OK);

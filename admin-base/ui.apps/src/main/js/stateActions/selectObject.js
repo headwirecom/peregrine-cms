@@ -8,7 +8,7 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    // should actually get the data from sling and put it into the data sub node for viewing
-    set(view, '/state/tools/object/show', target.selected)
-    set(view, '/state/tools/object/data', me.findNodeFromPath(view.admin.nodes, target.selected))
+    me.getApi().populateObject(target.selected, '/state/tools/object', 'data').then( () => {
+        set(view, '/state/tools/object/show', target.selected)
+    })
 }

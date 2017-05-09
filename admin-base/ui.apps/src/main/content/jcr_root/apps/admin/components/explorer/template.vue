@@ -10,7 +10,8 @@
             }">
         </admin-components-action>
     </template>
-    <div v-if="pt">
+    <div style="display: flex">
+    <div v-if="pt" class="explorer-main">
         <ul v-if="pt" class="collection">
             <a 
                 class ="collection-item" 
@@ -60,8 +61,9 @@
         </ul>
 
     </div>
-    <div v-if="hasEdit">
+    <div v-if="hasEdit" class="explorer-preview">
         <component v-bind:is="model.children[1].component" v-bind:model="model.children[1]"></component>
+    </div>
     </div>
     <template v-for="child in model.children[0].children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
@@ -134,9 +136,13 @@
                 let resourceType = target.resourceType
                 if(resourceType) {
                     if(resourceType === 'per:Object') {
+                        me.selectedObject = target.path
                         $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
                         return
                     }
+                }
+                if(me.selectedObject) {
+                    $perAdminApp.stateAction('unselectObject', { })
                 }
                 $perAdminApp.stateAction('selectToolsNodesPath', { selected: target.path, path: me.model.dataFrom })
             },
@@ -169,3 +175,14 @@
 
     }
 </script>
+
+<style>
+    .explorer-main {
+        flex: 6 1 60%;
+    }
+
+    .explorer-preview {
+        flex: 4 1 40%;
+    }
+
+</style>

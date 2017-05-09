@@ -32,7 +32,8 @@ function getOrCreate(obj, path) {
         while(segments.length > 0) {
             var segment = segments.pop()
             if(!obj[segment]) {
-                obj[segment] = {}
+                Vue.set(obj, segment, {})
+//                obj[segment] = {}
             }
             obj = obj[segment]
         }
@@ -143,9 +144,30 @@ class PerAdminImpl {
         })
     }
 
+    populateObject(path, target, name) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/getObject.json/'+path)
+                .then( (data) => populateView(target, name, data).then( () => {
+                    this.populateComponentDefinitionFromNode(path).then( () => {
+                        resolve()
+                    })
+                } ) )
+
+        })
+    }
+
+
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/createPage.json/path//'+parentPath+'//name//'+name+'//templatePath//'+templatePath)
+                .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
+        })
+    }
+
+    createObject(parentPath, name, templatePath) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/createObject.json/path//'+parentPath+'//name//'+name+'//templatePath//'+templatePath)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -233,6 +255,25 @@ class PerAdminImpl {
             nodeData['sling:resourceType'] = node.component.split('-').join('/')
 
             axios.post(path + node.path, data).then( function(res) {
+                resolve()
+            })
+
+        })
+    }
+
+    saveObjectEdit(path, node) {
+        return new Promise( (resolve, reject) => {
+
+            // convert to a new object
+            let nodeData = JSON.parse(JSON.stringify(node))
+            let data = new FormData();
+
+            data.append(':operation', 'import')
+            data.append(':contentType', 'json')
+            data.append(':replaceProperties', 'true')
+            data.append(':content', JSON.stringify(nodeData))
+
+            axios.post(path, data).then( function(res) {
                 resolve()
             })
 
