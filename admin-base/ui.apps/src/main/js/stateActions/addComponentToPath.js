@@ -9,6 +9,11 @@ export default function(me, target) {
 
     let view = me.getView()
 
+    // resolve path to component name
+    let componentName = target.component.split('/').slice(2).join('-')
+    log.fine('load',componentName, 'into edit view (make sure it is available')
+    document.getElementById('editview').contentWindow.$peregrineApp.loadComponent(componentName)
+
     let targetNode = null
     let targetNodeUpdate = null
     if(target.drop === 'into') {

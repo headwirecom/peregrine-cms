@@ -25,7 +25,7 @@ function loadComponentImpl(name) {
         }
         loadedComponents[name] = true
     } else {
-        logger.fine('component ',name, 'already present')
+        logger.fine('component',name, 'already present')
     }
 }
 
