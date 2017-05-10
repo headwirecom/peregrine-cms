@@ -9,12 +9,12 @@
                         <li class="tab col s2"><a href="#" v-bind:class="isSelected('search') ? 'active' : ''" v-on:click.stop.prevent="selectSearch">Search</a></li>
                     </ul>
                 </div>
-                <div v-if="isSelected('browse')" class="col s12">
+                <div v-if="isSelected('browse')" class="col s12" v-on:click.stop.prevent="selectParent">
                     <ul class="collection with-header">
                         <li class="collection-header">{{path}}</li>
                         <li class="collection-item" v-for="item in nodes.children" v-if="display(item)">
-                            <a href="" v-if="isFile(item)">{{item.name}}</a>
-                            <a href="" v-if="isFolder(item)">{{item.name}}</a>
+                            <a href="" v-if="isFile(item)" v-on:click.stop.prevent="selectItem(item)">{{item.name}}</a>
+                            <a href="" v-if="isFolder(item)" v-on:click.stop.prevent="selectFolder(item)">{{item.name}}</a>
                         </li>
                     </ul>
                 </div>
@@ -54,14 +54,20 @@
             }
         },
         methods: {
+            selectParent() {
+                let parentFolder = this.path.split('/')
+                parentFolder.pop()
+                let newPath = parentFolder.join('/')
+                this.selectFolder({ path: newPath} )
+            },
             display(item) {
                 return item.name !== 'jcr:content'
             },
             isFile(item) {
-                return true
+                return ['nt:file'].indexOf(item.resourceType) >= 0
             },
             isFolder(item) {
-                return false
+                return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
             },
             isSelected(name) {
                 return name === this.selected
@@ -71,6 +77,19 @@
             },
             selectSearch(ev) {
                 this.selected = 'search'
+            },
+            selectFolder(item) {
+                $perAdminApp.getApi().populateNodesForBrowser(item.path).then( () => {
+                    this.path = item.path
+                })
+            },
+            selectItem(item) {
+                console.log(item)
+                let callback = $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/onOk')
+                if(callback) {
+                    callback(item.path)
+                }
+                $('#pathBrowserModal').modal('close')
             }
         }
     }
