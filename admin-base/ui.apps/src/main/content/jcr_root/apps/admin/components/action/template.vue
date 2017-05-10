@@ -2,7 +2,7 @@
     <span>
         <a 
             v-if                    = "!model.type" 
-            v-bind:href             = "model.target" 
+            v-bind:href             = "model.target +'.html'"
             v-on:click.stop.prevent = "action" 
             v-bind:class            = "model.classes">
             {{model.title}}
