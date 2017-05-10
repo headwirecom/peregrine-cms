@@ -6,7 +6,12 @@
             <p>{{message}}</p>
         </div>
         <div class="modal-footer">
-            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">ok</a>
+            <a 
+                v-on:click="onOk"
+                href="#!" 
+                class="modal-action modal-close waves-effect waves-green btn-flat">
+                ok
+            </a>
         </div>
     </div>
 </div>
@@ -30,6 +35,13 @@
                 let notification = this.notify
                 if(notification) {
                     return notification.message
+                }
+                return ''
+            },
+            onOk() {
+                let notification = this.notify
+                if(notification) {
+                    return notification.onOk
                 }
                 return ''
             }
