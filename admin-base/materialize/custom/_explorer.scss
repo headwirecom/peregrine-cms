@@ -38,10 +38,12 @@
 		  > div {
 		  	height: 100%;
 		  	padding: 0.75rem;
-		  	background-color: #f0f0f0;
+		  	background-color: $blue-grey-lighten-5;
 		  	text-align: center;
+		  	position: relative;
 				img {
-			    max-width: 100%;
+					width: auto;
+					max-width: 100%;
 				}
 				iframe {
 			    border: 0;
@@ -51,14 +53,22 @@
 			}
 		}
 		.explorer-item-selected {
-	    background: #f0f0f0 !important;
+	    background: $blue-grey-lighten-5 !important;
 		}
 	}
 	/* desktop styles */
 	@media(min-width: 768px){
 		.explorer-layout {
 			.explorer-preview {
-
+				> div {
+					img {
+						position: relative;
+						top: 50%;
+						-webkit-transform: translateY(-50%);
+						-o-transform: translateY(-50%);
+						transform: translateY(-50%);
+					}
+				}
 			}
 		}
 	}
