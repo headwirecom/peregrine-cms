@@ -11,7 +11,7 @@
         props: ['model'],
         computed: {
             currentObject: function () {
-                return $perAdminApp.getNodeFromView("/state/tools/object")
+                return $perAdminApp.getNodeFromView("/state/tools/asset")
             }
         },
         methods: {

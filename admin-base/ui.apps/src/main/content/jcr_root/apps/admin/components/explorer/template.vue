@@ -141,6 +141,9 @@
                 if(me.selectedObject) {
                     $perAdminApp.stateAction('unselectObject', { })
                 }
+                if(me.selectedAsset) {
+                    $perAdminApp.stateAction('unselectAsset', { })
+                }
                 $perAdminApp.stateAction('selectToolsNodesPath', { selected: target.path, path: me.model.dataFrom })
             },
             viewPage: function(me, target) {
