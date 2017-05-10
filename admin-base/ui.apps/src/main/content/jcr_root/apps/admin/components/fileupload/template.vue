@@ -80,7 +80,6 @@ export default {
       })    
     },
     setUploadProgress(percentCompleted){
-      console.log('percentCompleted: ', percentCompleted)
       this.uploadProgress = percentCompleted 
       if(percentCompleted === 100){
         $perAdminApp.notifyUser('Success', 'File uploaded successfully.', ()=>{this.uploadProgress = 0}) 
