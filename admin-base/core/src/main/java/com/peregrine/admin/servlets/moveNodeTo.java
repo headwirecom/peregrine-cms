@@ -60,7 +60,8 @@ public class moveNodeTo extends SlingSafeMethodsServlet {
             Resource to = rs.getResource(path);
             Resource from = rs.getResource(component);
             if("into".equals(drop)) {
-                session.move(component, path);
+                log.debug("mode from {} to {}", component, path);
+                session.move(component, path+'/'+from.getName());
                 session.save();
                 response.sendRedirect(path+".model.json");
             } else if("before".equals(drop)) {
@@ -72,10 +73,10 @@ public class moveNodeTo extends SlingSafeMethodsServlet {
                     response.sendRedirect(to.getParent().getPath()+".model.json");
                 } else {
                     log.debug("moving from {} to {}", to.getParent().getPath());
-//                    session.move(component, to.getParent().getPath());
-//                    Node node = session.getNode(to.getParent().getPath());
-//                    node.orderBefore(from.getName(), to.getName());
-//                    session.save();
+                    session.move(component, to.getParent().getPath()+'/'+from.getName());
+                    Node node = session.getNode(to.getParent().getPath());
+                    node.orderBefore(from.getName(), to.getName());
+                    session.save();
                     response.sendRedirect(to.getParent().getPath()+".model.json");
                 }
             } else if("after".equals(drop)) {
@@ -84,26 +85,19 @@ public class moveNodeTo extends SlingSafeMethodsServlet {
                     Node node = session.getNode(to.getParent().getPath());
                     Node toNode = session.getNode(to.getPath());
                     int toIndexInParent = toNode.getIndex();
-                    Node after = null;
-                    for (NodeIterator it = node.getNodes(); it.hasNext(); ) {
-                        Node child = (Node) it.next();
-                        if(child.getPath().equals(toNode.getPath())) {
-                            if(it.hasNext()) {
-                                after = (Node) it.next();
-                                break;
-                            }
-                        }
-                    }
+                    Node after = getNodeAfter(node, toNode);
                     // find the next
                     node.orderBefore(from.getName(), after != null ? after.getName(): null);
                     session.save();
                     response.sendRedirect(to.getParent().getPath()+".model.json");
                 } else {
                     log.debug("moving from {} to {}", to.getParent().getPath());
-//                    session.move(component, to.getParent().getPath());
-//                    Node node = session.getNode(to.getParent().getPath());
-//                    node.orderBefore(from.getName(), to.getName());
-//                    session.save();
+                    session.move(component, to.getParent().getPath()+'/'+from.getName());
+                    Node node = session.getNode(to.getParent().getPath());
+                    Node toNode = session.getNode(to.getPath());
+                    Node after = getNodeAfter(node, toNode);
+                    node.orderBefore(from.getName(), after != null ? after.getName(): null);
+                    session.save();
                     response.sendRedirect(to.getParent().getPath()+".model.json");
                 }
             }
@@ -149,6 +143,20 @@ public class moveNodeTo extends SlingSafeMethodsServlet {
             log.error("problems while moving", e);
         }
 
+    }
+
+    private Node getNodeAfter(Node node, Node toNode) throws RepositoryException {
+        Node after = null;
+        for (NodeIterator it = node.getNodes(); it.hasNext(); ) {
+            Node child = (Node) it.next();
+            if(child.getPath().equals(toNode.getPath())) {
+                if(it.hasNext()) {
+                    after = (Node) it.next();
+                    break;
+                }
+            }
+        }
+        return after;
     }
 
 }
