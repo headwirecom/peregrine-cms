@@ -142,7 +142,7 @@
                         return
                     }
                     if(resourceType === 'nt:file') {
-                        me.selectedObject = target.path
+                        me.selectedAsset = target.path
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
                         return
                     }
