@@ -243,6 +243,13 @@ function notifyUserImpl(title, message, cb) {
     $('#notifyUserModal').modal('open')
 }
 
+function pathBrowserImpl(cb) {
+    api.populateNodesForBrowser('/content/assets')
+    set(view, '/state/pathbrowser/onOk', cb)
+    $('#pathBrowserModal').modal()
+    $('#pathBrowserModal').modal('open')
+}
+
 var PerAdminApp = {
 
     init(perAdminAppView) {
@@ -310,7 +317,12 @@ var PerAdminApp = {
 
     notifyUser(title, message, cb) {
         notifyUserImpl(title, message, cb)
+    },
+
+    pathBrowser(cb) {
+        pathBrowserImpl(cb)
     }
+
 }
 
 export default PerAdminApp

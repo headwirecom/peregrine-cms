@@ -4,6 +4,7 @@
             <component v-bind:is="child.component" v-bind:model="child"></component>
         </template>
         <admin-components-notifyuser>I am a Notification</admin-components-notifyuser>
+        <admin-components-pathbrowser>I am a Notification</admin-components-pathbrowser>
     </div>
 </template>
 
