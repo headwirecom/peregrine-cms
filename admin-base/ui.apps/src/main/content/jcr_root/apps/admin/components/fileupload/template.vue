@@ -4,28 +4,22 @@
       method="post" 
       action="" 
       enctype="multipart/form-data"
-      v-bind:class="dragStateClass"
+      v-bind:class="`file-upload ${isDragging || uploadProgress ? 'dragging-file' : ''}`"
       v-on:submit.prevent    ="uploadFile"
       v-on:drag.prevent      ="stopPropagation"
       v-on:dragstart.prevent ="stopPropagation"
-      v-on:dragover.prevent  ="addDragOverClass"
-      v-on:dragenter.prevent ="addDragOverClass"
-      v-on:dragleave.prevent ="removeDragOverClass"
-      v-on:dragend.prevent   ="removeDragOverClass"
+      v-on:dragover.prevent  ="setDragState"
+      v-on:dragenter.prevent ="setDragState"
+      v-on:dragleave.prevent ="unSetDragState"
+      v-on:dragend.prevent   ="unSetDragState"
       v-on:drop.prevent      ="onDropFile">
-      <div class="file-upload-inner">
-        <template v-if="uploadProgress">
-          <div v-if="uploadStatus" class="file-upload-status">
-            <i class="material-icons" v-on:click="hideUploadStatus">clear</i>
-            {{uploadStatus}}
-          </div>
-          <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress>
-        </template>
-        <template v-else>
-          <i class="material-icons">file_download</i>
-          <span class="file-upload-text">Drag files anywhere</span>
-        </template>
+
+      <div v-if="isDragging || uploadProgress" class="file-upload-inner">
+        <i class="material-icons">file_download</i>
+        <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
+        <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress>
       </div>
+
     </form>
 </template>
 
@@ -34,9 +28,8 @@ export default {
   props: ['model'],
   data() {
     return {
-      dragStateClass: '',
+      isDragging: false,
       uploadProgress: 0,
-      uploadStatus: false,
       formModel: { file: '' },
       schema: { 
         fields: [
@@ -63,17 +56,17 @@ export default {
     }
   }, 
   methods: {
-    addDragOverClass(ev){
+    setDragState(ev){
       ev.stopPropagation()
-      this.dragStateClass = 'is-dragover'
+      this.isDragging = true
     },
-    removeDragOverClass(ev){
+    unSetDragState(ev){
       ev.stopPropagation()
-      this.dragStateClass = ''
+      this.isDragging = false
     },
     onDropFile(ev){
       ev.stopPropagation()
-      this.dragStateClass = ''
+      this.isDragging = ''
       this.uploadFile(ev.dataTransfer.files)
     },
     stopPropagation(ev){
@@ -83,23 +76,16 @@ export default {
       $perAdminApp.stateAction('uploadFiles', { 
         path: $perAdminApp.getView().state.tools.assets, 
         files: files,
-        cb: this.setPercentCompleted
+        cb: this.setUploadProgress
       })    
     },
-    setPercentCompleted(percentCompleted){
+    setUploadProgress(percentCompleted){
       console.log('percentCompleted: ', percentCompleted)
       this.uploadProgress = percentCompleted 
       if(percentCompleted === 100){
-        this.showUploadStatus('Success! File uploaded.')
+        $perAdminApp.notifyUser('Success', 'File uploaded successfully.', ()=>{this.uploadProgress = 0}) 
       }
     },
-    showUploadStatus(msg){
-      this.uploadStatus = msg
-    },
-    hideUploadStatus(){
-      this.uploadStatus = false
-      this.uploadProgress = 0
-    }
   }
 }
 
