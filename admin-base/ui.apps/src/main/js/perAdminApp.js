@@ -235,6 +235,15 @@ function findNodeFromPathImpl(node, path) {
     }
 }
 
+function notifyUserImpl(title, message) {
+
+    set(view, '/state/notification/title', title)
+    set(view, '/state/notification/message', message)
+    $('.modal').modal()
+    $('#notifyUserModal').modal('open')
+
+}
+
 var PerAdminApp = {
 
     init(perAdminAppView) {
@@ -298,6 +307,10 @@ var PerAdminApp = {
 
     getApp() {
         return app;
+    },
+
+    notifyUser(title, message) {
+        notifyUserImpl(title, message)
     }
 }
 

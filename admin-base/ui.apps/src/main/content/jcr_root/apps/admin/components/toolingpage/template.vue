@@ -3,6 +3,7 @@
         <template v-for="child in model.children">
             <component v-bind:is="child.component" v-bind:model="child"></component>
         </template>
+        <admin-components-notifyuser>I am a Notification</admin-components-notifyuser>
     </div>
 </template>
 
