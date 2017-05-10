@@ -17,6 +17,7 @@ import savePageEdit from './stateActions/savePageEdit'
 import deletePageNode from './stateActions/deletePageNode'
 import cancelPageEdit from './stateActions/cancelPageEdit'
 import addComponentToPath from './stateActions/addComponentToPath'
+import moveComponentToPath from './stateActions/moveComponentToPath'
 import selectObject from './stateActions/selectObject'
 import unselectObject from './stateActions/unselectObject'
 import saveObjectEdit from './stateActions/saveObjectEdit'
@@ -37,6 +38,7 @@ actions['editPage'] = editPage
 actions['editComponent'] = editComponent
 actions['savePageEdit'] = savePageEdit
 actions['addComponentToPath'] = addComponentToPath
+actions['moveComponentToPath'] = moveComponentToPath
 actions['deletePageNode'] = deletePageNode
 actions['cancelPageEdit'] = cancelPageEdit
 actions['selectObject'] = selectObject

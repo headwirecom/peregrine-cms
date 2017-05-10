@@ -307,6 +307,16 @@ class PerAdminImpl {
         })
     }
 
+    moveNodeTo(path, component, drop) {
+        logger.debug(arguments)
+        return new Promise( (resolve, reject) => {
+
+            fetch('/admin/moveNodeTo.json/path//'+path+'//component//'+component+'//drop//'+drop)
+                .then( function(data) {
+                    resolve(data)
+                })
+        })
+    }
 }
 
 export default PerAdminImpl

@@ -108,6 +108,9 @@ class PerApi {
         return impl.insertNodeAt(path, component, drop)
     }
 
+    moveNodeTo(path, component, drop) {
+        return impl.moveNodeTo(path, component, drop)
+    }
 }
 
 export default PerApi

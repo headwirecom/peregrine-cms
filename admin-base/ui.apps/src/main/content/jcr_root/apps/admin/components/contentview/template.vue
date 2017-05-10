@@ -1,14 +1,17 @@
 <template>
     <div class="peregrine-content-view">
         <div 
-            id            = "editviewoverlay" 
+            id            = "editviewoverlay"
             v-on:click    = "click"
             v-on:mousewheel = "scrollEditView"
             v-on:mousemove= "mouseMove"
             v-on:mouseout = "leftArea"
             v-on:dragover = "dragOver"
             v-on:drop     = "drop">
-            <div id="editable"></div>
+            <div id="editable"
+                 draggable     = "true"
+                 v-on:dragstart= "dragStart"
+            ></div>
         </div>
         <iframe 
             id           = "editview" 
@@ -27,6 +30,17 @@ export default {
         }
     },
     methods: {
+        dragStart(ev) {
+            console.log(ev)
+            let element = this.getTargetEl(ev)
+            if(element) {
+                ev.dataTransfer.setData('componentFrom', element.getAttribute('data-per-path'))
+            }
+            else {
+                ev.preventDefault()
+                return false
+            }
+        },
         scrollEditView(ev){
             var timer = null
             var editViewOverlay = ev.target
@@ -139,9 +153,14 @@ export default {
 
             var targetEl = this.getTargetEl(e)
             var componentPath = e.dataTransfer.getData('component')
-
+            var componentFrom = e.dataTransfer.getData('componentFrom')
             var view = $perAdminApp.getView()
-            $perAdminApp.stateAction('addComponentToPath', { pagePath : view.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath, drop: this.dropPosition})
+            if(componentPath) {
+                $perAdminApp.stateAction('addComponentToPath', { pagePath : view.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath, drop: this.dropPosition})
+            } else if(componentFrom) {
+                $perAdminApp.stateAction('moveComponentToPath', { pagePath : view.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentFrom, drop: this.dropPosition})
+            }
+
         }
     }
 }
