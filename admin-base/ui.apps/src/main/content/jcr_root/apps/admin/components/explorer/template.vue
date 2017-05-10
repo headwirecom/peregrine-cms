@@ -1,5 +1,5 @@
 <template>
-<div class="explorer container">
+<div class="explorer">
     <template v-for="segment in pathSegments">
         <admin-components-action 
             v-bind:model="{ 
@@ -10,7 +10,7 @@
             }">
         </admin-components-action>
     </template>
-    <div style="display: flex">
+    <div class="explorer-layout">
     <div v-if="pt" class="explorer-main">
         <ul v-if="pt" class="collection">
             <a 
@@ -183,17 +183,3 @@
 
     }
 </script>
-
-<style>
-    .explorer-main {
-        flex: 6 1 60%;
-    }
-
-    .explorer-preview {
-        flex: 4 1 40%;
-    }
-
-    .explorer-item-selected {
-        background: #f0f0f0 !important;
-    }
-</style>
