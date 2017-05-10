@@ -18,7 +18,7 @@
                  sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/objects" dataDefault="/content/objects"/>
 
             <explorer jcr:primaryType="nt:unstructured"
-                       sling:resourceType="admin/components/explorer" dataFrom="/state/tools/objects">
+                       sling:resourceType="admin/components/explorer" dataFrom="/state/tools/objects" selectionFrom="/state/tools/object/show">
                 <actions jcr:primaryType="nt:unstructured">
                     <addFolder jcr:primaryType="nt:unstructured"
                                sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder"/>

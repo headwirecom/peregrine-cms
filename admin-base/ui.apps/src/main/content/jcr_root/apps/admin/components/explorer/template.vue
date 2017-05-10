@@ -14,8 +14,9 @@
     <div v-if="pt" class="explorer-main">
         <ul v-if="pt" class="collection">
             <a 
-                class ="collection-item" 
-                v-for ="child in pt.children" 
+                v-bind:class="isSelected(child) ? 'explorer-item-selected' : ''"
+                class="collection-item"
+                v-for ="child in pt.children"
                 v-if  ="checkIfAllowed(child.resourceType)">
                 <admin-components-action
                     v-bind:model="{
@@ -94,6 +95,14 @@
             }
         },
         methods: {
+            isSelected: function(child) {
+
+                if(this.model.selectionFrom && child) {
+                    return $perAdminApp.getNodeFromViewOrNull(this.model.selectionFrom) === child.path
+                }
+                return false
+
+            },
             editable: function(child) {
                 return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
             },
@@ -184,4 +193,7 @@
         flex: 4 1 40%;
     }
 
+    .explorer-item-selected {
+        background: #f0f0f0 !important;
+    }
 </style>

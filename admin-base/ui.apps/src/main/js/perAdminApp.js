@@ -173,6 +173,19 @@ function getNodeFromImpl(node, path) {
     return get(node, path)
 }
 
+function getNodeFromOrNullImpl(node, path) {
+
+    path = path.slice(1).split('/').reverse()
+    while(path.length > 0) {
+        var segment = path.pop()
+        if(!node[segment]) {
+            return null
+        }
+        node = node[segment]
+    }
+    return node
+}
+
 function getNodeFromWithDefaultImpl(node, path, value) {
     return get(node, path, value)
 }
@@ -243,6 +256,10 @@ var PerAdminApp = {
 
     getNodeFromView(path) {
         return getNodeFromImpl(this.getView(), path)
+    },
+
+    getNodeFromViewOrNull(path) {
+        return getNodeFromOrNullImpl(this.getView(), path)
     },
 
     getNodeFromViewWithDefault(path, value) {

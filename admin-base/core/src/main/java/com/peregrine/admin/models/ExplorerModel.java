@@ -28,12 +28,17 @@ import javax.inject.Named;
     "dataFrom": {
       "type": "string",
       "source": "inject"
+    },
+    "selectionFrom": {
+      "type": "string",
+      "source": "inject"
     }
   },
   "propertyNames": [
     "component",
     "path",
-    "dataFrom"
+    "dataFrom",
+    "selectionFrom"
   ],
   "modelName": "Explorer",
   "package": "com.peregrine.admin.models",
@@ -65,6 +70,10 @@ public class ExplorerModel extends Container {
 @Inject
 private String dataFrom;
 
+/* {"type":"string","source":"inject"} */
+@Inject
+private String selectionFrom;
+
 
 //GEN]
 
@@ -72,6 +81,11 @@ private String dataFrom;
     /* {"type":"string","source":"inject"} */
 public String getDataFrom() {
 return dataFrom;
+}
+
+/* {"type":"string","source":"inject"} */
+public String getSelectionFrom() {
+return selectionFrom;
 }
 
 
