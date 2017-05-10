@@ -7,6 +7,12 @@ import {makePathInfo, pagePathToDataPath, set, get} from './utils'
 
 import StateActions from './stateActions'
 
+window.onpopstate = function(e) {
+    if(e && e.state && e.state.path) {
+        loadContentImpl(e.state.path, false, true)
+    }
+}
+
 let view = null
 let api = null
 let app = null
@@ -109,7 +115,7 @@ function processLoaders(loaders) {
 }
 
 /** simple data loader **/
-function loadContentImpl(initialPath, firstTime) {
+function loadContentImpl(initialPath, firstTime, fromPopState) {
     logger.fine('loading content for', initialPath)
 
     var pathInfo = makePathInfo(initialPath.toString())
@@ -137,26 +143,29 @@ function loadContentImpl(initialPath, firstTime) {
                                 view.status = 'loaded';
                             }
 
-                            let params = view.adminPageStaged.suffixToParameter
-                            let suffix = ""
-                            if(params) {
-                                for(let i = 0; i < params.length; i+=2) {
-                                    if(i === 0) {
-                                        suffix += '/'
-                                    } else {
-                                        suffix += '//'
-                                    }
-
-                                    suffix += params[0]
-                                    suffix += '//'
-                                    suffix += getNodeFromImpl(view, params[i+1])
-                                }
-                            }
-                            let targetPath = initialPath.slice(0, initialPath.indexOf('.html')) + '.html' + suffix
                             delete view.adminPageStaged
 
-                            if(document.location !== targetPath) {
-                                history.pushState({peregrinevue:true, path: targetPath}, targetPath, targetPath)
+                            if(!fromPopState) {
+                                let params = view.adminPage.suffixToParameter
+                                let suffix = ""
+                                if(params) {
+                                    for(let i = 0; i < params.length; i+=2) {
+                                        if(i === 0) {
+                                            suffix += '/'
+                                        } else {
+                                            suffix += '//'
+                                        }
+
+                                        suffix += params[0]
+                                        suffix += '//'
+                                        suffix += getNodeFromImpl(view, params[i+1])
+                                    }
+                                }
+                                let targetPath = initialPath.slice(0, initialPath.indexOf('.html')) + '.html' + suffix
+
+                                if(document.location !== targetPath) {
+                                    history.pushState({peregrinevue:true, path: targetPath}, targetPath, targetPath)
+                                }
                             }
                         })
 
