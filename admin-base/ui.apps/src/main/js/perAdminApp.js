@@ -136,10 +136,27 @@ function loadContentImpl(initialPath, firstTime) {
                                 view.adminPage = view.adminPageStaged
                                 view.status = 'loaded';
                             }
+
+                            let params = view.adminPageStaged.suffixToParameter
+                            let suffix = ""
+                            if(params) {
+                                for(let i = 0; i < params.length; i+=2) {
+                                    if(i === 0) {
+                                        suffix += '/'
+                                    } else {
+                                        suffix += '//'
+                                    }
+
+                                    suffix += params[0]
+                                    suffix += '//'
+                                    suffix += getNodeFromImpl(view, params[i+1])
+                                }
+                            }
+                            let targetPath = initialPath.slice(0, initialPath.indexOf('.html')) + '.html' + suffix
                             delete view.adminPageStaged
 
-                            if(document.location !== initialPath) {
-                                history.pushState({peregrinevue:true, path: initialPath}, initialPath, initialPath)
+                            if(document.location !== targetPath) {
+                                history.pushState({peregrinevue:true, path: targetPath}, targetPath, targetPath)
                             }
                         })
 
