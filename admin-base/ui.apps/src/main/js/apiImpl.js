@@ -108,6 +108,14 @@ class PerAdminImpl {
         })
     }
 
+    populateObjects() {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/objects.json')
+                .then( (data) => populateView('/admin', 'objects', data) )
+                .then( () => resolve() )
+        })
+    }
+
     populateTemplates() {
         return new Promise( (resolve, reject) => {
             fetch('/admin/templates.json')

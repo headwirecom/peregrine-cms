@@ -7,6 +7,8 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    return api.createObject(target.parent, target.name, target.template)
+    return api.createObject(target.parent, target.name, target.template).then( () => {
+        me.loadContent('/content/admin/objects.html/path//'+ target.parent)
+    })
 
 }

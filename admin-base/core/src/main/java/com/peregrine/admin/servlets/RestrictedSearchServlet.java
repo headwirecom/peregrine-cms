@@ -47,8 +47,16 @@ public class RestrictedSearchServlet extends SlingSafeMethodsServlet {
             findComponents(request, response);
         } else if("templates".equals(type)) {
             findTemplates(request, response);
+        } else if("objects".equals(type)) {
+            findObjects(request, response);
         }
 
+    }
+
+    private void findObjects(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+
+        String query = "select * from per:ObjectDefinition order by jcr:path";
+        findAndOutputToWriterAsJSON(request, response, query);
     }
 
     private void findComponents(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {

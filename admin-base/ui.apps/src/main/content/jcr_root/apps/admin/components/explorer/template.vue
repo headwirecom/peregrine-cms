@@ -163,14 +163,15 @@
             },
             addFolder: function(me, target) {
                 var folderName = prompt('add folder at '+me.pt.path)
-                $perAdminApp.stateAction('createFolder', { parent: me.pt.path, name: folderName })
+                if(folderName) {
+                    $perAdminApp.stateAction('createFolder', { parent: me.pt.path, name: folderName })
+                }
             },
             addTemplate: function(me, target) {
                 $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
             },
             addObject: function(me, target) {
-                var objectName = prompt('add object at '+me.pt.path)
-                $perAdminApp.stateAction('createObject', { parent: me.pt.path, name: objectName, template: 'example/objects/sample' })
+                $perAdminApp.stateAction('createObjectWizard', me.pt.path)
             },
             deletePage: function(me, target) {
                 $perAdminApp.stateAction('deletePage', target)

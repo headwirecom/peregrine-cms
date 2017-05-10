@@ -21,6 +21,7 @@ import selectObject from './stateActions/selectObject'
 import unselectObject from './stateActions/unselectObject'
 import saveObjectEdit from './stateActions/saveObjectEdit'
 import createObject from './stateActions/createObject'
+import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
 
@@ -42,6 +43,7 @@ actions['selectObject'] = selectObject
 actions['unselectObject'] = unselectObject
 actions['saveObjectEdit'] = saveObjectEdit
 actions['createObject'] = createObject
+actions['createObjectWizard'] = createObjectWizard
 actions['selectAsset'] = selectAsset
 actions['unselectAsset'] = unselectAsset
 
