@@ -2,6 +2,7 @@ package com.peregrine.admin.servlets;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.Constants;
@@ -40,14 +41,25 @@ public class RestrictedSearchServlet extends SlingSafeMethodsServlet {
             IOException {
 
         String suffix = request.getRequestPathInfo().getSuffix();
-
-        findComponents(request, response);
+        Resource res = request.getResource();
+        String type = res.getValueMap().get("type", String.class);
+        if("components".equals(type)) {
+            findComponents(request, response);
+        } else if("templates".equals(type)) {
+            findTemplates(request, response);
+        }
 
     }
 
     private void findComponents(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
 
         String query = "select * from per:Component order by jcr:path";
+        findAndOutputToWriterAsJSON(request, response, query);
+    }
+
+    private void findTemplates(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+
+        String query = "select * from per:Page where jcr:path like '/content/templates/%' order by jcr:path";
         findAndOutputToWriterAsJSON(request, response, query);
     }
 

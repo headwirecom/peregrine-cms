@@ -8,6 +8,7 @@ import createPage from './stateActions/createPage'
 import createPageWizard from './stateActions/createPageWizard'
 import deletePage from './stateActions/deletePage'
 import createTemplate from './stateActions/createTemplate'
+import createTemplateWizard from './stateActions/createTemplateWizard'
 import createFolder from './stateActions/createFolder'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
@@ -28,6 +29,7 @@ actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['deletePage'] = deletePage
 actions['createTemplate'] = createTemplate
+actions['createTemplateWizard'] = createTemplateWizard
 actions['createFolder'] = createFolder
 actions['uploadFiles'] = uploadFiles
 actions['editPage'] = editPage

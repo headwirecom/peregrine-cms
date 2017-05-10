@@ -7,6 +7,8 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    return api.createTemplate(target.parent, target.name)
+    return api.createTemplate(target.parent, target.name).then( () => {
+        me.loadContent('/content/admin/templates.html/path//'+ target.parent)
+    })
 
 }

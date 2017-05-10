@@ -166,8 +166,7 @@
                 $perAdminApp.stateAction('createFolder', { parent: me.pt.path, name: folderName })
             },
             addTemplate: function(me, target) {
-                var templateName = prompt('add template at '+me.pt.path)
-                $perAdminApp.stateAction('createTemplate', { parent: me.pt.path, name: templateName })
+                $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
             },
             addObject: function(me, target) {
                 var objectName = prompt('add object at '+me.pt.path)

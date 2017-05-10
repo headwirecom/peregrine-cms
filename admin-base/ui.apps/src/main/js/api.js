@@ -29,6 +29,10 @@ class PerApi {
         return impl.populateComponents()
     }
 
+    populateTemplates() {
+        return impl.populateTemplates()
+    }
+
     populateNodesForBrowser(path, includeParents = false) {
         return impl.populateNodesForBrowser(path, includeParents)
     }

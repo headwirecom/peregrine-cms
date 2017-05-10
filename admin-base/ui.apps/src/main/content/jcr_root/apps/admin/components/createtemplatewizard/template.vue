@@ -1,12 +1,7 @@
 <template>
 <div class="container">
     <form-wizard v-bind:title="'create a page'" v-bind:subtitle="''" @on-complete="onComplete">
-        <tab-content title="select template">
-            <ul>
-                <li v-bind:class="isSelected('/content/templates/example') ? 'active' : ''"><admin-components-action v-bind:model="{ command: 'selectTemplate', target: '/content/templates/example' }">example</admin-components-action></li>
-            </ul>
-        </tab-content>
-        <tab-content title="choose name">
+        <tab-content title="choose name" :before-change="leaveTabTwo">
             <vue-form-generator :model="formmodel"
                                 :schema="nameSchema"
                                 :options="formOptions"
@@ -29,9 +24,7 @@
                 return {
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
-                        name: '',
-                        templatePath: ''
-
+                        name: ''
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -44,9 +37,8 @@
                             inputType: "text",
                             label: "Page Name",
                             model: "name",
-                            required: true
-//                    ,
-//                    validator: VueFormGenerator.validators.string
+                            required: true,
+                            validator: VueFormGenerator.validators.string
                         }
                         ]
                     }
@@ -55,21 +47,10 @@
         }
         ,
         methods: {
-            selectTemplate: function(me, target){
-                me.formmodel.templatePath = target
-            },
-            isSelected: function(target) {
-                return this.formmodel.templatePath === target
-            },
             onComplete: function() {
-                $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath })
+                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name })
             }
+
         }
     }
 </script>
-
-<style>
-    .active {
-        font-weight: bold;
-    }
-</style>
