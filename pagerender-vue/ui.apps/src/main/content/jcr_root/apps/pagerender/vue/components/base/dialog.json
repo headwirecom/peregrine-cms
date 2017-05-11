@@ -1,5 +1,5 @@
 { "fields":[{
-  "type": "textArea",
+  "type": "texteditor",
   "label": "Text",
   "model": "text",
   "rows": 10,
