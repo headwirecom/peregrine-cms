@@ -3,11 +3,8 @@ let log = LoggerFactory.logger('editComponent').setLevelDebug()
 
 import { set } from '../utils'
 
-export default function(me, target) {
+function bringUpEditor(me, view, target) {
 
-    log.fine(target)
-
-    let view = me.getView()
     me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
             log.fine('component name is', name)
             set(view, '/state/editor/component', name)
@@ -16,4 +13,20 @@ export default function(me, target) {
             set(view, '/state/rightPanelVisible', true)
         }
     )
+}
+
+export default function(me, target) {
+
+    log.fine(target)
+
+    let view = me.getView()
+    if(view.state.editorVisible) {
+        me.getApi().populatePageView(view.pageView.path).then( () => {
+            bringUpEditor(me, view, target)
+        })
+    } else {
+        bringUpEditor(me, view, target)
+    }
+
+
 }

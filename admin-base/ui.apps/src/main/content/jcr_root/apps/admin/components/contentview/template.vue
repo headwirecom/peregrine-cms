@@ -1,11 +1,10 @@
 <template>
-    <div class="peregrine-content-view">
+    <div class="peregrine-content-view" v-on:mouseout = "leftArea">
         <div 
             id            = "editviewoverlay"
             v-on:click    = "click"
             v-on:mousewheel = "scrollEditView"
             v-on:mousemove= "mouseMove"
-            v-on:mouseout = "leftArea"
             v-on:dragover = "dragOver"
             v-on:drop     = "drop">
             <div id="editable"
@@ -83,11 +82,14 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
+                var targetBox = targetEl.getBoundingClientRect()
+                this.setStyle(editable, targetBox, '', '1px solid red')
                 $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
 
         leftArea: function(e) {
+            if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var editable = this.$el.children['editviewoverlay'].children['editable']
             editable.style.display = 'none'
         },
@@ -106,8 +108,7 @@ export default {
 
         mouseMove: function(e) {
             if(!e) return
-            if($perAdminApp.getNodeFromView('/state/editorVisible')) return
-
+            if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 if(targetEl.getAttribute('data-per-droptarget')) {

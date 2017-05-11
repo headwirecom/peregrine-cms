@@ -10,6 +10,16 @@
         mounted() {
             this.initialize()
         },
+        beforeDestroy() {
+            this.quill = null
+        },
+        watch: {
+            value(newVal, oldVal) {
+                if(newVal != this.$refs.quilleditor.children[0].innerHTML) {
+                    this.$refs.quilleditor.children[0].innerHTML = this.value
+                }
+            }
+        },
         methods: {
             initialize() {
                 this.$refs.quilleditor.innerHTML = this.value

@@ -109,9 +109,10 @@
             },
 
             showComponentEdit(me, target) {
-                if(!me.state.editorVisible) {
-                    $perAdminApp.stateAction('editComponent', target)
-                }
+//                if(!me.state.editorVisible) {
+                $perAdminApp.stateAction('editComponent', target)
+
+//                }
             },
 
         }
