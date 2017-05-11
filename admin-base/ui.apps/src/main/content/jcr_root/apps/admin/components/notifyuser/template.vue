@@ -1,20 +1,24 @@
 <template>
 <div>
-    <div v-bind:class="`modal bottom-sheet ${isVisible ? 'visible' : ''}`">
-        <div class="modal-content">
-            <h4>{{title}}</h4>
-            <p>{{message}}</p>
+    <transition name="fade">
+        <div v-if="isVisible" class="modal bottom-sheet">
+            <div class="modal-content">
+                <h4>{{title}}</h4>
+                <p>{{message}}</p>
+            </div>
+            <div class="modal-footer">
+                <a 
+                    v-on:click="onOk"
+                    href="#!" 
+                    class="modal-action modal-close waves-effect waves-green btn-flat">
+                    ok
+                </a>
+            </div>
         </div>
-        <div class="modal-footer">
-            <a 
-                v-on:click="onOk"
-                href="#!" 
-                class="modal-action modal-close waves-effect waves-green btn-flat">
-                ok
-            </a>
-        </div>
-    </div>
-    <div v-on:click="onOk" v-bind:class="`modal-overlay ${isVisible ? 'visible' : ''}`"></div>
+    </transition>
+    <transition name="fade">
+        <div v-if="isVisible" v-on:click="onOk" class="modal-overlay"></div>
+    </transition>
 </div>
 </template>
 
