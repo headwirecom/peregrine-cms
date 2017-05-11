@@ -39,15 +39,18 @@
         props: ['model'],
         data: function() {
             return {
-                selected: 'browse',
-                path: '/content/assets'
+                selected: 'browse'
             }
         },
         computed: {
+            path() {
+                let root = $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/root')
+                return root
+            },
             nodes() {
                 let view = $perAdminApp.getView()
                 let nodes = view.admin.nodes
-                if(nodes) {
+                if(nodes && this.path) {
                     return $perAdminApp.findNodeFromPath(nodes, this.path)
                 }
                 return {}
@@ -80,7 +83,8 @@
             },
             selectFolder(item) {
                 $perAdminApp.getApi().populateNodesForBrowser(item.path).then( () => {
-                    this.path = item.path
+                    let pb = $perAdminApp.getNodeFromView('/state/pathbrowser')
+                    pb.root = item.path
                 })
             },
             selectItem(item) {

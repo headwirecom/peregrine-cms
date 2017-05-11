@@ -1,10 +1,9 @@
 { "fields":[
 {
-  "type": "input",
-  "inputType": "text",
+  "type": "pathbrowser",
   "label": "image",
   "model": "imagePath",
-  "rows": 5,
+  "browserRoot": "/content/assets",
   "placeholder": "select path"
 },
 {
