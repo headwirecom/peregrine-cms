@@ -43,4 +43,5 @@
         <exclude pattern="/apps/admin/install/.*"/>
     </filter>
     <filter root="/apps/field"/>
+    <filter root="/index.html"/>
 </workspaceFilter>
