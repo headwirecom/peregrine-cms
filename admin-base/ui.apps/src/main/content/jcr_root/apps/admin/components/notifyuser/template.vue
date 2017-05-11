@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div id="notifyUserModal" class="modal bottom-sheet">
+    <div v-bind:class="`modal bottom-sheet ${isVisible ? 'visible' : ''}`">
         <div class="modal-content">
             <h4>{{title}}</h4>
             <p>{{message}}</p>
@@ -14,6 +14,7 @@
             </a>
         </div>
     </div>
+    <div v-on:click="onOk" v-bind:class="`modal-overlay ${isVisible ? 'visible' : ''}`"></div>
 </div>
 </template>
 
@@ -38,12 +39,19 @@
                 }
                 return ''
             },
+            isVisible() {
+                let notification = this.notify
+                if(notification) {
+                    return notification.isVisible
+                }
+                return false
+            },
             onOk() {
                 let notification = this.notify
                 if(notification) {
                     return notification.onOk
                 }
-                return ''
+                return false
             }
         }
     }
