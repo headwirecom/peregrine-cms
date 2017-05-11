@@ -30,7 +30,6 @@ export default {
     },
     methods: {
         dragStart(ev) {
-            console.log(ev)
             let element = this.getTargetEl(ev)
             if(element) {
                 ev.dataTransfer.setData('componentFrom', element.getAttribute('data-per-path'))
