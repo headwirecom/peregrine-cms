@@ -238,9 +238,11 @@ function findNodeFromPathImpl(node, path) {
 function notifyUserImpl(title, message, cb) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
-    set(view, '/state/notification/onOk', cb)
-    $('.modal').modal()
-    $('#notifyUserModal').modal('open')
+    set(view, '/state/notification/onOk', function(){
+        set(view, '/state/notification/isVisible', false)
+        cb()
+    })
+    set(view, '/state/notification/isVisible', true)
 }
 
 function pathBrowserImpl(root, cb) {

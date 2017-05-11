@@ -1,19 +1,24 @@
 <template>
 <div>
-    <div id="notifyUserModal" class="modal bottom-sheet">
-        <div class="modal-content">
-            <h4>{{title}}</h4>
-            <p>{{message}}</p>
+    <transition name="fade">
+        <div v-if="isVisible" class="modal bottom-sheet">
+            <div class="modal-content">
+                <h4>{{title}}</h4>
+                <p>{{message}}</p>
+            </div>
+            <div class="modal-footer">
+                <a 
+                    v-on:click="onOk"
+                    href="#!" 
+                    class="modal-action modal-close waves-effect waves-green btn-flat">
+                    ok
+                </a>
+            </div>
         </div>
-        <div class="modal-footer">
-            <a 
-                v-on:click="onOk"
-                href="#!" 
-                class="modal-action modal-close waves-effect waves-green btn-flat">
-                ok
-            </a>
-        </div>
-    </div>
+    </transition>
+    <transition name="fade">
+        <div v-if="isVisible" v-on:click="onOk" class="modal-overlay"></div>
+    </transition>
 </div>
 </template>
 
@@ -38,12 +43,19 @@
                 }
                 return ''
             },
+            isVisible() {
+                let notification = this.notify
+                if(notification) {
+                    return notification.isVisible
+                }
+                return false
+            },
             onOk() {
                 let notification = this.notify
                 if(notification) {
                     return notification.onOk
                 }
-                return ''
+                return false
             }
         }
     }
