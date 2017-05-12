@@ -248,9 +248,12 @@ function notifyUserImpl(title, message, cb) {
 function pathBrowserImpl(root, cb) {
     api.populateNodesForBrowser('/content/assets')
     set(view, '/state/pathbrowser/root', root)
-    set(view, '/state/pathbrowser/onOk', cb)
-    $('#pathBrowserModal').modal()
-    $('#pathBrowserModal').modal('open')
+    set(view, '/state/pathbrowser/isVisible', false)
+    set(view, '/state/pathbrowser/methods', {
+        onShow: function(){ set(view, '/state/pathbrowser/isVisible', true) },
+        onHide: function(){ set(view, '/state/pathbrowser/isVisible', false) },
+        setItemPath: cb
+    })
 }
 
 var PerAdminApp = {

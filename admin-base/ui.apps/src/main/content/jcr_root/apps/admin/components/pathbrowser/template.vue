@@ -1,36 +1,42 @@
 <template>
 <div>
-    <div id="pathBrowserModal" class="modal">
-        <div class="modal-content">
-            <div class="row">
-                <div class="col s12">
-                    <ul class="tabs">
-                        <li class="tab col s2"><a href="#" v-bind:class="isSelected('browse') ? 'active' : ''" v-on:click.stop.prevent="selectBrowse">Browse</a></li>
-                        <li class="tab col s2"><a href="#" v-bind:class="isSelected('search') ? 'active' : ''" v-on:click.stop.prevent="selectSearch">Search</a></li>
-                    </ul>
-                </div>
-                <div v-if="isSelected('browse')" class="col s12" v-on:click.stop.prevent="selectParent">
-                    <ul class="collection with-header">
-                        <li class="collection-header">{{path}}</li>
-                        <li class="collection-item" v-for="item in nodes.children" v-if="display(item)">
-                            <a href="" v-if="isFile(item)" v-on:click.stop.prevent="selectItem(item)">{{item.name}}</a>
-                            <a href="" v-if="isFolder(item)" v-on:click.stop.prevent="selectFolder(item)">{{item.name}}</a>
-                        </li>
-                    </ul>
-                </div>
-                <div v-if="isSelected('search')" class="col s12">
-                    searchui
+    <transition name="fade">
+        <div v-if="isVisible" id="pathBrowserModal" class="modal default">
+            <div class="modal-content">
+                <div class="row">
+                    <div class="col s12">
+                        <ul class="tabs">
+                            <li class="tab col s2"><a href="#" v-bind:class="isSelected('browse') ? 'active' : ''" v-on:click.stop.prevent="selectBrowse">Browse</a></li>
+                            <li class="tab col s2"><a href="#" v-bind:class="isSelected('search') ? 'active' : ''" v-on:click.stop.prevent="selectSearch">Search</a></li>
+                        </ul>
+                    </div>
+                    <div v-if="isSelected('browse')" class="col s12" v-on:click.stop.prevent="selectParent">
+                        <ul class="collection with-header">
+                            <li class="collection-header">{{path}}</li>
+                            <li class="collection-item" v-for="item in nodes.children" v-if="display(item)">
+                                <a href="" v-if="isFile(item)" v-on:click.stop.prevent="selectItem(item)">{{item.name}}</a>
+                                <a href="" v-if="isFolder(item)" v-on:click.stop.prevent="selectFolder(item)">{{item.name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div v-if="isSelected('search')" class="col s12">
+                        searchui
+                    </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <a 
+                    v-on:click="onHide"
+                    href="#!"
+                    class="modal-action modal-close waves-effect waves-green btn-flat">
+                    ok
+                </a>
+            </div>
         </div>
-        <div class="modal-footer">
-            <a 
-                href="#!"
-                class="modal-action modal-close waves-effect waves-green btn-flat">
-                ok
-            </a>
-        </div>
-    </div>
+    </transition>
+    <transition name="fade">
+        <div v-if="isVisible" v-on:click="onHide" class="modal-overlay"></div>
+    </transition>
 </div>
 </template>
 
@@ -54,6 +60,9 @@
                     return $perAdminApp.findNodeFromPath(nodes, this.path)
                 }
                 return {}
+            },
+            isVisible() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/isVisible')
             }
         },
         methods: {
@@ -89,11 +98,14 @@
             },
             selectItem(item) {
                 console.log(item)
-                let callback = $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/onOk')
-                if(callback) {
-                    callback(item.path)
-                }
-                $('#pathBrowserModal').modal('close')
+                this.setItemPath(item.path)
+                this.onHide()
+            },
+            setItemPath(path){
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/methods').setItemPath(path)
+            },
+            onHide() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/methods').onHide()
             }
         }
     }
