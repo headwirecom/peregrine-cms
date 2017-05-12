@@ -12,6 +12,7 @@
     <module>pagerender-vue</module>
     <module>admin-base</module>
     <module>example-vue-site</module>
+    <module>content-generator</module>
   </modules>
 
 </project>

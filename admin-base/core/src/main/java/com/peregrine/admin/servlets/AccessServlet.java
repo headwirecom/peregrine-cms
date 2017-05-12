@@ -34,7 +34,6 @@ public class AccessServlet extends SlingSafeMethodsServlet {
             IOException {
 
         response.sendRedirect("/system/sling/info.sessionInfo.json");
-
     }
 
 }
