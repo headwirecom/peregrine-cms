@@ -48,6 +48,7 @@ public class PageCreator {
             HttpEntity responseEntity = response.getEntity();
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
+            EntityUtils.consume(responseEntity);
             if(statusCode == 201)
             {
                 System.out.println("Successfully created page at " + path);
@@ -58,7 +59,6 @@ public class PageCreator {
                 System.out.println("Failed to create page at " + path);
                 System.out.println(statusLine);
             }
-            EntityUtils.consume(responseEntity);
         }
         finally {
             response.close();
@@ -87,6 +87,7 @@ public class PageCreator {
             HttpEntity responseEntity = response.getEntity();
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
+            EntityUtils.consume(responseEntity);
             if(statusCode == 201)
             {
                 System.out.println("Successfully created content node at " + path);
@@ -97,7 +98,6 @@ public class PageCreator {
                 System.out.println("Failed to create content node at " + path);
                 System.out.println(statusLine);
             }
-            EntityUtils.consume(responseEntity);
         }
         finally {
             response.close();
@@ -105,7 +105,7 @@ public class PageCreator {
 
     }
 
-    private void createContainer(String path) throws Exception
+    public void createContainer(String path) throws Exception
     {
         System.out.println("Creating container node at " + path);
         String url = host + path;
@@ -122,6 +122,7 @@ public class PageCreator {
             HttpEntity responseEntity = response.getEntity();
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
+            EntityUtils.consume(responseEntity);
             if(statusCode == 201)
             {
                 System.out.println("Successfully created container node at " + path);
@@ -131,7 +132,6 @@ public class PageCreator {
                 System.out.println("Failed to create container node at " + path);
                 System.out.println(statusLine);
             }
-            EntityUtils.consume(responseEntity);
         }
         finally {
             response.close();
