@@ -1,73 +1,71 @@
 package com.peregrine.generator;
 
-import org.apache.http.Consts;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import sun.misc.BASE64Encoder;
 
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
+import java.util.Date;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
-//    public static void main( String[] args ) throws Exception
-//    {
-//        String encodedCredentials = Base64.getEncoder().encodeToString(("admin:admin").getBytes());
-//
-//        String url = "http://localhost:8080/content/sites/example/testpage5";
-//        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-//        formparams.add(new BasicNameValuePair("jcr:primaryType", "per:Page"));
-//        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams, Consts.UTF_8);
-//        HttpPost httpPost = new HttpPost(url);
-//        httpPost.setHeader("Authorization", "Basic " + encodedCredentials);
-//        httpPost.setEntity(entity);
-//        CloseableHttpClient httpClient = HttpClients.createDefault();
-//
-//        try
-//        {
-//            CloseableHttpResponse response = httpClient.execute(httpPost);
-//            try
-//            {
-//                System.out.println(response.getStatusLine());
-//                EntityUtils.consume(entity);
-//            }
-//            finally {
-//                response.close();
-//            }
-//        }
-//        finally {
-//            httpClient.close();
-//        }
-//
-//    }
+
+    private static final String DEFAULT_HOSTNAME = "localhost";
+    private static final String DEFAULT_PORT = "8080";
+    private static final String DEFAULT_USERNAME = "admin";
+    private static final String DEFAULT_PASSWORD = "admin";
+    private static final int DEFAULT_PAGECOUNT = 5;
 
     public static void main( String[] args ) throws Exception
     {
-        String encodedCredentials = Base64.getEncoder().encodeToString(("admin:admin").getBytes());
-        String host = "http://localhost:8080";
+        Options options = new Options();
+        options.addOption("h", "hostname", true, "Sling server hostname");
+        options.addOption("p", "port", true, "Sling server port");
+        options.addOption("c", "pagecount", true, "Number of pages to create");
+        options.addOption("U", "username", true, "Sling server username");
+        options.addOption("P", "password", true, "Sling server password");
+
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse(options, args);
+
+        String hostname = cmd.hasOption("h") ? cmd.getOptionValue("h") : DEFAULT_HOSTNAME;
+        String port = cmd.hasOption("p") ? cmd.getOptionValue("p") : DEFAULT_PORT;
+        String username = cmd.hasOption("U") ? cmd.getOptionValue("U") : DEFAULT_USERNAME;
+        String password = cmd.hasOption("P") ? cmd.getOptionValue("P") : DEFAULT_PASSWORD;
+
+        int pagecount;
+        if(cmd.hasOption("c"))
+        {
+            String pagecountString = cmd.getOptionValue("c");
+            try
+            {
+                pagecount = Integer.parseInt(pagecountString);
+            }
+            catch(Exception e)
+            {
+                pagecount = DEFAULT_PAGECOUNT;
+            }
+        }
+        else
+        {
+            pagecount = DEFAULT_PAGECOUNT;
+        }
+
+        String encodedCredentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        String host = "http://" + hostname + ":" + port;
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         try
         {
             PageCreator pageCreator = new PageCreator(encodedCredentials, host, httpClient);
-            String basePath = "/content/sites/example/autopage";
-            for(int i = 0; i < 5; i++)
+            long now = System.currentTimeMillis();
+            String basePath = "/content/sites/example/generated-" + now;
+            pageCreator.createPage(basePath, "Generated Content " + (new Date(now)).toString());
+            basePath += "/autopage";
+            for(int i = 1; i <= pagecount; i++)
             {
                 pageCreator.createPage(basePath + i, "Auto Page " + i);
             }
