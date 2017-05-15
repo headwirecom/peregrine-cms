@@ -6,8 +6,8 @@
     </footer>
 </template>
 
-<scrtipt>
+<script>
     export default {
-        props: ['model']
+        props: [ 'model' ]
     }
-</scrtipt>
+</script>
