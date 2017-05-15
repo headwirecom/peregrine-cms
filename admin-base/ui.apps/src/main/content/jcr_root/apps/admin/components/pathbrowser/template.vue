@@ -76,7 +76,7 @@
                 return item.name !== 'jcr:content'
             },
             isFile(item) {
-                return ['nt:file'].indexOf(item.resourceType) >= 0
+                return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
             },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
