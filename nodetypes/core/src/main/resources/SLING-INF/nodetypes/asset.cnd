@@ -1,0 +1,10 @@
+<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
+
+[per:Asset] > nt:file
+  primaryitem jcr:content
+  + jcr:content (per:AssetContent) = per:AssetContent
+  + * (nt:base) = nt:base version
+
+[per:AssetContent] > nt:unstructured
+  orderable
+  + renditions (nt:folder)
