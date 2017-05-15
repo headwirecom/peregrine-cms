@@ -2,6 +2,13 @@
 
 }
 
+.modal.default {
+	z-index: 1003;
+	display: block;
+	opacity: 1;
+	transform: scaleX(1);
+	top: 10%;
+}
 .modal.bottom-sheet {
 	z-index: 1003;
 	display: block;

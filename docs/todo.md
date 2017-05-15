@@ -16,17 +16,12 @@
 component gets selected
 - support for touch (does currently not work)
 - ability to move components
-- add asset viewer
-- add path field
 - support inline editing
-- support for styling of rich text content
 - support for responsive tables? 
 - some indication if the component is from the template and not from the page itself
-- create a path browser field
 
 ## assets
 
-- needs a preview
 - needs a way to manage and create renditions
 
 ## api 

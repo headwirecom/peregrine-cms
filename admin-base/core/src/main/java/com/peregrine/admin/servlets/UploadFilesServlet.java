@@ -58,15 +58,17 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
             for (Part part : request.getParts()) {
                 log.debug("part type {}",part.getContentType());
                 log.debug("part name {}",part.getName());
-                Node newNode = node.addNode(part.getName(), "nt:file");
-                Node jcrContent = newNode.addNode("jcr:content", "nt:resource");
+                Node newNode = node.addNode(part.getName(), "per:Asset");
+                Node jcrContent = newNode.addNode("jcr:content", "per:AssetContent");
                 Binary data = session.getValueFactory().createBinary(part.getInputStream());
                 jcrContent.setProperty("jcr:data", data);
                 jcrContent.setProperty("jcr:mimeType", part.getContentType());
                 session.save();
             }
+            log.debug("Upload Done successfully and saved");
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (RepositoryException e) {
+            log.debug("Upload Failed", e);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             e.printStackTrace(response.getWriter());
         }

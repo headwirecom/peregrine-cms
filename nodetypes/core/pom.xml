@@ -67,6 +67,7 @@
                         </Sling-Namespaces>
 
                         <Sling-Nodetypes>
+                            SLING-INF/nodetypes/asset.cnd,
                             SLING-INF/nodetypes/pagecontent.cnd,
                             SLING-INF/nodetypes/page.cnd,
                             SLING-INF/nodetypes/component.cnd,

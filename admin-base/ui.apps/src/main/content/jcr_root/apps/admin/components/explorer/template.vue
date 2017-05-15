@@ -126,12 +126,13 @@
                 if(nodeType === 'per:Page')     return 'insert_drive_file'
                 if(nodeType === 'per:Object')   return 'layers'
                 if(nodeType === 'nt:file')      return 'insert_drive_file'
+                if(nodeType === 'per:Asset')      return 'insert_drive_file'
                 if(nodeType === 'sling:Folder') return 'folder'
                 if(nodeType === 'sling:OrderedFolder') return 'folder'
                 return 'unknown'
             },
             checkIfAllowed: function(resourceType) {
-                return ['nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
+                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
@@ -141,7 +142,7 @@
                         $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
                         return
                     }
-                    if(resourceType === 'nt:file') {
+                    if(resourceType === 'per:Asset') {
                         me.selectedAsset = target.path
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
                         return

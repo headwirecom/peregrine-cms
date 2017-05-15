@@ -1,13 +1,13 @@
 <template>
-    <footer class="navbar navbar-light bg-faded fixed-bottom">
+    <footer class="navbar navbar-light bg-faded fixed-bottom" v-bind:data-per-path="model.path">
       <span class="navbar-text">
         &copy; 2017 by peregrine-cms, a headwire company
       </span>
     </footer>
 </template>
 
-<scrtipt>
+<script>
     export default {
-        props: ['model']
+        props: [ 'model' ]
     }
-</scrtipt>
+</script>

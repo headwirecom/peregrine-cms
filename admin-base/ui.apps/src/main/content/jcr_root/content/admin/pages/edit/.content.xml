@@ -12,15 +12,24 @@
             loaders="[populatePageView:/pageView/path,populateComponents:/pageView/path,setInitialPageEditorState:/]"
     >
             <nav jcr:primaryType="nt:unstructured"
-                 sling:resourceType="admin/components/nav"/>
+                 sling:resourceType="admin/components/nav">
+
+                <subnav jcr:primaryType="nt:unstructured"
+                     sling:resourceType="admin/components/subnav">
+                    <mobile jcr:primaryType="nt:unstructured"
+                               sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile" command="editPreview" icon="phone_android"/>
+                    <tablet jcr:primaryType="nt:unstructured"
+                            sling:resourceType="admin/components/action" target="tablet" type="icon" title="tablet" command="editPreview" icon="tablet_android"/>
+                    <desktop jcr:primaryType="nt:unstructured"
+                            sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop" command="editPreview" icon="desktop_mac"/>
+                    <preview jcr:primaryType="nt:unstructured"
+                            sling:resourceType="admin/components/action" target="preview" type="icon" title="preview" command="editPreview" icon="visibility"/>
+                </subnav>
+            </nav>
 
             <workspace jcr:primaryType="nt:unstructured"
                      sling:resourceType="admin/components/workspace">
 
-            <!--
-                <structure jcr:primaryType="nt:unstructured"
-                           sling:resourceType="pagerender/vue/components/base" text="structure"/>
-            -->
                         <contentview jcr:primaryType="nt:unstructured"
                                    sling:resourceType="admin/components/contentview" text="content"/>
 
