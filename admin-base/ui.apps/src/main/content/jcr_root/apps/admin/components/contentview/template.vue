@@ -15,7 +15,7 @@
         <iframe 
             id           = "editview" 
             v-bind:src   = "pagePath" 
-            frameborder  = "0"></iframe>
+            frameborder  = "0" v-bind:class="iframeClass"></iframe>
     </div>
 </template>
 
@@ -26,6 +26,14 @@ export default {
     computed: {
         pagePath: function() {
             return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
+        },
+        viewMode: function() {
+            let viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
+            if(viewMode) return viewMode
+            return 'desktop'
+        },
+        iframeClass: function() {
+            return this.viewMode
         }
     },
     methods: {

@@ -1,10 +1,9 @@
 <template>
-    <div class="nav-content">
-        <ul class="tabs tabs-transparent">
-            <li class="tab"><a href="#">mobile</a></li>
-            <li class="tab"><a href="#">tablet</a></li>
-            <li class="tab"><a href="#">desktop</a></li>
-            <li class="tab"><a href="#">preview</a></li>
+    <div class="nav-content" style=" height: 48px;">
+        <ul style="text-align: center; padding-top: 5px;">
+            <template v-for="child in model.children">
+                <li v-bind:is="child.component" v-bind:model="child"></li>
+            </template>
         </ul>
     </div>
 </template>

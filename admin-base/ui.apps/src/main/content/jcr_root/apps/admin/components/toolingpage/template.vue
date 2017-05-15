@@ -15,6 +15,9 @@ export default {
         selectPath: function(me, target) {
             $perAdminApp.loadContent(target+'.html')
         },
+        editPreview: function(me, target) {
+            $perAdminApp.stateAction('editPreview', target)
+        },
         editPage: function(me, target) {
             console.log('edit page')
         }

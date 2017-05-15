@@ -25,6 +25,7 @@ import createObject from './stateActions/createObject'
 import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
+import editPreview from './stateActions/editPreview'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createPageWizard'] = createPageWizard
@@ -48,6 +49,7 @@ actions['createObject'] = createObject
 actions['createObjectWizard'] = createObjectWizard
 actions['selectAsset'] = selectAsset
 actions['unselectAsset'] = unselectAsset
+actions['editPreview'] = editPreview
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)
