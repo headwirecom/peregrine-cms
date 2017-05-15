@@ -261,6 +261,8 @@ class PerAdminImpl {
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
             delete nodeData['children']
+            delete nodeData['path']
+            delete nodeData['component']
             let data = new FormData();
 
             data.append(':operation', 'import')
