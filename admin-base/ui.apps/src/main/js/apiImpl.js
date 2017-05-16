@@ -146,6 +146,8 @@ class PerAdminImpl {
             fetch('/admin/componentDefinition.json/path//'+path)
                 .then( (data) => {
                     name = data.name
+                    console.log(data.model.fields[0].buttons[0].onclick)
+                    eval('data.model.fields[0].buttons[0].onclick = '+data.model.fields[0].buttons[0].onclick)
                     populateView('/admin/componentDefinitions', data.name, data.model)
                 })
                 .then( () => resolve(name) )
