@@ -1,27 +1,40 @@
 <template>
-    <div class="peregrine-content-view" v-on:mouseout = "leftArea">
+    <div 
+        v-bind:class  ="`peregrine-content-view ${viewModeClass}`" 
+        v-on:mouseout = "leftArea">
         <div 
             id            = "editviewoverlay"
             v-on:click    = "click"
-            v-on:mousewheel = "scrollEditView"
+            v-on:mousewheel = "scrollEditViewOverlay"
             v-on:mousemove= "mouseMove"
             v-on:dragover = "dragOver"
             v-on:drop     = "drop">
             <div id="editable"
                  draggable     = "true"
-                 v-on:dragstart= "dragStart"
-            ></div>
+                 v-on:dragstart= "dragStart"></div>
         </div>
         <iframe 
             id           = "editview" 
             v-bind:src   = "pagePath" 
-            frameborder  = "0" v-bind:class="iframeClass"></iframe>
+            frameborder  = "0"></iframe>
     </div>
 </template>
 
 <script>
 export default {
+    mounted() {
+        this.$nextTick(function() {
+          window.addEventListener('resize', this.onResize)
+        })
+    },
+
     props: ['model'],
+
+    data(){
+        return {
+            selectedEl: null
+        }
+    },
 
     computed: {
         pagePath: function() {
@@ -32,7 +45,7 @@ export default {
             if(viewMode) return viewMode
             return 'desktop'
         },
-        iframeClass: function() {
+        viewModeClass: function() {
             return this.viewMode
         }
     },
@@ -47,16 +60,30 @@ export default {
                 return false
             }
         },
-        scrollEditView(ev){
+        scrollEditViewOverlay(ev){
             var timer = null
+            if(this.selectedEl !== null){
+                var selectedElRect = this.selectedEl.getBoundingClientRect()
+                this.updateEditablePos(selectedElRect.top)
+            }
             var editViewOverlay = ev.target
             editViewOverlay.style['pointer-events'] = 'none'
+            /* TODO: remove timeout by using custom method to detect when scrolling stops */
+            
             if(timer !== null) {
                 clearTimeout(timer)        
             }
             timer = setTimeout(function() {
                 editViewOverlay.style['pointer-events'] = 'auto'
-            }, 150)
+            }, 10)
+        },
+
+        onResize: function(e){
+            if(this.selectedEl !== null){
+                var targetBox = this.selectedEl.getBoundingClientRect()
+                var editable = this.$el.children['editviewoverlay'].children['editable']
+                this.setStyle(editable, targetBox, '', '1px solid #ef5350')
+            }
         },
 
         getPosFromMouse: function(e) {
@@ -89,8 +116,9 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
+                this.selectedEl = targetEl
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setStyle(editable, targetBox, '', '1px solid red')
+                this.setStyle(editable, targetBox, '', '1px solid #ef5350')
                 $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
@@ -113,16 +141,23 @@ export default {
             editable.style['border'+name] = border
         },
 
+        updateEditablePos: function(top, left){
+            var editable = this.$el.children['editviewoverlay'].children['editable']
+            editable.style.top = top + 'px'
+            editable.style.left = left + 'px'
+        },
+
         mouseMove: function(e) {
             if(!e) return
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
+                this.selectedEl = targetEl
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setStyle(editable, targetBox, '', '1px solid red')
+                this.setStyle(editable, targetBox, '', '1px solid #ef5350')
             }
         },
 
@@ -137,15 +172,15 @@ export default {
 
                 if(isDropTarget) {
                     this.dropPosition = 'into'
-                    this.setStyle(editable, targetBox, '', '1px solid red')
+                    this.setStyle(editable, targetBox, '', '1px solid #ef5350')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
                         this.dropPosition = 'before'
-                        this.setStyle(editable, targetBox, '-top', '1px solid red')
+                        this.setStyle(editable, targetBox, '-top', '1px solid #ef5350')
                     } else {
                         this.dropPosition = 'after'
-                        this.setStyle(editable, targetBox, '-bottom', '1px solid red')
+                        this.setStyle(editable, targetBox, '-bottom', '1px solid #ef5350')
                     }
                 }
             } else {
