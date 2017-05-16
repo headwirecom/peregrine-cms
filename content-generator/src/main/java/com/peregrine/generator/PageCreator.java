@@ -11,6 +11,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -20,6 +22,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by headwire on 5/11/2017.
  */
 public class PageCreator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PageCreator.class);
 
     private String encodedCredentials;
     private String host;
@@ -49,9 +53,9 @@ public class PageCreator {
         lorem = LoremIpsum.getInstance();
     }
 
-    public void createPage(String path, String title) throws Exception
+    public String createPage(String path, String title) throws Exception
     {
-        System.out.println("Creating page at " + path);
+        LOG.trace("Creating page at {}", path);
         String url = host + path;
         HttpPost httpPost = createPost(url,
                 new BasicNameValuePair("jcr:primaryType", "per:Page"));
@@ -60,13 +64,14 @@ public class PageCreator {
             int statusCode = consumeResponse(response);
             if(statusCode == 201)
             {
-                System.out.println("Successfully created page at " + path);
+                LOG.trace("Successfully created page at {}", path);
                 createContentNode(path + "/jcr:content", title);
+                return path;
             }
             else
             {
-                System.out.println("Failed to create page at " + path);
-                System.out.println(statusCode);
+                LOG.error("Failed to create page at {} : status code {}", path, statusCode);
+                throw new RuntimeException();
             }
         }
         finally {
@@ -76,7 +81,7 @@ public class PageCreator {
 
     private void createContentNode(String path, String title) throws Exception
     {
-        System.out.println("Creating content node at " + path);
+        LOG.trace("Creating content node at {}", path);
         String url = host + path;
         List<NameValuePair> formParams = new ArrayList<NameValuePair>();
         formParams.add(new BasicNameValuePair("jcr:primaryType", "per:PageContent"));
@@ -92,13 +97,12 @@ public class PageCreator {
             int statusCode = consumeResponse(response);
             if(statusCode == 201)
             {
-                System.out.println("Successfully created content node at " + path);
+                LOG.trace("Successfully created content node at {}", path);
                 createContainer(path + "/content");
             }
             else
             {
-                System.out.println("Failed to create content node at " + path);
-                System.out.println(statusCode);
+                LOG.error("Failed to create content node at {} : status code {}", path, statusCode);
             }
         }
         finally {
@@ -109,7 +113,7 @@ public class PageCreator {
 
     public void createContainer(String path) throws Exception
     {
-        System.out.println("Creating container node at " + path);
+        LOG.trace("Creating container node at {}", path);
         String url = host + path;
         HttpPost httpPost = createPost(url,
                 new BasicNameValuePair("jcr:primaryType", "nt:unstructured"),
@@ -119,13 +123,12 @@ public class PageCreator {
             int statusCode = consumeResponse(response);
             if(statusCode == 201)
             {
-                System.out.println("Successfully created container node at " + path);
+                LOG.trace("Successfully created container node at {}", path);
                 fillPageWithContent(path);
             }
             else
             {
-                System.out.println("Failed to create container node at " + path);
-                System.out.println(statusCode);
+                LOG.error("Failed to create container node at {} : status code {}", path, statusCode);
             }
         }
         finally {
@@ -135,7 +138,7 @@ public class PageCreator {
 
     public void fillPageWithContent(String path) throws Exception
     {
-        System.out.println("Filling page with content at " + path);
+        LOG.trace("Filling page with content at {}", path);
         int rowCount = ThreadLocalRandom.current().nextInt(1, 6);
         for(int i = 1; i <= rowCount; i++)
         {
@@ -145,6 +148,7 @@ public class PageCreator {
 
     public void createRow(String path) throws Exception
     {
+        LOG.trace("Creating row node at {}", path);
         String url = host + path;
         HttpPost httpPost = createPost(url,
                 new BasicNameValuePair("jcr:primaryType", "nt:unstructured"),
@@ -154,7 +158,7 @@ public class PageCreator {
             int statusCode = consumeResponse(response);
             if(statusCode == 201)
             {
-                System.out.println("Successfully created row at " + path);
+                LOG.trace("Successfully created row at {}", path);
                 int columnCount = columnCountOptions.get(ThreadLocalRandom.current().nextInt(0, columnCountOptions.size()));
                 for(int i = 1; i <= columnCount; i++)
                 {
@@ -163,8 +167,7 @@ public class PageCreator {
             }
             else
             {
-                System.out.println("Failed to create row at " + path);
-                System.out.println(statusCode);
+                LOG.error("Failed to create row at {} : status code {}", path, statusCode);
             }
         }
         finally {
@@ -174,6 +177,7 @@ public class PageCreator {
 
     public void createColumn(String path, String colClass) throws Exception
     {
+        LOG.trace("Creating column node at {}", path);
         String url = host + path;
         HttpPost httpPost = createPost(url,
                 new BasicNameValuePair("jcr:primaryType", "nt:unstructured"),
@@ -184,7 +188,7 @@ public class PageCreator {
             int statusCode = consumeResponse(response);
             if(statusCode == 201)
             {
-                System.out.println("Successfully created column at " + path);
+                LOG.trace("Successfully created column at {}", path);
                 int paragraphCount = ThreadLocalRandom.current().nextInt(1, 6);
                 for(int i = 1; i <= paragraphCount; i++)
                 {
@@ -193,8 +197,7 @@ public class PageCreator {
             }
             else
             {
-                System.out.println("Failed to create column at " + path);
-                System.out.println(statusCode);
+                LOG.error("Failed to create column at {} : status code {}", path, statusCode);
             }
         }
         finally {
@@ -204,6 +207,7 @@ public class PageCreator {
 
     public void createText(String path) throws Exception
     {
+        LOG.trace("Creating text node at {}", path);
         String url = host + path;
         String text = lorem.getWords(100, 300);
         HttpPost httpPost = createPost(url,
@@ -215,12 +219,11 @@ public class PageCreator {
             int statusCode = consumeResponse(response);
             if(statusCode == 201)
             {
-                System.out.println("Successfully created text at " + path);
+                LOG.trace("Successfully created text at {}", path);
             }
             else
             {
-                System.out.println("Failed to create text at " + path);
-                System.out.println(statusCode);
+                LOG.error("Failed to create text at {} : statusCode {}", path, statusCode);
             }
         }
         finally {
@@ -228,7 +231,7 @@ public class PageCreator {
         }
     }
 
-    public int consumeResponse(HttpResponse response) throws Exception
+    public static int consumeResponse(HttpResponse response) throws Exception
     {
         HttpEntity responseEntity = response.getEntity();
         StatusLine statusLine = response.getStatusLine();
