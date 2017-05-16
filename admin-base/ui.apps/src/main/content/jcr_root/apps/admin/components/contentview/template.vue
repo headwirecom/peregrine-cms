@@ -11,7 +11,7 @@
             v-on:drop     = "drop">
             <div id="editable"
                  draggable     = "true"
-                 v-on:dragstart= "dragStart"></div>
+                 v-on:dragstart= "dragStart"><div style="position: absolute; right: 0px; bottom: 0px; background-color: #d4d4d4;"><a href="#" v-on:click.stop.prevent="onDelete"><i class="material-icons">delete</i></a></div></div>
         </div>
         <iframe
             ref          = "editview"
@@ -205,6 +205,12 @@ export default {
                 $perAdminApp.stateAction('moveComponentToPath', { pagePath : view.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentFrom, drop: this.dropPosition})
             }
 
+        },
+
+        onDelete: function(e) {
+            var targetEl = this.getTargetEl(e)
+            var view = $perAdminApp.getView()
+            $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: targetEl.getAttribute('data-per-path') } )
         }
     }
 }
