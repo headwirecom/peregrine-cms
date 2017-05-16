@@ -68,6 +68,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
     log.fine('first time', firstTime)
     getPerView().page = data;
+    getPerView().path = path.slice(0, path.indexOf('.html'));
     getPerView().status = 'loaded';
     if(firstTime) {
         initPeregrineApp();

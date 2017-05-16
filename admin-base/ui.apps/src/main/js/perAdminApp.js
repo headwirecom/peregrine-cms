@@ -256,6 +256,12 @@ function pathBrowserImpl(root, cb) {
     })
 }
 
+function isPreviewModeImpl() {
+    let mode = getNodeFromOrNullImpl(view, '/state/tools/workspace/view')
+    if(mode == null) return false
+    return mode === 'preview'
+}
+
 var PerAdminApp = {
 
     init(perAdminAppView) {
@@ -327,6 +333,10 @@ var PerAdminApp = {
 
     pathBrowser(rootPath, cb) {
         pathBrowserImpl(rootPath, cb)
+    },
+
+    isPreviewMode() {
+        return isPreviewModeImpl()
     }
 
 }
