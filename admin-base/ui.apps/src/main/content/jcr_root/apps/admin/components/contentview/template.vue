@@ -13,7 +13,8 @@
                  draggable     = "true"
                  v-on:dragstart= "dragStart"></div>
         </div>
-        <iframe 
+        <iframe
+            ref          = "editview"
             id           = "editview" 
             v-bind:src   = "pagePath" 
             frameborder  = "0"></iframe>
@@ -87,7 +88,7 @@ export default {
         },
 
         getPosFromMouse: function(e) {
-            var elRect = this.$el.getBoundingClientRect()
+            var elRect = this.$refs.editview.getBoundingClientRect()
 
             var posX = e.clientX - elRect.left
             var posY = e.clientY - elRect.top

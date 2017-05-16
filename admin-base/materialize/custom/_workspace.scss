@@ -28,19 +28,27 @@
 		&.mobile {
 			#editviewoverlay {
 				width: 320px;
+                z-index: 1;
+                left: calc(50% - 160px);
 			}
 			#editview {
 				width: 320px;
 				box-shadow: 0 10px 10px rgba(0,0,0,.75);
+                left: calc(50% - 160px);
+                position: absolute;
 			}
 		}
 		&.tablet {
 			#editviewoverlay {
 				width: 768px;
+                z-index: 1;
+                left: calc(50% - 384px);
 			}
 			#editview {
 				width: 768px;
 				box-shadow: 0 10px 10px rgba(0,0,0,.75);
+                left: calc(50% - 384px);
+                position: absolute;
 			}
 		}
 		&.desktop {
