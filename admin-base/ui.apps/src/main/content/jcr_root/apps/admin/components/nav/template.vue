@@ -12,7 +12,7 @@
         &raquo; {{ vueRoot.adminPage.title}}
       </div>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li>{{this.$root.$data.state.user}}</li>
+          <li><a href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>
       </ul>
     </div>
     <template v-for="child in model.children">
