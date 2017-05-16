@@ -48,10 +48,7 @@ public class CreateTemplateServlet extends SlingSafeMethodsServlet {
         Map<String, String> params = convertSuffixToParams(request);
         String parentPath = params.get("path");
         log.debug(params.toString());
-
-        ResourceResolver rr = request.getResourceResolver();
-        Resource parent = rr.getResource(params.get("parentPath"));
-
+        
         Session session = request.getResourceResolver().adaptTo(Session.class);
         try {
             Node node = session.getRootNode().addNode(parentPath.substring(1)+"/"+params.get("name"));

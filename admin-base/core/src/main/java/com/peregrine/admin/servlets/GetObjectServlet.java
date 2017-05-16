@@ -41,8 +41,8 @@ public class GetObjectServlet extends SlingSafeMethodsServlet {
         String suffix = request.getRequestPathInfo().getSuffix();
 
         Resource res = request.getResourceResolver().getResource(suffix);
-        RequestDispatcherOptions rdOtions = new RequestDispatcherOptions();
-        request.getRequestDispatcher(res, rdOtions).forward(request, response);
+        RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
+        request.getRequestDispatcher(res, rdOptions).forward(request, response);
 
     }
 
