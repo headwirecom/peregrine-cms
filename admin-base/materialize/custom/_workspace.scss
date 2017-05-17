@@ -22,31 +22,28 @@
 					position: absolute; 
 					right: -1px; 
 					bottom: -1px; 
-					left: 50%;
 					background-color: $blue-gray-darken-3;
 					pointer-events: auto;
 					height: 25px;
 					text-align: center;
 					box-shadow: 0 10px 10px rgba(0,0,0,.5);
 					ul {
-						display: flex;
+						display: inline-block;
 						width: 100%;
 						height: 100%;
 						margin: 0;
 						padding: 0;
 						li {
-							flex: 1;
 							display: inline-block;
 							height: 100%;
-
+							border-right: 1px solid $blue-gray-darken-4;
+							border-left: 1px solid $blue-gray-darken-2;
 							> a {
 								display: inline-block;
 								height: 100%;
-								width: 100%;
+								width: auto;
 								color: #fff;
-								padding-top: 2px;
-								border-right: 1px solid $blue-gray-darken-4;
-								border-left: 1px solid $blue-gray-darken-2;
+								padding: 2px 10px 0;
 								.svg-icon {
 									width: 21px;
 									height: 21px;
@@ -56,14 +53,10 @@
 								}
 							}
 							&:first-child {
-								> a {
-									border-left: none;
-								}
+								border-left: none;
 							}
 							&:last-child {
-								> a {
-									border-right: none;
-								}
+								border-right: none;
 							}
 						}
 					}
