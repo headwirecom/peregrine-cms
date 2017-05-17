@@ -1,9 +1,6 @@
 package com.peregrine.generator;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
@@ -44,115 +41,90 @@ public class App
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
 
-        String hostname = cmd.hasOption("h") ? cmd.getOptionValue("h") : DEFAULT_HOSTNAME;
-        String port = cmd.hasOption("p") ? cmd.getOptionValue("p") : DEFAULT_PORT;
-        String username = cmd.hasOption("U") ? cmd.getOptionValue("U") : DEFAULT_USERNAME;
-        String password = cmd.hasOption("P") ? cmd.getOptionValue("P") : DEFAULT_PASSWORD;
+        if(args.length == 0) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("generator", options);
+        }
+        else {
+
+            String hostname = cmd.hasOption("h") ? cmd.getOptionValue("h") : DEFAULT_HOSTNAME;
+            String port = cmd.hasOption("p") ? cmd.getOptionValue("p") : DEFAULT_PORT;
+            String username = cmd.hasOption("U") ? cmd.getOptionValue("U") : DEFAULT_USERNAME;
+            String password = cmd.hasOption("P") ? cmd.getOptionValue("P") : DEFAULT_PASSWORD;
 
 
-        int pagecount;
-        if(cmd.hasOption("c"))
-        {
-            String pagecountString = cmd.getOptionValue("c");
-            try
-            {
-                pagecount = Integer.parseInt(pagecountString);
-            }
-            catch(Exception e)
-            {
+            int pagecount;
+            if (cmd.hasOption("c")) {
+                String pagecountString = cmd.getOptionValue("c");
+                try {
+                    pagecount = Integer.parseInt(pagecountString);
+                } catch (Exception e) {
+                    pagecount = DEFAULT_PAGECOUNT;
+                }
+            } else {
                 pagecount = DEFAULT_PAGECOUNT;
             }
-        }
-        else
-        {
-            pagecount = DEFAULT_PAGECOUNT;
-        }
 
-        int imagecount;
-        if(cmd.hasOption("C"))
-        {
-            String imagecountString = cmd.getOptionValue("C");
-            try
-            {
-                imagecount = Integer.parseInt(imagecountString);
-            }
-            catch(Exception e)
-            {
+            int imagecount;
+            if (cmd.hasOption("C")) {
+                String imagecountString = cmd.getOptionValue("C");
+                try {
+                    imagecount = Integer.parseInt(imagecountString);
+                } catch (Exception e) {
+                    imagecount = DEFAULT_IMAGECOUNT;
+                }
+            } else {
                 imagecount = DEFAULT_IMAGECOUNT;
             }
-        }
-        else
-        {
-            imagecount = DEFAULT_IMAGECOUNT;
-        }
 
-        int foldercount;
-        if(cmd.hasOption("f"))
-        {
-            String foldercountString = cmd.getOptionValue("f");
-            try
-            {
-                foldercount = Integer.parseInt(foldercountString);
-            }
-            catch(Exception e)
-            {
+            int foldercount;
+            if (cmd.hasOption("f")) {
+                String foldercountString = cmd.getOptionValue("f");
+                try {
+                    foldercount = Integer.parseInt(foldercountString);
+                } catch (Exception e) {
+                    foldercount = DEFAULT_FOLDERCOUNT;
+                }
+            } else {
                 foldercount = DEFAULT_FOLDERCOUNT;
             }
-        }
-        else
-        {
-            foldercount = DEFAULT_FOLDERCOUNT;
-        }
 
-        int pagedepth;
-        if(cmd.hasOption("d"))
-        {
-            String pagedepthString = cmd.getOptionValue("d");
-            try
-            {
-                pagedepth = Integer.parseInt(pagedepthString);
-            }
-            catch (Exception e)
-            {
+            int pagedepth;
+            if (cmd.hasOption("d")) {
+                String pagedepthString = cmd.getOptionValue("d");
+                try {
+                    pagedepth = Integer.parseInt(pagedepthString);
+                } catch (Exception e) {
+                    pagedepth = DEFAULT_PAGEDEPTH;
+                }
+            } else {
                 pagedepth = DEFAULT_PAGEDEPTH;
             }
-        }
-        else
-        {
-            pagedepth = DEFAULT_PAGEDEPTH;
-        }
 
-        int imagedepth;
-        if(cmd.hasOption("D"))
-        {
-            String imagedepthString = cmd.getOptionValue("D");
-            try
-            {
-                imagedepth = Integer.parseInt(imagedepthString);
-            }
-            catch (Exception e)
-            {
+            int imagedepth;
+            if (cmd.hasOption("D")) {
+                String imagedepthString = cmd.getOptionValue("D");
+                try {
+                    imagedepth = Integer.parseInt(imagedepthString);
+                } catch (Exception e) {
+                    imagedepth = DEFAULT_IMAGEDEPTH;
+                }
+            } else {
                 imagedepth = DEFAULT_IMAGEDEPTH;
             }
-        }
-        else
-        {
-            imagedepth = DEFAULT_IMAGEDEPTH;
-        }
 
-        String encodedCredentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-        String host = "http://" + hostname + ":" + port;
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+            String encodedCredentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+            String host = "http://" + hostname + ":" + port;
+            CloseableHttpClient httpClient = HttpClients.createDefault();
 
-        try
-        {
-            PageCreator pageCreator = new PageCreator(encodedCredentials, host, httpClient);
-            ImageCreator imageCreator = new ImageCreator(encodedCredentials, host, httpClient);
-            long now = System.currentTimeMillis();
-            String basePath = "/content/sites/example/generated-" + now;
-            String rootPagePath = pageCreator.createPage(basePath, "Generated Content " + (new Date(now)).toString());
+            try {
+                PageCreator pageCreator = new PageCreator(encodedCredentials, host, httpClient);
+                ImageCreator imageCreator = new ImageCreator(encodedCredentials, host, httpClient);
+                long now = System.currentTimeMillis();
+                String basePath = "/content/sites/example/generated-" + now;
+                String rootPagePath = pageCreator.createPage(basePath, "Generated Content " + (new Date(now)).toString());
 
-            createPages(rootPagePath, pagecount, pagedepth, pageCreator);
+                createPages(rootPagePath, pagecount, pagedepth, pageCreator);
 
 //            basePath += "/autopage";
 //
@@ -164,40 +136,34 @@ public class App
 //            }
 
 
+                String baseAssetPath = "/content/assets";
+                String generatedRootFolderName = "generated-" + now;
 
+                String rootFolderPath = imageCreator.createFolder(baseAssetPath, generatedRootFolderName);
+                List<String> folderPaths = createFolders(rootFolderPath, foldercount, imagedepth, imageCreator);
+                List<String> imagePaths = new ArrayList<String>();
 
-            String baseAssetPath = "/content/assets";
-            String generatedRootFolderName = "generated-" + now;
+                for (int i = 0; i < imagecount; i++) {
+                    String folderPath = folderPaths.get(ThreadLocalRandom.current().nextInt(0, folderPaths.size()));
+                    imagePaths.add(imageCreator.createImage(folderPath, "image-" + i + ".png"));
+                }
 
-            String rootFolderPath = imageCreator.createFolder(baseAssetPath, generatedRootFolderName);
-            List<String> folderPaths = createFolders(rootFolderPath, foldercount, imagedepth, imageCreator);
-            List<String> imagePaths = new ArrayList<String>();
-
-            for(int i = 0; i < imagecount; i++)
-            {
-                String folderPath = folderPaths.get(ThreadLocalRandom.current().nextInt(0, folderPaths.size()));
-                imagePaths.add(imageCreator.createImage(folderPath, "image-" + i + ".png"));
-            }
-
-            List<String> columnPaths = pageCreator.getColumnPaths();
-            if(columnPaths != null && !columnPaths.isEmpty())
-            {
-                if(!imagePaths.isEmpty())
-                {
-                    for(int i = 0; i < imagePaths.size(); i++)
-                    {
-                        String columnPath = columnPaths.get(ThreadLocalRandom.current().nextInt(0, columnPaths.size()));
-                        String imageComponentPath = columnPath + "/image" + i;
-                        String title = "Generated Image Component " + i;
-                        String captipon = "Image #" + i;
-                        pageCreator.createImageComponent(imageComponentPath, imagePaths.get(i), title, captipon);
+                List<String> columnPaths = pageCreator.getColumnPaths();
+                if (columnPaths != null && !columnPaths.isEmpty()) {
+                    if (!imagePaths.isEmpty()) {
+                        for (int i = 0; i < imagePaths.size(); i++) {
+                            String columnPath = columnPaths.get(ThreadLocalRandom.current().nextInt(0, columnPaths.size()));
+                            String imageComponentPath = columnPath + "/image" + i;
+                            String title = "Generated Image Component " + i;
+                            String captipon = "Image #" + i;
+                            pageCreator.createImageComponent(imageComponentPath, imagePaths.get(i), title, captipon);
+                        }
                     }
                 }
-            }
 
-        }
-        finally {
-            httpClient.close();
+            } finally {
+                httpClient.close();
+            }
         }
     }
 

@@ -62,20 +62,34 @@ public class ImageCreator {
         }
     }
 
+    private double getVal(int x, int y, double stepX, double stepY) {
+        return ((Math.sin(stepX * x + stepY * y) + 1) +  (Math.cos(stepX * y + stepY * x) + 1)) * 64;
+    }
+
     public File generateImage(String filename) throws Exception
     {
-        int width = 200;
-        int height = 200;
+        int width = 100 + (int) (Math.random() * 924.);
+        int height = 100 + (int) (Math.random() * 924.);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        double stepRX = Math.random()/100.;
+        double stepRY = Math.random()/100.;
+        double stepGX = Math.random()/100.;
+        double stepGY = Math.random()/100.;
+        double stepBX = Math.random()/100.;
+        double stepBY = Math.random()/100.;
+        double stepAX = Math.random()/100.;
+        double stepAY = Math.random()/100.;
 
         for(int y = 0; y < height; y++)
         {
             for(int x = 0; x < width; x++)
             {
-                int a = (int)(Math.random()*256); //alpha
-                int r = (int)(Math.random()*256); //red
-                int g = (int)(Math.random()*256); //green
-                int b = (int)(Math.random()*256); //blue
+//                int a = (int)(getVal(x,y,stepAX, stepAY)); //alpha
+                int a = 255; //alpha
+                int r = (int)(getVal(x,y,stepRX, stepRY)); //red
+                int g = (int)(getVal(x,y,stepGX, stepGY)); //green
+                int b = (int)(getVal(x,y,stepBX, stepBY)); //blue
 
                 int p = (a<<24) | (r<<16) | (g<<8) | b; //pixel
 
@@ -108,6 +122,7 @@ public class ImageCreator {
             if(statusCode == 200)
             {
                 LOG.trace("Successfully created image at {}/{}", path, filename);
+                f.delete();
                 return path + "/" + filename;
             }
             else
