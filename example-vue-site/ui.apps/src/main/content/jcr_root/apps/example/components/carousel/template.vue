@@ -37,7 +37,9 @@
                     if(!model.children) {
                         window.parent.$perAdminApp.getApp().$set(model, 'children', [])
                     }
-                    window.parent.$perAdminApp.getApp().$set(model.children, model.children.length, { name: 'child'+model.children.length})
+//                    model.children.push( { name: 'child'+(model.children.length+1)} )
+                    window.parent.$perAdminApp.getApp().$set(model.children, model.children.length, { } )
+                    window.parent.$perAdminApp.getApp().$set(model.children[model.children.length -1], 'name', 'child'+(model.children.length))
                 }
                 form.fields[0].buttons[1].onclick = function(model) {
                     window.parent.$perAdminApp.getApp().$set(model, 'children', model.children.slice(1))
