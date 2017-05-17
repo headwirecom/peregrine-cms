@@ -326,6 +326,21 @@ class PerAdminImpl {
         })
     }
 
+    insertNodeWithDataAt(path, data, drop) {
+        logger.debug(arguments)
+        return new Promise( (resolve, reject) => {
+
+            let postData = new FormData();
+
+            postData.append('content', JSON.stringify(data))
+
+            axios.post('/api/admin/insertNodeAt.json/path//'+path+'//drop//'+drop, postData)
+                .then( (result) => {
+                    resolve(result.data)
+                })
+        })
+    }
+
     moveNodeTo(path, component, drop) {
         logger.debug(arguments)
         return new Promise( (resolve, reject) => {

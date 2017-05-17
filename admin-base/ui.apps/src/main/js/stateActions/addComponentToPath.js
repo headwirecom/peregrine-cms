@@ -10,7 +10,7 @@ export default function(me, target) {
     let view = me.getView()
 
     // resolve path to component name
-    let componentName = target.component.split('/').slice(2).join('-')
+    let componentName = target.component ? target.component.split('/').slice(2).join('-') : target.data.component
     log.fine('load',componentName, 'into edit view (make sure it is available')
     document.getElementById('editview').contentWindow.$peregrineApp.loadComponent(componentName)
 
@@ -27,17 +27,31 @@ export default function(me, target) {
         log.error('addComponentToPath() target.drop not in allowed values - value was', target.drop)
     }
     if(targetNode) {
-        me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
-            .then( (data) => {
-                if(target.drop === 'into') {
-                    Vue.set(targetNodeUpdate, 'children', data.children)
-                }
-                else if(target.drop === 'before' || target.drop === 'after')
-                {
-                    Vue.set(targetNodeUpdate, 'children', data.children)
-                }
-                log.fine(data)
-            })
+        if(target.component) {
+            me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
+                .then( (data) => {
+                    if(target.drop === 'into') {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    else if(target.drop === 'before' || target.drop === 'after')
+                    {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    log.fine(data)
+                })
+        } else if(target.data) {
+            me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
+                .then( (data) => {
+                    if(target.drop === 'into') {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    else if(target.drop === 'before' || target.drop === 'after')
+                    {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    log.fine(data)
+                })
+        }
     }
 
     // me.getApi().savePageEdit(view.pageView.path, nodeToSave).then( () => {
