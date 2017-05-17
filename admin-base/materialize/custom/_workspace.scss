@@ -20,8 +20,8 @@
 				pointer-events: none;
 				.editable-actions {
 					position: absolute; 
-					right: 0px; 
-					bottom: 0px; 
+					right: -1px; 
+					bottom: -1px; 
 					left: 50%;
 					background-color: $blue-gray-darken-3;
 					pointer-events: auto;
