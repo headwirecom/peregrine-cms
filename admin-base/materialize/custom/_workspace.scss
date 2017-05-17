@@ -18,6 +18,52 @@
 				position: absolute; 
 				display: none;
 				pointer-events: none;
+				.editable-actions {
+					position: absolute; 
+					right: 0px; 
+					bottom: 0px; 
+					left: 50%;
+					background-color: $blue-gray-darken-3;
+					pointer-events: auto;
+					height: 30px;
+					text-align: center;
+					box-shadow: 0 10px 10px rgba(0,0,0,.5);
+					ul {
+						display: flex;
+						width: 100%;
+						height: 100%;
+						margin: 0;
+						padding: 0;
+						li {
+							flex: 1;
+							display: inline-block;
+							height: 100%;
+
+							> a {
+								display: inline-block;
+								height: 100%;
+								width: 100%;
+								padding-top: 3px;
+								color: #fff;
+								border-right: 1px solid $blue-gray-darken-4;
+								border-left: 1px solid $blue-gray-darken-2;
+								.svg-icon {
+
+								}
+							}
+							&:first-child {
+								> a {
+									border-left: none;
+								}
+							}
+							&:last-child {
+								> a {
+									border-right: none;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		#editview {
