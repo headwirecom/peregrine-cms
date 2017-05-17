@@ -171,12 +171,28 @@ public class App
 
             String rootFolderPath = imageCreator.createFolder(baseAssetPath, generatedRootFolderName);
             List<String> folderPaths = createFolders(rootFolderPath, foldercount, imagedepth, imageCreator);
-
+            List<String> imagePaths = new ArrayList<String>();
 
             for(int i = 0; i < imagecount; i++)
             {
                 String folderPath = folderPaths.get(ThreadLocalRandom.current().nextInt(0, folderPaths.size()));
-                imageCreator.createImage(folderPath, "image-" + i + ".png");
+                imagePaths.add(imageCreator.createImage(folderPath, "image-" + i + ".png"));
+            }
+
+            List<String> columnPaths = pageCreator.getColumnPaths();
+            if(columnPaths != null && !columnPaths.isEmpty())
+            {
+                if(!imagePaths.isEmpty())
+                {
+                    for(int i = 0; i < imagePaths.size(); i++)
+                    {
+                        String columnPath = columnPaths.get(ThreadLocalRandom.current().nextInt(0, columnPaths.size()));
+                        String imageComponentPath = columnPath + "/image" + i;
+                        String title = "Generated Image Component " + i;
+                        String captipon = "Image #" + i;
+                        pageCreator.createImageComponent(imageComponentPath, imagePaths.get(i), title, captipon);
+                    }
+                }
             }
 
         }

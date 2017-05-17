@@ -29,6 +29,12 @@ public class PageCreator {
     private String host;
     private CloseableHttpClient httpClient;
 
+    public List<String> getColumnPaths() {
+        return Collections.unmodifiableList(columnPaths);
+    }
+
+    private List<String> columnPaths;
+
     private List<Integer> columnCountOptions;
     private Map<Integer, String> columnSizeMap;
 
@@ -51,6 +57,8 @@ public class PageCreator {
         columnCountOptions = new ArrayList<>(columnSizeMap.keySet());
 
         lorem = LoremIpsum.getInstance();
+
+        columnPaths = new ArrayList<>();
     }
 
     public String createPage(String path, String title) throws Exception
@@ -194,6 +202,7 @@ public class PageCreator {
                 {
                     createText(path + "/text" + i);
                 }
+                columnPaths.add(path);
             }
             else
             {
@@ -224,6 +233,33 @@ public class PageCreator {
             else
             {
                 LOG.error("Failed to create text at {} : statusCode {}", path, statusCode);
+            }
+        }
+        finally {
+            response.close();
+        }
+    }
+
+    public void createImageComponent(String path, String imagePath, String title, String caption) throws Exception
+    {
+        LOG.trace("Creating image component node at {}", path);
+        String url = host + path;
+        HttpPost httpPost = createPost(url,
+                new BasicNameValuePair("jcr:primaryType", "nt:unstructured"),
+                new BasicNameValuePair("sling:resourceType", "example/components/image"),
+                new BasicNameValuePair("imagePath", imagePath),
+                new BasicNameValuePair("title", title),
+                new BasicNameValuePair("caption", caption));
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        try {
+            int statusCode = consumeResponse(response);
+            if(statusCode == 201)
+            {
+                LOG.trace("Successfully created image component at {}", path);
+            }
+            else
+            {
+                LOG.error("Failed to create image component at {} : statusCode {}", path, statusCode);
             }
         }
         finally {
