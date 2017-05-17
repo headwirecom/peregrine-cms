@@ -146,8 +146,10 @@ class PerAdminImpl {
             fetch('/admin/componentDefinition.json/path//'+path)
                 .then( (data) => {
                     name = data.name
-                    console.log(data.model.fields[0].buttons[0].onclick)
-                    eval('data.model.fields[0].buttons[0].onclick = '+data.model.fields[0].buttons[0].onclick)
+                    let component = callbacks.getComponentByName(name)
+                    if(component && component.methods && component.methods.augmentEditorSchema) {
+                        data.model = component.methods.augmentEditorSchema(data.model)
+                    }
                     populateView('/admin/componentDefinitions', data.name, data.model)
                 })
                 .then( () => resolve(name) )
@@ -262,13 +264,22 @@ class PerAdminImpl {
 
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
-            delete nodeData['children']
+
+            let component = callbacks.getComponentByName(nodeData.component)
+            if(component && component.methods && component.methods.beforeSave) {
+                nodeData = component.methods.beforeSave(nodeData)
+            } else {
+                delete nodeData['children']
+            }
             delete nodeData['path']
             delete nodeData['component']
+            nodeData['jcr:primaryType'] = 'nt:unstructured'
+            nodeData['sling:resourceType'] = node.component.split('-').join('/')
             let data = new FormData();
 
             data.append(':operation', 'import')
             data.append(':contentType', 'json')
+            data.append(':replace', 'true')
             data.append(':replaceProperties', 'true')
             data.append(':content', JSON.stringify(nodeData))
 

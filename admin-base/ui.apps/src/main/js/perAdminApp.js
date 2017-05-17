@@ -35,6 +35,14 @@ function loadComponentImpl(name) {
     }
 }
 
+function getComponentByNameImpl(name) {
+    var segments = name.split('-')
+    for(var i = 0; i < segments.length; i++) {
+        segments[i] = segments[i].charAt(0).toUpperCase() + segments[i].slice(1)
+    }
+    return window['cmp'+segments.join('')]
+}
+
 function loadData(source) {
     logger.fine('requesting to load data for', source)
     return api.populateByName(source)
@@ -293,6 +301,10 @@ var PerAdminApp = {
 
     loadComponent(name) {
         loadComponentImpl(name)
+    },
+
+    getComponentByName(name) {
+        return getComponentByNameImpl(name)
     },
 
     action(component, command, target) {

@@ -2,24 +2,23 @@
   "type": "select",
   "label": "Select a Sub Asset",
   "model": "selection",
-  "values": "fn:get:model.children",
   "buttons": [
     {
-      "classes": "btn", "label": "add", "onclick": "fn:add"
+      "classes": "btn", "label": "add"
     },{
-      "classes": "btn", "label": "del", "onclick": "fn:del"
+      "classes": "btn", "label": "del"
     }
   ]
 }, {
     "type": "input",
     "inputType": "text",
-    "visible": "fn:get:model.selection",
     "model": "selection.name"
-  }, {
-    "type": "input",
-    "inputType": "text",
-    "visible": "fn:get:model.selection",
-    "model": "selection.value"
-  }
+  },{
+  "type": "pathbrowser",
+  "label": "image",
+  "model": "selection.imagePath",
+  "browserRoot": "/content/assets",
+  "placeholder": "select path"
+}
   ]
 }
