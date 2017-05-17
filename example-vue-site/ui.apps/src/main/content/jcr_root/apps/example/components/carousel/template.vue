@@ -37,9 +37,13 @@
                     if(!model.children) {
                         window.parent.$perAdminApp.getApp().$set(model, 'children', [])
                     }
-                    model.children.push( { name: 'child'+(model.children.length+1)} )
-                    window.parent.$perAdminApp.getApp().$set(model, 'selection' , model.children[model.children.length -1])
+                    model.children.push( {
+                        name: 'child'+(model.children.length+1),
+                        'component': 'example-components-carousel-item',
+                        'path': model.path + '/child' + (model.children.length+1)
+                    } )
                     window.parent.$perAdminApp.getApp().$set(model, 'children', model.children.slice(0))
+//                    window.parent.$perAdminApp.getApp().$set(model, 'selection' , model.children[model.children.length -1])
                 }
                 form.fields[0].buttons[1].onclick = function(model) {
                     if(model.selection) {
