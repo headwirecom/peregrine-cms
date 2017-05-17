@@ -28,3 +28,22 @@
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0
 }
+
+.svg-icon {
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 1;
+  display: inline-block;
+  background-size: 75%;
+  background-position: center center;
+  background-repeat: no-repeat;
+	&.svg-icon-copy {
+		background-image: url(/etc/felibs/admin/images/icon-copy.svg)
+	}
+	&.svg-icon-paste {
+		background-image: url(/etc/felibs/admin/images/icon-paste.svg)
+	}
+}

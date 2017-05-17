@@ -3,17 +3,43 @@
         v-bind:class  ="`peregrine-content-view ${viewModeClass}`" 
         v-on:mouseout = "leftArea">
         <div 
-            id            = "editviewoverlay"
-            v-on:click    = "click"
-            v-on:mousewheel = "scrollEditViewOverlay"
-            v-on:mousemove= "mouseMove"
-            v-on:dragover = "dragOver"
-            v-on:drop     = "drop">
+            id             = "editviewoverlay"
+            v-on:click     = "click"
+            v-on:wheel     = "scrollEditViewOverlay"
+            v-on:mousemove = "mouseMove"
+            v-on:dragover  = "dragOver"
+            v-on:drop      = "drop">
             <div id="editable"
                  draggable     = "true"
-                 v-on:dragstart= "dragStart"><div style="position: absolute; right: 0px; bottom: 0px; background-color: #d4d4d4;"><a href="#" v-on:click.stop.prevent="onDelete"><i class="material-icons">delete</i></a></div></div>
+                 v-on:dragstart= "dragStart">
+                 <div class="editable-actions">
+                    <ul>
+                        <li class="waves-effect waves-light">
+                            <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
+                                <i class="svg-icon svg-icon-copy"></i>
+                            </a>
+                        </li>
+                        <li v-if="clipboard" class="waves-effect waves-light">
+                            <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
+                                <i class="svg-icon svg-icon-paste"></i>
+                            </a>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
+                                <i class="material-icons">delete</i>
+                            </a>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a href="#" title="drag" v-on:click.stop.prevent="allowEditableEvents">
+                                <i class="material-icons">drag_handle</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <iframe
+            v-on:load    = "setWheelEventListener"
             ref          = "editview"
             id           = "editview" 
             v-bind:src   = "pagePath" 
@@ -33,7 +59,8 @@ export default {
 
     data(){
         return {
-            selectedEl: null
+            selectedEl: null,
+            clipboard: null
         }
     },
 
@@ -61,7 +88,24 @@ export default {
                 return false
             }
         },
+
+        setWheelEventListener(ev){
+            ev.target.contentWindow.addEventListener('wheel', this.onEditViewScroll)
+        },
+
+        onEditViewScroll(ev){
+            var scrollTop = ev.target.scrollTop
+            console.log('onEditViewScroll: ', scrollTop)
+        },
+
+        allowEditableEvents(ev){
+            console.log('parent? ', ev.target.parent)
+            var editable = this.$el.children['editviewoverlay'].children['editable']
+            editable.style['pointer-events'] = 'auto'
+        },
+
         scrollEditViewOverlay(ev){
+            console.log('scrollEditViewOverlay')
             var timer = null
             if(this.selectedEl !== null){
                 var selectedElRect = this.selectedEl.getBoundingClientRect()
@@ -193,6 +237,7 @@ export default {
 
         drop: function(e) {
             var editable = this.$el.children['editviewoverlay'].children['editable']
+            editable.style['pointer-events'] = 'none'
             editable.style.display = 'none'
 
             var targetEl = this.getTargetEl(e)
@@ -210,7 +255,37 @@ export default {
         onDelete: function(e) {
             var targetEl = this.getTargetEl(e)
             var view = $perAdminApp.getView()
+            var pagePath = view.pageView.path
+            console.log('onDelete. pagePath:', pagePath)
+            console.log('onDelete. targetEl:', targetEl)
+            console.log('onDelete. view:', view)
             $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: targetEl.getAttribute('data-per-path') } )
+        },
+
+        onCopy: function(e) {
+            var targetEl = this.getTargetEl(e)
+            var targetCopy = targetEl.cloneNode(true)
+            var path = targetCopy.getAttribute('data-per-path')
+            targetCopy.setAttribute('data-per-path', path + '-1')
+            this.clipboard = targetCopy
+            console.log('onCopy (copied node):', targetCopy)
+        },
+
+        onPaste: function(e) {
+            var componentFromClipboard = this.clipboard
+            console.log('componentFromClipboard:', componentFromClipboard)
+            var view = $perAdminApp.getView()
+            /* do something with clipboard contents, then clear clipboard */
+            var payload = { 
+                pagePath: view.pageView.path, 
+                path: componentFromClipboard.getAttribute('data-per-path'), 
+                component: 'componentPath',
+                drop: 'this.dropPosition'
+            }
+            console.log('payload: ', payload)
+            /* uncomment when payload has been built properly */
+            // $perAdminApp.stateAction('addComponentToPath', payload)
+            this.clipboard = null
         }
     }
 }
