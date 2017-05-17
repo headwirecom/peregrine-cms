@@ -25,7 +25,7 @@
 					left: 50%;
 					background-color: $blue-gray-darken-3;
 					pointer-events: auto;
-					height: 30px;
+					height: 25px;
 					text-align: center;
 					box-shadow: 0 10px 10px rgba(0,0,0,.5);
 					ul {
@@ -43,12 +43,16 @@
 								display: inline-block;
 								height: 100%;
 								width: 100%;
-								padding-top: 3px;
 								color: #fff;
+								padding-top: 2px;
 								border-right: 1px solid $blue-gray-darken-4;
 								border-left: 1px solid $blue-gray-darken-2;
 								.svg-icon {
-
+									width: 21px;
+									height: 21px;
+								}
+								.material-icons {
+									font-size: 21px;
 								}
 							}
 							&:first-child {
