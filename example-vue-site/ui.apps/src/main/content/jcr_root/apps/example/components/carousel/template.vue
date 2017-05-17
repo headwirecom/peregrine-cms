@@ -5,10 +5,10 @@
         </ol>
         <div class="carousel-inner" role="listbox">
             <div v-for="(item, key) in model.children" class="carousel-item" v-bind:class="key === 0 ? 'active': ''">
-                <img class="d-block img-fluid" v-bind:src="item.imagePath" v-bind:alt="item.name">
-                <div class="carousel-caption d-none d-md-block">
-                    <h3>...</h3>
-                    <p>...</p>
+                <img class="d-block img-fluid" v-bind:src="item.imagePath" v-bind:alt="item.alt">
+                <div v-if="item.heading || item.text" class="carousel-caption d-none d-md-block">
+                    <h3 v-if="item.heading">{{item.heading}}</h3>
+                    <p v-if="item.text" v-html="item.text"></p>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
                     if(!model.children) {
                         window.parent.$perAdminApp.getApp().$set(model, 'children', [])
                     }
-                    window.parent.$perAdminApp.getApp().$set(model.children, model.children.length, { name: 'test', value: 'test'})
+                    window.parent.$perAdminApp.getApp().$set(model.children, model.children.length, { name: 'child'+model.children.length})
                 }
                 form.fields[0].buttons[1].onclick = function(model) {
                     window.parent.$perAdminApp.getApp().$set(model, 'children', model.children.slice(1))
@@ -51,11 +51,13 @@
                 }
                 form.fields[1].visible = function(model) { return model.selection}
                 form.fields[2].visible = function(model) { return model.selection}
+                form.fields[3].visible = function(model) { return model.selection}
+                form.fields[4].visible = function(model) { return model.selection}
+                form.fields[5].visible = function(model) { return model.selection}
                 return form
             },
             beforeSave(data) {
                 delete data.selection
-                console.log(JSON.stringify(data, true, 2))
                 while(data.children.length > 0) {
                     let name = data.children[0].name
                     if(data.children[0].path) {

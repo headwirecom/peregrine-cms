@@ -3,6 +3,8 @@
 import { LoggerFactory } from './logger'
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
+import { stripNulls} from './utils'
+
 const API_BASE = '/api'
 
 let callbacks
@@ -268,14 +270,16 @@ class PerAdminImpl {
             let component = callbacks.getComponentByName(nodeData.component)
             if(component && component.methods && component.methods.beforeSave) {
                 nodeData = component.methods.beforeSave(nodeData)
-            } else {
-                delete nodeData['children']
             }
+
+            delete nodeData['children']
             delete nodeData['path']
             delete nodeData['component']
             nodeData['jcr:primaryType'] = 'nt:unstructured'
             nodeData['sling:resourceType'] = node.component.split('-').join('/')
             let data = new FormData();
+
+            stripNulls(nodeData)
 
             data.append(':operation', 'import')
             data.append(':contentType', 'json')

@@ -20,6 +20,15 @@ public class CarouselItemModel extends AbstractComponent {
     @Inject
     private String name;
 
+    @Inject
+    private String alt;
+
+    @Inject
+    private String heading;
+
+    @Inject
+    private String text;
+
     @Inject @Default(values = "")
     private String imagePath;
 
@@ -35,4 +44,15 @@ public class CarouselItemModel extends AbstractComponent {
         return imagePath;
     }
 
+    public String getAlt() {
+        return alt;
+    }
+
+    public String getHeading() {
+        return heading;
+    }
+
+    public String getText() {
+        return text;
+    }
 }

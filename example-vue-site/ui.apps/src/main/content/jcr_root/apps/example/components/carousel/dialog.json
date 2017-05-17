@@ -12,13 +12,37 @@
 }, {
     "type": "input",
     "inputType": "text",
+    "label": "Name",
+    "placeholder": "enter name of item",
     "model": "selection.name"
   },{
   "type": "pathbrowser",
-  "label": "image",
+  "label": "Image",
   "model": "selection.imagePath",
   "browserRoot": "/content/assets",
   "placeholder": "select path"
-}
-  ]
+},
+  {
+    "type": "input",
+    "inputType": "text",
+    "label": "Alt Text",
+    "placeholder": "enter alt text for item",
+    "model": "selection.alt"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "label": "Heading",
+    "placeholder": "enter heading for item",
+    "model": "selection.heading"
+  },
+  {
+    "type": "texteditor",
+    "label": "Text",
+    "model": "selection.text",
+    "label": "Text",
+    "rows": 10,
+    "placeholder": "text"
+  }
+    ]
 }

@@ -102,3 +102,12 @@ export function parentPath(path) {
     logger.fine('parentPath() res:',ret)
     return ret
 }
+
+export function stripNulls(data) {
+    for(var key in data) {
+        if(data[key] === null) delete data[key]
+        if(typeof data[key] === 'object') {
+            stripNulls(data[key])
+        }
+    }
+}
