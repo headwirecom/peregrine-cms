@@ -40,6 +40,18 @@ public class ServletHelper {
         return sb.toString();
     }
 
+    public static String componentNameToPath(String name) {
+        String[] segments = name.split("-");
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < segments.length; i++) {
+            if(i != 0) {
+                sb.append("/");
+            }
+            sb.append(segments[i]);
+        }
+        return sb.toString();
+    }
+
     public static void echo(InputStream input, PrintWriter writer) throws IOException {
         char[] buffer = new char[1024];
         InputStreamReader reader = new InputStreamReader(input);

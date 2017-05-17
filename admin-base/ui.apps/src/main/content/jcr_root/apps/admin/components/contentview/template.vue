@@ -281,7 +281,7 @@ export default {
             var targetEl = this.getTargetEl(e)
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
             this.clipboard = node
-            console.log('copied node:', node)
+            // console.log('copied node:', node)
         },
 
         onPaste: function(e) {
@@ -291,24 +291,22 @@ export default {
             var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
             var dropPosition
             isDropTarget ? dropPosition = 'into' : dropPosition = 'after'
-            console.log('nodeFromClipboard:', nodeFromClipboard)
+            // console.log('nodeFromClipboard:', nodeFromClipboard)
             /* do something with clipboard contents, then clear clipboard */
             var payload = { 
                 // path to page
                 pagePath: view.pageView.path, 
                 // path to component
-                component: nodeFromClipboard.component,
-                // component data (is it always the text property?)
-                data: nodeFromClipboard.text,
+                // component: nodeFromClipboard.component,
+                // component data
+                data: nodeFromClipboard,
                 // path of component to paste after/into
                 path: targetEl.getAttribute('data-per-path'), 
                 // drop before, after or into
                 drop: dropPosition
             }
-            console.log('onPaste payload: ', payload)
+            // console.log('onPaste payload: ', payload)
             $perAdminApp.stateAction('addComponentToPath', payload)
-            /* clear clipboard */
-            this.clipboard = null
         }
     }
 }
