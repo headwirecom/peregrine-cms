@@ -153,6 +153,7 @@ public class InsertNodeAt extends SlingAllMethodsServlet {
         return res;
     }
 
+    // todo: needs deep clone
     private Node createNode(Node parent, Map data) throws RepositoryException {
         data.remove("path");
         String component = (String) data.remove("component");
