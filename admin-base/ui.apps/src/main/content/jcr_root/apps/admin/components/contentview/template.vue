@@ -127,7 +127,7 @@ export default {
             if(this.selectedEl !== null){
                 var targetBox = this.selectedEl.getBoundingClientRect()
                 var editable = this.$el.children['editviewoverlay'].children['editable']
-                this.setStyle(editable, targetBox, '', '1px solid #ef5350')
+                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
             }
         },
 
@@ -163,7 +163,7 @@ export default {
             if(targetEl) {
                 this.selectedEl = targetEl
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setStyle(editable, targetBox, '', '1px solid #ef5350')
+                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
                 $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
@@ -202,7 +202,7 @@ export default {
                     targetEl = targetEl.parentElement
                 }
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setStyle(editable, targetBox, '', '1px solid #ef5350')
+                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
             }
         },
 
@@ -217,15 +217,15 @@ export default {
 
                 if(isDropTarget) {
                     this.dropPosition = 'into'
-                    this.setStyle(editable, targetBox, '', '1px solid #ef5350')
+                    this.setStyle(editable, targetBox, '', '1px solid #607d8b')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
                         this.dropPosition = 'before'
-                        this.setStyle(editable, targetBox, '-top', '1px solid #ef5350')
+                        this.setStyle(editable, targetBox, '-top', '1px solid #607d8b')
                     } else {
                         this.dropPosition = 'after'
-                        this.setStyle(editable, targetBox, '-bottom', '1px solid #ef5350')
+                        this.setStyle(editable, targetBox, '-bottom', '1px solid #607d8b')
                     }
                 }
             } else {
@@ -244,11 +244,25 @@ export default {
             var componentPath = e.dataTransfer.getData('component')
             var componentFrom = e.dataTransfer.getData('componentFrom')
             var view = $perAdminApp.getView()
+            var payload
             if(componentPath) {
-                $perAdminApp.stateAction('addComponentToPath', { pagePath : view.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentPath, drop: this.dropPosition})
+                payload = { 
+                    pagePath : view.pageView.path, 
+                    path: targetEl.getAttribute('data-per-path'), 
+                    component: componentPath, 
+                    drop: this.dropPosition 
+                }
+                $perAdminApp.stateAction('addComponentToPath', payload)
             } else if(componentFrom) {
-                $perAdminApp.stateAction('moveComponentToPath', { pagePath : view.pageView.path, path: targetEl.getAttribute('data-per-path'), component: componentFrom, drop: this.dropPosition})
+                payload = { 
+                    pagePath : view.pageView.path, 
+                    path: targetEl.getAttribute('data-per-path'), 
+                    component: componentFrom, 
+                    drop: this.dropPosition
+                }
+                $perAdminApp.stateAction('moveComponentToPath', payload)
             }
+            console.log('onDrop payload: ', payload)
 
         },
 
@@ -256,35 +270,44 @@ export default {
             var targetEl = this.getTargetEl(e)
             var view = $perAdminApp.getView()
             var pagePath = view.pageView.path
-            console.log('onDelete. pagePath:', pagePath)
-            console.log('onDelete. targetEl:', targetEl)
-            console.log('onDelete. view:', view)
-            $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: targetEl.getAttribute('data-per-path') } )
+            var payload = { 
+                pagePath: view.pageView.path, 
+                path: targetEl.getAttribute('data-per-path') 
+            }
+            $perAdminApp.stateAction('deletePageNode',  payload)
         },
 
         onCopy: function(e) {
             var targetEl = this.getTargetEl(e)
-            var targetCopy = targetEl.cloneNode(true)
-            var path = targetCopy.getAttribute('data-per-path')
-            targetCopy.setAttribute('data-per-path', path + '-1')
-            this.clipboard = targetCopy
-            console.log('onCopy (copied node):', targetCopy)
+            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
+            this.clipboard = node
+            console.log('copied node:', node)
         },
 
         onPaste: function(e) {
-            var componentFromClipboard = this.clipboard
-            console.log('componentFromClipboard:', componentFromClipboard)
+            var targetEl = this.getTargetEl(e)
+            var nodeFromClipboard = this.clipboard
             var view = $perAdminApp.getView()
+            var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
+            var dropPosition
+            isDropTarget ? dropPosition = 'into' : dropPosition = 'after'
+            console.log('nodeFromClipboard:', nodeFromClipboard)
             /* do something with clipboard contents, then clear clipboard */
             var payload = { 
+                // path to page
                 pagePath: view.pageView.path, 
-                path: componentFromClipboard.getAttribute('data-per-path'), 
-                component: 'componentPath',
-                drop: 'this.dropPosition'
+                // path to component
+                component: nodeFromClipboard.component,
+                // component data (is it always the text property?)
+                data: nodeFromClipboard.text,
+                // path of component to paste after/into
+                path: targetEl.getAttribute('data-per-path'), 
+                // drop before, after or into
+                drop: dropPosition
             }
-            console.log('payload: ', payload)
-            /* uncomment when payload has been built properly */
-            // $perAdminApp.stateAction('addComponentToPath', payload)
+            console.log('onPaste payload: ', payload)
+            $perAdminApp.stateAction('addComponentToPath', payload)
+            /* clear clipboard */
             this.clipboard = null
         }
     }
