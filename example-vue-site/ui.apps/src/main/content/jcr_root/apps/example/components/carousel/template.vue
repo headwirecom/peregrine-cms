@@ -37,12 +37,25 @@
                     if(!model.children) {
                         window.parent.$perAdminApp.getApp().$set(model, 'children', [])
                     }
-//                    model.children.push( { name: 'child'+(model.children.length+1)} )
-                    window.parent.$perAdminApp.getApp().$set(model.children, model.children.length, { } )
-                    window.parent.$perAdminApp.getApp().$set(model.children[model.children.length -1], 'name', 'child'+(model.children.length))
+                    model.children.push( {
+                        name: 'child'+(model.children.length+1),
+                        'component': 'example-components-carousel-item',
+                        'path': model.path + '/child' + (model.children.length+1)
+                    } )
+                    window.parent.$perAdminApp.getApp().$set(model, 'children', model.children.slice(0))
+//                    window.parent.$perAdminApp.getApp().$set(model, 'selection' , model.children[model.children.length -1])
                 }
                 form.fields[0].buttons[1].onclick = function(model) {
-                    window.parent.$perAdminApp.getApp().$set(model, 'children', model.children.slice(1))
+                    if(model.selection) {
+                        for(let i = 0; i < model.children.length; i++) {
+                            if(model.selection.name === model.children[i].name) {
+                                model.children.splice(i, 1)
+                                window.parent.$perAdminApp.getApp().$set(model, 'children', model.children.slice(0))
+                                break;
+                            }
+                        }
+                    }
+                    window.parent.$perAdminApp.getApp().$set(model, 'children', model.children.slice(0))
                     model.selection = {}
                 }
                 form.fields[0].values = function(model, schema) {
