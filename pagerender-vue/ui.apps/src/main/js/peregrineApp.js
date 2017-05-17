@@ -44,7 +44,7 @@ function loadComponentImpl(name) {
             Vue.component(name, window[varName])
         }
         // if we are in edit mode push the component to the perAdminApp as well
-        if(window.parent.$perAdminApp) {
+        if(window.parent.$perAdminApp && !window.parent[varName]) {
             window.parent[varName] = window[varName]
         }
         loadedComponents[name] = true
