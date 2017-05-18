@@ -31,7 +31,7 @@
                             </a>
                         </li>
                         <li class="waves-effect waves-light">
-                            <a href="#" title="drag" v-on:click.stop.prevent="allowEditableEvents">
+                            <a href="#" title="drag" style="pointer-events: none;">
                                 <i class="material-icons">drag_handle</i>
                             </a>
                         </li>
@@ -79,6 +79,16 @@ export default {
         viewModeClass: function() {
             return this.viewMode
         }
+    },
+    watch: {
+        viewModeClass: function(mode) {
+            console.log('view mode changed')
+            if(this.selectedEl !== null){
+                var targetBox = this.selectedEl.getBoundingClientRect()
+                var editable = this.$el.children['editviewoverlay'].children['editable']
+                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
+            }
+        },
     },
     methods: {
         setScrollBarWidth(userAgent) {
@@ -135,11 +145,6 @@ export default {
                     editViewOverlay.style['pointer-events'] = 'auto'
                 }, 150)
             })
-        },
-
-        allowEditableEvents(ev){
-            var editable = this.$el.children['editviewoverlay'].children['editable']
-            editable.style['pointer-events'] = 'auto'
         },
 
         onResize: function(e){
@@ -255,7 +260,6 @@ export default {
 
         drop: function(e) {
             var editable = this.$el.children['editviewoverlay'].children['editable']
-            editable.style['pointer-events'] = 'none'
             editable.style.display = 'none'
 
             var targetEl = this.getTargetEl(e)
@@ -314,6 +318,28 @@ export default {
                 drop: dropPosition
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
+        },
+
+        onKeyboardCopyPaste(ev){
+            console.log('onKeyboardCopyPaste')
+            /* modify example */
+            // $(document).ready(function() {
+            //     var ctrlDown = false,
+            //         ctrlKey = 17,
+            //         cmdKey = 91,
+            //         vKey = 86,
+            //         cKey = 67;
+
+            //     $(document).keydown(function(e) {
+            //         if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
+            //     }).keyup(function(e) {
+            //         if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
+            //     });
+
+            //     $(".no-copy-paste").keydown(function(e) {
+            //         if (ctrlDown && (e.keyCode == vKey || e.keyCode == cKey)) return false;
+            //     });
+            // });
         }
     }
 }
