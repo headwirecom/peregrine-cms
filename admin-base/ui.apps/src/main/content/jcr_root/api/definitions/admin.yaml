@@ -1,0 +1,205 @@
+swagger: '2.0'
+info:
+  contact:
+    email: apiinfo@peregrine-cms.com
+    name: Api Information Team
+    url: 'https://api.peregrine-cms.com'
+  description: 'peregrine cms api'
+  license:
+    name: Apache-2.0
+  title: peregrine-cms-admin
+  version: '1.0'
+schemes:
+  - http
+basePath: /api/admin
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /access.json:
+    get:
+      responses:
+        '200':
+          description: returns the user id and if available the authentication type
+          schema:
+            type: object
+            required:
+              - userID
+            properties:
+              authType:
+                type: string
+              userID:
+                type: string
+  /componentDefinition.json:
+    get:
+      parameters:
+        - description: the name of the component we want to get information about
+          name: name
+          type: string
+          in: query
+        - description: the path to a content node to look up the corresponding component
+          name: path
+          type: string
+          in: query
+      responses:
+        '200':
+          description: get a component definition
+          schema:
+            type: object
+            properties:
+              path:
+                type: string
+              name:
+                type: string
+              schema:
+                type: object
+                properties:
+                  fields:
+                    type: object
+                    additionalProperties:
+                      type: string
+  '/content.json{path}':
+    get:
+      description: returns the content for the given path
+      parameters:
+        - description: the path to the content, for example /content/sites
+          name: path
+          type: string
+          in: path
+      responses:
+        '200':
+          description: returns all the content for the given node
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/getObject.json{path}':
+    get:
+      description: returns the content for the given object
+      parameters:
+        - description: the path to the content
+          name: path
+          type: string
+          in: path
+      responses:
+        '200':
+          description: returns all the content for the given node
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/createFolder.json/path//{path}//name//{name}':
+    get:
+      description: create a new folder in the system
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path where to create the new folder
+        - name: name
+          type: string
+          in: path
+          description: the name of the new folder
+      responses:
+        '200':
+          description: returns all the content for the given node
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/createObject.json/path//{path}//name//{name}//templatePath//{templatePath}':
+    get:
+      description: create a new object in the system
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path where to create the object
+        - name: name
+          type: string
+          in: path
+          description: the name of the new object
+        - name: templatePath
+          type: string
+          in: path
+          description: the path to the template of the object
+      responses:
+        '200':
+          description: returns all the content for the given node
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/createPage.json/path//{path}//name//{name}//templatePath//{templatePath}':
+    get:
+      description: create a new page in the system
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path where to create the page
+        - name: name
+          type: string
+          in: path
+          description: the name of the new page
+        - name: templatePath
+          type: string
+          in: path
+          description: the path to the template of the page
+      responses:
+        '200':
+          description: returns all the content for the given node
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/createTemplate.json/path//{path}//name//{name}':
+    get:
+      description: create a new template in the system
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path where to create the template
+        - name: name
+          type: string
+          in: path
+          description: the name of the new template
+      responses:
+        '200':
+          description: returns all the content for the given node
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/deleteNode.json/path//{path}':
+    get:
+      description: delete a node
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path to the node to delete
+      responses:
+        '200':
+          description: '-'
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/deletePage.json/path//{path}':
+    get:
+      description: delete a node
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path to the node to delete
+      responses:
+        '200':
+          description: '-'
+          schema:
+            type: object
+            additionalProperties:
+              type: object

@@ -78,8 +78,29 @@
         }
       }
     },
-    "/content": {
-
+    "/content.json/path//{path}": {
+      "get": {
+        "parameters": [ {
+          "description": "the path of the content",
+          "name": "path",
+          "type": "string",
+          "in": "path"
+        }
+        ]
+      },
+      "responses": {
+        "200": {
+          "description": "get a component definition",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     },
     "/createFolder": {
 

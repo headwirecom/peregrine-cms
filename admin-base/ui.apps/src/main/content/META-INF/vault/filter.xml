@@ -17,6 +17,8 @@
         folder otherwise they wipe all installed bundles.
     -->
     <filter root="/api/admin"/>
+    <filter root="/api/swaggereditor"/>
+    <filter root="/api/definitions"/>
     <filter root="/content/admin"/>
     <filter root="/etc/felibs/admin"/>
     <filter root="/content/templates">
