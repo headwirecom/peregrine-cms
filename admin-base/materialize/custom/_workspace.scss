@@ -14,6 +14,7 @@
 			position: absolute;
 			top: 0;
 			bottom: 0;
+			left: 0;
 			#editable {
 				position: absolute; 
 				display: none;
@@ -95,9 +96,6 @@
 			}
 		}
 		&.desktop {
-			#editviewoverlay {
-				width: 100%;
-			}
 			#editview {
 				width: 100%;
 			}
