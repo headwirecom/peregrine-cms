@@ -5,10 +5,11 @@
         <div 
             id             = "editviewoverlay"
             v-on:click     = "click"
-            v-on:wheel     = "scrollEditViewOverlay"
+            v-on:wheel     = "onEditViewOverlayScroll"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "dragOver"
-            v-on:drop      = "drop">
+            v-on:drop      = "drop"
+            v-bind:style   = "`right: ${scrollbarWidth}px;`">
             <div id="editable"
                  draggable     = "true"
                  v-on:dragstart= "dragStart">
@@ -52,6 +53,7 @@ export default {
     mounted() {
         this.$nextTick(function() {
           window.addEventListener('resize', this.onResize)
+          this.setScrollBarWidth(window.navigator.userAgent)
         })
     },
 
@@ -60,7 +62,8 @@ export default {
     data(){
         return {
             selectedEl: null,
-            clipboard: null
+            clipboard: null,
+            scrollbarWidth: 0
         }
     },
 
@@ -78,6 +81,22 @@ export default {
         }
     },
     methods: {
+        setScrollBarWidth(userAgent) {
+            switch(true) {
+                case (userAgent.indexOf('Edge') != -1):
+                    this.scrollbarWidth = 12
+                    break
+                case (userAgent.indexOf('Mac') != -1):
+                    this.scrollbarWidth = 15
+                    break
+                case (userAgent.indexOf('Win') != -1):
+                    this.scrollbarWidth = 17
+                    break
+                default:
+                    this.scrollbarWidth = 17
+            }
+        },
+
         dragStart(ev) {
             let element = this.getTargetEl(ev)
             if(element) {
@@ -91,36 +110,36 @@ export default {
 
         setWheelEventListener(ev){
             ev.target.contentWindow.addEventListener('wheel', this.onEditViewScroll)
+            ev.target.contentWindow.addEventListener('scroll', this.onEditViewScroll)
         },
 
         onEditViewScroll(ev){
-            var scrollTop = ev.target.scrollTop
-            console.log('onEditViewScroll: ', scrollTop)
+            this.$nextTick(function () {
+                if(this.selectedEl !== null){
+                    var selectedElRect = this.selectedEl.getBoundingClientRect()
+                    this.updateEditablePos(selectedElRect.top)
+                }
+            })
+        },
+
+        onEditViewOverlayScroll(ev){
+            this.$nextTick(function () {
+                var timer = null
+                var editViewOverlay = ev.target
+                editViewOverlay.style['pointer-events'] = 'none'
+                /* TODO: remove timeout by using custom method to detect when scrolling stops */
+                if(timer !== null) {
+                    clearTimeout(timer)        
+                }
+                timer = setTimeout(function() {
+                    editViewOverlay.style['pointer-events'] = 'auto'
+                }, 150)
+            })
         },
 
         allowEditableEvents(ev){
-            console.log('parent? ', ev.target.parent)
             var editable = this.$el.children['editviewoverlay'].children['editable']
             editable.style['pointer-events'] = 'auto'
-        },
-
-        scrollEditViewOverlay(ev){
-            console.log('scrollEditViewOverlay')
-            var timer = null
-            if(this.selectedEl !== null){
-                var selectedElRect = this.selectedEl.getBoundingClientRect()
-                this.updateEditablePos(selectedElRect.top)
-            }
-            var editViewOverlay = ev.target
-            editViewOverlay.style['pointer-events'] = 'none'
-            /* TODO: remove timeout by using custom method to detect when scrolling stops */
-            
-            if(timer !== null) {
-                clearTimeout(timer)        
-            }
-            timer = setTimeout(function() {
-                editViewOverlay.style['pointer-events'] = 'auto'
-            }, 10)
         },
 
         onResize: function(e){
@@ -144,7 +163,7 @@ export default {
 
             var pos = this.getPosFromMouse(e)
 
-            var editview = this.$el.children['editview']
+            var editview = this.$refs.editview
             var editable = this.$el.children['editviewoverlay'].children['editable']
 
             var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
@@ -152,7 +171,7 @@ export default {
 
             while(!targetEl.getAttribute('data-per-path')) {
                 targetEl = targetEl.parentElement
-                if(!targetEl) { break; }
+                if(!targetEl) { break }
             }
             return targetEl
         },
@@ -186,10 +205,9 @@ export default {
             editable.style['border'+name] = border
         },
 
-        updateEditablePos: function(top, left){
+        updateEditablePos: function(top){
             var editable = this.$el.children['editviewoverlay'].children['editable']
             editable.style.top = top + 'px'
-            editable.style.left = left + 'px'
         },
 
         mouseMove: function(e) {
@@ -262,7 +280,6 @@ export default {
                 }
                 $perAdminApp.stateAction('moveComponentToPath', payload)
             }
-            console.log('onDrop payload: ', payload)
 
         },
 
@@ -281,7 +298,6 @@ export default {
             var targetEl = this.getTargetEl(e)
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
             this.clipboard = node
-            // console.log('copied node:', node)
         },
 
         onPaste: function(e) {
@@ -291,21 +307,12 @@ export default {
             var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
             var dropPosition
             isDropTarget ? dropPosition = 'into' : dropPosition = 'after'
-            // console.log('nodeFromClipboard:', nodeFromClipboard)
-            /* do something with clipboard contents, then clear clipboard */
             var payload = { 
-                // path to page
                 pagePath: view.pageView.path, 
-                // path to component
-                // component: nodeFromClipboard.component,
-                // component data
                 data: nodeFromClipboard,
-                // path of component to paste after/into
                 path: targetEl.getAttribute('data-per-path'), 
-                // drop before, after or into
                 drop: dropPosition
             }
-            // console.log('onPaste payload: ', payload)
             $perAdminApp.stateAction('addComponentToPath', payload)
         }
     }
