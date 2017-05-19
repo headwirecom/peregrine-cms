@@ -17,4 +17,9 @@ nav {
 	  	}
   	}
   }
+  &.nav-extended {
+    height: 112px;
+    position: relative;
+    z-index: 1;
+  }
 }
