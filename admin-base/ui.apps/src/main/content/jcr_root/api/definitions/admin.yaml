@@ -203,3 +203,134 @@ paths:
             type: object
             additionalProperties:
               type: object
+  '/insertNodeAt.json/path//{path}//component//{component}//drop//{drop}':
+    get:
+      description: insert node at a path
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path
+        - name: component
+          type: string
+          in: path
+        - name: drop
+          type: string
+          in: path
+          description: before, after, into
+      responses:
+        '200':
+          description: '-'
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/insertNodeAt.json/path//{path}//drop//{drop}':
+    post:
+      description: insert node at a path
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path
+        - name: content
+          type: object
+          in: formData
+        - name: drop
+          type: string
+          in: path
+          description: before, after, into
+      responses:
+        '200':
+          description: '-'
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/list.json/{type}':
+    get:
+      description: list the available tools
+      parameters:
+        - name: type
+          type: string
+          in: path
+          description: either tools or tools/config
+      responses:
+        '200':
+          description: the available tools
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/moveNodeTo.json/path//{path}//component//{component}//drop//{drop}':
+    get:
+      description: list the available tools
+      parameters:
+        - name: path
+          type: string
+          in: path
+        - name: component
+          type: string
+          in: path
+        - name: drop
+          type: string
+          in: path
+      responses:
+        '200':
+          description: returns the new node structure at the drop location
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/nodes.json/path//{path}':
+    get:
+      parameters:
+        - name: path
+          type: string
+          in: path
+      responses:
+        '200':
+          description: returns the node tree
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/templates.json':
+    get:
+      responses:
+        '200':
+          description: returns the templates
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/objects.json':
+    get:
+      responses:
+        '200':
+          description: returns the templates
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  '/components.json':
+    get:
+      responses:
+        '200':
+          description: returns the templates
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+  'uploadFiles.json/path//{path}':
+    post:
+      parameters:
+        - name: path
+          type: string
+          in: path
+      responses:
+        '200':
+          schema:
+            type: object
+            additionalProperties:
+              type: object

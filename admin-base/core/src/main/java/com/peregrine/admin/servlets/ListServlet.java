@@ -42,6 +42,7 @@ public class ListServlet extends SlingSafeMethodsServlet {
 
         String suffix = request.getRequestPathInfo().getSuffix();
 
+        response.setContentType("application/json");
         if("/tools".equals(suffix)) {
             getJSONFromResource(request, response, "/content/admin/tools");
         } else if("/tools/config".equals(suffix)) {
