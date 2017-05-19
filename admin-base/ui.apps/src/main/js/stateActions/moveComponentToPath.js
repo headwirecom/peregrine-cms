@@ -22,6 +22,13 @@ export default function(me, target) {
 
     me.getApi().moveNodeTo(target.pagePath+target.path, target.pagePath+target.component, target.drop)
         .then( (data) => {
+                var node = me.findNodeFromPath(view.pageView.page, target.component)
+                var parent = me.findNodeFromPath(view.pageView.page, parentPath(target.component).parentPath)
+                console.log(node)
+                console.log(parent)
+                let index = parent.children.indexOf(node)
+                parent.children.splice(index, 1)
+
                 if(target.drop === 'into') {
                     Vue.set(targetNodeUpdate, 'children', data.children)
                 }
@@ -30,12 +37,6 @@ export default function(me, target) {
                     Vue.set(targetNodeUpdate, 'children', data.children)
                 }
 
-                var node = me.findNodeFromPath(view.pageView.page, target.component)
-                var parent = me.findNodeFromPath(view.pageView.page, parentPath(target.component).parentPath)
-                console.log(node)
-                console.log(parent)
-                let index = parent.children.indexOf(node)
-                parent.children.splice(index, 1)
             })
 //    }
 

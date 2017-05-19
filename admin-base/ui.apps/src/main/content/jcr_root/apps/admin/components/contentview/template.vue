@@ -276,6 +276,7 @@ export default {
                 }
                 $perAdminApp.stateAction('addComponentToPath', payload)
             } else if(componentFrom) {
+                if(targetEl.getAttribute('data-per-path') === componentFrom) return
                 payload = { 
                     pagePath : view.pageView.path, 
                     path: targetEl.getAttribute('data-per-path'), 
