@@ -55,7 +55,7 @@ export default {
             window.addEventListener('resize', this.onResize)
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
-          this.setScrollBarWidth(window.navigator.userAgent)
+            this.setScrollBarWidth(window.navigator.userAgent)
         })
     },
 
@@ -86,11 +86,12 @@ export default {
     },
     watch: {
         viewModeClass: function(mode) {
-            console.log('view mode changed')
             if(this.selectedComponent !== null){
-                var targetBox = this.selectedComponent.getBoundingClientRect()
-                var editable = this.$el.children['editviewoverlay'].children['editable']
-                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
+                this.$nextTick(function() {
+                    var targetBox = this.selectedComponent.getBoundingClientRect()
+                    var editable = this.$el.children['editviewoverlay'].children['editable']
+                    this.setStyle(editable, targetBox, '', '1px solid #607d8b')
+                })
             }
         },
     },
