@@ -1,18 +1,20 @@
 <template>
     <div 
         v-bind:class  ="`peregrine-content-view ${viewModeClass}`" 
-        v-on:mouseout = "leftArea">
+        v-on:mouseout = "leftEditableArea">
         <div 
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
-            v-on:wheel     = "onEditViewOverlayScroll"
+            v-on:wheel     = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "dragOver"
             v-on:drop      = "drop"
             v-bind:style   = "`right: ${scrollbarWidth}px;`">
-            <div id="editable"
-                 draggable     = "true"
-                 v-on:dragstart= "dragStart">
+            <div 
+                 ref            = "editable" 
+                 id             = "editable"
+                 draggable      = "true"
+                 v-on:dragstart = "dragStart">
                  <div class="editable-actions">
                     <ul>
                         <li class="waves-effect waves-light">
@@ -64,7 +66,6 @@ export default {
     data(){
         return {
             selectedComponent: null,
-            highlightedComponent: null,
             clipboard: null,
             scrollbarWidth: 0,
             ctrlDown: false
@@ -89,13 +90,65 @@ export default {
             if(this.selectedComponent !== null){
                 this.$nextTick(function() {
                     var targetBox = this.selectedComponent.getBoundingClientRect()
-                    var editable = this.$el.children['editviewoverlay'].children['editable']
-                    this.setStyle(editable, targetBox, '', '1px solid #607d8b')
+                    this.setEditableStyle(this.$refs.editable, targetBox, '', '1px solid #607d8b')
                 })
             }
         },
     },
     methods: {
+        /* Window/Document methods =================
+        ============================================ */
+        onResize: function(e){
+            if(this.selectedComponent !== null){
+                var targetBox = this.selectedComponent.getBoundingClientRect()
+                this.setEditableStyle(this.$refs.editable, targetBox, '', '1px solid #607d8b')
+            }
+        },
+
+        onKeyDown(ev){
+            var ctrlKey = 17
+            var cmdKey = 91
+            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+                this.ctrlDown = true   
+            } 
+            if(this.selectedComponent !== null){
+                var cKey = 67
+                var vKey = 86
+                if (this.ctrlDown && (ev.keyCode == cKey)){
+                    this.onCopy()
+                }
+                if (this.ctrlDown && (ev.keyCode == vKey)){
+                    this.onPaste()
+                }
+            }
+        },
+
+        onKeyUp(ev){
+            var ctrlKey = 17
+            var cmdKey = 91
+            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+                this.ctrlDown = false
+            } 
+        },
+
+        /* Iframe (editview) methods ===============
+        ============================================ */
+        setWheelEventListener(ev){
+            ev.target.contentWindow.addEventListener('wheel', this.onScrollIframe)
+            ev.target.contentWindow.addEventListener('scroll', this.onScrollIframe)
+        },
+
+        onScrollIframe(ev){
+            if(this.selectedComponent !== null){
+                this.$nextTick(function () {
+                    var selectedComponentRect = this.selectedComponent.getBoundingClientRect()
+                    this.updateEditablePos(selectedComponentRect.top)
+                })
+            }
+        },
+
+        /*  Overlay (editviewoverlay) methods ======
+        ============================================ */
         setScrollBarWidth(userAgent) {
             switch(true) {
                 case (userAgent.indexOf('Edge') != -1):
@@ -112,52 +165,17 @@ export default {
             }
         },
 
-        dragStart(ev) {
-            let element = this.getTargetEl(ev)
-            if(element) {
-                ev.dataTransfer.setData('componentFrom', element.getAttribute('data-per-path'))
-            }
-            else {
-                ev.preventDefault()
-                return false
-            }
-        },
-
-        setWheelEventListener(ev){
-            ev.target.contentWindow.addEventListener('wheel', this.onEditViewScroll)
-            ev.target.contentWindow.addEventListener('scroll', this.onEditViewScroll)
-        },
-
-        onEditViewScroll(ev){
+        onScrollOverlay(ev){
             this.$nextTick(function () {
-                if(this.selectedComponent !== null){
-                    var selectedComponentRect = this.selectedComponent.getBoundingClientRect()
-                    this.updateEditablePos(selectedComponentRect.top)
-                }
-            })
-        },
-
-        onEditViewOverlayScroll(ev){
-            this.$nextTick(function () {
-                var timer = null
-                var editViewOverlay = ev.target
-                editViewOverlay.style['pointer-events'] = 'none'
-                /* TODO: remove timeout by using custom method to detect when scrolling stops */
-                if(timer !== null) {
+                var isScrolling = false
+                ev.target.style['pointer-events'] = 'none'
+                if(isScrolling) {
                     clearTimeout(timer)        
                 }
-                timer = setTimeout(function() {
-                    editViewOverlay.style['pointer-events'] = 'auto'
-                }, 150)
+                isScrolling = setTimeout(function() {
+                    ev.target.style['pointer-events'] = 'auto'
+                }, 66)
             })
-        },
-
-        onResize: function(e){
-            if(this.selectedComponent !== null){
-                var targetBox = this.selectedComponent.getBoundingClientRect()
-                var editable = this.$el.children['editviewoverlay'].children['editable']
-                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
-            }
         },
 
         getPosFromMouse: function(e) {
@@ -174,7 +192,6 @@ export default {
             var pos = this.getPosFromMouse(e)
 
             var editview = this.$refs.editview
-            var editable = this.$el.children['editviewoverlay'].children['editable']
 
             var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
             if(!targetEl) return
@@ -192,32 +209,15 @@ export default {
             if(targetEl) {
                 this.selectedComponent = targetEl
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
+                this.setEditableStyle(editable, targetBox, '', '1px solid #607d8b')
                 $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
 
-        leftArea: function(e) {
+        leftEditableArea: function(e) {
+            console.log('left editable area')
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
-            var editable = this.$el.children['editviewoverlay'].children['editable']
-            editable.style.display = 'none'
-        },
-
-        setStyle: function(editable, targetBox, name, border) {
-            editable.style.top = targetBox.top+'px'
-            editable.style.left = targetBox.left+'px'
-            editable.style.width = targetBox.width+'px'
-            editable.style.height = targetBox.height+'px'
-            editable.style.display = 'block'
-            editable.style['border'] = 'none'
-            editable.style['border-top'] = 'none'
-            editable.style['border-bottom'] = 'none'
-            editable.style['border'+name] = border
-        },
-
-        updateEditablePos: function(top){
-            var editable = this.$el.children['editviewoverlay'].children['editable']
-            editable.style.top = top + 'px'
+            this.$refs.editable.style.display = 'none'
         },
 
         mouseMove: function(e) {
@@ -230,7 +230,19 @@ export default {
                     targetEl = targetEl.parentElement
                 }
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setStyle(editable, targetBox, '', '1px solid #607d8b')
+                this.setEditableStyle(editable, targetBox, '', '1px solid #607d8b')
+            }
+        },
+
+        /* Drag and Drop ===========================        ============================================ */
+        dragStart(ev) {
+            let element = this.getTargetEl(ev)
+            if(element) {
+                ev.dataTransfer.setData('componentFrom', element.getAttribute('data-per-path'))
+            }
+            else {
+                ev.preventDefault()
+                return false
             }
         },
 
@@ -245,28 +257,26 @@ export default {
 
                 if(isDropTarget) {
                     this.dropPosition = 'into'
-                    this.setStyle(editable, targetBox, '', '1px solid #607d8b')
+                    this.setEditableStyle(editable, targetBox, '', '1px solid #607d8b')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
                         this.dropPosition = 'before'
-                        this.setStyle(editable, targetBox, '-top', '1px solid #607d8b')
+                        this.setEditableStyle(editable, targetBox, '-top', '1px solid #607d8b')
                     } else {
                         this.dropPosition = 'after'
-                        this.setStyle(editable, targetBox, '-bottom', '1px solid #607d8b')
+                        this.setEditableStyle(editable, targetBox, '-bottom', '1px solid #607d8b')
                     }
                 }
             } else {
                 this.dropPosition = 'none'
-                this.leftArea()
+                this.leftEditableArea()
             }
 
         },
 
         drop: function(e) {
-            var editable = this.$el.children['editviewoverlay'].children['editable']
-            editable.style.display = 'none'
-
+            this.$refs.editable.style.display = 'none'
             var targetEl = this.getTargetEl(e)
             var componentPath = e.dataTransfer.getData('component')
             var componentFrom = e.dataTransfer.getData('componentFrom')
@@ -291,6 +301,24 @@ export default {
                 $perAdminApp.stateAction('moveComponentToPath', payload)
             }
 
+        },
+
+        /* Editable methods ========================
+        ============================================ */
+        setEditableStyle: function(editable, targetBox, name, border) {
+            editable.style.top = targetBox.top+'px'
+            editable.style.left = targetBox.left+'px'
+            editable.style.width = targetBox.width+'px'
+            editable.style.height = targetBox.height+'px'
+            editable.style.display = 'block'
+            editable.style['border'] = 'none'
+            editable.style['border-top'] = 'none'
+            editable.style['border-bottom'] = 'none'
+            editable.style['border'+name] = border
+        },
+
+        updateEditablePos: function(top){
+            this.$refs.editable.style.top = top + 'px'
         },
 
         onDelete: function(e) {
@@ -324,36 +352,6 @@ export default {
                 drop: dropPosition
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
-        },
-
-        onKeyDown(ev){
-            console.log('onKeyDown')
-            var ctrlKey = 17
-            var cmdKey = 91
-            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                this.ctrlDown = true   
-            } 
-            if(this.selectedComponent !== null){
-                var cKey = 67
-                var vKey = 86
-                if (this.ctrlDown && (ev.keyCode == cKey)){
-                    console.log('copying')
-                    this.onCopy()
-                }
-                if (this.ctrlDown && (ev.keyCode == vKey)){
-                    console.log('pasting')
-                    this.onPaste()
-                }
-            }
-        },
-
-        onKeyUp(ev){
-            console.log('onKeyUp')
-            var ctrlKey = 17
-            var cmdKey = 91
-            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                this.ctrlDown = false
-            } 
         }
     }
 }
