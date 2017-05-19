@@ -4,7 +4,7 @@
         v-on:mouseout = "leftArea">
         <div 
             id             = "editviewoverlay"
-            v-on:click     = "click"
+            v-on:click     = "onClickOverlay"
             v-on:wheel     = "onEditViewOverlayScroll"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "dragOver"
@@ -52,7 +52,9 @@
 export default {
     mounted() {
         this.$nextTick(function() {
-          window.addEventListener('resize', this.onResize)
+            window.addEventListener('resize', this.onResize)
+            document.addEventListener('keydown', this.onKeyDown)
+            document.addEventListener('keyup', this.onKeyUp)
           this.setScrollBarWidth(window.navigator.userAgent)
         })
     },
@@ -61,9 +63,11 @@ export default {
 
     data(){
         return {
-            selectedEl: null,
+            selectedComponent: null,
+            highlightedComponent: null,
             clipboard: null,
-            scrollbarWidth: 0
+            scrollbarWidth: 0,
+            ctrlDown: false
         }
     },
 
@@ -83,8 +87,8 @@ export default {
     watch: {
         viewModeClass: function(mode) {
             console.log('view mode changed')
-            if(this.selectedEl !== null){
-                var targetBox = this.selectedEl.getBoundingClientRect()
+            if(this.selectedComponent !== null){
+                var targetBox = this.selectedComponent.getBoundingClientRect()
                 var editable = this.$el.children['editviewoverlay'].children['editable']
                 this.setStyle(editable, targetBox, '', '1px solid #607d8b')
             }
@@ -125,9 +129,9 @@ export default {
 
         onEditViewScroll(ev){
             this.$nextTick(function () {
-                if(this.selectedEl !== null){
-                    var selectedElRect = this.selectedEl.getBoundingClientRect()
-                    this.updateEditablePos(selectedElRect.top)
+                if(this.selectedComponent !== null){
+                    var selectedComponentRect = this.selectedComponent.getBoundingClientRect()
+                    this.updateEditablePos(selectedComponentRect.top)
                 }
             })
         },
@@ -148,8 +152,8 @@ export default {
         },
 
         onResize: function(e){
-            if(this.selectedEl !== null){
-                var targetBox = this.selectedEl.getBoundingClientRect()
+            if(this.selectedComponent !== null){
+                var targetBox = this.selectedComponent.getBoundingClientRect()
                 var editable = this.$el.children['editviewoverlay'].children['editable']
                 this.setStyle(editable, targetBox, '', '1px solid #607d8b')
             }
@@ -181,11 +185,11 @@ export default {
             return targetEl
         },
 
-        click: function(e) {
+        onClickOverlay: function(e) {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-                this.selectedEl = targetEl
+                this.selectedComponent = targetEl
                 var targetBox = targetEl.getBoundingClientRect()
                 this.setStyle(editable, targetBox, '', '1px solid #607d8b')
                 $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
@@ -220,7 +224,7 @@ export default {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-                this.selectedEl = targetEl
+                this.selectedComponent = targetEl
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
@@ -289,7 +293,7 @@ export default {
         },
 
         onDelete: function(e) {
-            var targetEl = this.getTargetEl(e)
+            var targetEl = this.selectedComponent
             var view = $perAdminApp.getView()
             var pagePath = view.pageView.path
             var payload = { 
@@ -300,13 +304,13 @@ export default {
         },
 
         onCopy: function(e) {
-            var targetEl = this.getTargetEl(e)
+            var targetEl = this.selectedComponent
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
             this.clipboard = node
         },
 
         onPaste: function(e) {
-            var targetEl = this.getTargetEl(e)
+            var targetEl = this.selectedComponent
             var nodeFromClipboard = this.clipboard
             var view = $perAdminApp.getView()
             var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
@@ -321,26 +325,34 @@ export default {
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
 
-        onKeyboardCopyPaste(ev){
-            console.log('onKeyboardCopyPaste')
-            /* modify example */
-            // $(document).ready(function() {
-            //     var ctrlDown = false,
-            //         ctrlKey = 17,
-            //         cmdKey = 91,
-            //         vKey = 86,
-            //         cKey = 67;
+        onKeyDown(ev){
+            console.log('onKeyDown')
+            var ctrlKey = 17
+            var cmdKey = 91
+            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+                this.ctrlDown = true   
+            } 
+            if(this.selectedComponent !== null){
+                var cKey = 67
+                var vKey = 86
+                if (this.ctrlDown && (ev.keyCode == cKey)){
+                    console.log('copying')
+                    this.onCopy()
+                }
+                if (this.ctrlDown && (ev.keyCode == vKey)){
+                    console.log('pasting')
+                    this.onPaste()
+                }
+            }
+        },
 
-            //     $(document).keydown(function(e) {
-            //         if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
-            //     }).keyup(function(e) {
-            //         if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
-            //     });
-
-            //     $(".no-copy-paste").keydown(function(e) {
-            //         if (ctrlDown && (e.keyCode == vKey || e.keyCode == cKey)) return false;
-            //     });
-            // });
+        onKeyUp(ev){
+            console.log('onKeyUp')
+            var ctrlKey = 17
+            var cmdKey = 91
+            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+                this.ctrlDown = false
+            } 
         }
     }
 }
