@@ -17,8 +17,9 @@
 			left: 0;
 			#editable {
 				position: absolute; 
-				display: none;
+				border: 1px solid transparent;
 				.editable-actions {
+					display: none;
 					position: absolute; 
 					right: -1px; 
 					bottom: -1px; 
@@ -57,6 +58,31 @@
 							}
 							&:last-child {
 								border-right: none;
+							}
+						}
+					}
+				}
+				&.drop-top {
+					border-top-color: $blue-gray;
+				}
+				&.drop-bottom {
+					border-bottom-color: $blue-gray;
+				}
+				&.selected {
+					border-color: $blue-gray;
+					.editable-actions {
+						display: block;
+					}
+				}
+				&.dragging {
+					.editable-actions {
+						display: block;
+						ul {
+							li {
+								display: none;
+								&:last-child {
+									display: block;
+								}
 							}
 						}
 					}
