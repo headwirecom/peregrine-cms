@@ -171,6 +171,7 @@ export default {
         },
 
         onScrollOverlay(ev){
+            ev.preventDefault()
             this.$nextTick(function () {
                 var isScrolling = false
                 ev.target.style['pointer-events'] = 'none'
@@ -222,7 +223,7 @@ export default {
         leftOverlayArea: function(e) {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             this.selectedComponent = null
-            this.editableClass = ''
+            this.editableClass = null
         },
 
         mouseMove: function(e) {
@@ -282,7 +283,7 @@ export default {
         },
 
         drop: function(e) {
-            this.editableClass = ''
+            this.editableClass = null
             var targetEl = this.getTargetEl(e)
             var componentPath = e.dataTransfer.getData('component')
             var componentFrom = e.dataTransfer.getData('componentFrom')
@@ -333,6 +334,8 @@ export default {
                 path: targetEl.getAttribute('data-per-path') 
             }
             $perAdminApp.stateAction('deletePageNode',  payload)
+            this.editableClass = null
+            this.selectedComponent = null
         },
 
         onCopy: function(e) {
