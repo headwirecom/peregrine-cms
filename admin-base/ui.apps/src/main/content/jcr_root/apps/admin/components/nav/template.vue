@@ -1,5 +1,5 @@
 <template>
-<nav v-bind:data-per-path="model.path" class="nav-extended">
+<nav v-bind:data-per-path="model.path" v-bind:class="isExtended ? 'nav-extended' : ''">
     <div class="nav-wrapper blue-grey darken-3">
       <div class="brand-logo">
         <admin-components-action 
@@ -28,7 +28,11 @@ export default {
     computed: {
         vueRoot: function() {
             return this.$root
+        },
+        isExtended: function() {
+            return this.model.children && this.model.children.length > 0
         }
+
     }
 }
 </script>

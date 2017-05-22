@@ -1,5 +1,6 @@
 @echo off
 setlocal
+set path=%path%;bin\vips
 cd resources 
 start java -jar org.apache.sling.launchpad-9-SNAPSHOT.jar
 
