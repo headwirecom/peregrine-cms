@@ -1,7 +1,7 @@
 <template>
     <div 
         v-bind:class  ="`peregrine-content-view ${viewModeClass}`" 
-        v-on:mouseout = "leftEditableArea">
+        v-on:mouseout = "leftOverlayArea">
         <div 
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
@@ -11,11 +11,12 @@
             v-on:drop      = "drop"
             v-bind:style   = "`right: ${scrollbarWidth}px;`">
             <div 
-                 ref            = "editable" 
-                 id             = "editable"
-                 draggable      = "true"
-                 v-on:dragstart = "dragStart">
-                 <div class="editable-actions">
+                v-bind:class   = "editableClass"
+                ref            = "editable" 
+                id             = "editable"
+                draggable      = "true"
+                v-on:dragstart = "dragStart">
+                <div class="editable-actions">
                     <ul>
                         <li class="waves-effect waves-light">
                             <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
@@ -65,6 +66,8 @@ export default {
 
     data(){
         return {
+            editableVisible: false,
+            editableClass: null,
             selectedComponent: null,
             clipboard: null,
             scrollbarWidth: 0,
@@ -85,23 +88,25 @@ export default {
             return this.viewMode
         }
     },
+
     watch: {
         viewModeClass: function(mode) {
             if(this.selectedComponent !== null){
                 this.$nextTick(function() {
                     var targetBox = this.selectedComponent.getBoundingClientRect()
-                    this.setEditableStyle(this.$refs.editable, targetBox, '', '1px solid #607d8b')
+                    this.setEditableStyle(targetBox, 'selected')
                 })
             }
         },
     },
+
     methods: {
         /* Window/Document methods =================
         ============================================ */
         onResize: function(e){
             if(this.selectedComponent !== null){
                 var targetBox = this.selectedComponent.getBoundingClientRect()
-                this.setEditableStyle(this.$refs.editable, targetBox, '', '1px solid #607d8b')
+                this.setEditableStyle(targetBox, 'selected')
             }
         },
 
@@ -209,15 +214,15 @@ export default {
             if(targetEl) {
                 this.selectedComponent = targetEl
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setEditableStyle(editable, targetBox, '', '1px solid #607d8b')
+                this.setEditableStyle(targetBox, 'selected')
                 $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
             }
         },
 
-        leftEditableArea: function(e) {
-            console.log('left editable area')
+        leftOverlayArea: function(e) {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
-            this.$refs.editable.style.display = 'none'
+            this.selectedComponent = null
+            this.editableClass = ''
         },
 
         mouseMove: function(e) {
@@ -225,17 +230,18 @@ export default {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-                this.selectedComponent = targetEl
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
+                this.selectedComponent = targetEl
                 var targetBox = targetEl.getBoundingClientRect()
-                this.setEditableStyle(editable, targetBox, '', '1px solid #607d8b')
+                this.setEditableStyle(targetBox, 'selected')
             }
         },
 
         /* Drag and Drop ===========================        ============================================ */
         dragStart(ev) {
+            this.editableClass = 'dragging'
             let element = this.getTargetEl(ev)
             if(element) {
                 ev.dataTransfer.setData('componentFrom', element.getAttribute('data-per-path'))
@@ -257,26 +263,26 @@ export default {
 
                 if(isDropTarget) {
                     this.dropPosition = 'into'
-                    this.setEditableStyle(editable, targetBox, '', '1px solid #607d8b')
+                    this.setEditableStyle(targetBox, 'selected')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
                         this.dropPosition = 'before'
-                        this.setEditableStyle(editable, targetBox, '-top', '1px solid #607d8b')
+                        this.setEditableStyle(targetBox, 'drop-top')
                     } else {
                         this.dropPosition = 'after'
-                        this.setEditableStyle(editable, targetBox, '-bottom', '1px solid #607d8b')
+                        this.setEditableStyle(targetBox, 'drop-bottom')
                     }
                 }
             } else {
                 this.dropPosition = 'none'
-                this.leftEditableArea()
+                this.leftOverlayArea()
             }
 
         },
 
         drop: function(e) {
-            this.$refs.editable.style.display = 'none'
+            this.editableClass = ''
             var targetEl = this.getTargetEl(e)
             var componentPath = e.dataTransfer.getData('component')
             var componentFrom = e.dataTransfer.getData('componentFrom')
@@ -305,16 +311,13 @@ export default {
 
         /* Editable methods ========================
         ============================================ */
-        setEditableStyle: function(editable, targetBox, name, border) {
-            editable.style.top = targetBox.top+'px'
-            editable.style.left = targetBox.left+'px'
-            editable.style.width = targetBox.width+'px'
-            editable.style.height = targetBox.height+'px'
-            editable.style.display = 'block'
-            editable.style['border'] = 'none'
-            editable.style['border-top'] = 'none'
-            editable.style['border-bottom'] = 'none'
-            editable.style['border'+name] = border
+        setEditableStyle: function(targetBox, editableClass) {
+            var editable = this.$refs.editable
+            editable.style.top    = targetBox.top + 'px'
+            editable.style.left   = targetBox.left + 'px'
+            editable.style.width  = targetBox.width + 'px'
+            editable.style.height = targetBox.height + 'px'
+            this.editableClass = editableClass
         },
 
         updateEditablePos: function(top){
