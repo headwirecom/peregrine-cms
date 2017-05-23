@@ -5,19 +5,16 @@ import com.peregrine.admin.process.ProcessContext;
 import com.peregrine.admin.process.ProcessRunner;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
-import com.peregrine.admin.transform.OperationContext;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Binary;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -36,14 +33,14 @@ public abstract class AbstractVipsImageTransformation
     protected void transform0(ImageContext imageContext, String operationName, String...parameters)
         throws TransformationException
     {
-        String name = "transformation." + System.currentTimeMillis() + "." + imageContext.getImageType();
+        String name = "transformation.in." + System.currentTimeMillis() + "." + imageContext.getImageType();
         Path temporaryFolder = createTempFolder();
         if(temporaryFolder != null) {
             File input = writeToFile(temporaryFolder, name, imageContext.getImageStream());
             if(input == null) {
                 throw new TransformationException("Could not create input file: " + name);
             }
-            String outputFileName = "out." + name;
+            String outputFileName = "transformation.out." + System.currentTimeMillis() + "." + imageContext.getOutputImageType();
             File output = createTempFile(temporaryFolder, outputFileName);
             if(output == null) {
                 throw new TransformationException("Could not create output file: " + outputFileName);

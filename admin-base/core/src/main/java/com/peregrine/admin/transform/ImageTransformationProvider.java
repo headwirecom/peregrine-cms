@@ -3,25 +3,29 @@ package com.peregrine.admin.transform;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Image Transformation Factory to manage the available
+ * Image Transformation Provider to manage the available
  * Image Transformation by transformation name which normally
  * is also the operation name
  */
 @Component(
-    service = ImageTransformationFactory.class,
+    service = ImageTransformationProvider.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Peregrine Image Transformation Factory",
+        Constants.SERVICE_DESCRIPTION + "=Peregrine Image Transformation Service Provider",
         Constants.SERVICE_VENDOR + "=headwire.com, Inc"
     }
 )
-public class ImageTransformationFactory {
+public class ImageTransformationProvider {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -31,7 +35,12 @@ public class ImageTransformationFactory {
         return imageTransformations.get(transformationName);
     }
 
-    @Reference
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC,
+        policyOption = ReferencePolicyOption.GREEDY
+    )
+    @SuppressWarnings("unused")
     public void bindImageTransformation(ImageTransformation imageTransformation) {
         String transformationName = imageTransformation.getTransformationName();
         if(transformationName != null && !transformationName.isEmpty()) {
@@ -41,6 +50,7 @@ public class ImageTransformationFactory {
         }
     }
 
+    @SuppressWarnings("unused")
     public void unbindImageTransformation(ImageTransformation imageTransformation) {
         String transformationName = imageTransformation.getTransformationName();
         if(imageTransformations.containsKey(transformationName)) {

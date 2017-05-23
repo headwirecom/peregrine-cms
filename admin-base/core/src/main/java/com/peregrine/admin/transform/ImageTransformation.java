@@ -29,4 +29,12 @@ public interface ImageTransformation {
             super("Service: '" + transformationName + "' is disabled");
         }
     }
+
+    public class UnsupportedFormatException
+        extends TransformationException
+    {
+        public UnsupportedFormatException(String formatName) {
+            super("File Format: '" + formatName + "' is not supported for this operation");
+        }
+    }
 }

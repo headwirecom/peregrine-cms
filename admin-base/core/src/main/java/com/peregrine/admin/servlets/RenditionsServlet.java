@@ -1,10 +1,12 @@
 package com.peregrine.admin.servlets;
 
+import com.peregrine.admin.transform.ImageTransformationConfiguration;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
 import com.peregrine.admin.transform.ImageTransformation.DisabledTransformationException;
 import com.peregrine.admin.transform.ImageTransformation.TransformationException;
-import com.peregrine.admin.transform.ImageTransformationFactory;
+import com.peregrine.admin.transform.ImageTransformationConfigurationProvider;
+import com.peregrine.admin.transform.ImageTransformationProvider;
 import com.peregrine.admin.transform.OperationContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -12,15 +14,12 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +46,6 @@ import java.util.Map;
                 ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=per/Asset"
         }
 )
-@Designate(
-    ocd = RenditionsConfiguration.class
-)
 @SuppressWarnings("serial")
 /**
  * This servlet provides renditions of Peregrine Assets (per:Asset)
@@ -60,35 +56,9 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
     private final Logger log = LoggerFactory.getLogger(RenditionsServlet.class);
 
     @Reference
-    private ImageTransformationFactory imageTransformationFactory;
-
-    private List<RenditionType> renditionTypeList = new ArrayList<>();
-
-    @Activate
-    private void activate(final RenditionsConfiguration configuration) {
-        log.debug("activate");
-        configure(configuration);
-    }
-
-    @Modified
-    private void modified(final RenditionsConfiguration configuration) {
-        log.debug("modified");
-        configure(configuration);
-    }
-
-    @Deactivate
-    protected void deactivate() {
-        log.info("deactivate");
-    }
-
-    private void configure(final RenditionsConfiguration configuration) {
-        String[] renditions = configuration.renditions();
-        for(String rendition: renditions) {
-            renditionTypeList.add(
-                new RenditionType(rendition)
-            );
-        }
-    }
+    private ImageTransformationConfigurationProvider imageTransformationConfigurationProvider;
+    @Reference
+    private ImageTransformationProvider imageTransformationProvider;
 
     @Override
     protected void doGet(SlingHttpServletRequest request,
@@ -100,17 +70,18 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
             Node resourceJcrContentNode = resourceNode.getNode("jcr:content");
             // Check if there is a suffix
             String suffix = request.getRequestPathInfo().getSuffix();
+            String imageType = "png";
             if(suffix != null && suffix.length() > 0) {
                 // Check if we support that renditions
-                RenditionType renditionType = null;
-                for(RenditionType type : renditionTypeList) {
-                    if(suffix.endsWith(type.getName())) {
-                        renditionType = type;
-                        break;
-                    }
+                String renditionName = suffix;
+                int index = renditionName.indexOf('/');
+                if(index >= 0) {
+                    renditionName = renditionName.substring(index + 1);
                 }
+                List<ImageTransformationConfiguration> imageTransformationConfigurationList =
+                    imageTransformationConfigurationProvider.getImageTransformationConfigurations(renditionName);
                 //AS TODO: Handle if rendition is not supported
-                if(renditionType != null) {
+                if(imageTransformationConfigurationList != null) {
                     // Check if the file exists
                     ResourceResolver resourceResolver = request.getResourceResolver();
                     Resource renditions = resource.getChild("renditions");
@@ -126,54 +97,42 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                         }
                     }
                     if(renditions != null) {
-                        Resource rendition = renditions.getChild(renditionType.getName());
+                        Resource rendition = renditions.getChild(renditionName);
                         if(rendition == null) {
                             try {
                                 Session session = request.getResourceResolver().adaptTo(Session.class);
                                 Node renditionsNode = renditions.adaptTo(Node.class);
-                                Node renditionNode = renditionsNode.addNode(renditionType.getName(), "nt:file");
+                                Node renditionNode = renditionsNode.addNode(renditionName, "nt:file");
                                 Node jcrContent = renditionNode.addNode("jcr:content", "nt:resource");
                                 Binary source = resourceJcrContentNode.getProperty("jcr:data").getBinary();
+                                // Obtain the Image Type
+                                index = resource.getName().lastIndexOf('.');
+                                if(index > 0 && index < resource.getName().length() - 3) {
+                                    imageType = resource.getName().substring(index + 1);
+                                }
+                                ImageContext imageContext = new ImageContext(imageType, source.getStream());
 
-                                ImageTransformation imageTransformation = imageTransformationFactory.getImageTransformation(renditionType.getTransformationName());
-                                if(imageTransformation != null) {
-                                    // Obtain the Image Type
-                                    int index = resource.getName().lastIndexOf('.');
-                                    String imageType = "png";
-                                    if(index > 0 && index < resource.getName().length() - 3) {
-                                        imageType = resource.getName().substring(index + 1);
-                                    }
-                                    ImageContext imageContext = new ImageContext(
-                                        imageType,
-                                        source.getStream()
-                                    );
-                                    Map<String, String> parameters = new HashMap<>();
-                                    String parameter = renditionType.getParameter("height");
-                                    if(parameter == null || parameter.isEmpty()) {
-                                        throw new IllegalArgumentException("Height for Rendition Type: '" + renditionType.getName() + "' is empty" );
-                                    }
-                                    parameters.put("height", parameter);
-                                    parameter = renditionType.getParameter("width");
-                                    if(parameter == null || parameter.isEmpty()) {
-                                        throw new IllegalArgumentException("Width for Rendition Type: '" + renditionType.getName() + "' is empty" );
-                                    }
-                                    parameters.put("width", parameter);
-                                    OperationContext operationContext = new OperationContext(renditionType.getName(), parameters);
-                                    try {
-                                        imageTransformation.transform(imageContext, operationContext);
-                                        Binary data = session.getValueFactory().createBinary(imageContext.getImageStream());
-                                        jcrContent.setProperty("jcr:data", data);
-                                        jcrContent.setProperty("jcr:mimeType", "application/octet-stream");
-                                        session.save();
-                                        rendition = renditions.getChild(renditionType.getName());
-                                    } catch(DisabledTransformationException e) {
-                                        log.error("Transformation disabled and hence ignored", e);
-                                    } catch(TransformationException e) {
-                                        log.error("Transformation Failed", e);
+                                for(ImageTransformationConfiguration imageTransformationConfiguration: imageTransformationConfigurationList) {
+                                    ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(imageTransformationConfiguration.getTransformationName());
+                                    if(imageTransformation != null) {
+                                        Map<String, String> parameters = imageTransformationConfiguration.getParameters();
+                                        OperationContext operationContext = new OperationContext(renditionName, parameters);
+                                        try {
+                                            imageTransformation.transform(imageContext, operationContext);
+                                        } catch(DisabledTransformationException e) {
+                                            log.error("Transformation disabled and hence ignored", e);
+                                        } catch(TransformationException e) {
+                                            log.error("Transformation Failed", e);
+                                        }
                                     }
                                 }
+                                Binary data = session.getValueFactory().createBinary(imageContext.getImageStream());
+                                jcrContent.setProperty("jcr:data", data);
+                                jcrContent.setProperty("jcr:mimeType", "image/" + imageType);
+                                session.save();
+                                rendition = renditions.getChild(renditionName);
                             } catch(RepositoryException e) {
-                                log.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionType.getName());
+                                log.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
                                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                 e.printStackTrace(response.getWriter());
                             }
@@ -187,9 +146,10 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
             if(resource != null) {
                 // Read image as is and send back
                 Resource jcrContent = resource.getChild("jcr:content");
-                InputStream is = jcrContent != null ? jcrContent.getValueMap().get("jcr:data", InputStream.class) : null;
+                ValueMap properties = jcrContent != null ? jcrContent.getValueMap() : null;
+                InputStream is = properties != null ? properties.get("jcr:data", InputStream.class) : null;
                 if(is != null) {
-                    response.setContentType("application/octet-stream");
+                    response.setContentType(properties.get("jcr:mimeType", "image/" + imageType ));
                     OutputStream os = response.getOutputStream();
                     IOUtils.copy(is, os);
                     IOUtils.closeQuietly(is);
@@ -205,71 +165,5 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
         }
     }
 
-    public static class RenditionType {
-        private String name;
-        private String transformationName;
-        private Map<String, String> parameters = new HashMap<>();
-
-        public RenditionType(String format) {
-            String[] tokens = format.split("\\|");
-            if(tokens.length == 0) {
-                throw new IllegalArgumentException("Rendition Type format has no name, format: '" + format + "'. " + getFormat());
-            }
-            this.name = tokens[0];
-            if(this.name == null || this.name.isEmpty()) {
-                throw new IllegalArgumentException("Rendition Type format's name is not provided, format: '" + format + "'. " + getFormat());
-            }
-            if(tokens.length == 1) {
-                throw new IllegalArgumentException("Rendition Type format has no transformation name, format: '" + format + "'. " + getFormat());
-            }
-            String temp = tokens[1];
-            this.transformationName = tokens[1];
-            if(temp == null || temp.isEmpty()) {
-                throw new IllegalArgumentException("Rendition Type format's transformation name is not provided, format: '" + format + "'. " + getFormat());
-            } else {
-                int index = temp.indexOf('=');
-                if(index <= 0 || index >= temp.length() - 1) {
-                    throw new IllegalArgumentException("Rendition Type format's transformation name is not of type transformation=value , format: '" + format + "'. " + getFormat());
-                } else {
-                    String key = temp.substring(0, index);
-                    String name = temp.substring(index + 1);
-                    if(!"transformation".equals(key)) {
-                        throw new IllegalArgumentException("Rendition Type format's transformation name does not start with 'transformation' , format: '" + format + "'. " + getFormat());
-                    } else if(name.isEmpty()) {
-                        throw new IllegalArgumentException("Rendition Type format's transformation name value is not provided , format: '" + format + "'. " + getFormat());
-                    } else {
-                        this.transformationName = name;
-                    }
-                }
-            }
-            for(int i = 2; i < tokens.length; i++) {
-                String value = tokens[i];
-                if(value == null || value.isEmpty()) {
-                    throw new IllegalArgumentException("Rendition Type format's contains empty token, format: '" + format + "' on position: " + (i + 1) + "). " + getFormat());
-                }
-                int index = value.indexOf('=');
-                if(index <= 0 || index >= value.length() - 1) {
-                    throw new IllegalArgumentException("Rendition Type format's token is not of type key=value , format: '" + format + "' on position: " + (i + 1) + "). " + getFormat());
-                }
-                parameters.put(value.substring(0, index), value.substring(index + 1));
-            }
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getTransformationName() {
-            return transformationName;
-        }
-
-        public String getParameter(String name) {
-            return parameters.get(name);
-        }
-
-        private String getFormat() {
-            return "Expected Format: <name>|transformation=<transformation name>|<a | separated list of <parameter>=<value>>";
-        }
-    }
 }
 

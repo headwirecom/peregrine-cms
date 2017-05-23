@@ -15,23 +15,21 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
     service = ImageTransformation.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Peregrine: Thumbnail Image Transformation (transformation name: vips:thumbnail",
+        Constants.SERVICE_DESCRIPTION + "=Peregrine: Greyscale Image Transformation (transformation name: vips:greyscale",
         Constants.SERVICE_VENDOR + "=headwire.com, Inc"
     }
 )
 @Designate(
-    ocd = ThumbnailImageTransformation.Configuration.class
+    ocd = GreyscaleImageTransformation.Configuration.class
 )
-public class ThumbnailImageTransformation
+public class GreyscaleImageTransformation
     extends AbstractVipsImageTransformation
 {
-    public static final String THUMBNAIL_TRANSFORMATION_NAME = "vips:thumbnail";
-    public static final int THUMBNAIL_DEFAULT_WIDTH = 50;
-    public static final int THUMBNAIL_DEFAULT_HEIGHT = 50;
+    public static final String THUMBNAIL_TRANSFORMATION_NAME = "vips:greyscale";
 
     @ObjectClassDefinition(
-        name = "Peregrine: Thumbnail Image Transformation Configuration",
-        description = "Service to provide Thumbnail Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service)"
+        name = "Peregrine: Greyscale Image Transformation Configuration",
+        description = "Service to provide Greyscale Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service) for JPEG / PNG files only"
     )
     public @interface Configuration {
 
@@ -48,26 +46,10 @@ public class ThumbnailImageTransformation
             required = true
         )
         String transformationName() default THUMBNAIL_TRANSFORMATION_NAME;
-
-        @AttributeDefinition(
-            name = "Default Width",
-            description = "Default width of the Thumbnail if no value is given",
-            min = "1"
-        )
-        int defaultWidth() default THUMBNAIL_DEFAULT_WIDTH;
-
-        @AttributeDefinition(
-            name = "Default Height",
-            description = "Default height of the Thumbnail if no value is given",
-            min = "1"
-        )
-        int defaultHeight() default THUMBNAIL_DEFAULT_HEIGHT;
     }
 
     private boolean enabled = false;
     private String transformationName = THUMBNAIL_TRANSFORMATION_NAME;
-    private int defaultWidth = THUMBNAIL_DEFAULT_WIDTH;
-    private int getDefaultHeight = THUMBNAIL_DEFAULT_HEIGHT;
 
     @Activate
     private void activate(final Configuration configuration) {
@@ -90,8 +72,6 @@ public class ThumbnailImageTransformation
             if(transformationName.isEmpty()) {
                 throw new IllegalArgumentException("Transformation Name cannot be empty");
             }
-            defaultWidth = configuration.defaultWidth();
-            getDefaultHeight = configuration.defaultHeight();
         }
     }
 
@@ -105,15 +85,35 @@ public class ThumbnailImageTransformation
         throws TransformationException
     {
         if(enabled) {
-            transform0(imageContext, "thumbnail",
+            if(
+                !"png".equals(imageContext.getImageType()) &&
+                !"jpg".equals(imageContext.getImageType()) &&
+                !"jpeg".equals(imageContext.getImageType())
+            ) {
+                throw new UnsupportedFormatException(imageContext.getImageType());
+            }
+            // A PNG image cannot be saved directly as PNG with VIPS
+            // For that we need to store it as JPEG and then save it as PNG while stripping color info
+            boolean requiresConversion = "png".equals(imageContext.getImageType());
+            if(requiresConversion) {
+                imageContext.setOutputImageType("v");
+            }
+            transform0(
+                imageContext,
+                "colourspace",
                 // {in}, {out} mark the placement of the input / output file (path / name)
                 "{in}", "{out}",
-                // Third parameter is width with no tag
-                operationContext.getParameter("width", defaultWidth + ""),
-                // Optional Parameters, double dashes without equals
-                "--height", operationContext.getParameter("height", getDefaultHeight + ""),
-                // We crop it at the center to make it fit within the given width and height
-                "--crop", "centre");
+                // Last Parameter is the color space type: Grey 16
+                "grey16"
+            );
+            if(requiresConversion) {
+                imageContext.setOutputImageType("png");
+                transform0(imageContext, "pngsave",
+                    // {in}, {out} mark the placement of the input / output file (path / name)
+                    "{in}", "{out}",
+                    // Last Parameter is to strip the color settings from JPEG to be able to save it as PNG
+                    "--strip=true");
+            }
         } else {
             throw new DisabledTransformationException(transformationName);
         }

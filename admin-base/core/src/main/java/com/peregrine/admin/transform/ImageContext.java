@@ -10,6 +10,7 @@ import java.io.InputStream;
 public class ImageContext {
 
     private String imageType = "png";
+    private String outputImageType = imageType;
     private InputStream imageStream;
 
     public ImageContext(String imageType, InputStream imageStream)
@@ -18,11 +19,21 @@ public class ImageContext {
             throw new IllegalArgumentException("Image Type must be provided (extension without the dot)");
         }
         this.imageType = imageType;
+        outputImageType = this.imageType;
         resetImageStream(imageStream);
     }
 
     public String getImageType() {
         return imageType;
+    }
+
+    public String getOutputImageType() {
+        return outputImageType;
+    }
+
+    public ImageContext setOutputImageType(String outputImageType) {
+        this.outputImageType = outputImageType;
+        return this;
     }
 
     public InputStream getImageStream() {
@@ -38,5 +49,8 @@ public class ImageContext {
             IOUtils.closeQuietly(this.imageStream);
         }
         this.imageStream = newImageStream;
+        if(!imageType.equals(outputImageType)) {
+            this.imageType = outputImageType;
+        }
     }
 }
