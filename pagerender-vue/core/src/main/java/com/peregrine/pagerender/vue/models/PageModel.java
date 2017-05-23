@@ -9,6 +9,7 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.factory.ModelFactory;
 
 import javax.inject.Inject;
@@ -45,16 +46,16 @@ public class PageModel extends Container {
     @Inject
     private ModelFactory modelFactory;
 
-    @Inject
+    @Inject @Optional
     private String[] siteCSS;
 
-    @Inject
+    @Inject @Optional
     private String[] siteJS;
 
-    @Inject @Named("template")
+    @Inject @Named("template") @Optional
     private String template;
 
-    @Inject @Named("jcr:title")
+    @Inject @Named("jcr:title") @Optional
     private String title;
 
     public String getSiteRoot() {
@@ -82,6 +83,8 @@ public class PageModel extends Container {
     }
 
     private PageModel getTamplatePageModel() {
+        String template = getTemplate();
+        if(template == null) return null;
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate()+"/jcr:content");
         return (PageModel) modelFactory.getModelFromResource(templateResource);
     }

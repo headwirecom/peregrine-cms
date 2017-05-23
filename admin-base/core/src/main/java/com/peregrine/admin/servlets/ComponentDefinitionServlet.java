@@ -52,6 +52,9 @@ public class ComponentDefinitionServlet extends SlingSafeMethodsServlet {
         String componentPath = "/apps/"+resource.getValueMap().get("sling:resourceType", String.class);
         Resource component = rr.getResource(componentPath);
         Resource dialog = component.getChild("dialog.json");
+        if(dialog == null) {
+            dialog = getDialogFromSuperType(rr, component);
+        }
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(response.getWriter());
         jg.writeStartObject();
@@ -67,6 +70,25 @@ public class ComponentDefinitionServlet extends SlingSafeMethodsServlet {
         jg.close();
 
 
+    }
+
+    private Resource getDialogFromSuperType(ResourceResolver rr, Resource resource) {
+        String componentPath = resource.getValueMap().get("sling:resourceSuperType", String.class);
+        if(componentPath != null) {
+            if (!componentPath.startsWith("/apps")) {
+                componentPath = "/apps/" + componentPath;
+            }
+            resource = rr.getResource(componentPath);
+            Resource component = rr.getResource(componentPath);
+            Resource dialog = component.getChild("dialog.json");
+            if (dialog == null) {
+                return getDialogFromSuperType(rr, component);
+            } else {
+                return dialog;
+            }
+        } else {
+            return null;
+        }
     }
 
 }
