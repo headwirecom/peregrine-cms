@@ -9,37 +9,38 @@ import java.io.InputStream;
  */
 public class ImageContext {
 
-    private String imageType = "png";
-    private String outputImageType = imageType;
+    private String sourceMimeType = "image/png";
+    private String targetMimeType = sourceMimeType;
     private InputStream imageStream;
 
-    public ImageContext(String imageType, InputStream imageStream) {
-        this(imageType, imageType, imageStream);
+    public ImageContext(String sourceMimeType, InputStream imageStream) {
+        this(sourceMimeType, sourceMimeType, imageStream);
     }
 
-    public ImageContext(String imageType, String outputImageType, InputStream imageStream)
+    public ImageContext(String sourceMimeType, String targetMimeType, InputStream imageStream)
     {
-        if(imageType == null || imageType.isEmpty()) {
-            throw new IllegalArgumentException("Image Type must be provided (extension without the dot)");
+        if(sourceMimeType == null || sourceMimeType.isEmpty()) {
+            throw new IllegalArgumentException("Source Mime Type must be provided");
         }
-        if(outputImageType == null || outputImageType.isEmpty()) {
-            throw new IllegalArgumentException("Output Image Type must be provided (extension without the dot)");
+        if(targetMimeType == null || targetMimeType.isEmpty()) {
+            throw new IllegalArgumentException("Output Image Mime Type must be provided");
         }
         resetImageStream(imageStream);
-        this.imageType = imageType;
-        this.outputImageType = outputImageType;
+        // The reset of the image stream in changing the output mime type so we set it later
+        this.sourceMimeType = sourceMimeType;
+        this.targetMimeType = targetMimeType;
     }
 
-    public String getImageType() {
-        return imageType;
+    public String getSourceMimeType() {
+        return sourceMimeType;
     }
 
-    public String getOutputImageType() {
-        return outputImageType;
+    public String getTargetMimeType() {
+        return targetMimeType;
     }
 
-    public ImageContext setOutputImageType(String outputImageType) {
-        this.outputImageType = outputImageType;
+    public ImageContext setTargetMimeType(String targetMimeType) {
+        this.targetMimeType = targetMimeType;
         return this;
     }
 
@@ -56,8 +57,8 @@ public class ImageContext {
             IOUtils.closeQuietly(this.imageStream);
         }
         this.imageStream = newImageStream;
-        if(!imageType.equals(outputImageType)) {
-            this.imageType = outputImageType;
+        if(!sourceMimeType.equals(targetMimeType)) {
+            this.sourceMimeType = targetMimeType;
         }
     }
 }

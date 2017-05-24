@@ -6,6 +6,7 @@ import com.peregrine.admin.process.ProcessRunner;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
 import org.apache.commons.io.IOUtils;
+import org.apache.sling.commons.mime.MimeTypeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,17 +31,23 @@ public abstract class AbstractVipsImageTransformation
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    abstract MimeTypeService getMimeTypeService();
+
     protected void transform0(ImageContext imageContext, String operationName, String...parameters)
         throws TransformationException
     {
-        String name = "transformation.in." + System.currentTimeMillis() + "." + imageContext.getImageType();
+        String sourceExtension = getMimeTypeService().getExtension(imageContext.getSourceMimeType());
+        if(sourceExtension == null) { sourceExtension = imageContext.getSourceMimeType(); }
+        String targetExtension = getMimeTypeService().getExtension(imageContext.getTargetMimeType());
+        if(targetExtension == null) { targetExtension = imageContext.getTargetMimeType(); }
+        String name = "transformation.in." + System.currentTimeMillis() + "." + sourceExtension;
         Path temporaryFolder = createTempFolder();
         if(temporaryFolder != null) {
             File input = writeToFile(temporaryFolder, name, imageContext.getImageStream());
             if(input == null) {
                 throw new TransformationException("Could not create input file: " + name);
             }
-            String outputFileName = "transformation.out." + System.currentTimeMillis() + "." + imageContext.getOutputImageType();
+            String outputFileName = "transformation.out." + System.currentTimeMillis() + "." + targetExtension;
             File output = createTempFile(temporaryFolder, outputFileName);
             if(output == null) {
                 throw new TransformationException("Could not create output file: " + outputFileName);

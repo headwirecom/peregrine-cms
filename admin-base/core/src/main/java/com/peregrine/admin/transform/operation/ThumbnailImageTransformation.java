@@ -3,11 +3,13 @@ package com.peregrine.admin.transform.operation;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
 import com.peregrine.admin.transform.OperationContext;
+import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -68,6 +70,13 @@ public class ThumbnailImageTransformation
     private String transformationName = THUMBNAIL_TRANSFORMATION_NAME;
     private int defaultWidth = THUMBNAIL_DEFAULT_WIDTH;
     private int getDefaultHeight = THUMBNAIL_DEFAULT_HEIGHT;
+
+    @Reference
+    MimeTypeService mimeTypeService;
+
+    MimeTypeService getMimeTypeService() {
+        return mimeTypeService;
+    }
 
     @Activate
     private void activate(final Configuration configuration) {

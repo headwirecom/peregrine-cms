@@ -3,11 +3,13 @@ package com.peregrine.admin.transform.operation;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
 import com.peregrine.admin.transform.OperationContext;
+import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -51,6 +53,13 @@ public class GreyscaleImageTransformation
     private boolean enabled = false;
     private String transformationName = THUMBNAIL_TRANSFORMATION_NAME;
 
+    @Reference
+    MimeTypeService mimeTypeService;
+
+    MimeTypeService getMimeTypeService() {
+        return mimeTypeService;
+    }
+
     @Activate
     private void activate(final Configuration configuration) {
         configure(configuration);
@@ -86,17 +95,16 @@ public class GreyscaleImageTransformation
     {
         if(enabled) {
             if(
-                !"png".equals(imageContext.getImageType()) &&
-                !"jpg".equals(imageContext.getImageType()) &&
-                !"jpeg".equals(imageContext.getImageType())
+                !"image/png".equals(imageContext.getSourceMimeType()) &&
+                !"image/jpeg".equals(imageContext.getSourceMimeType())
             ) {
-                throw new UnsupportedFormatException(imageContext.getImageType());
+                throw new UnsupportedFormatException(imageContext.getSourceMimeType());
             }
             // A PNG image cannot be saved directly as PNG with VIPS
             // For that we need to store it as JPEG and then save it as PNG while stripping color info
-            boolean requiresConversion = "png".equals(imageContext.getImageType());
+            boolean requiresConversion = "image/png".equals(imageContext.getSourceMimeType());
             if(requiresConversion) {
-                imageContext.setOutputImageType("v");
+                imageContext.setTargetMimeType("v");
             }
             transform0(
                 imageContext,
@@ -107,7 +115,7 @@ public class GreyscaleImageTransformation
                 "grey16"
             );
             if(requiresConversion) {
-                imageContext.setOutputImageType("png");
+                imageContext.setTargetMimeType("image/png");
                 transform0(imageContext, "pngsave",
                     // {in}, {out} mark the placement of the input / output file (path / name)
                     "{in}", "{out}",
