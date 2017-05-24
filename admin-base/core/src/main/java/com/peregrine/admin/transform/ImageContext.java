@@ -13,14 +13,21 @@ public class ImageContext {
     private String outputImageType = imageType;
     private InputStream imageStream;
 
-    public ImageContext(String imageType, InputStream imageStream)
+    public ImageContext(String imageType, InputStream imageStream) {
+        this(imageType, imageType, imageStream);
+    }
+
+    public ImageContext(String imageType, String outputImageType, InputStream imageStream)
     {
         if(imageType == null || imageType.isEmpty()) {
             throw new IllegalArgumentException("Image Type must be provided (extension without the dot)");
         }
-        this.imageType = imageType;
-        outputImageType = this.imageType;
+        if(outputImageType == null || outputImageType.isEmpty()) {
+            throw new IllegalArgumentException("Output Image Type must be provided (extension without the dot)");
+        }
         resetImageStream(imageStream);
+        this.imageType = imageType;
+        this.outputImageType = outputImageType;
     }
 
     public String getImageType() {

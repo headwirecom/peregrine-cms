@@ -70,11 +70,16 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
             Node resourceJcrContentNode = resourceNode.getNode("jcr:content");
             // Check if there is a suffix
             String suffix = request.getRequestPathInfo().getSuffix();
-            String imageType = "png";
+            String sourceImageType = "png";
+            int index = resource.getName().lastIndexOf('.');
+            if(index > 0 && index < resource.getName().length() - 1) {
+                sourceImageType = resource.getName().substring(index + 1);
+            }
+            String targetImageType = "png";
             if(suffix != null && suffix.length() > 0) {
                 // Check if we support that renditions
                 String renditionName = suffix;
-                int index = renditionName.indexOf('/');
+                index = renditionName.indexOf('/');
                 if(index >= 0) {
                     renditionName = renditionName.substring(index + 1);
                 }
@@ -106,11 +111,11 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                                 Node jcrContent = renditionNode.addNode("jcr:content", "nt:resource");
                                 Binary source = resourceJcrContentNode.getProperty("jcr:data").getBinary();
                                 // Obtain the Image Type
-                                index = resource.getName().lastIndexOf('.');
-                                if(index > 0 && index < resource.getName().length() - 3) {
-                                    imageType = resource.getName().substring(index + 1);
+                                index = renditionName.lastIndexOf('.');
+                                if(index > 0 && index < renditionName.length() - 3) {
+                                    targetImageType = renditionName.substring(index + 1);
                                 }
-                                ImageContext imageContext = new ImageContext(imageType, source.getStream());
+                                ImageContext imageContext = new ImageContext(sourceImageType, targetImageType, source.getStream());
 
                                 for(ImageTransformationConfiguration imageTransformationConfiguration: imageTransformationConfigurationList) {
                                     ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(imageTransformationConfiguration.getTransformationName());
@@ -121,44 +126,77 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                                             imageTransformation.transform(imageContext, operationContext);
                                         } catch(DisabledTransformationException e) {
                                             log.error("Transformation disabled and hence ignored", e);
-                                        } catch(TransformationException e) {
-                                            log.error("Transformation Failed", e);
                                         }
                                     }
                                 }
                                 Binary data = session.getValueFactory().createBinary(imageContext.getImageStream());
                                 jcrContent.setProperty("jcr:data", data);
-                                jcrContent.setProperty("jcr:mimeType", "image/" + imageType);
+                                jcrContent.setProperty("jcr:mimeType", "image/" + targetImageType);
                                 session.save();
                                 rendition = renditions.getChild(renditionName);
+                            } catch(TransformationException e) {
+                                log.error("Transformation failed, image ignore", e);
                             } catch(RepositoryException e) {
                                 log.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
                                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                                 e.printStackTrace(response.getWriter());
                             }
                         }
+                        InputStream sourceStream = null;
                         if(rendition != null) {
-                            resource = rendition;
+                            Resource jcrContent = rendition.getChild("jcr:content");
+                            ValueMap properties = jcrContent != null ? jcrContent.getValueMap() : null;
+                            sourceStream = properties != null ? properties.get("jcr:data", InputStream.class) : null;
+                        }
+                        if(sourceStream == null) {
+                            // Try to load and thumbnail the broken-image image
+                            String imagePath = "/etc/felibs/admin/images/broken-image.svg";
+                            Resource brokenImageResource = renditions.getChild(imagePath);
+                            if(brokenImageResource != null) {
+                                try {
+                                    Resource jcrContent = brokenImageResource.getChild("jcr:content");
+                                    ValueMap properties = jcrContent != null ? jcrContent.getValueMap() : null;
+                                    InputStream is = properties != null ? properties.get("jcr:data", InputStream.class) : null;
+                                    ImageContext imageContext = new ImageContext("svg", "png", is);
+
+                                    imageTransformationConfigurationList =
+                                        imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.png");
+                                    for(ImageTransformationConfiguration imageTransformationConfiguration: imageTransformationConfigurationList) {
+                                        ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(imageTransformationConfiguration.getTransformationName());
+                                        if(imageTransformation != null) {
+                                            Map<String, String> parameters = new HashMap<>(imageTransformationConfiguration.getParameters());
+                                            parameters.put("noCrop", "true");
+                                            OperationContext operationContext = new OperationContext(renditionName, parameters);
+                                            try {
+                                                imageTransformation.transform(imageContext, operationContext);
+                                            } catch(DisabledTransformationException e) {
+                                                log.error("Transformation disabled and hence ignored", e);
+                                            }
+                                        }
+                                    }
+                                    sourceStream = imageContext.getImageStream();
+                                } catch(TransformationException e) {
+                                    log.error("Transformation failed, image ignore", e);
+//                                } catch(RepositoryException e) {
+//                                    log.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
+//                                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                                    e.printStackTrace(response.getWriter());
+                                }
+                            }
+                        }
+                        if(sourceStream != null) {
+                            response.setContentType("image/" + targetImageType);
+                            OutputStream os = response.getOutputStream();
+                            IOUtils.copy(sourceStream, os);
+                            IOUtils.closeQuietly(sourceStream);
+                            IOUtils.closeQuietly(os);
+                            return;
                         }
                     }
                 }
             }
-            if(resource != null) {
-                // Read image as is and send back
-                Resource jcrContent = resource.getChild("jcr:content");
-                ValueMap properties = jcrContent != null ? jcrContent.getValueMap() : null;
-                InputStream is = properties != null ? properties.get("jcr:data", InputStream.class) : null;
-                if(is != null) {
-                    response.setContentType(properties.get("jcr:mimeType", "image/" + imageType ));
-                    OutputStream os = response.getOutputStream();
-                    IOUtils.copy(is, os);
-                    IOUtils.closeQuietly(is);
-                    IOUtils.closeQuietly(os);
-                } else {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    //AS TODO: set response body
-                }
-            }
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            //AS TODO: set response body
         } catch(RepositoryException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             e.printStackTrace(response.getWriter());

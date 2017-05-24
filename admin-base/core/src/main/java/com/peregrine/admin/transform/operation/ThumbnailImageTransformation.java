@@ -105,15 +105,28 @@ public class ThumbnailImageTransformation
         throws TransformationException
     {
         if(enabled) {
-            transform0(imageContext, "thumbnail",
-                // {in}, {out} mark the placement of the input / output file (path / name)
-                "{in}", "{out}",
-                // Third parameter is width with no tag
-                operationContext.getParameter("width", defaultWidth + ""),
-                // Optional Parameters, double dashes without equals
-                "--height", operationContext.getParameter("height", getDefaultHeight + ""),
-                // We crop it at the center to make it fit within the given width and height
-                "--crop", "centre");
+            boolean noCrop = !"false".equals(operationContext.getParameter("noCrop", "false"));
+            if(noCrop) {
+                transform0(imageContext, "thumbnail",
+                    // {in}, {out} mark the placement of the input / output file (path / name)
+                    "{in}", "{out}",
+                    // Third parameter is width with no tag
+                    operationContext.getParameter("width", defaultWidth + ""),
+                    // Optional Parameters, double dashes without equals
+                    "--height", operationContext.getParameter("height", getDefaultHeight + "")
+                );
+            } else {
+                transform0(imageContext, "thumbnail",
+                    // {in}, {out} mark the placement of the input / output file (path / name)
+                    "{in}", "{out}",
+                    // Third parameter is width with no tag
+                    operationContext.getParameter("width", defaultWidth + ""),
+                    // Optional Parameters, double dashes without equals
+                    "--height", operationContext.getParameter("height", getDefaultHeight + ""),
+                    // We crop it a= the center to make it fit within the given width and height
+                    "--crop", "centre"
+                );
+            }
         } else {
             throw new DisabledTransformationException(transformationName);
         }
