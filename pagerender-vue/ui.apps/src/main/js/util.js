@@ -1,5 +1,5 @@
 import { LoggerFactory } from './logger.js'
-let log = LoggerFactory.logger('util').setDebugLevel()
+let log = LoggerFactory.logger('util').sewtDebugLevel()
 
 import { DATA_EXTENSION, COMPONENT_PREFIX } from './constants.js'
 
@@ -17,7 +17,7 @@ export function pathToPathInfo(path) {
  */
 export function pagePathToDataPath(path) {
 
-    log.debug('converting',path,'to dataPath')
+    log.fine('converting',path,'to dataPath')
     var firstHtmlExt = path.indexOf('.html')
     var res = null
     if(firstHtmlExt >= 0) {
@@ -27,7 +27,7 @@ export function pagePathToDataPath(path) {
     else {
         res = path + DATA_EXTENSION
     }
-    log.debug('result',res)
+    log.fine('result',res)
     return res
 
 }

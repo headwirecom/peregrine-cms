@@ -79,7 +79,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     }
 
     if(document.location !== path && !fromPopState && !firstTime) {
-        log.debug("PUSHSTATE : "+path);
+        log.fine("PUSHSTATE : "+path);
         history.pushState({peregrinevue:true, path: path}, path, path)
     }
 }
@@ -89,6 +89,7 @@ function loadContentImpl(path, firstTime, fromPopState) {
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
+    log.fine(dataUrl)
     getPerView().status = undefined;
     axios.get(dataUrl).then(function (response) {
         log.fine('got data for', path)

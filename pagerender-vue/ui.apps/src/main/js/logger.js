@@ -62,7 +62,7 @@ export class Logger {
     }
 
     setFineLevel() {
-        return setLevel(LogLevel.FINE)
+        return this.setLevel(LogLevel.FINE)
     }
 
     applyTo(method, level, args) {
@@ -78,6 +78,7 @@ export class Logger {
 
     fine() {
         if(this.level < LogLevel.FINE) return
+        alert(console.log)
         var args = Array.prototype.slice.call(arguments);
         this.applyTo(console.log, '[fine ]', args)
     }

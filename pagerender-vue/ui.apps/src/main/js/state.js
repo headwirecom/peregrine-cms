@@ -11,15 +11,15 @@ window.onclick = function(ev) {
 
 
     var currentServer = window.location.protocol+'//'+window.location.host+'/'
-    console.log("LOCATION: " + window.location.host);
-    console.log("NODENAME: " + ev.target.nodeName.toString());
+    log.fine("LOCATION: " , window.location.host);
+    log.fine("NODENAME: " , ev.target.nodeName.toString());
     if(ev.target.nodeName.toString() === 'A') {
         var toUrl = ev.target.href
-        log.debug("onClick() - "+ toUrl);
-        console.log(toUrl, currentServer)
+        log.fine("onClick() - "+ toUrl);
+        log.fine(toUrl, currentServer)
         if(toUrl.startsWith(currentServer)) {
             var gotoPath = '/'+toUrl.slice(currentServer.length)
-            log.debug("gotoPath : " + gotoPath);
+            log.fine("gotoPath : " + gotoPath);
             $peregrineApp.loadContent(gotoPath, false)
             return false
         }
@@ -29,7 +29,7 @@ window.onclick = function(ev) {
 }
 window.onpopstate = function(e){
     if(e.state) {
-        log.debug("ONPOPSTATE : " + e.state.path);
+        log.fine("ONPOPSTATE : " + e.state.path);
         $peregrineApp.loadContent(e.state.path, false, true)
     } else {
         log.warn(e);
@@ -42,7 +42,7 @@ window.onpopstate = function(e){
 export default {
 
     initBrowserStateHandler: function() {
-        log.debug('this should init our state handler')
+        log.fine('this should init our state handler')
     }
 
 }
