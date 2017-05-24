@@ -153,8 +153,11 @@ class PerAdminImpl {
                         data.model = component.methods.augmentEditorSchema(data.model)
                     }
                     populateView('/admin/componentDefinitions', data.name, data.model)
+                    resolve(name)
                 })
-                .then( () => resolve(name) )
+                .catch ( error => {
+                    reject(error)
+                } )
         })
     }
 

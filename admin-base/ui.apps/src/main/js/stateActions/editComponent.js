@@ -12,7 +12,9 @@ function bringUpEditor(me, view, target) {
             set(view, '/state/editorVisible', true)
             set(view, '/state/rightPanelVisible', true)
         }
-    )
+    ).catch( error => {
+        $perAdminApp.notifyUser('error', 'was not able to bring up editor for the selected component')
+    })
 }
 
 export default function(me, target) {
