@@ -194,6 +194,18 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                         }
                     }
                 }
+            } else {
+                Binary source = resourceJcrContentNode.getProperty("jcr:data").getBinary();
+                InputStream sourceStream = source.getStream();
+                if(sourceStream != null) {
+                    response.setContentType("image/" + targetImageType);
+                    OutputStream os = response.getOutputStream();
+                    IOUtils.copy(sourceStream, os);
+                    IOUtils.closeQuietly(sourceStream);
+                    IOUtils.closeQuietly(os);
+                    return;
+                }
+
             }
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             //AS TODO: set response body
