@@ -314,10 +314,12 @@ export default {
         ============================================ */
         setEditableStyle: function(targetBox, editableClass) {
             var editable = this.$refs.editable
-            editable.style.top    = targetBox.top + 'px'
-            editable.style.left   = targetBox.left + 'px'
-            editable.style.width  = targetBox.width + 'px'
-            editable.style.height = targetBox.height + 'px'
+            if(editable) {
+                editable.style.top    = targetBox.top + 'px'
+                editable.style.left   = targetBox.left + 'px'
+                editable.style.width  = targetBox.width + 'px'
+                editable.style.height = targetBox.height + 'px'
+            }
             this.editableClass = editableClass
         },
 

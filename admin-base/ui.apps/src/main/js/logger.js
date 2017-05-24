@@ -23,7 +23,7 @@ export class Logger {
         if(displayName.length > loggerFactoryInstance.getMaxNameLength()) {
             loggerFactoryInstance.setMaxNameLength(displayName.length)
         } else {
-            displayName = displayName + ' '.repeat(loggerFactoryInstance.getMaxNameLength() - displayName.length)
+            displayName = displayName + repeatStr(' ',loggerFactoryInstance.getMaxNameLength() - displayName.length)
         }
         this.displayName = displayName
     }
@@ -108,6 +108,14 @@ export class Logger {
 
 }
 
+function repeatStr(str, times) {
+    let ret = ""
+    for(let i = 0; i < times; i++) {
+        ret += str
+    }
+    return ret
+}
+
 export class LoggerFactory {
 
     constructor() {
@@ -128,7 +136,7 @@ export class LoggerFactory {
             var logger = this.loggers[key]
             var displayName = logger.getDisplayName()
             if(displayName.length < length) {
-                logger.setDisplayName(displayName + ' '.repeat(length - displayName.length))
+                logger.setDisplayName(displayName + repeatStr(' ',length - displayName.length))
             }
         }
     }
