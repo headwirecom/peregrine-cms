@@ -327,7 +327,7 @@ class PerAdminImpl {
     }
 
     insertNodeAt(path, component, drop) {
-        logger.debug(arguments)
+        logger.fine(arguments)
         return new Promise( (resolve, reject) => {
 
             fetch('/admin/insertNodeAt.json/path//'+path+'//component//'+component+'//drop//'+drop)
@@ -338,7 +338,7 @@ class PerAdminImpl {
     }
 
     insertNodeWithDataAt(path, data, drop) {
-        logger.debug(arguments)
+        logger.fine(arguments)
         return new Promise( (resolve, reject) => {
 
             let postData = new FormData();
