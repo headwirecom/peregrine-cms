@@ -5,23 +5,20 @@
 	.collection { 
 		overflow: auto;
 		border: 0;
-		a.collection-item {
+		.collection-item {
+			display: block;
 			padding-left: 0;
 			background: none;
 			border-color: $blue-grey-lighten-4;
 			color: $link-color;
-			cursor: grab;
-	    cursor: -moz-grab;
-	    cursor: -webkit-grab;
+			cursor: move;
 			&:hover,
 			&:focus,
 			&:active {
 				background-color: #fff;
 			}
 			&:active {
-				cursor: grabbing;
-		    cursor: -moz-grabbing;
-		    cursor: -webkit-grabbing;
+				cursor: move;
 			}
 			.material-icons {
 				color: #b0bec5;

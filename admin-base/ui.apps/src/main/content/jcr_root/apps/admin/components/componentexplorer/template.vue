@@ -2,7 +2,14 @@
     <div class="component-explorer">
         <span class="panel-title">Components</span>
         <div v-if="this.$root.$data.admin.components" class="collection">
-           <a draggable="true" v-on:dragstart="onDragStart(cmp, $event)" class="collection-item" v-for="cmp in componentList"><i class="material-icons">drag_handle</i> {{cmp.path.split('/')[2]}} {{cmp.name}}</a>
+           <span 
+            v-for          = "cmp in componentList"
+            v-on:dragstart = "onDragStart(cmp, $event)" 
+            draggable      = "true" 
+            class          = "collection-item">
+                <i class="material-icons">drag_handle</i> 
+                {{cmp.path.split('/')[2]}} {{cmp.name}}
+            </span>
         </div>
     </div>
 </template>
@@ -34,7 +41,7 @@
         methods: {
             onDragStart: function(cmp, ev) {
                 if(ev) {
-                    ev.dataTransfer.setData('component', cmp.path)
+                    ev.dataTransfer.setData('text', cmp.path)
                 }
             }
         }
