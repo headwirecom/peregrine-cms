@@ -155,18 +155,10 @@ export default {
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
         setScrollBarWidth(userAgent) {
-            switch(true) {
-                case (userAgent.indexOf('Edge') != -1):
-                    this.scrollbarWidth = 12
-                    break
-                case (userAgent.indexOf('Mac') != -1):
-                    this.scrollbarWidth = 15
-                    break
-                case (userAgent.indexOf('Win') != -1):
-                    this.scrollbarWidth = 17
-                    break
-                default:
-                    this.scrollbarWidth = 17
+            let widths = { edge: 12, mac: 15, win: 17, unknown: 17 }
+            this.scrollbarWidth = widths[$perAdminApp.getOSBrowser()]
+            if(!this.scrollbarWidth){
+                this.scrollbarWidth = widths.unknown
             }
         },
 
