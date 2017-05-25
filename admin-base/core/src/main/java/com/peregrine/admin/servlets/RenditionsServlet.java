@@ -54,6 +54,15 @@ import java.util.Map;
 public class RenditionsServlet extends SlingSafeMethodsServlet {
 
     public static final String JCR_CONTENT = "jcr:content";
+    public static final String JCR_DATA = "jcr:data";
+    public static final String NT_FILE = "nt:file";
+    public static final String NT_RESOURCE = "nt:resource";
+    public static final String JCR_MIME_TYPE = "jcr:mimeType";
+    public static final String RENDITIONS = "renditions";
+    public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
+    public static final String SLING_FOLDER = "sling:Folder";
+    public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
+    
     private final Logger log = LoggerFactory.getLogger(RenditionsServlet.class);
 
     @Reference
@@ -76,7 +85,7 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
         }
         // Check if there is a suffix
         String suffix = request.getRequestPathInfo().getSuffix();
-        String sourceMimeType = jcrContent.getValueMap().get("jcr:mimeType", "");
+        String sourceMimeType = jcrContent.getValueMap().get(JCR_MIME_TYPE, "");
         if(sourceMimeType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Given Resource has no Mime Type");
@@ -117,7 +126,7 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                 InputStream sourceStream = rendition != null ? getDataStream(rendition) : null;
                 if(sourceStream == null) {
                     // Rendition was not found and could not be created therefore load and thumbnail the broken image
-                    String imagePath = "/etc/felibs/admin/images/broken-image.svg";
+                    String imagePath = ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG;
                     Resource brokenImageResource = request.getResourceResolver().getResource(imagePath);
                     if(brokenImageResource != null) {
                         try {
@@ -212,7 +221,7 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
         }
         if(resource != null) {
             ValueMap properties = resource != null ? resource.getValueMap() : null;
-            answer = properties != null ? properties.get("jcr:data", InputStream.class) : null;
+            answer = properties != null ? properties.get(JCR_DATA, InputStream.class) : null;
         }
         return answer;
     }
@@ -231,11 +240,11 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
     {
         Session session = request.getResourceResolver().adaptTo(Session.class);
         Node renditionsNode = renditions.adaptTo(Node.class);
-        Node renditionNode = renditionsNode.addNode(renditionName, "nt:file");
-        Node jcrContent = renditionNode.addNode("jcr:content", "nt:resource");
+        Node renditionNode = renditionsNode.addNode(renditionName, NT_FILE);
+        Node jcrContent = renditionNode.addNode(JCR_CONTENT, NT_RESOURCE);
         Binary data = session.getValueFactory().createBinary(inputStream);
-        jcrContent.setProperty("jcr:data", data);
-        jcrContent.setProperty("jcr:mimeType", mimeType);
+        jcrContent.setProperty(JCR_DATA, data);
+        jcrContent.setProperty(JCR_MIME_TYPE, mimeType);
         session.save();
     }
 
@@ -249,12 +258,12 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
      */
     private Resource createRenditionsFolder(SlingHttpServletRequest request, Resource parent) {
         ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource renditions = parent.getChild("renditions");
+        Resource renditions = parent.getChild(RENDITIONS);
         if(renditions == null) {
             Map<String, Object> properties = new HashMap<>();
-            properties.put("jcr:primaryType", "sling:Folder");
+            properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
             try {
-                renditions = resourceResolver.create(parent, "renditions", properties);
+                renditions = resourceResolver.create(parent, RENDITIONS, properties);
             } catch(PersistenceException e) {
                 log.error("Failed to create 'renditions' folder in resource: " + parent.getPath());
             }
