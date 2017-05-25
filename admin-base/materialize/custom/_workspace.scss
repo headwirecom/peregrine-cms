@@ -18,6 +18,7 @@
 			z-index: 1;
 			#editable {
 				position: absolute; 
+				z-index: 2;
 				border: 1px solid transparent;
 				.editable-actions {
 					display: none;
@@ -75,23 +76,28 @@
 						display: block;
 					}
 				}
-				&.dragging {
+				&.drag-start {
+					border-color: $blue-gray;
+					cursor: move;
 					.editable-actions {
 						display: block;
 						ul {
 							li {
 								display: none;
 								&:last-child {
-									display: block;
+									display: inline-block;
 								}
 							}
 						}
 					}
 				}
+				&.dragging {
+
+				}
 			}
 		}
 		#editview {
-			cursor: default;
+			display: block;
 			height: 100%;
 			width: 100%;
 			border: 0;
