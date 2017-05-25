@@ -185,14 +185,33 @@ export default {
             return {x: posX, y: posY }
         },
 
+        findIn: function(el, pos) {
+            var rect = el.getBoundingClientRect()
+            var ret = null
+            if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
+                ret = el
+                for(var i = 0; i < el.children.length; i++) {
+                    var child = this.findIn(el.children[i], pos)
+                    if(child != null) {
+                        ret = child
+                        break
+                    }
+                }
+            }
+            return ret
+        },
+
         getTargetEl: function(e) {
-            console.log('getTargetEl====================')
+            // console.log('getTargetEl====================')
             var pos = this.getPosFromMouse(e)
-            console.log('pos: ', pos)
+            // console.log('pos: ', pos)
             var editview = this.$refs.editview
-            console.log('editview: ', editview)
+            // console.log('editview: ', editview)
             var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
-            console.log('targetEl: ', targetEl)
+            if(targetEl === null) {
+                targetEl = this.findIn(editview.contentWindow.document.body, pos)
+            }
+            // console.log('targetEl: ', targetEl)
             if(!targetEl) return
 
             while(!targetEl.getAttribute('data-per-path')) {
