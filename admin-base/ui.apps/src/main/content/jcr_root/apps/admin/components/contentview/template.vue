@@ -186,6 +186,7 @@ export default {
         },
 
         findIn: function(el, pos) {
+            if(!el) return null
             var rect = el.getBoundingClientRect()
             var ret = null
             if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
