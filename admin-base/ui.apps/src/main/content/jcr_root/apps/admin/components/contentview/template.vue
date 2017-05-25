@@ -7,15 +7,15 @@
             v-on:click     = "onClickOverlay"
             v-on:wheel     = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
-            v-on:dragover  = "dragOver"
-            v-on:drop      = "drop"
+            v-on:dragover  = "onDragOver"
+            v-on:drop      = "onDrop"
             v-bind:style   = "`right: ${scrollbarWidth}px;`">
             <div 
                 v-bind:class   = "editableClass"
                 ref            = "editable" 
                 id             = "editable"
                 draggable      = "true"
-                v-on:dragstart = "dragStart">
+                v-on:dragstart = "onDragStart">
                 <div class="editable-actions">
                     <ul>
                         <li class="waves-effect waves-light">
@@ -194,12 +194,13 @@ export default {
         },
 
         getTargetEl: function(e) {
-
+            console.log('getTargetEl====================')
             var pos = this.getPosFromMouse(e)
-
+            console.log('pos: ', pos)
             var editview = this.$refs.editview
-
+            console.log('editview: ', editview)
             var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
+            console.log('targetEl: ', targetEl)
             if(!targetEl) return
 
             while(!targetEl.getAttribute('data-per-path')) {
@@ -240,25 +241,20 @@ export default {
             }
         },
 
-        /* Drag and Drop ===========================        ============================================ */
-        dragStart(ev) {
+        /* Drag and Drop ===========================        
+        ============================================ */
+        onDragStart(ev) {
+            if(this.selectedComponent === null)return
             this.editableClass = 'dragging'
-            let element = this.getTargetEl(ev)
-            if(element) {
-                ev.dataTransfer.setData('componentFrom', element.getAttribute('data-per-path'))
-            }
-            else {
-                ev.preventDefault()
-                return false
-            }
+            ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
         },
 
-        dragOver: function(e) {
-            e.preventDefault()
-            var targetEl = this.getTargetEl(e)
+        onDragOver(ev) {
+            ev.preventDefault()
+            var targetEl = this.getTargetEl(ev)
 
             if(targetEl) {
-                var pos = this.getPosFromMouse(e)
+                var pos = this.getPosFromMouse(ev)
                 var targetBox = targetEl.getBoundingClientRect()
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
@@ -282,32 +278,30 @@ export default {
 
         },
 
-        drop: function(e) {
+        onDrop(ev) {
             this.editableClass = null
-            var targetEl = this.getTargetEl(e)
-            var componentPath = e.dataTransfer.getData('component')
-            var componentFrom = e.dataTransfer.getData('componentFrom')
-            var view = $perAdminApp.getView()
-            var payload
-            if(componentPath) {
-                payload = { 
-                    pagePath : view.pageView.path, 
-                    path: targetEl.getAttribute('data-per-path'), 
-                    component: componentPath, 
-                    drop: this.dropPosition 
-                }
-                $perAdminApp.stateAction('addComponentToPath', payload)
-            } else if(componentFrom) {
-                if(targetEl.getAttribute('data-per-path') === componentFrom) return
-                payload = { 
-                    pagePath : view.pageView.path, 
-                    path: targetEl.getAttribute('data-per-path'), 
-                    component: componentFrom, 
-                    drop: this.dropPosition
-                }
-                $perAdminApp.stateAction('moveComponentToPath', payload)
+            var targetEl = this.getTargetEl(ev)
+            var componentPath = ev.dataTransfer.getData('text')
+            if(typeof targetEl === 'undefined' || targetEl === null){
+                console.log('no target')
+                return false
             }
-
+            if(targetEl.getAttribute('data-per-path') === componentPath) {
+                ev.dataTransfer.clearData('text')
+                return false 
+            }
+            console.log('drop componentPath: ', componentPath)
+            var view = $perAdminApp.getView()
+            var payload = { 
+                pagePath : view.pageView.path, 
+                path: targetEl.getAttribute('data-per-path'), 
+                component: componentPath, 
+                drop: this.dropPosition 
+            }
+            var addOrMove
+            componentPath.includes('/components/') ? addOrMove = 'addComponentToPath' : addOrMove = 'moveComponentToPath'
+            $perAdminApp.stateAction(addOrMove, payload)
+            ev.dataTransfer.clearData('text')
         },
 
         /* Editable methods ========================
