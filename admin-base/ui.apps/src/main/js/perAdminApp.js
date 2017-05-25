@@ -17,6 +17,7 @@ let view = null
 let api = null
 let app = null
 let loadedComponents = []
+let OSBrowser = null
 
 /** dynamic component initializer **/
 function loadComponentImpl(name) {
@@ -270,6 +271,25 @@ function isPreviewModeImpl() {
     return mode === 'preview'
 }
 
+function getOSBrowserImpl() {
+    if(OSBrowser == null){
+        switch(true) {
+            case (window.navigator.userAgent.indexOf('Edge') != -1):
+                OSBrowser = 'edge'
+                break
+            case (window.navigator.userAgent.indexOf('Mac') != -1):
+                OSBrowser = 'mac'
+                break
+            case (window.navigator.userAgent.indexOf('Win') != -1):
+                OSBrowser = 'win'
+                break
+            default:
+                OSBrowser = 'unknown'
+        }
+    }
+    return OSBrowser
+}
+
 var PerAdminApp = {
 
     init(perAdminAppView) {
@@ -349,8 +369,11 @@ var PerAdminApp = {
 
     isPreviewMode() {
         return isPreviewModeImpl()
-    }
+    },
 
+    getOSBrowser(){
+        return getOSBrowserImpl()
+    }
 }
 
 export default PerAdminApp
