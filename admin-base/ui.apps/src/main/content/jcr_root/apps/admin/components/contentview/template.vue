@@ -203,16 +203,13 @@ export default {
         },
 
         getTargetEl: function(e) {
-            // console.log('getTargetEl====================')
             var pos = this.getPosFromMouse(e)
-            // console.log('pos: ', pos)
             var editview = this.$refs.editview
-            // console.log('editview: ', editview)
-            var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
-            if(targetEl === null) {
-                targetEl = this.findIn(editview.contentWindow.document.body, pos)
+            if($perAdminApp.getOSBrowser() === 'win'){
+                var targetEl = this.findIn(editview.contentWindow.document.body, pos)
+            } else {
+                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
             }
-            // console.log('targetEl: ', targetEl)
             if(!targetEl) return
 
             while(!targetEl.getAttribute('data-per-path')) {
