@@ -111,29 +111,43 @@ export default {
         },
 
         onKeyDown(ev){
-            var ctrlKey = 17
-            var cmdKey = 91
-            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                this.ctrlDown = true   
-            } 
-            if(this.selectedComponent !== null){
-                var cKey = 67
-                var vKey = 86
-                if (this.ctrlDown && (ev.keyCode == cKey)){
-                    this.onCopy()
-                }
-                if (this.ctrlDown && (ev.keyCode == vKey)){
-                    this.onPaste()
+            var nodeName = document.activeElement.nodeName
+            var className = document.activeElement.className
+            /* check no field is currently in focus */
+            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+                return false
+            } else { 
+                var ctrlKey = 17
+                var cmdKey = 91
+                if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+                    this.ctrlDown = true   
+                } 
+                if(this.selectedComponent !== null){
+                    var cKey = 67
+                    var vKey = 86
+                    if (this.ctrlDown && (ev.keyCode == cKey)){
+                        this.onCopy()
+                    }
+                    if (this.ctrlDown && (ev.keyCode == vKey)){
+                        this.onPaste()
+                    }
                 }
             }
         },
 
         onKeyUp(ev){
-            var ctrlKey = 17
-            var cmdKey = 91
-            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                this.ctrlDown = false
-            } 
+            var nodeName = document.activeElement.nodeName
+            var className = document.activeElement.className
+            /* check no field is currently in focus */
+            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+                return false
+            } else {
+                var ctrlKey = 17
+                var cmdKey = 91
+                if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+                    this.ctrlDown = false
+                } 
+            }
         },
 
         /* Iframe (editview) methods ===============
