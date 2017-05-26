@@ -66,7 +66,7 @@ export default {
     },
     onDropFile(ev){
       ev.stopPropagation()
-      this.isDragging = ''
+      this.isDragging = false
       this.uploadFile(ev.dataTransfer.files)
     },
     stopPropagation(ev){
