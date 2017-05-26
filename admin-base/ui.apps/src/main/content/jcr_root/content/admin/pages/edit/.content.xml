@@ -15,7 +15,7 @@
                  sling:resourceType="admin/components/nav">
 
                 <subnav jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/subnav">
+                     sling:resourceType="admin/components/subnav" classes="navcenter">
                     <mobile jcr:primaryType="nt:unstructured"
                                sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile" command="editPreview" icon="phone_android"/>
                     <tablet jcr:primaryType="nt:unstructured"

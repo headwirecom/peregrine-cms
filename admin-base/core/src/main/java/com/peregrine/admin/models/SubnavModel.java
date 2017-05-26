@@ -24,11 +24,16 @@ import javax.inject.Named;
     "path": {
       "type": "string",
       "source": "ignore"
+    },
+    "classes": {
+      "type": "string",
+      "source": "inject"
     }
   },
   "propertyNames": [
     "component",
-    "path"
+    "path",
+    "classes"
   ],
   "modelName": "Subnav",
   "package": "com.peregrine.admin.models",
@@ -56,11 +61,20 @@ public class SubnavModel extends Container {
     public SubnavModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    
+    /* {"type":"string","source":"inject"} */
+@Inject
+private String classes;
+
+
 //GEN]
 
     //GEN[:GETTERS
-    
+    /* {"type":"string","source":"inject"} */
+public String getClasses() {
+return classes;
+}
+
+
 //GEN]
 
 }
