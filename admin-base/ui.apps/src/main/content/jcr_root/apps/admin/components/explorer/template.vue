@@ -1,5 +1,12 @@
 <template>
-<div class="explorer">
+<div class="explorer" 
+    v-on:drag.prevent      ="stopPropagation"
+    v-on:dragstart.prevent ="stopPropagation"
+    v-on:dragover.prevent  ="setDragState"
+    v-on:dragenter.prevent ="setDragState"
+    v-on:dragleave.prevent ="unSetDragState"
+    v-on:dragend.prevent   ="unSetDragState"
+    v-on:drop.prevent      ="onDropFile">
     <!--
     <template v-for="segment in pathSegments">
         <admin-components-action 
@@ -71,6 +78,12 @@
 <script>
     export default {
         props: ['model'],
+        data(){
+            return{
+                isDragging: false,
+                uploadProgress: 0
+            }
+        },
         computed: {
             path: function() {
                 var dataFrom    = this.model.dataFrom
@@ -99,6 +112,42 @@
             }
         },
         methods: {
+            /* file upload */
+            setDragState(ev){
+              ev.stopPropagation()
+              this.isDragging = true
+            },
+            unSetDragState(ev){
+              ev.stopPropagation()
+              this.isDragging = false
+            },
+            stopPropagation(ev){
+              ev.stopPropagation()
+            },
+            uploadFile(files) {
+              $perAdminApp.stateAction('uploadFiles', { 
+                path: $perAdminApp.getView().state.tools.assets, 
+                files: files,
+                cb: this.setUploadProgress
+              })    
+            },
+            setUploadProgress(percentCompleted){
+              this.uploadProgress = percentCompleted 
+              if(percentCompleted === 100){
+                $perAdminApp.notifyUser(
+                  'Success', 
+                  'File uploaded successfully.', 
+                  () => { this.uploadProgress = 0 }
+                ) 
+              }
+            },
+            onDropFile(ev){
+              console.log('onDropFile')
+              ev.stopPropagation()
+              this.isDragging = false
+              this.uploadFile(ev.dataTransfer.files)
+            },
+            
             isSelected: function(child) {
 
                 if(this.model.selectionFrom && child) {
