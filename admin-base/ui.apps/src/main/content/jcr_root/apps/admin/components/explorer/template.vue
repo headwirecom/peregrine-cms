@@ -1,5 +1,6 @@
 <template>
 <div class="explorer">
+    <!--
     <template v-for="segment in pathSegments">
         <admin-components-action 
             v-bind:model="{ 
@@ -10,6 +11,7 @@
             }">
         </admin-components-action>
     </template>
+    -->
     <div class="explorer-layout">
     <div v-if="pt" class="explorer-main">
         <ul v-if="pt" class="collection">
@@ -55,12 +57,14 @@
 
     </div>
     <div v-if="hasEdit" class="explorer-preview">
-        <component v-bind:is="model.children[1].component" v-bind:model="model.children[1]"></component>
+        <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
     </div>
     </div>
+    <!--
     <template v-for="child in model.children[0].children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
     </template>
+    -->
 </div>
 </template>
 
@@ -91,7 +95,7 @@
                 return ret;
             },
             hasEdit: function() {
-                return this.model.children[1]
+                return this.model.children && this.model.children[0]
             }
         },
         methods: {
@@ -155,6 +159,9 @@
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
                 $perAdminApp.stateAction('selectToolsNodesPath', { selected: target.path, path: me.model.dataFrom })
+            },
+            selectPathInNav: function(me, target) {
+                this.selectPath(me, target)
             },
             viewPage: function(me, target) {
                 alert(target)

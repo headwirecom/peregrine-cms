@@ -9,13 +9,13 @@
             target: '/content/admin' 
           }">
         </admin-components-action>
-          <component v-for="item in vueRoot.adminPage.breadcrumbs">&nbsp;&raquo;&nbsp;<admin-components-action
+          <template v-for="item in vueRoot.adminPage.breadcrumbs">&nbsp;&raquo;&nbsp;<admin-components-action
               v-bind:model="{
               command: 'selectPath',
               title: item.title,
               target: item.path
               }">
-              </admin-components-action></component>
+              </admin-components-action></template>
 
       </div>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
