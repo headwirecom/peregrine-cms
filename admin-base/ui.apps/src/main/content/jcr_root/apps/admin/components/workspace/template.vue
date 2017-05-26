@@ -10,11 +10,11 @@
         <div :class="getRightPanelClasses">
 
             <admin-components-action v-if="!state.editorVisible" v-bind:model="{
-                classes: 'toggle-right-panel',
+                classes: state.rightPanelVisible ? 'hide-right-panel' : 'show-right-panel',
                 target: 'rightPanelVisible',
                 command: 'showHide'
             }">
-                <i class="material-icons">{{state.rightPanelVisible ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</i>
+                <i class="material-icons">{{state.rightPanelVisible ? 'highlight_off' : 'keyboard_arrow_left'}}</i>
             </admin-components-action>
 
             <component

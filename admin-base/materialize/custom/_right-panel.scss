@@ -2,8 +2,9 @@
 	height: 100%;
 	position: relative;
 	width: 0;
+	z-index: 1;
 	background-color: $blue-grey-lighten-5;
-	.toggle-right-panel {
+	.show-right-panel {
 		background-color: $blue-grey-lighten-5;
 		width: 2rem; 
 		height: 40px; 
@@ -16,6 +17,15 @@
 			position: relative;
 			left: -.25rem;
 			font-size: 40px;
+		}
+	}
+	.hide-right-panel {
+		position: absolute;
+		right: 1rem;
+		top: 1rem;
+		.material-icons {
+			font-size: 30px;
+			color: $blue-grey-lighten-1;
 		}
 	}
 
