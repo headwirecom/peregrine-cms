@@ -1,72 +1,94 @@
 <template>
-<div class="explorer">
-    <template v-for="segment in pathSegments">
-        <admin-components-action 
-            v-bind:model="{ 
-                target: { path: segment.path },
-                title: segment.name, 
-                command: 'selectPath', 
-                classes: 'btn waves-effect waves-light blue-grey darken-3'
-            }">
-        </admin-components-action>
-    </template>
-    <div class="explorer-layout">
-    <div v-if="pt" class="explorer-main">
-        <ul v-if="pt" class="collection">
-            <a 
-                v-bind:class="isSelected(child) ? 'explorer-item-selected' : ''"
-                class="collection-item"
-                v-for ="child in pt.children"
-                v-if  ="checkIfAllowed(child.resourceType)">
-                <admin-components-action
-                    v-bind:model="{
-                        target: child,
-                        command: 'selectPath'
-                    }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
-                </admin-components-action>
+<div class="explorer" 
+    v-on:drag.prevent      ="stopPropagation"
+    v-on:dragstart.prevent ="stopPropagation"
+    v-on:dragover.prevent  ="setDragState"
+    v-on:dragenter.prevent ="setDragState"
+    v-on:dragleave.prevent ="unSetDragState"
+    v-on:dragend.prevent   ="unSetDragState"
+    v-on:drop.prevent      ="onDropFile">
 
-                <div class="secondary-content">
-                    <admin-components-action v-if="editable(child)"
+    <nav class="nav-explorer">
+        <div class="nav-wrapper">
+            <div class="nav-breadcrumbs">
+                <template v-for="segment in pathSegments">
+                    <admin-components-action 
                         v-bind:model="{ 
-                            target: child.path, 
-                            command: 'editPage'
+                            target: { path: segment.path },
+                            title: segment.name, 
+                            command: 'selectPath'
                         }">
-                        <i class="material-icons">edit</i>
                     </admin-components-action>
+                </template>
+            </div>
+            <div class="nav-actions">
+                <template v-for="child in model.children[0].children">
+                    <component v-bind:is="child.component" v-bind:model="child"></component>
+                </template>
+            </div>
+        </div>
+    </nav>
 
-                    <span v-if="viewable(child)">
-                        <a 
-                            target      ="viewer"
-                            v-bind:href ="viewUrl(child)">
-                            <i class="material-icons">visibility</i>
-                        </a>
-                    </span>
-
+    <div class="explorer-layout">
+        <div v-if="pt" class="explorer-main">
+            <ul v-if="pt" class="collection">
+                <a 
+                    v-bind:class="isSelected(child) ? 'explorer-item-selected' : ''"
+                    class="collection-item"
+                    v-for ="child in pt.children"
+                    v-if  ="checkIfAllowed(child.resourceType)">
                     <admin-components-action
                         v-bind:model="{
-                            target: child.path,
-                            command: 'deletePage'
-                        }">
-                        <i class="material-icons">delete</i>
+                            target: child,
+                            command: 'selectPath'
+                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
                     </admin-components-action>
-                </div>
-            </a>
-        </ul>
 
+                    <div class="secondary-content">
+                        <admin-components-action v-if="editable(child)"
+                            v-bind:model="{ 
+                                target: child.path, 
+                                command: 'editPage'
+                            }">
+                            <i class="material-icons">edit</i>
+                        </admin-components-action>
+
+                        <span v-if="viewable(child)">
+                            <a 
+                                target      ="viewer"
+                                v-bind:href ="viewUrl(child)">
+                                <i class="material-icons">visibility</i>
+                            </a>
+                        </span>
+
+                        <admin-components-action
+                            v-bind:model="{
+                                target: child.path,
+                                command: 'deletePage'
+                            }">
+                            <i class="material-icons">delete</i>
+                        </admin-components-action>
+                    </div>
+                </a>
+            </ul>
+
+        </div>
+        <div v-if="hasEdit" class="explorer-preview">
+            <component v-bind:is="model.children[1].component" v-bind:model="model.children[1]"></component>
+        </div>
     </div>
-    <div v-if="hasEdit" class="explorer-preview">
-        <component v-bind:is="model.children[1].component" v-bind:model="model.children[1]"></component>
-    </div>
-    </div>
-    <template v-for="child in model.children[0].children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
 </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
+        data(){
+            return{
+                isDragging: false,
+                uploadProgress: 0
+            }
+        },
         computed: {
             path: function() {
                 var dataFrom    = this.model.dataFrom
@@ -95,6 +117,43 @@
             }
         },
         methods: {
+            /* file upload */
+            setDragState(ev){
+              ev.stopPropagation()
+              this.isDragging = true
+            },
+            unSetDragState(ev){
+              ev.stopPropagation()
+              this.isDragging = false
+            },
+            stopPropagation(ev){
+              ev.stopPropagation()
+            },
+            uploadFile(files) {
+              $perAdminApp.stateAction('uploadFiles', { 
+                path: $perAdminApp.getView().state.tools.assets, 
+                files: files,
+                cb: this.setUploadProgress
+              })    
+            },
+            setUploadProgress(percentCompleted){
+              this.uploadProgress = percentCompleted 
+              if(percentCompleted === 100){
+                $perAdminApp.notifyUser(
+                  'Success', 
+                  'File uploaded successfully.', 
+                  () => { this.uploadProgress = 0 }
+                ) 
+              }
+            },
+            onDropFile(ev){
+              console.log('onDropFile')
+              ev.stopPropagation()
+              this.isDragging = false
+              this.uploadFile(ev.dataTransfer.files)
+            },
+
+            
             isSelected: function(child) {
 
                 if(this.model.selectionFrom && child) {
@@ -122,14 +181,22 @@
                 return path + '.json'
             },
             nodeTypeToIcon: function(nodeType) {
-
-                if(nodeType === 'per:Page')     return 'insert_drive_file'
-                if(nodeType === 'per:Object')   return 'layers'
-                if(nodeType === 'nt:file')      return 'insert_drive_file'
-                if(nodeType === 'per:Asset')      return 'insert_drive_file'
-                if(nodeType === 'sling:Folder') return 'folder'
-                if(nodeType === 'sling:OrderedFolder') return 'folder'
-                return 'unknown'
+                switch(nodeType){
+                    case 'per:Page':
+                        return 'insert_drive_file'
+                    case 'per:Object':
+                        return 'layers'
+                    case 'nt:file':
+                        return 'insert_drive_file'
+                    case 'per:Asset':
+                        return 'insert_drive_file'
+                    case 'sling:Folder':
+                        return 'folder'
+                    case 'sling:OrderedFolder':
+                        return 'folder'
+                    default:
+                        return 'unknown'
+                }
             },
             checkIfAllowed: function(resourceType) {
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
