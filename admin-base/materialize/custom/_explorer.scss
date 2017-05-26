@@ -66,7 +66,7 @@
     position: relative;
 		z-index: 1;
 		.explorer-main {
-	    flex: 6 1 60%;
+	    flex: 4 1 auto;
 	    height: 100%;
 	    overflow: scroll;
 			.collection {
@@ -103,7 +103,7 @@
 				}
 		}
 		.explorer-preview {
-		  flex: 4 1 40%;
+		  flex: 1 1 auto;
 		  background-color: $blue-grey-lighten-5;
 		  border-left: 1px solid $blue-grey-lighten-4;
 		  color: $blue-gray-darken-1;
