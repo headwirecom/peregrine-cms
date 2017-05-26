@@ -185,13 +185,27 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
         })
 }
 
+function findActionInTree(component, command, target) {
+    if(component.$options.methods && component.$options.methods[command]) {
+        component.$options.methods[command](component, target)
+        return true
+    } else {
+        let children = component.$children
+        for(let i = 0; i < children.length; i++) {
+            let ret = findActionInTree(children[i], command, target)
+            if(ret) return true;
+        }
+    }
+}
 
 function actionImpl(component, command, target) {
     if(component.$options.methods && component.$options.methods[command]) {
         component.$options.methods[command](component, target)
     } else {
         if(component.$parent === component.$root) {
-            logger.error('action', command, 'not found, ignored, traget was', target)
+            if(!findActionInTree(component.$root, command, target)) {
+                logger.error('action', command, 'not found, ignored, traget was', target)
+            }
         } else {
             actionImpl(component.$parent, command, target)
         }

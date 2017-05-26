@@ -12,19 +12,29 @@
             loaders="[populateNodesForBrowser:/state/tools/assets]"
     >
         <nav jcr:primaryType="nt:unstructured"
-             sling:resourceType="admin/components/nav"/>
+             sling:resourceType="admin/components/nav">
+            <subnav jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/subnav">
 
-            <pathfield jcr:primaryType="nt:unstructured"
-                 sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/assets"/>
+                <pathfield jcr:primaryType="nt:unstructured"
+                           sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/assets"/>
+                <add jcr:primaryType="nt:unstructured"
+                     sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder"/>
+                <fileupload jcr:primaryType="nt:unstructured"
+                            sling:resourceType="admin/components/fileupload"/>
+            </subnav>
+        </nav>
 
             <explorer jcr:primaryType="nt:unstructured"
                        sling:resourceType="admin/components/explorer" dataFrom="/state/tools/assets" selectionFrom="/state/tools/asset/show">
+                <!--
                 <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerender/vue/structure/container">
                     <add jcr:primaryType="nt:unstructured"
                          sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder"/>
                     <fileupload jcr:primaryType="nt:unstructured"
                          sling:resourceType="admin/components/fileupload"/>
                 </actions>
+                -->
                 <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/assetview"/>
 
             </explorer>

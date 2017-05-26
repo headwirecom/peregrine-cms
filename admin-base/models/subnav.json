@@ -10,6 +10,10 @@
 				"path": {
 					"type": "string",
 					"source": "ignore"
+				},
+				"classes": {
+					"type": "string",
+					"source": "inject"
 				}
 			}
 		}

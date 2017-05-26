@@ -9,7 +9,14 @@
             target: '/content/admin' 
           }">
         </admin-components-action>
-        &raquo; {{ vueRoot.adminPage.title}}
+          <template v-for="item in vueRoot.adminPage.breadcrumbs">&nbsp;&raquo;&nbsp;<admin-components-action
+              v-bind:model="{
+              command: 'selectPath',
+              title: item.title,
+              target: item.path
+              }">
+              </admin-components-action></template>
+
       </div>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li><a href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>

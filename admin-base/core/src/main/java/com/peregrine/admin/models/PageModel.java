@@ -11,6 +11,10 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by rr on 12/2/2016.
@@ -112,5 +116,35 @@ public class PageModel extends Container {
 
     public String[] getSuffixToParameter() {
         return suffixToParameter;
+    }
+
+    public List<TitlePath> getBreadcrumbs() {
+        LinkedList<TitlePath> ret = new LinkedList<TitlePath>();
+        Resource res = getResource();
+        while(res != null) {
+
+            ret.addFirst(new TitlePath(res));
+            res = getParentContent(res);
+            // we do not want to stop at level 2 and not include it
+            if(res != null && res.getParent().getPath().equals("/content/admin")) {
+                break;
+            }
+        }
+        return ret;
+    }
+
+    class TitlePath {
+        Resource res;
+        public TitlePath(Resource res) {
+            this.res = res;
+        }
+
+        public String getTitle() {
+            return res.getValueMap().get("jcr:title", String.class);
+        }
+
+        public String getPath() {
+            return res.getParent().getPath();
+        }
     }
 }

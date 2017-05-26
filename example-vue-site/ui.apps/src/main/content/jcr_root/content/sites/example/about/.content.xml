@@ -23,11 +23,11 @@
                            sling:resourceType="example/components/carousel"
                            >
                         <slide1 jcr:primaryType="nt:unstructured"
-                                imagePath="/etc/felibs/admin/peregrine-logo.png"
+                                imagePath="/etc/felibs/admin/images/peregrine-logo.png"
                                 sling:resourceType="example/components/carouselItem"
                                 name="slide1"/>
                         <slide2 jcr:primaryType="nt:unstructured"
-                                imagePath="/etc/felibs/admin/peregrine-logo.png"
+                                imagePath="/etc/felibs/admin/images/peregrine-logo.png"
                                 sling:resourceType="example/components/carouselItem"
                                 name="slide2"/>
                     </carousel>

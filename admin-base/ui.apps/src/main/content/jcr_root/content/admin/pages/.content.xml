@@ -12,17 +12,24 @@
             loaders="[populateNodesForBrowser:/state/tools/pages]"
     >
         <nav jcr:primaryType="nt:unstructured"
-             sling:resourceType="admin/components/nav"/>
-
-            <pathfield jcr:primaryType="nt:unstructured"
-                 sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/pages"/>
+             sling:resourceType="admin/components/nav">
+            <subnav jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/subnav">
+                <pathfield jcr:primaryType="nt:unstructured"
+                           sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/pages"/>
+                <add jcr:primaryType="nt:unstructured"
+                         sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add"/>
+            </subnav>
+        </nav>
 
             <explorer jcr:primaryType="nt:unstructured"
                        sling:resourceType="admin/components/explorer" dataFrom="/state/tools/pages">
+                <!--
                 <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerender/vue/structure/container">
                     <add jcr:primaryType="nt:unstructured"
                          sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add"/>
                 </actions>
+                -->
             </explorer>
 
             <jsonview jcr:primaryType="nt:unstructured"
