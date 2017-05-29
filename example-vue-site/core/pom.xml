@@ -154,6 +154,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
+            <version>1.0.8</version>
+            <groupId>org.apache.sling</groupId>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <profiles>

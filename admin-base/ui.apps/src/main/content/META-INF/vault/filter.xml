@@ -20,6 +20,7 @@
     <filter root="/api/swaggereditor"/>
     <filter root="/api/definitions"/>
     <filter root="/content/admin"/>
+    <filter root="/content/sites/docs"/>
     <filter root="/etc/felibs/admin"/>
     <filter root="/content/templates">
         <include pattern="/content/templates/jcr:content.*"/>

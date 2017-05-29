@@ -30,10 +30,16 @@ public class PageMerge implements Use {
 
     private final Logger log = LoggerFactory.getLogger(PageMerge.class);
 
+    private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
+
 //    @Reference
     ModelFactory modelFactory;
 
     private SlingHttpServletRequest request;
+
+    public static RenderContext getRenderContext() {
+        return renderContext.get();
+    }
 
     public String getMerged() {
         try {
@@ -102,5 +108,6 @@ public class PageMerge implements Use {
         request = (SlingHttpServletRequest) bindings.get("request");
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
         modelFactory = sling.getService(ModelFactory.class);
+        renderContext.set(new RenderContext(request));
     }
 }
