@@ -1,10 +1,8 @@
 <template>
-    <div class="nav-content" style=" height: 48px;">
-        <ul style="padding-top: 5px;" v-bind:class="classes">
-            <template v-for="child in model.children">
-                <li v-bind:is="child.component" v-bind:model="child"></li>
-            </template>
-        </ul>
+    <div class="nav-content sub-nav">
+        <template v-for="child in model.children">
+            <li v-bind:is="child.component" v-bind:model="child"></li>
+        </template>
     </div>
 </template>
 
@@ -22,11 +20,3 @@ export default {
 }
 </script>
 
-<style>
-    .navcenter {
-        text-align: center;
-    }
-    .navright {
-        text-align: right;
-    }
-</style>
