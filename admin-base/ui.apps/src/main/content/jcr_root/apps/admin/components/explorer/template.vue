@@ -24,8 +24,7 @@
     <div class="row">
         <div v-if="pt" class="col s12 m8 explorer-main">
             <ul class="collection">
-                <a 
-                    href="#!" 
+                <li 
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
                     v-for ="child in pt.children"
                     v-if  ="checkIfAllowed(child.resourceType)">
@@ -61,7 +60,7 @@
                             <i class="material-icons">delete</i>
                         </admin-components-action>
                     </div>
-                </a>
+                </li>
             </ul>
 
         </div>
