@@ -1,13 +1,14 @@
 <template>
-<div style="display:inline;" class="pathfield">
-    <template v-for="item in pathSegments"><admin-components-action
-            v-bind:model="{
-                target: { path: item.path },
-                title: '/ '+item.name,
-                command: 'selectPathInNav'
-            }"></admin-components-action>
-    </template>
-</div>
+    <div class="pathfield">
+        <template v-for="item in pathSegments">
+            <admin-components-action
+                v-bind:model="{
+                    target: { path: item.path },
+                    title: '/ '+item.name,
+                    command: 'selectPathInNav'
+                }"></admin-components-action>
+        </template>
+    </div>
 </template>
 
 <script>
@@ -31,15 +32,3 @@
         }
     }
 </script>
-
-<style>
-.pathfield {
-    position: absolute;
-    top: 1em;
-    left: 1em;
-}
-.pathfield a {
-    display: inherit;
-    padding: 0 2px;
-}
-</style>
