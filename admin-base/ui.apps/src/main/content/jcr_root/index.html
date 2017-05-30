@@ -2,11 +2,6 @@
 <head>
     <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons" type="text/css">
     <link rel="stylesheet" href="/etc/felibs/materialize/materialize.css" type="text/css">
-    <style>
-        .card .card-content p {
-            height: 100px;
-        }
-    </style>
 </head>
 <body>
     <div id="peregrine-adminapp">
@@ -24,46 +19,45 @@
             </div>
         </span>
     </div>
-    <div class="container">
+    <div class="welcome-page container">
         <div class="row">
-            <div class="col s12 m12" style="text-align: center; padding: 8px;">
-                <img src="/etc/felibs/admin/images/peregrine-logo.png" style="width: 200px"/>
+            <div class="col s12 center-align">
+                <img class="welcome-page-logo" src="/etc/felibs/admin/images/peregrine-logo.png" />
             </div>
-            <div class="col s12 m4">
+        </div>
+        <div class="row">
+            <div class="col s12 m6 l4">
                 <div class="card blue-grey darken-3">
                     <div class="card-content white-text">
                         <span class="card-title">Welcome</span>
-                        <p>glad you're accessing peregrine. Watch out for more information right here in the future</p>
-                        <div class="card-action">
-                            <a href="http://peregrine-cms.com" target="_blank">peregrine-cms homepage</a>
-                        </div>
+                        <p>Glad you&apos;re accessing peregrine. Watch out for more information right here in the future.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="http://peregrine-cms.com" target="_blank">peregrine-cms homepage</a>
                     </div>
                 </div>
             </div>
-            <div class="col s12 m4">
+            <div class="col s12 m6 l4">
                 <div class="card blue-grey darken-3">
                     <div class="card-content white-text">
                         <span class="card-title">Administration</span>
-                        <p>Use the links below to administer peregrine-cms</p>
-                        <div class="card-action">
-                            <a href="/content/admin.html">admin</a>
-                            <a href="/bin/browser.html">composum</a>
-                            <a href="/api/swaggereditor/">api</a>
-                        </div>
+                        <p>Use the links below to administer peregrine-cms.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="/content/admin.html">admin</a>
+                        <a href="/bin/browser.html">composum</a>
+                        <a href="/api/swaggereditor/">api</a>
                     </div>
                 </div>
             </div>
-            <div class="col s12 m4">
+            <div class="col s12 m6 l4 offset-m3">
                 <div class="card blue-grey darken-3">
                     <div class="card-content white-text">
                         <span class="card-title">Sites</span>
-                        <p>
-                            peregine-cms contains some sample sites for you to explore using a set of front
-                            end technologies. You can adapt these samples to your needs
-                        </p>
-                        <div class="card-action">
-                            <a href="/content/sites/example.html">example vuejs based site</a>
-                        </div>
+                        <p>Peregine-cms contains some sample sites for you to explore using a set of front end technologies. You can adapt these samples to your needs.</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="/content/sites/example.html">example vuejs based site</a>
                     </div>
                 </div>
             </div>
