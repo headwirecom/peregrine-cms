@@ -1,190 +1,141 @@
 .explorer {
-	position: absolute;
-	top: 112px;
-	left: 0;
-	right: 0;
-	bottom: 0;
 	overflow: hidden;
-	z-index: 0;
-	.nav-explorer {
-		.nav-wrapper {
-			background-color: $blue-gray-darken-2;
-			.nav-breadcrumbs {
-				text-align: center;
-				display: inline-block;
-				> span {
-				  font-size: 18px;
-				  color: rgba(255, 255, 255, 0.7); 
-
-				  i,
-				  [class^="mdi-"],
-				  [class*="mdi-"],
-				  i.material-icons {
-				    display: inline-block;
-				    float: left;
-				    font-size: 24px;
-				  }
-				  &:before {
-				    content: '\E5CC';
-				    color: rgba(255, 255, 255, 0.7);
-				    vertical-align: top;
-				    display: inline-block;
-				    font-family: 'Material Icons';
-				    font-weight: normal;
-				    font-style: normal;
-				    font-size: 25px;
-				    margin: 0 10px 0 8px;
-				    -webkit-font-smoothing: antialiased; 
-				 	}
-				  &:first-child:before {
-				    display: none; 
-				  }
-				  &:last-child {
-				    color: #fff; 
-				  }
-				}
-			}
-			.nav-actions {
-				float: right;
-				display: inline-block;
-				> span {
-					display: inline-block;
-					padding-left: 0.75rem;
-					.material-icons {
-						height: 40px;
-						line-height: 40px;
-					}
-				}
-			}
-		}
-	}
 	.explorer-layout {
 		clear: both;
-    display: flex;
-    flex-direction: row;
+		width: 100%;
     height: 100%;
-    position: relative;
-		z-index: 1;
-		.explorer-main {
-	    flex: 4 1 0;
-	    height: 100%;
-	    overflow-y: auto;
-			.collection {
-					border: 0;
-					a.collection-item {
-						color: $blue-gray-darken-2;
-						border-color: $blue-grey-lighten-4;
-						span,
-				    span a,
-				    .material-icons {
-				    	color: $blue-gray-darken-2;
-				    }
-				    .material-icons {
-							vertical-align: middle;
-						}
-						&:hover,
-						&:focus,
-						&:active {
-							background-color: $blue-grey-lighten-5;
-						}
-						&:last-child {
-							border-bottom: 0;
-						}
-						&.explorer-item-selected {
-							color: $blue-gray-darken-4;
-					    background-color: $blue-grey-lighten-5;
-					    span,
+		.row {
+			margin-bottom: 0;
+			.explorer-main {
+		    overflow-y: auto;
+		    padding: 0;
+				.collection {
+						border: 0;
+						margin: 0;
+						a.collection-item {
+							color: $blue-gray-darken-2;
+							border-color: $blue-grey-lighten-4;
+							span,
 					    span a,
 					    .material-icons {
-					    	color: $blue-gray-darken-4;
+					    	color: $blue-gray-darken-2;
 					    }
+					    .material-icons {
+								vertical-align: middle;
+							}
+							&:hover,
+							&:focus,
+							&:active {
+								background-color: $blue-grey-lighten-5;
+							}
+							&:last-child {
+								border-bottom: 0;
+							}
+							&.explorer-item-selected {
+								color: $blue-gray-darken-4;
+						    background-color: $blue-grey-lighten-5;
+						    span,
+						    span a,
+						    .material-icons {
+						    	color: $blue-gray-darken-4;
+						    }
+							}
 						}
 					}
-				}
-				.secondary-content {
-					color: $primary-color-dark;
-					span {
-						display: inline-block;
-						padding: 0 1rem;
-						border-left: 1px solid $blue-grey-lighten-4;
-						a {
+					.secondary-content {
+						color: $primary-color-dark;
+						span {
 							display: inline-block;
+							padding: 0 1rem;
+							border-left: 1px solid $blue-grey-lighten-4;
+							a {
+								display: inline-block;
+							}
+							&:first-child {
+								border-left: 0;
+							}
 						}
-						&:first-child {
-							border-left: 0;
-						}
 					}
-				}
-		}
-		.explorer-preview {
-		  flex: 1 1 0;
-		  background-color: $blue-grey-lighten-5;
-		  border-left: 1px solid $blue-grey-lighten-4;
-		  color: $blue-gray-darken-1;
-		  .asset-preview {
-		  	height: 100%;
-		  	padding: 0.75rem;		  	
-		  	text-align: center;
-		  	position: relative;
-		  	.asset-info {
-		  		font-size: 12px;
-			  	> li {
-			  		display: flex;
-	    			flex-direction: row; 
-			  		.asset-name {
-			  			flex: 1;
-			  			padding-right: 0.75rem;
-			  			text-align: right;
-			  			font-weight: 500;
-			  		}
-			  		.asset-value {
-			  			flex: 2;
-			  			text-align: left;
-			  			font-weight: 400;
-			  		}
-			  	}
-			  }
-				img {
-					width: auto;
-					max-width: 100%;
-					height: auto;
-					max-height: 50%;
-				}
-				iframe {
-			    border: 0;
-			    max-width: 100%;
-			    height: 100%;
-				}
-				.no-asset-selected {
-					margin-top: 45%;
-					> span {
-						display: inline-block;
-						width: 100%;
-					}
-					.material-icons {
-						color: $blue-grey-lighten-2;
-						font-size: 80px;
-					}
-				}
 			}
-		}
-	}
-	/* desktop styles */
-	@media(min-width: 1400px){
-		width: 1400px;
-		left: 50%;
-		margin-left: -700px;
-		.explorer-layout {
 			.explorer-preview {
-
+			  background-color: $blue-grey-lighten-5;
+			  border-left: 1px solid $blue-grey-lighten-4;
+			  color: $blue-gray-darken-1;
+			  .asset-preview {
+			  	height: 100%;
+			  	padding: 0.75rem 0;		  	
+			  	text-align: center;
+			  	position: relative;
+			  	.asset-info {
+			  		font-size: 12px;
+				  	> li {
+				  		display: flex;
+		    			flex-direction: row; 
+				  		.asset-name {
+				  			flex: 1;
+				  			padding-right: 0.75rem;
+				  			text-align: right;
+				  			font-weight: 500;
+				  		}
+				  		.asset-value {
+				  			flex: 2;
+				  			text-align: left;
+				  			font-weight: 400;
+				  		}
+				  	}
+				  }
+					img {
+						width: auto;
+						max-width: 100%;
+						height: auto;
+						max-height: 50%;
+					}
+					iframe {
+				    border: 0;
+				    max-width: 100%;
+				    height: 100%;
+					}
+					.no-asset-selected {
+						> span {
+							display: inline-block;
+							width: 100%;
+						}
+						.material-icons {
+							color: $blue-grey-lighten-2;
+							font-size: 80px;
+						}
+					}
+				}
 			}
 		}
 	}
 
-	/* mobile styles */
-	@media(max-width: 767px){
-    .explorer-layout {
-        flex-direction: column;
-    }
+	/* tablet styles */
+	@media(min-width: 601px){
+		position: absolute;
+		top: 112px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 0;
+		.explorer-layout {
+			max-width: 1400px;
+			margin: 0 auto;
+			.row {
+				height: 100%;
+				.explorer-main {
+					height: 100%;
+				}
+				.explorer-preview {
+					height: 100%;
+					.asset-preview {
+						padding: 0;
+					}
+					.no-asset-selected {
+						margin-top: 45%;
+					}
+				}
+			}
+		}
 	}
 }

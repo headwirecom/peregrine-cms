@@ -21,51 +21,53 @@
     </template>
     -->
     <div class="explorer-layout">
-    <div v-if="pt" class="explorer-main">
-        <ul v-if="pt" class="collection">
-            <a 
-                href="#!" 
-                v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
-                v-for ="child in pt.children"
-                v-if  ="checkIfAllowed(child.resourceType)">
-                <admin-components-action
-                    v-bind:model="{
-                        target: child,
-                        command: 'selectPath'
-                    }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
-                </admin-components-action>
-
-                <div class="secondary-content">
-                    <admin-components-action v-if="editable(child)"
-                        v-bind:model="{ 
-                            target: child.path, 
-                            command: 'editPage'
-                        }">
-                        <i class="material-icons">edit</i>
-                    </admin-components-action>
-
-                    <span v-if="viewable(child)">
-                        <a 
-                            target      ="viewer"
-                            v-bind:href ="viewUrl(child)">
-                            <i class="material-icons">visibility</i>
-                        </a>
-                    </span>
-
+    <div class="row">
+        <div v-if="pt" class="col s12 m8 explorer-main">
+            <ul class="collection">
+                <a 
+                    href="#!" 
+                    v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
+                    v-for ="child in pt.children"
+                    v-if  ="checkIfAllowed(child.resourceType)">
                     <admin-components-action
                         v-bind:model="{
-                            target: child.path,
-                            command: 'deletePage'
-                        }">
-                        <i class="material-icons">delete</i>
+                            target: child,
+                            command: 'selectPath'
+                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
                     </admin-components-action>
-                </div>
-            </a>
-        </ul>
 
-    </div>
-    <div v-if="hasEdit" class="explorer-preview">
-        <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
+                    <div class="secondary-content">
+                        <admin-components-action v-if="editable(child)"
+                            v-bind:model="{ 
+                                target: child.path, 
+                                command: 'editPage'
+                            }">
+                            <i class="material-icons">edit</i>
+                        </admin-components-action>
+
+                        <span v-if="viewable(child)">
+                            <a 
+                                target      ="viewer"
+                                v-bind:href ="viewUrl(child)">
+                                <i class="material-icons">visibility</i>
+                            </a>
+                        </span>
+
+                        <admin-components-action
+                            v-bind:model="{
+                                target: child.path,
+                                command: 'deletePage'
+                            }">
+                            <i class="material-icons">delete</i>
+                        </admin-components-action>
+                    </div>
+                </a>
+            </ul>
+
+        </div>
+        <div v-if="hasEdit" class="col s12 m4 explorer-preview">
+            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
+        </div>
     </div>
     </div>
     <!--
