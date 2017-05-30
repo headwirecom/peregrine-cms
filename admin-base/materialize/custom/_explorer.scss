@@ -66,24 +66,38 @@
     position: relative;
 		z-index: 1;
 		.explorer-main {
-	    flex: 4 1 auto;
+	    flex: 4 1 0;
 	    height: 100%;
-	    overflow: scroll;
+	    overflow-y: scroll;
 			.collection {
 					border: 0;
 					a.collection-item {
-						background: none;
+						color: $blue-gray-darken-2;
 						border-color: $blue-grey-lighten-4;
+						span,
+				    span a,
+				    .material-icons {
+				    	color: $blue-gray-darken-2;
+				    }
+				    .material-icons {
+							vertical-align: middle;
+						}
 						&:hover,
 						&:focus,
 						&:active {
-							background-color: #fff;
-						}
-						.material-icons {
-							vertical-align: middle;
+							background-color: $blue-grey-lighten-5;
 						}
 						&:last-child {
 							border-bottom: 0;
+						}
+						&.explorer-item-selected {
+							color: $blue-gray-darken-4;
+					    background-color: $blue-grey-lighten-5;
+					    span,
+					    span a,
+					    .material-icons {
+					    	color: $blue-gray-darken-4;
+					    }
 						}
 					}
 				}
@@ -103,7 +117,7 @@
 				}
 		}
 		.explorer-preview {
-		  flex: 1 1 auto;
+		  flex: 1 1 0;
 		  background-color: $blue-grey-lighten-5;
 		  border-left: 1px solid $blue-grey-lighten-4;
 		  color: $blue-gray-darken-1;
@@ -153,9 +167,6 @@
 					}
 				}
 			}
-		}
-		.explorer-item-selected {
-	    background: $blue-grey-lighten-5 !important;
 		}
 	}
 	/* desktop styles */
