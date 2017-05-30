@@ -15,7 +15,10 @@
             v-on:click.stop.prevent = "action" 
             class                   = "btn-floating waves-effect waves-light" 
             v-bind:class            = "model.classes">
-            <i class="material-icons">{{model.icon ? model.icon : model.title}}<slot></slot></i>
+            <i class="material-icons">
+                {{model.icon ? model.icon : model.title}}
+                <slot></slot>
+            </i>
         </a>
     </span>
 </template>
