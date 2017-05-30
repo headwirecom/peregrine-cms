@@ -1,0 +1,35 @@
+.icon-action {
+	.card-content {
+		p {
+			height: auto !important;
+		}
+	}
+	@media(min-width: 601px){
+		.card-content {
+			p {
+				min-height: 63px;
+			}
+		}
+	}
+	@media(min-width: 768px){
+		.card-content {
+			p {
+				min-height: 42px;
+			}
+		}
+	}
+	@media(min-width: 992px){
+		.card-content {
+			p {
+				min-height: 63px;
+			}
+		}
+	}
+	@media(min-width: 1400px){
+		.card-content {
+			p {
+				min-height: 44px;
+			}
+		}
+	}
+}
