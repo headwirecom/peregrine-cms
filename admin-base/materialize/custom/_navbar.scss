@@ -1,25 +1,72 @@
 nav {
-  .nav-wrapper {
-    padding: 0 0.75rem;
-  }
-    // Logo
-  .brand-logo {
-  	> span:first-of-type {
-  		> a {
-	  		display: inline-block;
-	  		vertical-align: middle;
-	  		width: 50px;
-	  		height: 50px;
-	  		margin-right: 0.75rem;
-				background-image: url(/etc/felibs/admin/images/peregrine-logo.png);
-        background-size: contain;
-	  		text-indent: -9999px;
-	  	}
-  	}
-  }
   &.nav-extended {
-    height: 112px;
-    position: relative;
-    z-index: 1;
+
   }
+  .nav-wrapper {
+    .brand-logo {
+      > span {
+        display: inline-block;
+        padding: 0 0.75rem;
+        > a {
+          display: inline-block;
+          line-height: 36px;
+          &.peregrine-logo {
+            height: 36px;
+            width: 36px;
+            background-image: url(/etc/felibs/admin/images/peregrine-logo.png);
+            background-size: contain;
+            background-position: center center;
+            text-indent: -9999px;
+          }
+          &:before {
+            content: '\00BB';
+            margin-left: -0.75rem;
+            margin-right: 0.75rem;
+            display: inline;
+          }
+        }
+      }
+    }
+  }
+  .sub-nav {
+    min-height: 48px;
+    padding: 4px 0;
+    > span {
+      display: inline-block;
+      padding: 0 0.75rem;
+      float: right;
+      .material-icons {
+        line-height: 40px;
+        height: 100%;
+      }
+    }
+    .pathfield {
+      display: inline-block;
+      padding-left: 0.75rem;
+      line-height: 20px;
+      width: calc(100% - 122px);
+      position: relative;
+       > span {
+        display: inline-block;
+        height: 100%;
+       }
+    }
+  }
+
+  @media(min-width: 601px){
+    .nav-wrapper {
+      .brand-logo {
+        > span {
+          > a {
+            line-height: 44px;
+            &.peregrine-logo {
+              height: 44px;
+              width: 44px;
+            }
+          }
+        }
+      }
+    }
+  }
+
 }
