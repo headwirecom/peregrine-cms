@@ -68,7 +68,7 @@
 		.explorer-main {
 	    flex: 4 1 0;
 	    height: 100%;
-	    overflow-y: scroll;
+	    overflow-y: auto;
 			.collection {
 					border: 0;
 					a.collection-item {
