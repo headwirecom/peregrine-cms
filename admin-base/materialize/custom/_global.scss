@@ -1,3 +1,7 @@
+body {
+	max-width: 100%;
+	overflow-x: hidden;
+}
 .modal.default {
 	z-index: 1003;
 	display: block;
