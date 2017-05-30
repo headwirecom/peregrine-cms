@@ -1,7 +1,7 @@
 <template>
     <div class="nav-content sub-nav">
         <template v-for="child in model.children">
-            <li v-bind:is="child.component" v-bind:model="child"></li>
+            <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
     </div>
 </template>
