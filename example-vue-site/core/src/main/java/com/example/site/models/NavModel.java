@@ -26,15 +26,16 @@ import java.util.List;
 @Exporter(name = "jackson", extensions = "json")
 public class NavModel extends AbstractComponent {
 
-    @Inject @Default(values = "")
-    private String brand;
-
     public NavModel(Resource resource) {
         super(resource);
     }
 
     public String getBrand() {
-        return brand == null ? "" : brand;
+        RenderContext rx = PageMerge.getRenderContext();
+        SlingHttpServletRequest request = rx.getRequest();
+        Resource homePage = getResourceAt(request.getResource(), 3);
+        Resource content = homePage.getChild("jcr:content");
+        return content.adaptTo(ValueMap.class).get("brand", String.class);
     }
 
     public List<NavItem> getNavigation() {

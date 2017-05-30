@@ -6,7 +6,8 @@
     <jcr:content
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
-            jcr:title="peregrine cms"
+            jcr:title="example site"
+            brand="example"
             template="/content/templates/example"
     >
         <jumbotron jcr:primaryType="nt:unstructured"

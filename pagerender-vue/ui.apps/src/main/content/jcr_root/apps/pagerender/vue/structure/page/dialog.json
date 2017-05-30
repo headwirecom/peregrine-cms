@@ -1,4 +1,10 @@
 { "fields":[{
+  "type": "input",
+  "inputType": "text",
+  "model": "brand",
+  "label": "Brand",
+  "placeholder": "brand name"
+},{
   "type": "list",
   "label": "Site JS Files",
   "model": "siteJS",

@@ -15,6 +15,7 @@ return `<?xml version="1.0" encoding="UTF-8"?>
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
             jcr:title="${title}"
+            brand="peregrine"
             template="/content/templates/example"
     >
         <content jcr:primaryType="nt:unstructured"
