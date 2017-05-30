@@ -1,4 +1,5 @@
 <template>
+
 <div class="explorer" 
     v-on:drag.prevent      ="stopPropagation"
     v-on:dragstart.prevent ="stopPropagation"
@@ -23,8 +24,8 @@
     <div v-if="pt" class="explorer-main">
         <ul v-if="pt" class="collection">
             <a 
-                v-bind:class="isSelected(child) ? 'explorer-item-selected' : ''"
-                class="collection-item"
+                href="#!" 
+                v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
                 v-for ="child in pt.children"
                 v-if  ="checkIfAllowed(child.resourceType)">
                 <admin-components-action
@@ -79,7 +80,7 @@
     export default {
         props: ['model'],
         data(){
-            return{
+            return {
                 isDragging: false,
                 uploadProgress: 0
             }
