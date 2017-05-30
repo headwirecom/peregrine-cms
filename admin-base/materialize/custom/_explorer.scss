@@ -12,13 +12,17 @@
 				.collection {
 						border: 0;
 						margin: 0;
-						a.collection-item {
+						.collection-item {
+							position: relative;
 							color: $blue-gray-darken-2;
 							border-color: $blue-grey-lighten-4;
-							span,
-					    span a,
-					    .material-icons {
+					    > span > a {
 					    	color: $blue-gray-darken-2;
+					    	&:hover,
+								&:focus,
+								&:active {
+									color: $blue-gray-darken-4;
+								}
 					    }
 					    .material-icons {
 								vertical-align: middle;
@@ -26,6 +30,7 @@
 							&:hover,
 							&:focus,
 							&:active {
+								color: $blue-gray-darken-4;
 								background-color: $blue-grey-lighten-5;
 							}
 							&:last-child {
@@ -34,25 +39,29 @@
 							&.explorer-item-selected {
 								color: $blue-gray-darken-4;
 						    background-color: $blue-grey-lighten-5;
-						    span,
-						    span a,
-						    .material-icons {
-						    	color: $blue-gray-darken-4;
-						    }
 							}
-						}
-					}
-					.secondary-content {
-						color: $primary-color-dark;
-						span {
-							display: inline-block;
-							padding: 0 1rem;
-							border-left: 1px solid $blue-grey-lighten-4;
-							a {
-								display: inline-block;
-							}
-							&:first-child {
-								border-left: 0;
+							.secondary-content {
+								color: $primary-color-dark;
+								position: absolute;
+								top: 0;
+								right: 0;
+								bottom: 0;
+								padding: 0.75rem 0;
+								span {
+									display: inline-block;
+									> a {
+										color: $blue-gray-darken-2;
+										vertical-align: middle;
+										display: inline-block;
+										padding: 0 0.75rem;
+										border-left: 1px solid $blue-grey-lighten-4;
+										&:hover,
+										&:focus,
+										&:active {
+											color: $blue-gray-darken-4;
+										}
+									}
+								}
 							}
 						}
 					}
