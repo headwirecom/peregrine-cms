@@ -1,20 +1,24 @@
 <template>
-    <div class="peregrine-workspace">
-
-
+    <div :class="`peregrine-workspace ${state.rightPanelVisible ? 'right-panel-visible' : ''}`">
         <component
                 v-bind:is    = "getChildByPath('contentview').component"
                 v-bind:model = "getChildByPath('contentview')">
         </component>
 
-        <div :class="getRightPanelClasses">
+        <admin-components-action v-if="!state.rightPanelVisible" v-bind:model="{
+            classes: 'show-right-panel',
+            target: 'rightPanelVisible',
+            command: 'showHide'
+            }"><i class="material-icons">keyboard_arrow_left</i>
+        </admin-components-action>
 
+        <div class="right-panel">
             <admin-components-action v-if="!state.editorVisible" v-bind:model="{
-                classes: state.rightPanelVisible ? 'hide-right-panel' : 'show-right-panel',
+                classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
                 command: 'showHide'
             }">
-                <i class="material-icons">{{state.rightPanelVisible ? 'highlight_off' : 'keyboard_arrow_left'}}</i>
+                <i class="material-icons">highlight_off</i>
             </admin-components-action>
 
             <component
@@ -29,51 +33,12 @@
                     v-bind:model = "getChildByPath('components')">
             </component>
         </div>
-
-        <!--
-        <component
-            v-bind:is    = "getChildByPath('contentview').component"
-            v-bind:model = "getChildByPath('contentview')">
-        </component>
-
-        <div :class= "getRightPanelClasses">
-            {{this.$root.$data.state}}
-            <admin-components-action v-bind:model="{
-                classes: 'toggle-right-panel',
-                target: 'rightPanelVisible', 
-                command: 'showHide' 
-            }">
-                <i class="material-icons">{{isVisible ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</i>
-            </admin-components-action>
-
-            <component
-                v-if         = "editorVisible"
-                v-bind:is    = "getChildByPath('editor').component"
-                v-bind:model = "getChildByPath('editor')">
-            </component>
-
-            <component
-                v-else
-                v-bind:is    = "getChildByPath('components').component"
-                v-bind:model = "getChildByPath('components')">
-            </component>
-        </div>
-        -->
     </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
-//        beforeMount(){
-//
-//            $perAdminApp.getNodeFromView('/state')['rightPanelVisible'] = true // .$set($perAdminApp.getView().state,'rightPanelVisible', true)
-//            this.$root.$data.state.rightPanelVisible = true
-////            $perAdminView.state.rightPanelVisible = true
-////            $perAdminApp.getNodeFromViewWithDefault('/state/editorVisible', true)
-////            this.$root.$set(perAdminView.state, 'rightPanelVisible', true)
-////            this.$root.$set(perAdminView.state, 'editorVisible', false)
-//        },
         computed: {
             state: function() {
                 return $perAdminApp.getView().state
