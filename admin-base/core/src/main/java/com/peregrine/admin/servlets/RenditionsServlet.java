@@ -8,6 +8,7 @@ import com.peregrine.admin.transform.ImageTransformation.TransformationException
 import com.peregrine.admin.transform.ImageTransformationConfigurationProvider;
 import com.peregrine.admin.transform.ImageTransformationProvider;
 import com.peregrine.admin.transform.OperationContext;
+import com.peregrine.admin.util.JcrUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -53,14 +54,6 @@ import java.util.Map;
  */
 public class RenditionsServlet extends SlingSafeMethodsServlet {
 
-    public static final String JCR_CONTENT = "jcr:content";
-    public static final String JCR_DATA = "jcr:data";
-    public static final String NT_FILE = "nt:file";
-    public static final String NT_RESOURCE = "nt:resource";
-    public static final String JCR_MIME_TYPE = "jcr:mimeType";
-    public static final String RENDITIONS = "renditions";
-    public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
-    public static final String SLING_FOLDER = "sling:Folder";
     public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
     
     private final Logger log = LoggerFactory.getLogger(RenditionsServlet.class);
@@ -77,7 +70,7 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                          SlingHttpServletResponse response) throws ServletException,
             IOException {
         Resource resource = request.getResource();
-        Resource jcrContent = resource.getChild(JCR_CONTENT);
+        Resource jcrContent = resource.getChild(JcrUtil.JCR_CONTENT);
         if(jcrContent == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Given Resource has no Content");
@@ -85,7 +78,7 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
         }
         // Check if there is a suffix
         String suffix = request.getRequestPathInfo().getSuffix();
-        String sourceMimeType = jcrContent.getValueMap().get(JCR_MIME_TYPE, "");
+        String sourceMimeType = jcrContent.getValueMap().get(JcrUtil.JCR_MIME_TYPE, "");
         if(sourceMimeType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Given Resource has no Mime Type");
@@ -216,12 +209,12 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
      */
     private InputStream getDataStream(Resource resource) {
         InputStream answer = null;
-        if(resource != null && !JCR_CONTENT.equals(resource.getName())) {
-            resource = resource.getChild(JCR_CONTENT);
+        if(resource != null && !JcrUtil.JCR_CONTENT.equals(resource.getName())) {
+            resource = resource.getChild(JcrUtil.JCR_CONTENT);
         }
         if(resource != null) {
             ValueMap properties = resource != null ? resource.getValueMap() : null;
-            answer = properties != null ? properties.get(JCR_DATA, InputStream.class) : null;
+            answer = properties != null ? properties.get(JcrUtil.JCR_DATA, InputStream.class) : null;
         }
         return answer;
     }
@@ -240,11 +233,11 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
     {
         Session session = request.getResourceResolver().adaptTo(Session.class);
         Node renditionsNode = renditions.adaptTo(Node.class);
-        Node renditionNode = renditionsNode.addNode(renditionName, NT_FILE);
-        Node jcrContent = renditionNode.addNode(JCR_CONTENT, NT_RESOURCE);
+        Node renditionNode = renditionsNode.addNode(renditionName, JcrUtil.NT_FILE);
+        Node jcrContent = renditionNode.addNode(JcrUtil.JCR_CONTENT, JcrUtil.NT_RESOURCE);
         Binary data = session.getValueFactory().createBinary(inputStream);
-        jcrContent.setProperty(JCR_DATA, data);
-        jcrContent.setProperty(JCR_MIME_TYPE, mimeType);
+        jcrContent.setProperty(JcrUtil.JCR_DATA, data);
+        jcrContent.setProperty(JcrUtil.JCR_MIME_TYPE, mimeType);
         session.save();
     }
 
@@ -258,12 +251,12 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
      */
     private Resource createRenditionsFolder(SlingHttpServletRequest request, Resource parent) {
         ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource renditions = parent.getChild(RENDITIONS);
+        Resource renditions = parent.getChild(JcrUtil.RENDITIONS);
         if(renditions == null) {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
+            properties.put(JcrUtil.JCR_PRIMARY_TYPE, JcrUtil.SLING_FOLDER);
             try {
-                renditions = resourceResolver.create(parent, RENDITIONS, properties);
+                renditions = resourceResolver.create(parent, JcrUtil.RENDITIONS, properties);
             } catch(PersistenceException e) {
                 log.error("Failed to create 'renditions' folder in resource: " + parent.getPath());
             }
