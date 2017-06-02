@@ -1,5 +1,5 @@
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-[per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath
+[per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath, per:Replication
   orderable
 

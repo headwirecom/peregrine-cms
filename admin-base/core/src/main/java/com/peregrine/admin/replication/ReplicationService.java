@@ -1,6 +1,7 @@
 package com.peregrine.admin.replication;
 
 import com.peregrine.admin.util.JcrUtil;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -17,12 +18,19 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeDefinition;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.NodeTypeIterator;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.peregrine.admin.util.JcrUtil.JCR_CONTENT;
 
 /**
  * Created by schaefa on 5/25/17.
@@ -233,7 +241,7 @@ public class ReplicationService
     {
         Resource answer = null;
         Map<String, Object> newProperties = new HashMap<>();
-        ValueMap properties = JcrUtil.getProperties(source, false);
+        ModifiableValueMap properties = JcrUtil.getModifiableProperties(source, false);
         for(String key : properties.keySet()) {
             Object value = properties.get(key);
             if(value instanceof String) {
@@ -245,6 +253,38 @@ public class ReplicationService
                 }
             }
             newProperties.put(key, value);
+        }
+        Node sourceNode = source.adaptTo(Node.class);
+        boolean replicationMixin = false;
+        try {
+            NodeType[] mixins = sourceNode.getMixinNodeTypes();
+            for(NodeType mixin: mixins) {
+                if(mixin.getName().equals("per:Replication")) {
+                    replicationMixin = true;
+                    break;
+                }
+            }
+            if(!replicationMixin) {
+                NodeType nodeType = sourceNode.getPrimaryNodeType();
+                NodeType[] superTypes = nodeType.getSupertypes();
+                for(NodeType mixin: superTypes) {
+                    if(mixin.getName().equals("per:Replication")) {
+                        replicationMixin = true;
+                        break;
+                    }
+                }
+            }
+        } catch(RepositoryException e) {
+            e.printStackTrace();
+        }
+//        if(JCR_CONTENT.equals(source.getName())) {
+        if(replicationMixin) {
+            properties.put("per:ReplicatedBy", source.getResourceResolver().getUserID());
+            properties.put("per:Replicated", Calendar.getInstance());
+            properties.put("per:ReplicationRef", targetParent.getPath());
+            newProperties.put("per:ReplicatedBy", source.getResourceResolver().getUserID());
+            newProperties.put("per:Replicated", Calendar.getInstance());
+            newProperties.put("per:ReplicationRef", source.getParent().getPath());
         }
         answer = source.getResourceResolver().create(targetParent, source.getName(), newProperties);
         return answer;

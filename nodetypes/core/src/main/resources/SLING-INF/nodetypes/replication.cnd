@@ -1,0 +1,9 @@
+<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
+
+//-----------------------------------------------------------------------------
+// Mixin node type for replication
+[per:Replication]
+    mixin
+  - per:Replicated (date)
+  - per:ReplicatedBy (string)
+  - per:ReplicationRef (string)

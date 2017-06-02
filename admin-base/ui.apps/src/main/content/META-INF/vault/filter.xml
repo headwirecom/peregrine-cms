@@ -47,4 +47,7 @@
     </filter>
     <filter root="/apps/field"/>
     <filter root="/index.html"/>
+    <filter root="/live">
+        <exclude pattern="/live/.*"/>
+    </filter>
 </workspaceFilter>
