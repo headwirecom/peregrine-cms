@@ -1,6 +1,7 @@
 package com.peregrine.admin.replication;
 
 import com.peregrine.admin.util.JcrUtil;
+import com.peregrine.admin.util.JcrUtil.MissingOrOutdatedResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
@@ -81,7 +82,7 @@ public class ReferenceListerService
                                 log.info("Resource is already in the list: '{}'", child);
                             } else {
                                 if(source  != null && target != null) {
-                                    JcrUtil.listMissingParents(child, response, source, target);
+                                    JcrUtil.listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
                                 }
                                 log.trace("Found Reference Resource: '{}'", child);
                                 response.add(child);

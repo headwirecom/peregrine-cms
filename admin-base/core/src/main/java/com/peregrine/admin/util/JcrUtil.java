@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -184,18 +185,21 @@ public class JcrUtil {
         return answer;
     }
 
-    public static void listMissingResources(Resource startingResource, List<Resource> response, Resource source, Resource target, boolean deep) {
-        if(startingResource != null && source != null && target != null && response != null) {
-            String relativePath = relativePath(source, startingResource);
-            Resource targetResource = target.getChild(relativePath);
-            if(targetResource == null && !containsResource(response, startingResource)) {
+    public static void listMissingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
+        ResourceChecker childResourceChecker = resourceChecker;
+        if(startingResource != null && resourceChecker != null && response != null) {
+            if(resourceChecker.doAdd(startingResource)) {
                 response.add(startingResource);
+                // If this is JCR Content we need to add all children
+                if(startingResource.getName().equals(JCR_CONTENT)) {
+                    childResourceChecker = new AddAllResourceChecker();
+                }
             }
             for(Resource child : startingResource.getChildren()) {
                 if(child.getName().equals(JCR_CONTENT)) {
-                    listMissingResources(child, response, source, target, true);
+                    listMissingResources(child, response, childResourceChecker, true);
                 } else if(deep) {
-                    listMissingResources(child, response, source, target, true);
+                    listMissingResources(child, response, childResourceChecker, true);
                 }
             }
         }
@@ -216,21 +220,61 @@ public class JcrUtil {
      * @param startingResource Child Resource
      * @param response List of resources to which the missing parents are added to. Cannot be null
      * @param source Root of the Child
-     * @param target Root of the Target. Parents of the child are added if there is not matching parent on the target.
-     *               Matching means the resource with the same relative path.
+     * @param resourceChecker Resource Check instance that defined when a parent is added to the missing list
      */
-    public static void listMissingParents(Resource startingResource, List<Resource> response, Resource source, Resource target) {
-        if(startingResource != null && source != null && target != null && response != null) {
+    public static void listMissingParents(Resource startingResource, List<Resource> response, Resource source, ResourceChecker resourceChecker) {
+        if(startingResource != null && source != null && resourceChecker != null && response != null) {
             List<Resource> parents = listParents(source, startingResource);
             // Now we go through all parents, check if the matching parent exists on the target
             // side and if not there add it to the list
             for(Resource sourceParent : parents) {
-                String relativePath = JcrUtil.relativePath(source, sourceParent);
-                Resource targetResource = target.getChild(relativePath);
-                if(targetResource == null && !containsResource(response, sourceParent)) {
+                if(resourceChecker.doAdd(sourceParent)) {
                     response.add(sourceParent);
                 }
             }
+        }
+    }
+
+    public static interface ResourceChecker {
+        public boolean doAdd(Resource resource);
+    }
+
+    public static class MissingOrOutdatedResourceChecker
+        implements ResourceChecker
+    {
+        private Resource source;
+        private Resource target;
+
+        public MissingOrOutdatedResourceChecker(Resource source, Resource target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        @Override
+        public boolean doAdd(Resource resource) {
+            boolean answer = false;
+            String relativePath = relativePath(source, resource);
+            Resource targetResource = target.getChild(relativePath);
+            if(targetResource == null) {
+                answer = true;
+            } else {
+                // If target resource then we need to check if there is a per:Replicated value and if so then check the dates
+                Calendar sourceLastModified = resource.getValueMap().get("per:Replicated", Calendar.class);
+                Calendar targetLastModified = targetResource.getValueMap().get("per:Replicated", Calendar.class);
+                if(sourceLastModified != null && targetLastModified != null) {
+                    answer = !sourceLastModified.before(targetLastModified);
+                }
+            }
+            return answer;
+        }
+    }
+
+    public static class AddAllResourceChecker
+        implements ResourceChecker
+    {
+        @Override
+        public boolean doAdd(Resource resource) {
+            return true;
         }
     }
 }

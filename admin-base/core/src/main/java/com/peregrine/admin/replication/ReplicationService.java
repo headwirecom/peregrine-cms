@@ -1,6 +1,8 @@
 package com.peregrine.admin.replication;
 
 import com.peregrine.admin.util.JcrUtil;
+import com.peregrine.admin.util.JcrUtil.MissingOrOutdatedResourceChecker;
+import com.peregrine.admin.util.JcrUtil.ResourceChecker;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -21,9 +23,7 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeDefinition;
 import javax.jcr.nodetype.NodeType;
-import javax.jcr.nodetype.NodeTypeIterator;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -154,13 +154,21 @@ public class ReplicationService
         if(target == null) {
             throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
         }
-        List<Resource> replicationList = referenceLister.getReferenceList(startingResource, true, source, target);
+        List<Resource> referenceList = referenceLister.getReferenceList(startingResource, true, source, target);
+        List<Resource> replicationList = new ArrayList<>();
+        ResourceChecker resourceChecker = new MissingOrOutdatedResourceChecker(source, target);
+        // Need to check this list of they need to be replicated first
+        for(Resource resource: referenceList) {
+            if(resourceChecker.doAdd(resource)) {
+                replicationList.add(resource);
+            }
+        }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: new ArrayList<Resource>(replicationList)) {
-            JcrUtil.listMissingResources(reference, replicationList, source, target, false);
+            JcrUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
-        JcrUtil.listMissingParents(startingResource, replicationList, source, target);
-        JcrUtil.listMissingResources(startingResource, replicationList, source, target, deep);
+        JcrUtil.listMissingParents(startingResource, replicationList, source, resourceChecker);
+        JcrUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
         return replicate(replicationList);
     }
 
@@ -286,7 +294,20 @@ public class ReplicationService
             newProperties.put("per:Replicated", Calendar.getInstance());
             newProperties.put("per:ReplicationRef", source.getParent().getPath());
         }
-        answer = source.getResourceResolver().create(targetParent, source.getName(), newProperties);
+        Resource newTarget = targetParent.getChild(source.getName());
+        if(newTarget != null) {
+            ModifiableValueMap newTargetProperties = JcrUtil.getModifiableProperties(newTarget, false);
+            for(String key: newProperties.keySet()) {
+                try {
+                    newTargetProperties.put(key, newProperties.get(key));
+                } catch(Exception e) {
+                    // Ignore
+                }
+            }
+            answer = newTarget;
+        } else {
+            answer = source.getResourceResolver().create(targetParent, source.getName(), newProperties);
+        }
         return answer;
     }
 }
