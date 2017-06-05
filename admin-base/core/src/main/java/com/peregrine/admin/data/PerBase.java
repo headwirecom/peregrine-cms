@@ -23,4 +23,6 @@ public interface PerBase
     public Resource getContentResource();
     public ValueMap getProperties();
     public ModifiableValueMap getModifiableProperties();
+    public <T> T getContentProperty(String propertyName, Class<T> type);
+    public <T> T getContentProperty(String propertyName, T defaultValue);
 }

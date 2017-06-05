@@ -1,9 +1,9 @@
 package com.peregrine.admin.servlets;
 
+import com.peregrine.admin.data.PerAsset;
 import com.peregrine.admin.transform.ImageTransformationConfiguration;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
-import com.peregrine.admin.transform.ImageTransformation.DisabledTransformationException;
 import com.peregrine.admin.transform.ImageTransformation.TransformationException;
 import com.peregrine.admin.transform.ImageTransformationConfigurationProvider;
 import com.peregrine.admin.transform.ImageTransformationProvider;
@@ -12,9 +12,7 @@ import com.peregrine.admin.util.JcrUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
@@ -25,10 +23,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Binary;
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -39,13 +34,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.admin.util.JcrUtil.JCR_MIME_TYPE;
+
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=rendition provider servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=per/Asset"
-        }
+    service = Servlet.class,
+    property = {
+        Constants.SERVICE_DESCRIPTION + "=rendition provider servlet",
+        Constants.SERVICE_VENDOR + "=headwire.com, Inc",
+        ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=per/Asset"
+    }
 )
 @SuppressWarnings("serial")
 /**
@@ -70,16 +67,21 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                          SlingHttpServletResponse response) throws ServletException,
             IOException {
         Resource resource = request.getResource();
-        Resource jcrContent = resource.getChild(JcrUtil.JCR_CONTENT);
-        if(jcrContent == null) {
+        PerAsset asset = resource.adaptTo(PerAsset.class);
+        if(asset == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Given Resource has no Content");
+            response.getWriter().write("Given Resource: '" + resource.getPath() + "' is not an Asset");
+            return;
+        }
+        if(!asset.isValid()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Given Resource: '" + resource.getPath() + "' is not an valid Asset");
             return;
         }
         // Check if there is a suffix
         String suffix = request.getRequestPathInfo().getSuffix();
-        String sourceMimeType = jcrContent.getValueMap().get(JcrUtil.JCR_MIME_TYPE, "");
-        if(sourceMimeType.isEmpty()) {
+        String sourceMimeType = asset.getContentProperty(JCR_MIME_TYPE, String.class);
+        if(sourceMimeType == null || sourceMimeType.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Given Resource has no Mime Type");
             return;
@@ -96,17 +98,14 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
             List<ImageTransformationConfiguration> imageTransformationConfigurationList =
                 imageTransformationConfigurationProvider.getImageTransformationConfigurations(renditionName);
             if(imageTransformationConfigurationList != null) {
-                // Obtain renditions folder and the rendition. If rendition is not found then take the
-                // source asset and transform it
-                Resource renditions = createRenditionsFolder(request, resource);
-                Resource rendition = renditions != null ? renditions.getChild(renditionName) : null;
-                if(rendition == null) {
+                InputStream imageStream = asset.getRenditionStream(renditionName);
+                if(imageStream == null) {
                     try {
-                        InputStream sourceStream = getDataStream(jcrContent);
+                        InputStream sourceStream = asset.getRenditionStream((Resource) null);
                         if(sourceStream != null) {
                             ImageContext imageContext = transform(renditionName, sourceMimeType, sourceStream, targetMimeType, imageTransformationConfigurationList, false);
-                            createAndSaveRenditionBinary(request, renditions, renditionName, targetMimeType, imageContext.getImageStream());
-                            rendition = renditions.getChild(renditionName);
+                            asset.addRendition(renditionName, imageContext.getImageStream(), targetMimeType);
+                            imageStream = asset.getRenditionStream(renditionName);
                         } else {
                             log.error("Resource: '{}' does not contain a data element", resource.getName());
                         }
@@ -116,8 +115,7 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                         log.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
                     }
                 }
-                InputStream sourceStream = rendition != null ? getDataStream(rendition) : null;
-                if(sourceStream == null) {
+                if(imageStream == null) {
                     // Rendition was not found and could not be created therefore load and thumbnail the broken image
                     String imagePath = ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG;
                     Resource brokenImageResource = request.getResourceResolver().getResource(imagePath);
@@ -127,15 +125,15 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                             imageTransformationConfigurationList =
                                 imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.png");
                             ImageContext imageContext = transform(renditionName, "image/svg+xml", brokenImageStream, "image/png", imageTransformationConfigurationList, true);
-                            sourceStream = imageContext.getImageStream();
+                            imageStream = imageContext.getImageStream();
                         } catch(TransformationException e) {
                             log.error("Transformation failed, image ignore", e);
                         }
                     }
                 }
-                if(sourceStream != null) {
+                if(imageStream != null) {
                     // Got a output stream -> send it back
-                    streamToResponse(response, sourceStream, targetMimeType);
+                    streamToResponse(response, imageStream, targetMimeType);
                     return;
                 } else {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -148,7 +146,7 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
             }
         } else {
             // This was not a request for a rendition but just the original asset -> load and send it back
-            InputStream sourceStream = getDataStream(jcrContent);
+            InputStream sourceStream = asset.getRenditionStream((Resource) null);
             if(sourceStream != null) {
                 streamToResponse(response, sourceStream, sourceMimeType);
                 return;
@@ -192,11 +190,8 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                     parameters = imageTransformationConfiguration.getParameters();
                 }
                 OperationContext operationContext = new OperationContext(renditionName, parameters);
-                try {
-                    imageTransformation.transform(imageContext, operationContext);
-                } catch(DisabledTransformationException e) {
-                    log.error("Transformation disabled and hence ignored", e);
-                }
+                // Disabled Transformations will stop the rendition creation as it does create incomplete or non-renditioned images
+                imageTransformation.transform(imageContext, operationContext);
             }
         }
         return imageContext;
@@ -217,51 +212,6 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
             answer = properties != null ? properties.get(JcrUtil.JCR_DATA, InputStream.class) : null;
         }
         return answer;
-    }
-
-    /**
-     * Creates the rendition resource, sets the mime type and add the data
-     * @param request Request to obtain the session
-     * @param renditions Parent Folder (renditions) where this resource is created underneath
-     * @param renditionName Name of the Rendition
-     * @param mimeType Mime Type of the Rendition
-     * @param inputStream Content Data to be added to the resource
-     * @throws RepositoryException If node could not be created, data added or session saved
-     */
-    private void createAndSaveRenditionBinary(SlingHttpServletRequest request, Resource renditions, String renditionName, String mimeType, InputStream inputStream)
-        throws RepositoryException
-    {
-        Session session = request.getResourceResolver().adaptTo(Session.class);
-        Node renditionsNode = renditions.adaptTo(Node.class);
-        Node renditionNode = renditionsNode.addNode(renditionName, JcrUtil.NT_FILE);
-        Node jcrContent = renditionNode.addNode(JcrUtil.JCR_CONTENT, JcrUtil.NT_RESOURCE);
-        Binary data = session.getValueFactory().createBinary(inputStream);
-        jcrContent.setProperty(JcrUtil.JCR_DATA, data);
-        jcrContent.setProperty(JcrUtil.JCR_MIME_TYPE, mimeType);
-        session.save();
-    }
-
-    /**
-     * Creates a renditions folder under the given resource if not already there and
-     * then returns it
-     *
-     * @param request Servlet Request
-     * @param parent Resource where the folder is added to
-     * @return Renditions folder if found otherwise <code>null</code>
-     */
-    private Resource createRenditionsFolder(SlingHttpServletRequest request, Resource parent) {
-        ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource renditions = parent.getChild(JcrUtil.RENDITIONS);
-        if(renditions == null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(JcrUtil.JCR_PRIMARY_TYPE, JcrUtil.SLING_FOLDER);
-            try {
-                renditions = resourceResolver.create(parent, JcrUtil.RENDITIONS, properties);
-            } catch(PersistenceException e) {
-                log.error("Failed to create 'renditions' folder in resource: " + parent.getPath());
-            }
-        }
-        return renditions;
     }
 
     /**

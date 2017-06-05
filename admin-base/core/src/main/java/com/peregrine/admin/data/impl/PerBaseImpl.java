@@ -3,8 +3,12 @@ package com.peregrine.admin.data.impl;
 import com.peregrine.admin.data.PerBase;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.jcr.Session;
 import java.util.Calendar;
 
 import static com.peregrine.admin.util.JcrUtil.JCR_CONTENT;
@@ -17,6 +21,8 @@ import static com.peregrine.admin.util.JcrUtil.JCR_LAST_MODIFIED_BY;
 public abstract class PerBaseImpl
     implements PerBase
 {
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     private Resource resource;
     private Resource jcrContent;
 
@@ -87,19 +93,33 @@ public abstract class PerBaseImpl
             null;
     }
 
-    <T> T getContentProperty(String propertyName, Class<T> type) {
+    public <T> T getContentProperty(String propertyName, Class<T> type) {
         T answer = null;
         ValueMap properties = getProperties();
         if(properties != null) {
-            answer = properties.get(JCR_LAST_MODIFIED_BY, type);
+            answer = properties.get(propertyName, type);
         }
         return answer;
+    }
+
+    public <T> T getContentProperty(String propertyName, T defaultValue) {
+        T answer = null;
+        if(defaultValue != null) {
+            answer = getContentProperty(propertyName, (Class<T>) defaultValue.getClass());
+        }
+        return answer == null ?
+            defaultValue :
+            answer;
     }
 
     @Override
     public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
         if(type.equals(Resource.class)) {
             return (AdapterType) resource;
+        } else if(type.equals(ResourceResolver.class)) {
+            return (AdapterType) resource.getResourceResolver();
+        } else if(type.equals(Session.class)) {
+            return (AdapterType) resource.getResourceResolver().adaptTo(Session.class);
         } else {
             return null;
         }

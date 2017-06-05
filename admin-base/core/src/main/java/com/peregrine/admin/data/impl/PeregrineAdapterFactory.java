@@ -61,14 +61,14 @@ public class PeregrineAdapterFactory
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
             } else {
-                log.trace("Given Resource: '{}' is not a page", resource);
+                log.trace("Given Resource: '{}' is not a Page", resource);
             }
         } else if(type == PerAsset.class) {
             String primaryType = resource.getResourceType();
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
-                return (AdapterType) new PerPageImpl(resource);
+                return (AdapterType) new PerAssetImpl(resource);
             } else {
-                log.trace("Given Resource: '{}' is not an asset", resource);
+                log.trace("Given Resource: '{}' is not an Asset", resource);
             }
             return (AdapterType) new PerAssetImpl(resource);
         } else {
