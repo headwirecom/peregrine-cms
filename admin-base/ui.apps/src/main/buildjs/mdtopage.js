@@ -4,7 +4,7 @@ const xmlescape = require('xml-escape');
 
 var path = '../../docs/public'
 
-function content(title, html) {
+function content(title, html, order) {
 html = xmlescape(html)
 return `<?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
@@ -40,7 +40,20 @@ return `<?xml version="1.0" encoding="UTF-8"?>
         </content>
 
     </jcr:content>
+    ${order}
 </jcr:root>`
+}
+
+function findOrder(commands) {
+    var ret = ''
+    var order = /order: (.*)/g.exec(commands)
+    if(order[1]) {
+        order[1].split(',').forEach( x => {
+            var node = x.trim()
+            ret += '<'+node+'/>\n'
+        })
+    }
+    return ret;
 }
 
 function makeContent(root, path) {
@@ -48,13 +61,22 @@ function makeContent(root, path) {
     var md = fs.readFileSync(path).toString()
     var title = path.slice(0, path.lastIndexOf('/'))
     title = title.slice(title.lastIndexOf('/')+1)
-    var out = marked.parse(md)
-    var res = content(title, out)
+
+    var order = ''
+    // trim commands
+    if(md.startsWith('```')) {
+        var commands = md.slice(3, md.indexOf('```', 3))
+        order = findOrder(commands)
+        md = md.slice(md.indexOf('```', 3)+3)
+    }
+
+    var out = marked.parse(md) + '<p>&nbsp;</p>'
+    var res = content(title, out, order)
 
     var relPath = 'target/classes/content/sites/docs'+path.slice(root.length)
     relPath = relPath.replace('index.md', '.content.xml')
     console.log(relPath)
-    fs.mkdirsSync(relPath.replace('.content.xml', ''))
+    fs.mkdirsSync(relPath.replace('.content.xml', title))
     fs.writeFileSync(relPath, res)
 }
 

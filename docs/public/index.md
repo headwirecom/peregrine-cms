@@ -1,6 +1,12 @@
-# peregrine-cms
+```
+order: install, concepts, author, projects, tools, fedev, bedev
+```
 
-Peregrine-cms is a modern, api first content management system
+<div class="jumbotron" v-bind:data-per-path="model.path">
+    <h1 class="display-3">peregrine-cms</h1>
+    <p class="lead">Peregrine-cms is a modern, api first content management system
+    </p>
+</div>
 
 ## for site owners
 
@@ -41,6 +47,3 @@ needs on an individual customer level
 
 We believe in today's world a customer should be able to choose where his site is hosted. 
 Install Peregrine-CMS on premise, in your own cloud or let us host for you. 
-
-
-
