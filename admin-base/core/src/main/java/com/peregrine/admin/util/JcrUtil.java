@@ -24,6 +24,12 @@ public class JcrUtil {
     public static final String RENDITIONS = "renditions";
     public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
     public static final String SLING_FOLDER = "sling:Folder";
+    public static final String JCR_LAST_MODIFIED = "jcr:lastModified";
+    public static final String JCR_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
+    public static final String JCR_TITLE = "jcr:title";
+    public static final String PAGE_PRIMARY_TYPE = "per:Page";
+    public static final String ASSET_PRIMARY_TYPE = "per:Asset";
+
     private static final Logger LOG = LoggerFactory.getLogger(JcrUtil.class);
 
     /**

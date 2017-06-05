@@ -1,5 +1,7 @@
 package com.peregrine.admin.servlets;
 
+import com.peregrine.admin.data.PerAsset;
+import com.peregrine.admin.data.PerPage;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.admin.replication.Replication.ReplicationException;
@@ -82,6 +84,17 @@ public class ReplicationServlet extends SlingAllMethodsServlet {
         }
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
+//AS TODO: Remove this later
+//            try {
+//                PerPage perPage = source.adaptTo(PerPage.class);
+//                if(perPage == null) {
+//                    log.warn("Adaption to Per Page returned null for resource: '{}'", source);
+//                } else {
+//                    log.info("Adaption to Per Page yielded: '{}'", perPage);
+//                }
+//            } catch(Exception e) {
+//                log.warn("Adaption to Per Asset failed for resource: '{}'", source);
+//            }
             response.setContentType("application/json");
             List<Resource> replicates = new ArrayList<>();
             try {
