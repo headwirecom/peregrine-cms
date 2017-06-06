@@ -40,9 +40,9 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>com.day.jcr.vault</groupId>
-            <artifactId>content-package-maven-plugin</artifactId>
-            <version>0.0.24</version>
+            <groupId>io.wcm.maven.plugins</groupId>
+            <artifactId>wcmio-content-package-maven-plugin</artifactId>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>com.headwire.sling</groupId>
@@ -99,17 +99,14 @@ under the License.
         <plugins>
             <!-- configuration for upload into the sling instance -->
             <plugin>
-                <groupId>com.day.jcr.vault</groupId>
-                <artifactId>content-package-maven-plugin</artifactId>
-                <version>0.0.24</version>
+                <groupId>io.wcm.maven.plugins</groupId>
+                <artifactId>wcmio-content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
-                    <targetURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</targetURL>
+                    <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
-                    <useProxy>false</useProxy>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <failOnError>true</failOnError>
                     <group>com.headwire.sling</group>
                     <subPackages>
                         <subPackage>
@@ -137,8 +134,8 @@ under the License.
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.day.jcr.vault</groupId>
-                        <artifactId>content-package-maven-plugin</artifactId>
+                        <groupId>io.wcm.maven.plugins</groupId>
+                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>install-package</id>

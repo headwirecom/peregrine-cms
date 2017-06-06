@@ -177,12 +177,6 @@
                                     <!-- ATTENTION: Do not include this package as sub package which would yield an endless loop -->
                                 </configuration>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>io.wcm.maven.plugins</groupId>
-                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                        <executions>
                             <execution>
                                 <id>install-package</id>
                                 <goals>

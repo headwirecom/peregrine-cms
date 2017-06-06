@@ -193,24 +193,17 @@
                 </plugin>
                 <!-- Content Package Plugin -->
                 <plugin>
-                    <groupId>com.day.jcr.vault</groupId>
-                    <artifactId>content-package-maven-plugin</artifactId>
-                    <version>0.0.24</version>
+                    <groupId>io.wcm.maven.plugins</groupId>
+                    <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                    <version>1.5.0</version>
                     <configuration>
-                        <targetURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</targetURL>
+                        <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
                         <userId>${sling.user}</userId>
                         <password>${sling.password}</password>
-                        <useProxy>false</useProxy>
                         <failOnMissingEmbed>true</failOnMissingEmbed>
-                        <failOnError>true</failOnError>
                         <group>com.peregrine</group>
                         <!--<targetURL>http://${sling.host}:${sling.port}/crx/packmgr/service.jsp</targetURL>-->
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.day.jcr.vault</groupId>
-                    <artifactId>maven-vault-plugin</artifactId>
-                    <version>0.0.10</version>
                 </plugin>
                 <!-- Apache Felix Bundle Plugin -->
                 <plugin>
