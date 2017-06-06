@@ -6,7 +6,7 @@ const file = require('fs');
 const url = argv.url || 'http://localhost:8080/content/admin.html';
 const format = argv.format === 'jpeg' ? 'jpeg' : 'png';
 const viewportWidth = argv.viewportWidth || 600;
-const viewportHeight = argv.viewportHeight || 600;
+const viewportHeight = argv.viewportHeight || 1024;
 const delay = argv.delay || 0;
 const userAgent = argv.userAgent;
 const fullPage = false
