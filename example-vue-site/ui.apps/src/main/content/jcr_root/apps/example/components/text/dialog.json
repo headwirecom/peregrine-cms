@@ -1,0 +1,7 @@
+{ "fields":[{
+  "type": "texteditor",
+  "label": "Text",
+  "model": "text",
+  "rows": 10,
+  "placeholder": "test"
+}]}

@@ -21,7 +21,8 @@
             componentList: function () {
                 if(!this.$root.$data.admin.components) return {}
                 // if(!this.$root.$data.admin.currentPageConfig) return {}
-                var allowedComponents = ['/apps/example', '/apps/pagerender'] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                var componentPath = this.$root.$data.pageView.path.split('/')
+                var allowedComponents = ['/apps/'+componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
                 var list = this.$root.$data.admin.components.data
                 if(!list || !allowedComponents) return {}
 

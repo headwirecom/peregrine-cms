@@ -20,7 +20,7 @@
                 >
 
                     <text2 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="pagerender/vue/components/base"
+                           sling:resourceType="example/components/text"
                            text="this is the contact page"/>
                 </col1>
 
