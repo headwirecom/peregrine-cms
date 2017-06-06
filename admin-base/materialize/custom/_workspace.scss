@@ -148,6 +148,7 @@
 			}
 		}
 		&.preview {
+			width: 100% !important;
 			position: fixed;
 			z-index: 1;
 			top: 112px;
