@@ -3,13 +3,13 @@ package com.peregrine.admin.data.impl;
 import com.peregrine.admin.data.Filter;
 import com.peregrine.admin.data.PerPage;
 import com.peregrine.admin.data.PerPageManager;
-import com.peregrine.admin.data.PerTemplate;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.peregrine.admin.util.JcrUtil.JCR_TITLE;
+import static com.peregrine.admin.util.JcrUtil.TEMPLATE;
 
 /**
  * Created by schaefa on 6/4/17.
@@ -83,8 +83,13 @@ public class PerPageImpl
     }
 
     @Override
-    public PerTemplate getTemplate() {
-        return null;
+    public PerPage getTemplate() {
+        PerPage answer = null;
+        String templatePath = getContentProperty(TEMPLATE, String.class);
+        if(templatePath != null) {
+            answer = pageManager.getPage(templatePath);
+        }
+        return answer;
     }
 
     @Override

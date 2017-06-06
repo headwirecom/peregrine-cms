@@ -8,15 +8,21 @@ package com.peregrine.admin.data;
  */
 public interface PerPage
     extends PerBase
-//    extends Adaptable
 {
+    /** @return The Page Manager **/
     public PerPageManager getPageManager();
+    /** @return Title of the Page if found otherwise null **/
     public String getTitle();
+    /** @return List all children of type page **/
     public Iterable<PerPage> listChildren();
+    /** @return List all children of type page that passes the filter **/
     public Iterable<PerPage> listChildren(Filter<PerPage> filter);
+    /** @return List all children or their children of type page that passes the filter **/
     public Iterable<PerPage> listChildren(Filter<PerPage> filter, boolean deep);
+    /** @return If there is a child page with the given name **/
     public boolean hasChild(String name);
+    /** @return Parent Page of this page if it is a page otherwise null **/
     public PerPage getParent();
-    //AS TODO: The Data Structure for a Template is the same as for a Page. Do we then return a PerPage here instead?
-    public PerTemplate getTemplate();
+    /** @return Template Page of this page if there is a template and is a page otherwise null **/
+    public PerPage getTemplate();
 }

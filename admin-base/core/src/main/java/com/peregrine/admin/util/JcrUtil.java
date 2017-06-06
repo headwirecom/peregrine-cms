@@ -29,6 +29,7 @@ public class JcrUtil {
     public static final String JCR_TITLE = "jcr:title";
     public static final String PAGE_PRIMARY_TYPE = "per:Page";
     public static final String ASSET_PRIMARY_TYPE = "per:Asset";
+    public static final String TEMPLATE = "template";
 
     private static final Logger LOG = LoggerFactory.getLogger(JcrUtil.class);
 
