@@ -334,3 +334,29 @@ paths:
             type: object
             additionalProperties:
               type: object
+  '/repl.json/path//{path}//name//{name}//deep//{deep}':
+    post:
+      description: Replicates the given node(s) using the named replication service
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the node(s) to be replicated
+          required: true
+        - name: name
+          type: string
+          in: path
+          description: the name of the replication service to be used
+          required: true
+        - name: deep
+          type: boolean
+          in: path
+          description: flag indicating if only the given node and its content is replicated or all sub nodes
+          required: false
+      responses:
+        '200':
+          description: returns the root node name / path and the list of the nodes created by the replication
+          schema:
+            type: object
+            additionalProperties:
+              type: object
