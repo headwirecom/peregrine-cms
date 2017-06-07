@@ -1,0 +1,112 @@
+.debugger {
+	z-index: 2;
+	position: fixed; 
+	bottom: 60px; 
+	left: 0;
+	// .toggle-debugger {
+	//   width: 2rem;
+	//   height: 40px;
+	//   position: absolute;
+	//   border: 1px solid $blue-grey-lighten-4;
+	//   border-left: 0;
+	//   background-color: $blue-grey-lighten-5 !important;
+	// }
+
+	.toggle-debugger {
+		width: 2rem; 
+		height: 40px; 
+		position: absolute;
+		.material-icons {
+			position: relative;
+			left: -.25rem;
+			font-size: 40px;
+		}
+		&.show-debugger {
+			background-color: $blue-grey-lighten-5;
+			border: 1px solid $blue-grey-lighten-4;
+			border-left: 0;
+			color: $blue-gray-darken-3;
+		}
+		&.hide-debugger {
+			z-index: 1;
+			color: #fff;
+			top: 0.75rem;
+			right: 0.75rem;
+			left: auto;
+			bottom: auto;
+		}
+	}
+
+	a {
+	    color: #fff;
+	}
+
+	.debugger-content {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		overflow: auto;
+		background-color: $blue-gray-darken-3;
+		.collection {
+			border-color: $blue-grey-lighten-4;
+			.collection-item {
+				background: none;
+				border-color: $blue-grey-lighten-4;
+				.logger-level {
+					cursor: pointer;
+					color: #ffb300;
+					padding-left: 0.75rem;
+					text-decoration: none;
+					&:hover,
+					&:focus,
+					&:active {
+						text-decoration: underline;
+					}
+				}
+			}
+		}
+		ul.list-inline {
+			padding-bottom: 0.75rem;
+			border-bottom: 1px solid $blue-grey-lighten-4;
+			> li {
+				padding-right: 0.75rem;
+				> a {
+					display: inline-block;
+					cursor: pointer;
+					padding: 0.25rem 0.75rem;
+					border: 1px solid $blue-grey-lighten-4;
+					color: $blue-grey-lighten-4;
+					border-radius: 20px;
+					&.active {
+						border-color: #fff;
+						color: #fff;
+					}
+					&:hover,
+					&:focus,
+					&:active {
+						border-color: #fff;
+					}
+				}
+				&:last-child {
+					padding-right: 0;
+				}
+			}
+		}
+	}
+	code pre {
+		font-family: "Inconsolata-g", Consolas, "Source Code Pro", Monaco, Menlo, monospace;
+	}
+	&.visible {
+		bottom: 0; 
+		left: 0; 
+		top: 0; 
+		right: 0; 
+		height: 100%; 
+		width: 100%; 
+		overflow: scroll; 
+		background-color: $blue-gray-darken-3; 
+		color: white;
+	}
+}
