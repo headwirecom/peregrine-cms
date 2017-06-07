@@ -1,17 +1,30 @@
 <template>
-<div v-bind:style="elementStyle" class="debugger z-depth-5">
-    <a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" title="show data" class="toggle-debugger"><i class="material-icons">keyboard_arrow_right</i></a>
-    <a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" title="hide data" class="toggle-debugger-visible"><i class="material-icons">keyboard_arrow_left</i></a>
-    <div v-if="visible">
-        <div>
-            <b>loggers</b>&nbsp;|&nbsp;<span v-for="(logger, key) of getLoggers()"><a v-on:click.stop.prevent="changeLogLevel(logger.name)">{{logger.name}} {{levelToName(logger.level)}}</a>&nbsp;|&nbsp;</span>
+<div v-bind:class="`debugger ${elementStyle}`">
+    <a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" title="show data" class="toggle-debugger show-debugger"><i class="material-icons">bug_report</i></a>
+    <a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" title="hide data" class="toggle-debugger hide-debugger"><i class="material-icons">highlight_off</i></a>
+    <div v-if="visible" class="debugger-content">
+        <div class="row">
+            <div class="col s12 m4 l3 debugger-levels">
+                <h5>Loggers</h5>
+                <ul class="collection">
+                    <li v-for="(logger, key) of getLoggers()" class="collection-item right-align">
+                        <span class="logger-name">{{logger.name}}:</span> 
+                        <a class="logger-level" v-on:click.stop.prevent="changeLogLevel(logger.name)">
+                            {{levelToName(logger.level)}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col s12 m8 l9 debugger-object-view">
+                <h5>Root Objects</h5>
+                <ul class="list-inline">
+                    <li v-for="(value, key) of this.$root.$data">
+                        <a v-bind:class="selected === key ? 'active' : ''" v-on:click.stop.prevent="select(key)">{{key}}</a>
+                    </li>
+                </ul>
+                <code><pre>{{this.$root.$data[this.selected]}}</pre></code>
+            </div>
         </div>
-        <div>
-            <b>root objects</b>&nbsp;|&nbsp;<span v-for="(value, key) of this.$root.$data"><a v-on:click.stop.prevent="select(key)">{{key}}</a>&nbsp;|&nbsp;</span>
-        </div>
-<pre>
-{{this.$root.$data[this.selected]}}
-</pre>
     </div>
 </div>
 </template>
@@ -32,9 +45,9 @@
             },
             elementStyle: function() {
                 if(this.visible) {
-                    return "position: fixed; bottom: 0; left: 0; top: 0; right: 0; height: 100%; width: 100%; overflow: scroll; background-color: #37474f; color: white;"
+                    return "visible"
                 } else {
-                    return "position: fixed; bottom: 60px; left: 0;"
+                    return ""
                 }
             }
 
@@ -43,7 +56,9 @@
             if(!this.visible) {
                 this.visible = false
             }
-            return { visible: this.visible }
+            return { 
+                visible: this.visible
+            }
         },
         methods: {
             levelToName: function(level) {
@@ -72,33 +87,3 @@
         }
     }
 </script>
-
-<style>
-.toggle-debugger {
-    width: 2rem;
-    height: 40px;
-    position: absolute;
-    border: 1px solid #cfd8dc;
-    border-left: 0;
-    background-color: #eceff1 !important;
-}
-
-.toggle-debugger-visible {
-    width: 2rem;
-    height: 40px;
-    bottom: 6px;
-    position: absolute;
-    border: 1px solid #cfd8dc;
-    border-left: 0;
-    background-color: #eceff1 !important;
-}
-
-.debugger {
-    z-index: 2;
-    color: white;
-}
-
-.debugger a {
-    color: white;
-}
-</style>
