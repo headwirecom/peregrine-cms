@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.peregrine</groupId>
@@ -35,6 +36,7 @@
     <module>pagerender-vue</module>
     <module>admin-base</module>
     <module>example-vue-site</module>
+    <module>autodocs</module>
   </modules>
 
 </project>
