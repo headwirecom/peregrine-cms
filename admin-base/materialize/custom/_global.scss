@@ -2,6 +2,12 @@ body {
 	max-width: 100%;
 	overflow-x: hidden;
 }
+ul.list-inline {
+	display: inline-block;
+	> li {
+		display: inline-block;
+	}
+}
 .modal.default {
 	z-index: 1003;
 	display: block;
