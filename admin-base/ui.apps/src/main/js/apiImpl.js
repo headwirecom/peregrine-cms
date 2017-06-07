@@ -256,6 +256,21 @@ class PerAdminImpl {
         })
     }
 
+    fetchExternalImage(path, url, name) {
+        return new Promise( (resolve, reject) => {
+            axios.get(url, {responseType: "blob"}).then( (response) => {
+                //alert(response.data)
+                var data = new FormData()
+                data.append(name, response.data, name)
+
+                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data).then( (response) => {
+                    logger.fine(response.data)
+                    this.populateNodesForBrowser(path) })
+                    .then( () => resolve() )
+            })
+        })
+    }
+
     setInitialPageEditorState() {
         return new Promise( (resolve, reject) => {
             populateView('/state', 'editorVisible', false)

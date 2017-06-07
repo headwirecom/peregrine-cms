@@ -226,6 +226,9 @@
                     $perAdminApp.stateAction('createFolder', { parent: me.pt.path, name: folderName })
                 }
             },
+            sourceImage: function(me, target) {
+                $perAdminApp.stateAction('sourceImageWizard', me.pt.path )
+            },
             addTemplate: function(me, target) {
                 $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
             },
