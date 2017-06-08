@@ -173,6 +173,7 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                                 let targetPath = initialPath.slice(0, initialPath.indexOf('.html')) + '.html' + suffix
 
                                 if(document.location !== targetPath) {
+                                    document.title = getNodeFromImpl(view, '/adminPage/title')
                                     history.pushState({peregrinevue:true, path: targetPath}, targetPath, targetPath)
                                 }
                             }

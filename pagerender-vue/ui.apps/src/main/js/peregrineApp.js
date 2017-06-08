@@ -80,6 +80,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
     if(document.location !== path && !fromPopState && !firstTime) {
         log.fine("PUSHSTATE : "+path);
+        document.title = getPerView().page.title
         history.pushState({peregrinevue:true, path: path}, path, path)
     }
 }
