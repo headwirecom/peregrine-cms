@@ -78,7 +78,6 @@ export class Logger {
 
     fine() {
         if(this.level < LogLevel.FINE) return
-        alert(console.log)
         var args = Array.prototype.slice.call(arguments);
         this.applyTo(console.log, '[fine ]', args)
     }
