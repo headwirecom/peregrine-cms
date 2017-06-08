@@ -6,6 +6,8 @@
 
     <title>${resource.jcr:title}</title>
 
+    <sly data-sly-include="tracker-head.html"></sly>
+
     <sly data-sly-include="styles.html"></sly>
 
     <sly data-sly-list="${helper.model.siteCSS}">
@@ -20,8 +22,7 @@
 
 </head>
 <body>
-
-
+<sly data-sly-include="tracker-bodystart.html"></sly>
 <div id="peregrine-app">
     <span v-cloak>
         <component v-bind:is="page.component" v-bind:model="page"></component>
@@ -39,5 +40,6 @@
     $peregrineApp.registerView($perView)
     $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
 </script>
+<sly data-sly-include=tracker-bodyend.html"></sly>
 </body>
 </html>
