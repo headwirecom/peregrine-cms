@@ -69,7 +69,7 @@ public class PageMerge implements Use {
         for (Object key: page.keySet()) {
             Object value = page.get(key);
             log.debug("key is {}", key);
-            log.debug("value is {}", value.getClass());
+            log.debug("value is {}", value == null ? value : value.getClass());
             if(value instanceof Map) {
 
             } else if(value instanceof ArrayList) {

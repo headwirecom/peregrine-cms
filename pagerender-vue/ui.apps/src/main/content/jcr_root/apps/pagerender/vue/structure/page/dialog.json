@@ -16,4 +16,10 @@
   "model": "siteCSS",
   "rows": 10,
   "placeholder": "list all css files for the site"
+},{
+  "type": "list",
+  "label": "Public Domain Names",
+  "model": "domains",
+  "rows": 10,
+  "placeholder": "list of all public domain names for url shortening"
 }]}

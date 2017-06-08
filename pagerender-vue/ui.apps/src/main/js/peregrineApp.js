@@ -81,7 +81,17 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     if(document.location !== path && !fromPopState && !firstTime) {
         log.fine("PUSHSTATE : "+path);
         document.title = getPerView().page.title
-        history.pushState({peregrinevue:true, path: path}, path, path)
+        var url = document.location.href
+        var domains = (getPerView().page.domains)
+        var newLocation = path
+        for(var i = 0; i < domains.length; i++) {
+            var domain = domains[i]
+            if(url.startsWith(domain)) {
+                newLocation = path.split('/').slice(4).join('/')
+                if(newLocation === '') newLocation = '/'
+            }
+        }
+        history.pushState({peregrinevue:true, path: path}, path, newLocation)
     }
 }
 

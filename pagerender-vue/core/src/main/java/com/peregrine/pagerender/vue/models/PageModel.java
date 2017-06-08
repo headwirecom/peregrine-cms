@@ -52,6 +52,9 @@ public class PageModel extends Container {
     @Inject @Optional
     private String[] siteJS;
 
+    @Inject @Optional
+    private String[] domains;
+
     @Inject @Named("template") @Optional
     private String template;
 
@@ -80,6 +83,20 @@ public class PageModel extends Container {
             }
         }
         return siteCSS;
+    }
+
+    public String[] getDomains() {
+        if(domains == null) {
+            String[] value = (String[]) getInheritedProperty("domains");
+            if (value != null && value.length != 0) return value;
+            if (getTemplate() != null) {
+                PageModel templatePageModel = getTamplatePageModel();
+                if(templatePageModel != null) {
+                    return templatePageModel.getDomains();
+                }
+            }
+        }
+        return domains;
     }
 
     private PageModel getTamplatePageModel() {
