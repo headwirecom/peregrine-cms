@@ -89,7 +89,14 @@ class PerAdminImpl {
     populateUser() {
         return new Promise( (resolve, reject) => {
             fetch('/admin/access.json')
-                .then( (data) => populateView('/state', 'user', data.userID) )
+                .then( (data) => {
+                    populateView('/state', 'user', data.userID)
+                    if(data.userID === 'anonymous') {
+                        alert('please login to continue')
+                        window.location = '/'
+                        reject()
+                    }
+                })
                 .then(() => resolve() )
         })
     }
