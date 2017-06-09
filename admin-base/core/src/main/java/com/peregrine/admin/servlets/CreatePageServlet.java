@@ -52,16 +52,17 @@ public class CreatePageServlet extends SlingSafeMethodsServlet {
         Map<String, String> params = convertSuffixToParams(request);
         String parentPath = params.get("path");
         log.debug(params.toString());
-
+        String templatePath = params.get("templatePath");
         Session session = request.getResourceResolver().adaptTo(Session.class);
         try {
+            String templateComponent = session.getNode(templatePath+"/jcr:content").getProperty("sling:resourceType").getString();
             Node node = session.getRootNode().addNode(parentPath.substring(1)+"/"+params.get("name"));
             node.setPrimaryType("per:Page");
             Node content = node.addNode("jcr:content");
             content.setPrimaryType("per:PageContent");
-            content.setProperty("sling:resourceType", "example/components/page");
+            content.setProperty("sling:resourceType", templateComponent);
             content.setProperty("jcr:title", params.get("name"));
-            content.setProperty("template", params.get("templatePath"));
+            content.setProperty("template", templatePath);
             session.save();
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (RepositoryException e) {
