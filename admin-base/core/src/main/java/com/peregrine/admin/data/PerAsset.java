@@ -5,6 +5,7 @@ import org.apache.sling.api.resource.Resource;
 
 import javax.jcr.RepositoryException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Peregrine Asset with access to their data and renditions.
@@ -47,4 +48,34 @@ public interface PerAsset
      * @throws RepositoryException
      */
     public void addRendition(String renditionName, InputStream dataStream, String mimeType) throws PersistenceException, RepositoryException;
+
+    /**
+     * Add a Image Metadata Tag to the Asset
+     *
+     * @param category Name of the category
+     * @param tag Name of the tag
+     * @param value Value of the tag
+     * @throws PersistenceException If necessary resource could not be created
+     * @throws RepositoryException General Access issue to the JCR Tree
+     */
+    public void addTag(String category, String tag, Object value)
+        throws PersistenceException, RepositoryException;
+
+    /** @return All the image tags of this Asset. Map maybe empty but never null **/
+    public Map<String, Map<String, Object>> getTags();
+
+    /**
+     * @param category Name of the category
+     * @return All the image tags of this Asset's Category.
+     *         Map may be empty but never null
+     **/
+    public Map<String, Object> getTags(String category);
+
+    /**
+     * Get a specific tag of this asset
+     * @param category Name of the Category of the Asset
+     * @param tag Name of the Tag
+     * @return The value of the tag or null if not found
+     */
+    public Object getTag(String category, String tag);
 }

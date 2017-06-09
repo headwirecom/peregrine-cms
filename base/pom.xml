@@ -242,33 +242,4 @@ under the License.
         </profile>
 
     </profiles>
-
-    <!-- adobe repositories for plugins -->
-    <repositories>
-        <repository>
-            <id>adobe-public-releases</id>
-            <name>Adobe Public Repository</name>
-            <url>https://repo.adobe.com/nexus/content/groups/public</url>
-            <releases>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>adobe-public-releases</id>
-            <name>Adobe Public Repository</name>
-            <url>https://repo.adobe.com/nexus/content/groups/public</url>
-            <releases>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
 </project>

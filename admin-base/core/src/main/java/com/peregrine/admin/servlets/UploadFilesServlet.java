@@ -1,5 +1,11 @@
 package com.peregrine.admin.servlets;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.peregrine.admin.data.PerAsset;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -64,6 +70,21 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
                 jcrContent.setProperty("jcr:data", data);
                 jcrContent.setProperty("jcr:mimeType", part.getContentType());
                 session.save();
+                Resource assetResource = request.getResourceResolver().getResource(newNode.getPath());
+                PerAsset perAsset = assetResource.adaptTo(PerAsset.class);
+                try {
+                    Metadata metadata = ImageMetadataReader.readMetadata(perAsset.getRenditionStream((Resource) null));
+                    for(Directory directory : metadata.getDirectories()) {
+                        String directoryName = directory.getName();
+                        for(Tag tag : directory.getTags()) {
+                            String name = tag.getTagName();
+                            log.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[] {directoryName, name, tag.getDescription()});
+                            perAsset.addTag(directoryName, name, tag.getDescription());
+                        }
+                    }
+                } catch(ImageProcessingException e) {
+                    e.printStackTrace();
+                }
             }
             log.debug("Upload Done successfully and saved");
             response.setStatus(HttpServletResponse.SC_OK);

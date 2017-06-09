@@ -181,6 +181,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.drewnoakes</groupId>
+            <artifactId>metadata-extractor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.xmp</groupId>
+            <artifactId>xmpcore</artifactId>
+        </dependency>
     </dependencies>
 
     <profiles>

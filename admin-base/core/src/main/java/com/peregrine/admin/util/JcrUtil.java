@@ -22,6 +22,7 @@ public class JcrUtil {
     public static final String NT_RESOURCE = "nt:resource";
     public static final String JCR_MIME_TYPE = "jcr:mimeType";
     public static final String RENDITIONS = "renditions";
+    public static final String METADATA = "metadata";
     public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
     public static final String SLING_FOLDER = "sling:Folder";
     public static final String JCR_LAST_MODIFIED = "jcr:lastModified";
