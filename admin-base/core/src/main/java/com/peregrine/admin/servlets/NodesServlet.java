@@ -73,16 +73,18 @@ public class NodesServlet extends SlingSafeMethodsServlet {
             if(fullPath.startsWith(child.getPath())) {
                 convertResource(jg, rs, segments, pos+1, fullPath);
             } else {
-                jg.writeStartObject();
-                jg.writeStringField("name",child.getName());
-                jg.writeStringField("path",child.getPath());
-                String resourceType = child.getValueMap().get("jcr:primaryType", String.class);
-                jg.writeStringField("resourceType", resourceType);
-                if("per:Asset".equals(resourceType)) {
-                    String mimeType = child.getChild("jcr:content").getValueMap().get("jcr:mimeType", String.class);
-                    jg.writeStringField("mimeType", mimeType);
+                if(!"jcr:content".equals(child.getName())) {
+                    jg.writeStartObject();
+                    jg.writeStringField("name",child.getName());
+                    jg.writeStringField("path",child.getPath());
+                    String resourceType = child.getValueMap().get("jcr:primaryType", String.class);
+                    jg.writeStringField("resourceType", resourceType);
+                    if("per:Asset".equals(resourceType)) {
+                        String mimeType = child.getChild("jcr:content").getValueMap().get("jcr:mimeType", String.class);
+                        jg.writeStringField("mimeType", mimeType);
+                    }
+                    jg.writeEndObject();
                 }
-                jg.writeEndObject();
             }
         }
         jg.writeEndArray();

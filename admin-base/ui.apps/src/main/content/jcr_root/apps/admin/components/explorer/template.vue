@@ -24,10 +24,21 @@
     <div class="row">
         <div v-if="pt" class="col s12 m8 explorer-main">
             <ul class="collection">
+                <li v-if="showNavigateToParent"
+                    v-on:click.stop.prevent="selectParent()"
+                    class="collection-item">
+                    <admin-components-action
+                            v-bind:model="{
+                            target: null,
+                            command: 'selectParent'
+                        }"><i class="material-icons">folder</i> ..
+                    </admin-components-action>
+                </li>
                 <li 
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
                     v-for ="child in pt.children"
-                    v-if  ="checkIfAllowed(child.resourceType)">
+                    v-if  ="checkIfAllowed(child.resourceType)"
+                    v-on:click.stop.prevent="selectItem(child)">
                     <admin-components-action
                         v-bind:model="{
                             target: child,
@@ -87,6 +98,9 @@
             }
         },
         computed: {
+            showNavigateToParent() {
+                return this.path.split('/').length > 3
+            },
             path: function() {
                 var dataFrom    = this.model.dataFrom
                 var node = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
@@ -114,6 +128,17 @@
             }
         },
         methods: {
+            selectParent(me, target) {
+                var dataFrom = !me ? this.model.dataFrom : me.model.dataFrom
+                var path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
+                var pathSegments = path.split('/')
+                pathSegments.pop()
+                path = pathSegments.join('/')
+                $perAdminApp.action(!me ? this: me, 'selectPath', { path: path, resourceType: 'sling:OrderedFolder'})
+            },
+            selectItem(item) {
+                $perAdminApp.action(this, 'selectPath', item)
+            },
             /* file upload */
             setDragState(ev){
               ev.stopPropagation()
