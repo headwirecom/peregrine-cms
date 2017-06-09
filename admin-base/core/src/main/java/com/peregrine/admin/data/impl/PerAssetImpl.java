@@ -64,7 +64,12 @@ public class PerAssetImpl
 
     @Override
     public Iterable<Resource> listRenditions() {
-        Resource renditions = getRenditions();
+        Resource renditions = null;
+        try {
+            renditions = getRenditionsResource(false);
+        } catch(PersistenceException e) {
+            // Ignore
+        }
         if(renditions != null) {
             return renditions.getChildren();
         } else {
@@ -77,7 +82,7 @@ public class PerAssetImpl
         throws PersistenceException, RepositoryException
     {
         Session session = adaptTo(Session.class);
-        Resource renditions = getOrCreateRenditionsFolder();
+        Resource renditions = getRenditionsResource(true);
         Node renditionsNode = renditions.adaptTo(Node.class);
         Node renditionNode = renditionsNode.addNode(renditionName, JcrUtil.NT_FILE);
         Node jcrContent = renditionNode.addNode(JcrUtil.JCR_CONTENT, JcrUtil.NT_RESOURCE);
@@ -87,6 +92,7 @@ public class PerAssetImpl
         session.save();
     }
 
+    @Override
     public void addTag(String category, String tag, Object value)
         throws PersistenceException, RepositoryException
     {
@@ -99,6 +105,7 @@ public class PerAssetImpl
         session.save();
     }
 
+    @Override
     public Map<String, Map<String, Object>> getTags() {
         Map<String, Map<String, Object>> answer = new HashMap<>();
         Resource metadata = null;
@@ -117,6 +124,7 @@ public class PerAssetImpl
         return answer;
     }
 
+    @Override
     public Map<String, Object> getTags(String category) {
         Map<String, Object> answer = new HashMap<>();
         Resource categoryResource = null;
@@ -131,17 +139,25 @@ public class PerAssetImpl
         return answer;
     }
 
+    /**
+     * Obtains all tags of a given category
+     * @param category Category resource
+     * @return Map of all tags except 'jcr:' of the given category. It is empty if none found or category is null.
+     */
     private Map<String, Object> getTags(Resource category) {
         Map<String, Object> answer = new HashMap<>();
-        ValueMap properties = category.getValueMap();
-        for(String key: properties.keySet()) {
-            if(!key.startsWith("jcr:")) {
-                answer.put(key, properties.get(key));
+        if(category != null) {
+            ValueMap properties = category.getValueMap();
+            for(String key : properties.keySet()) {
+                if(!key.startsWith("jcr:")) {
+                    answer.put(key, properties.get(key));
+                }
             }
         }
         return answer;
     }
 
+    @Override
     public Object getTag(String category, String tag) {
         Object answer = null;
         Resource categoryResource = null;
@@ -157,12 +173,18 @@ public class PerAssetImpl
         return answer;
     }
 
-    private Resource getOrCreateRenditionsFolder()
+    /**
+     * Obtains the Renditions from the Image
+     * @param create If true the renditions will be created if not found
+     * @return The Renditions resource if found or created otherwise null
+     * @throws PersistenceException If resource could not be created
+     */
+    private Resource getRenditionsResource(boolean create)
         throws PersistenceException
     {
         ResourceResolver resourceResolver = adaptTo(ResourceResolver.class);
-        Resource renditions = getRenditions();
-        if(renditions == null) {
+        Resource renditions = getResource().getChild(RENDITIONS);
+        if(create && renditions == null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
             renditions = resourceResolver.create(getResource(), JcrUtil.RENDITIONS, properties);
@@ -170,10 +192,13 @@ public class PerAssetImpl
         return renditions;
     }
 
-    private Resource getRenditions() {
-        return getResource().getChild(RENDITIONS);
-    }
-
+    /**
+     * Obtains the given Category from the Image's Metadata
+     * @param category Name of the category
+     * @param create If true the category will be created if not found
+     * @return The Category resource if found or created otherwise null
+     * @throws PersistenceException If resource could not be created
+     */
     private Resource getCategoryResource(String category, boolean create)
         throws PersistenceException
     {
@@ -189,6 +214,7 @@ public class PerAssetImpl
         return answer;
     }
 
+    /** @return Obtains the metadata resource folder from the content and if not found then create it first **/
     private Resource getOrCreateMetaData() throws PersistenceException {
         Resource contentResource = getContentResource();
         Resource metadata = contentResource.getChild(METADATA);
@@ -201,6 +227,11 @@ public class PerAssetImpl
         return metadata;
     }
 
+    /**
+     * Adjust an Image Category / Tag Name to be suitable for Peregrine
+     * @param name Name to be adjust
+     * @return The given name lowercase and spaces and slashes to underscore or if name is null then null
+     */
     private String adjustName(String name) {
         return name == null ?
             null :

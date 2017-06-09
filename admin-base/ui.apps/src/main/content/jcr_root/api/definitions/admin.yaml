@@ -360,3 +360,28 @@ paths:
             type: object
             additionalProperties:
               type: object
+  '/ref.json/path//{path}':
+    get:
+      description: List references and their references of the given page
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the resource to lists its references
+          required: true
+      responses:
+        '200':
+          description: returns the root node name / path and the list of the nodes referenced
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+        '400':
+          description: If the path did not resolve to a resource
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              path:
+                type: string
