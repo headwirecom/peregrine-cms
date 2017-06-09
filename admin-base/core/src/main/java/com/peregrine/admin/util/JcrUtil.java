@@ -32,6 +32,8 @@ public class JcrUtil {
     public static final String ASSET_PRIMARY_TYPE = "per:Asset";
     public static final String TEMPLATE = "template";
 
+    public static final String EQUALS = "=";
+
     private static final Logger LOG = LoggerFactory.getLogger(JcrUtil.class);
 
     /**

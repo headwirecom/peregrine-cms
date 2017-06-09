@@ -34,14 +34,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.admin.util.JcrUtil.EQUALS;
 import static com.peregrine.admin.util.JcrUtil.JCR_MIME_TYPE;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
     service = Servlet.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=rendition provider servlet",
-        Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-        ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=per/Asset"
+        SERVICE_DESCRIPTION + EQUALS + "Peregrine: Rendition Provider Servlet",
+        SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "per/Asset"
     }
 )
 @SuppressWarnings("serial")

@@ -1,16 +1,12 @@
 package com.peregrine.admin.servlets;
 
-import com.peregrine.admin.data.PerAsset;
-import com.peregrine.admin.data.PerPage;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.admin.replication.Replication.ReplicationException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -27,15 +23,20 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.admin.util.JcrUtil.EQUALS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=Peregrine: Replication Servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_METHODS + "=POST",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/repl"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + "Peregrine: Replication Servlet",
+        SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
+        SLING_SERVLET_METHODS + EQUALS + "POST",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/repl"
+    }
 )
 @SuppressWarnings("serial")
 /**
@@ -84,17 +85,6 @@ public class ReplicationServlet extends SlingAllMethodsServlet {
         }
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
-//AS TODO: Remove this later
-//            try {
-//                PerPage perPage = source.adaptTo(PerPage.class);
-//                if(perPage == null) {
-//                    log.warn("Adaption to Per Page returned null for resource: '{}'", source);
-//                } else {
-//                    log.info("Adaption to Per Page yielded: '{}'", perPage);
-//                }
-//            } catch(Exception e) {
-//                log.warn("Adaption to Per Asset failed for resource: '{}'", source);
-//            }
             response.setContentType("application/json");
             List<Resource> replicates = new ArrayList<>();
             try {
