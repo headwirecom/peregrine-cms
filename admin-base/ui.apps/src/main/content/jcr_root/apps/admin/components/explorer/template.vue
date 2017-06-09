@@ -58,7 +58,9 @@
                         <span v-if="viewable(child)">
                             <a 
                                 target      ="viewer"
-                                v-bind:href ="viewUrl(child)">
+                                v-bind:href ="viewUrl(child)"
+                                v-on:click.stop  =""
+                                >
                                 <i class="material-icons">visibility</i>
                             </a>
                         </span>
