@@ -2,14 +2,21 @@
 <div class="container">
     <form-wizard v-bind:title="'create a page'" v-bind:subtitle="''" @on-complete="onComplete">
         <tab-content title="select template" :before-change="leaveTabOne">
-            <ul class="collection">
-                <li class="collection-item"
-                    v-for="template in templates"
-                    v-bind:class="isSelected(template.path) ? 'grey lighten-2' : ''">
-                    <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path }">{{template.name}}</admin-components-action>
-                </li>
-            </ul>
-            <div v-if="!formmodel.templatePath">please select a template</div>
+            <fieldset class="vue-form-generator">
+                <div class="form-group required">
+                    <label>Select Template</label>
+                    <ul class="collection">
+                        <li class="collection-item"
+                            v-for="template in templates"
+                            v-bind:class="isSelected(template.path) ? 'grey lighten-2' : ''">
+                            <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path }">{{template.name}}</admin-components-action>
+                        </li>
+                    </ul>
+                    <div v-if="!formmodel.templatePath" class="errors">
+                        <span track-by="index">selection required</span>
+                    </div>
+                </div>
+            </fieldset>
         </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
             <vue-form-generator :model="formmodel"
