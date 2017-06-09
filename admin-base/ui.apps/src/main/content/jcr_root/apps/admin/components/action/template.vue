@@ -15,7 +15,7 @@
             v-on:click.stop.prevent = "action" 
             class                   = "btn-floating waves-effect waves-light" 
             v-bind:class            = "model.classes">
-            <i class="material-icons">
+            <i class="material-icons" v-bind:class="isSelected ? 'actionSelected' : ''">
                 {{model.icon ? model.icon : model.title}}
                 <slot></slot>
             </i>
@@ -26,6 +26,20 @@
 <script>
 export default {
     props: ['model' ],
+    computed: {
+        isSelected() {
+            if(!this.model.stateFrom) return false
+            let currentState = $perAdminApp.getNodeFromViewOrNull(this.model.stateFrom)
+            if(!currentState) {
+                if(this.model.stateFromDefault) {
+                    return true
+                }
+            } else if(currentState === this.model.target) {
+                return true
+            }
+            return false
+        }
+    },
     methods: {
         action: function(e) {
             $perAdminApp.action(this, this.model.command, this.model.target)
@@ -33,3 +47,10 @@ export default {
     }
 }
 </script>
+
+<style>
+    .actionSelected {
+        background-color: white !important;
+        color: #37474f !important;
+    }
+</style>

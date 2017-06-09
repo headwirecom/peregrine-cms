@@ -30,6 +30,14 @@
 				"icon": {
 					"type": "string",
 					"source": "inject"
+				},
+				"stateFrom": {
+					"type": "string",
+					"source": "inject"
+				},
+				"stateFromDefault": {
+					"type": "string",
+					"source": "inject"
 				}
 			}
 		}

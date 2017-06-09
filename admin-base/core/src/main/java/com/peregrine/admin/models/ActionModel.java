@@ -43,6 +43,14 @@ import javax.inject.Named;
     "icon": {
       "type": "string",
       "source": "inject"
+    },
+    "stateFrom": {
+      "type": "string",
+      "source": "inject"
+    },
+    "stateFromDefault": {
+      "type": "string",
+      "source": "inject"
     }
   },
   "propertyNames": [
@@ -52,7 +60,9 @@ import javax.inject.Named;
     "target",
     "command",
     "type",
-    "icon"
+    "icon",
+    "stateFrom",
+    "stateFromDefault"
   ],
   "modelName": "Action",
   "package": "com.peregrine.admin.models",
@@ -100,6 +110,14 @@ private String type;
 @Inject
 private String icon;
 
+/* {"type":"string","source":"inject"} */
+@Inject
+private String stateFrom;
+
+/* {"type":"string","source":"inject"} */
+@Inject
+private String stateFromDefault;
+
 
 //GEN]
 
@@ -127,6 +145,16 @@ return type;
 /* {"type":"string","source":"inject"} */
 public String getIcon() {
 return icon;
+}
+
+/* {"type":"string","source":"inject"} */
+public String getStateFrom() {
+return stateFrom;
+}
+
+/* {"type":"string","source":"inject"} */
+public String getStateFromDefault() {
+return stateFromDefault;
 }
 
 
