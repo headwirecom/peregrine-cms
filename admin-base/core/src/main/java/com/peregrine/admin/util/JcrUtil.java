@@ -245,6 +245,17 @@ public class JcrUtil {
         }
     }
 
+    /**
+     * Adjust an Image Category / Tag Name to be suitable for Peregrine
+     * @param name Name to be adjust
+     * @return The given name lowercase and spaces and slashes to underscore or if name is null then null
+     */
+    public static String adjustMetadataName(String name) {
+        return name == null ?
+            null :
+            name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    }
+
     public static interface ResourceChecker {
         public boolean doAdd(Resource resource);
     }

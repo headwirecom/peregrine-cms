@@ -6,6 +6,7 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.peregrine.admin.data.PerAsset;
+import com.peregrine.admin.replication.ImageMetadataSelector;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -17,6 +18,8 @@ import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +32,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
@@ -49,6 +55,15 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
 
     @Reference
     ModelFactory modelFactory;
+
+    private List<ImageMetadataSelector> imageMetadataSelectors = new ArrayList<>();
+
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC
+    )
+    void addImageMetadataSelector(ImageMetadataSelector selector)    { imageMetadataSelectors.add(selector); }
+    void removeImageMetadataSelector(ImageMetadataSelector selector) { imageMetadataSelectors.remove(selector); }
 
     @Override
     protected void doPost(SlingHttpServletRequest request,
@@ -76,10 +91,34 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
                     Metadata metadata = ImageMetadataReader.readMetadata(perAsset.getRenditionStream((Resource) null));
                     for(Directory directory : metadata.getDirectories()) {
                         String directoryName = directory.getName();
+                        ImageMetadataSelector selector = null;
+                        for(ImageMetadataSelector item: imageMetadataSelectors) {
+                            String temp = item.acceptCategory(directoryName);
+                            if(temp != null) {
+                                selector = item;
+                                directoryName = temp;
+                            }
+                        }
+                        boolean asJson = selector != null && selector.asJsonProperty();
+                        String json = "{";
                         for(Tag tag : directory.getTags()) {
                             String name = tag.getTagName();
-                            log.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[] {directoryName, name, tag.getDescription()});
-                            perAsset.addTag(directoryName, name, tag.getDescription());
+                            String tagName = selector != null ? selector.acceptTag(name) : name;
+                            if(tagName != null) {
+                                log.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
+                                if(asJson) {
+                                    json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
+                                } else {
+                                    perAsset.addTag(directoryName, tagName, tag.getDescription());
+                                }
+                            }
+                        }
+                        if(asJson) {
+                            if(json.length() > 1) {
+                                json = json.substring(0, json.length() - 1);
+                                json += "}";
+                                perAsset.addTag(directoryName, "raw_tags", json);
+                            }
                         }
                     }
                 } catch(ImageProcessingException e) {

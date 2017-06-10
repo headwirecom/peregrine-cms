@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="sling:OsgiConfig"
+          category="icc-profile"
+          imageDirectory="icc_profile"
+          included="{Boolean}true"
+          selection=
+"[
+signature,
+version,
+device_manufacturer,
+class,
+color_space,
+copyright,
+tag_count
+]"
+          json="{Boolean}false"
+          mapping=
+"[
+primary_platform=platform,
+profile_connection_space=connectionSpace,
+profile_date_time=dateAndTime,
+profile_description=description,
+profile_size=size
+]"
+/>

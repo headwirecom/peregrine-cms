@@ -100,7 +100,7 @@ public class PerAssetImpl
         Resource categoryResource = getCategoryResource(category, true);
         ModifiableValueMap properties = categoryResource.adaptTo(ModifiableValueMap.class);
         if(properties != null) {
-            properties.put(adjustName(tag), value);
+            properties.put(JcrUtil.adjustMetadataName(tag), value);
         }
         session.save();
     }
@@ -165,7 +165,7 @@ public class PerAssetImpl
             categoryResource = getCategoryResource(category, false);
             if(categoryResource != null) {
                 ValueMap properties = categoryResource.getValueMap();
-                answer = properties.get(adjustName(tag));
+                answer = properties.get(JcrUtil.adjustMetadataName(tag));
             }
         } catch(PersistenceException e) {
             // Ignore
@@ -202,7 +202,7 @@ public class PerAssetImpl
     private Resource getCategoryResource(String category, boolean create)
         throws PersistenceException
     {
-        String adjustedCategory = adjustName(category);
+        String adjustedCategory = JcrUtil.adjustMetadataName(category);
         ResourceResolver resourceResolver = adaptTo(ResourceResolver.class);
         Resource metadata = getOrCreateMetaData();
         Resource answer = metadata.getChild(adjustedCategory);
@@ -225,16 +225,5 @@ public class PerAssetImpl
 
         }
         return metadata;
-    }
-
-    /**
-     * Adjust an Image Category / Tag Name to be suitable for Peregrine
-     * @param name Name to be adjust
-     * @return The given name lowercase and spaces and slashes to underscore or if name is null then null
-     */
-    private String adjustName(String name) {
-        return name == null ?
-            null :
-            name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
     }
 }
