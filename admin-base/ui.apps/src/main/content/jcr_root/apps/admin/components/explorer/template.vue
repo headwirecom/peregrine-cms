@@ -270,7 +270,11 @@
                 $perAdminApp.stateAction('deletePage', target)
             },
             editPage: function(me, target) {
-                $perAdminApp.stateAction('editPage', target )
+                if(me.pt.path.startsWith('/content/templates')) {
+                    $perAdminApp.stateAction('editTemplate', target )
+                } else {
+                    $perAdminApp.stateAction('editPage', target )
+                }
             }
         }
 

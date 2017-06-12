@@ -23,7 +23,7 @@
             function() {
                 return {
                     formmodel: {
-                        path: $perAdminApp.getNodeFromView('/state/tools/pages'),
+                        path: $perAdminApp.getNodeFromView('/state/tools/templates'),
                         name: ''
                     },
                     formOptions: {

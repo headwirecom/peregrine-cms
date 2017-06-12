@@ -14,6 +14,7 @@ import fetchExternalAsset from './stateActions/fetchExternalAsset'
 import createFolder from './stateActions/createFolder'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
+import editTemplate from './stateActions/editTemplate'
 import editComponent from './stateActions/editComponent'
 import savePageEdit from './stateActions/savePageEdit'
 import deletePageNode from './stateActions/deletePageNode'
@@ -40,6 +41,7 @@ actions['uploadFiles'] = uploadFiles
 actions['sourceImageWizard'] = sourceImageWizard
 actions['fetchExternalAsset'] = fetchExternalAsset
 actions['editPage'] = editPage
+actions['editTemplate'] = editTemplate
 actions['editComponent'] = editComponent
 actions['savePageEdit'] = savePageEdit
 actions['addComponentToPath'] = addComponentToPath
