@@ -245,7 +245,11 @@
                 alert(target)
             },
             addPage: function(me, target) {
-                $perAdminApp.stateAction('createPageWizard', me.pt.path)
+                if(me.pt.path === '/content/sites') {
+                    $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
+                } else {
+                    $perAdminApp.stateAction('createPageWizard', me.pt.path)
+                }
             },
             addFolder: function(me, target) {
                 var folderName = prompt('add folder at '+me.pt.path)
