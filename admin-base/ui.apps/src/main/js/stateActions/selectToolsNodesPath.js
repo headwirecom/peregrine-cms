@@ -4,6 +4,9 @@ let logger = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
 import {set} from '../utils'
 
 export default function(me, target) {
+    let view = me.getView()
+    set(view, '/state/tools/page', null)
+
     me.getApi().populateNodesForBrowser(target.selected).then( () => {
     		set(me.getView(), target.path, target.selected)
         let path = document.location.pathname

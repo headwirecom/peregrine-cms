@@ -28,6 +28,7 @@ import createObject from './stateActions/createObject'
 import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
+import showPageInfo from './stateActions/showPageInfo'
 import editPreview from './stateActions/editPreview'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
@@ -54,6 +55,7 @@ actions['saveObjectEdit'] = saveObjectEdit
 actions['createObject'] = createObject
 actions['createObjectWizard'] = createObjectWizard
 actions['selectAsset'] = selectAsset
+actions['showPageInfo'] = showPageInfo
 actions['unselectAsset'] = unselectAsset
 actions['editPreview'] = editPreview
 

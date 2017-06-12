@@ -83,6 +83,11 @@ public class NodesServlet extends SlingSafeMethodsServlet {
                         String mimeType = child.getChild("jcr:content").getValueMap().get("jcr:mimeType", String.class);
                         jg.writeStringField("mimeType", mimeType);
                     }
+                    if("per:Page".equals(resourceType)) {
+                        String title = child.getChild("jcr:content").getValueMap().get("jcr:title", String.class);
+                        jg.writeStringField("title", title);
+
+                    }
                     jg.writeEndObject();
                 }
             }

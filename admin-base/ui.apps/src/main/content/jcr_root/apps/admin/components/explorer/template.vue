@@ -43,7 +43,7 @@
                         v-bind:model="{
                             target: child,
                             command: 'selectPath'
-                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.name}}
+                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
                     <div class="secondary-content">
@@ -53,6 +53,14 @@
                                 command: 'editPage'
                             }">
                             <i class="material-icons">edit</i>
+                        </admin-components-action>
+
+                        <admin-components-action v-if="editable(child)"
+                                                 v-bind:model="{
+                                target: child.path,
+                                command: 'showInfo'
+                            }">
+                            <i class="material-icons">info</i>
                         </admin-components-action>
 
                         <span v-if="viewable(child)">
@@ -181,6 +189,8 @@
 
                 if(this.model.selectionFrom && child) {
                     return $perAdminApp.getNodeFromViewOrNull(this.model.selectionFrom) === child.path
+                } else if(child.path === $perAdminApp.getNodeFromViewOrNull('/state/tools/page')) {
+                    return true
                 }
                 return false
 
@@ -215,6 +225,9 @@
             },
             checkIfAllowed: function(resourceType) {
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
+            },
+            showInfo: function(me, target) {
+                $perAdminApp.stateAction('showPageInfo', { selected: target })
             },
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
