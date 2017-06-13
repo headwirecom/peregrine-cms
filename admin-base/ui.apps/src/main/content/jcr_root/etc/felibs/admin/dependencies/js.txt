@@ -1,5 +1,5 @@
 /etc/felibs/pagerender-vue/js/pagerenderVueStructureContainer.js
 /etc/felibs/pagerender-vue/js/pagerenderVueComponentsBase.js
 /etc/felibs/pagerender-vue/js/pagerenderVueComponentsPlaceholder.js
-vfg-core.js
+vfg.js
 vue-form-wizard.js
