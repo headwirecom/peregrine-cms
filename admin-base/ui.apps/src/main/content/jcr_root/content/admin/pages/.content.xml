@@ -30,6 +30,8 @@
                          sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add"/>
                 </actions>
                 -->
+                <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/pageview"/>
+
             </explorer>
 
             <jsonview jcr:primaryType="nt:unstructured"

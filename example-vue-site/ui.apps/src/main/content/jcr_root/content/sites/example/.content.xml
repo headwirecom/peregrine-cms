@@ -6,7 +6,7 @@
     <jcr:content
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
-            jcr:title="example site"
+            jcr:title="example vuejs site"
             brand="example"
             template="/content/templates/example"
     >

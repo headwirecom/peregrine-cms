@@ -5,7 +5,7 @@
     <jcr:content
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
-            jcr:title="peregrine cms sites"
+            jcr:title="sites"
     >
 
     </jcr:content>
