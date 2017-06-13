@@ -20,14 +20,21 @@
                 >
 
                     <carousel jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/carousel"
+                            sling:resourceType="example/components/carousel"
+                            interval="5000"
+                            pause="hover"
+                            ride="true"
+                            indicators="true"
+                            controls="true"
+                            wrap="true"
+                            keyboard="true"
                            >
                         <slide1 jcr:primaryType="nt:unstructured"
-                                imagePath="/etc/felibs/admin/images/peregrine-logo.png"
+                                imagePath="/etc/felibs/admin/images/tesla.jpg"
                                 sling:resourceType="example/components/carouselItem"
                                 name="slide1"/>
                         <slide2 jcr:primaryType="nt:unstructured"
-                                imagePath="/etc/felibs/admin/images/peregrine-logo.png"
+                                imagePath="/etc/felibs/admin/images/tesla1.jpg"
                                 sling:resourceType="example/components/carouselItem"
                                 name="slide2"/>
                     </carousel>
