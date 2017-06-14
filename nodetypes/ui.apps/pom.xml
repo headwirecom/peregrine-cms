@@ -28,7 +28,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ui.apps</artifactId>
+    <artifactId>nodetypes.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>peregrine default node types - UI Apps</name>
