@@ -42,11 +42,18 @@ public class ReferenceListerService
             required = true
         )
         String[] referencePrefix() default "/content/";
+        @AttributeDefinition(
+            name = "ReferencedByRoot",
+            description = "List of Roots to look for the referenced by resources",
+            required = true
+        )
+        String[] referencedByRoot() default "/content";
     }
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private List<String> referencePrefixList = new ArrayList<>();
+    private List<String> referencedByRootList = new ArrayList<>();
 
     @Override
     public List<Resource> getReferenceList(Resource resource, boolean deep) {
@@ -57,6 +64,17 @@ public class ReferenceListerService
     public List<Resource> getReferenceList(Resource resource, boolean deep, Resource source, Resource target) {
         List<Resource> answer = new ArrayList<>();
         traverse(resource, answer, deep, source, target);
+        return answer;
+    }
+
+    public List<Resource> getReferencedByList(Resource resource) {
+        List<Resource> answer = new ArrayList<>();
+        for(String root: referencedByRootList) {
+            Resource rootResource = resource != null ? resource.getResourceResolver().getResource(root) : null;
+            if(rootResource != null) {
+                traverseTreeForRB(rootResource, resource.getPath(), answer);
+            }
+        }
         return answer;
     }
 
@@ -110,6 +128,59 @@ public class ReferenceListerService
         }
     }
 
+//    private void traverseForRB(Resource resource, String referencePath, List<Resource> response) {
+//        Resource jcrContent = resource.getChild(JCR_CONTENT);
+//        if(jcrContent != null) {
+//            parsePropertiesForRB(jcrContent, referencePath, response);
+//            // Loop of all its children
+//            traverseTreeForRB(jcrContent, referencePath, response);
+//        }
+//    }
+
+    private void traverseTreeForRB(Resource resource, String referencePath, List<Resource> response) {
+        for(Resource child: resource.getChildren()) {
+            parsePropertiesForRB(child, referencePath, response);
+            traverseTreeForRB(child, referencePath, response);
+        }
+    }
+
+    private void parsePropertiesForRB(Resource resource, String referencePath, List<Resource> response) {
+        ValueMap properties = resource.getValueMap();
+        for(Object item: properties.values()) {
+            String value = item + "";
+            if(referencePath.equals(value)) {
+                // Find the node
+                boolean found = false;
+                Resource temp = resource;
+                while(true) {
+                    if(temp.getName().equals(JCR_CONTENT)) {
+                        Resource parent = temp.getParent();
+                        if(parent != null) {
+                            if(!response.contains(parent)) {
+                                response.add(parent);
+                            }
+                            found = true;
+                        } else {
+                            log.warn("JCR Content Node: '{}' found but no parent", temp.getPath());
+                        }
+                        break;
+                    } else {
+                        temp = temp.getParent();
+                        if(temp == null) {
+                            break;
+                        }
+                    }
+                }
+                if(!found) {
+                    // No JCR Content node found so just use this one
+                    if(!response.contains(resource)) {
+                        response.add(resource);
+                    }
+                }
+            }
+        }
+    }
+
     @Activate
     @SuppressWarnings("unused")
     void activate(Configuration configuration) { setup(configuration); }
@@ -124,6 +195,14 @@ public class ReferenceListerService
             if(prefix != null && !prefix.isEmpty()) {
                 log.debug("Add Reference Prefix: '{}'", prefix);
                 referencePrefixList.add(prefix);
+            }
+        }
+        String[] roots = configuration.referencedByRoot();
+        referencedByRootList = new ArrayList<>();
+        for(String root: roots) {
+            if(root != null && !root.isEmpty()) {
+                log.debug("Add Referenced By Root: '{}'", root);
+                referencedByRootList.add(root);
             }
         }
     }
