@@ -38,6 +38,7 @@
     		this.schema.fields.forEach( (item, index) => {
     			model[item.model] = ''
     		})
+    		model.name = 'n' + Date.now()
     		return model
     	}
     },

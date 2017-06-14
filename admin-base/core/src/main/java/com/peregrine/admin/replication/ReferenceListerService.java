@@ -63,32 +63,45 @@ public class ReferenceListerService
     private void traverse(Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
         Resource jcrContent = resource.getChild(JCR_CONTENT);
         if(jcrContent != null) {
-            ValueMap properties = jcrContent.getValueMap();
-            for(Object item: properties.values()) {
-                String value = item + "";
-                for(String prefix: referencePrefixList) {
-                    if(value.startsWith(prefix)) {
-                        String resourcePath = value;
-                        log.trace("Found Reference Resource Path: '{}'", resourcePath);
-                        Resource child = null;
-                        if(resourcePath.startsWith("/")) {
-                            child = resource.getResourceResolver().getResource(value);
+            parseProperties(jcrContent, response, deep, source, target);
+            // Loop of all its children
+            traverseTree(jcrContent, response, deep, source, target);
+        }
+    }
+
+    private void traverseTree(Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
+        for(Resource child: resource.getChildren()) {
+            parseProperties(child, response, deep, source, target);
+            traverseTree(child, response, deep, source, target);
+        }
+    }
+
+    private void parseProperties(Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
+        ValueMap properties = resource.getValueMap();
+        for(Object item: properties.values()) {
+            String value = item + "";
+            for(String prefix: referencePrefixList) {
+                if(value.startsWith(prefix)) {
+                    String resourcePath = value;
+                    log.trace("Found Reference Resource Path: '{}'", resourcePath);
+                    Resource child = null;
+                    if(resourcePath.startsWith("/")) {
+                        child = resource.getResourceResolver().getResource(value);
+                    } else {
+                        child = resource.getChild(resourcePath);
+                    }
+                    if(child != null) {
+                        // Check if the resource is not already listed in there
+                        if(response.contains(child)) {
+                            log.info("Resource is already in the list: '{}'", child);
                         } else {
-                            child = resource.getChild(resourcePath);
-                        }
-                        if(child != null) {
-                            // Check if the resource is not already listed in there
-                            if(response.contains(child)) {
-                                log.info("Resource is already in the list: '{}'", child);
-                            } else {
-                                if(source  != null && target != null) {
-                                    JcrUtil.listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
-                                }
-                                log.trace("Found Reference Resource: '{}'", child);
-                                response.add(child);
-                                if(deep) {
-                                    traverse(child, response, deep, source, target);
-                                }
+                            if(source  != null && target != null) {
+                                JcrUtil.listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
+                            }
+                            log.trace("Found Reference Resource: '{}'", child);
+                            response.add(child);
+                            if(deep) {
+                                traverse(child, response, deep, source, target);
                             }
                         }
                     }
