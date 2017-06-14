@@ -87,8 +87,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
         for(var i = 0; i < domains.length; i++) {
             var domain = domains[i]
             if(url.startsWith(domain)) {
-                newLocation = path.split('/').slice(4).join('/')
-                if(newLocation === '') newLocation = '/'
+                newLocation = '/'+path.split('/').slice(4).join('/')
             }
         }
         history.pushState({peregrinevue:true, path: path}, path, newLocation)
