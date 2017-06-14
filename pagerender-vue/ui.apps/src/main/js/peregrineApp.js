@@ -92,6 +92,16 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
             }
         }
         history.pushState({peregrinevue:true, path: path}, path, newLocation)
+        scroll(0,0)
+
+        // Create the event.
+        var event = document.createEvent('Event')
+
+        // Define that the event name is 'build'.
+        event.initEvent('pageRendered', true, true)
+
+        // target can be any Element or other EventTarget.
+        window.dispatchEvent(event)
     }
 }
 

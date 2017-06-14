@@ -3,7 +3,7 @@ setlocal
 set path=%path%;%~dp0vips\bin
 set path
 cd resources 
-start java -jar org.apache.sling.launchpad-9-SNAPSHOT.jar
+start java -jar org.apache.sling.launchpad-9.jar
 
 rem -- loop until sling server is present and running on port 8080
 :while1
