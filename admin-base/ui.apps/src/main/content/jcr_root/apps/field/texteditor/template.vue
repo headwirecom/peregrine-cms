@@ -23,7 +23,19 @@
         methods: {
             initialize() {
                 this.$refs.quilleditor.innerHTML = this.value
-                this.quill = new Quill(this.$refs.quilleditor, {theme: 'snow'})
+                this.quill = new Quill(this.$refs.quilleditor, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ header: [1, 2, 3, 4, 5, false] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'script': 'sub'}, { 'script': 'super' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            ['code-block'],
+                            ['clean']
+                        ]
+                    }                })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
                     this.value = this.$refs.quilleditor.children[0].innerHTML
                 } )
