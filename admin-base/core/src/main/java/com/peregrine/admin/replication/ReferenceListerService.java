@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.peregrine.admin.util.JcrUtil.JCR_CONTENT;
 
@@ -67,12 +68,12 @@ public class ReferenceListerService
         return answer;
     }
 
-    public List<Resource> getReferencedByList(Resource resource) {
-        List<Resource> answer = new ArrayList<>();
+    public List<Reference> getReferencedByList(Resource resource) {
+        List<Reference> answer = new ArrayList<>();
         for(String root: referencedByRootList) {
             Resource rootResource = resource != null ? resource.getResourceResolver().getResource(root) : null;
             if(rootResource != null) {
-                traverseTreeForRB(rootResource, resource.getPath(), answer);
+                traverseTreeReverse(rootResource, resource.getPath(), answer);
             }
         }
         return answer;
@@ -128,26 +129,19 @@ public class ReferenceListerService
         }
     }
 
-//    private void traverseForRB(Resource resource, String referencePath, List<Resource> response) {
-//        Resource jcrContent = resource.getChild(JCR_CONTENT);
-//        if(jcrContent != null) {
-//            parsePropertiesForRB(jcrContent, referencePath, response);
-//            // Loop of all its children
-//            traverseTreeForRB(jcrContent, referencePath, response);
-//        }
-//    }
-
-    private void traverseTreeForRB(Resource resource, String referencePath, List<Resource> response) {
+    private void traverseTreeReverse(Resource resource, String referencePath, List<Reference> response) {
         for(Resource child: resource.getChildren()) {
-            parsePropertiesForRB(child, referencePath, response);
-            traverseTreeForRB(child, referencePath, response);
+            parsePropertiesReverse(child, referencePath, response);
+            traverseTreeReverse(child, referencePath, response);
         }
     }
 
-    private void parsePropertiesForRB(Resource resource, String referencePath, List<Resource> response) {
+    private void parsePropertiesReverse(Resource resource, String referencePath, List<Reference> response) {
         ValueMap properties = resource.getValueMap();
-        for(Object item: properties.values()) {
-            String value = item + "";
+        for(Map.Entry<String, Object> entry: properties.entrySet()) {
+//        for(Object item: properties.values()) {
+            String name = entry.getKey();
+            String value = entry.getValue() + "";
             if(referencePath.equals(value)) {
                 // Find the node
                 boolean found = false;
@@ -157,7 +151,7 @@ public class ReferenceListerService
                         Resource parent = temp.getParent();
                         if(parent != null) {
                             if(!response.contains(parent)) {
-                                response.add(parent);
+                                response.add(new Reference(parent, name, resource));
                             }
                             found = true;
                         } else {
@@ -174,7 +168,7 @@ public class ReferenceListerService
                 if(!found) {
                     // No JCR Content node found so just use this one
                     if(!response.contains(resource)) {
-                        response.add(resource);
+                        response.add(new Reference(resource, name, resource));
                     }
                 }
             }

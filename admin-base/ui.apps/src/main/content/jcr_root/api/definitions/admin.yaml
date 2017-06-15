@@ -385,3 +385,63 @@ paths:
                 type: string
               path:
                 type: string
+  '/refBy.json/path//{path}':
+    get:
+      description: Lists all the nodes that have a reference to the given node
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the resource which is the targer of the reference
+          required: true
+      responses:
+        '200':
+          description: returns the root node name / path and the list of the nodes that reference the given page which includes the node, the property node and the property name that contains the link
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+        '400':
+          description: If the path did not resolve to a resource
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              path:
+                type: string
+  '/move.json/path//{path}//to//{to}//type//{type}':
+    post:
+      description: Move a given node to a new place
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the resource which is moved
+          required: true
+        - name: to
+          type: string
+          in: path
+          description: the path of the resource that is either the new parent for type 'child' or the next/previous sibling for type 'before' or 'after'
+          required: true
+        - name: type
+          type: string
+          in: path
+          description: The type of move which can be 'child' (add as child of the given to node), 'after' (add after the given to node) or 'before' (add before the given to node)
+          required: true
+      responses:
+        '200':
+          description: returns the from node name and path and the new node name and path
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+        '400':
+          description: If the path and to did not resolve to a resource or if the type was wrong
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              path:
+                type: string

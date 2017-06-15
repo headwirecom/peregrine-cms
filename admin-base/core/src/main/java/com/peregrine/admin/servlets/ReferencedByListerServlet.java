@@ -57,23 +57,27 @@ public class ReferencedByListerServlet extends SlingSafeMethodsServlet {
         response.setContentType("application/json");
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
-            List<Resource> references = referenceLister.getReferencedByList(source);
+            List<com.peregrine.admin.replication.Reference> references = referenceLister.getReferencedByList(source);
             StringBuffer answer = new StringBuffer();
             answer.append("{");
             answer.append("\"sourceName\":\"" + source.getName() + "\", ");
             answer.append("\"sourcePath\":\"" + source.getPath() + "\", ");
             answer.append("\"referencedBy\":[");
             boolean first = true;
-            for(Resource child : references) {
+            for(com.peregrine.admin.replication.Reference child : references) {
                 if(first) {
                     first = false;
                 } else {
                     answer.append(", ");
                 }
                 answer.append("{\"name\":\"");
-                answer.append(child.getName());
+                answer.append(child.getResource().getName());
                 answer.append("\", \"path\":\"");
-                answer.append(child.getPath());
+                answer.append(child.getResource().getPath());
+                answer.append("\", \"propertyName\":\"");
+                answer.append(child.getPropertyName());
+                answer.append("\", \"propertyPath\":\"");
+                answer.append(child.getPropertyResource().getPath());
                 answer.append("\"}");
             }
             answer.append("]}");

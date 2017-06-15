@@ -10,12 +10,12 @@ import java.util.List;
 public interface ReferenceLister {
 
     /**
-     * Provides a list of resources referenced by the given resource
+     * Provides a list of referenced that have a reference to the given resource
      *
      * @param resource Resource that is referenced by the result list
-     * @return List of resources referenced by which might be empty
+     * @return List of references which can be empty if none found
      */
-    List<Resource> getReferencedByList(Resource resource);
+    List<Reference> getReferencedByList(Resource resource);
 
     /**
      * Provides a list of resources referenced directly or indirectly by
