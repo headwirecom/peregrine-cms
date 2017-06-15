@@ -3,6 +3,7 @@
 // includes
 const request = require('request-promise-native')
 const params  = require('commander')
+const cli = require('cli-interact')
 
 // default options
 let host = 'localhost'
@@ -123,8 +124,8 @@ async function test() {
         debug(data)
     })
 
-    var query = require('cli-interact').getYesNo;
-    var answer = query('Shall we clean the nodes?');
+    let query = cli.getYesNo;
+    let answer = query('Shall we clean the nodes?');
     if(answer) {
         await request.post(`http://${host}:${port}/content/move-resource-test`).form({':operation': 'delete'}).auth(username, password, true).then( (data) => {
             debug(data)
