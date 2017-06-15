@@ -56,7 +56,7 @@
                 <configuration>
                     <instructions>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Sling-Model-Packages>\${package}.\${slingModelSubPackage}</Sling-Model-Packages>
+                        <Sling-Model-Packages>${package}.${slingModelSubPackage}</Sling-Model-Packages>
                         <_dsannotations>*</_dsannotations>
                         <_metatypeannotations>*</_metatypeannotations>
                         <_removeheaders>
@@ -79,9 +79,9 @@
                 <groupId>org.apache.sling</groupId>
                 <artifactId>maven-sling-plugin</artifactId>
                 <configuration>
-                    <slingUrl>http://\${sling.host}:\${sling.port}/system/console</slingUrl>
-                    <user>\${sling.user}</user>
-                    <password>\${sling.password}</password>
+                    <slingUrl>http://${sling.host}:${sling.port}/system/console</slingUrl>
+                    <user>${sling.user}</user>
+                    <password>${sling.password}</password>
                 </configuration>
             </plugin>
         </plugins>
