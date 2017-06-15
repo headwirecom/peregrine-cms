@@ -9,6 +9,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "cli-interact": "^0.1.9",
     "commander": "^2.9.0",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4"

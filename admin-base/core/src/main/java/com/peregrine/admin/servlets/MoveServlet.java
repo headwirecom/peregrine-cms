@@ -129,7 +129,7 @@ public class MoveServlet extends SlingAllMethodsServlet {
                 Resource propertyResource = reference.getPropertyResource();
                 ModifiableValueMap properties = JcrUtil.getModifiableProperties(propertyResource);
                 if(properties.containsKey(reference.getPropertyName())) {
-                    properties.put(reference.getPropertyName(), to.getPath());
+                    properties.put(reference.getPropertyName(), newResource.getPath());
                 }
             }
             request.getResourceResolver().commit();
