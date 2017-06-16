@@ -10,7 +10,7 @@ let host = 'localhost'
 let port = '8080'
 let username = 'admin'
 let password = 'admin'
-let type = 'child'
+let index = 1
 
 // poor mans debugger output
 let logDebug = false
@@ -53,21 +53,37 @@ function createNode(folderPath, type, properties) {
 
 // parse the command line parameters
 params
-    .option('-H, --host', 'server name or ip')
-    .option('-P, --port', 'server port')
-    .option('-u, --user', 'username')
-    .option('-p, --pass', 'password')
-    .option('-t, --type', 'type of the move: child, before or after')
+    .option('-H, --host [host]', 'server name or ip')
+    .option('-P, --port <port>', 'server port', parseInt)
+    .option('-u, --user [user]', 'username')
+    .option('-p, --pass [password]', 'password')
+    .option('-i, --index <n>', 'index (1 - 3) of the source node to be rename', parseInt)
     .option('-v, --verbose', 'verbose')
     .parse(process.argv)
 
 // set the options
 if(params.host)     { host = params.host }
-if(params.port)     { port = params.port }
+if(!isNaN(params.port)) {
+    if(params.port > 0) {
+        port = params.port
+    } else {
+        console.log('Port: \'' + params.port + '\' is not valid')
+        return 1
+    }
+}
 if(params.user)     { username = params.user }
 if(params.password) { password = params.password }
-if(params.type)     { type = params.type }
 if(params.verbose)  { logDebug = true }
+if(params.index)    {
+    if(params.index >= 1 && params.index <= 3) {
+        index = params.index
+    } else {
+        console.log('Index: \'' + params.index + '\' is not valid')
+        return 1
+    }
+}
+
+// console.log('Host: ' + host + ', Port: ' + port + ', User: ' + username + ', Passsword: ' + password + ', Index: ' + index + ', Verbose: ' + logDebug)
 
 let rootUrl = `http://${host}:${port}`
 let contentUrl = `${rootUrl}/content/`
@@ -112,7 +128,7 @@ async function test() {
     console.log('Move the Source to the Target Folder')
     console.log('-------------------------------------------------------------------------------')
 
-    await request.post(rootUrl + `/api/admin/rename.json/path///content/${testFolderName}/source/sourceTest2//to//renameTest2`).auth(username, password, true).then( (data) => {
+    await request.post(rootUrl + `/api/admin/rename.json/path///content/${testFolderName}/source/sourceTest${index}//to//renameTest${index}`).auth(username, password, true).then( (data) => {
         debug(data)
     })
 

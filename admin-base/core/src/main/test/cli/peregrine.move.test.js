@@ -53,25 +53,41 @@ function createNode(folderPath, type, properties) {
 
 // parse the command line parameters
 params
-    .option('-H, --host', 'server name or ip')
-    .option('-P, --port', 'server port')
-    .option('-u, --user', 'username')
-    .option('-p, --pass', 'password')
-    .option('-t, --type', 'type of the move: child, before or after')
+    .option('-H, --host [host]', 'server name or ip')
+    .option('-P, --port <port>', 'server port', parseInt)
+    .option('-u, --user [user]', 'username')
+    .option('-p, --pass [password]', 'password')
+    .option('-t, --type [type]', 'type of the move - can be one of these: child, before or after')
     .option('-v, --verbose', 'verbose')
     .parse(process.argv)
 
 // set the options
 if(params.host)     { host = params.host }
-if(params.port)     { port = params.port }
+if(!isNaN(params.port)) {
+    if(params.port > 0) {
+        port = params.port
+    } else {
+        console.log('Port: \'' + params.port + '\' is not valid')
+        return 1
+    }
+}
 if(params.user)     { username = params.user }
 if(params.password) { password = params.password }
-if(params.type)     { type = params.type }
+if(params.type)     {
+    if(params.type == 'child' || params.type == 'before' || params.type == 'after') {
+        type = params.type
+    } else {
+        console.log('Type: \'' + params.type + '\' is not valid')
+        return 1
+    }
+}
 if(params.verbose)  { logDebug = true }
 
 let rootUrl = `http://${host}:${port}`
 let contentUrl = `${rootUrl}/content/`
 let testFolderName = 'move-resource-test'
+
+// console.log('Host: ' + host + ', Port: ' + port + ', User: ' + username + ', Passsword: ' + password + ', Type: ' + type + ', Verbose: ' + logDebug)
 
 // the actual test we are performing
 async function test() {
