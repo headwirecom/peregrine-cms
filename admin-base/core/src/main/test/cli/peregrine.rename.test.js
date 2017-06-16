@@ -71,7 +71,7 @@ if(params.verbose)  { logDebug = true }
 
 let rootUrl = `http://${host}:${port}`
 let contentUrl = `${rootUrl}/content/`
-let testFolderName = 'move-resource-test'
+let testFolderName = 'rename-resource-test'
 
 // the actual test we are performing
 async function test() {
@@ -101,6 +101,8 @@ async function test() {
     console.log('Create the Initial Resources')
     console.log('-------------------------------------------------------------------------------')
     await createNode(testFolderName + '/source/sourceTest1', 'nt:unstructured', 'Source Test 1')
+    await createNode(testFolderName + '/source/sourceTest2', 'nt:unstructured', 'Source Test 2')
+    await createNode(testFolderName + '/source/sourceTest3', 'nt:unstructured', 'Source Test 3')
     await createNode(testFolderName + '/target/targetTest1', 'nt:unstructured', 'Target Test 1')
     await createNode(testFolderName + '/target/targetTest2', 'nt:unstructured', 'Target Test 2')
     await createNode(testFolderName + '/target/targetTest3', 'nt:unstructured', 'Target Test 3')
@@ -109,16 +111,8 @@ async function test() {
 
     console.log('Move the Source to the Target Folder')
     console.log('-------------------------------------------------------------------------------')
-    var toPath="/content/move-resource-test/target"
-    if(type == 'child') {
-        toPath="/content/move-resource-test/target"
-    } else if(type == 'before') {
-        toPath="/content/move-resource-test/target/targetTest2"
-    } else if(type == 'after') {
-        toPath="/content/move-resource-test/target/targetTest2"
-    }
 
-    await request.post(rootUrl + `/api/admin/move.json/path///content/${testFolderName}/source/sourceTest1//to//${toPath}//type//${type}`).auth(username, password, true).then( (data) => {
+    await request.post(rootUrl + `/api/admin/rename.json/path///content/${testFolderName}/source/sourceTest2//to//renameTest2`).auth(username, password, true).then( (data) => {
         debug(data)
     })
 
