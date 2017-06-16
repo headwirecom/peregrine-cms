@@ -58,7 +58,7 @@
 										&:hover,
 										&:focus,
 										&:active {
-											color: $blue-gray-darken-4;
+											color: #ff9800;
 										}
 									}
 								}
@@ -92,6 +92,13 @@
 				  			font-weight: 400;
 				  		}
 				  	}
+				  }
+				  .btn {
+				  	&:hover,
+				  	&:focus,
+				  	&:active {
+				  		background-color: #ff9800;
+				  	}		
 				  }
 					img {
 						width: auto;

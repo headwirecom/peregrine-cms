@@ -8,9 +8,26 @@ nav {
       > span {
         display: inline-block;
         padding: 0 0.75rem;
+        &:before {
+          content: '\00BB';
+          margin-left: -0.75rem;
+          margin-right: 0.75rem;
+          display: inline;
+        }
+        &:first-child {
+          &:before {
+            content: '';
+          }
+        }
         > a {
           display: inline-block;
           line-height: 36px;
+          
+          &:hover,
+          &:focus,
+          &:active {
+            text-decoration: underline;
+          }
           &.peregrine-logo {
             height: 36px;
             width: 36px;
@@ -18,13 +35,13 @@ nav {
             background-size: contain;
             background-position: center center;
             text-indent: -9999px;
-          }
-          &:before {
-            content: '\00BB';
-            margin-left: -0.75rem;
-            margin-right: 0.75rem;
-            display: inline;
-          }
+            &:hover,
+            &:focus,
+            &:active {
+              text-decoration: none;
+              opacity: .75;
+            }
+          }          
         }
       }
     }
@@ -37,9 +54,16 @@ nav {
       display: inline-block;
       padding-right: 10px;
       vertical-align: middle;
-      .material-icons {
-        line-height: 40px;
-        height: 100%;
+      > a.btn-floating {
+        .material-icons {
+          line-height: 40px;
+          height: 100%;
+        }
+        &:hover,
+        &:focus,
+        &:active {
+          background-color: #ff9800;
+        }
       }
       &:only-of-type {
         margin-left: 50px;
@@ -55,6 +79,13 @@ nav {
        > span {
         display: inline-block;
         height: 100%;
+        > a {
+          &:hover,
+          &:focus,
+          &:active {
+            text-decoration: underline;
+          }
+        }
        }
     }
   }
