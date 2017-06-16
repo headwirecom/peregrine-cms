@@ -12,6 +12,7 @@ import org.apache.sling.api.scripting.SlingScriptHelper;
 public class Helper implements Use {
 
     private Object model;
+    private String siteRootPath;
 
     public String getHello() {
         return "hello";
@@ -19,6 +20,10 @@ public class Helper implements Use {
 
     public Object getModel() {
         return model;
+    }
+
+    public String getSiteRootPath() {
+        return siteRootPath;
     }
 
     public String getModelClass() {
@@ -29,6 +34,16 @@ public class Helper implements Use {
         Resource resource = (Resource) bindings.get("resource");
         SlingHttpServletRequest request = (SlingHttpServletRequest) bindings.get("request");
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
+
+        String path = resource.getPath();
+        if(path.startsWith("/content/sites/")) {
+            path = path.substring("/content/sites/".length());
+        } else if(path.startsWith("/content/templates/")) {
+            path = path.substring("/content/templates/".length());
+        }
+        int slash = path.indexOf("/");
+        String siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
+        siteRootPath = "/content/sites/"+siteName;
 
         try {
             model = sling.getService(ModelFactory.class).getModelFromResource(resource);

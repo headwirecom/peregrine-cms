@@ -51,7 +51,7 @@
       "model": "children",
       "fields" : [
         {
-          "type": "input",
+          "type": "pathbrowser",
           "label": "Image Source",
           "model": "imagePath"
         },
