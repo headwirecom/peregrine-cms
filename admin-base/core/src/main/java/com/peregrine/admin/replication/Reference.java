@@ -10,26 +10,25 @@ import java.util.List;
  * Created by schaefa on 5/25/17.
  */
 public class Reference {
-    private Resource source;
-    private List<Reference> references = new ArrayList<>();
+    private Resource resource;
+    private Resource propertyResource;
+    private String propertyName;
 
-    public Reference(Resource source) {
-        this.source = source;
+    public Reference(Resource resource, String propertyName, Resource propertyResource) {
+        this.resource = resource;
+        this.propertyName = propertyName;
+        this.propertyResource = propertyResource;
     }
 
-    public Resource getSource() {
-        return source;
+    public Resource getResource() {
+        return resource;
     }
 
-    public List<Reference> getReferences() {
-        return Collections.unmodifiableList(references);
+    public String getPropertyName() {
+        return propertyName;
     }
 
-    public Reference addReference(Resource resource) {
-        Reference answer = resource != null ? new Reference(resource) : null;
-        if(answer != null) {
-            references.add(answer);
-        }
-        return answer;
+    public Resource getPropertyResource() {
+        return propertyResource;
     }
 }

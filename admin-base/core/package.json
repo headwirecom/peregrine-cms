@@ -1,0 +1,17 @@
+{
+  "name": "coretest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cli-interact": "^0.1.9",
+    "commander": "^2.9.0",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4"
+  }
+}

@@ -3,6 +3,7 @@ package com.peregrine.admin.util;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,7 @@ public class JcrUtil {
                 LOG.warn("Path is null so call is ignored");
             }
         }
-        return answer;
+        return checkResource(answer);
     }
 
     public static Resource getResource(ResourceResolver resourceResolver, String path) {
@@ -104,7 +105,15 @@ public class JcrUtil {
                 LOG.warn("Path is null so call with RR is ignored");
             }
         }
-        return answer;
+        return checkResource(answer);
+    }
+
+    public static Resource checkResource(Resource resource) {
+        if(resource != null) {
+            return ResourceUtil.isNonExistingResource(resource) ? null : resource;
+        } else {
+            return null;
+        }
     }
 
     /**

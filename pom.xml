@@ -37,6 +37,7 @@
     <module>admin-base</module>
     <module>example-vue-site</module>
     <module>autodocs</module>
+    <module>tooling/maven/archetypes/project</module>
   </modules>
 
 </project>

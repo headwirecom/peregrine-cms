@@ -87,11 +87,20 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
         for(var i = 0; i < domains.length; i++) {
             var domain = domains[i]
             if(url.startsWith(domain)) {
-                newLocation = path.split('/').slice(4).join('/')
-                if(newLocation === '') newLocation = '/'
+                newLocation = '/'+path.split('/').slice(4).join('/')
             }
         }
         history.pushState({peregrinevue:true, path: path}, path, newLocation)
+        scroll(0,0)
+
+        // Create the event.
+        var event = document.createEvent('Event')
+
+        // Define that the event name is 'build'.
+        event.initEvent('pageRendered', true, true)
+
+        // target can be any Element or other EventTarget.
+        window.dispatchEvent(event)
     }
 }
 
