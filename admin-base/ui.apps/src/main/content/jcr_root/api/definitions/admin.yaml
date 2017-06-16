@@ -445,3 +445,33 @@ paths:
                 type: string
               path:
                 type: string
+  '/rename.json/path//{path}//to//{to}':
+    post:
+      description: Renames a Resource and tries to keep the order intact
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the resource which is renamed
+          required: true
+        - name: to
+          type: string
+          in: path
+          description: the new name of the resource
+          required: true
+      responses:
+        '200':
+          description: returns the from node name and path and the new node name and path
+          schema:
+            type: object
+            additionalProperties:
+              type: object
+        '400':
+          description: If the path did not resolve to a resource, the to name was not provided or contained a slash
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              path:
+                type: string

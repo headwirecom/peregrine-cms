@@ -133,7 +133,7 @@ public class MoveServlet extends SlingAllMethodsServlet {
                 answer.append("\"sourceName\":\"" + from.getName() + "\", ");
                 answer.append("\"sourcePath\":\"" + from.getPath() + "\", ");
                 answer.append("\"tagetName\":\"" + newResource.getName() + "\", ");
-                answer.append("\"targetPath\":\"" + newResource.getPath() + "\", ");
+                answer.append("\"targetPath\":\"" + newResource.getPath() + "\"");
                 answer.append("}");
                 String temp = answer.toString();
                 log.debug("Answer: '{}'", temp);
@@ -179,7 +179,7 @@ public class MoveServlet extends SlingAllMethodsServlet {
                 answer.append("\"sourceName\":\"" + from.getName() + "\", ");
                 answer.append("\"sourcePath\":\"" + from.getPath() + "\", ");
                 answer.append("\"targetName\":\"" + toPath + "\", ");
-                answer.append("\"targetPath\":\"" + newPath + "\", ");
+                answer.append("\"targetPath\":\"" + newPath + "\"");
                 answer.append("}");
                 String temp = answer.toString();
                 log.debug("Answer: '{}'", temp);
