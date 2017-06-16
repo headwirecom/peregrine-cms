@@ -7,6 +7,7 @@
     <title>${resource.jcr:title}</title>
 
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
+    <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
 
     <sly data-sly-include="tracker-head.html"></sly>
 
@@ -42,6 +43,7 @@
     $peregrineApp.registerView($perView)
     $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
 </script>
+<sly data-sly-include=serviceworker.html"></sly>
 <sly data-sly-include=tracker-bodyend.html"></sly>
 </body>
 </html>
