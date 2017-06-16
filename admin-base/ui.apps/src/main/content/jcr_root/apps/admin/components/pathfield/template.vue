@@ -1,12 +1,12 @@
 <template>
     <div class="pathfield">
         <template v-for="item in pathSegments">
-            <admin-components-action
+            /&nbsp;<admin-components-action
                 v-bind:model="{
                     target: { path: item.path },
-                    title: '/ '+item.name,
+                    title: item.name,
                     command: 'selectPathInNav'
-                }"></admin-components-action>
+                }"></admin-components-action>&nbsp;
         </template>
     </div>
 </template>
