@@ -22,23 +22,24 @@ nav {
         > a {
           display: inline-block;
           line-height: 36px;
-          
+          text-decoration: none;
+          transition: color .3s ease;
           &:hover,
           &:focus,
           &:active {
-            text-decoration: underline;
+            color: $orange-light;
           }
           &.peregrine-logo {
             height: 36px;
             width: 36px;
-            background-image: url(/etc/felibs/admin/images/peregrine-logo.svg);
+            background-image: url(/etc/felibs/admin/images/peregrine-logo.png);
             background-size: contain;
             background-position: center center;
             text-indent: -9999px;
             &:hover,
             &:focus,
             &:active {
-              text-decoration: none;
+              opacity: .75;
             }
           }
           #peregrine_logo {
