@@ -84,10 +84,12 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
         var url = document.location.href
         var domains = (getPerView().page.domains)
         var newLocation = path
-        for(var i = 0; i < domains.length; i++) {
-            var domain = domains[i]
-            if(url.startsWith(domain)) {
-                newLocation = '/'+path.split('/').slice(4).join('/')
+        if(domains) {
+            for(var i = 0; i < domains.length; i++) {
+                var domain = domains[i]
+                if(url.startsWith(domain)) {
+                    newLocation = '/'+path.split('/').slice(4).join('/')
+                }
             }
         }
         history.pushState({peregrinevue:true, path: path}, path, newLocation)
@@ -136,6 +138,15 @@ function loadContentImpl(path, firstTime, fromPopState) {
     });
 }
 
+function isAuthorModeImpl() {
+
+    if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
+        return true
+    }
+    return false
+    
+}
+
 var peregrineApp = {
 
     registerView: function(view) {
@@ -156,6 +167,9 @@ var peregrineApp = {
 
     getPerVueApp: function() {
         return perVueApp
+    }, 
+    isAuthorMode: function() {
+        return isAuthorModeImpl()        
     }
 
 }

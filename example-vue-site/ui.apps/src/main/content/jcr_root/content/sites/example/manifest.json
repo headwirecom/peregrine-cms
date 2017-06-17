@@ -1,6 +1,9 @@
 {
   "short_name": "pcms example",
   "name": "peregrine cms example site",
+  "display": "fullscreen",
+  "theme_color": "#c0c0c0",
+  "background_color": "#ffffff",
   "icons": [
     {
       "src": "/etc/felibs/examplesite/images/launcher-icon-1x.png",
@@ -16,7 +19,12 @@
       "src": "/etc/felibs/examplesite/images/launcher-icon-4x.png",
       "type": "image/png",
       "sizes": "192x192"
+    },
+    {
+      "src": "/etc/felibs/examplesite/images/launcher-icon-4x.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
-  "start_url": "/?launcher=true"
+  "start_url": "/content/sites/example.html?launcher=true"
 }

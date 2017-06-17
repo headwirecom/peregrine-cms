@@ -1,5 +1,8 @@
 var CACHE_NAME = 'my-site-cache-v1';
-var urlsToCache = [];
+var urlsToCache = [
+    '/content/sites/example.html',
+    '/content/sites/example.html?launcher=true'
+];
 
 self.addEventListener('install', function(event) {
     // Perform install steps
@@ -7,6 +10,7 @@ self.addEventListener('install', function(event) {
         caches.open(CACHE_NAME)
             .then(function(cache) {
                 console.log('Opened cache');
+                console.log('cache for', urlsToCache)
                 return cache.addAll(urlsToCache);
             })
     );
@@ -16,6 +20,8 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
         caches.match(event.request)
             .then(function(response) {
+                console.log('request for',event.request)
+
                 // Cache hit - return response
                 if (response) {
                     return response;
@@ -49,5 +55,6 @@ self.addEventListener('fetch', function(event) {
                     }
                 );
             })
+
     );
 });
