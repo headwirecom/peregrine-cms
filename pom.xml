@@ -6,6 +6,11 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <inceptionYear>2017</inceptionYear>
+  <organization>
+    <name>headwire inc.</name>
+  </organization>
+
   <build>
     <plugins>
       <plugin>
@@ -25,6 +30,24 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.13</version>
+        <configuration>
+          <licenseName>peregrine-cms-license</licenseName>
+          <licenseResolver>${project.baseUri}/src/license</licenseResolver>
+        </configuration>
+        <!--<executions>-->
+          <!--<execution>-->
+            <!--<id>first</id>-->
+            <!--<goals>-->
+              <!--<goal>update-file-header</goal>-->
+            <!--</goals>-->
+            <!--<phase>process-sources</phase>-->
+          <!--</execution>-->
+        <!--</executions>-->
       </plugin>
     </plugins>
   </build>

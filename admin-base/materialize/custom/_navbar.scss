@@ -22,11 +22,12 @@ nav {
         > a {
           display: inline-block;
           line-height: 36px;
-          
+          text-decoration: none;
+          transition: color .3s ease;
           &:hover,
           &:focus,
           &:active {
-            text-decoration: underline;
+            color: $orange-light;
           }
           &.peregrine-logo {
             height: 36px;
@@ -38,10 +39,22 @@ nav {
             &:hover,
             &:focus,
             &:active {
-              text-decoration: none;
               opacity: .75;
             }
-          }          
+          }
+          #peregrine_logo {
+            width: 44px;
+            height: auto;
+            .st0{
+              fill: $orange;
+              transition: fill .3s ease;
+            }
+            &:hover {
+              .st0{
+                fill: $orange-light;
+              }
+            }
+          }        
         }
       }
     }
@@ -58,11 +71,6 @@ nav {
         .material-icons {
           line-height: 40px;
           height: 100%;
-        }
-        &:hover,
-        &:focus,
-        &:active {
-          background-color: #ff9800;
         }
       }
       &:only-of-type {

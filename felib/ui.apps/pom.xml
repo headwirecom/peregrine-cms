@@ -94,6 +94,19 @@
                     <group>com.peregrine</group>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>peregrine-cms-license</licenseName>
+                    <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
+                    <excludes>
+                        <exclude>css.html</exclude>
+                        <exclude>js.html</exclude>
+                        <exclude>lib.html</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>

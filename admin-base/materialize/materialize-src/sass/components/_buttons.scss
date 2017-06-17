@@ -56,7 +56,7 @@
 .btn,
 .btn-floating {
   &:focus {
-    background-color: darken($button-raised-background, 10%);
+    background-color: color("orange", "base");
   }
 }
 

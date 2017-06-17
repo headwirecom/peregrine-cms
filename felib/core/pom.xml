@@ -81,6 +81,14 @@
                     <password>${sling.password}</password>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>peregrine-cms-license</licenseName>
+                    <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>

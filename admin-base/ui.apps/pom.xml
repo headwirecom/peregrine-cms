@@ -148,10 +148,16 @@
                     <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
-                    <!--<useProxy>false</useProxy>-->
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <!--<failOnError>true</failOnError>-->
                     <group>com.peregrine.admin</group>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>peregrine-cms-license</licenseName>
+                    <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                 </configuration>
             </plugin>
         </plugins>
