@@ -70,12 +70,12 @@ $button-padding: 0 2rem !default;
 $button-radius: 2px !default;
 
 // Disabled styles
-$button-disabled-background: #DFDFDF !default;
-$button-disabled-color: #9F9F9F !default;
+$button-disabled-background: color("blue-grey", "lighten-5") !default;
+$button-disabled-color: color("blue-grey", "lighten-4") !default;
 
 // Raised buttons
 $button-raised-background: $secondary-color !default;
-$button-raised-background-hover: lighten($button-raised-background, 5%) !default;
+$button-raised-background-hover: color("orange", "base") !default;
 $button-raised-color: #fff !default;
 
 // Large buttons
@@ -83,12 +83,12 @@ $button-large-icon-font-size: 1.6rem !default;
 $button-large-height: $button-height * 1.5 !default;
 
 // Flat buttons
-$button-flat-color: #343434 !default;
-$button-flat-disabled-color: lighten(#999, 10%) !default;
+$button-flat-color: color("blue-grey", "darken-4") !default;
+$button-flat-disabled-color: color("blue-grey", "lighten-2") !default;
 
 // Floating buttons
 $button-floating-background: $secondary-color !default;
-$button-floating-background-hover: $button-floating-background !default;
+$button-floating-background-hover: color("orange", "base") !default;
 $button-floating-color: #fff !default;
 $button-floating-size: 40px !default;
 $button-floating-large-size: 56px !default;
