@@ -52,6 +52,11 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <inceptionYear>2017</inceptionYear>
+    <organization>
+        <name>headwire inc.</name>
+    </organization>
+
     <build>
         <plugins>
             <!-- Maven Release Plugin -->
@@ -200,11 +205,8 @@
                         <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
                         <userId>${sling.user}</userId>
                         <password>${sling.password}</password>
-                        <!--<useProxy>false</useProxy>-->
                         <failOnMissingEmbed>true</failOnMissingEmbed>
-                        <!--<failOnError>true</failOnError>-->
                         <group>com.peregrine.admin</group>
-                        <!--<targetURL>http://${sling.host}:${sling.port}/crx/packmgr/service.jsp</targetURL>-->
                     </configuration>
                 </plugin>
                 <!-- Apache Felix Bundle Plugin -->
@@ -225,6 +227,31 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.9.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>1.13</version>
+                    <configuration>
+                        <licenseName>peregrine-cms-license</licenseName>
+                        <licenseResolver>${project.baseUri}/../src/license</licenseResolver>
+                        <extraExtensions>
+                            <cnd>java</cnd>
+                        </extraExtensions>
+                        <excludes>
+                            <exclude>*.css</exclude>
+                            <exclude>*.svg</exclude>
+                        </excludes>
+                    </configuration>
+                    <!--<executions>-->
+                        <!--<execution>-->
+                            <!--<id>first</id>-->
+                            <!--<goals>-->
+                                <!--<goal>update-file-header</goal>-->
+                            <!--</goals>-->
+                            <!--<phase>process-sources</phase>-->
+                        <!--</execution>-->
+                    <!--</executions>-->
                 </plugin>
             </plugins>
         </pluginManagement>

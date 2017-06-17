@@ -122,8 +122,27 @@ under the License.
                     </subPackages>
                 </configuration>
             </plugin>
-
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.13</version>
+                <configuration>
+                    <licenseName>peregrine-cms-license</licenseName>
+                    <licenseResolver>${project.baseUri}/../src/license</licenseResolver>
+                    <extraExtensions>
+                        <cnd>java</cnd>
+                    </extraExtensions>
+                </configuration>
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>first</id>-->
+                        <!--<goals>-->
+                            <!--<goal>update-file-header</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>process-sources</phase>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            </plugin>
         </plugins>
     </build>
     <profiles>
