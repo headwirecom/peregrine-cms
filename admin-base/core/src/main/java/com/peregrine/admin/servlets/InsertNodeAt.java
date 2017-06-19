@@ -59,11 +59,24 @@ public class InsertNodeAt extends SlingAllMethodsServlet {
 
         try {
             Session session = request.getResourceResolver().adaptTo(Session.class);
-            if ("into".equals(drop)) {
-                Node node = session.getNode(path).addNode("n"+UUID.randomUUID(), "nt:unstructured");
+            if ("into-before".equals(drop)) {
+                Node parent = session.getNode(path);
+                NodeIterator nodes = parent.getNodes();
+                Node firstChild = null;
+                if(nodes.hasNext()) {
+                    firstChild = (Node) nodes.next();
+                }
+                Node node = parent.addNode("n" + UUID.randomUUID(), "nt:unstructured");
                 node.setProperty("sling:resourceType", component);
+                if(firstChild != null) parent.orderBefore(node.getName(), firstChild.getName());
                 session.save();
-                response.sendRedirect(path+".model.json");
+                response.sendRedirect(path + ".model.json");
+            }
+            else if ("into-after".equals(drop)) {
+                    Node node = session.getNode(path).addNode("n"+UUID.randomUUID(), "nt:unstructured");
+                    node.setProperty("sling:resourceType", component);
+                    session.save();
+                    response.sendRedirect(path+".model.json");
             } else if("before".equals(drop)) {
                 Node node = session.getNode(path);
                 Node parent = node.getParent();

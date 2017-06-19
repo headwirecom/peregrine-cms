@@ -10,7 +10,7 @@ export default function(me, target) {
     let view = me.getView()
 
     let targetNodeUpdate = null
-    if(target.drop === 'into') {
+    if(target.drop.startsWith('into')) {
         targetNodeUpdate = me.findNodeFromPath(view.pageView.page, target.path)
     } else if(target.drop === 'before' || target.drop === 'after') {
         var path = parentPath(target.path)
@@ -29,7 +29,7 @@ export default function(me, target) {
                 let index = parent.children.indexOf(node)
                 parent.children.splice(index, 1)
 
-                if(target.drop === 'into') {
+                if(target.drop.startsWith('into')) {
                     Vue.set(targetNodeUpdate, 'children', data.children)
                 }
                 else if(target.drop === 'before' || target.drop === 'after')

@@ -59,11 +59,33 @@ public class moveNodeTo extends SlingSafeMethodsServlet {
             Session session = rs.adaptTo(Session.class);
             Resource to = rs.getResource(path);
             Resource from = rs.getResource(component);
-            if("into".equals(drop)) {
+            if("into-after".equals(drop)) {
                 log.debug("mode from {} to {}", component, path);
-                session.move(component, path+'/'+from.getName());
+                if(!to.getPath().equals(from.getParent().getPath())) {
+                    session.move(component, path + '/' + from.getName());
+                } else {
+                    Node parent = session.getNode(path);
+                    parent.orderBefore(from.getName(), null);
+                }
                 session.save();
-                response.sendRedirect(path+".model.json");
+                response.sendRedirect(path + ".model.json");
+            }
+            else if("into-before".equals(drop)) {
+                log.debug("mode from {} to {}", component, path);
+                Node parent = session.getNode(path);
+                NodeIterator nodes = parent.getNodes();
+                Node firstChild = null;
+                if(nodes.hasNext()) {
+                    firstChild = (Node) nodes.next();
+                }
+                if(!to.getPath().equals(from.getParent().getPath())) {
+                    session.move(component, path + '/' + from.getName());
+                }
+                if(firstChild != null) {
+                    parent.orderBefore(from.getName(), firstChild.getName());
+                }
+                session.save();
+                response.sendRedirect(path + ".model.json");
             } else if("before".equals(drop)) {
                 if(to.getParent().getPath().equals(from.getParent().getPath())) {
                     log.debug("same parent, just reorder before");

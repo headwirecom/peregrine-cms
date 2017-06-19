@@ -16,7 +16,7 @@ export default function(me, target) {
 
     let targetNode = null
     let targetNodeUpdate = null
-    if(target.drop === 'into') {
+    if(target.drop.startsWith('into')) {
         targetNode = me.findNodeFromPath(view.pageView.page, target.path)
         targetNodeUpdate = targetNode
     } else if(target.drop === 'before' || target.drop === 'after') {
@@ -30,7 +30,7 @@ export default function(me, target) {
         if(target.component) {
             me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
                 .then( (data) => {
-                    if(target.drop === 'into') {
+                    if(target.drop.startsWith('into')) {
                         Vue.set(targetNodeUpdate, 'children', data.children)
                     }
                     else if(target.drop === 'before' || target.drop === 'after')
@@ -42,7 +42,7 @@ export default function(me, target) {
         } else if(target.data) {
             me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
                 .then( (data) => {
-                    if(target.drop === 'into') {
+                    if(target.drop.startsWith('into')) {
                         Vue.set(targetNodeUpdate, 'children', data.children)
                     }
                     else if(target.drop === 'before' || target.drop === 'after')

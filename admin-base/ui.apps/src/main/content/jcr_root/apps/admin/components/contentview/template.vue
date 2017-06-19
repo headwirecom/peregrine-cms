@@ -269,6 +269,7 @@ export default {
         onDragStart(ev) {
             if(this.selectedComponent === null)return
             this.editableClass = 'dragging'
+            console.log(this.selectedComponent.getAttribute('data-per-path'))
             ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
         },
 
@@ -282,7 +283,11 @@ export default {
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
                 if(isDropTarget) {
+                    var dropLocation = targetEl.getAttribute('data-per-location')
                     this.dropPosition = 'into'
+                    if(dropLocation) {
+                        this.dropPosition += '-' + dropLocation
+                    }
                     this.setEditableStyle(targetBox, 'selected')
                 } else {
                     var y = pos.y - targetBox.top
