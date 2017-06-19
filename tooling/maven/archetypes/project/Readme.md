@@ -18,7 +18,6 @@ Both type (regular and example) have the same structure and so you can copy them
 |Name                 |Description                                                                   |  
 |:--------------------|:-----------------------------------------------------------------------------|  
 |groupId              |Maven Group Id|  
-|artifactId           |Maven Artifact Id|
 |version              |Version of your project|
 |artifactName         |Project Label used in the Descriptions and Module Name|
 |packageGroup         |Name of the Package Folder where the ui.apps is installed in (/etc/packages)|
@@ -47,11 +46,26 @@ Until this project is fully released in the public Maven Repo this is how to use
 
 #### Build and Install Integration Test
 
-There is a simple integration test setup with this archetype.
-You can run this one using the attached Unix shell script:
+The archetype comes with an integration test meaning during the
+archetype installation a sample project is created which can
+be deploy as is to Peregrine CMS.
 
-    sh build.run.and.deploy.test.sh
+##### Configuration
 
-The properties for the integration test can be found under
-**/test/resources/projects/basic/archetype.properties**.
+The configuration can be found under
+    src/test/resources/projects/basic/archetype.properties
 
+If you want to add more tests then create new folders under
+    /src/test/resources/projects
+
+##### Installation into Peregrine CMS
+
+Assuming you have Peregrine CMS up and running on the host
+and port specified (see in the archetype.properties) then
+you can install it with:
+
+    cd target/test/classes/projects/basic/project
+    mvn clean install -P autoInstallPackage
+
+If you use your own test project then replace **basic**
+with the folder name of your test project.
