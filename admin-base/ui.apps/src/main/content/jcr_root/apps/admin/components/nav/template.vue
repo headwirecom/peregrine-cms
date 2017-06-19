@@ -30,10 +30,10 @@
           <admin-components-action 
             v-bind:model="{ 
               command: 'selectPath', 
-              title: 'home', 
               target: '/content/admin',
               classes: 'peregrine-logo'
             }">
+            <admin-components-logo></admin-components-logo>
           </admin-components-action>
           <template v-for="item in vueRoot.adminPage.breadcrumbs">
             <admin-components-action
