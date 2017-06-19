@@ -101,9 +101,9 @@
                     <licenseName>peregrine-cms-license</licenseName>
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                     <excludes>
-                        <exclude>css.html</exclude>
-                        <exclude>js.html</exclude>
-                        <exclude>lib.html</exclude>
+                        <exclude>**/css.html</exclude>
+                        <exclude>**/js.html</exclude>
+                        <exclude>**/lib.html</exclude>
                     </excludes>
                 </configuration>
             </plugin>

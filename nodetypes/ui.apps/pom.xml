@@ -100,6 +100,9 @@
                 <configuration>
                     <licenseName>peregrine-cms-license</licenseName>
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
+                    <excludes>
+                        <exclude>**/apps/per/**/*.html</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

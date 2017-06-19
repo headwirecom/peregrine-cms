@@ -153,8 +153,8 @@
                     <licenseName>peregrine-cms-license</licenseName>
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                     <excludes>
-                        <exclude>*.json</exclude>
-                        <exclude>*.html</exclude>
+                        <exclude>**/*.json</exclude>
+                        <exclude>**/*.html</exclude>
                     </excludes>
                 </configuration>
             </plugin>

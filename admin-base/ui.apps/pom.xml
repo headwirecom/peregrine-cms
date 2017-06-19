@@ -158,6 +158,10 @@
                 <configuration>
                     <licenseName>peregrine-cms-license</licenseName>
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
+                    <excludes>
+                        <exclude>**/api/swaggereditor/**/*</exclude>
+                        <exclude>**/*.svg</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

@@ -27,6 +27,11 @@
 
     <name>Peregrine Project Archetype</name>
 
+    <inceptionYear>2017</inceptionYear>
+    <organization>
+        <name>headwire inc.</name>
+    </organization>
+
     <build>
         <extensions>
             <extension>
@@ -41,6 +46,18 @@
                 <plugin>
                     <artifactId>maven-archetype-plugin</artifactId>
                     <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>1.13</version>
+                    <configuration>
+                        <licenseName>peregrine-cms-license</licenseName>
+                        <licenseResolver>${project.baseUri}/../../../../src/license</licenseResolver>
+                        <excludes>
+                            <exclude>**/*</exclude>
+                        </excludes>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

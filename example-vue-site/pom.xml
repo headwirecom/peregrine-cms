@@ -239,7 +239,7 @@
                             <cnd>java</cnd>
                         </extraExtensions>
                         <excludes>
-                            <exclude>*.json</exclude>
+                            <exclude>**/*.json</exclude>
                         </excludes>
                     </configuration>
                     <!--<executions>-->

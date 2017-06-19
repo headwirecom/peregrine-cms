@@ -237,10 +237,10 @@
                         <licenseResolver>${project.baseUri}/../src/license</licenseResolver>
                         <extraExtensions>
                             <cnd>java</cnd>
-                            <excludes>
-                                <exclude>*.json</exclude>
-                            </excludes>
                         </extraExtensions>
+                        <excludes>
+                            <exclude>**/*.json</exclude>
+                        </excludes>
                     </configuration>
                     <!--<executions>-->
                         <!--<execution>-->

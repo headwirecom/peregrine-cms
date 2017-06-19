@@ -239,8 +239,8 @@
                             <cnd>java</cnd>
                         </extraExtensions>
                         <excludes>
-                            <exclude>*.css</exclude>
-                            <exclude>*.svg</exclude>
+                            <exclude>**/*.css</exclude>
+                            <exclude>**/*.svg</exclude>
                         </excludes>
                     </configuration>
                     <!--<executions>-->
