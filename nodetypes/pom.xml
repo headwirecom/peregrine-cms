@@ -237,6 +237,7 @@
                         <licenseResolver>${project.baseUri}/../src/license</licenseResolver>
                         <extraExtensions>
                             <cnd>java</cnd>
+                            <vue>xml</vue>
                         </extraExtensions>
                     </configuration>
                 </plugin>

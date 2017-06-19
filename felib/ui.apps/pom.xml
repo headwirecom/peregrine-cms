@@ -102,6 +102,7 @@
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                     <excludes>
                         <!-- Need to provide a pattern that deals with folders as well -->
+                        <exclude>**/css.html</exclude>
                         <exclude>**/js.html</exclude>
                         <exclude>**/lib.html</exclude>
                     </excludes>
