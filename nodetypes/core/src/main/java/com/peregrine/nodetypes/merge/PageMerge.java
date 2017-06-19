@@ -51,6 +51,7 @@ public class PageMerge implements Use {
                 Map template = modelFactory.exportModelForResource(request.getResourceResolver().getResource(templatePath).getChild("jcr:content"),
                         "jackson", Map.class,
                         Collections.<String, String> emptyMap());
+                flagFromTemplate(template);
                 return toJSON(merge(template, page));
             }
             return toJSON(page);
@@ -60,6 +61,22 @@ public class PageMerge implements Use {
             log.error("not able to find exporter for model", e);
         }
         return "{}";
+    }
+
+    private void flagFromTemplate(Map template) {
+        template.put("fromTemplate", Boolean.TRUE);
+        for(Object key: template.keySet()) {
+            Object value = template.get(key);
+            if(value instanceof ArrayList) {
+                ArrayList arr = (ArrayList) value;
+                for(int i = 0; i < arr.size(); i++) {
+                    Object item = arr.get(i);
+                    if(item instanceof Map) {
+                        flagFromTemplate((Map)arr.get(i));
+                    }
+                }
+            }
+        }
     }
 
     private Map merge(Map template, Map page) {

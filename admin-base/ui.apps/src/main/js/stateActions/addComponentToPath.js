@@ -30,26 +30,33 @@ export default function(me, target) {
         if(target.component) {
             me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
                 .then( (data) => {
-                    if(target.drop.startsWith('into')) {
-                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    if(targetNodeUpdate.fromTemplate === true) {
+                        me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                    } else {
+                        if(target.drop.startsWith('into')) {
+                            Vue.set(targetNodeUpdate, 'children', data.children)
+                        }
+                        else if(target.drop === 'before' || target.drop === 'after')
+                        {
+                            Vue.set(targetNodeUpdate, 'children', data.children)
+                        }
+                        log.fine(data)
                     }
-                    else if(target.drop === 'before' || target.drop === 'after')
-                    {
-                        Vue.set(targetNodeUpdate, 'children', data.children)
-                    }
-                    log.fine(data)
                 })
         } else if(target.data) {
             me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
                 .then( (data) => {
-                    if(target.drop.startsWith('into')) {
-                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    if(targetNodeUpdate.fromTemplate === true) {
+                        me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                    } else {
+                        if (target.drop.startsWith('into')) {
+                            Vue.set(targetNodeUpdate, 'children', data.children)
+                        }
+                        else if (target.drop === 'before' || target.drop === 'after') {
+                            Vue.set(targetNodeUpdate, 'children', data.children)
+                        }
+                        log.fine(data)
                     }
-                    else if(target.drop === 'before' || target.drop === 'after')
-                    {
-                        Vue.set(targetNodeUpdate, 'children', data.children)
-                    }
-                    log.fine(data)
                 })
         }
     }

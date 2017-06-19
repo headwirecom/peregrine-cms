@@ -28,15 +28,17 @@ export default function(me, target) {
                 console.log(parent)
                 let index = parent.children.indexOf(node)
                 parent.children.splice(index, 1)
-
-                if(target.drop.startsWith('into')) {
-                    Vue.set(targetNodeUpdate, 'children', data.children)
+                if(targetNodeUpdate.fromTemplate === true) {
+                    me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                } else {
+                    if(target.drop.startsWith('into')) {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    else if(target.drop === 'before' || target.drop === 'after')
+                    {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
                 }
-                else if(target.drop === 'before' || target.drop === 'after')
-                {
-                    Vue.set(targetNodeUpdate, 'children', data.children)
-                }
-
             })
 //    }
 
