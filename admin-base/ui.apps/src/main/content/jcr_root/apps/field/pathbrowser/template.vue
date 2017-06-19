@@ -15,17 +15,14 @@
 
 <script>
     export default {
-        /* TODO: set this somewhere else */
-        beforeMount(){
-            $perAdminApp.pathBrowser(
-                this.schema.browserRoot, 
-                (newValue) => { this.value = newValue }
-            )
-        },
         props: ['model'],
         mixins: [ VueFormGenerator.abstractField ],
         methods: {
             browse() {
+                $perAdminApp.pathBrowser(
+                    this.schema.browserRoot,
+                    (newValue) => { this.value = newValue }
+                )
                 return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/methods').onShow()
             }
         }
