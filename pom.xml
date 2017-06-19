@@ -39,15 +39,6 @@
           <licenseName>peregrine-cms-license</licenseName>
           <licenseResolver>${project.baseUri}/src/license</licenseResolver>
         </configuration>
-        <!--<executions>-->
-          <!--<execution>-->
-            <!--<id>first</id>-->
-            <!--<goals>-->
-              <!--<goal>update-file-header</goal>-->
-            <!--</goals>-->
-            <!--<phase>process-sources</phase>-->
-          <!--</execution>-->
-        <!--</executions>-->
       </plugin>
     </plugins>
   </build>

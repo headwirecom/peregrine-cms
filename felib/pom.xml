@@ -238,19 +238,12 @@
                         <extraExtensions>
                             <cnd>java</cnd>
                         </extraExtensions>
+                        <!-- Any Sub POM files to has a excludes files needs to add all it wants as the excludes are NOT merged-->
                         <excludes>
-                            <exclude>*.json</exclude>
+                            <!-- Need to provide a pattern that deals with folders as well -->
+                            <exclude>**/*.json</exclude>
                         </excludes>
                     </configuration>
-                    <!--<executions>-->
-                        <!--<execution>-->
-                            <!--<id>first</id>-->
-                            <!--<goals>-->
-                                <!--<goal>update-file-header</goal>-->
-                            <!--</goals>-->
-                            <!--<phase>process-sources</phase>-->
-                        <!--</execution>-->
-                    <!--</executions>-->
                 </plugin>
             </plugins>
         </pluginManagement>

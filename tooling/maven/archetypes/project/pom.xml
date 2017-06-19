@@ -55,6 +55,7 @@
                         <licenseName>peregrine-cms-license</licenseName>
                         <licenseResolver>${project.baseUri}/../../../../src/license</licenseResolver>
                         <excludes>
+                            <!-- We don't want to add licensing to a custom project -->
                             <exclude>**/*</exclude>
                         </excludes>
                     </configuration>

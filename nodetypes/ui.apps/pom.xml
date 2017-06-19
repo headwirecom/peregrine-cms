@@ -101,6 +101,7 @@
                     <licenseName>peregrine-cms-license</licenseName>
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                     <excludes>
+                        <!-- Need to provide a pattern that deals with folders as well -->
                         <exclude>**/apps/per/**/*.html</exclude>
                     </excludes>
                 </configuration>
