@@ -8,6 +8,7 @@ nav {
       > span {
         display: inline-block;
         padding: 0 0.75rem;
+        vertical-align: top;
         &:before {
           content: '\00BB';
           margin-left: -0.75rem;
@@ -21,7 +22,7 @@ nav {
         }
         > a {
           display: inline-block;
-          line-height: 36px;
+          line-height: 44px;
           text-decoration: none;
           transition: color .3s ease;
           &:hover,
@@ -30,28 +31,19 @@ nav {
             color: $orange-light;
           }
           &.peregrine-logo {
-            height: 36px;
-            width: 36px;
-            background-image: url(/etc/felibs/admin/images/peregrine-logo.png);
-            background-size: contain;
-            background-position: center center;
-            text-indent: -9999px;
-            &:hover,
-            &:focus,
-            &:active {
-              opacity: .75;
-            }
-          }
-          #peregrine_logo {
-            width: 44px;
-            height: auto;
-            .st0{
-              fill: $orange;
-              transition: fill .3s ease;
-            }
-            &:hover {
+            svg {
+              width: 44px;
+              height: auto;
+              position: relative;
+              top: 6px;
               .st0{
-                fill: $orange-light;
+                fill: $orange;
+                transition: fill .3s ease;
+              }
+              &:hover {
+                .st0{
+                  fill: $orange-light;
+                }
               }
             }
           }        
@@ -103,10 +95,10 @@ nav {
       .brand-logo {
         > span {
           > a {
-            line-height: 44px;
             &.peregrine-logo {
-              height: 44px;
-              width: 44px;
+              svg {
+                top: 10px;
+              }
             }
           }
         }
