@@ -28,7 +28,7 @@
       v-bind:title="'create a page'" 
       v-bind:subtitle="''" @on-complete="onComplete"
       error-color="#d32f2f"
-      color="#37474f">
+      color="#546e7a">
         <tab-content title="select template" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
@@ -36,7 +36,7 @@
                     <ul class="collection">
                         <li class="collection-item"
                             v-for="template in templates"
-                            v-bind:class="isSelected(template.path) ? 'grey lighten-2' : ''">
+                            v-bind:class="isSelected(template.path) ? 'active' : ''">
                             <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path }">{{template.name}}</admin-components-action>
                         </li>
                     </ul>
