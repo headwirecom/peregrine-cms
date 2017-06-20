@@ -24,7 +24,10 @@
   -->
 <template>
 <div class="container">
-    <form-wizard v-bind:title="'create a page'" v-bind:subtitle="''" @on-complete="onComplete">
+    <form-wizard 
+      v-bind:title="'create a page'" 
+      v-bind:subtitle="''" @on-complete="onComplete"
+      color="#37474f">
         <tab-content title="select template" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
@@ -43,11 +46,11 @@
             </fieldset>
         </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
-            <vue-form-generator :model="formmodel"
-                                :schema="nameSchema"
-                                :options="formOptions"
-                                ref="nameTab">
-
+            <vue-form-generator 
+              :model   ="formmodel"
+              :schema  ="nameSchema"
+              :options ="formOptions"
+              ref      ="nameTab">
             </vue-form-generator>
         </tab-content>
         <tab-content title="verify">
@@ -75,7 +78,8 @@
                         validateAfterChanged: true
                     },
                     nameSchema: {
-                        fields: [{
+                      fields: [
+                        {
                             type: "input",
                             inputType: "text",
                             label: "Page Name",
@@ -83,7 +87,7 @@
                             required: true,
                             validator: VueFormGenerator.validators.string
                         }
-                        ]
+                      ]
                     }
                 }
 
