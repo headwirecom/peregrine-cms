@@ -239,10 +239,10 @@
             },
             nodeTypeToIcon: function(nodeType) {
 
-                if(nodeType === 'per:Page')     return 'insert_drive_file'
+                if(nodeType === 'per:Page')     return 'description'
                 if(nodeType === 'per:Object')   return 'layers'
                 if(nodeType === 'nt:file')      return 'insert_drive_file'
-                if(nodeType === 'per:Asset')      return 'insert_drive_file'
+                if(nodeType === 'per:Asset')      return 'image'
                 if(nodeType === 'sling:Folder') return 'folder'
                 if(nodeType === 'sling:OrderedFolder') return 'folder'
                 return 'unknown'
@@ -264,6 +264,8 @@
                     if(resourceType === 'per:Asset') {
                         me.selectedAsset = target.path
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
+                        return
+                    } else if(resourceType === 'nt:file') {
                         return
                     }
                 }
