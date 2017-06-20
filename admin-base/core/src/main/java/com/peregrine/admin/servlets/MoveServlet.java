@@ -26,13 +26,12 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.admin.util.JcrUtil;
+import com.peregrine.util.PerUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -50,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
-import static com.peregrine.admin.util.JcrUtil.EQUALS;
+import static com.peregrine.util.PerUtil.EQUALS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
@@ -93,11 +92,11 @@ public class MoveServlet extends SlingAllMethodsServlet {
         log.debug("Parameters from Suffix: '{}'", params);
         response.setContentType("application/json");
         String fromPath = params.get("path");
-        Resource from = JcrUtil.getResource(request.getResourceResolver(), fromPath);
+        Resource from = PerUtil.getResource(request.getResourceResolver(), fromPath);
         String toPath = params.get("to");
         if(request.getResource().getName().equals("move")) {
             String type = params.get("type");
-            Resource to = JcrUtil.getResource(request.getResourceResolver(), toPath);
+            Resource to = PerUtil.getResource(request.getResourceResolver(), toPath);
             if(from == null) {
                 reportError(response, "Given Path does not yield a resource", fromPath);
             } else if(!acceptedTypes.contains(type)) {
@@ -147,7 +146,7 @@ public class MoveServlet extends SlingAllMethodsServlet {
                 // Update the references
                 for(com.peregrine.admin.replication.Reference reference : references) {
                     Resource propertyResource = reference.getPropertyResource();
-                    ModifiableValueMap properties = JcrUtil.getModifiableProperties(propertyResource);
+                    ModifiableValueMap properties = PerUtil.getModifiableProperties(propertyResource);
                     if(properties.containsKey(reference.getPropertyName())) {
                         properties.put(reference.getPropertyName(), newResource.getPath());
                     }

@@ -56,7 +56,7 @@ The configuration can be found under
     src/test/resources/projects/basic/archetype.properties
 
 If you want to add more tests then create new folders under
-    /src/test/resources/projects
+    src/test/resources/projects
 
 ##### Installation into Peregrine CMS
 

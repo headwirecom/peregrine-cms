@@ -1,4 +1,4 @@
-package com.peregrine.admin.data.impl;
+package com.peregrine.adaption.impl;
 
 /*-
  * #%L
@@ -25,9 +25,9 @@ package com.peregrine.admin.data.impl;
  * #L%
  */
 
-import com.peregrine.admin.data.PerAsset;
-import com.peregrine.admin.data.PerPage;
-import com.peregrine.admin.data.PerPageManager;
+import com.peregrine.adaption.PerAsset;
+import com.peregrine.adaption.PerPage;
+import com.peregrine.adaption.PerPageManager;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -36,8 +36,8 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.peregrine.admin.util.JcrUtil.PAGE_PRIMARY_TYPE;
-import static com.peregrine.admin.util.JcrUtil.ASSET_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 
 /**
  * Created by schaefa on 6/4/17.
@@ -48,9 +48,9 @@ import static com.peregrine.admin.util.JcrUtil.ASSET_PRIMARY_TYPE;
         Constants.SERVICE_DESCRIPTION + "=Peregrine: Adapter Factory",
         Constants.SERVICE_VENDOR + "=headwire.com, Inc",
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.admin.data.PerPage",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.admin.data.PerAsset",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.admin.data.PerPageManager",
+        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerPage",
+        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerAsset",
+        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerPageManager",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
         AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.Resource",
         AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.ResourceResolver"

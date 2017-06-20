@@ -29,9 +29,7 @@ import com.peregrine.admin.replication.ReferenceLister;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -45,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
-import static com.peregrine.admin.util.JcrUtil.EQUALS;
+import static com.peregrine.util.PerUtil.EQUALS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
