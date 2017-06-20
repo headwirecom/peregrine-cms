@@ -153,7 +153,7 @@ $roboto-font-path: "../fonts/roboto/" !default;
 
 // Text Inputs + Textarea
 $input-height: 3rem !default;
-$input-border-color: color("grey", "base") !default;
+$input-border-color: color("blue-grey", "base") !default;
 $input-border: 1px solid $input-border-color !default;
 $input-background: #fff !default;
 $input-error-color: $error-color !default;
@@ -314,11 +314,11 @@ $interval-size: $range / $intervals !default;
 // 23. Collections
 // ==========================================================================
 
-$collection-border-color: #e0e0e0 !default;
+$collection-border-color: color("blue-grey", "lighten-4") !default;
 $collection-bg-color: #fff !default;
-$collection-active-bg-color: $secondary-color !default;
-$collection-active-color: lighten($secondary-color, 55%) !default;
-$collection-hover-bg-color: #ddd !default;
+$collection-active-bg-color: color("blue-grey", "lighten-5") !default;
+$collection-active-color: color("blue-grey", "base") !default;
+$collection-hover-bg-color: color("blue-grey", "lighten-3") !default;
 $collection-link-color: $secondary-color !default;
 $collection-line-height: 1.5rem !default;
 
