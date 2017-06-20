@@ -71,7 +71,7 @@
                         fields: [{
                             type: "input",
                             inputType: "text",
-                            label: "Page Name",
+                            label: "Object Name",
                             model: "name",
                             required: true,
                             validator: VueFormGenerator.validators.string

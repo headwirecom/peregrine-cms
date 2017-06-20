@@ -59,7 +59,7 @@
                         fields: [{
                             type: "input",
                             inputType: "text",
-                            label: "Page Name",
+                            label: "Template Name",
                             model: "name",
                             required: true,
                             validator: VueFormGenerator.validators.string
