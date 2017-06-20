@@ -1,4 +1,4 @@
-package com.peregrine.admin.data.impl;
+package com.peregrine.adaption.impl;
 
 /*-
  * #%L
@@ -25,16 +25,16 @@ package com.peregrine.admin.data.impl;
  * #L%
  */
 
-import com.peregrine.admin.data.Filter;
-import com.peregrine.admin.data.PerPage;
-import com.peregrine.admin.data.PerPageManager;
+import com.peregrine.adaption.Filter;
+import com.peregrine.adaption.PerPage;
+import com.peregrine.adaption.PerPageManager;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.peregrine.admin.util.JcrUtil.JCR_TITLE;
-import static com.peregrine.admin.util.JcrUtil.TEMPLATE;
+import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerUtil.TEMPLATE;
 
 /**
  * Created by schaefa on 6/4/17.

@@ -144,6 +144,24 @@
                     <failOnMissingEmbed>true</failOnMissingEmbed>
                     <group>com.example</group>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <embeddedTarget>/apps/example/install</embeddedTarget>
+                            <embeddeds>
+                                <embedded>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>example.core</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                            </embeddeds>
+                            <!-- ATTENTION: Do not include this package as sub package which would yield an endless loop -->
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -168,22 +186,6 @@
                             <group>com.example</group>
                         </configuration>
                         <executions>
-                            <execution>
-                                <goals>
-                                    <goal>package</goal>
-                                </goals>
-                                <configuration>
-                                    <embeddedTarget>/apps/example/install</embeddedTarget>
-                                    <embeddeds>
-                                        <embedded>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>example.core</artifactId>
-                                            <generateFilter>true</generateFilter>
-                                        </embedded>
-                                    </embeddeds>
-                                    <!-- ATTENTION: Do not include this package as sub package which would yield an endless loop -->
-                                </configuration>
-                            </execution>
                             <execution>
                                 <id>install-package</id>
                                 <goals>

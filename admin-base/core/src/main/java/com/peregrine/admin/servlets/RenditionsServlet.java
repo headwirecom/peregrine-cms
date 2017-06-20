@@ -25,7 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.data.PerAsset;
+import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.transform.ImageTransformationConfiguration;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
@@ -33,16 +33,14 @@ import com.peregrine.admin.transform.ImageTransformation.TransformationException
 import com.peregrine.admin.transform.ImageTransformationConfigurationProvider;
 import com.peregrine.admin.transform.ImageTransformationProvider;
 import com.peregrine.admin.transform.OperationContext;
-import com.peregrine.admin.util.JcrUtil;
+import com.peregrine.util.PerConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.commons.mime.MimeTypeService;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -59,8 +57,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.util.JcrUtil.EQUALS;
-import static com.peregrine.admin.util.JcrUtil.JCR_MIME_TYPE;
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -233,12 +231,12 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
      */
     private InputStream getDataStream(Resource resource) {
         InputStream answer = null;
-        if(resource != null && !JcrUtil.JCR_CONTENT.equals(resource.getName())) {
-            resource = resource.getChild(JcrUtil.JCR_CONTENT);
+        if(resource != null && !PerConstants.JCR_CONTENT.equals(resource.getName())) {
+            resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
         if(resource != null) {
             ValueMap properties = resource != null ? resource.getValueMap() : null;
-            answer = properties != null ? properties.get(JcrUtil.JCR_DATA, InputStream.class) : null;
+            answer = properties != null ? properties.get(PerConstants.JCR_DATA, InputStream.class) : null;
         }
         return answer;
     }

@@ -1,4 +1,4 @@
-package com.peregrine.admin.util;
+package com.peregrine.util;
 
 /*-
  * #%L
@@ -40,27 +40,15 @@ import java.util.List;
 /**
  * Created by schaefa on 5/26/17.
  */
-public class JcrUtil {
+public class PerUtil {
 
-    public static final String JCR_CONTENT = "jcr:content";
-    public static final String JCR_DATA = "jcr:data";
-    public static final String NT_FILE = "nt:file";
-    public static final String NT_RESOURCE = "nt:resource";
-    public static final String JCR_MIME_TYPE = "jcr:mimeType";
     public static final String RENDITIONS = "renditions";
     public static final String METADATA = "metadata";
-    public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
-    public static final String SLING_FOLDER = "sling:Folder";
-    public static final String JCR_LAST_MODIFIED = "jcr:lastModified";
-    public static final String JCR_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
-    public static final String JCR_TITLE = "jcr:title";
-    public static final String PAGE_PRIMARY_TYPE = "per:Page";
-    public static final String ASSET_PRIMARY_TYPE = "per:Asset";
     public static final String TEMPLATE = "template";
 
     public static final String EQUALS = "=";
 
-    private static final Logger LOG = LoggerFactory.getLogger(JcrUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
     /**
      * Provides the relative path of a resource to a given root
@@ -163,8 +151,8 @@ public class JcrUtil {
     public static ValueMap getProperties(Resource resource, boolean goToJcrContent) {
         ValueMap answer = null;
         Resource jcrContent = resource;
-        if(goToJcrContent && !jcrContent.getName().equals(JCR_CONTENT)) {
-            jcrContent = jcrContent.getChild(JCR_CONTENT);
+        if(goToJcrContent && !jcrContent.getName().equals(PerConstants.JCR_CONTENT)) {
+            jcrContent = jcrContent.getChild(PerConstants.JCR_CONTENT);
         }
         if(jcrContent != null) {
             answer = jcrContent.getValueMap();
@@ -194,8 +182,8 @@ public class JcrUtil {
     public static ModifiableValueMap getModifiableProperties(Resource resource, boolean goToJcrContent) {
         ModifiableValueMap answer = null;
         Resource jcrContent = resource;
-        if(goToJcrContent && !jcrContent.getName().equals(JCR_CONTENT)) {
-            jcrContent = jcrContent.getChild(JCR_CONTENT);
+        if(goToJcrContent && !jcrContent.getName().equals(PerConstants.JCR_CONTENT)) {
+            jcrContent = jcrContent.getChild(PerConstants.JCR_CONTENT);
         }
         if(jcrContent != null) {
             answer = jcrContent.adaptTo(ModifiableValueMap.class);
@@ -235,12 +223,12 @@ public class JcrUtil {
             if(resourceChecker.doAdd(startingResource)) {
                 response.add(startingResource);
                 // If this is JCR Content we need to add all children
-                if(startingResource.getName().equals(JCR_CONTENT)) {
+                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
                     childResourceChecker = new AddAllResourceChecker();
                 }
             }
             for(Resource child : startingResource.getChildren()) {
-                if(child.getName().equals(JCR_CONTENT)) {
+                if(child.getName().equals(PerConstants.JCR_CONTENT)) {
                     listMissingResources(child, response, childResourceChecker, true);
                 } else if(deep) {
                     listMissingResources(child, response, childResourceChecker, true);

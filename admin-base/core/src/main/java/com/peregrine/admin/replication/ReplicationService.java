@@ -25,15 +25,14 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
-import com.peregrine.admin.util.JcrUtil;
-import com.peregrine.admin.util.JcrUtil.MissingOrOutdatedResourceChecker;
-import com.peregrine.admin.util.JcrUtil.ResourceChecker;
+import com.peregrine.util.PerUtil;
+import com.peregrine.util.PerUtil.MissingOrOutdatedResourceChecker;
+import com.peregrine.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -55,7 +54,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.util.JcrUtil.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.util.PerConstants.PER_REPLICATION_REF;
 
 /**
  * Created by schaefa on 5/25/17.
@@ -190,10 +192,10 @@ public class ReplicationService
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: new ArrayList<Resource>(replicationList)) {
-            JcrUtil.listMissingResources(reference, replicationList, resourceChecker, false);
+            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
-        JcrUtil.listMissingParents(startingResource, replicationList, source, resourceChecker);
-        JcrUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
+        PerUtil.listMissingParents(startingResource, replicationList, source, resourceChecker);
+        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
         return replicate(replicationList);
     }
 
@@ -222,7 +224,7 @@ public class ReplicationService
                 Map<String, String> pathMapping = new HashMap<>();
                 for(Resource item: resourceList) {
                     if(item != null) {
-                        String relativePath = JcrUtil.relativePath(source, item);
+                        String relativePath = PerUtil.relativePath(source, item);
                         if(relativePath != null) {
                             String targetPath = localTarget + '/' + relativePath;
                             pathMapping.put(item.getPath(), targetPath);
@@ -237,7 +239,7 @@ public class ReplicationService
                         String targetPath = pathMapping.get(item.getPath());
                         if(targetPath != null) {
                             try {
-                                String targetParent = JcrUtil.getParent(targetPath);
+                                String targetParent = PerUtil.getParent(targetPath);
                                 Resource targetParentResource = resourceResolver.getResource(targetParent);
                                 if(targetParentResource == null) {
                                     log.warn("Parent: '{}' does not exist -> resource: '{}' ignored", targetParent, item.getPath());
@@ -274,7 +276,7 @@ public class ReplicationService
     {
         Resource answer = null;
         Map<String, Object> newProperties = new HashMap<>();
-        ModifiableValueMap properties = JcrUtil.getModifiableProperties(source, false);
+        ModifiableValueMap properties = PerUtil.getModifiableProperties(source, false);
         for(String key : properties.keySet()) {
             Object value = properties.get(key);
             if(value instanceof String) {
@@ -301,7 +303,7 @@ public class ReplicationService
                 NodeType nodeType = sourceNode.getPrimaryNodeType();
                 NodeType[] superTypes = nodeType.getSupertypes();
                 for(NodeType mixin: superTypes) {
-                    if(mixin.getName().equals("per:Replication")) {
+                    if(mixin.getName().equals(PER_REPLICATION)) {
                         replicationMixin = true;
                         break;
                     }
@@ -312,16 +314,16 @@ public class ReplicationService
         }
 //        if(JCR_CONTENT.equals(source.getName())) {
         if(replicationMixin) {
-            properties.put("per:ReplicatedBy", source.getResourceResolver().getUserID());
-            properties.put("per:Replicated", Calendar.getInstance());
-            properties.put("per:ReplicationRef", targetParent.getPath());
-            newProperties.put("per:ReplicatedBy", source.getResourceResolver().getUserID());
-            newProperties.put("per:Replicated", Calendar.getInstance());
-            newProperties.put("per:ReplicationRef", source.getParent().getPath());
+            properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+            properties.put(PER_REPLICATED, Calendar.getInstance());
+            properties.put(PER_REPLICATION_REF, targetParent.getPath());
+            newProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+            newProperties.put(PER_REPLICATED, Calendar.getInstance());
+            newProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
         }
         Resource newTarget = targetParent.getChild(source.getName());
         if(newTarget != null) {
-            ModifiableValueMap newTargetProperties = JcrUtil.getModifiableProperties(newTarget, false);
+            ModifiableValueMap newTargetProperties = PerUtil.getModifiableProperties(newTarget, false);
             for(String key: newProperties.keySet()) {
                 try {
                     newTargetProperties.put(key, newProperties.get(key));

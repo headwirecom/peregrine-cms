@@ -1,4 +1,4 @@
-package com.peregrine.admin.data.impl;
+package com.peregrine.adaption.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.data.impl;
  * #L%
  */
 
-import com.peregrine.admin.data.PerBase;
+import com.peregrine.adaption.PerBase;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Session;
 import java.util.Calendar;
 
-import static com.peregrine.admin.util.JcrUtil.JCR_CONTENT;
-import static com.peregrine.admin.util.JcrUtil.JCR_LAST_MODIFIED;
-import static com.peregrine.admin.util.JcrUtil.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
 
 /**
  * Created by schaefa on 6/4/17.

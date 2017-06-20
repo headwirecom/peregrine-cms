@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
-import static com.peregrine.admin.util.JcrUtil.EQUALS;
+import static com.peregrine.util.PerUtil.EQUALS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;

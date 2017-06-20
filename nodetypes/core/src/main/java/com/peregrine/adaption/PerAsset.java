@@ -1,4 +1,4 @@
-package com.peregrine.admin.data;
+package com.peregrine.adaption;
 
 /*-
  * #%L

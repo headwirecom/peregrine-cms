@@ -1,4 +1,4 @@
-package com.peregrine.admin.data.impl;
+package com.peregrine.adaption.impl;
 
 /*-
  * #%L
@@ -25,8 +25,8 @@ package com.peregrine.admin.data.impl;
  * #L%
  */
 
-import com.peregrine.admin.data.PerPage;
-import com.peregrine.admin.data.PerPageManager;
+import com.peregrine.adaption.PerPage;
+import com.peregrine.adaption.PerPageManager;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;

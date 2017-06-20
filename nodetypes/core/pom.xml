@@ -52,6 +52,11 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Export-Package>
+                            com.peregrine.adaption,
+                            com.peregrine.nodetypes.*,
+                            com.peregrine.util
+                        </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.nodetypes.models</Sling-Model-Packages>
                         <_dsannotations>*</_dsannotations>

@@ -13,6 +13,5 @@
         jcr:title="${artifactName}"
         brand="${artifactName}"
         template="/content/templates/${contentFolderName}"
->
-
+    />
 </jcr:root>

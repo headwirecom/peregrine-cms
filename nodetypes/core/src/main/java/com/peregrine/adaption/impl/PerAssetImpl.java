@@ -1,4 +1,4 @@
-package com.peregrine.admin.data.impl;
+package com.peregrine.adaption.impl;
 
 /*-
  * #%L
@@ -25,8 +25,8 @@ package com.peregrine.admin.data.impl;
  * #L%
  */
 
-import com.peregrine.admin.data.PerAsset;
-import com.peregrine.admin.util.JcrUtil;
+import com.peregrine.adaption.PerAsset;
+import com.peregrine.util.PerUtil;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -42,12 +42,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.admin.util.JcrUtil.JCR_CONTENT;
-import static com.peregrine.admin.util.JcrUtil.JCR_MIME_TYPE;
-import static com.peregrine.admin.util.JcrUtil.JCR_PRIMARY_TYPE;
-import static com.peregrine.admin.util.JcrUtil.METADATA;
-import static com.peregrine.admin.util.JcrUtil.RENDITIONS;
-import static com.peregrine.admin.util.JcrUtil.SLING_FOLDER;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_DATA;
+import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.NT_FILE;
+import static com.peregrine.util.PerConstants.NT_RESOURCE;
+import static com.peregrine.util.PerConstants.SLING_FOLDER;
+import static com.peregrine.util.PerUtil.METADATA;
+import static com.peregrine.util.PerUtil.RENDITIONS;
 
 /**
  * Created by schaefa on 6/4/17.
@@ -81,7 +84,7 @@ public class PerAssetImpl
             getContentResource();
         if(jcrContent != null) {
             ValueMap properties = jcrContent.getValueMap();
-            return properties.get(JcrUtil.JCR_DATA, InputStream.class);
+            return properties.get(JCR_DATA, InputStream.class);
         } else {
             return null;
         }
@@ -109,10 +112,10 @@ public class PerAssetImpl
         Session session = adaptTo(Session.class);
         Resource renditions = getRenditionsResource(true);
         Node renditionsNode = renditions.adaptTo(Node.class);
-        Node renditionNode = renditionsNode.addNode(renditionName, JcrUtil.NT_FILE);
-        Node jcrContent = renditionNode.addNode(JcrUtil.JCR_CONTENT, JcrUtil.NT_RESOURCE);
+        Node renditionNode = renditionsNode.addNode(renditionName, NT_FILE);
+        Node jcrContent = renditionNode.addNode(JCR_CONTENT, NT_RESOURCE);
         Binary data = session.getValueFactory().createBinary(dataStream);
-        jcrContent.setProperty(JcrUtil.JCR_DATA, data);
+        jcrContent.setProperty(JCR_DATA, data);
         jcrContent.setProperty(JCR_MIME_TYPE, mimeType);
         session.save();
     }
@@ -125,7 +128,7 @@ public class PerAssetImpl
         Resource categoryResource = getCategoryResource(category, true);
         ModifiableValueMap properties = categoryResource.adaptTo(ModifiableValueMap.class);
         if(properties != null) {
-            properties.put(JcrUtil.adjustMetadataName(tag), value);
+            properties.put(PerUtil.adjustMetadataName(tag), value);
         }
         session.save();
     }
@@ -190,7 +193,7 @@ public class PerAssetImpl
             categoryResource = getCategoryResource(category, false);
             if(categoryResource != null) {
                 ValueMap properties = categoryResource.getValueMap();
-                answer = properties.get(JcrUtil.adjustMetadataName(tag));
+                answer = properties.get(PerUtil.adjustMetadataName(tag));
             }
         } catch(PersistenceException e) {
             // Ignore
@@ -212,7 +215,7 @@ public class PerAssetImpl
         if(create && renditions == null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-            renditions = resourceResolver.create(getResource(), JcrUtil.RENDITIONS, properties);
+            renditions = resourceResolver.create(getResource(), RENDITIONS, properties);
         }
         return renditions;
     }
@@ -227,7 +230,7 @@ public class PerAssetImpl
     private Resource getCategoryResource(String category, boolean create)
         throws PersistenceException
     {
-        String adjustedCategory = JcrUtil.adjustMetadataName(category);
+        String adjustedCategory = PerUtil.adjustMetadataName(category);
         ResourceResolver resourceResolver = adaptTo(ResourceResolver.class);
         Resource metadata = getOrCreateMetaData();
         Resource answer = metadata.getChild(adjustedCategory);

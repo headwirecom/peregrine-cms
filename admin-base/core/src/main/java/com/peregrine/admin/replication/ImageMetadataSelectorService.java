@@ -25,35 +25,19 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
-import com.peregrine.admin.util.JcrUtil;
-import com.peregrine.admin.util.JcrUtil.MissingOrOutdatedResourceChecker;
-import com.peregrine.admin.util.JcrUtil.ResourceChecker;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
+import com.peregrine.util.PerUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by schaefa on 5/25/17.
@@ -170,7 +154,7 @@ public class ImageMetadataSelectorService
             }
         }
         boolean accept = false;
-        String test = JcrUtil.adjustMetadataName(tag);
+        String test = PerUtil.adjustMetadataName(tag);
         if(included) {
             for(String item: selection) {
                 if(item.equals(test)) {
@@ -198,15 +182,15 @@ public class ImageMetadataSelectorService
             if(source == null || source.isEmpty()) {
                 throw new IllegalArgumentException("Source must be provide");
             }
-            this.source = JcrUtil.adjustMetadataName(source);
+            this.source = PerUtil.adjustMetadataName(source);
             // If no destination then we just return the adjusted source
             this.destination = destination == null ?
                 this.source :
-                JcrUtil.adjustMetadataName(destination);
+                PerUtil.adjustMetadataName(destination);
         }
 
         public boolean accept(String name) {
-            return source.equals(JcrUtil.adjustMetadataName(name));
+            return source.equals(PerUtil.adjustMetadataName(name));
         }
 
         public String getDestination() {

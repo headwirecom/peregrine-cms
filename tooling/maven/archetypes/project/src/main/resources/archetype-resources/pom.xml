@@ -26,7 +26,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>${groupId}</groupId>
-    <artifactId>${artifactId}-parent</artifactId>
+    <artifactId>${rootArtifactId}-parent</artifactId>
     <version>${version}</version>
     <packaging>pom</packaging>
 
@@ -176,7 +176,7 @@
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
                     <force>true</force>
-                    <group>\${packageGroup}</group>
+                    <group>${packageGroup}</group>
                 </configuration>
             </plugin>
         </plugins>

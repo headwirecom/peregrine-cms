@@ -25,8 +25,8 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
-import com.peregrine.admin.util.JcrUtil;
-import com.peregrine.admin.util.JcrUtil.MissingOrOutdatedResourceChecker;
+import com.peregrine.util.PerUtil;
+import com.peregrine.util.PerUtil.MissingOrOutdatedResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.util.JcrUtil.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
 
 /**
  * Created by schaefa on 5/25/17.
@@ -140,7 +140,7 @@ public class ReferenceListerService
                             log.info("Resource is already in the list: '{}'", child);
                         } else {
                             if(source  != null && target != null) {
-                                JcrUtil.listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
+                                PerUtil.listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
                             }
                             log.trace("Found Reference Resource: '{}'", child);
                             response.add(child);

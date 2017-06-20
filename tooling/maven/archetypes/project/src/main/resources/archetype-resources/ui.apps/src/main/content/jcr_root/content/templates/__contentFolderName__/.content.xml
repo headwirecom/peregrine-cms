@@ -12,6 +12,5 @@
             sling:resourceType="${contentFolderName}/components/page"
             jcr:title="${artifactName} template"
             brand="${artifactName}"
-    >
-
+    />
 </jcr:root>
