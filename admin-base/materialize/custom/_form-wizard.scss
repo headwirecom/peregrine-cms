@@ -57,7 +57,7 @@
 	  line-height: 20px;
 	  color: #fff;
 	  text-align: center;
-	  background-color: $orange;
+	  background-color: color("orange", "accent-2");
 	  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
 	  transition: width .6s ease;
 	}
@@ -113,7 +113,7 @@
 	    flex-direction: column;
 	    padding: 0;
 	    margin: 0 auto;
-	    color: $blue-gray-darken-2;
+	    color: color("blue-grey", "darken-2");
 	    position: relative;
 	    top: 3px;
 	    z-index: 100;
@@ -121,7 +121,7 @@
 		>li>a:focus,
 		>li>a:hover {
 		  background-color: transparent;
-		  color: $blue-gray-darken-1;
+		  color: color("blue-grey", "darken-1");
 		  outline: 0!important;
 		  cursor: pointer;
 		}
@@ -150,10 +150,10 @@
 	}
 
 	.is_error {
-	  border-color: $orange!important;
+	  border-color: color("orange", "accent-2") !important;
 	}
 	.is_error .icon-container {
-	  background: $orange!important;
+	  background: color("orange", "accent-2") !important;
 	}
 	.icon-circle {
 	  font-size: 18px;
@@ -230,7 +230,7 @@
 	  text-align: center;
 	}
 	.wizard-title {
-	  color: $blue-gray-darken-2;
+	  color: color("blue-grey", "darken-2");
 	  font-weight: 300;
 	  margin: 0;
 	  text-align: center;
@@ -238,7 +238,7 @@
 	.category {
 	  font-size: 14px;
 	  font-weight: 400;
-	  color: $blue-grey-lighten-3;
+	  color: color("blue-grey", "lighten-3");
 	  margin-bottom: 0;
 	  text-align: center;
 	}

@@ -32,7 +32,7 @@
 					position: absolute; 
 					right: -1px; 
 					bottom: -1px; 
-					background-color: $blue-gray-darken-3;
+					background-color: color("blue-grey", "darken-3");
 					pointer-events: auto;
 					height: 25px;
 					text-align: center;
@@ -46,8 +46,8 @@
 						li {
 							display: inline-block;
 							height: 100%;
-							border-right: 1px solid $blue-gray-darken-4;
-							border-left: 1px solid $blue-gray-darken-2;
+							border-right: 1px solid color("blue-grey", "darken-4");
+							border-left: 1px solid color("blue-grey", "darken-2");
 							> a {
 								display: inline-block;
 								height: 100%;
@@ -72,19 +72,19 @@
 					}
 				}
 				&.drop-top {
-					border-top-color: $blue-gray;
+					border-top-color: color("blue-grey", "base");
 				}
 				&.drop-bottom {
-					border-bottom-color: $blue-gray;
+					border-bottom-color: color("blue-grey", "base");
 				}
 				&.selected {
-					border-color: $blue-gray;
+					border-color: color("blue-grey", "base");
 					.editable-actions {
 						display: block;
 					}
 				}
 				&.drag-start {
-					border-color: $blue-gray;
+					border-color: color("blue-grey", "base");
 					cursor: move;
 					.editable-actions {
 						display: block;
@@ -165,14 +165,14 @@
 		}
 	}
 	.show-right-panel {
-		background-color: $blue-grey-lighten-5;
+		background-color: color("blue-grey", "lighten-5");
 		width: 2rem; 
 		height: 40px; 
 		position: absolute;
 		z-index: 1;
 		right: 0;
 		top: 1rem;
-		border: 1px solid $blue-grey-lighten-4;
+		border: 1px solid color("blue-grey", "lighten-4");
 		border-right: 0;
 		.material-icons {
 			position: relative;
@@ -191,8 +191,8 @@
 		-ms-transition: width .2s ease-in-out;
 		transition: width .2s ease-in-out;
 		z-index: 0;
-		background-color: $blue-grey-lighten-5;
-		border-left: 1px solid $blue-grey-lighten-4;
+		background-color: color("blue-grey", "lighten-5");
+		border-left: 1px solid color("blue-grey", "lighten-4");
 		.hide-right-panel {
 			position: absolute;
 			right: 1rem;
@@ -201,7 +201,7 @@
 			transition: opacity .1s ease-in-out;
 			.material-icons {
 				font-size: 30px;
-				color: $blue-grey-lighten-1;
+				color: color("blue-grey", "lighten-1");
 			}
 		}
 
@@ -211,7 +211,7 @@
 			flex: 1;
 			box-shadow: none !important;
 			height: 100%; 
-			border-left: 1px solid $blue-grey-lighten-4;
+			border-left: 1px solid color("blue-grey", "lighten-4");
 			overflow: visible;
 		}
 	}

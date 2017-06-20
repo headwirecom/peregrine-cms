@@ -7,9 +7,9 @@
 	//   width: 2rem;
 	//   height: 40px;
 	//   position: absolute;
-	//   border: 1px solid $blue-grey-lighten-4;
+	//   border: 1px solid color("blue-grey", "lighten-4");
 	//   border-left: 0;
-	//   background-color: $blue-grey-lighten-5 !important;
+	//   background-color: color("blue-grey", "lighten-5") !important;
 	// }
 
 	.toggle-debugger {
@@ -22,10 +22,10 @@
 			font-size: 40px;
 		}
 		&.show-debugger {
-			background-color: $blue-grey-lighten-5;
-			border: 1px solid $blue-grey-lighten-4;
+			background-color: color("blue-grey", "lighten-5");
+			border: 1px solid color("blue-grey", "lighten-4");
 			border-left: 0;
-			color: $blue-gray-darken-3;
+			color: color("blue-grey", "darken-3");
 		}
 		&.hide-debugger {
 			z-index: 1;
@@ -48,12 +48,12 @@
 		right: 0;
 		bottom: 0;
 		overflow: auto;
-		background-color: $blue-gray-darken-3;
+		background-color: color("blue-grey", "darken-3");
 		.collection {
-			border-color: $blue-grey-lighten-4;
+			border-color: color("blue-grey", "lighten-4");
 			.collection-item {
 				background: none;
-				border-color: $blue-grey-lighten-4;
+				border-color: color("blue-grey", "lighten-4");
 				.logger-level {
 					cursor: pointer;
 					color: #ffb300;
@@ -69,15 +69,15 @@
 		}
 		ul.list-inline {
 			padding-bottom: 0.75rem;
-			border-bottom: 1px solid $blue-grey-lighten-4;
+			border-bottom: 1px solid color("blue-grey", "lighten-4");
 			> li {
 				padding-right: 0.75rem;
 				> a {
 					display: inline-block;
 					cursor: pointer;
 					padding: 0.25rem 0.75rem;
-					border: 1px solid $blue-grey-lighten-4;
-					color: $blue-grey-lighten-4;
+					border: 1px solid color("blue-grey", "lighten-4");
+					color: color("blue-grey", "lighten-4");
 					border-radius: 20px;
 					&.active {
 						border-color: #fff;
@@ -106,7 +106,7 @@
 		height: 100%; 
 		width: 100%; 
 		overflow: scroll; 
-		background-color: $blue-gray-darken-3; 
+		background-color: color("blue-grey", "darken-3"); 
 		color: white;
 	}
 }

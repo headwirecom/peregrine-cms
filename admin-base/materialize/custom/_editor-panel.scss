@@ -35,7 +35,7 @@
     		}
 	    	.form-control {
 	    		padding: 0.5rem;
-	    		border-color: $blue-grey-lighten-4;
+	    		border-color: color("blue-grey", "lighten-4");
 	    		border-radius: 0;
 	    	}
 	    }

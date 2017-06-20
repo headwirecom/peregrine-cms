@@ -10,67 +10,67 @@
 		    overflow-y: auto;
 		    padding: 0;
 				.collection {
-						border: 0;
-						margin: 0;
-						.collection-item {
-							position: relative;
-							color: $blue-gray-darken-2;
-							border-color: $blue-grey-lighten-4;
-					    > span > a {
-					    	color: $blue-gray-darken-2;
-					    	&:hover,
-								&:focus,
-								&:active {
-									color: $blue-gray-darken-4;
-								}
-					    }
-					    .material-icons {
-								vertical-align: middle;
-							}
-							&:hover,
+					border: 0;
+					margin: 0;
+					.collection-item {
+						position: relative;
+						color: color("blue-grey", "darken-2");
+						border-color: color("blue-grey", "lighten-4");
+				    > span > a {
+				    	color: color("blue-grey", "darken-2");
+				    	&:hover,
 							&:focus,
 							&:active {
-								color: $blue-gray-darken-4;
-								background-color: $blue-grey-lighten-5;
+								color: color("blue-grey", "darken-4");
 							}
-							&:last-child {
-								border-bottom: 0;
-							}
-							&.explorer-item-selected {
-								color: $blue-gray-darken-4;
-						    background-color: $blue-grey-lighten-5;
-							}
-							.secondary-content {
-								color: $primary-color-dark;
-								position: absolute;
-								top: 0;
-								right: 0;
-								bottom: 0;
-								padding: 0.75rem 0;
-								span {
+				    }
+				    .material-icons {
+							vertical-align: middle;
+						}
+						&:hover,
+						&:focus,
+						&:active {
+							color: color("blue-grey", "darken-4");
+							background-color: color("blue-grey", "lighten-5");
+						}
+						&:last-child {
+							border-bottom: 0;
+						}
+						&.explorer-item-selected {
+							color: color("blue-grey", "darken-4");
+					    background-color: color("blue-grey", "lighten-5");
+						}
+						.secondary-content {
+							color: $primary-color-dark;
+							position: absolute;
+							top: 0;
+							right: 0;
+							bottom: 0;
+							padding: 0.75rem 0;
+							span {
+								display: inline-block;
+								> a {
+									color: color("blue-grey", "darken-2");
+									vertical-align: middle;
 									display: inline-block;
-									> a {
-										color: $blue-gray-darken-2;
-										vertical-align: middle;
-										display: inline-block;
-										padding: 0 0.75rem;
-										border-left: 1px solid $blue-grey-lighten-4;
-										transition: color .3s ease;
-										&:hover,
-										&:focus,
-										&:active {
-											color: $orange-dark;
-										}
+									padding: 0 0.75rem;
+									border-left: 1px solid color("blue-grey", "lighten-4");
+									transition: color .3s ease;
+									&:hover,
+									&:focus,
+									&:active {
+										color: color("orange", "base");
 									}
 								}
 							}
 						}
 					}
+				}
 			}
 			.explorer-preview {
-			  background-color: $blue-grey-lighten-5;
-			  border-left: 1px solid $blue-grey-lighten-4;
-			  color: $blue-gray-darken-1;
+			  background-color: color("blue-grey", "lighten-5");
+			  border-left: 1px solid color("blue-grey", "lighten-4");
+			  color: color("blue-grey", "darken-4");
 			  .asset-preview {
 			  	height: 100%;
 			  	padding: 0.75rem 0;		  	
@@ -111,7 +111,7 @@
 							width: 100%;
 						}
 						.material-icons {
-							color: $blue-grey-lighten-2;
+							color: color("blue-grey", "lighten-2");
 							font-size: 80px;
 						}
 					}

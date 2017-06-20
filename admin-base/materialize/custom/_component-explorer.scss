@@ -10,7 +10,7 @@
 			display: block;
 			padding-left: 0;
 			background: none;
-			border-color: $blue-grey-lighten-4;
+			border-color: color("blue-grey", "lighten-4");
 			color: $link-color;
 			cursor: move;
 			&:hover,

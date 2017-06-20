@@ -29,7 +29,7 @@ nav {
           &:hover,
           &:focus,
           &:active {
-            color: $orange-light;
+            color: #ffd8a6;
           }
           &.peregrine-logo {
             svg {
@@ -38,12 +38,12 @@ nav {
               position: relative;
               top: 6px;
               .st0{
-                fill: $orange;
+                fill: color("orange", "accent-2");
                 transition: fill .3s ease;
               }
               &:hover {
                 .st0{
-                  fill: $orange-light;
+                  fill: #ffd8a6;
                 }
               }
             }
