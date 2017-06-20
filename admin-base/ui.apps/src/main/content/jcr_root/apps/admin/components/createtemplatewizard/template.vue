@@ -24,7 +24,11 @@
   -->
 <template>
 <div class="container">
-    <form-wizard v-bind:title="'create a template'" v-bind:subtitle="''" @on-complete="onComplete" color="#37474f">
+    <form-wizard 
+      v-bind:title="'create a template'" 
+      v-bind:subtitle="''" @on-complete="onComplete" 
+      error-color="#d32f2f"
+      color="#546e7a">
         <tab-content title="choose name" :before-change="leaveTabTwo">
             <vue-form-generator :model="formmodel"
                                 :schema="nameSchema"
