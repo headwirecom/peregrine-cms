@@ -7,3 +7,9 @@
   text-transform: uppercase;
   color: $primary-color-dark;
 }
+code,
+kbd,
+pre,
+samp {
+	font-family: "Source Code Pro", "Consolas", "Menlo", monospace;
+}
