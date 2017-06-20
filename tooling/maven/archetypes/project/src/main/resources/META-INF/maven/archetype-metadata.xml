@@ -64,6 +64,12 @@
                 <include>Readme.md</include>
             </includes>
         </fileSet>
+        <fileSet filtered="true" encoding="UTF-8">
+            <directory>.properties</directory>
+            <includes>
+                <include>settings.json</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <!--AS NOTE: the only dynamic change that can be made here is to add ${rootArtifactId} to the id and name
