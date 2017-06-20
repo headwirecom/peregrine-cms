@@ -239,10 +239,10 @@
             },
             nodeTypeToIcon: function(nodeType) {
 
-                if(nodeType === 'per:Page')     return 'insert_drive_file'
+                if(nodeType === 'per:Page')     return 'description'
                 if(nodeType === 'per:Object')   return 'layers'
                 if(nodeType === 'nt:file')      return 'insert_drive_file'
-                if(nodeType === 'per:Asset')      return 'insert_drive_file'
+                if(nodeType === 'per:Asset')      return 'image'
                 if(nodeType === 'sling:Folder') return 'folder'
                 if(nodeType === 'sling:OrderedFolder') return 'folder'
                 return 'unknown'
@@ -264,6 +264,8 @@
                     if(resourceType === 'per:Asset') {
                         me.selectedAsset = target.path
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
+                        return
+                    } else if(resourceType === 'nt:file') {
                         return
                     }
                 }
@@ -298,7 +300,11 @@
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path )
             },
             addTemplate: function(me, target) {
-                $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
+                if(me.pt.path === '/content/templates') {
+                    $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
+                } else {
+                    $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
+                }
             },
             addObject: function(me, target) {
                 $perAdminApp.stateAction('createObjectWizard', me.pt.path)

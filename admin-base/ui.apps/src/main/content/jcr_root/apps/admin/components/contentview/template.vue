@@ -41,7 +41,7 @@
                 draggable      = "true"
                 v-on:dragstart = "onDragStart">
                 <div class="editable-actions">
-                    <ul>
+                    <ul v-if="enableTools">
                         <li class="waves-effect waves-light">
                             <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
                                 <i class="svg-icon svg-icon-copy"></i>
@@ -110,6 +110,12 @@ export default {
         },
         viewModeClass: function() {
             return this.viewMode
+        },
+        enableTools: function() {
+            var targetEl = this.selectedComponent
+            if(!targetEl) return false
+            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
+            return !node.fromTemplate
         }
     },
 
@@ -261,10 +267,16 @@ export default {
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
-                this.selectedComponent = targetEl
-                var targetBox = targetEl.getBoundingClientRect()
-                this.setEditableStyle(targetBox, 'selected')
-                $perAdminApp.action(this, 'showComponentEdit', targetEl.getAttribute('data-per-path'))
+                var path = targetEl.getAttribute('data-per-path')
+                var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                if(node.fromTemplate) {
+                    $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', () => {})
+                } else {
+                    this.selectedComponent = targetEl
+                    var targetBox = targetEl.getBoundingClientRect()
+                    this.setEditableStyle(targetBox, 'selected')
+                    $perAdminApp.action(this, 'showComponentEdit', path)
+                }
             }
         },
 

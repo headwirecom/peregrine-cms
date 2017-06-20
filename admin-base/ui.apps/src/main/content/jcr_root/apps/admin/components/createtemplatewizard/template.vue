@@ -24,7 +24,7 @@
   -->
 <template>
 <div class="container">
-    <form-wizard v-bind:title="'create a page'" v-bind:subtitle="''" @on-complete="onComplete">
+    <form-wizard v-bind:title="'create a template'" v-bind:subtitle="''" @on-complete="onComplete" color="#37474f">
         <tab-content title="choose name" :before-change="leaveTabTwo">
             <vue-form-generator :model="formmodel"
                                 :schema="nameSchema"
@@ -59,7 +59,7 @@
                         fields: [{
                             type: "input",
                             inputType: "text",
-                            label: "Page Name",
+                            label: "Template Name",
                             model: "name",
                             required: true,
                             validator: VueFormGenerator.validators.string
