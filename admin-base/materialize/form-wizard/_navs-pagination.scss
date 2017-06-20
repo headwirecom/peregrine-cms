@@ -1,0 +1,50 @@
+.vue-form-wizard .wizard-nav-pills {
+    margin-top:0;
+    position: relative;
+    text-align: center;
+    display:flex;
+    flex-wrap:wrap;
+    li,a{
+      flex:1;
+      align-items: center;
+      flex-wrap:wrap;
+      flex-grow: 1;
+    }
+    a{
+      display:flex;
+    }
+    > li > a {
+        display:flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0 auto;
+        color: $form-placeholder-color;
+        position: relative;
+        top: 3px;
+        z-index: 100;
+        &:hover,
+        &:focus{
+            background-color: transparent;
+            color: $form-placeholder-color;
+            outline: 0 !important;
+            cursor: pointer;
+        }
+    }
+
+    > li.active > a,
+    > li.active > a:hover,
+    > li.active > a:focus {
+        background-color: transparent;
+        @include transition-font-size(.2s, linear);
+
+
+        .wizard-icon{
+            color: $white-color;
+            font-size: 24px;
+            display:flex;
+            align-items:center;
+            justify-content: center;
+            @include transition(.2s, linear);
+        }
+    }
+}

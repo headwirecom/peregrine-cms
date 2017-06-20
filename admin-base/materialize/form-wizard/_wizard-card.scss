@@ -1,0 +1,122 @@
+.vue-form-wizard {
+  padding-bottom: 20px;
+  .is_error {
+    border-color: $danger-states-color !important;
+    .icon-container {
+      background: $danger-states-color !important;
+    }
+  }
+  .wizard-icon-circle {
+    font-size: 18px;
+    border: 3px solid $gray-input-bg;
+    border-radius: 50%;
+    font-weight: $font-weight-bold;
+    width: 70px;
+    height: 70px;
+    background-color: $white-color;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    &.square_shape {
+      border-radius: 0;
+    }
+    &.tab_shape {
+      width: 100%;
+      min-width: 100px;
+      height: 40px;
+      border: none;
+      background-color: $gray-input-bg;
+      border-radius: 0;
+    }
+    .wizard-icon-container {
+      display: flex;
+      justify-content: center;
+      flex: 1;
+      border-radius: 40%;
+      &.square_shape, &.tab_shape {
+        border-radius: 0;
+      }
+    }
+    .wizard-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .wizard-tab-content {
+    min-height: 100px;
+    padding: 30px 20px 10px;
+  }
+
+  .wizard-header {
+    padding: 15px 15px 15px 15px;
+    position: relative;
+    border-radius: 3px 3px 0 0;
+    z-index: 3;
+    text-align: center;
+  }
+
+  .wizard-title {
+    color: $card-black-color;
+    font-weight: $font-weight-light;
+    margin: 0;
+    text-align: center;
+  }
+
+  .category {
+    font-size: 14px;
+    font-weight: 400;
+    color: #9A9A9A;
+    margin-bottom: 0px;
+    text-align: center;
+  }
+
+  .wizard-navigation {
+    .wizard-progress-with-circle {
+      position: relative;
+      top: 40px;
+      z-index: 50;
+      height: 4px;
+
+      .wizard-progress-bar {
+        box-shadow: none;
+        -webkit-transition: width .3s ease;
+        -o-transition: width .3s ease;
+        transition: width .3s ease;
+      }
+    }
+  }
+  .clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+  .wizard-card-footer {
+    padding: 0 20px;
+    .wizard-footer-left {
+      float: left;
+    }
+    .wizard-footer-right {
+      float: right;
+    }
+  }
+  @media screen and (max-width: 350px) {
+    .wizard-card-footer {
+      display:flex;
+      justify-content: center;
+      flex-direction: column;
+      .wizard-footer-left,
+      .wizard-footer-right {
+        float: none;
+        flex:1;
+        display: flex;
+        justify-content:center;
+      }
+      .wizard-footer-right button{
+        margin-top:10px;
+      }
+    }
+  }
+}
