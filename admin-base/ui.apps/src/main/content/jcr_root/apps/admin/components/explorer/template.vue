@@ -298,7 +298,11 @@
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path )
             },
             addTemplate: function(me, target) {
-                $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
+                if(me.pt.path === '/content/templates') {
+                    $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
+                } else {
+                    $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
+                }
             },
             addObject: function(me, target) {
                 $perAdminApp.stateAction('createObjectWizard', me.pt.path)

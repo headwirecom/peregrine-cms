@@ -47,7 +47,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
 
@@ -56,13 +55,13 @@ import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
         property = {
                 Constants.SERVICE_DESCRIPTION + "=move node to servlet",
                 Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/moveNodeTo"
+                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/MoveNodeTo"
         }
 )
 @SuppressWarnings("serial")
-public class moveNodeTo extends SlingSafeMethodsServlet {
+public class MoveNodeTo extends SlingSafeMethodsServlet {
 
-    private final Logger log = LoggerFactory.getLogger(moveNodeTo.class);
+    private final Logger log = LoggerFactory.getLogger(MoveNodeTo.class);
 
     @Reference
     ModelFactory modelFactory;

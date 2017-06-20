@@ -95,7 +95,12 @@
         ,
         computed: {
             templates: function() {
-                return $perAdminApp.getNodeFromViewOrNull('/admin/templates/data')
+                const templates = $perAdminApp.getNodeFromViewOrNull('/admin/templates/data')
+                const siteRootParts = this.formmodel.path.split('/').slice(0,4)
+                siteRootParts[2] = 'templates'
+                const siteRoot = siteRootParts.join('/')
+                console.log(siteRoot)
+                return templates.filter( (item) => item.path.startsWith(siteRoot))
             }
         }
         ,
