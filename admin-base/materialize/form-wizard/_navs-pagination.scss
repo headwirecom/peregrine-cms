@@ -37,7 +37,14 @@
         background-color: transparent;
         @include transition-font-size(.2s, linear);
 
-
+        .wizard-icon-circle {
+            border-color: color("orange", "base") !important;
+            @include transition(.2s, linear);
+        }
+        .wizard-icon-container {
+            background-color: color("orange", "base") !important;
+            @include transition(.2s, linear);
+        }
         .wizard-icon{
             color: $white-color;
             font-size: 24px;

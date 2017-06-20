@@ -6,6 +6,10 @@
       background: $danger-states-color !important;
     }
   }
+  .errors,
+  .has-error {
+    color: $danger-color;
+  }
   .wizard-icon-circle {
     font-size: 18px;
     border: 3px solid $gray-input-bg;
@@ -47,13 +51,27 @@
 
   .wizard-tab-content {
     min-height: 100px;
-    padding: 30px 20px 10px;
+    padding: 1.5rem 0 0.75rem;
+
+    .vue-form-generator,
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    pre {
+      background-color: color("blue-grey", "lighten-5");
+      border: 1px solid color("blue-grey", "lighten-4");
+      color: color("blue-grey", "darken-2");
+      padding: 0.75rem;
+    }
   }
 
   .wizard-header {
-    padding: 15px 15px 15px 15px;
+    padding: 3rem 0.75rem 1.5rem;
     position: relative;
-    border-radius: 3px 3px 0 0;
+    border-radius: 0;
     z-index: 3;
     text-align: center;
   }
@@ -94,7 +112,7 @@
     display: table;
   }
   .wizard-card-footer {
-    padding: 0 20px;
+    padding: 0;
     .wizard-footer-left {
       float: left;
     }

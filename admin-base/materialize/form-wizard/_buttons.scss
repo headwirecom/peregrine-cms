@@ -1,14 +1,16 @@
 .vue-form-wizard .wizard-btn,
 .vue-form-wizard .navbar .navbar-nav > li > a.wizard-btn {
   box-sizing: border-box;
-  border-width: $border-thick;
-  background-color: $transparent-bg;
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
-  padding: $padding-base-vertical $padding-base-horizontal;
+  border: $button-border;
+  background-color: $button-raised-background !important;
+  font-size: $button-font-size;
+  padding: $button-padding;
+  border-radius: $button-radius;
+  height: $button-height;
+  color: $button-raised-color;
   &:hover,
   &:focus {
-    outline: 0 !important;
+    background-color: color("orange", "base") !important;
   }
 }
 
