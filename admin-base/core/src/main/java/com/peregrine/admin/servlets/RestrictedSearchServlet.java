@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -125,7 +126,16 @@ public class RestrictedSearchServlet extends SlingSafeMethodsServlet {
                     while(nodes.hasNext()) {
                         Node node = nodes.nextNode();
                         w.write("{ \"name\": \""+node.getName()+"\",");
-                        w.write("\"path\": \""+node.getPath()+"\"}");
+                        w.write("\"path\": \""+node.getPath()+"\",");
+                        if(node.getPrimaryNodeType().toString().equals("per:Component")) {
+                            if(node.hasProperty("group")) {
+                                Property group = node.getProperty("group");
+                                if(group != null) {
+                                    w.write("\"group\": \""+group.getString()+"\",");
+                                }
+                            }
+                        }
+                        w.write("\"nodeType\": \""+node.getPrimaryNodeType()+"\"}");
                         if(nodes.hasNext()) {
                             w.write(',');
                         }

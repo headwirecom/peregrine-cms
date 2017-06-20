@@ -53,6 +53,7 @@
                 var ret = []
                 for(var i = 0; i < list.length; i++) {
                     var path = list[i].path
+                    if(list[i].group === '.hidden') continue;
                     for(var j = 0; j < allowedComponents.length; j++) {
                         if(path.startsWith(allowedComponents[j])) {
                             ret.push(list[i])
