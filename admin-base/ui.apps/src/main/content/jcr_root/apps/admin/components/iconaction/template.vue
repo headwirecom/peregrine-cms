@@ -30,13 +30,15 @@
             <p>{{model.description}}</p>
         </div>
         <div class="card-action">
-            <admin-components-action 
+            <admin-components-action v-if="internal(model.action)"
                 v-bind:model="{ 
                     target: model.action, 
                     command: 'selectPath', 
                     title: 'explore' 
                 }">
             </admin-components-action>
+            <a v-else v-bind:href="model.action" target="docs">explore</a>
+
         </div>
     </div>
 </div>
@@ -44,7 +46,12 @@
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        methods: {
+            internal(action) {
+                return !action.startsWith('http')
+            }
+        }
     }
 </script>
 

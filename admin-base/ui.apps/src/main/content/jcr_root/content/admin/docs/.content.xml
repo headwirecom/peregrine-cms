@@ -45,17 +45,17 @@
 
                     <pages1 jcr:primaryType="nt:unstructured" jcr:title="For Authors" sling:resourceType="admin/components/iconaction"
                            jcr:description="Learn about how to use peregrine-cms in day to day editing."
-                           action="/content/admin/docs"/>
+                           action="http://www.peregrine-cms.com/docs.html"/>
 
 
                     <pages2 jcr:primaryType="nt:unstructured" jcr:title="For Developers" sling:resourceType="admin/components/iconaction"
                            jcr:description="Get ready to build and enhance peregrine-cms"
-                           action="/content/admin/pages"/>
+                           action="http://www.peregrine-cms.com/docs/sitedev.html"/>
 
 
                     <pages3 jcr:primaryType="nt:unstructured" jcr:title="For Administrators" sling:resourceType="admin/components/iconaction"
                            jcr:description="Learn on how to manage peregrine-cms instances"
-                           action="/content/admin/pages"/>
+                           action="http://www.peregrine-cms.com/docs.html"/>
 
             </row>
 
