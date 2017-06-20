@@ -27,6 +27,7 @@
     <form-wizard 
       v-bind:title="'create a page'" 
       v-bind:subtitle="''" @on-complete="onComplete"
+      error-color="#d32f2f"
       color="#37474f">
         <tab-content title="select template" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
