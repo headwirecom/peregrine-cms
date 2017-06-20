@@ -1,0 +1,20 @@
+.vue-form-wizard .wizard-btn,
+.vue-form-wizard .navbar .navbar-nav > li > a.wizard-btn {
+  box-sizing: border-box;
+  border-width: $border-thick;
+  background-color: $transparent-bg;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  padding: $padding-base-vertical $padding-base-horizontal;
+  &:hover,
+  &:focus {
+    outline: 0 !important;
+  }
+}
+
+.vue-form-wizard {
+  .navbar .navbar-nav > li > a.wizard-btn.wizard-btn-wd,
+  .wizard-btn-wd {
+    min-width: 140px;
+  }
+}

@@ -1,0 +1,11 @@
+//Bootstrap imports just for general styling
+@import "bs_button";
+@import "bs_nav_pills";
+@import "bs_progress_bar";
+
+@import "variables";
+@import "mixins";
+//Form wizard related
+@import "buttons";
+@import "navs-pagination";
+@import "wizard-card";
