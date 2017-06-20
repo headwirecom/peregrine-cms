@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerUtil.TEMPLATE;
 
 /**
@@ -124,6 +125,96 @@ public class PerPageImpl
         } else {
             return super.adaptTo(type);
         }
+    }
+
+    @Override
+    public PerPage getNext() {
+        Resource resource = getResource();
+        return findNext(resource, true);
+    }
+
+    /*
+     * Pre-Order means that a direct child is returned first whereas
+     * Post-Order means that first the furthers child is returned first
+     *
+     * Pre-Order: first child, sibling or parent sibling
+     *
+     * Post-Order: first leaf child, leaf sibling leaf child, leaf sibling or parent
+     */
+    private PerPage findNext(Resource resource, boolean preOrder) {
+        PerPage answer = findNextChildPage(resource, null);
+        if(answer == null) {
+            Resource parent = resource.getParent();
+            Resource child = resource;
+            while(parent != null) {
+                // Find any sibling in the parent this is after the this resource's path
+                answer = findNextChildPage(parent, child);
+                if(answer == null) {
+                    child = parent;
+                    parent = parent.getParent();
+                } else {
+                    break;
+                }
+            }
+        }
+        return answer;
+    }
+
+    private PerPage findNextChildPage(Resource resource, Resource after) {
+        PerPage answer = null;
+        boolean found = after == null;
+        for(Resource child: resource.getChildren()) {
+            if(found) {
+                String resourceType = child.getResourceType();
+                if(PAGE_PRIMARY_TYPE.equals(resourceType)) {
+                    answer = new PerPageImpl(child);
+                    break;
+                }
+            } else {
+                // 'found' can only be false if after is not null
+                if(child.getName().equals(after.getName())) {
+                    found = true;
+                }
+            }
+        }
+        return answer;
+    }
+
+    @Override
+    public PerPage getPrevious() {
+        Resource resource = getResource();
+        return findPrevious(resource, true);
+    }
+
+    private PerPage findPrevious(Resource resource, boolean preOrder) {
+        PerPage answer = findPreviousChildPage(resource, null);
+        if(answer == null) {
+            Resource parent = resource.getParent();
+            Resource child = resource;
+            while(parent != null) {
+                // Find any sibling in the parent this is before the this resource's path
+                answer = findPreviousChildPage(parent, child);
+                if(answer == null) {
+                    child = parent;
+                    parent = parent.getParent();
+                } else {
+                    break;
+                }
+            }}
+
+        return answer;
+    }
+
+    private PerPage findPreviousChildPage(Resource resource, Resource before) {
+        Resource last = null;
+        for(Resource child: resource.getChildren()) {
+            if(before != null && child.getName().equals(before.getName())) {
+                break;
+            }
+            // Memorize child so that when the loops ends it is the resource that is last or before the 'before' resource
+            last = child;
+        }
+        return last != null ? new PerPageImpl(last) : null;
     }
 
     private static class AllFilter

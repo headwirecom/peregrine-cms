@@ -315,7 +315,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.5.10</version>
+                <version>1.7.21</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -383,19 +383,26 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>3.8.1</version>
+                <version>4.11</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.jmock</groupId>
-                <artifactId>jmock-junit4</artifactId>
-                <version>2.8.2</version>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>1.9.5</version>
                 <scope>test</scope>
             </dependency>
+            <!-- AS Could not find any docu about this and it is not used in Sling -->
+            <!--<dependency>-->
+                <!--<groupId>org.jmock</groupId>-->
+                <!--<artifactId>jmock-junit4</artifactId>-->
+                <!--<version>2.8.3</version>-->
+                <!--<scope>test</scope>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.5.10</version>
+                <version>1.7.21</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

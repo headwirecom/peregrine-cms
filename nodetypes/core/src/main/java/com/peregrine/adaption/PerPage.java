@@ -50,4 +50,22 @@ public interface PerPage
     public PerPage getParent();
     /** @return Template Page of this page if there is a template and is a page otherwise null **/
     public PerPage getTemplate();
+
+    /** @return
+     * The next Page which is the fist found (pre-order):
+     * - first child if there are any children
+     * - next sibling if there are any
+     * - next sibling of a parent that has a child
+     * - null if no page was found
+     **/
+    public PerPage getNext();
+
+    /** @return
+     * The previous Page which is the fist found (pre-order):
+     * - last child if there are any children
+     * - previous sibling if there are any
+     * - previous sibling of a parent that has a child
+     * - null if no page was found
+     **/
+    public PerPage getPrevious();
 }

@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 
 /**
@@ -86,7 +88,14 @@ public class PeregrineAdapterFactory
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
             } else {
-                log.trace("Given Resource: '{}' is not a Page", resource);
+                // Traverse up the tree. If we find a jcr:content of type per:PageContent and its parent is per:Page
+                // then return that one instead
+                PerPage answer = findPage(resource);
+                if(answer == null) {
+                    log.trace("Given Resource: '{}' is not a Page", resource);
+                } else {
+                    return (AdapterType) answer;
+                }
             }
         } else if(type == PerAsset.class) {
             String primaryType = resource.getResourceType();
@@ -111,6 +120,32 @@ public class PeregrineAdapterFactory
             log.warn("Unable to adapt resolver to requested type {}",
                 type.getName());
             return null;
+        }
+    }
+
+    private PerPage findPage(Resource resource) {
+        String primaryType = resource.getResourceType();
+        if(JCR_CONTENT.equals(resource.getName())) {
+            if(PAGE_CONTENT_TYPE.equals(primaryType)) {
+                Resource parent = resource.getParent();
+                String parentPrimaryType = parent != null ? parent.getResourceType() : null;
+                if(PAGE_PRIMARY_TYPE.equals(parentPrimaryType)) {
+                    return new PerPageImpl(parent);
+                } else {
+                    // Found jcr:content but either wrong type or no parent -> done
+                    return null;
+                }
+            } else {
+                // JCR Content found not of the correct type -> done
+                return null;
+            }
+        } else {
+            Resource parent = resource.getParent();
+            return parent != null ?
+                // Parent Found -> check this one out
+                findPage(parent) :
+                // No parent found -> done
+                null;
         }
     }
 }
