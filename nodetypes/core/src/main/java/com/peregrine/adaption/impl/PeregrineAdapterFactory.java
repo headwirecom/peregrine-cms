@@ -28,6 +28,7 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
+import com.peregrine.util.PerUtil;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -41,6 +42,7 @@ import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.util.PerUtil.EQUALS;
 
 /**
  * Created by schaefa on 6/4/17.
@@ -48,15 +50,15 @@ import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 @Component(
     service = AdapterFactory.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Peregrine: Adapter Factory",
-        Constants.SERVICE_VENDOR + "=headwire.com, Inc",
+        Constants.SERVICE_DESCRIPTION + EQUALS + "Peregrine: Adapter Factory",
+        Constants.SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.adaption.PerPage",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.adaption.PerAsset",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.adaption.PerPageManager",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPage",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerAsset",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPageManager",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
-        AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.Resource",
-        AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.ResourceResolver"
+        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.Resource",
+        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.ResourceResolver"
     }
 )
 public class PeregrineAdapterFactory
@@ -85,7 +87,7 @@ public class PeregrineAdapterFactory
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
         if(type.equals(PerPage.class)) {
-            String primaryType = resource.getResourceType();
+            String primaryType = PerUtil.getPrimaryType(resource);
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
             } else {
@@ -99,7 +101,7 @@ public class PeregrineAdapterFactory
                 }
             }
         } else if(type == PerAsset.class) {
-            String primaryType = resource.getResourceType();
+            String primaryType = PerUtil.getPrimaryType(resource);
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerAssetImpl(resource);
             } else {
@@ -125,13 +127,13 @@ public class PeregrineAdapterFactory
     }
 
     private PerPage findPage(Resource resource) {
-        String primaryType = resource.adaptTo(ValueMap.class).get("jcr:primaryType").toString();
         log.trace("path: {}", resource.getPath());
+        String primaryType = PerUtil.getPrimaryType(resource);
         log.trace("primaryType: {}", primaryType);
         if(JCR_CONTENT.equals(resource.getName())) {
             if(PAGE_CONTENT_TYPE.equals(primaryType)) {
                 Resource parent = resource.getParent();
-                String parentPrimaryType = parent != null ? parent.adaptTo(ValueMap.class).get("jcr:primaryType").toString() : null;
+                String parentPrimaryType = PerUtil.getPrimaryType(parent);
                 if(PAGE_PRIMARY_TYPE.equals(parentPrimaryType)) {
                     return new PerPageImpl(parent);
                 } else {

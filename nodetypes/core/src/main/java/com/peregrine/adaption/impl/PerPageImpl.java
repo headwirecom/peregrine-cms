@@ -28,11 +28,13 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.Filter;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
+import com.peregrine.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerUtil.TEMPLATE;
@@ -164,10 +166,11 @@ public class PerPageImpl
         PerPage answer = null;
         boolean found = after == null;
         for(Resource child: resource.getChildren()) {
-            if(child.getName().equals("jcr:content")) continue;
+            // JCR Content nodes will not yield a page -> ignore
+            if(child.getName().equals(JCR_CONTENT)) { continue; }
             if(found) {
-                String resourceType = child.getResourceType();
-                if(PAGE_PRIMARY_TYPE.equals(resourceType)) {
+                String primaryType = PerUtil.getPrimaryType(child);
+                if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                     answer = new PerPageImpl(child);
                     break;
                 }
@@ -209,12 +212,16 @@ public class PerPageImpl
     private PerPage findPreviousChildPage(Resource resource, Resource before) {
         Resource last = null;
         for(Resource child: resource.getChildren()) {
-            if(child.getName().equals("jcr:content")) continue;
+            // JCR Content nodes will not yield a page -> ignore
+            if(child.getName().equals(JCR_CONTENT)) { continue; }
             if(before != null && child.getName().equals(before.getName())) {
                 break;
             }
-            // Memorize child so that when the loops ends it is the resource that is last or before the 'before' resource
-            last = child;
+            String primaryType = PerUtil.getPrimaryType(child);
+            if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
+                // Memorize child so that when the loops ends it is the resource that is last or before the 'before' resource
+                last = child;
+            }
         }
         return last != null ? new PerPageImpl(last) : null;
     }

@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
+
 /**
  * Created by schaefa on 5/26/17.
  */
@@ -276,6 +278,15 @@ public class PerUtil {
         return name == null ?
             null :
             name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    }
+
+    public static String getPrimaryType(Resource resource) {
+        String answer = null;
+        if(resource != null) {
+            ValueMap properties = getProperties(resource, false);
+            answer = properties.get(JCR_PRIMARY_TYPE, String.class);
+        }
+        return answer;
     }
 
     public static interface ResourceChecker {

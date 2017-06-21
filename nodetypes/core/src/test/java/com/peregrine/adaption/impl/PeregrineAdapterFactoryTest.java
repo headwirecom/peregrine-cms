@@ -2,6 +2,7 @@ package com.peregrine.adaption.impl;
 
 import com.peregrine.adaption.PerPage;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static org.junit.Assert.*;
@@ -31,91 +33,79 @@ public class PeregrineAdapterFactoryTest {
     }
 
     @Test
-    public void adaptPaeFromPageResource() throws Exception {
-//        Resource pageResource = mock(Resource.class);
-//        when(pageResource.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
-//        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
-//        PerPage page = factory.getAdapter(pageResource, PerPage.class);
-//        assertNotNull("Page could not be adapted", page);
+    public void adaptPageFromPageResource() throws Exception {
+        Resource pageResource = createPageResource(null, "resource-1");
+        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
+        PerPage page = factory.getAdapter(pageResource, PerPage.class);
+        assertNotNull("Page could not be adapted", page);
+        checkPage("Adapted Page Resource is not what was excepted", pageResource, page);
+    }
+
+    private void checkPage(String message, Resource expected, PerPage found) {
+        assertEquals(message, expected, found.getResource());
+    }
+
+    private void checkPage(String message, PerPage expected, PerPage found) {
+        assertEquals(message, expected.getResource(), found.getResource());
     }
 
     @Test
     public void adaptPageFromContentTest() throws Exception {
-//        Resource pageResource = mock(Resource.class);
-//        when(pageResource.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
-//
-//        Resource pageContentResource = mock(Resource.class);
-//        when(pageContentResource.getResourceType()).thenReturn(PAGE_CONTENT_TYPE);
-//        when(pageContentResource.getName()).thenReturn(JCR_CONTENT);
-//        when(pageContentResource.getParent()).thenReturn(pageResource);
-//
-//        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
-//        PerPage page = factory.getAdapter(pageResource, PerPage.class);
-//        assertNotNull("Page Content could not be adapted", page);
+        Resource pageResource = createPageResource(null, "resource-2");
+        Resource jcrContent = createResource(pageResource, JCR_CONTENT, PAGE_CONTENT_TYPE);
+
+        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
+        PerPage page = factory.getAdapter(jcrContent, PerPage.class);
+        assertNotNull("Page Content could not be adapted", page);
+        checkPage("Adapted Page Resource is not what was excepted", pageResource, page);
     }
 
     @Test
     public void adaptPageFromContentChildTest() throws Exception {
-//        Resource pageResource = mock(Resource.class);
-//        when(pageResource.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
-//
-//        Resource pageContentResource = mock(Resource.class);
-//        when(pageContentResource.getResourceType()).thenReturn(PAGE_CONTENT_TYPE);
-//        when(pageContentResource.getName()).thenReturn(JCR_CONTENT);
-//        when(pageContentResource.getParent()).thenReturn(pageResource);
-//
-//        Resource pageContentChildResource = mock(Resource.class);
-//        when(pageContentChildResource.getResourceType()).thenReturn("gugus");
-//        when(pageContentChildResource.getName()).thenReturn("My Gugus");
-//        when(pageContentChildResource.getParent()).thenReturn(pageContentResource);
-//
-//        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
-//        PerPage page = factory.getAdapter(pageContentChildResource, PerPage.class);
-//        assertNotNull("Page Content could not be adapted", page);
+        Resource pageResource = createPageResource(null, "resource-3");
+        Resource jcrContent = createResource(pageResource, JCR_CONTENT, PAGE_CONTENT_TYPE);
+        Resource jcrContentChild = createResource(jcrContent, "My Gugus", "gugus");
+
+        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
+        PerPage page = factory.getAdapter(jcrContentChild, PerPage.class);
+        assertNotNull("Page Content could not be adapted", page);
+        checkPage("Adapted Page Resource is not what was excepted", pageResource, page);
     }
 
     @Test
     public void noAdaptNoPageContentChild() throws Exception {
-//        Resource pageResource = mock(Resource.class);
-//        when(pageResource.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
-//
-//        Resource pageNoContentResource = mock(Resource.class);
-//        when(pageNoContentResource.getResourceType()).thenReturn("gugus");
-//        when(pageNoContentResource.getName()).thenReturn("My Gugus");
-//        when(pageNoContentResource.getParent()).thenReturn(pageResource);
-//
-//        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
-//        PerPage page = factory.getAdapter(pageNoContentResource, PerPage.class);
-//        assertNull("Page Child should not be adapted as it is a no content child", page);
+        Resource pageResource = createPageResource(null, "resource-4");
+        Resource pageNoContentResource = createResource(pageResource, "My Gugus", "gugus");
+
+        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
+        PerPage page = factory.getAdapter(pageNoContentResource, PerPage.class);
+        assertNull("Page Child should not be adapted as it is a no-content child", page);
     }
 
     @Test
     public void noAdaptNoPageChild() throws Exception {
-//        Resource noPageParent = mock(Resource.class);
-//        when(noPageParent.getResourceType()).thenReturn("super:gugus");
-//
-//        Resource noPage = mock(Resource.class);
-//        when(noPage.getResourceType()).thenReturn("gugus");
-//        when(noPage.getName()).thenReturn("My Gugus");
-//        when(noPage.getParent()).thenReturn(noPageParent);
-//
-//        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
-//        PerPage page = factory.getAdapter(noPage, PerPage.class);
-//        assertNull("No Page should not be adapted as it has no Page parent", page);
+        Resource notPageResource = createResource(null, "resource-5", "super:gugus");
+        Resource jcrContent = createResource(notPageResource, JCR_CONTENT, PAGE_CONTENT_TYPE);
+
+        PeregrineAdapterFactory factory = new PeregrineAdapterFactory();
+        PerPage page = factory.getAdapter(notPageResource, PerPage.class);
+        assertNull("No Page should not be adapted as it has no Page Type", page);
+        page = factory.getAdapter(jcrContent, PerPage.class);
+        assertNull("No Page Content should not be adapted as it has no Page parent", page);
     }
 
     @Test
     public void traverseNext() throws Exception {
-        PerPage root = createPageResource(null, "root");
-        PerPage child1 = createPageResource(root, "child-1");
-        PerPage child2 = createPageResource(root, "child-2");
-        PerPage child11 = createPageResource(child1, "child-1-1");
-        PerPage child12 = createPageResource(child1, "child-1-2");
-        PerPage child13 = createPageResource(child1, "child-1-3");
-        PerPage child111 = createPageResource(child11, "child-1-1-1");
-        PerPage child112 = createPageResource(child11, "child-1-1-2");
-        PerPage child21 = createPageResource(child2, "child-2-1");
-        PerPage child22 = createPageResource(child2, "child-2-2");
+        PerPage root = createPage(null, "root");
+        PerPage child1 = createPage(root, "child-1");
+        PerPage child2 = createPage(root, "child-2");
+        PerPage child11 = createPage(child1, "child-1-1");
+        PerPage child12 = createPage(child1, "child-1-2");
+        PerPage child13 = createPage(child1, "child-1-3");
+        PerPage child111 = createPage(child11, "child-1-1-1");
+        PerPage child112 = createPage(child11, "child-1-1-2");
+        PerPage child21 = createPage(child2, "child-2-1");
+        PerPage child22 = createPage(child2, "child-2-2");
 
         checkNext("Child-1 was not return as next of Root", child1, root);
         checkNext("Child-11 was not return as next of Child-1", child11, child1);
@@ -135,16 +125,16 @@ public class PeregrineAdapterFactoryTest {
 
     @Test
     public void traversePrevious() throws Exception {
-        PerPage root = createPageResource(null, "root");
-        PerPage child1 = createPageResource(root, "child-1");
-        PerPage child2 = createPageResource(root, "child-2");
-        PerPage child11 = createPageResource(child1, "child-1-1");
-        PerPage child12 = createPageResource(child1, "child-1-2");
-        PerPage child13 = createPageResource(child1, "child-1-3");
-        PerPage child111 = createPageResource(child11, "child-1-1-1");
-        PerPage child112 = createPageResource(child11, "child-1-1-2");
-        PerPage child21 = createPageResource(child2, "child-2-1");
-        PerPage child22 = createPageResource(child2, "child-2-2");
+        PerPage root = createPage(null, "root");
+        PerPage child1 = createPage(root, "child-1");
+        PerPage child2 = createPage(root, "child-2");
+        PerPage child11 = createPage(child1, "child-1-1");
+        PerPage child12 = createPage(child1, "child-1-2");
+        PerPage child13 = createPage(child1, "child-1-3");
+        PerPage child111 = createPage(child11, "child-1-1-1");
+        PerPage child112 = createPage(child11, "child-1-1-2");
+        PerPage child21 = createPage(child2, "child-2-1");
+        PerPage child22 = createPage(child2, "child-2-2");
 
         checkPrevious("Child-2 was not return as previous of Root", child2, root);
         checkPrevious("Child-22 was not return as previous of Child-2", child22, child2);
@@ -164,16 +154,39 @@ public class PeregrineAdapterFactoryTest {
 
     Map<Resource, List<Resource>> childrenMap = new HashMap<>();
 
-    private PerPage createPageResource(PerPage parent, String name) {
+    private Resource createResource(Resource parent, String name, String primaryType) {
         Resource answer = mock(Resource.class, name);
         childrenMap.put(answer, new ArrayList<Resource>());
         when(answer.getName()).thenReturn(name);
-        when(answer.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
+        ValueMap properties = mock(ValueMap.class);
+        when(properties.get(JCR_PRIMARY_TYPE, String.class)).thenReturn(primaryType);
+        when(answer.getValueMap()).thenReturn(properties);
         when(answer.getChildren()).thenReturn(childrenMap.get(answer));
         if(parent != null) {
-            when(answer.getParent()).thenReturn(parent.getResource());
-            childrenMap.get(parent.getResource()).add(answer);
+            when(answer.getParent()).thenReturn(parent);
+            childrenMap.get(parent).add(answer);
         }
-        return new PerPageImpl(answer);
+        return answer;
+    }
+
+    private Resource createPageResource(Resource parent, String name) {
+        return createResource(parent, name, PAGE_PRIMARY_TYPE);
+    }
+
+    private PerPage createPage(PerPage parent, String name) {
+        Resource pageResource =createPageResource(parent == null ? null : parent.getResource(), name);
+        addRandomChildren(pageResource, 0, 2);
+        Resource pageContent = createResource(pageResource, JCR_CONTENT, PAGE_CONTENT_TYPE);
+        addRandomChildren(pageResource, 0, 2);
+        Resource pageContentChild = createResource(pageContent, name + "-content-child", "test");
+
+        return new PerPageImpl(pageResource);
+    }
+
+    private void addRandomChildren(Resource parent, int min, int max) {
+        int loop = (int) (Math.random() * (max + 1) + min);
+        for(int i = 0; i < loop; i++) {
+            createResource(parent, "random-child-" + i, "gugus-" + i);
+        }
     }
 }
