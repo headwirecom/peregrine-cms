@@ -123,11 +123,12 @@ export default {
         viewModeClass: function(mode) {
             if(this.selectedComponent !== null){
                 this.$nextTick(function() {
-                    var targetBox = this.selectedComponent.getBoundingClientRect()
+                    var targetBox = this.getBoundingClientRect(this.selectedComponent)
                     this.setEditableStyle(targetBox, 'selected')
                 })
             }
         },
+
     },
 
     methods: {
@@ -135,7 +136,7 @@ export default {
         ============================================ */
         onResize: function(e){
             if(this.selectedComponent !== null){
-                var targetBox = this.selectedComponent.getBoundingClientRect()
+                var targetBox = this.getBoundingClientRect(this.selectedComponent)
                 this.setEditableStyle(targetBox, 'selected')
             }
         },
@@ -190,7 +191,7 @@ export default {
         onScrollIframe(ev){
             if(this.selectedComponent !== null){
                 this.$nextTick(function () {
-                    var selectedComponentRect = this.selectedComponent.getBoundingClientRect()
+                    var selectedComponentRect = this.getBoundingClientRect(this.selectedComponent)
                     this.updateEditablePos(selectedComponentRect.top)
                 })
             }
@@ -221,7 +222,7 @@ export default {
         },
 
         getPosFromMouse: function(e) {
-            var elRect = this.$refs.editview.getBoundingClientRect()
+            var elRect = this.getBoundingClientRect(this.$refs.editview)
 
             var posX = e.clientX - elRect.left
             var posY = e.clientY - elRect.top
@@ -229,9 +230,41 @@ export default {
             return {x: posX, y: posY }
         },
 
+        getElementStyle: function (e, styleName) {
+            var styleValue = "";
+            if(document.defaultView && document.defaultView.getComputedStyle) {
+                styleValue = document.defaultView.getComputedStyle(e, "").getPropertyValue(styleName);
+            }
+            else if(e.currentStyle) {
+                styleName = styleName.replace(/\-(\w)/g, function (strMatch, p1) {
+                    return p1.toUpperCase();
+                });
+                styleValue = e.currentStyle[styleName];
+            }
+            return styleValue;
+        },
+
+        getBoundingClientRect: function(e) {
+            let rect = e.getBoundingClientRect()
+            let marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
+            let marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
+            let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
+            let marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
+            let newRect = {
+                left: rect.left - marginLeft,
+                right: rect.right + marginRight,
+                top: rect.top - marginTop,
+                bottom: rect.bottom + marginBottom,
+            }
+            newRect.width = newRect.right - newRect.left
+            newRect.height = newRect.bottom - newRect.top
+            return newRect;
+        },
+
         findIn: function(el, pos) {
             if(!el) return null
-            var rect = el.getBoundingClientRect()
+            var rect = this.getBoundingClientRect(el)
+            // console.log(rect)
             var ret = null
             if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
                 ret = el
@@ -249,11 +282,12 @@ export default {
         getTargetEl: function(e) {
             var pos = this.getPosFromMouse(e)
             var editview = this.$refs.editview
-            if($perAdminApp.getOSBrowser() === 'win'){
-                var targetEl = this.findIn(editview.contentWindow.document.body, pos)
-            } else {
-                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
-            }
+//            if($perAdminApp.getOSBrowser() === 'win'){
+//                var targetEl = this.findIn(editview.contentWindow.document.body, pos)
+//            } else {
+//                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
+//            }
+            var targetEl = this.findIn(editview.contentWindow.document.body, pos)
             if(!targetEl) return
 
             while(!targetEl.getAttribute('data-per-path')) {
@@ -273,7 +307,7 @@ export default {
                     $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', () => {})
                 } else {
                     this.selectedComponent = targetEl
-                    var targetBox = targetEl.getBoundingClientRect()
+                    var targetBox = this.getBoundingClientRect(targetEl)
                     this.setEditableStyle(targetBox, 'selected')
                     $perAdminApp.action(this, 'showComponentEdit', path)
                 }
@@ -295,7 +329,7 @@ export default {
                     targetEl = targetEl.parentElement
                 }
                 this.selectedComponent = targetEl
-                var targetBox = targetEl.getBoundingClientRect()
+                var targetBox = this.getBoundingClientRect(targetEl)
                 this.setEditableStyle(targetBox, 'selected')
             }
         },
@@ -315,7 +349,7 @@ export default {
 
             if(targetEl) {
                 var pos = this.getPosFromMouse(ev)
-                var targetBox = targetEl.getBoundingClientRect()
+                var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
                 if(isDropTarget) {
