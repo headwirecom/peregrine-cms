@@ -89,6 +89,7 @@ export default {
 
     updated(){
         if(this.selectedComponent !== null){
+            console.log('updated!')
             var targetBox = this.selectedComponent.getBoundingClientRect()
             this.setEditableStyle(targetBox, 'selected')
         }
@@ -147,6 +148,7 @@ export default {
                 var targetBox = this.getBoundingClientRect(this.selectedComponent)
                 this.setEditableStyle(targetBox, 'selected')
             }
+            this.setEditContainerHeight()
         },
 
         onKeyDown(ev){
@@ -192,24 +194,14 @@ export default {
         /* Iframe (editview) methods ===============
         ============================================ */
         onIframeLoaded(ev){
-            var iframeBody = ev.target.contentWindow.document.body
+            var iframeBody = ev.target.contentWindow.document.body.style.overflow = 'hidden'
             var editviewContainer = this.$refs.editviewContainer
-            iframeBody.style.overflow = 'hidden'
-            /* TODO: find better way to find when iframe content finishes loading */
-            setTimeout(function(){
-                var iframeHeight = iframeBody.offsetHeight
-                editviewContainer.style.height = iframeHeight + 'px'
+            /* TODO: use pageRendered event instead of timeout */
+            // ev.target.contentWindow.addEventListener('pageRendered', this.setEditContainerHeight)
+            setTimeout(()=>{
+                this.setEditContainerHeight()
             }, 1000)
         },
-
-        // onScrollIframe(ev){
-        //     if(this.selectedComponent !== null){
-        //         this.$nextTick(function () {
-        //             var selectedComponentRect = this.getBoundingClientRect(this.selectedComponent)
-        //             this.updateEditablePos(selectedComponentRect.top)
-        //         })
-        //     }
-        // },
 
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
@@ -219,6 +211,11 @@ export default {
                 var editview = this.$refs.editview
                 editview.contentWindow.scrollTo(0, scrollAmount)
             })
+        },
+
+        setEditContainerHeight(){
+            var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
+            this.$refs.editviewContainer.style.height = iframeHeight + 'px'
         },
 
         getPosFromMouse: function(e) {
