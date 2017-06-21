@@ -28,16 +28,21 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
+import com.peregrine.util.PerUtil;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.util.PerUtil.EQUALS;
 
 /**
  * Created by schaefa on 6/4/17.
@@ -45,15 +50,15 @@ import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 @Component(
     service = AdapterFactory.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Peregrine: Adapter Factory",
-        Constants.SERVICE_VENDOR + "=headwire.com, Inc",
+        Constants.SERVICE_DESCRIPTION + EQUALS + "Peregrine: Adapter Factory",
+        Constants.SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerPage",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerAsset",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerPageManager",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPage",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerAsset",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPageManager",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
-        AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.Resource",
-        AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.ResourceResolver"
+        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.Resource",
+        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.ResourceResolver"
     }
 )
 public class PeregrineAdapterFactory
@@ -82,14 +87,21 @@ public class PeregrineAdapterFactory
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
         if(type.equals(PerPage.class)) {
-            String primaryType = resource.getResourceType();
+            String primaryType = PerUtil.getPrimaryType(resource);
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
             } else {
-                log.trace("Given Resource: '{}' is not a Page", resource);
+                // Traverse up the tree. If we find a jcr:content of type per:PageContent and its parent is per:Page
+                // then return that one instead
+                PerPage answer = findPage(resource);
+                if(answer == null) {
+                    log.trace("Given Resource: '{}' is not a Page", resource);
+                } else {
+                    return (AdapterType) answer;
+                }
             }
         } else if(type == PerAsset.class) {
-            String primaryType = resource.getResourceType();
+            String primaryType = PerUtil.getPrimaryType(resource);
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerAssetImpl(resource);
             } else {
@@ -111,6 +123,34 @@ public class PeregrineAdapterFactory
             log.warn("Unable to adapt resolver to requested type {}",
                 type.getName());
             return null;
+        }
+    }
+
+    private PerPage findPage(Resource resource) {
+        log.trace("path: {}", resource.getPath());
+        String primaryType = PerUtil.getPrimaryType(resource);
+        log.trace("primaryType: {}", primaryType);
+        if(JCR_CONTENT.equals(resource.getName())) {
+            if(PAGE_CONTENT_TYPE.equals(primaryType)) {
+                Resource parent = resource.getParent();
+                String parentPrimaryType = PerUtil.getPrimaryType(parent);
+                if(PAGE_PRIMARY_TYPE.equals(parentPrimaryType)) {
+                    return new PerPageImpl(parent);
+                } else {
+                    // Found jcr:content but either wrong type or no parent -> done
+                    return null;
+                }
+            } else {
+                // JCR Content found not of the correct type -> done
+                return null;
+            }
+        } else {
+            Resource parent = resource.getParent();
+            return parent != null ?
+                // Parent Found -> check this one out
+                findPage(parent) :
+                // No parent found -> done
+                null;
         }
     }
 }

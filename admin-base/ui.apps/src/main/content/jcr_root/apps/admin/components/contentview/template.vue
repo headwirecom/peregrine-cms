@@ -29,47 +29,45 @@
         <div 
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
-            v-on:scroll     = "onScrollOverlay"
+            v-on:wheel     = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "onDragOver"
             v-on:drop      = "onDrop"
             v-bind:style   = "`right: ${scrollbarWidth}px;`">
-            <div class="editview-container" ref="editviewContainer">
-                <div 
-                    v-bind:class   = "editableClass"
-                    ref            = "editable" 
-                    id             = "editable"
-                    draggable      = "true"
-                    v-on:dragstart = "onDragStart">
-                    <div class="editable-actions">
-                        <ul v-if="enableTools">
-                            <li class="waves-effect waves-light">
-                                <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
-                                    <i class="svg-icon svg-icon-copy"></i>
-                                </a>
-                            </li>
-                            <li v-if="clipboard" class="waves-effect waves-light">
-                                <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
-                                    <i class="svg-icon svg-icon-paste"></i>
-                                </a>
-                            </li>
-                            <li class="waves-effect waves-light">
-                                <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
-                                    <i class="material-icons">delete</i>
-                                </a>
-                            </li>
-                            <li class="waves-effect waves-light">
-                                <a href="#" title="drag" style="pointer-events: none;">
-                                    <i class="material-icons">drag_handle</i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+            <div 
+                v-bind:class   = "editableClass"
+                ref            = "editable" 
+                id             = "editable"
+                draggable      = "true"
+                v-on:dragstart = "onDragStart">
+                <div class="editable-actions">
+                    <ul v-if="enableTools">
+                        <li class="waves-effect waves-light">
+                            <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
+                                <i class="svg-icon svg-icon-copy"></i>
+                            </a>
+                        </li>
+                        <li v-if="clipboard" class="waves-effect waves-light">
+                            <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
+                                <i class="svg-icon svg-icon-paste"></i>
+                            </a>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
+                                <i class="material-icons">delete</i>
+                            </a>
+                        </li>
+                        <li class="waves-effect waves-light">
+                            <a href="#" title="drag" style="pointer-events: none;">
+                                <i class="material-icons">drag_handle</i>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
         <iframe
-            v-on:load    = "onIframeLoaded"
+            v-on:load    = "setWheelEventListener"
             ref          = "editview"
             id           = "editview" 
             v-bind:src   = "pagePath" 
@@ -84,15 +82,8 @@ export default {
             window.addEventListener('resize', this.onResize)
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
-            // this.setScrollBarWidth(window.navigator.userAgent)
+            this.setScrollBarWidth(window.navigator.userAgent)
         })
-    },
-
-    updated(){
-        if(this.selectedComponent !== null){
-            var targetBox = this.selectedComponent.getBoundingClientRect()
-            this.setEditableStyle(targetBox, 'selected')
-        }
     },
 
     props: ['model'],
@@ -132,11 +123,12 @@ export default {
         viewModeClass: function(mode) {
             if(this.selectedComponent !== null){
                 this.$nextTick(function() {
-                    var targetBox = this.selectedComponent.getBoundingClientRect()
+                    var targetBox = this.getBoundingClientRect(this.selectedComponent)
                     this.setEditableStyle(targetBox, 'selected')
                 })
             }
         },
+
     },
 
     methods: {
@@ -144,7 +136,7 @@ export default {
         ============================================ */
         onResize: function(e){
             if(this.selectedComponent !== null){
-                var targetBox = this.selectedComponent.getBoundingClientRect()
+                var targetBox = this.getBoundingClientRect(this.selectedComponent)
                 this.setEditableStyle(targetBox, 'selected')
             }
         },
@@ -191,29 +183,46 @@ export default {
 
         /* Iframe (editview) methods ===============
         ============================================ */
-        onIframeLoaded(ev){
-            var iframeBody = ev.target.contentWindow.document.body
-            var editviewContainer = this.$refs.editviewContainer
-            iframeBody.style.overflow = 'hidden'
-            /* TODO: find better way to find when iframe content finishes loading */
-            setTimeout(function(){
-                var iframeHeight = iframeBody.offsetHeight
-                editviewContainer.style.height = iframeHeight + 'px'
-            }, 1000)
+        setWheelEventListener(ev){
+            ev.target.contentWindow.addEventListener('wheel', this.onScrollIframe)
+            ev.target.contentWindow.addEventListener('scroll', this.onScrollIframe)
+        },
+
+        onScrollIframe(ev){
+            if(this.selectedComponent !== null){
+                this.$nextTick(function () {
+                    var selectedComponentRect = this.getBoundingClientRect(this.selectedComponent)
+                    this.updateEditablePos(selectedComponentRect.top)
+                })
+            }
         },
 
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
+        setScrollBarWidth(userAgent) {
+            let widths = { edge: 12, mac: 15, win: 17, unknown: 17 }
+            this.scrollbarWidth = widths[$perAdminApp.getOSBrowser()]
+            if(!this.scrollbarWidth){
+                this.scrollbarWidth = widths.unknown
+            }
+        },
+
         onScrollOverlay(ev){
+            ev.preventDefault()
             this.$nextTick(function () {
-                var scrollAmount = ev.target.scrollTop
-                var editview = this.$refs.editview
-                editview.contentWindow.scrollTo(0, scrollAmount)
+                var isScrolling = false
+                ev.target.style['pointer-events'] = 'none'
+                if(isScrolling) {
+                    clearTimeout(timer)        
+                }
+                isScrolling = setTimeout(function() {
+                    ev.target.style['pointer-events'] = 'auto'
+                }, 66)
             })
         },
 
         getPosFromMouse: function(e) {
-            var elRect = this.$refs.editview.getBoundingClientRect()
+            var elRect = this.getBoundingClientRect(this.$refs.editview)
 
             var posX = e.clientX - elRect.left
             var posY = e.clientY - elRect.top
@@ -221,9 +230,41 @@ export default {
             return {x: posX, y: posY }
         },
 
+        getElementStyle: function (e, styleName) {
+            var styleValue = "";
+            if(document.defaultView && document.defaultView.getComputedStyle) {
+                styleValue = document.defaultView.getComputedStyle(e, "").getPropertyValue(styleName);
+            }
+            else if(e.currentStyle) {
+                styleName = styleName.replace(/\-(\w)/g, function (strMatch, p1) {
+                    return p1.toUpperCase();
+                });
+                styleValue = e.currentStyle[styleName];
+            }
+            return styleValue;
+        },
+
+        getBoundingClientRect: function(e) {
+            let rect = e.getBoundingClientRect()
+            let marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
+            let marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
+            let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
+            let marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
+            let newRect = {
+                left: rect.left - marginLeft - 2,
+                right: rect.right + marginRight + 2,
+                top: rect.top - marginTop -2,
+                bottom: rect.bottom + marginBottom + 2,
+            }
+            newRect.width = newRect.right - newRect.left
+            newRect.height = newRect.bottom - newRect.top
+            return newRect;
+        },
+
         findIn: function(el, pos) {
             if(!el) return null
-            var rect = el.getBoundingClientRect()
+            var rect = this.getBoundingClientRect(el)
+            // console.log(rect)
             var ret = null
             if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
                 ret = el
@@ -241,11 +282,12 @@ export default {
         getTargetEl: function(e) {
             var pos = this.getPosFromMouse(e)
             var editview = this.$refs.editview
-            if($perAdminApp.getOSBrowser() === 'win'){
-                var targetEl = this.findIn(editview.contentWindow.document.body, pos)
-            } else {
-                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
-            }
+//            if($perAdminApp.getOSBrowser() === 'win'){
+//                var targetEl = this.findIn(editview.contentWindow.document.body, pos)
+//            } else {
+//                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
+//            }
+            var targetEl = this.findIn(editview.contentWindow.document.body, pos)
             if(!targetEl) return
 
             while(!targetEl.getAttribute('data-per-path')) {
@@ -265,7 +307,7 @@ export default {
                     $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', () => {})
                 } else {
                     this.selectedComponent = targetEl
-                    var targetBox = targetEl.getBoundingClientRect()
+                    var targetBox = this.getBoundingClientRect(targetEl)
                     this.setEditableStyle(targetBox, 'selected')
                     $perAdminApp.action(this, 'showComponentEdit', path)
                 }
@@ -287,7 +329,7 @@ export default {
                     targetEl = targetEl.parentElement
                 }
                 this.selectedComponent = targetEl
-                var targetBox = targetEl.getBoundingClientRect()
+                var targetBox = this.getBoundingClientRect(targetEl)
                 this.setEditableStyle(targetBox, 'selected')
             }
         },
@@ -307,7 +349,7 @@ export default {
 
             if(targetEl) {
                 var pos = this.getPosFromMouse(ev)
-                var targetBox = targetEl.getBoundingClientRect()
+                var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
                 if(isDropTarget) {
