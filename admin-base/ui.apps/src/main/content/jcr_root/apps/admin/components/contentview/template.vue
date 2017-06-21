@@ -251,10 +251,10 @@ export default {
             let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
             let marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
             let newRect = {
-                left: rect.left - marginLeft,
-                right: rect.right + marginRight,
-                top: rect.top - marginTop,
-                bottom: rect.bottom + marginBottom,
+                left: rect.left - marginLeft - 2,
+                right: rect.right + marginRight + 2,
+                top: rect.top - marginTop -2,
+                bottom: rect.bottom + marginBottom + 2,
             }
             newRect.width = newRect.right - newRect.left
             newRect.height = newRect.bottom - newRect.top
