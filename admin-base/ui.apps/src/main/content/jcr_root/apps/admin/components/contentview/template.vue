@@ -29,45 +29,47 @@
         <div 
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
-            v-on:wheel     = "onScrollOverlay"
+            v-on:scroll     = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "onDragOver"
             v-on:drop      = "onDrop"
             v-bind:style   = "`right: ${scrollbarWidth}px;`">
-            <div 
-                v-bind:class   = "editableClass"
-                ref            = "editable" 
-                id             = "editable"
-                draggable      = "true"
-                v-on:dragstart = "onDragStart">
-                <div class="editable-actions">
-                    <ul v-if="enableTools">
-                        <li class="waves-effect waves-light">
-                            <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
-                                <i class="svg-icon svg-icon-copy"></i>
-                            </a>
-                        </li>
-                        <li v-if="clipboard" class="waves-effect waves-light">
-                            <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
-                                <i class="svg-icon svg-icon-paste"></i>
-                            </a>
-                        </li>
-                        <li class="waves-effect waves-light">
-                            <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
-                                <i class="material-icons">delete</i>
-                            </a>
-                        </li>
-                        <li class="waves-effect waves-light">
-                            <a href="#" title="drag" style="pointer-events: none;">
-                                <i class="material-icons">drag_handle</i>
-                            </a>
-                        </li>
-                    </ul>
+            <div class="editview-container" ref="editviewContainer">
+                <div 
+                    v-bind:class   = "editableClass"
+                    ref            = "editable" 
+                    id             = "editable"
+                    draggable      = "true"
+                    v-on:dragstart = "onDragStart">
+                    <div class="editable-actions">
+                        <ul v-if="enableTools">
+                            <li class="waves-effect waves-light">
+                                <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
+                                    <i class="svg-icon svg-icon-copy"></i>
+                                </a>
+                            </li>
+                            <li v-if="clipboard" class="waves-effect waves-light">
+                                <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
+                                    <i class="svg-icon svg-icon-paste"></i>
+                                </a>
+                            </li>
+                            <li class="waves-effect waves-light">
+                                <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
+                                    <i class="material-icons">delete</i>
+                                </a>
+                            </li>
+                            <li class="waves-effect waves-light">
+                                <a href="#" title="drag" style="pointer-events: none;">
+                                    <i class="material-icons">drag_handle</i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         <iframe
-            v-on:load    = "setWheelEventListener"
+            v-on:load    = "onIframeLoaded"
             ref          = "editview"
             id           = "editview" 
             v-bind:src   = "pagePath" 
@@ -82,12 +84,11 @@ export default {
             window.addEventListener('resize', this.onResize)
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
-            this.setScrollBarWidth(window.navigator.userAgent)
+            // this.setScrollBarWidth(window.navigator.userAgent)
         })
     },
 
     updated(){
-        console.log('updated!!!')
         if(this.selectedComponent !== null){
             var targetBox = this.selectedComponent.getBoundingClientRect()
             this.setEditableStyle(targetBox, 'selected')
@@ -190,41 +191,24 @@ export default {
 
         /* Iframe (editview) methods ===============
         ============================================ */
-        setWheelEventListener(ev){
-            ev.target.contentWindow.addEventListener('wheel', this.onScrollIframe)
-            ev.target.contentWindow.addEventListener('scroll', this.onScrollIframe)
-        },
-
-        onScrollIframe(ev){
-            if(this.selectedComponent !== null){
-                this.$nextTick(function () {
-                    var selectedComponentRect = this.selectedComponent.getBoundingClientRect()
-                    this.updateEditablePos(selectedComponentRect.top)
-                })
-            }
+        onIframeLoaded(ev){
+            var iframeBody = ev.target.contentWindow.document.body
+            var editviewContainer = this.$refs.editviewContainer
+            iframeBody.style.overflow = 'hidden'
+            /* TODO: find better way to find when iframe content finishes loading */
+            setTimeout(function(){
+                var iframeHeight = iframeBody.offsetHeight
+                editviewContainer.style.height = iframeHeight + 'px'
+            }, 1000)
         },
 
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
-        setScrollBarWidth(userAgent) {
-            let widths = { edge: 12, mac: 15, win: 17, unknown: 17 }
-            this.scrollbarWidth = widths[$perAdminApp.getOSBrowser()]
-            if(!this.scrollbarWidth){
-                this.scrollbarWidth = widths.unknown
-            }
-        },
-
         onScrollOverlay(ev){
-            ev.preventDefault()
             this.$nextTick(function () {
-                var isScrolling = false
-                ev.target.style['pointer-events'] = 'none'
-                if(isScrolling) {
-                    clearTimeout(timer)        
-                }
-                isScrolling = setTimeout(function() {
-                    ev.target.style['pointer-events'] = 'auto'
-                }, 66)
+                var scrollAmount = ev.target.scrollTop
+                var editview = this.$refs.editview
+                editview.contentWindow.scrollTo(0, scrollAmount)
             })
         },
 
