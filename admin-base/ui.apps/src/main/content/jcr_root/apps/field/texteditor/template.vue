@@ -53,6 +53,7 @@
                         toolbar: [
                             [{ header: [1, 2, 3, 4, 5, false] }],
                             ['bold', 'italic', 'underline'],
+                            ['link'],
                             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
                             [{ 'script': 'sub'}, { 'script': 'super' }],
                             [{ 'indent': '-1'}, { 'indent': '+1' }],
