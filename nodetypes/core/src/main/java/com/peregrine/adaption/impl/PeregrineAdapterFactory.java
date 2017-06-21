@@ -31,6 +31,7 @@ import com.peregrine.adaption.PerPageManager;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -50,9 +51,9 @@ import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
         Constants.SERVICE_DESCRIPTION + "=Peregrine: Adapter Factory",
         Constants.SERVICE_VENDOR + "=headwire.com, Inc",
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerPage",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerAsset",
-        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.data.PerPageManager",
+        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.adaption.PerPage",
+        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.adaption.PerAsset",
+        AdapterFactory.ADAPTER_CLASSES + "=com.peregrine.adaption.PerPageManager",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
         AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.Resource",
         AdapterFactory.ADAPTABLE_CLASSES + "=org.apache.sling.api.resource.ResourceResolver"
@@ -124,11 +125,13 @@ public class PeregrineAdapterFactory
     }
 
     private PerPage findPage(Resource resource) {
-        String primaryType = resource.getResourceType();
+        String primaryType = resource.adaptTo(ValueMap.class).get("jcr:primaryType").toString();
+        log.trace("path: {}", resource.getPath());
+        log.trace("primaryType: {}", primaryType);
         if(JCR_CONTENT.equals(resource.getName())) {
             if(PAGE_CONTENT_TYPE.equals(primaryType)) {
                 Resource parent = resource.getParent();
-                String parentPrimaryType = parent != null ? parent.getResourceType() : null;
+                String parentPrimaryType = parent != null ? parent.adaptTo(ValueMap.class).get("jcr:primaryType").toString() : null;
                 if(PAGE_PRIMARY_TYPE.equals(parentPrimaryType)) {
                     return new PerPageImpl(parent);
                 } else {
