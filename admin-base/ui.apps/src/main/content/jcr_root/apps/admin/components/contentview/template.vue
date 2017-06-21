@@ -29,7 +29,7 @@
         <div 
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
-            v-on:wheel     = "onScrollOverlay"
+            v-on:scroll     = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "onDragOver"
             v-on:drop      = "onDrop"
