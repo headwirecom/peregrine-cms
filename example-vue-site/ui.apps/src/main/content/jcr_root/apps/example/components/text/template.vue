@@ -35,7 +35,7 @@ export default {
                 return this.model.text
             }
             if(window.parent && window.parent.$perAdminApp) {
-                return 'empty'
+                return '<p>empty</p>'
             }
         }
     }
