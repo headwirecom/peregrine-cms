@@ -86,6 +86,14 @@ export default {
         })
     },
 
+    updated(){
+        console.log('updated!!!')
+        if(this.selectedComponent !== null){
+            var targetBox = this.selectedComponent.getBoundingClientRect()
+            this.setEditableStyle(targetBox, 'selected')
+        }
+    },
+
     props: ['model'],
 
     data(){
