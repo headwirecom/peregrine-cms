@@ -164,6 +164,7 @@ public class PerPageImpl
         PerPage answer = null;
         boolean found = after == null;
         for(Resource child: resource.getChildren()) {
+            if(child.getName().equals("jcr:content")) continue;
             if(found) {
                 String resourceType = child.getResourceType();
                 if(PAGE_PRIMARY_TYPE.equals(resourceType)) {
@@ -208,6 +209,7 @@ public class PerPageImpl
     private PerPage findPreviousChildPage(Resource resource, Resource before) {
         Resource last = null;
         for(Resource child: resource.getChildren()) {
+            if(child.getName().equals("jcr:content")) continue;
             if(before != null && child.getName().equals(before.getName())) {
                 break;
             }
