@@ -43,11 +43,12 @@
         mixins: [ VueFormGenerator.abstractField ],
         methods: {
             browse() {
+                let root = this.schema.browserRoot
+                if(!root) root = '/content/assets'
                 $perAdminApp.pathBrowser(
-                    this.schema.browserRoot,
+                    root,
                     (newValue) => { this.value = newValue }
                 )
-                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/methods').onShow()
             }
         }
     }

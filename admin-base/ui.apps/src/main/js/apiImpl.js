@@ -171,11 +171,10 @@ class PerAdminImpl {
         })
     }
 
-    populateNodesForBrowser(path, includeParents = false) {
+    populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/nodes.json/path//'+path+'//includeParents//'+includeParents)
-                .then( (data) => populateView('/admin', 'nodes', data) )
-                .then(() => resolve() )
+                .then( (data) => populateView('/admin', target, data).then( () => resolve() ))
         })
     }
 

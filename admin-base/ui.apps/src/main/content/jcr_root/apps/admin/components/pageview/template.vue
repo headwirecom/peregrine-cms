@@ -41,7 +41,7 @@
                 <li><pre>{{JSON.stringify(page, true, 2)}}</pre></li>
             </ul>
             <button class="btn" v-on:click.stop.prevent="renamePage()">rename</button>
-            <button class="btn">move</button>
+            <button class="btn" v-on:click.stop.prevent="movePage()">move</button>
             <button class="btn" v-on:click.stop.prevent="deletePage()">delete</button>
             <!--
             <ul class="asset-info">
@@ -98,6 +98,17 @@
             deletePage() {
                 $perAdminApp.stateAction('deletePage', this.page.path)
                 $perAdminApp.stateAction('showPageInfo', { selected: null })
+            },
+            movePage() {
+                let path = this.page.path
+                $perAdminApp.pathBrowser(
+                    '/content/sites',
+                    (newValue) => {
+                        $perAdminApp.stateAction('movePage', { path: path, to: newValue, type: 'child'})
+                        $perAdminApp.getNodeFromView('/state/tools').pages = newValue
+                        $perAdminApp.getNodeFromView('/state/tools').page = null
+                    }
+                )
             }
         }
     }
