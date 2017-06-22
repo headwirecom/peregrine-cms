@@ -225,8 +225,11 @@ export default {
         },
 
         setEditContainerHeight(){
-            var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
-            this.$refs.editviewContainer.style.height = iframeHeight + 'px'
+            // make sure the iframe exists before we actually try to read it
+            if(this.$refs.editview) {
+                var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
+                this.$refs.editviewContainer.style.height = iframeHeight + 'px'
+            }
         },
 
         getPosFromMouse: function(e) {
@@ -414,9 +417,12 @@ export default {
         ============================================ */
         setEditableStyle: function(targetBox, editableClass) {
             var editable = this.$refs.editable
+            var editview = this.$refs.editview
+            var scrollY = editview ? editview.contentWindow.scrollY : 0
+            var scrollX = editview ? editview.contentWindow.scrollX : 0
             if(editable) {
-                editable.style.top    = targetBox.top + 'px'
-                editable.style.left   = targetBox.left + 'px'
+                editable.style.top    = (targetBox.top + scrollY) + 'px'
+                editable.style.left   = (targetBox.left + scrollX) + 'px'
                 editable.style.width  = targetBox.width + 'px'
                 editable.style.height = targetBox.height + 'px'
             }
