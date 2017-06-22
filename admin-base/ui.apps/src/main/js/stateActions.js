@@ -32,6 +32,7 @@ import createPage from './stateActions/createPage'
 import createPageWizard from './stateActions/createPageWizard'
 import deletePage from './stateActions/deletePage'
 import renamePage from './stateActions/renamePage'
+import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
 import createTemplateWizard from './stateActions/createTemplateWizard'
 import sourceImageWizard from './stateActions/sourceImageWizard'
@@ -61,6 +62,7 @@ actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['deletePage'] = deletePage
 actions['renamePage'] = renamePage
+actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
 actions['createFolder'] = createFolder

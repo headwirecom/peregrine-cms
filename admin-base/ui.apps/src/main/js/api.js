@@ -104,6 +104,10 @@ class PerApi {
         return impl.renamePage(path, newName)
     }
 
+    movePage(path, to, type) {
+        return impl.movePage(path, to, type)
+    }
+
     deletePageNode(path, nodePath) {
         return impl.deletePageNode(path, nodePath)
     }

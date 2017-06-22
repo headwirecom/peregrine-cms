@@ -259,6 +259,14 @@ class PerAdminImpl {
         })
     }
 
+    movePage(path, to, type) {
+        return new Promise( (resolve, reject) => {
+            update('/admin/move.json/path//'+path+'//to//'+to+'//type//'+type)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
     deletePageNode(path, nodePath) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/deleteNode.json/path//'+nodePath)
