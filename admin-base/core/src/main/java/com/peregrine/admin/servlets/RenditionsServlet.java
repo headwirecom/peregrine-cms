@@ -59,6 +59,7 @@ import java.util.Map;
 
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -75,8 +76,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 /**
  * This servlet provides renditions of Peregrine Assets (per:Asset)
  * and creates them if they are not available yet
+ *
+ * Drag an image to the asset page: http://localhost:8080/content/admin/assets.html/path///content/assets
+ * Create a thumbnail image with: curl -u admin:admin -X POST http://localhost:8080/content/assets/test.png.rendition.json/thunbnail
  */
-public class RenditionsServlet extends SlingSafeMethodsServlet {
+public class RenditionsServlet extends AbstractBaseServlet {
 
     public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
     
@@ -89,29 +93,23 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
     @Reference
     MimeTypeService mimeTypeService;
 
+
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
+    Response handleRequest(Request request) throws IOException {
+        Response answer = null;
         Resource resource = request.getResource();
         PerAsset asset = resource.adaptTo(PerAsset.class);
         if(asset == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Given Resource: '" + resource.getPath() + "' is not an Asset");
-            return;
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Resource: '" + resource.getPath() + "' is not an Asset");
         }
         if(!asset.isValid()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Given Resource: '" + resource.getPath() + "' is not an valid Asset");
-            return;
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Resource: '" + resource.getPath() + "' is not an valid Asset");
         }
         // Check if there is a suffix
-        String suffix = request.getRequestPathInfo().getSuffix();
+        String suffix = request.getSuffix();
         String sourceMimeType = asset.getContentProperty(JCR_MIME_TYPE, String.class);
         if(sourceMimeType == null || sourceMimeType.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Given Resource has no Mime Type");
-            return;
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Resource has no Mime Type");
         }
         if(suffix != null && suffix.length() > 0) {
             // Get final Rendition Name and Mime Type
@@ -160,31 +158,23 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
                 }
                 if(imageStream != null) {
                     // Got a output stream -> send it back
-                    streamToResponse(response, imageStream, targetMimeType);
-                    return;
+                    answer = new StreamResponse(targetMimeType, imageStream);
                 } else {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("Failed to load or transform the broken image");
+                    return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to load or transform the broken image");
                 }
             } else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("No Rendition Transformation found for: " + renditionName);
-                return;
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Rendition Transformation found for: " + renditionName);
             }
         } else {
             // This was not a request for a rendition but just the original asset -> load and send it back
             InputStream sourceStream = asset.getRenditionStream((Resource) null);
             if(sourceStream != null) {
-                streamToResponse(response, sourceStream, sourceMimeType);
-                return;
+                answer = new StreamResponse(sourceMimeType, sourceStream);
             } else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("No Data Stream found for requested resource");
-                return;
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Data Stream found for requested resource");
             }
         }
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write("Could not handle rendition or original asset");
+        return answer;
     }
 
     /**
@@ -241,29 +231,30 @@ public class RenditionsServlet extends SlingSafeMethodsServlet {
         return answer;
     }
 
-    /**
-     * Streams the given Input Stream of the given resource to the
-     * HTTP Servlet Response. The given source of data and the response output
-     * stream is closed after this operation
-     *
-     * @param response Servlet Response to write to
-     * @param sourceStream Source of the data
-     * @param mimeType Mime Type of the data to make sure the data is displayed correctly
-     * @throws IOException If the opening of the response output stream or the copying of the data failed
-     */
-    private void streamToResponse(HttpServletResponse response, InputStream sourceStream, String mimeType)
-        throws IOException
-    {
-        if(sourceStream != null) {
-            OutputStream os = null;
+    public static class StreamResponse extends Response {
+
+        private String mimeType;
+        private InputStream inputStream;
+
+        public StreamResponse(String mimeType, InputStream stream) {
+            super("stream");
+            this.mimeType = mimeType;
+            this.inputStream = stream;
+        }
+
+        @Override
+        public void writeTo(OutputStream outputStream) throws IOException {
             try {
-                response.setContentType(mimeType);
-                os = response.getOutputStream();
-                IOUtils.copy(sourceStream, os);
+                IOUtils.copy(inputStream, outputStream);
             } finally {
-                IOUtils.closeQuietly(sourceStream);
-                IOUtils.closeQuietly(os);
+                IOUtils.closeQuietly(inputStream);
+                IOUtils.closeQuietly(outputStream);
             }
+        }
+
+        @Override
+        public String getMimeType() {
+            return mimeType;
         }
     }
 }

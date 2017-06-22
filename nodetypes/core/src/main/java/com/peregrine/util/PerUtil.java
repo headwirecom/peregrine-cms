@@ -312,11 +312,12 @@ public class PerUtil {
             if(targetResource == null) {
                 answer = true;
             } else {
-                // If target resource then we need to check if there is a per:Replicated value and if so then check the dates
+                //AS TODO This does not work as is. We need to compare the source's last mddified timestamp against the target's
+                //AS TODO replicated timestamp
                 Calendar sourceLastModified = resource.getValueMap().get("per:Replicated", Calendar.class);
                 Calendar targetLastModified = targetResource.getValueMap().get("per:Replicated", Calendar.class);
                 if(sourceLastModified != null && targetLastModified != null) {
-                    answer = !sourceLastModified.before(targetLastModified);
+                    answer = sourceLastModified.after(targetLastModified);
                 }
             }
             return answer;

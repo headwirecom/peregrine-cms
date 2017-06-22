@@ -460,18 +460,30 @@ paths:
           description: the new name of the resource
           required: true
       responses:
-        '200':
+        200:
           description: returns the from node name and path and the new node name and path
           schema:
             type: object
+            properties:
+              sourceName:
+                type: string
+              sourcePath:
+                type: string
+              tagetName:
+                type: string
+              targetPath:
+                type: string
             additionalProperties:
               type: object
-        '400':
-          description: If the path did not resolve to a resource, the to name was not provided or contained a slash
+        400:
+          description: Expected Error
           schema:
-            type: object
-            properties:
-              error:
-                type: string
-              path:
-                type: string
+            $ref: "#/definitions/Error"
+definitions:
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+      path:
+        type: string
