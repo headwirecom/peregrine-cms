@@ -195,13 +195,15 @@ export default {
 
         updateOverlay(){
             console.log('iframeUpdated')
-            /* ensure edit container height === iframe body height */
-            this.setEditContainerHeight()
-            /* update editable position if selected */
-            if(this.selectedComponent !== null){
-                var targetBox = this.getBoundingClientRect(this.selectedComponent)
-                this.setEditableStyle(targetBox, 'selected')
-            }
+            this.$nextTick(() => {
+                /* ensure edit container height === iframe body height */
+                this.setEditContainerHeight()
+                /* update editable position if selected */
+                if(this.selectedComponent !== null){
+                    var targetBox = this.getBoundingClientRect(this.selectedComponent)
+                    this.setEditableStyle(targetBox, 'selected')
+                }
+            })
         },
 
         createHeightChangeListener(iframeDoc){
@@ -213,7 +215,7 @@ export default {
             heightChangeListener.style.bottom = '0'
             heightChangeListener.style.left = '0'
             heightChangeListener.style.height = '100%'
-            heightChangeListener.style.width = '0'
+            heightChangeListener.style.width = '100%'
             heightChangeListener.style.border = '0'
             heightChangeListener.style['background-color'] = 'transparent'
             iframeDoc.body.appendChild(heightChangeListener)
