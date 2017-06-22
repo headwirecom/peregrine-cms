@@ -81,12 +81,18 @@
 export default {
     mounted() {
         this.$nextTick(function() {
-            window.addEventListener('resize', this.updateOverlay)
+            // window.addEventListener('resize', this.updateOverlay)
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
 
             /* check if page has loaded */
-            $perAdminApp.getApp().$watch('pageView', this.updateOverlay, {deep: true })
+            var unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
+                console.log('status: ', pageView.status)
+                if(pageView.status === 'loaded'){
+                    this.updateOverlay()
+                    unwatch() // we dont need to watch the pageView prop anymore
+                }
+            }, {deep: true })
         })
     },
 
