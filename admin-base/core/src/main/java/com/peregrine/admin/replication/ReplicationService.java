@@ -314,11 +314,12 @@ public class ReplicationService
         }
 //        if(JCR_CONTENT.equals(source.getName())) {
         if(replicationMixin) {
+            Calendar replicated = Calendar.getInstance();
             properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-            properties.put(PER_REPLICATED, Calendar.getInstance());
+            properties.put(PER_REPLICATED, replicated);
             properties.put(PER_REPLICATION_REF, targetParent.getPath());
             newProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-            newProperties.put(PER_REPLICATED, Calendar.getInstance());
+            newProperties.put(PER_REPLICATED, replicated);
             newProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
         }
         Resource newTarget = targetParent.getChild(source.getName());

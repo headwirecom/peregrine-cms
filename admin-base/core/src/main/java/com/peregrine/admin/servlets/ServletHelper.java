@@ -44,7 +44,8 @@ public class ServletHelper {
         if(suffix != null && suffix.length() > 1) {
             suffix = suffix.substring(1);
             String[] params = suffix.split("//");
-            for(int i = 0; i < params.length; i+=2) {
+            // We loop in 2 steps but the check makes sure that there are two entries left
+            for(int i = 0; i < params.length - 1; i+=2) {
                 ret.put(params[i], params[i+1]);
             }
         }

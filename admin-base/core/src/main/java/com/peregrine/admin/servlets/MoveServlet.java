@@ -25,6 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.util.PerUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -50,6 +51,7 @@ import java.util.Map;
 
 import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
 import static com.peregrine.util.PerUtil.EQUALS;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
@@ -70,8 +72,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 /**
  * This servlet provides the ability to move a resource
+ *
+ *
  */
-public class MoveServlet extends SlingAllMethodsServlet {
+public class MoveServlet extends AbstractBaseServlet {
 
     public static final String BEFORE_TYPE = "before";
     public static final String AFTER_TYPE = "after";
@@ -84,25 +88,19 @@ public class MoveServlet extends SlingAllMethodsServlet {
     private ReferenceLister referenceLister;
 
     @Override
-    protected void doPost(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-        IOException
-    {
-        Map<String, String> params = convertSuffixToParams(request);
-        log.debug("Parameters from Suffix: '{}'", params);
-        response.setContentType("application/json");
-        String fromPath = params.get("path");
+    Response handleRequest(Request request) throws IOException {
+        String fromPath = request.getParameter("path");
         Resource from = PerUtil.getResource(request.getResourceResolver(), fromPath);
-        String toPath = params.get("to");
+        String toPath = request.getParameter("to");
         if(request.getResource().getName().equals("move")) {
-            String type = params.get("type");
+            String type = request.getParameter("type");
             Resource to = PerUtil.getResource(request.getResourceResolver(), toPath);
             if(from == null) {
-                reportError(response, "Given Path does not yield a resource", fromPath);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Path does not yield a resource").setRequestPath(fromPath);
             } else if(!acceptedTypes.contains(type)) {
-                reportError(response, "Type is not recognized: " + type, fromPath);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Type is not recognized: " + type).setRequestPath(fromPath);
             } else if(to == null) {
-                reportError(response, "Target Path: " + toPath + " is not found", fromPath);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Target Path: " + toPath + " is not found").setRequestPath(fromPath);
             } else {
                 // Look for Referenced By list before we updating
                 List<com.peregrine.admin.replication.Reference> references = referenceLister.getReferencedByList(from);
@@ -118,8 +116,8 @@ public class MoveServlet extends SlingAllMethodsServlet {
                         try {
                             toNode.orderBefore(newResource.getName(), to.getName());
                         } catch(RepositoryException e) {
-                            reportError(response, "New Resource: " + newResource.getPath() + " could not be reordered", fromPath);
-                            return;
+                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("New Resource: " + newResource.getPath() + " could not be reordered")
+                                .setRequestPath(fromPath).setException(e);
                         }
                     } else {
                         try {
@@ -138,8 +136,7 @@ public class MoveServlet extends SlingAllMethodsServlet {
                                 toNode.orderBefore(newResource.getName(), nextNode.getName());
                             }
                         } catch(RepositoryException e) {
-                            reportError(response, "New Resource: " + newResource.getPath() + " could not be reordered (after)", fromPath);
-                            return;
+                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("New Resource: " + newResource.getPath() + " could not be reordered (after)").setRequestPath(fromPath).setException(e);
                         }
                     }
                 }
@@ -152,24 +149,21 @@ public class MoveServlet extends SlingAllMethodsServlet {
                     }
                 }
                 request.getResourceResolver().commit();
-                StringBuffer answer = new StringBuffer();
-                answer.append("{");
-                answer.append("\"sourceName\":\"" + from.getName() + "\", ");
-                answer.append("\"sourcePath\":\"" + from.getPath() + "\", ");
-                answer.append("\"tagetName\":\"" + newResource.getName() + "\", ");
-                answer.append("\"targetPath\":\"" + newResource.getPath() + "\"");
-                answer.append("}");
-                String temp = answer.toString();
-                log.debug("Answer: '{}'", temp);
-                response.getWriter().write(temp);
+                JsonResponse answer = new JsonResponse();
+                JsonGenerator json = answer.getJson();
+                json.writeStringField("sourceName", from.getName());
+                json.writeStringField("sourcePath", from.getPath());
+                json.writeStringField("tagetName", newResource.getName());
+                json.writeStringField("targetPath", newResource.getPath());
+                return answer;
             }
         } else if(request.getResource().getName().equals("rename")) {
             if(from == null) {
-                reportError(response, "Given Path does not yield a resource", fromPath);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Path does not yield a resource").setRequestPath(fromPath);
             } else if(toPath == null || toPath.isEmpty()) {
-                reportError(response, "Given New Name (to) is not provided", fromPath);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given New Name (to) is not provided").setRequestPath(fromPath);
             } else if(toPath.indexOf('/') >= 0) {
-                reportError(response, "Given New Name: " + toPath + " cannot have a slash", fromPath);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given New Name: " + toPath + " cannot have a slash").setRequestPath(fromPath);
             } else {
                 String newPath = from.getParent().getPath() + "/" + toPath;
                 log.info("Rename from: '{}' to: '{}'", from.getPath(), newPath);
@@ -196,24 +190,18 @@ public class MoveServlet extends SlingAllMethodsServlet {
                     }
                     fromNode.getSession().save();
                 } catch(RepositoryException e) {
-                    reportError(response, "Rename Failed: " + e.getMessage(), fromPath);
+                    return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Rename Failed: " + e.getMessage()).setRequestPath(fromPath).setException(e);
                 }
-                StringBuffer answer = new StringBuffer();
-                answer.append("{");
-                answer.append("\"sourceName\":\"" + from.getName() + "\", ");
-                answer.append("\"sourcePath\":\"" + from.getPath() + "\", ");
-                answer.append("\"targetName\":\"" + toPath + "\", ");
-                answer.append("\"targetPath\":\"" + newPath + "\"");
-                answer.append("}");
-                String temp = answer.toString();
-                log.debug("Answer: '{}'", temp);
-                response.getWriter().write(temp);
+                JsonResponse answer = new JsonResponse();
+                JsonGenerator json = answer.getJson();
+                json.writeStringField("sourceName", from.getName());
+                json.writeStringField("sourcePath", from.getPath());
+                json.writeStringField("tagetName", toPath);
+                json.writeStringField("targetPath", newPath);
+                return answer;
             }
+        } else {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown request: " + request.getResource().getName());
         }
-    }
-
-    private void reportError(SlingHttpServletResponse response, String message, String path) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write("{\"error\":\"" + message + "\", \"path\":\"" + path + "\"}");
     }
 }

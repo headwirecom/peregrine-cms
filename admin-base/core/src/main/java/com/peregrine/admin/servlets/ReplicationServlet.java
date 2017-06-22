@@ -25,30 +25,27 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.admin.replication.Replication.ReplicationException;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
 import static com.peregrine.util.PerUtil.EQUALS;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -70,82 +67,78 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *
  * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/api/admin/repl.json/path///content/sites/example//name//local
  */
-public class ReplicationServlet extends SlingAllMethodsServlet {
+public class ReplicationServlet extends AbstractBaseServlet {
 
     private final Logger log = LoggerFactory.getLogger(ReplicationServlet.class);
 
     @Reference
     private ReferenceLister referenceLister;
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE)
-    private Collection<Replication> replications;
+
+    private Map<String, Replication> replications = new HashMap<>();
+
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC,
+        policyOption = ReferencePolicyOption.GREEDY
+    )
+    @SuppressWarnings("unused")
+    public void bindImageTransformation(Replication replication) {
+        String replicationName = replication.getName();
+        if(replicationName != null && !replicationName.isEmpty()) {
+            replications.put(replicationName, replication);
+        } else {
+            log.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void unbindImageTransformation(Replication replication) {
+        String replicationName = replication.getName();
+        if(replications.containsKey(replicationName)) {
+            replications.remove(replicationName);
+        } else {
+            log.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
+        }
+    }
 
     @Override
-    protected void doPost(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response)
-        throws ServletException,
-               IOException
-    {
-        Map<String, String> params = convertSuffixToParams(request);
-        log.debug("Parameters from Suffix: '{}'", params);
-        String sourcePath = params.get("path");
-        String replicationName = params.get("name");
+    Response handleRequest(Request request) throws IOException {
+        String sourcePath = request.getParameter("path");
+        String replicationName = request.getParameter("name");
         if(replicationName == null || replicationName.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Parameter 'name' for the replication name is not provided");
-            return;
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parameter 'name' for the replication name is not provided");
         }
-        String deepParameter = params.get("deep");
+        String deepParameter = request.getParameter("deep");
         boolean deep = deepParameter != null && "true".equals(deepParameter.toLowerCase());
-        Replication replication = null;
-        for(Replication item: replications) {
-            if(replicationName.equals(item.getName())) {
-                replication = item;
-                break;
-            }
-        }
+        Replication replication = replications.get(replicationName);
         if(replication == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Replication not found for name: " + replicationName);
-            return;
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication not found for name: " + replicationName);
         }
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
-            response.setContentType("application/json");
-            List<Resource> replicates = new ArrayList<>();
+            List<Resource> replicates;
             try {
                 replicates = replication.replicate(source, deep);
             } catch(ReplicationException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                e.printStackTrace(response.getWriter());
-                replicates = null;
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication Failed").setException(e);
             }
+            JsonResponse response = new JsonResponse();
+            JsonGenerator json = response.getJson();
+            json.writeStringField("sourceName", source.getName());
+            json.writeStringField("sourcePath", source.getPath());
+            json.writeArrayFieldStart("replicates");
             if(replicates != null) {
-                StringBuffer answer = new StringBuffer();
-                answer.append("{");
-                answer.append("\"sourceName\":\"" + source.getName() + "\", ");
-                answer.append("\"sourcePath\":\"" + source.getPath() + "\", ");
-                answer.append("\"replicates\":[");
-                boolean first = true;
                 for(Resource child : replicates) {
-                    if(first) {
-                        first = false;
-                    } else {
-                        answer.append(", ");
-                    }
-                    answer.append("{\"name\":\"");
-                    answer.append(child.getName());
-                    answer.append("\", \"path\":\"");
-                    answer.append(child.getPath());
-                    answer.append("\"}");
+                    json.writeStartObject();
+                    json.writeStringField("name", child.getName());
+                    json.writeStringField("path", child.getPath());
+                    json.writeEndObject();
                 }
-                answer.append("]}");
-                String temp = answer.toString();
-                log.debug("Answer: '{}'", temp);
-                response.getWriter().write(temp);
             }
+            json.writeEndArray();
+            return response;
         } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Suffix: " + sourcePath + " is not a resource");
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Suffix: " + sourcePath + " is not a resource");
         }
     }
 }
