@@ -40,9 +40,11 @@
                 </li>
                 <li><pre>{{JSON.stringify(page, true, 2)}}</pre></li>
             </ul>
-            <button class="btn" v-on:click.stop.prevent="renamePage()">rename</button>
-            <button class="btn" v-on:click.stop.prevent="movePage()">move</button>
-            <button class="btn" v-on:click.stop.prevent="deletePage()">delete</button>
+            <template v-if="allowOperations">
+                <button class="btn" v-on:click.stop.prevent="renamePage()">rename</button>
+                <button class="btn" v-on:click.stop.prevent="movePage()">move</button>
+                <button class="btn" v-on:click.stop.prevent="deletePage()">delete</button>
+            </template>
             <!--
             <ul class="asset-info">
                 <li>
@@ -81,6 +83,9 @@
             },
             page: function() {
                 return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject)
+            },
+            allowOperations: function() {
+                return this.currentObject.split('/').length > 4
             }
 
         },
