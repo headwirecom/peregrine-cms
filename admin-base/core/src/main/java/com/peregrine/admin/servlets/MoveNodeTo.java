@@ -55,7 +55,7 @@ import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
         property = {
                 Constants.SERVICE_DESCRIPTION + "=move node to servlet",
                 Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/MoveNodeTo"
+                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/moveNodeTo"
         }
 )
 @SuppressWarnings("serial")
