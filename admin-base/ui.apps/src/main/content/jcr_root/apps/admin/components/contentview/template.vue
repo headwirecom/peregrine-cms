@@ -81,9 +81,12 @@
 export default {
     mounted() {
         this.$nextTick(function() {
-            window.addEventListener('resize', this.onResize)
+            window.addEventListener('resize', this.updateOverlay)
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
+
+            /* check if page has loaded */
+            $perAdminApp.getApp().$watch('pageView', this.updateOverlay, {deep: true })
         })
     },
 
@@ -135,14 +138,6 @@ export default {
     methods: {
         /* Window/Document methods =================
         ============================================ */
-        onResize: function(e){
-            if(this.selectedComponent !== null){
-                var targetBox = this.getBoundingClientRect(this.selectedComponent)
-                this.setEditableStyle(targetBox, 'selected')
-            }
-            this.setEditContainerHeight()
-        },
-
         onKeyDown(ev){
             var nodeName = document.activeElement.nodeName
             var className = document.activeElement.className
@@ -188,39 +183,19 @@ export default {
         onIframeLoaded(ev){
             var iframeDoc = ev.target.contentWindow.document
             iframeDoc.body.style.overflow = 'hidden'
-
+            iframeDoc.body.style.position = 'relative'
             this.createHeightChangeListener(iframeDoc)
-            /* TODO: use pageRendered event instead of timeout */
-            // ev.target.contentWindow.addEventListener('pageRendered', this.setEditContainerHeight)
-            setTimeout(()=>{
-                this.setEditContainerHeight()
-            }, 1000)
         },
 
-        onIframeUpdated(){
+        updateOverlay(){
             console.log('iframeUpdated')
             /* ensure edit container height === iframe body height */
             this.setEditContainerHeight()
             /* update editable position if selected */
             if(this.selectedComponent !== null){
-                var targetBox = this.selectedComponent.getBoundingClientRect()
+                var targetBox = this.getBoundingClientRect(this.selectedComponent)
                 this.setEditableStyle(targetBox, 'selected')
             }
-        },
-
-        /*  Overlay (editviewoverlay) methods ======
-        ============================================ */
-        onScrollOverlay(ev){
-            this.$nextTick(function () {
-                var scrollAmount = ev.target.scrollTop
-                var editview = this.$refs.editview
-                editview.contentWindow.scrollTo(0, scrollAmount)
-            })
-        },
-
-        setEditContainerHeight(){
-            var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
-            this.$refs.editviewContainer.style.height = iframeHeight + 'px'
         },
 
         createHeightChangeListener(iframeDoc){
@@ -236,7 +211,22 @@ export default {
             heightChangeListener.style.border = '0'
             heightChangeListener.style['background-color'] = 'transparent'
             iframeDoc.body.appendChild(heightChangeListener)
-            heightChangeListener.contentWindow.addEventListener("resize", this.onIframeUpdated)
+            heightChangeListener.contentWindow.addEventListener("resize", this.updateOverlay)
+        },
+
+        /*  Overlay (editviewoverlay) methods ======
+        ============================================ */
+        onScrollOverlay(ev){
+            this.$nextTick(function () {
+                var scrollAmount = ev.target.scrollTop
+                var editview = this.$refs.editview
+                editview.contentWindow.scrollTo(0, scrollAmount)
+            })
+        },
+
+        setEditContainerHeight(){
+            var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
+            this.$refs.editviewContainer.style.height = iframeHeight + 'px'
         },
 
         getPosFromMouse: function(e) {
