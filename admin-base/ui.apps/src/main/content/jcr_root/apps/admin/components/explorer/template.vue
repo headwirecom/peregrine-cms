@@ -24,14 +24,14 @@
   -->
 <template>
 
-<div class="explorer" 
-    v-on:drag.prevent      ="stopPropagation"
-    v-on:dragstart.prevent ="stopPropagation"
-    v-on:dragover.prevent  ="setDragState"
-    v-on:dragenter.prevent ="setDragState"
-    v-on:dragleave.prevent ="unSetDragState"
-    v-on:dragend.prevent   ="unSetDragState"
-    v-on:drop.prevent      ="onDropFile">
+<div class="explorer"
+     v-on:drag.prevent      ="stopPropagation"
+     v-on:dragstart.prevent ="stopPropagation"
+     v-on:dragover.prevent  ="setDragState"
+     v-on:dragenter.prevent ="setDragState"
+     v-on:dragleave.prevent ="unSetDragState"
+     v-on:dragend.prevent   ="unSetDragState"
+     v-on:drop.prevent      ="onDropFile">
     <!--
     <template v-for="segment in pathSegments">
         <admin-components-action 
@@ -58,7 +58,7 @@
                         }"><i class="material-icons">folder</i> ..
                     </admin-components-action>
                 </li>
-                <li 
+                <li
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
                     v-for ="child in pt.children"
                     v-if  ="checkIfAllowed(child.resourceType)"
@@ -104,6 +104,14 @@
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
+                        <span>
+                            <a href="#">
+                                <i class="material-icons"
+                                   draggable="true"
+                                   v-on:dragover="dragOver" v-on:drop="drop(child)"
+                                   v-on:dragstart="onDragStart(child,$event)">drag_handle</i>
+                            </a>
+                        </span>
                     </div>
                 </li>
             </ul>
@@ -318,6 +326,15 @@
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }
+            },
+            onDragStart: function(item, event) {
+                this.dragItem = item
+            },
+            dragOver: function(e) {
+                e.preventDefault()
+            },
+            drop: function(item) {
+                $perAdminApp.stateAction('movePage', { path: this.dragItem.path, to: item.path, type: 'before' })
             }
         }
 
