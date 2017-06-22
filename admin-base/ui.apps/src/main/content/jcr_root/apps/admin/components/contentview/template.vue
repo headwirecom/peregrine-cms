@@ -87,7 +87,6 @@ export default {
 
             /* check if page has loaded */
             var unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
-                console.log('status: ', pageView.status)
                 if(pageView.status === 'loaded'){
                     this.updateOverlay()
                     unwatch() // we dont need to watch the pageView prop anymore
@@ -194,7 +193,6 @@ export default {
         },
 
         updateOverlay(){
-            console.log('iframeUpdated')
             this.$nextTick(() => {
                 /* ensure edit container height === iframe body height */
                 this.setEditContainerHeight()
