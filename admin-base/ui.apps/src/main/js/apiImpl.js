@@ -47,6 +47,20 @@ function fetch(path) {
 
 }
 
+function update(path) {
+
+    logger.fine('update() ', path)
+    return axios.post(API_BASE+path).then( (response) => {
+        return new Promise( (resolve, reject) => {
+            resolve(response.data)
+        })
+    }).catch( (error) => { logger.error('request to',
+        error.response.request.path, 'failed')
+        throw error
+    })
+
+}
+
 function getOrCreate(obj, path) {
 
     if(path === '/') {
@@ -232,6 +246,14 @@ class PerAdminImpl {
     deletePage(path) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/deletePage.json/path//'+path)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
+    renamePage(path, newName) {
+        return new Promise( (resolve, reject) => {
+            update('/admin/rename.json/path//'+path+'//to//'+newName)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })

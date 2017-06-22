@@ -40,9 +40,9 @@
                 </li>
                 <li><pre>{{JSON.stringify(page, true, 2)}}</pre></li>
             </ul>
-            <button class="btn">rename</button>
+            <button class="btn" v-on:click.stop.prevent="renamePage()">rename</button>
             <button class="btn">move</button>
-            <button class="btn">delete</button>
+            <button class="btn" v-on:click.stop.prevent="deletePage()">delete</button>
             <!--
             <ul class="asset-info">
                 <li>
@@ -83,6 +83,22 @@
                 return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject)
             }
 
+        },
+        methods: {
+            renamePage() {
+                let newName = prompt('new name for '+this.page.name)
+                if(newName) {
+                    $perAdminApp.stateAction('renamePage', { path: this.page.path, name: newName})
+                    let newPath = this.currentObject.split('/')
+                    newPath.pop()
+                    newPath.push(newName)
+                    $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
+                }
+            },
+            deletePage() {
+                $perAdminApp.stateAction('deletePage', this.page.path)
+                $perAdminApp.stateAction('showPageInfo', { selected: null })
+            }
         }
     }
 </script>
