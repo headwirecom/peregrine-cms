@@ -81,7 +81,6 @@
 export default {
     mounted() {
         this.$nextTick(function() {
-            // window.addEventListener('resize', this.updateOverlay)
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
 
@@ -126,18 +125,6 @@ export default {
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
             return !node.fromTemplate
         }
-    },
-
-    watch: {
-        viewModeClass: function(mode) {
-            if(this.selectedComponent !== null){
-                this.$nextTick(function() {
-                    var targetBox = this.getBoundingClientRect(this.selectedComponent)
-                    this.setEditableStyle(targetBox, 'selected')
-                })
-            }
-        },
-
     },
 
     methods: {
