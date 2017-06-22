@@ -87,14 +87,6 @@ export default {
         })
     },
 
-    updated(){
-        if(this.selectedComponent !== null){
-            console.log('updated!')
-            var targetBox = this.selectedComponent.getBoundingClientRect()
-            this.setEditableStyle(targetBox, 'selected')
-        }
-    },
-
     props: ['model'],
 
     data(){
@@ -194,13 +186,26 @@ export default {
         /* Iframe (editview) methods ===============
         ============================================ */
         onIframeLoaded(ev){
-            var iframeBody = ev.target.contentWindow.document.body.style.overflow = 'hidden'
-            var editviewContainer = this.$refs.editviewContainer
+            var iframeDoc = ev.target.contentWindow.document
+            iframeDoc.body.style.overflow = 'hidden'
+
+            this.createHeightChangeListener(iframeDoc)
             /* TODO: use pageRendered event instead of timeout */
             // ev.target.contentWindow.addEventListener('pageRendered', this.setEditContainerHeight)
             setTimeout(()=>{
                 this.setEditContainerHeight()
             }, 1000)
+        },
+
+        onIframeUpdated(){
+            console.log('iframeUpdated')
+            /* ensure edit container height === iframe body height */
+            this.setEditContainerHeight()
+            /* update editable position if selected */
+            if(this.selectedComponent !== null){
+                var targetBox = this.selectedComponent.getBoundingClientRect()
+                this.setEditableStyle(targetBox, 'selected')
+            }
         },
 
         /*  Overlay (editviewoverlay) methods ======
@@ -216,6 +221,22 @@ export default {
         setEditContainerHeight(){
             var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
             this.$refs.editviewContainer.style.height = iframeHeight + 'px'
+        },
+
+        createHeightChangeListener(iframeDoc){
+            var heightChangeListener = iframeDoc.createElement('iframe')
+            heightChangeListener.id = 'height_change_listener'
+            heightChangeListener.setAttribute('tabindex', '-1')
+            heightChangeListener.style.position = 'absolute'
+            heightChangeListener.style.top = '0'
+            heightChangeListener.style.bottom = '0'
+            heightChangeListener.style.left = '0'
+            heightChangeListener.style.height = '100%'
+            heightChangeListener.style.width = '0'
+            heightChangeListener.style.border = '0'
+            heightChangeListener.style['background-color'] = 'transparent'
+            iframeDoc.body.appendChild(heightChangeListener)
+            heightChangeListener.contentWindow.addEventListener("resize", this.onIframeUpdated)
         },
 
         getPosFromMouse: function(e) {
@@ -453,3 +474,4 @@ export default {
     }
 }
 </script>
+        
