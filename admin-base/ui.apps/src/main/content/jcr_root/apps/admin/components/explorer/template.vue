@@ -25,25 +25,11 @@
 <template>
 
 <div class="explorer"
-     v-on:drag.prevent      ="stopPropagation"
-     v-on:dragstart.prevent ="stopPropagation"
-     v-on:dragover.prevent  ="setDragState"
-     v-on:dragenter.prevent ="setDragState"
-     v-on:dragleave.prevent ="unSetDragState"
-     v-on:dragend.prevent   ="unSetDragState"
-     v-on:drop.prevent      ="onDropFile">
-    <!--
-    <template v-for="segment in pathSegments">
-        <admin-components-action 
-            v-bind:model="{ 
-                target: { path: segment.path },
-                title: segment.name, 
-                command: 'selectPath', 
-                classes: 'btn waves-effect waves-light blue-grey darken-3'
-            }">
-        </admin-components-action>
-    </template>
-    -->
+    v-on:dragover.prevent  ="onDragOverExplorer"
+    v-on:dragenter.prevent ="onDragEnterExplorer"
+    v-on:dragleave.prevent ="onDragLeaveExplorer"
+    v-on:drop.prevent      ="onDropExplorer">
+
     <div class="explorer-layout">
     <div class="row">
         <div v-if="pt" class="col s12 m8 explorer-main">
@@ -53,15 +39,23 @@
                     class="collection-item">
                     <admin-components-action
                             v-bind:model="{
-                            target: null,
+                            target: ndivl,
                             command: 'selectParent'
                         }"><i class="material-icons">folder</i> ..
                     </admin-components-action>
                 </li>
-                <li
-                    v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
-                    v-for ="child in pt.children"
+                <li 
                     v-if  ="checkIfAllowed(child.resourceType)"
+                    v-for ="child in pt.children" 
+                    v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"                    
+                    draggable ="true" 
+                    v-on:dragstart ="onDragRowStart(child,$event)"
+                    v-on:drag      ="onDragRow"
+                    v-on:dragend   ="onDragRowEnd(child,$event)"
+                    v-on:dragenter.stop.prevent ="onDragEnterRow"
+                    v-on:dragover.stop.prevent  ="onDragOverRow"
+                    v-on:dragleave.stop.prevent ="onDragLeaveRow" 
+                    v-on:drop.prevent      ="onDropRow(child, $event)"
                     v-on:click.stop.prevent="selectItem(child)">
                     <admin-components-action
                         v-bind:model="{
@@ -80,7 +74,7 @@
                         </admin-components-action>
 
                         <admin-components-action v-if="editable(child)"
-                                                 v-bind:model="{
+                            v-bind:model="{
                                 target: child.path,
                                 command: 'showInfo'
                             }">
@@ -104,14 +98,6 @@
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
-                        <span>
-                            <a href="#">
-                                <i class="material-icons"
-                                   draggable="true"
-                                   v-on:dragover="dragOver" v-on:drop="drop(child)"
-                                   v-on:dragstart="onDragStart(child,$event)">drag_handle</i>
-                            </a>
-                        </span>
                     </div>
                 </li>
             </ul>
@@ -121,6 +107,14 @@
             <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
         </div>
     </div>
+    </div>
+
+    <div v-if="isDraggingFile || uploadProgress" class="file-upload">
+        <div class="file-upload-inner">
+            <i class="material-icons">file_download</i>
+            <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
+            <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress>
+        </div>
     </div>
     <!--
     <template v-for="child in model.children[0].children">
@@ -135,7 +129,9 @@
         props: ['model'],
         data(){
             return {
-                isDragging: false,
+                isDraggingFile: false,
+                isDraggingRow: false,
+                dragItem: null,
                 uploadProgress: 0
             }
         },
@@ -181,18 +177,85 @@
             selectItem(item) {
                 $perAdminApp.action(this, 'selectPath', item)
             },
+
+            /* row drag events */
+            onDragRowStart(item, ev){
+                if(this.isDraggingFile){ this.isDraggingFile = false }
+                this.isDraggingRow = true
+                this.dragItem = item
+            },
+
+            onDragRow(ev){
+
+            },
+
+            onDragRowEnd(item, ev){
+
+                this.isDraggingRow = false
+                this.dragItem = null
+            },
+
+            /* row drop zone events */
+            onDragOverRow(ev){
+
+            },
+
+            onDragEnterRow(ev){
+
+                if(this.isDraggingRow){
+                    ev.target.classList.add('active-drop-zone')
+                }
+            },
+
+            onDragLeaveRow(ev){
+
+                if(this.isDraggingRow){
+                    ev.target.classList.remove('active-drop-zone')
+                }
+            },
+
+            onDropRow(item, ev) {
+                if(this.isDraggingRow){
+                    ev.target.classList.remove('active-drop-zone')
+                    /* reorder row logic */
+                    $perAdminApp.stateAction('movePage', { 
+                        path: this.dragItem.path, 
+                        to: item.path, 
+                        type: 'after' 
+                    })
+                }
+            },
+
+            /* file drop zone events */
+            onDragOverExplorer(ev){
+
+            },
+
+            onDragEnterExplorer(ev){
+                if(!this.isDraggingRow){
+                    this.isDraggingFile = true
+                }
+                /* show upload instructions */
+            },
+
+            onDragLeaveExplorer(ev){
+                /* hide upload overlay */
+                /* TODO: fix upload unexpectedly closing 
+                if(this.isDraggingFile){
+                    this.isDraggingFile = false
+                }
+                */
+            },
+
+            onDropExplorer(ev){
+                if(this.isDraggingFile){
+                    /* file uploade logic */
+                    this.uploadFile(ev.dataTransfer.files)
+                    this.isDraggingFile = false
+                }
+            },
+
             /* file upload */
-            setDragState(ev){
-              ev.stopPropagation()
-              this.isDragging = true
-            },
-            unSetDragState(ev){
-              ev.stopPropagation()
-              this.isDragging = false
-            },
-            stopPropagation(ev){
-              ev.stopPropagation()
-            },
             uploadFile(files) {
               $perAdminApp.stateAction('uploadFiles', { 
                 path: $perAdminApp.getView().state.tools.assets, 
@@ -210,15 +273,8 @@
                 ) 
               }
             },
-            onDropFile(ev){
-              console.log('onDropFile')
-              ev.stopPropagation()
-              this.isDragging = false
-              this.uploadFile(ev.dataTransfer.files)
-            },
             
             isSelected: function(child) {
-
                 if(this.model.selectionFrom && child) {
                     return $perAdminApp.getNodeFromViewOrNull(this.model.selectionFrom) === child.path
                 } else if(child.path === $perAdminApp.getNodeFromViewOrNull('/state/tools/page')) {
@@ -326,15 +382,6 @@
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }
-            },
-            onDragStart: function(item, event) {
-                this.dragItem = item
-            },
-            dragOver: function(e) {
-                e.preventDefault()
-            },
-            drop: function(item) {
-                $perAdminApp.stateAction('movePage', { path: this.dragItem.path, to: item.path, type: 'before' })
             }
         }
 
