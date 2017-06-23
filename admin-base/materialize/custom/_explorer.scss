@@ -40,6 +40,9 @@
 							color: color("blue-grey", "darken-4");
 					    background-color: color("blue-grey", "lighten-5");
 						}
+						&.active-drop-zone {
+							border-bottom: 1px solid color("orange", "lighten-3") !important;
+						}
 						.secondary-content {
 							color: $primary-color-dark;
 							position: absolute;
