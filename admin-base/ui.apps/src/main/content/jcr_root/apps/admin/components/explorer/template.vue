@@ -224,12 +224,10 @@
 
             onDropRow(item, ev) {
                 if(this.isDraggingRow){
-                    var fromPath = ev.dataTransfer.getData("text")
-                    console.log('fromPath: ', fromPath)
                     ev.target.classList.remove('active-drop-zone')
                     /* reorder row logic */
                     $perAdminApp.stateAction('movePage', { 
-                        path: fromPath, 
+                        path: ev.dataTransfer.getData("text"), 
                         to: item.path, 
                         type: 'after' 
                     })
