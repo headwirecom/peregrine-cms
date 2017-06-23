@@ -50,7 +50,7 @@
             </div>
             <div class="modal-footer">
                 <a 
-                    v-on:click="onHide"
+                    v-on:click="onOk"
                     href="#!"
                     class="modal-action modal-close waves-effect waves-green btn-flat">
                     ok
@@ -79,7 +79,7 @@
             },
             nodes() {
                 let view = $perAdminApp.getView()
-                let nodes = view.admin.nodes
+                let nodes = view.admin.pathBrowser
                 if(nodes && this.path) {
                     return $perAdminApp.findNodeFromPath(nodes, this.path)
                 }
@@ -115,7 +115,7 @@
                 this.selected = 'search'
             },
             selectFolder(item) {
-                $perAdminApp.getApi().populateNodesForBrowser(item.path).then( () => {
+                $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser').then( () => {
                     let pb = $perAdminApp.getNodeFromView('/state/pathbrowser')
                     pb.root = item.path
                 })
@@ -130,6 +130,10 @@
             },
             onHide() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/methods').onHide()
+            },
+            onOk() {
+                $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/methods').setItemPath($perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/root'))
+                this.onHide()
             }
         }
     }

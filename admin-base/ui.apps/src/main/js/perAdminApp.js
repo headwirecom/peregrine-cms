@@ -294,13 +294,15 @@ function notifyUserImpl(title, message, cb) {
 }
 
 function pathBrowserImpl(root, cb) {
-    api.populateNodesForBrowser('/content/assets')
-    set(view, '/state/pathbrowser/root', root)
-    set(view, '/state/pathbrowser/isVisible', false)
-    set(view, '/state/pathbrowser/methods', {
-        onShow: function(){ set(view, '/state/pathbrowser/isVisible', true) },
-        onHide: function(){ set(view, '/state/pathbrowser/isVisible', false) },
-        setItemPath: cb
+    api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
+        set(view, '/state/pathbrowser/root', root)
+        set(view, '/state/pathbrowser/isVisible', false)
+        set(view, '/state/pathbrowser/methods', {
+            onShow: function(){ set(view, '/state/pathbrowser/isVisible', true) },
+            onHide: function(){ set(view, '/state/pathbrowser/isVisible', false) },
+            setItemPath: cb
+        })
+        view.state.pathbrowser.methods.onShow()
     })
 }
 

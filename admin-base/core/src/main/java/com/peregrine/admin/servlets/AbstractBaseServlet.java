@@ -53,9 +53,20 @@ public abstract class AbstractBaseServlet
     }
 
     private void doRequest(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
-        Response out = handleRequest(new Request(request, response));
-        if(out == null) {
-            out = new ErrorResponse().setHttpErrorCode(SC_INTERNAL_SERVER_ERROR).setErrorCode(-123).setErrorMessage("Servlet did not return a Response");
+        Response out = null;
+        try {
+            out = handleRequest(new Request(request, response));
+            if(out == null) {
+                out = new ErrorResponse().setHttpErrorCode(SC_INTERNAL_SERVER_ERROR).setErrorCode(-123).setErrorMessage("Servlet did not return a Response");
+            }
+        } catch(IOException e) {
+            out = new ErrorResponse().setHttpErrorCode(SC_INTERNAL_SERVER_ERROR).setErrorCode(-124).setErrorMessage("Failed with IO exception").setException(e);
+        } catch(RuntimeException e) {
+            out = new ErrorResponse().setHttpErrorCode(SC_INTERNAL_SERVER_ERROR).setErrorCode(-125).setErrorMessage("Failed with runtime exception").setException(e);
+        } catch(Error e) {
+            // Do not swallow errors as the system needs to handle that -> log and rethrow
+            logger.debug("Servlet Request failed with Error", e);
+            throw e;
         }
         response.setContentType(out.getMimeType());
         String output = out.getContent();
@@ -69,6 +80,7 @@ public abstract class AbstractBaseServlet
             logger.trace("Servlet Response: '{}'", output);
             response.getWriter().write(output);
         }
+        response.flushBuffer();
     }
 
     abstract Response handleRequest(Request request) throws IOException;

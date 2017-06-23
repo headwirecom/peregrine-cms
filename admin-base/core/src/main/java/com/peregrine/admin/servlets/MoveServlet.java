@@ -27,6 +27,7 @@ package com.peregrine.admin.servlets;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.peregrine.admin.replication.ReferenceLister;
+import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.util.PerUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -84,14 +85,17 @@ public class MoveServlet extends AbstractBaseServlet {
     private final Logger log = LoggerFactory.getLogger(MoveServlet.class);
     private List<String> acceptedTypes = Arrays.asList(BEFORE_TYPE, AFTER_TYPE, CHILD_TYPE);
 
+//    @Reference
+//    private ReferenceLister referenceLister;
     @Reference
-    private ReferenceLister referenceLister;
+    private ResourceRelocation resourceRelocation;
 
     @Override
     Response handleRequest(Request request) throws IOException {
         String fromPath = request.getParameter("path");
         Resource from = PerUtil.getResource(request.getResourceResolver(), fromPath);
         String toPath = request.getParameter("to");
+        Resource newResource;
         if(request.getResource().getName().equals("move")) {
             String type = request.getParameter("type");
             Resource to = PerUtil.getResource(request.getResourceResolver(), toPath);
@@ -102,60 +106,18 @@ public class MoveServlet extends AbstractBaseServlet {
             } else if(to == null) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Target Path: " + toPath + " is not found").setRequestPath(fromPath);
             } else {
-                // Look for Referenced By list before we updating
-                List<com.peregrine.admin.replication.Reference> references = referenceLister.getReferencedByList(from);
-
                 boolean addAsChild = CHILD_TYPE.equals(type);
                 boolean addBefore = BEFORE_TYPE.equals(type);
                 Resource target = addAsChild ? to : to.getParent();
-                Resource newResource = request.getResourceResolver().move(from.getPath(), target.getPath());
+                newResource = resourceRelocation.moveToNewParent(from, target, true);
                 // Reorder if needed
                 if(!addAsChild) {
-                    Node toNode = target.adaptTo(Node.class);
-                    if(addBefore) {
-                        try {
-                            toNode.orderBefore(newResource.getName(), to.getName());
-                        } catch(RepositoryException e) {
-                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("New Resource: " + newResource.getPath() + " could not be reordered")
-                                .setRequestPath(fromPath).setException(e);
-                        }
-                    } else {
-                        try {
-                            NodeIterator i = toNode.getNodes();
-                            Node nextNode = null;
-                            while(i.hasNext()) {
-                                Node child = i.nextNode();
-                                if(child.getName().equals(to.getName())) {
-                                    if(i.hasNext()) {
-                                        nextNode = i.nextNode();
-                                    }
-                                    break;
-                                }
-                            }
-                            if(nextNode != null) {
-                                toNode.orderBefore(newResource.getName(), nextNode.getName());
-                            }
-                        } catch(RepositoryException e) {
-                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("New Resource: " + newResource.getPath() + " could not be reordered (after)").setRequestPath(fromPath).setException(e);
-                        }
+                    try {
+                        resourceRelocation.reorder(target, newResource.getName(), to.getName(), addBefore);
+                    } catch(RepositoryException e) {
+                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("New Resource: " + newResource.getPath() + " could not be reordered (after)").setRequestPath(fromPath).setException(e);
                     }
                 }
-                // Update the references
-                for(com.peregrine.admin.replication.Reference reference : references) {
-                    Resource propertyResource = reference.getPropertyResource();
-                    ModifiableValueMap properties = PerUtil.getModifiableProperties(propertyResource);
-                    if(properties.containsKey(reference.getPropertyName())) {
-                        properties.put(reference.getPropertyName(), newResource.getPath());
-                    }
-                }
-                request.getResourceResolver().commit();
-                JsonResponse answer = new JsonResponse();
-                JsonGenerator json = answer.getJson();
-                json.writeStringField("sourceName", from.getName());
-                json.writeStringField("sourcePath", from.getPath());
-                json.writeStringField("tagetName", newResource.getName());
-                json.writeStringField("targetPath", newResource.getPath());
-                return answer;
             }
         } else if(request.getResource().getName().equals("rename")) {
             if(from == null) {
@@ -167,41 +129,21 @@ public class MoveServlet extends AbstractBaseServlet {
             } else {
                 String newPath = from.getParent().getPath() + "/" + toPath;
                 log.info("Rename from: '{}' to: '{}'", from.getPath(), newPath);
-                Node fromNode = from.adaptTo(Node.class);
                 try {
-                    // Before the rename obtain the next node sibling and then after the move order the renamed node before its next sibling
-                    Node parent = fromNode.getParent();
-                    Node next = null;
-                    if(parent != null) {
-                        NodeIterator i = parent.getNodes();
-                        while(i.hasNext()) {
-                            Node child = i.nextNode();
-                            if(child.getName().equals(fromNode.getName())) {
-                                if(i.hasNext()) {
-                                    next = i.nextNode();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    fromNode.getSession().move(from.getPath(), newPath);
-                    if(next != null) {
-                        parent.orderBefore(toPath, next.getName());
-                    }
-                    fromNode.getSession().save();
+                    newResource = resourceRelocation.rename(from, toPath, true);
                 } catch(RepositoryException e) {
                     return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Rename Failed: " + e.getMessage()).setRequestPath(fromPath).setException(e);
                 }
-                JsonResponse answer = new JsonResponse();
-                JsonGenerator json = answer.getJson();
-                json.writeStringField("sourceName", from.getName());
-                json.writeStringField("sourcePath", from.getPath());
-                json.writeStringField("tagetName", toPath);
-                json.writeStringField("targetPath", newPath);
-                return answer;
             }
         } else {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown request: " + request.getResource().getName());
         }
+        JsonResponse answer = new JsonResponse();
+        JsonGenerator json = answer.getJson();
+        json.writeStringField("sourceName", from.getName());
+        json.writeStringField("sourcePath", from.getPath());
+        json.writeStringField("tagetName", newResource.getName());
+        json.writeStringField("targetPath", newResource.getPath());
+        return answer;
     }
 }
