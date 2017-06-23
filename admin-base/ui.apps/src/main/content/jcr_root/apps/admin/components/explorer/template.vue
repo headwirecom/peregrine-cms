@@ -209,14 +209,12 @@
             },
 
             onDragEnterRow(ev){
-
                 if(this.isDraggingRow){
                     ev.target.classList.add('active-drop-zone')
                 }
             },
 
             onDragLeaveRow(ev){
-
                 if(this.isDraggingRow){
                     ev.target.classList.remove('active-drop-zone')
                 }
@@ -259,7 +257,7 @@
                 if(this.isDraggingFile){
                     /* file uploade logic */
                     this.uploadFile(ev.dataTransfer.files)
-                    setTimeout(()=>{this.isDraggingFile = false}, 1000)
+                    this.isDraggingFile = false
                 }
             },
 
