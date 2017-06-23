@@ -1,13 +1,17 @@
-.file-upload {
+/* TEMP: Remove file uplaod from nav */
+.nav-content.sub-nav .file-upload {
 	display: none;
+}
+
+.file-upload {
 	position: fixed;
-	z-index: -1;
 	top: 0;
 	bottom: 0;
 	left: 0;
 	right: 0;
 	color: color("blue-grey", "base");
-
+	background-color: rgba(255,255,255,.5);
+	pointer-events: none;
 	.file-upload-inner {
 		position: absolute;
 		top: 50%;
@@ -36,43 +40,16 @@
 			overflow: hidden;
 		}
 		progress::-webkit-progress-bar {
-			-webkit-animation: animate-stripes 5s linear infinite;
-       animation: animate-stripes 5s linear infinite;
 			background-color: color("blue-grey", "lighten-4");
-		  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
 		}
 		progress::-webkit-progress-value {
-	  	background-image:
-		   -webkit-linear-gradient(-45deg, 
-		                           transparent 33%, rgba(0, 0, 0, .1) 33%, 
-		                           rgba(0,0, 0, .1) 66%, transparent 66%),
-		   -webkit-linear-gradient(top, 
-		                           rgba(255, 255, 255, .25), 
-		                           rgba(0, 0, 0, .25)),
-		   -webkit-linear-gradient(left, #81c784, #43a047);
-
-		    border-radius: 2px; 
-		    background-size: 35px 20px, 100% 100%, 100% 100%;
-		}
-		@-webkit-keyframes animate-stripes {
-			100% { background-position: -100px 0px; }
-		}
-
-		@keyframes animate-stripes {
-			100% { background-position: -100px 0px; }
+	  	background-color: color("orange", "lighten-2");
+			border-radius: 2px; 
 		}
 		.file-upload-status {
 			.material-icons {
 				cursor: pointer;
 			}
-		}
-	}
-	
-	&.dragging-file {
-		background-color: rgba(255,255,255,.65);
-		z-index: 2;
-		.file-upload-inner {
-			display: block;
 		}
 	}
 }
