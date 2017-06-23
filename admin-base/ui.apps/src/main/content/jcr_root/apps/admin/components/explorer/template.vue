@@ -109,11 +109,21 @@
     </div>
     </div>
 
-    <div v-if="isDraggingFile || uploadProgress" class="file-upload">
+    <div v-if="isFileUploadVisible" class="file-upload">
         <div class="file-upload-inner">
             <i class="material-icons">file_download</i>
             <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
-            <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress>
+            <div class="progress-bar">
+                <div class="progress-bar-value" v-bind:style="`width: ${uploadProgress}%`"></div>
+            </div>
+            <div class="progress-text">{{uploadProgress}}%</div>
+            <div class="file-upload-action">
+                <button 
+                    type="button" 
+                    class="btn"
+                    v-on:click="onDoneFileUpload">ok</button>
+            </div>
+            <!-- <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress> -->
         </div>
     </div>
     <!--
@@ -131,6 +141,7 @@
             return {
                 isDraggingFile: false,
                 isDraggingRow: false,
+                isFileUploadVisible: false,
                 dragItem: null,
                 uploadProgress: 0
             }
@@ -235,7 +246,7 @@
                 if(!this.isDraggingRow){
                     this.isDraggingFile = true
                 }
-                /* show upload instructions */
+                this.isFileUploadVisible = true
             },
 
             onDragLeaveExplorer(ev){
@@ -251,7 +262,7 @@
                 if(this.isDraggingFile){
                     /* file uploade logic */
                     this.uploadFile(ev.dataTransfer.files)
-                    this.isDraggingFile = false
+                    setTimeout(()=>{this.isDraggingFile = false}, 1000)
                 }
             },
 
@@ -263,16 +274,16 @@
                 cb: this.setUploadProgress
               })    
             },
+
             setUploadProgress(percentCompleted){
               this.uploadProgress = percentCompleted 
-              if(percentCompleted === 100){
-                $perAdminApp.notifyUser(
-                  'Success', 
-                  'File uploaded successfully.', 
-                  () => { this.uploadProgress = 0 }
-                ) 
-              }
             },
+            
+            onDoneFileUpload(){
+                this.isFileUploadVisible = false
+                this.uploadProgress = 0
+            },
+
             
             isSelected: function(child) {
                 if(this.model.selectionFrom && child) {
