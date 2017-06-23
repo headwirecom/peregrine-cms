@@ -245,8 +245,8 @@
             onDragEnterExplorer(ev){
                 if(!this.isDraggingRow){
                     this.isDraggingFile = true
-                }
-                this.isFileUploadVisible = true
+                    this.isFileUploadVisible = true
+                }  
             },
 
             onDragLeaveExplorer(ev){
