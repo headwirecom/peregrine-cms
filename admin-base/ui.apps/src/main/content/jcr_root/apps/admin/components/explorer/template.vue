@@ -142,7 +142,6 @@
                 isDraggingFile: false,
                 isDraggingRow: false,
                 isFileUploadVisible: false,
-                dragItem: null,
                 uploadProgress: 0
             }
         },
@@ -191,9 +190,9 @@
 
             /* row drag events */
             onDragRowStart(item, ev){
+                ev.dataTransfer.setData('text', item.path)
                 if(this.isDraggingFile){ this.isDraggingFile = false }
                 this.isDraggingRow = true
-                this.dragItem = item
             },
 
             onDragRow(ev){
@@ -201,9 +200,7 @@
             },
 
             onDragRowEnd(item, ev){
-
                 this.isDraggingRow = false
-                this.dragItem = null
             },
 
             /* row drop zone events */
@@ -227,10 +224,12 @@
 
             onDropRow(item, ev) {
                 if(this.isDraggingRow){
+                    var fromPath = ev.dataTransfer.getData("text")
+                    console.log('fromPath: ', fromPath)
                     ev.target.classList.remove('active-drop-zone')
                     /* reorder row logic */
                     $perAdminApp.stateAction('movePage', { 
-                        path: this.dragItem.path, 
+                        path: fromPath, 
                         to: item.path, 
                         type: 'after' 
                     })
