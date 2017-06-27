@@ -30,6 +30,19 @@ public class ResourceRelocationService
     private ReferenceLister referenceLister;
 
     @Override
+    public boolean isParentOf(Resource child, Resource parent) {
+        Resource childParent = child != null ? child.getParent() : null;
+        return childParent != null && parent != null &&
+            parent.getPath().equals(childParent.getPath());
+    }
+
+    @Override
+    public boolean hasSameParent(Resource first, Resource second) {
+        return second != null &&
+            isParentOf(first, second.getParent());
+    }
+
+    @Override
     public Resource moveToNewParent(Resource from, Resource toParent, boolean updateReferences) throws PersistenceException {
         Resource answer = null;
         List<com.peregrine.admin.replication.Reference> references = null;
@@ -80,13 +93,23 @@ public class ResourceRelocationService
             throw new IllegalArgumentException("Target Child: '" + targetChildName + "' could not be found");
         }
         Node toNode = parent.adaptTo(Node.class);
-        if(before || targetChildName == null) {
-            toNode.orderBefore(sourceChildName, targetChildName);
-        } else {
-            Node nextNode = getNextNode(toNode, targetChildName);
-            if(nextNode != null) {
-                toNode.orderBefore(sourceChildName, nextNode.getName());
+        if(before) {
+            // No Target Child Name and before means we move it to the first place
+            if(targetChildName == null) {
+                Node temp = getNextNode(toNode, null);
+                targetChildName = temp != null ? temp.getName() : null;
             }
+            if(targetChildName != null) {
+                toNode.orderBefore(sourceChildName, targetChildName);
+            }
+        } else {
+            // No Target Child Name and after means we move it to the last place
+            String nextNodeName = null;
+            if(targetChildName != null) {
+                Node nextNode = getNextNode(toNode, targetChildName);
+                nextNodeName = nextNode != null ? nextNode.getName() : null;
+            }
+            toNode.orderBefore(sourceChildName, nextNodeName);
         }
         toNode.getSession().save();
     }
@@ -96,6 +119,11 @@ public class ResourceRelocationService
         NodeIterator i = parent.getNodes();
         while(i.hasNext()) {
             Node child = i.nextNode();
+            if(childName == null) {
+                // No Child Name means returns first
+                answer = child;
+                break;
+            }
             if(child.getName().equals(childName)) {
                 if(i.hasNext()) {
                     answer = i.nextNode();

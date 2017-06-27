@@ -10,6 +10,10 @@ import javax.jcr.RepositoryException;
  */
 public interface ResourceRelocation {
 
+    public boolean isParentOf(Resource child, Resource parent);
+
+    public boolean hasSameParent(Resource first, Resource second);
+
     /**
      * Moves the given Resource to a new Parent. If the to parent
      * is the same as the from resource parent then the call is
