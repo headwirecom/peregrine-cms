@@ -109,11 +109,21 @@
     </div>
     </div>
 
-    <div v-if="isDraggingFile || uploadProgress" class="file-upload">
+    <div v-if="isFileUploadVisible" class="file-upload">
         <div class="file-upload-inner">
             <i class="material-icons">file_download</i>
             <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
-            <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress>
+            <div class="progress-bar">
+                <div class="progress-bar-value" v-bind:style="`width: ${uploadProgress}%`"></div>
+            </div>
+            <div class="progress-text">{{uploadProgress}}%</div>
+            <div class="file-upload-action">
+                <button 
+                    type="button" 
+                    class="btn"
+                    v-on:click="onDoneFileUpload">ok</button>
+            </div>
+            <!-- <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress> -->
         </div>
     </div>
     <!--
@@ -131,7 +141,7 @@
             return {
                 isDraggingFile: false,
                 isDraggingRow: false,
-                dragItem: null,
+                isFileUploadVisible: false,
                 uploadProgress: 0
             }
         },
@@ -180,9 +190,9 @@
 
             /* row drag events */
             onDragRowStart(item, ev){
+                ev.dataTransfer.setData('text', item.path)
                 if(this.isDraggingFile){ this.isDraggingFile = false }
                 this.isDraggingRow = true
-                this.dragItem = item
             },
 
             onDragRow(ev){
@@ -190,9 +200,7 @@
             },
 
             onDragRowEnd(item, ev){
-
                 this.isDraggingRow = false
-                this.dragItem = null
             },
 
             /* row drop zone events */
@@ -201,14 +209,12 @@
             },
 
             onDragEnterRow(ev){
-
                 if(this.isDraggingRow){
                     ev.target.classList.add('active-drop-zone')
                 }
             },
 
             onDragLeaveRow(ev){
-
                 if(this.isDraggingRow){
                     ev.target.classList.remove('active-drop-zone')
                 }
@@ -219,7 +225,7 @@
                     ev.target.classList.remove('active-drop-zone')
                     /* reorder row logic */
                     $perAdminApp.stateAction('movePage', { 
-                        path: this.dragItem.path, 
+                        path: ev.dataTransfer.getData("text"), 
                         to: item.path, 
                         type: 'after' 
                     })
@@ -234,8 +240,8 @@
             onDragEnterExplorer(ev){
                 if(!this.isDraggingRow){
                     this.isDraggingFile = true
-                }
-                /* show upload instructions */
+                    this.isFileUploadVisible = true
+                }  
             },
 
             onDragLeaveExplorer(ev){
@@ -263,16 +269,16 @@
                 cb: this.setUploadProgress
               })    
             },
+
             setUploadProgress(percentCompleted){
               this.uploadProgress = percentCompleted 
-              if(percentCompleted === 100){
-                $perAdminApp.notifyUser(
-                  'Success', 
-                  'File uploaded successfully.', 
-                  () => { this.uploadProgress = 0 }
-                ) 
-              }
             },
+            
+            onDoneFileUpload(){
+                this.isFileUploadVisible = false
+                this.uploadProgress = 0
+            },
+
             
             isSelected: function(child) {
                 if(this.model.selectionFrom && child) {
