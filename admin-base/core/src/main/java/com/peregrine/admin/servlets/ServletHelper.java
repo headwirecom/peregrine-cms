@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import org.apache.sling.api.SlingHttpServletRequest;
 
 import java.io.*;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,21 +37,21 @@ import java.util.Map;
  */
 public class ServletHelper {
 
-    public static Map<String,String> convertSuffixToParams(SlingHttpServletRequest request) {
+    public static Map<String,String> obtainParameters(SlingHttpServletRequest request) {
+        HashMap<String, String> answer = new HashMap<String, String>();
 
         String suffix = request.getRequestPathInfo().getSuffix();
-        HashMap<String, String> ret = new HashMap<String, String>();
-
-        if(suffix != null && suffix.length() > 1) {
-            suffix = suffix.substring(1);
-            String[] params = suffix.split("//");
-            // We loop in 2 steps but the check makes sure that there are two entries left
-            for(int i = 0; i < params.length - 1; i+=2) {
-                ret.put(params[i], params[i+1]);
-            }
+        if(suffix != null && !suffix.isEmpty()) {
+            answer.put("path", suffix);
+        }
+        Enumeration<String> e = request.getParameterNames();
+        while(e.hasMoreElements()) {
+            String name = e.nextElement();
+            String value = request.getParameter(name);
+            answer.put(name, value);
         }
 
-        return ret;
+        return answer;
 
     }
 

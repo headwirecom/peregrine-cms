@@ -35,21 +35,14 @@ import com.peregrine.admin.transform.ImageTransformationProvider;
 import com.peregrine.admin.transform.OperationContext;
 import com.peregrine.util.PerConstants;
 import org.apache.commons.io.IOUtils;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,7 +52,10 @@ import java.util.Map;
 
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -67,8 +63,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + "Peregrine: Rendition Provider Servlet",
-        SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Rendition Provider Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "POST",
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "per/Asset"
     }
 )
@@ -84,8 +81,6 @@ public class RenditionsServlet extends AbstractBaseServlet {
 
     public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
     
-    private final Logger log = LoggerFactory.getLogger(RenditionsServlet.class);
-
     @Reference
     private ImageTransformationConfigurationProvider imageTransformationConfigurationProvider;
     @Reference
@@ -132,12 +127,12 @@ public class RenditionsServlet extends AbstractBaseServlet {
                             asset.addRendition(renditionName, imageContext.getImageStream(), targetMimeType);
                             imageStream = asset.getRenditionStream(renditionName);
                         } else {
-                            log.error("Resource: '{}' does not contain a data element", resource.getName());
+                            logger.error("Resource: '{}' does not contain a data element", resource.getName());
                         }
                     } catch(TransformationException e) {
-                        log.error("Transformation failed, image ignore", e);
+                        logger.error("Transformation failed, image ignore", e);
                     } catch(RepositoryException e) {
-                        log.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
+                        logger.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
                     }
                 }
                 if(imageStream == null) {
@@ -152,7 +147,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
                             ImageContext imageContext = transform(renditionName, "image/svg+xml", brokenImageStream, "image/png", imageTransformationConfigurationList, true);
                             imageStream = imageContext.getImageStream();
                         } catch(TransformationException e) {
-                            log.error("Transformation failed, image ignore", e);
+                            logger.error("Transformation failed, image ignore", e);
                         }
                     }
                 }

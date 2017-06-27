@@ -59,16 +59,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.admin.servlets.ServletHelper.obtainParameters;
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=upload files servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/uploadFiles",
-                ServletResolverConstants.SLING_SERVLET_METHODS+"=POST"
-        }
+    service = Servlet.class,
+    property = {
+        Constants.SERVICE_DESCRIPTION + "=upload files servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "POST",
+        ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/uploadFiles",
+    }
 )
 @SuppressWarnings("serial")
 public class UploadFilesServlet extends SlingAllMethodsServlet {
@@ -93,7 +97,7 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
             IOException {
 
         Session session = request.getResourceResolver().adaptTo(Session.class);
-        Map<String, String> params = convertSuffixToParams(request);
+        Map<String, String> params = obtainParameters(request);
         String parentPath = params.get("path");
         try {
             Node node = session.getRootNode().getNode(parentPath.substring(1));

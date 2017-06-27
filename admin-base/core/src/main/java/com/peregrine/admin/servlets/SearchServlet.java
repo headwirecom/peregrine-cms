@@ -26,8 +26,6 @@ package com.peregrine.admin.servlets;
  */
 
 import java.io.IOException;
-import java.io.Writer;
-import java.util.Iterator;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -36,93 +34,67 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 
-import org.apache.sling.api.resource.Resource;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=search servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                "sling.servlet.paths=/bin/search"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Search Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_PATHS + EQUALS + "/bin/search"
+    }
 )
 @SuppressWarnings("serial")
-public class SearchServlet extends SlingSafeMethodsServlet {
+public class SearchServlet extends AbstractBaseServlet {
 
     private static final long ROWS_PER_PAGE = 100;
-    private final Logger log = LoggerFactory.getLogger(SearchServlet.class);
 
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        String query = request.getParameter("q");
-        if(query == null) query = "";
-
-        Writer w = response.getWriter();
-        if(query.length() == 0) {
-            noInput(response, query, w);
+    Response handleRequest(Request request) throws IOException {
+        String query = request.getParameter("q", "");
+        if(query.trim().length() == 0) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Query Provided");
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
+            JsonResponse answer = new JsonResponse();
             try {
-                response.setContentType("application/json");
-
-                if (query != null && query.trim().length() > 0) {
-                    QueryManager qm = session.getWorkspace().getQueryManager();
-                    Query q = qm.createQuery(query, Query.SQL);
-                    q.setLimit(ROWS_PER_PAGE+1);
-                    String pageParam = request.getParameter("page");
-                    int page = 0;
-                    if(pageParam != null) {
-                        page = Integer.parseInt(pageParam);
-                    }
-                    q.setOffset(page*ROWS_PER_PAGE);
-
-                    QueryResult res = q.execute();
-                    NodeIterator nodes = res.getNodes();
-                    w.write("{");
-                    w.write("\"current\": "+"1"+",");
-                    w.write("\"more\": "+(nodes.getSize() > ROWS_PER_PAGE)+",");
-                    w.write("\"data\": [");
-                    while(nodes.hasNext()) {
-                        Node node = nodes.nextNode();
-                        w.write("{ \"name\": \""+node.getName()+"\",");
-                        w.write("\"path\": \""+node.getPath()+"\"}");
-                        if(nodes.hasNext()) {
-                            w.write(',');
-                        }
-                    }
-                    w.write("]");
-                    w.write("}");
+                QueryManager qm = session.getWorkspace().getQueryManager();
+                Query q = qm.createQuery(query, Query.SQL);
+                q.setLimit(ROWS_PER_PAGE+1);
+                String pageParam = request.getParameter("page", "0");
+                int page = 0;
+                try {
+                    page = Integer.parseInt(pageParam);
+                } catch(NumberFormatException e) {
+                    logger.warn("Given Page: '" + pageParam + "' could not be converted to an integer -> ignored", e);
                 }
+                q.setOffset(page*ROWS_PER_PAGE);
+
+                QueryResult res = q.execute();
+                NodeIterator nodes = res.getNodes();
+                answer.writeAttribute("current", 1);
+                answer.writeAttribute("more", nodes.getSize() > ROWS_PER_PAGE);
+                answer.writeArray("data");
+                while(nodes.hasNext()) {
+                    Node node = nodes.nextNode();
+                    answer.writeAttribute("name", node.getName());
+                    answer.writeAttribute("path", node.getPath());
+                }
+                answer.writeClose();
+                return answer;
             } catch(Exception e) {
-                log.error("not able to get query manager",e);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to execute the query").setException(e);
             }
         }
     }
-
-    private void noInput(SlingHttpServletResponse response, String query, Writer w) throws IOException {
-        response.setContentType("text/html");
-        w.write("<html>");
-        w.write("<head>");
-        w.write("<title>jcr query tool</title>");
-        w.write("</head>");
-        w.write("<body>");
-        w.write("<form><input size='100' type='text' name='q' value=\""+query+"\"></form>");
-        w.write("</body>");
-        w.write("</html>");
-    }
-
 }
 

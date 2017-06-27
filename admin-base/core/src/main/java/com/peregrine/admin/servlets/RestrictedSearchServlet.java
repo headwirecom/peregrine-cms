@@ -25,15 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -43,69 +36,73 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import java.io.IOException;
-import java.io.Writer;
+
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=search servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=api/admin/search"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Search Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/search"
+    }
 )
 @SuppressWarnings("serial")
-public class RestrictedSearchServlet extends SlingSafeMethodsServlet {
+public class RestrictedSearchServlet extends AbstractBaseServlet {
 
     private static final long ROWS_PER_PAGE = 100;
-    private final Logger log = LoggerFactory.getLogger(RestrictedSearchServlet.class);
 
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        String suffix = request.getRequestPathInfo().getSuffix();
+    Response handleRequest(Request request) throws IOException {
+        // Path / Suffix is obtained but not used ?
+        String path = request.getParameter("path");
         Resource res = request.getResource();
         String type = res.getValueMap().get("type", String.class);
+        Response answer;
         if("components".equals(type)) {
-            findComponents(request, response);
+            answer = findComponents(request);
         } else if("templates".equals(type)) {
-            findTemplates(request, response);
+            answer = findTemplates(request);
         } else if("objects".equals(type)) {
-            findObjects(request, response);
+            answer = findObjects(request);
+        } else {
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown Type: " + type);
         }
-
+        return answer;
     }
 
-    private void findObjects(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    private Response findObjects(Request request) throws IOException {
 
         String query = "select * from per:ObjectDefinition order by jcr:path";
-        findAndOutputToWriterAsJSON(request, response, query);
+        return findAndOutputToWriterAsJSON(request, query);
     }
 
-    private void findComponents(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    private Response findComponents(Request request) throws IOException {
 
         String query = "select * from per:Component order by jcr:path";
-        findAndOutputToWriterAsJSON(request, response, query);
+        return findAndOutputToWriterAsJSON(request, query);
     }
 
-    private void findTemplates(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    private Response findTemplates(Request request) throws IOException {
 
         String query = "select * from per:Page where jcr:path like '/content/templates/%' order by jcr:path";
-        findAndOutputToWriterAsJSON(request, response, query);
+        return findAndOutputToWriterAsJSON(request, query);
     }
 
-    private void findAndOutputToWriterAsJSON(SlingHttpServletRequest request, SlingHttpServletResponse response, String query) throws IOException {
-        Writer w = response.getWriter();
+    private Response findAndOutputToWriterAsJSON(Request request, String query) throws IOException {
+        JsonResponse answer = new JsonResponse();
         if(query.length() == 0) {
-            noInput(response, query, w);
+            answer.writeAttribute("current", 1).writeAttribute("more", false).writeArray("data").writeClose();
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             try {
-                response.setContentType("application/json");
-
                 if (query != null && query.trim().length() > 0) {
                     QueryManager qm = session.getWorkspace().getQueryManager();
                     Query q = qm.createQuery(query, Query.SQL);
@@ -119,45 +116,32 @@ public class RestrictedSearchServlet extends SlingSafeMethodsServlet {
 
                     QueryResult res = q.execute();
                     NodeIterator nodes = res.getNodes();
-                    w.write("{");
-                    w.write("\"current\": "+"1"+",");
-                    w.write("\"more\": "+(nodes.getSize() > ROWS_PER_PAGE)+",");
-                    w.write("\"data\": [");
+                    answer.writeAttribute("current", 1);
+                    answer.writeAttribute("more", nodes.getSize() > ROWS_PER_PAGE);
+                    answer.writeArray("data");
                     while(nodes.hasNext()) {
                         Node node = nodes.nextNode();
-                        w.write("{ \"name\": \""+node.getName()+"\",");
-                        w.write("\"path\": \""+node.getPath()+"\",");
+                        answer.writeObject();
+                        answer.writeAttribute("name", node.getName());
+                        answer.writeAttribute("path", node.getPath());
                         if(node.getPrimaryNodeType().toString().equals("per:Component")) {
                             if(node.hasProperty("group")) {
                                 Property group = node.getProperty("group");
                                 if(group != null) {
-                                    w.write("\"group\": \""+group.getString()+"\",");
+                                    answer.writeAttribute("group", group.getString());
                                 }
                             }
                         }
-                        w.write("\"nodeType\": \""+node.getPrimaryNodeType()+"\"}");
-                        if(nodes.hasNext()) {
-                            w.write(',');
-                        }
+                        answer.writeAttribute("nodeType", node.getPrimaryNodeType() + "");
+                        answer.writeClose();
                     }
-                    w.write("]");
-                    w.write("}");
+                    answer.writeClose();
                 }
             } catch(Exception e) {
-                log.error("not able to get query manager",e);
+                answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unable to get query manager").setException(e);
             }
         }
+        return answer;
     }
-
-    private void noInput(SlingHttpServletResponse response, String query, Writer w) throws IOException {
-        w.write("{");
-        w.write("\"current\": 1,");
-        w.write("\"more\": fasle,");
-        w.write("\"data\": [");
-        w.write("]");
-        w.write("}");
-    }
-
-
 }
 

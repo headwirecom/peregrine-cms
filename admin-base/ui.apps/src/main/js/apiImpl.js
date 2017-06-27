@@ -61,6 +61,21 @@ function update(path) {
 
 }
 
+function updateWithForm(path, data) {
+
+    logger.debug('update() with data, path: ' + path + ', data: ' + data)
+    return axios.post(API_BASE+path, data).then( (response) => {
+        return new Promise( (resolve, reject) => {
+            logger.debug('UpdateWithForm, response data: ' + response.data)
+            resolve(response.data)
+        })
+    }).catch( (error) => {
+        logger.error('request to',
+            error.response.request.path, 'failed')
+        throw error
+    })
+}
+
 function getOrCreate(obj, path) {
 
     if(path === '/') {
@@ -173,8 +188,9 @@ class PerAdminImpl {
 
     populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/nodes.json/path//'+path+'//includeParents//'+includeParents)
-                .then( (data) => populateView('/admin', target, data).then( () => resolve() ))
+            fetch('/admin/nodes.json'+path+'?includeParents='+includeParents)
+                .then( (data) => populateView('/admin', target, data ) )
+                .then( () => resolve() )
         })
     }
 
@@ -189,7 +205,8 @@ class PerAdminImpl {
     populateComponentDefinitionFromNode(path) {
         return new Promise( (resolve, reject) => {
             var name;
-            fetch('/admin/componentDefinition.json/path//'+path)
+            //AS TOOD: Check if we need to have a trailing slash on the api URI
+            fetch('/admin/componentDefinition.json'+path)
                 .then( (data) => {
                     name = data.name
                     let component = callbacks.getComponentByName(name)
@@ -207,7 +224,7 @@ class PerAdminImpl {
 
     populatePageView(path) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/readNode.json/path//'+path)
+            fetch('/admin/readNode.json'+path)
                 .then( (data) => populateView('/pageView', 'page', data) )
                 .then( () => resolve() )
         })
@@ -215,7 +232,7 @@ class PerAdminImpl {
 
     populateObject(path, target, name) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/getObject.json/'+path)
+            fetch('/admin/getObject.json'+path)
                 .then( (data) => populateView(target, name, data).then( () => {
                     this.populateComponentDefinitionFromNode(path).then( () => {
                         resolve()
@@ -228,7 +245,10 @@ class PerAdminImpl {
 
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createPage.json/path//'+parentPath+'//name//'+name+'//templatePath//'+templatePath)
+            let data = new FormData()
+            data.append('name', name)
+            data.append('templatePath', templatePath)
+            updateWithForm('/admin/createPage.json/path'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -236,7 +256,10 @@ class PerAdminImpl {
 
     createObject(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createObject.json/path//'+parentPath+'//name//'+name+'//templatePath//'+templatePath)
+            let data = new FormData()
+            data.append('name', name)
+            data.append('templatePath', templatePath)
+            updateWithForm('/admin/createObject.json/path'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -244,7 +267,8 @@ class PerAdminImpl {
 
     deletePage(path) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/deletePage.json/path//'+path)
+            let data = new FormData()
+            updateWithForm('/admin/deletePage.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -252,7 +276,9 @@ class PerAdminImpl {
 
     renamePage(path, newName) {
         return new Promise( (resolve, reject) => {
-            update('/admin/rename.json/path//'+path+'//to//'+newName)
+            let data = new FormData()
+            data.append('to', newName)
+            updateWithForm('/admin/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -260,7 +286,10 @@ class PerAdminImpl {
 
     movePage(path, to, type) {
         return new Promise( (resolve, reject) => {
-            update('/admin/move.json/path//'+path+'//to//'+to+'//type//'+type)
+            let data = new FormData()
+            data.append('to', to)
+            data.append('type', type)
+            updateWithForm('/admin/move.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -268,7 +297,8 @@ class PerAdminImpl {
 
     deletePageNode(path, nodePath) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/deleteNode.json/path//'+nodePath)
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json'+nodePath, data)
                 .then( (data) => this.populatePageView(path) )
                 .then( () => resolve() )
         })
@@ -276,7 +306,9 @@ class PerAdminImpl {
 
     createTemplate(parentPath, name) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createTemplate.json/path//'+parentPath+'//name//'+name)
+            let data = new FormData()
+            data.append(':name', name)
+            updateWithForm('/admin/createTemplate.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -284,7 +316,9 @@ class PerAdminImpl {
 
     createFolder(parentPath, name) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createFolder.json/path//'+parentPath+'//name//'+name)
+            let data = new FormData()
+            data.append('name', name)
+            upupdateWithFormdate('/admin/createFolder.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -404,11 +438,13 @@ class PerAdminImpl {
     insertNodeAt(path, component, drop) {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
-
-            fetch('/admin/insertNodeAt.json/path//'+path+'//component//'+component+'//drop//'+drop)
+            let data = new FormData();
+            data.append('component', component)
+            data.append('drop', drop)
+            updateWithForm('/admin/insertNodeAt.json'+path, data)
                 .then( function(data) {
                     resolve(data)
-            })
+                })
         })
     }
 
@@ -428,10 +464,12 @@ class PerAdminImpl {
     }
 
     moveNodeTo(path, component, drop) {
-        logger.debug(arguments)
+        logger.debug('Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
         return new Promise( (resolve, reject) => {
-
-            fetch('/admin/moveNodeTo.json/path//'+path+'//component//'+component+'//drop//'+drop)
+            let formData = new FormData();
+            formData.append('component', component)
+            formData.append('drop', drop)
+            updateWithForm('/admin/moveNodeTo.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
                 })

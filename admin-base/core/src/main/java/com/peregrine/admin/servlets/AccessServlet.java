@@ -25,42 +25,32 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=access servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=api/admin/access"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Access Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/access"
+    }
 )
 @SuppressWarnings("serial")
-public class AccessServlet extends SlingSafeMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(AccessServlet.class);
+public class AccessServlet extends AbstractBaseServlet {
 
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        response.sendRedirect("/system/sling/info.sessionInfo.json");
-
+    Response handleRequest(Request request) throws IOException {
+        return new RedirectResponse("/system/sling/info.sessionInfo.json");
     }
-
 }
 

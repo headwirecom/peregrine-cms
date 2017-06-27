@@ -28,7 +28,8 @@ public interface ResourceRelocation {
      *
      * @param parent Parent Resource in which the resource is reordered
      * @param sourceChildName Name of the child resource to be reordered
-     * @param targetChildName Name of the resource of which the source resource is added before or after
+     * @param targetChildName Name of the resource of which the source resource is added before or after. If it is null
+     *                        then the source is moved to the end
      * @param before If true the source resource will be placed ahead of the target otherwise after than one
      */
     public void reorder(Resource parent, String sourceChildName, String targetChildName, boolean before) throws RepositoryException;

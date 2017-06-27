@@ -25,68 +25,86 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
 import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collections;
 
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=search servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=api/admin/list"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "List Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/list"
+    }
 )
 @SuppressWarnings("serial")
-public class ListServlet extends SlingSafeMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(ListServlet.class);
+public class ListServlet extends AbstractBaseServlet {
 
     @Reference
     ModelFactory modelFactory;
 
+
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        String suffix = request.getRequestPathInfo().getSuffix();
-
-        response.setContentType("application/json");
-        if("/tools".equals(suffix)) {
-            getJSONFromResource(request, response, "/content/admin/tools");
-        } else if("/tools/config".equals(suffix)) {
-            getJSONFromResource(request, response, "/content/admin/toolsConfig");
+    Response handleRequest(Request request) throws IOException {
+        String path = request.getParameter("path");
+        if(path == null || path.isEmpty()) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No suffix provided").setRequestPath(path);
         }
-
+        Response answer;
+        if("/tools".equals(path)) {
+            answer = getJSONFromResource(request.getResource(), "/content/admin/tools");
+        } else if("/tools/config".equals(path)) {
+            answer = getJSONFromResource(request.getResource(), "/content/admin/toolsConfig");
+        } else {
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown suffix: " + path);
+        }
+        return answer;
     }
 
-    private void getJSONFromResource(SlingHttpServletRequest request, SlingHttpServletResponse response, String resourcePath) throws IOException {
-        Resource res = request.getResourceResolver().getResource(resourcePath);
+    private Response getJSONFromResource(Resource resource, String resourcePath) throws IOException {
+        Response answer;
+        Resource res = resource.getResourceResolver().getResource(resourcePath);
         try {
             String out = modelFactory.exportModelForResource(res, "jackson", String.class, Collections.<String, String> emptyMap());
-            response.getWriter().write(out.toString());
+            answer = new PlainJsonResponse(out);
         } catch (ExportException e) {
-            log.error("error while exporting model", e);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Error while exporting model").setException(e);
         } catch (MissingExporterException e) {
-            log.error("no exporter 'jackson' defined", e);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("no exporter 'jackson' defined").setException(e);
         }
+        return answer;
     }
 
+    public static class PlainJsonResponse
+        extends JsonResponse {
+
+        private String json = "{}";
+
+        public PlainJsonResponse(String json) throws IOException {
+            if(json != null && !json.isEmpty()) {
+                this.json = json;
+            }
+        }
+
+        @Override
+        public String getContent() throws IOException {
+            return json;
+        }
+    }
 }
 

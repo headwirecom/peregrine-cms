@@ -25,51 +25,46 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=object servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=api/admin/getObject"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Object Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/getObject"
+    }
 )
 @SuppressWarnings("serial")
-public class GetObjectServlet extends SlingSafeMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(GetObjectServlet.class);
+public class GetObjectServlet extends AbstractBaseServlet {
 
     @Reference
     ModelFactory modelFactory;
 
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        String suffix = request.getRequestPathInfo().getSuffix();
-
-        Resource res = request.getResourceResolver().getResource(suffix);
+    Response handleRequest(Request request) throws IOException {
+        String path = request.getParameter("path");
+        Resource resource = request.getResourceByPath(path);
+        if(resource == null) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found").setRequestPath(path);
+        }
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
-        request.getRequestDispatcher(res, rdOptions).forward(request, response);
-
+        return new ForwardResponse(resource, rdOptions);
     }
-
 }
 

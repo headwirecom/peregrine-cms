@@ -76,11 +76,11 @@ public class ResourceRelocationService
         if(parent.getChild(sourceChildName) == null) {
             throw new IllegalArgumentException("Source Child: '" + sourceChildName + "' could not be found");
         }
-        if(parent.getChild(targetChildName) == null) {
+        if(targetChildName != null && parent.getChild(targetChildName) == null) {
             throw new IllegalArgumentException("Target Child: '" + targetChildName + "' could not be found");
         }
         Node toNode = parent.adaptTo(Node.class);
-        if(before) {
+        if(before || targetChildName == null) {
             toNode.orderBefore(sourceChildName, targetChildName);
         } else {
             Node nextNode = getNextNode(toNode, targetChildName);

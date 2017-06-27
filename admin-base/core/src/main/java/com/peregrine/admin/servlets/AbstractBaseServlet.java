@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
@@ -17,8 +18,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.admin.servlets.ServletHelper.obtainParameters;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
@@ -52,7 +54,7 @@ public abstract class AbstractBaseServlet
         doRequest(request, response);
     }
 
-    private void doRequest(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    private void doRequest(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
         Response out = null;
         try {
             out = handleRequest(new Request(request, response));
@@ -70,17 +72,21 @@ public abstract class AbstractBaseServlet
         }
         response.setContentType(out.getMimeType());
         String output = out.getContent();
-        if("error".equals(out.getType())) {
-            ErrorResponse error = (ErrorResponse) out;
-            response.setStatus(error.getHttpErrorCode());
-        }
-        if(output == null) {
-            out.writeTo(response.getOutputStream());
+        if("direct".equals(out.getType())) {
+            out.handleDirect(request, response);
         } else {
-            logger.trace("Servlet Response: '{}'", output);
-            response.getWriter().write(output);
+            if("error".equals(out.getType())) {
+                ErrorResponse error = (ErrorResponse) out;
+                response.setStatus(error.getHttpErrorCode());
+            }
+            if(output == null) {
+                out.writeTo(response.getOutputStream());
+            } else {
+                logger.trace("Servlet Response: '{}'", output);
+                response.getWriter().write(output);
+            }
+            response.flushBuffer();
         }
-        response.flushBuffer();
     }
 
     abstract Response handleRequest(Request request) throws IOException;
@@ -93,7 +99,7 @@ public abstract class AbstractBaseServlet
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
             this.request = request;
             this.response = response;
-            this.parameters = convertSuffixToParams(request);
+            this.parameters = obtainParameters(request);
         }
 
         public SlingHttpServletRequest getRequest() {
@@ -119,6 +125,8 @@ public abstract class AbstractBaseServlet
 
         public Resource getResource() { return request.getResource(); }
 
+        public Resource getResourceByPath(String path) { return request.getResourceResolver().getResource(path); }
+
         public String getSuffix() { return request.getRequestPathInfo().getSuffix(); }
     }
 
@@ -139,14 +147,21 @@ public abstract class AbstractBaseServlet
             throw new UnsupportedOperationException("Write To is not supported");
         }
 
+        public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
+            throw new UnsupportedOperationException("Handle Direct is not supported");
+        }
+
         public abstract String getMimeType();
     }
 
     public static class JsonResponse
         extends Response
     {
+        private enum STATE { object, array };
+
         private JsonGenerator json;
         private StringWriter writer;
+        private Stack<STATE> states = new Stack<>();
 
         public JsonResponse() throws IOException {
             this("json");
@@ -163,15 +178,67 @@ public abstract class AbstractBaseServlet
             json = jf.createGenerator(writer);
             json.useDefaultPrettyPrinter();
             json.writeStartObject();
+            states.push(STATE.object);
         }
 
-        public JsonGenerator getJson() {
-            return json;
+        public JsonResponse writeAttribute(String name, boolean value) throws IOException {
+            json.writeBooleanField(name, value);
+            return this;
+        }
+
+        public JsonResponse writeAttribute(String name, int value) throws IOException {
+            json.writeNumberField(name, value);
+            return this;
+        }
+
+        public JsonResponse writeAttribute(String name, String value) throws IOException {
+            json.writeStringField(name, value);
+            return this;
+        }
+
+        public JsonResponse writeAttributeRaw(String name, String value) throws IOException {
+            json.writeFieldName(name);
+            json.writeRawValue(value);
+            return this;
+        }
+
+        public JsonResponse writeArray(String name) throws IOException {
+            json.writeArrayFieldStart(name);
+            states.push(STATE.array);
+            return this;
+        }
+
+        public JsonResponse writeObject() throws IOException {
+            json.writeStartObject();
+            states.push(STATE.object);
+            return this;
+        }
+
+        public JsonResponse writeClose() throws IOException {
+            STATE last = states.pop();
+            switch(last) {
+                case object:
+                    json.writeEndObject();
+                    break;
+                case array:
+                    json.writeEndArray();
+                    break;
+                default:
+                    // Nothing to do here
+            }
+            return this;
+        }
+
+        public JsonResponse writeCloseAll() throws IOException {
+            while(!states.empty()) {
+                writeClose();
+            }
+            json.close();
+            return this;
         }
 
         public String getContent() throws IOException {
-            json.writeEndObject();
-            json.close();
+            writeCloseAll();
             return writer.toString();
         }
 
@@ -200,30 +267,25 @@ public abstract class AbstractBaseServlet
         }
 
         public ErrorResponse setErrorCode(int code) throws IOException {
-            getJson().writeNumberField("code", code);
-            return this;
+            return (ErrorResponse) writeAttribute("code", code);
         }
 
         public ErrorResponse setErrorMessage(String message) throws IOException {
-            getJson().writeStringField("message", message);
-            return this;
+            return (ErrorResponse) writeAttribute("message", message);
         }
 
         public ErrorResponse setRequestPath(String path) throws IOException {
-            getJson().writeStringField("path", path);
-            return this;
+            return (ErrorResponse) writeAttribute("path", path);
         }
 
         public ErrorResponse setCustom(String fieldName, String value) throws IOException {
-            getJson().writeStringField(fieldName, value);
-            return this;
+            return (ErrorResponse) writeAttribute(fieldName, value);
         }
 
         public ErrorResponse setException(Exception e) throws IOException {
             StringWriter out = new StringWriter();
             e.printStackTrace(new PrintWriter(out));
-            getJson().writeStringField("exception", out.toString());
-            return this;
+            return (ErrorResponse) writeAttribute("exception", out.toString());
         }
     }
 
@@ -262,6 +324,56 @@ public abstract class AbstractBaseServlet
         @Override
         public String getMimeType() {
             return mimeType;
+        }
+    }
+
+    public static class RedirectResponse
+        extends Response
+    {
+        private String redirectTo;
+
+        public RedirectResponse(String redirectTo) {
+            super("direct");
+            if(redirectTo == null || redirectTo.isEmpty()) {
+                throw new IllegalArgumentException("Redirect To path must be provided");
+            }
+            this.redirectTo = redirectTo;
+        }
+
+        @Override
+        public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+            response.sendRedirect(redirectTo);
+        }
+
+        @Override
+        public String getMimeType() {
+            return null;
+        }
+    }
+
+    public static class ForwardResponse
+        extends Response
+    {
+        private Resource resource;
+        private RequestDispatcherOptions requestDispatcherOptions;
+
+        public ForwardResponse(Resource resource, RequestDispatcherOptions requestDispatcherOptions) {
+            super("direct");
+            if(resource == null) {
+                throw new IllegalArgumentException("Redirect Resource must be provided");
+            }
+            this.resource = resource;
+            this.requestDispatcherOptions = requestDispatcherOptions;
+        }
+
+        @Override
+        public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
+            request.getRequestDispatcher(resource, requestDispatcherOptions).forward(request, response);
+        }
+
+        @Override
+        public String getMimeType() {
+            return null;
         }
     }
 }

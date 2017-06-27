@@ -89,25 +89,36 @@ paths:
             type: object
             additionalProperties:
               type: object
-  '/createFolder.json/path//{path}//name//{name}':
-    get:
+  '/createFolder.json/{path}':
+    post:
       description: create a new folder in the system
       parameters:
         - name: path
           type: string
           in: path
           description: the path where to create the new folder
+          required: true
         - name: name
           type: string
-          in: path
+          in: formData
           description: the name of the new folder
+          required: true
       responses:
-        '200':
+        200:
           description: returns all the content for the given node
           schema:
             type: object
-            additionalProperties:
-              type: object
+            properties:
+              name:
+                type: string
+                description: Name of the created Folder
+              path:
+                type: string
+                description: Path of the created Folder
+        400:
+          description: If the path did not resolve to a resource, the name is null or the folder already exists
+          schema:
+            $ref: "#/definitions/Error"
   '/createObject.json/path//{path}//name//{name}//templatePath//{templatePath}':
     get:
       description: create a new object in the system
@@ -131,29 +142,44 @@ paths:
             type: object
             additionalProperties:
               type: object
-  '/createPage.json/path//{path}//name//{name}//templatePath//{templatePath}':
-    get:
+  '/createPage.json/{path}':
+    post:
       description: create a new page in the system
       parameters:
         - name: path
           type: string
           in: path
           description: the path where to create the page
+          required: true
         - name: name
           type: string
-          in: path
+          in: formData
           description: the name of the new page
+          required: true
         - name: templatePath
           type: string
-          in: path
+          in: formData
           description: the path to the template of the page
+          required: true
       responses:
-        '200':
+        200:
           description: returns all the content for the given node
           schema:
             type: object
-            additionalProperties:
-              type: object
+            properties:
+              name:
+                type: string
+                description: Name of the created Folder
+              path:
+                type: string
+                description: Path of the created Folder
+              teamplatePath:
+                type: string
+                description: Path of the underlying Template
+        400:
+          description: If the path did not resolve to a resource
+          schema:
+            $ref: "#/definitions/Error"
   '/createTemplate.json/path//{path}//name//{name}':
     get:
       description: create a new template in the system
@@ -334,7 +360,7 @@ paths:
             type: object
             additionalProperties:
               type: object
-  '/repl.json/path//{path}//name//{name}//deep//{deep}':
+  '/repl.json/{path}':
     post:
       description: Replicates the given node(s) using the named replication service
       parameters:
@@ -345,22 +371,38 @@ paths:
           required: true
         - name: name
           type: string
-          in: path
+          in: formData
           description: the name of the replication service to be used
           required: true
         - name: deep
           type: boolean
-          in: path
+          in: formData
           description: flag indicating if only the given node and its content is replicated or all sub nodes
           required: false
       responses:
-        '200':
-          description: returns the root node name / path and the list of the nodes created by the replication
+        200:
+          description: returns the root node name / path and the list of the nodes referenced
           schema:
             type: object
-            additionalProperties:
-              type: object
-  '/ref.json/path//{path}':
+            properties:
+              sourceName:
+                type: string
+              sourcePath:
+                type: string
+              replicates:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    path:
+                      type: string
+        400:
+          description: If the path did not resolve to a resource
+          schema:
+            $ref: "#/definitions/Error"
+  '/ref.json/{path}':
     get:
       description: List references and their references of the given page
       parameters:
@@ -370,21 +412,28 @@ paths:
           description: the path of the resource to lists its references
           required: true
       responses:
-        '200':
+        200:
           description: returns the root node name / path and the list of the nodes referenced
           schema:
             type: object
-            additionalProperties:
-              type: object
-        '400':
+            properties:
+              sourceName:
+                type: string
+              sourcePath:
+                type: string
+              references:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    path:
+                      type: string
+        400:
           description: If the path did not resolve to a resource
           schema:
-            type: object
-            properties:
-              error:
-                type: string
-              path:
-                type: string
+            $ref: "#/definitions/Error"
   '/refBy.json/path//{path}':
     get:
       description: Lists all the nodes that have a reference to the given node
@@ -395,22 +444,37 @@ paths:
           description: the path of the resource which is the targer of the reference
           required: true
       responses:
-        '200':
+        200:
           description: returns the root node name / path and the list of the nodes that reference the given page which includes the node, the property node and the property name that contains the link
           schema:
             type: object
-            additionalProperties:
-              type: object
-        '400':
+            properties:
+              sourceName:
+                type: string
+              sourcePath:
+                type: string
+              referencedBy:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      description: Name of the Page having a reference
+                      type: string
+                    path:
+                      description: Path to the Page having a reference
+                      type: string
+                    propertyName:
+                      description: Name of the Property containing the reference
+                      type: string
+                    propertyPath:
+                      description: Path of the Resource with the property containing the reference
+                      type: string
+        400:
           description: If the path did not resolve to a resource
           schema:
-            type: object
-            properties:
-              error:
-                type: string
-              path:
-                type: string
-  '/move.json/path//{path}//to//{to}//type//{type}':
+            $ref: "#/definitions/Error"
+  '/move.json/{path}':
     post:
       description: Move a given node to a new place
       parameters:
@@ -421,31 +485,24 @@ paths:
           required: true
         - name: to
           type: string
-          in: path
+          in: formData
           description: the path of the resource that is either the new parent for type 'child' or the next/previous sibling for type 'before' or 'after'
           required: true
         - name: type
           type: string
-          in: path
+          in: formData
           description: The type of move which can be 'child' (add as child of the given to node), 'after' (add after the given to node) or 'before' (add before the given to node)
           required: true
       responses:
-        '200':
+        200:
           description: returns the from node name and path and the new node name and path
           schema:
-            type: object
-            additionalProperties:
-              type: object
-        '400':
+            $ref: "#/definitions/Move"
+        400:
           description: If the path and to did not resolve to a resource or if the type was wrong
           schema:
-            type: object
-            properties:
-              error:
-                type: string
-              path:
-                type: string
-  '/rename.json/path//{path}//to//{to}':
+            $ref: "#/definitions/Error"
+  '/rename.json/{path}':
     post:
       description: Renames a Resource and tries to keep the order intact
       parameters:
@@ -463,27 +520,33 @@ paths:
         200:
           description: returns the from node name and path and the new node name and path
           schema:
-            type: object
-            properties:
-              sourceName:
-                type: string
-              sourcePath:
-                type: string
-              tagetName:
-                type: string
-              targetPath:
-                type: string
-            additionalProperties:
-              type: object
+            $ref: "#/definitions/Move"
         400:
-          description: Expected Error
+          description: If the path did not resolve to a resource, the to name was not provided or contained a slash
           schema:
             $ref: "#/definitions/Error"
 definitions:
   Error:
     type: object
     properties:
+      code:
+        type: int32
       message:
         type: string
       path:
+        type: string
+      exception:
+        type: string
+      additionalProperties:
+        type: string
+  Move:
+    type: object
+    properties:
+      sourceName:
+        type: string
+      sourcePath:
+        type: string
+      tagetName:
+        type: string
+      targetPath:
         type: string

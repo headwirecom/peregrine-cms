@@ -25,68 +25,68 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=create template servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/createTemplate"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Create Template Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "POST",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/createTemplate"
+    }
 )
 @SuppressWarnings("serial")
-public class CreateTemplateServlet extends SlingSafeMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(CreateTemplateServlet.class);
+public class CreateTemplateServlet extends AbstractBaseServlet {
 
     @Reference
     ModelFactory modelFactory;
 
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        Map<String, String> params = convertSuffixToParams(request);
-        String parentPath = params.get("path");
-        log.debug(params.toString());
-        
-        Session session = request.getResourceResolver().adaptTo(Session.class);
+    Response handleRequest(Request request) throws IOException {
+        String parentPath = request.getParameter("path");
+        Resource parent = request.getResourceByPath(parentPath);
+        if(parent == null) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parent Path not found").setRequestPath(parentPath);
+        }
+        String name = request.getParameter("name");
+        if(name == null || name.isEmpty()) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Object Name must be provided").setRequestPath(parentPath);
+        }
         try {
-            Node node = session.getRootNode().addNode(parentPath.substring(1)+"/"+params.get("name"));
-            node.setPrimaryType("per:Page");
-            Node content = node.addNode("jcr:content");
-            content.setPrimaryType("per:PageContent");
-            content.setProperty("sling:resourceType", "example/components/page");
-            content.setProperty("jcr:title", params.get("name"));
-            session.save();
-            response.setStatus(HttpServletResponse.SC_OK);
+            Node parentNode = parent.adaptTo(Node.class);
+            Node newTemplate = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
+            Node content = newTemplate.addNode(JCR_CONTENT, PAGE_CONTENT_TYPE);
+            content.setProperty(SLING_RESOURCE_TYPE, "example/components/page");
+            content.setProperty(JCR_TITLE, name);
+            parentNode.getSession().save();
+            return new JsonResponse()
+                .writeAttribute("type", "template").writeAttribute("status", "created")
+                .writeAttribute("name", name).writeAttribute("path", newTemplate.getPath());
         } catch (RepositoryException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            e.printStackTrace(response.getWriter());
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create template").setException(e);
         }
     }
 
