@@ -19,6 +19,7 @@ public class PerConstants {
     public static final String PAGE_PRIMARY_TYPE = "per:Page";
     public static final String PAGE_CONTENT_TYPE = "per:PageContent";
     public static final String ASSET_PRIMARY_TYPE = "per:Asset";
+    public static final String ASSET_CONTENT_TYPE = "per:AssetContent";
     public static final String OBJECT_PRIMARY_TYPE = "per:Object";
     public static final String PER_REPLICATION = "per:Replication";
     public static final String PER_REPLICATED_BY = "per:ReplicatedBy";

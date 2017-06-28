@@ -468,8 +468,9 @@ class PerAdminImpl {
             let postData = new FormData();
 
             postData.append('content', JSON.stringify(data))
+            postData.append('drop', drop);
 
-            axios.post('/api/admin/insertNodeAt.json/path//'+path+'//drop//'+drop, postData)
+            updateWithForm('/admin/insertNodeAt.json'+path, postData)
                 .then( (result) => {
                     resolve(result.data)
                 })

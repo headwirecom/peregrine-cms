@@ -88,8 +88,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class UploadFilesServlet extends AbstractBaseServlet {
 
-    private final Logger log = LoggerFactory.getLogger(UploadFilesServlet.class);
-
     @Reference
     ModelFactory modelFactory;
 
@@ -107,12 +105,11 @@ public class UploadFilesServlet extends AbstractBaseServlet {
         String path = request.getParameter("path");
         try {
             Resource resource = request.getResourceByPath(path);
-//            Node node = session.getRootNode().getNode(parentPath.substring(1));
-            log.debug("Upload files to resource: '{}'", resource);
+            logger.debug("Upload files to resource: '{}'", resource);
             List<PerAsset> assets = new ArrayList<>();
             for (Part part : request.getParts()) {
-                log.debug("part type {}",part.getContentType());
-                log.debug("part name {}",part.getName());
+                logger.debug("part type {}",part.getContentType());
+                logger.debug("part name {}",part.getName());
 
                 Node node = resource.adaptTo(Node.class);
                 Node newAsset = node.addNode(part.getName(), ASSET_PRIMARY_TYPE);
@@ -143,7 +140,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
                             String name = tag.getTagName();
                             String tagName = selector != null ? selector.acceptTag(name) : name;
                             if(tagName != null) {
-                                log.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
+                                logger.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
                                 if(asJson) {
                                     json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
                                 } else {
@@ -163,7 +160,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
                     e.printStackTrace();
                 }
             }
-            log.debug("Upload Done successfully and saved");
+            logger.debug("Upload Done successfully and saved");
             JsonResponse answer = new JsonResponse()
                 .writeAttribute("resourceName", resource.getName())
                 .writeAttribute("resourcePath", resource.getPath())
@@ -176,7 +173,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             }
             return answer;
         } catch (RepositoryException e) {
-            log.debug("Upload Failed", e);
+            logger.debug("Upload Failed", e);
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Upload Failed because of JCR Repository").setRequestPath(path).setException(e);
         } catch(ServletException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Upload Failed because of Servlet Parts Problem").setRequestPath(path).setException(e);
