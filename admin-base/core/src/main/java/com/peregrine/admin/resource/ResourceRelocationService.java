@@ -87,10 +87,10 @@ public class ResourceRelocationService
             throw new IllegalArgumentException("Parent Resource must be specified");
         }
         if(parent.getChild(sourceChildName) == null) {
-            throw new IllegalArgumentException("Source Child: '" + sourceChildName + "' could not be found");
+            throw new IllegalArgumentException("Source Child: '" + sourceChildName + "' could not be found in Parent: '" + parent.getPath() + "'");
         }
         if(targetChildName != null && parent.getChild(targetChildName) == null) {
-            throw new IllegalArgumentException("Target Child: '" + targetChildName + "' could not be found");
+            throw new IllegalArgumentException("Target Child: '" + targetChildName + "' could not be found in Parent: '" + parent.getPath() + "'");
         }
         Node toNode = parent.adaptTo(Node.class);
         if(before) {

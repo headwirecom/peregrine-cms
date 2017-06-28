@@ -91,7 +91,7 @@ public class MoveNodeTo extends AbstractBaseServlet {
                 if(addBefore || sameParent) {
                     // If we move to the front or if it is the same parent (move to the end)
                     // No Target Child Name means we move it the front for before and end for after
-                    resourceRelocation.reorder(toResource.getParent(), fromResource.getName(), null, addBefore);
+                    resourceRelocation.reorder(toResource, fromResource.getName(), null, addBefore);
                 }
                 answer = new RedirectResponse(toPath + ".model.json");
             } else {
