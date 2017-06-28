@@ -71,80 +71,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
     @Reference
     ResourceRelocation resourceRelocation;
 
-//AS This servlet creates a node (changing the JCR tree) so GET was deprecated
-//    @Override
-//    protected void doGet(SlingHttpServletRequest request,
-//                         SlingHttpServletResponse response) throws ServletException,
-//            IOException {
-//
-//        Map<String, String> params = convertSuffixToParams(request);
-//        String path = params.get("path");
-//        String component = params.get("component");
-//        if(component.startsWith("/apps")) {
-//            component = component.substring(component.indexOf('/', 1) + 1);
-//        }
-//        String drop = params.get("drop");
-//        log.debug(params.toString());
-//
-//        try {
-//            Session session = request.getResourceResolver().adaptTo(Session.class);
-//            if ("into-before".equals(drop)) {
-//                Node parent = session.getNode(path);
-//                NodeIterator nodes = parent.getNodes();
-//                Node firstChild = null;
-//                if(nodes.hasNext()) {
-//                    firstChild = (Node) nodes.next();
-//                }
-//                Node node = parent.addNode("n" + UUID.randomUUID(), "nt:unstructured");
-//                node.setProperty("sling:resourceType", component);
-//                if(firstChild != null) parent.orderBefore(node.getName(), firstChild.getName());
-//                session.save();
-//                response.sendRedirect(path + ".model.json");
-//            }
-//            else if ("into-after".equals(drop)) {
-//                    Node node = session.getNode(path).addNode("n"+UUID.randomUUID(), "nt:unstructured");
-//                    node.setProperty("sling:resourceType", component);
-//                    session.save();
-//                    response.sendRedirect(path+".model.json");
-//            } else if("before".equals(drop)) {
-//                Node node = session.getNode(path);
-//                Node parent = node.getParent();
-//                Node newNode = parent.addNode("n"+UUID.randomUUID(), "nt:unstructured");
-//                newNode.setProperty("sling:resourceType", component);
-//                parent.orderBefore(newNode.getName(), node.getName());
-//                session.save();
-//                response.sendRedirect(parent.getPath()+".model.json");
-//
-//            } else if("after".equals(drop)) {
-//                Node node = session.getNode(path);
-//                Node parent = node.getParent();
-//                Node newNode = parent.addNode("n"+UUID.randomUUID(), "nt:unstructured");
-//                newNode.setProperty("sling:resourceType", component);
-//                Node after = null;
-//                for (NodeIterator it = parent.getNodes(); it.hasNext(); ) {
-//                    Node child = (Node) it.next();
-//                    if(child.getPath().equals(node.getPath())) {
-//                        if(it.hasNext()) {
-//                            after = (Node) it.next();
-//                            break;
-//                        }
-//                    }
-//                }
-//                if(after != null) {
-//                    // if we are inserting in the last position then we are already at the right place
-//                    parent.orderBefore(newNode.getName(), after.getName());
-//                }
-//                session.save();
-//                response.sendRedirect(parent.getPath()+".model.json");
-//
-//            }
-//        } catch (RepositoryException e) {
-//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            e.printStackTrace(response.getWriter());
-//        }
-//
-//    }
-
     @Override
     Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
@@ -158,8 +84,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
             type = request.getParameter("drop", "not provided");
         }
         boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith("into");
-//        // This line is only here to be backwards compatible
-//        addAsChild = addAsChild || "into".equals(type);
         boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith("-before");
         String component = request.getParameter("component");
         if(component != null && component.startsWith("/apps")) {

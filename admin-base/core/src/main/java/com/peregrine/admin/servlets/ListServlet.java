@@ -40,6 +40,7 @@ import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -49,6 +50,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "List Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "GET",
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/list"
     }
 )

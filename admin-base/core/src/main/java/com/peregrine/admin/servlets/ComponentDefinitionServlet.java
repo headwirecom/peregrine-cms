@@ -27,7 +27,6 @@ package com.peregrine.admin.servlets;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
@@ -39,16 +38,19 @@ import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Component Definition Servlet",
-                SERVICE_VENDOR + EQUALS + PER_VENDOR,
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=api/admin/componentDefinition"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Component Definition Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "GET",
+        SLING_SERVLET_RESOURCE_TYPES +"=api/admin/componentDefinition"
+    }
 )
 @SuppressWarnings("serial")
 public class ComponentDefinitionServlet extends AbstractBaseServlet {
