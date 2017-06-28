@@ -65,15 +65,30 @@ function updateWithForm(path, data) {
 
     logger.debug('update() with data, path: ' + path + ', data: ' + data)
     return axios.post(API_BASE+path, data).then( (response) => {
-        return new Promise( (resolve, reject) => {
-            logger.debug('UpdateWithForm, response data: ' + response.data)
-            resolve(response.data)
+            return new Promise( (resolve, reject) => {
+                logger.debug('UpdateWithForm, response data: ' + response.data)
+                resolve(response.data)
+            })
+        }).catch( (error) => {
+                logger.error('request to',
+                error.response.request.path, 'failed')
+            throw error
         })
-    }).catch( (error) => {
-        logger.error('request to',
-            error.response.request.path, 'failed')
-        throw error
-    })
+}
+
+function updateWithFormAndConfig(path, data, config) {
+
+    logger.debug('Upddate with Form and Config, path: ' + path + ', data: ' + data)
+    return axios.post(API_BASE+path, data, config).then( (response) => {
+            return new Promise( (resolve, reject) => {
+                logger.debug('updateWithFormAndConfig, response data: ' + response.data)
+                resolve(response.data)
+            })
+        }).catch( (error) => {
+                logger.error('request to',
+                error.response.request.path, 'failed')
+            throw error
+        })
 }
 
 function getOrCreate(obj, path) {
@@ -334,19 +349,18 @@ class PerAdminImpl {
 
         return new Promise( (resolve, reject) => {
 
-                logger.fine('uploading files to', path)
-                logger.fine(files)
+            logger.fine('uploading files to', path)
+            logger.fine(files)
 
-                var data = new FormData()
-                for(var i = 0; i < files.length; i++) {
-                    var file = files[i]
-                    data.append(file.name, file, file.name)
-                }
+            var data = new FormData()
+            for(var i = 0; i < files.length; i++) {
+                var file = files[i]
+                data.append(file.name, file, file.name)
+            }
 
-                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data, config).then( (response) => {
-                        logger.fine(response.data)
-                        this.populateNodesForBrowser(path) })
-                    .then( () => resolve() )
+            updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
+                .then( (response) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
         })
     }
 
@@ -357,9 +371,8 @@ class PerAdminImpl {
                 var data = new FormData()
                 data.append(name, response.data, name)
 
-                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data).then( (response) => {
-                    logger.fine(response.data)
-                    this.populateNodesForBrowser(path) })
+                updateWithFormAndConfig('/admin/uploadFiles.json'+path, data)
+                    .then( (response) => this.populateNodesForBrowser(path) )
                     .then( () => resolve() )
             })
         })

@@ -12,10 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -128,6 +130,8 @@ public abstract class AbstractBaseServlet
         public Resource getResourceByPath(String path) { return request.getResourceResolver().getResource(path); }
 
         public String getSuffix() { return request.getRequestPathInfo().getSuffix(); }
+
+        public Collection<Part> getParts() throws IOException, ServletException { return request.getParts(); }
     }
 
     public static abstract class Response {
