@@ -359,7 +359,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   '/moveNodeTo.json{path}':
-    get:
+    post:
       description: list the available tools
       parameters:
         - name: path
