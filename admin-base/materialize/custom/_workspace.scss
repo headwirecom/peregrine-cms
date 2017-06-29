@@ -35,10 +35,10 @@
 					.editable-actions {
 						display: none;
 						position: absolute; 
-						right: -1px; 
-						bottom: -1px; 
+						z-index: 1;
+						right: 0; 
+						bottom: 0; 
 						background-color: color("blue-grey", "darken-3");
-						pointer-events: auto;
 						height: 25px;
 						text-align: center;
 						box-shadow: 0 10px 10px rgba(0,0,0,.5);
@@ -51,6 +51,7 @@
 							li {
 								display: inline-block;
 								height: 100%;
+								max-width: 33.333%;
 								border-right: 1px solid color("blue-grey", "darken-4");
 								border-left: 1px solid color("blue-grey", "darken-2");
 								> a {
@@ -210,6 +211,26 @@
 				color: color("blue-grey", "lighten-1");
 			}
 		}
+		.toggle-fullscreen {
+			position: absolute;
+			right: 1rem;
+			top: 1rem;
+			border: 0;
+			background: none;
+			padding: 0;
+			.material-icons {
+				font-size: 30px;
+				color: color("blue-grey", "base");
+				transition: color .1s ease-in-out;
+			}
+			&:hover,
+			&:focus,
+			&:active {
+				.material-icons {
+					color: color("blue-grey", "darken-2");
+				}
+			}
+    }
 
 		&.visible {
 			position: relative;
@@ -220,6 +241,7 @@
 			border-left: 1px solid color("blue-grey", "lighten-4");
 			overflow: visible;
 		}
+
 	}
 	&.right-panel-visible {
 		.peregrine-content-view {
@@ -227,6 +249,14 @@
 		}
 		.right-panel {
 			width: 300px;
+			&.fullscreen {
+				position: absolute;
+				top: 0;
+				left:0;
+				right:0;
+				bottom:0;
+				width: auto;
+			}
 			.hide-right-panel {
 				opacity: 1;
 			}
