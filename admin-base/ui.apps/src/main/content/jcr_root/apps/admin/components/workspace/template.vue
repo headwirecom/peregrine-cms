@@ -36,7 +36,7 @@
             }"><i class="material-icons">keyboard_arrow_left</i>
         </admin-components-action>
 
-        <div class="right-panel">
+        <div v-bind:class="`right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
             <admin-components-action v-if="!state.editorVisible" v-bind:model="{
                 classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
@@ -44,6 +44,21 @@
             }">
                 <i class="material-icons">highlight_off</i>
             </admin-components-action>
+            
+            <button 
+              v-if="state.editorVisible && isFullscreen"
+              type="button" 
+              class="toggle-fullscreen" 
+              v-on:click.prevent="onEditorNarrow">
+              <i class="material-icons">highlight_off</i>
+            </button>
+            <button 
+              v-if="state.editorVisible && !isFullscreen"
+              type="button" 
+              class="toggle-fullscreen" 
+              v-on:click.prevent="onEditorFullscreen">
+              <i class="material-icons">fullscreen</i>
+            </button>
 
             <component
                     v-if         = "state.editorVisible"
@@ -63,6 +78,11 @@
 <script>
     export default {
         props: ['model'],
+        data(){
+          return {
+            isFullscreen: false
+          }
+        },
         computed: {
             state: function() {
                 return $perAdminApp.getView().state
@@ -104,6 +124,13 @@
 //                }
             },
 
+            onEditorNarrow(){
+              this.isFullscreen = false
+            },
+
+            onEditorFullscreen(){
+              this.isFullscreen = true
+            }
         }
     }
 </script>
