@@ -45,12 +45,12 @@
                         <ul v-if="enableTools">
                             <li class="waves-effect waves-light">
                                 <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
-                                    <i class="svg-icon svg-icon-copy"></i>
+                                    <i class="material-icons">content_copy</i>
                                 </a>
                             </li>
                             <li v-if="clipboard" class="waves-effect waves-light">
                                 <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
-                                    <i class="svg-icon svg-icon-paste"></i>
+                                    <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
                             <li class="waves-effect waves-light">
