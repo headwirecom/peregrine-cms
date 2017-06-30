@@ -4,91 +4,93 @@
     width: 100%;
     padding: 0 0.75rem;
     overflow: auto;
-    > .vue-form-generator {
-        margin: 0 -0.75rem;
-        .vue-form-generator {
-            margin: 0;
-        }
-        * {
-            box-sizing: border-box;
-        }
-        fieldset {
-            border: 0;
-            padding: 0;
-            margin: 0;
-            min-width: auto;
-            .form-group {
-                padding: 0 0.75rem;
-                input:not([type]), 
-                input[type=text], 
-                input[type=password], 
-                input[type=email], 
-                input[type=url], 
-                input[type=time], 
-                input[type=date], 
-                input[type=datetime], 
-                input[type=datetime-local], 
-                input[type=tel], 
-                input[type=number], 
-                input[type=search], 
-                textarea.materialize-textarea,
-                .form-control {
-                    border: 1px solid color("blue-grey", "lighten-4");
-                    background-color: #fff;
+    .editor-panel-content {
+        > .vue-form-generator {
+            margin: 0 -0.75rem;
+            .vue-form-generator {
+                margin: 0;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            fieldset {
+                border: 0;
+                padding: 0;
+                margin: 0;
+                min-width: auto;
+                .form-group {
                     padding: 0 0.75rem;
-                    &:focus:not([readonly]) {
-                        border-bottom-color: color("blue-grey", "base");
-                        box-shadow: 0 1px 0 0 color("blue-grey", "base");
-                    }
-                }
-                label {
-                    font-size: 14px;
-                    color: color("blue-grey", "darken-2");
-                }
-                .field-wrap {
-                    &.field-with-button {
-                        input {
-                            width: calc(100% - 3rem);
-                            + button {
-                                width: 3rem;
-                                height: 3rem;
-                                float:right;
-                                display: inline-block;
-                                border: 1px solid color("blue-grey", "lighten-4");
-                                border-left: 0;
-                                background-color: color("blue-grey", "darken-3");
-                                color: #fff;
-                            }
+                    input:not([type]), 
+                    input[type=text], 
+                    input[type=password], 
+                    input[type=email], 
+                    input[type=url], 
+                    input[type=time], 
+                    input[type=date], 
+                    input[type=datetime], 
+                    input[type=datetime-local], 
+                    input[type=tel], 
+                    input[type=number], 
+                    input[type=search], 
+                    textarea.materialize-textarea,
+                    .form-control {
+                        border: 1px solid color("blue-grey", "lighten-4");
+                        background-color: #fff;
+                        padding: 0 0.75rem;
+                        &:focus:not([readonly]) {
+                            border-bottom-color: color("blue-grey", "base");
+                            box-shadow: 0 1px 0 0 color("blue-grey", "base");
                         }
                     }
-
-                }
-                &.field-collection {
-                    padding: 0;
-                    clear: both;
-                    margin-top: 1.5rem;
-                    .collapsible {
-                        margin: 0;
-                        box-shadow: none;
-                        border-left: 0;
+                    label {
+                        font-size: 14px;
+                        color: color("blue-grey", "darken-2");
                     }
-                }
-                &.field-materialswitch {
-                    display: inline-block;
-                    .switch {
-                        label {
-                            .lever {
-                                background-color: color("blue-grey", "lighten-3");
-                                &:after {
-                                    background-color: color("blue-grey", "lighten-3");
-                                    //box-shadow: none;
+                    .field-wrap {
+                        &.field-with-button {
+                            input {
+                                width: calc(100% - 3rem);
+                                + button {
+                                    width: 3rem;
+                                    height: 3rem;
+                                    float:right;
+                                    display: inline-block;
+                                    border: 1px solid color("blue-grey", "lighten-4");
+                                    border-left: 0;
+                                    background-color: color("blue-grey", "darken-3");
+                                    color: #fff;
                                 }
                             }
-                            input[type=checkbox]:checked {
-                                + .lever {
-                                    background-color: color("blue-grey", "base");
+                        }
+
+                    }
+                    &.field-collection {
+                        padding: 0;
+                        clear: both;
+                        margin-top: 1.5rem;
+                        .collapsible {
+                            margin: 0;
+                            box-shadow: none;
+                            border-left: 0;
+                        }
+                    }
+                    &.field-materialswitch {
+                        display: inline-block;
+                        .switch {
+                            label {
+                                .lever {
+                                    background-color: color("blue-grey", "lighten-3");
                                     &:after {
-                                        background-color: color("orange", "lighten-2");
+                                        background-color: color("blue-grey", "lighten-3");
+                                        //box-shadow: none;
+                                    }
+                                }
+                                input[type=checkbox]:checked {
+                                    + .lever {
+                                        background-color: color("blue-grey", "base");
+                                        &:after {
+                                            background-color: color("orange", "lighten-2");
+                                        }
                                     }
                                 }
                             }
@@ -193,6 +195,21 @@
                     }
                 }
             }
+        }
+    }
+}
+
+.right-panel {
+    &.fullscreen {
+        .editor-panel-content {
+            width: 100%;
+            max-width: 768px;
+            margin: 0 auto;
+        }
+    }
+    &.narrow {
+        .editor-panel-content {
+            width: 100%;
         }
     }
 }
