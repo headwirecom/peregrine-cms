@@ -16,6 +16,7 @@
             border: 0;
             padding: 0;
             margin: 0;
+            min-width: auto;
             .form-group {
                 padding: 0 0.75rem;
                 input:not([type]), 
@@ -130,6 +131,65 @@
                     .collapsible-body {
                         padding: 0;
                         display: block;
+                    }
+                }
+            }
+        }
+        .collection-fields {
+            width: 100%;
+            margin: 0;
+            padding: 0 0.75rem;
+            clear: both;
+            > .collection-field {
+                padding: 0;
+                position: relative;
+                .vue-form-generator { 
+                    width: calc(100% - 3rem);
+                    fieldset { 
+                        .form-group {
+                            padding: 0;
+                            .field-wrap {
+                                .wrapper {
+                                    input {
+                                        width: 100%;
+                                        border-top: 0;
+                                        margin: 0 0 1px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                button {
+                    position: absolute;
+                    width: 3rem;
+                    top: 0;
+                    right: 0;
+                    bottom: 2px;
+                    display: inline-block;
+                    border: none;
+                    border-left: 0;
+                    background-color: transparent;
+                    color: color("blue-grey", "base");
+                    &:hover,
+                    &:focus,
+                    &:active {
+                        color: color("blue-grey", "darken-2");
+                    }
+                }
+            }
+            > li:first-child {
+               .vue-form-generator { 
+                    fieldset { 
+                        .form-group {
+                            .field-wrap {
+                                .wrapper {
+                                    input {
+                                        border-top: 1px solid color("blue-grey", "lighten-4");
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
