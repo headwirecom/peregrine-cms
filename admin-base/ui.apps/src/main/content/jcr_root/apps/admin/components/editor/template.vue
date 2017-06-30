@@ -24,6 +24,7 @@
   -->
 <template>
     <div class="editor-panel">
+      <div class="editor-panel-content">
         <span class="panel-title">Editor</span>
         <div v-if="!hasSchema">this component does not have a dialog defined</div>
         <vue-form-generator
@@ -31,11 +32,15 @@
             v-bind:model   = "dataModel"
             v-bind:options = "formOptions">
         </vue-form-generator>
-        <div>
-            <button v-if="hasSchema" class="btn-flat" v-on:click.stop.prevent="onOk">ok</button>
-            <button class="btn-flat" v-on:click.stop.prevent="onCancel">cancel</button>
-            <button class="btn-flat" v-on:click.stop.prevent="onDelete">delete</button>
+        <div class="right-align">
+            <button class="btn btn-raised" v-on:click.stop.prevent="onDelete">
+              <i class="material-icons">delete</button>
+            <button class="btn btn-raised" v-on:click.stop.prevent="onCancel">
+              <i class="material-icons">close</button>
+            <button v-if="hasSchema" class="btn btn-raised" v-on:click.stop.prevent="onOk">
+              <i class="material-icons">check</i></button>
         </div>
+      <div/>
     </div>
 </template>
 
