@@ -41,7 +41,7 @@
                     id             = "editable"
                     draggable      = "true"
                     v-on:dragstart = "onDragStart">
-                    <div class="editable-actions">
+                    <div class="editable-actions" v-bind:style="`width: ${clipboard ? '135' : '90'}px`">
                         <ul v-if="enableTools">
                             <li class="waves-effect waves-light">
                                 <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
@@ -56,11 +56,6 @@
                             <li class="waves-effect waves-light">
                                 <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
-                                </a>
-                            </li>
-                            <li class="waves-effect waves-light">
-                                <a href="#" title="drag" style="pointer-events: none;">
-                                    <i class="material-icons">drag_handle</i>
                                 </a>
                             </li>
                         </ul>
@@ -227,10 +222,8 @@ export default {
 
         getPosFromMouse: function(e) {
             var elRect = this.getBoundingClientRect(this.$refs.editview)
-
             var posX = e.clientX - elRect.left
             var posY = e.clientY - elRect.top
-
             return {x: posX, y: posY }
         },
 
