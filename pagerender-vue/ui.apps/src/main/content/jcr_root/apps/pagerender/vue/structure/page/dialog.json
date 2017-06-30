@@ -5,34 +5,36 @@
     "model": "brand",
     "label": "Brand",
     "placeholder": "brand name"
-  },{
-    "type": "list",
-    "label": "Site JS Files",
-    "model": "siteJS",
-    "rows": 10,
-    "placeholder": "list all js files for the site"
   },
   {
     "type": "collection",
     "title": "Site JS Files",
-    "placeholder": "path/to/file.js",
     "model": "siteJS",
     "multifield": false,
     "fields" : [
       {
         "type": "input",
-        "label": "Path",
-        "model": "path"
+        "inputType": "text",
+        "placeholder": "path/to/file.js",
+        "model": "src"
       }
     ],
     "items": []
   },
   {
-    "type": "list",
-    "label": "Site CSS Files",
+    "type": "collection",
+    "title": "Site CSS Files",
     "model": "siteCSS",
-    "rows": 10,
-    "placeholder": "list all css files for the site"
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "path/to/file.css",
+        "model": "href"
+      }
+    ],
+    "items": []
   },
   {
     "type": "list",
