@@ -93,7 +93,7 @@
         console.log('itemModel: ', this.itemModel)
         this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
         this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
-        this.value.push(Object.assign({}, this.itemModel))
+        this.value.push('')
       },
       onRemoveItem(index){
         this.schema.items.splice(index, 1)
