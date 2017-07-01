@@ -46,7 +46,7 @@
       <li v-for="(item, index) in schema.items" class="collection-field">
         <vue-form-generator
             :schema="item"
-            :model="{[item.fields[0].model]: value[index]}"></vue-form-generator>
+            :model="{[schema.model]: value}"></vue-form-generator>
         <button v-on:click.stop.prevent="onRemoveItem(index)" class="waves-effect waves-light btn-flat">
           <i class="material-icons">delete</i>
         </button>
@@ -67,7 +67,8 @@
       var len = model.length
   		if(model && len > 0){
   			for(var i=0; i<len; i++){
-  				this.schema.items.push({ fields: this.schema.fields.slice(0)})
+  				this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
+                this.schema.items[i].fields[0].model = this.schema.model + '['+i+']'
   			}
   		}
   	},
@@ -90,7 +91,8 @@
     methods: {
       onAddItem(e){
         console.log('itemModel: ', this.itemModel)
-        this.schema.items.push({ fields: this.schema.fields.slice(0)})
+        this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
+        this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
         this.value.push(Object.assign({}, this.itemModel))
       },
       onRemoveItem(index){

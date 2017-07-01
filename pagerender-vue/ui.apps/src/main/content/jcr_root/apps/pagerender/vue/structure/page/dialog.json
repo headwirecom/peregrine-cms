@@ -16,7 +16,7 @@
         "type": "input",
         "inputType": "text",
         "placeholder": "path/to/file.js",
-        "model": "src"
+        "model": "siteJS"
       }
     ],
     "items": []
@@ -31,7 +31,7 @@
         "type": "input",
         "inputType": "text",
         "placeholder": "path/to/file.css",
-        "model": "href"
+        "model": "siteCSS"
       }
     ],
     "items": []
