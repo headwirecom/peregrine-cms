@@ -26,7 +26,7 @@
 	<div class="edit-collection">
 		<h5>
       {{schema.title}} 
-      <button type="button" class="btn btn-floating" v-on:click="onAddItem">
+      <button type="button" class="waves-effect waves-light btn-floating" v-on:click="onAddItem">
         <i class="material-icons">add</i>
       </button>
     </h5>
@@ -44,28 +44,14 @@
     </ul>
     <ul v-else class="collection-fields">
       <li v-for="(item, index) in schema.items" class="collection-field">
-<!--         <input
-          class="form-control"
-          :type="item.inputType"
-          :disabled="disabled"
-          :maxlength="schema.max"
-          :placeholder="schema.placeholder"
-          :readonly="schema.readonly"
-          :value="value[index]" /> -->
         <vue-form-generator
             :schema="item"
             :model="{[item.fields[0].model]: value[index]}"></vue-form-generator>
-        <button v-on:click.stop.prevent="onRemoveItem(index)">
-          <i class="material-icons">clear</i>
+        <button v-on:click.stop.prevent="onRemoveItem(index)" class="waves-effect waves-light btn-flat">
+          <i class="material-icons">delete</i>
         </button>
       </li>
     </ul>
-    <div class="test-bindings">
-      <h5>Test Bindings</h5>
-      <ol>
-        <li v-for="(item, index) in schema.items">{{value[index]}}</li>
-      </ol>
-    </div>
 	</div>
 </template>
 
@@ -106,11 +92,6 @@
         console.log('itemModel: ', this.itemModel)
         this.schema.items.push({ fields: this.schema.fields.slice(0)})
         this.value.push(Object.assign({}, this.itemModel))
-        // else {
-        //   var valueItem = this.schema.items[0].fields[0].placeholder
-        //   console.log('valueItem: ', valueItem)
-        //   this.value.push(valueItem)
-        // }
       },
       onRemoveItem(index){
         this.schema.items.splice(index, 1)
@@ -123,28 +104,3 @@
     }
   }
 </script>
-
-<style>
-.test-bindings {
-  width: calc(100% - 3rem);
-  font-size: 13px;
-  margin: -1px 0.75rem 3rem;
-  padding: 0.75rem;
-  background-color: #fff;
-  border: 1px solid #cfd8dc;
-  border-top: 0;
-}
-.test-bindings h5 {
-  font-size: 13px !important;
-  padding: 0 !important;
-}
-.test-bindings ol {
-  font-weight: 400;
-  padding: 0 0.75rem;
-  margin: 0;
-  font-size: 13px;
-}
-.test-bindings ol > li {
-  font-size: 13px;
-}
-</style>
