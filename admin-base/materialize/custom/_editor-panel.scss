@@ -6,7 +6,7 @@
     overflow: auto;
     .editor-panel-content {
         > .vue-form-generator {
-            margin: 0 -0.75rem;
+            margin: 0 -0.75rem 0.75rem;
             .vue-form-generator {
                 margin: 0;
             }
@@ -42,6 +42,15 @@
                             box-shadow: 0 1px 0 0 color("blue-grey", "base");
                         }
                     }
+                    textarea {
+                        &.form-control {
+                            height: inherit;
+                            padding: 0.75rem;
+                            &:focus {
+                                outline: none;
+                            }
+                        }
+                    }
                     label {
                         font-size: 14px;
                         color: color("blue-grey", "darken-2");
@@ -50,15 +59,13 @@
                         &.field-with-button {
                             input {
                                 width: calc(100% - 3rem);
-                                + button {
+                                + .btn-flat {
                                     width: 3rem;
-                                    height: 3rem;
+                                    height: 100%;
                                     float:right;
                                     display: inline-block;
-                                    border: 1px solid color("blue-grey", "lighten-4");
-                                    border-left: 0;
-                                    background-color: color("blue-grey", "darken-3");
-                                    color: #fff;
+                                    padding: 0;
+                                    color: color("blue-grey", "darken-1");
                                 }
                             }
                         }
@@ -100,17 +107,20 @@
             }
         }
     }
-    textarea {
-    	height: inherit;
-    }
     .edit-collection {
         h5 {
             color: color("blue-grey", "darken-2");
             padding: 0 0.75rem;
             font-size: 16px;
-            .btn {
-                float:right;
-                margin: -0.75rem 0 0.75rem;
+            .btn-floating {
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                margin-left: 0.75rem;
+                background-color: color("blue-grey", "darken-1");
+                .material-icons {
+                    line-height: 30px;
+                }
             }
         }
         .collapsible {
@@ -146,7 +156,9 @@
                 padding: 0;
                 position: relative;
                 .vue-form-generator { 
+                    display: inline-block;
                     width: calc(100% - 3rem);
+                    background-color: #fff;
                     fieldset { 
                         .form-group {
                             padding: 0;
@@ -162,22 +174,13 @@
                         }
                     }
                 }
-                button {
-                    position: absolute;
+                .btn-flat {
                     width: 3rem;
-                    top: 0;
-                    right: 0;
-                    bottom: 2px;
+                    height: 100%;
+                    float:right;
                     display: inline-block;
-                    border: none;
-                    border-left: 0;
-                    background-color: transparent;
-                    color: color("blue-grey", "base");
-                    &:hover,
-                    &:focus,
-                    &:active {
-                        color: color("blue-grey", "darken-2");
-                    }
+                    padding: 0;
+                    color: color("blue-grey", "darken-1");
                 }
             }
             > li:first-child {
@@ -188,6 +191,22 @@
                                 .wrapper {
                                     input {
                                         border-top: 1px solid color("blue-grey", "lighten-4");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            > li:last-child,
+            > li:only-child {
+               .vue-form-generator { 
+                    fieldset { 
+                        .form-group {
+                            .field-wrap {
+                                .wrapper {
+                                    input {
+                                        margin-bottom: 0;
                                     }
                                 }
                             }
