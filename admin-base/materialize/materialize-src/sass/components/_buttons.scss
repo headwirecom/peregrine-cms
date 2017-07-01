@@ -264,12 +264,12 @@ button.btn-floating {
 
   &:focus,
   &:hover {
-    background-color: rgba(0,0,0,.1);
+    background-color: color("blue-grey", "lighten-5");
     box-shadow: none;
   }
 
   &:active {
-    background-color: rgba(0,0,0,.2);
+    background-color: color("blue-grey", "lighten-4");
   }
 
   &.disabled {
