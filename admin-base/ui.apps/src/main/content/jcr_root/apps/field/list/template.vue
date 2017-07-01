@@ -32,7 +32,7 @@
             :maxlength="schema.max"
             :placeholder="schema.placeholder"
             :readonly="schema.readonly" >
-        <button v-on:click.stop.prevent="add">
+        <button v-on:click.stop.prevent="add" class="btn-flat">
           <i class="material-icons">insert_drive_file</i>
         </button>
         <div v-for="item in value">
