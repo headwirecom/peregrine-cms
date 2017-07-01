@@ -261,7 +261,6 @@ export default {
         findIn: function(el, pos) {
             if(!el) return null
             var rect = this.getBoundingClientRect(el)
-            // console.log(rect)
             var ret = null
             if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
                 ret = el
@@ -313,6 +312,10 @@ export default {
 
         leftOverlayArea: function(e) {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
+
+            // check if we only left the area into the overlay for the actions
+            var targetEl = this.getTargetEl(e)
+            if(targetEl) return
             this.selectedComponent = null
             this.editableClass = null
         },
@@ -336,7 +339,6 @@ export default {
         onDragStart(ev) {
             if(this.selectedComponent === null)return
             this.editableClass = 'dragging'
-            console.log(this.selectedComponent.getAttribute('data-per-path'))
             ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
         },
 
@@ -378,14 +380,12 @@ export default {
             var targetEl = this.getTargetEl(ev)
             var componentPath = ev.dataTransfer.getData('text')
             if(typeof targetEl === 'undefined' || targetEl === null){
-                console.log('no target')
                 return false
             }
             if(targetEl.getAttribute('data-per-path') === componentPath) {
                 ev.dataTransfer.clearData('text')
                 return false 
             }
-            console.log('drop componentPath: ', componentPath)
             var view = $perAdminApp.getView()
             var payload = { 
                 pagePath : view.pageView.path, 
