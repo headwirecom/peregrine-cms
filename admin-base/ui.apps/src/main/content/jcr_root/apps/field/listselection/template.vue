@@ -49,23 +49,6 @@
 <script>
     export default {
         props: ['model'],
-        mixins: [ VueFormGenerator.abstractField ],
-        beforeMount() {
-            if(!this.schema.values) {
-                axios.get(this.schema.valuesFrom).then( (response) => {
-                    console.log(response.data)
-                    if(!this.schema.values) {
-                        Vue.set(this.schema, 'values', [])
-                    }
-                    for(var key in response.data) {
-                        console.log(key)
-                        if(response.data[key]['jcr:title']) {
-                            console.log(response.data[key]['jcr:title'])
-                            Vue.set(this.schema.values, this.schema.values.length, response.data[key]['jcr:title'])
-                        }
-                    }
-                })
-            }
-        }
+        mixins: [ VueFormGenerator.abstractField ]
     }
 </script>

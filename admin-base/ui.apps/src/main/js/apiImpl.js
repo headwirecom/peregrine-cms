@@ -196,8 +196,27 @@ class PerAdminImpl {
                     if(component && component.methods && component.methods.augmentEditorSchema) {
                         data.model = component.methods.augmentEditorSchema(data.model)
                     }
-                    populateView('/admin/componentDefinitions', data.name, data.model)
-                    resolve(name)
+
+                    let promises = []
+                    for(let i = 0; i < data.model.fields.length; i++) {
+                        let from = data.model.fields[i].valuesFrom
+                        if(from) {
+                            data.model.fields[i].values = []
+                            let promise = axios.get(from).then( (response) => {
+                                for(var key in response.data) {
+                                    if(response.data[key]['jcr:title']) {
+                                        data.model.fields[i].values.push(response.data[key]['jcr:title'])
+                                    }
+                                }
+                            })
+                            promises.push(promise)
+                        }
+                    }
+                    Promise.all(promises).then( () => {
+                            populateView('/admin/componentDefinitions', data.name, data.model)
+                            resolve(name)
+                        }
+                    )
                 })
                 .catch ( error => {
                     reject(error)
