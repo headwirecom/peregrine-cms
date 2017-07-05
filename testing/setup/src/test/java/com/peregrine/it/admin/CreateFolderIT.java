@@ -36,10 +36,8 @@ public class CreateFolderIT
     public static void setUpAll() {
         SlingClient client = slingInstanceRule.getAdminClient();
         try {
-            deleteFolder(client, ROOT_PATH, 200);
+            client.doDelete(ROOT_PATH, null, null, 200);
         } catch(ClientException e) {
-            logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
-        } catch(IOException e) {
             logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
         }
     }
