@@ -6,6 +6,7 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -14,6 +15,9 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import java.util.List;
+
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_TITLE;
 
 /**
  * Created by schaefa on 6/22/17.
@@ -57,7 +61,9 @@ public class ResourceRelocationService
             throw new IllegalArgumentException("To-Parent Resource must be specified");
         }
         ResourceResolver resourceResolver = from.getResourceResolver();
-        try {
+//AS The catch is removed as a move of the page into a folder that already contains a node with the given name
+//AS This is for sure an erroneous situation and should be be covered up
+//        try {
             answer = resourceResolver.move(from.getPath(), toParent.getPath());
             if(references != null) {
                 // Update the references
@@ -69,14 +75,14 @@ public class ResourceRelocationService
                     }
                 }
             }
-        } catch(PersistenceException e) {
-            if(e.getCause() instanceof ItemExistsException) {
-                // Ignore and return the given from resource
-                answer = from;
-            } else {
-                throw e;
-            }
-        }
+//        } catch(PersistenceException e) {
+//            if(e.getCause() instanceof ItemExistsException) {
+//                // Ignore and return the given from resource
+//                answer = from;
+//            } else {
+//                throw e;
+//            }
+//        }
         answer.getResourceResolver().commit();
         return answer;
     }
@@ -152,7 +158,16 @@ public class ResourceRelocationService
         Node fromNodeParent = parent.adaptTo(Node.class);
         Node nextNode = getNextNode(fromNodeParent, from.getName());
         String fromPath = from.getPath();
+        String fromName = from.getName();
         String newPath = parent.getPath() + "/" + newName;
+        // If the Node has a Content with a JCR Title which matches the original name then change that as well
+        ModifiableValueMap properties = PerUtil.getModifiableProperties(from);
+        if(properties != null) {
+            String title = properties.get(JCR_TITLE, String.class);
+            if(fromName.equals(title)) {
+                properties.put(JCR_TITLE, newName);
+            }
+        }
         fromNode.getSession().move(fromPath, newPath);
         if(nextNode != null) {
             fromNodeParent.orderBefore(newName, nextNode.getName());
@@ -161,7 +176,7 @@ public class ResourceRelocationService
         // Update the references
         for(com.peregrine.admin.replication.Reference reference : references) {
             Resource propertyResource = reference.getPropertyResource();
-            ModifiableValueMap properties = PerUtil.getModifiableProperties(propertyResource);
+            properties = PerUtil.getModifiableProperties(propertyResource);
             if(properties.containsKey(reference.getPropertyName())) {
                 properties.put(reference.getPropertyName(), answer.getPath());
             }

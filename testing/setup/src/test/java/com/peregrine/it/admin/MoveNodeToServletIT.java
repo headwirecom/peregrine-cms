@@ -20,18 +20,18 @@ import static com.peregrine.it.util.TestHarness.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.listResource;
-import static com.peregrine.it.util.TestHarness.moveResource;
-import static com.peregrine.it.util.TestHarness.renameResource;
+import static com.peregrine.it.util.TestHarness.moveNodeToResource;
 
 /**
  * Created by schaefa on 6/22/17.
  */
-public class MoveServletIT
+public class MoveNodeToServletIT
     extends AbstractTest
 {
-    public static final String ROOT_PATH = "/content/tests/test-move-simple";
+    public static final String ROOT_PATH = "/content/tests/test-move-node-to";
 
-    private static final Logger logger = LoggerFactory.getLogger(MoveServletIT.class.getName());
+
+    private static final Logger logger = LoggerFactory.getLogger(MoveNodeToServletIT.class.getName());
 
     @ClassRule
     public static SlingInstanceRule slingInstanceRule = new SlingInstanceRule();
@@ -39,6 +39,7 @@ public class MoveServletIT
     @BeforeClass
     public static void setUpAll() {
         SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
         try {
             deleteFolder(client, ROOT_PATH, 200);
         } catch(ClientException e) {
@@ -47,6 +48,7 @@ public class MoveServletIT
             logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
         }
     }
+
 
     @Test
     public void testMoveToAnotherEmptyFolder() throws Exception {
@@ -60,10 +62,8 @@ public class MoveServletIT
         response = createPage(client, sourcePath, "test-page-1", "/content/templates/example", 200);
         logger.info("Response from creating test page folder: '{}'", response.getContent());
         // Move the resource
-        response = moveResource(client, sourcePath+ "/test-page-1", targetPath, "child", 200);
+        response = moveNodeToResource(client, sourcePath+ "/test-page-1", targetPath, "child", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
-        // Check the servlet response
-        Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/test-page-1", "targetPath", targetPath + "/test-page-1");
         // Check the node json listing
         response = listResource(client, targetPath + "/test-page-1");
         logger.info("Response from listing the moved page: '{}'", response.getContent());
@@ -79,10 +79,42 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource
-        response = moveResource(client, sourcePath + "/source-page-q", targetPath, "child", 200);
+        response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "child", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
-        // Check the servlet response
-        Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/source-page-q", "targetPath", targetPath + "/source-page-q");
+        // Check the node json listing
+        response = listResource(client, targetPath);
+        logger.info("Response from listing the moved page: '{}'", response.getContent());
+        checkPages(response, "target-page-a", "target-page-z", "target-page-b", "target-page-y", "source-page-q");
+    }
+
+    @Test
+    public void testMoveToAnotherFolderAsChildBefore() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String sourcePath = ROOT_PATH + "/source/source-m2afacb";
+        String targetPath = ROOT_PATH + "/target/target-m2afacb";
+        createPageSetup(client, sourcePath, targetPath);
+
+        // Move the resource
+        response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "into-before", 302);
+        logger.info("Response from creating move the resource: '{}'", response.getContent());
+        // Check the node json listing
+        response = listResource(client, targetPath);
+        logger.info("Response from listing the moved page: '{}'", response.getContent());
+        checkPages(response, "source-page-q", "target-page-a", "target-page-z", "target-page-b", "target-page-y");
+    }
+
+    @Test
+    public void testMoveToAnotherFolderAsChildAfter() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String sourcePath = ROOT_PATH + "/source/source-m2afaca";
+        String targetPath = ROOT_PATH + "/target/target-m2afaca";
+        createPageSetup(client, sourcePath, targetPath);
+
+        // Move the resource
+        response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "into-after", 302);
+        logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
         response = listResource(client, targetPath);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
@@ -98,10 +130,8 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource before 'target-page-z'
-        response = moveResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "before", 200);
+        response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "before", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
-        // Check the servlet response
-        Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/source-page-q", "targetPath", targetPath + "/source-page-q");
         // Check the node json listing
         response = listResource(client, targetPath);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
@@ -117,10 +147,8 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource before 'target-page-z'
-        response = moveResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "after", 200);
+        response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "after", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
-        // Check the servlet response
-        Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/source-page-q", "targetPath", targetPath + "/source-page-q");
         // Check the node json listing
         response = listResource(client, targetPath);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
@@ -136,7 +164,7 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource before 'target-page-z'
-        response = moveResource(client, sourcePath + "/source-page-q", targetPath + "-not-there", "child", 400);
+        response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath + "-not-there", "child", 400);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
     }
 
@@ -149,7 +177,7 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource before 'target-page-z'
-        response = moveResource(client, sourcePath + "-not-there" + "/source-page-q", targetPath, "child", 400);
+        response = moveNodeToResource(client, sourcePath + "-not-there" + "/source-page-q", targetPath, "child", 400);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
     }
 
@@ -162,7 +190,7 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource before 'target-page-z'
-        response = moveResource(client, sourcePath + "/source-page-q-not-there", targetPath, "child", 400);
+        response = moveNodeToResource(client, sourcePath + "/source-page-q-not-there", targetPath, "child", 400);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
     }
 
@@ -176,46 +204,8 @@ public class MoveServletIT
         createPage(client, targetPath, "source-page-q", "/content/templates/example", 200);
 
         // Move the resource before 'target-page-z'
-        response = moveResource(client, sourcePath + "/source-page-q", targetPath, "child", 400);
+        response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "child", 400);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
-    }
-
-    @Test
-    public void testRename() throws Exception {
-        SlingClient client = slingInstanceRule.getAdminClient();
-        SlingHttpResponse response = null;
-        String sourcePath = ROOT_PATH + "/source/source-r";
-        String targetPath = ROOT_PATH + "/target/target-r";
-        createPageSetup(client, sourcePath, targetPath);
-
-        // Rename a page
-        response = renameResource(client, targetPath + "/target-page-z", "renamed-z", 200);
-        logger.info("Response from creating move the resource: '{}'", response.getContent());
-        // Check the node json listing
-        response = listResource(client, targetPath);
-        checkPages(response, "target-page-a", "renamed-z", "target-page-b", "target-page-y");
-    }
-
-    @Test
-    public void testRenameFailures() throws Exception {
-        SlingClient client = slingInstanceRule.getAdminClient();
-        SlingHttpResponse response = null;
-        String sourcePath = ROOT_PATH + "/source/source-rf";
-        String targetPath = ROOT_PATH + "/target/target-rf";
-        createPageSetup(client, sourcePath, targetPath);
-
-        // Non Existing From Path
-        response = renameResource(client, targetPath + "/target-page-abc", "renamed-a", 400);
-        logger.info("Response from failed rename due to wrong resource: '{}'", response.getContent());
-        // No To path
-        response = renameResource(client, targetPath + "/target-page-a", "", 400);
-        logger.info("Response from failed rename due to non to pth: '{}'", response.getContent());
-        // To Path with a Slash
-        response = renameResource(client, targetPath + "/target-page-a", "/a/b/c", 400);
-        logger.info("Response from failed rename due to a slash in the to path: '{}'", response.getContent());
-        // To Path is set to an already existing page
-        response = renameResource(client, targetPath + "/target-page-a", "target-page-z", 400);
-        logger.info("Response from failed rename due to an already existing page: '{}'", response.getContent());
     }
 
     private void createPageSetup(SlingClient client, String sourcePath, String targetPath) throws ClientException, IOException {
@@ -228,6 +218,7 @@ public class MoveServletIT
         createPage(client, targetPath, "target-page-b", "/content/templates/example", 200);
         createPage(client, targetPath, "target-page-y", "/content/templates/example", 200);
     }
+
 
     @Override
     public Logger getLogger() {

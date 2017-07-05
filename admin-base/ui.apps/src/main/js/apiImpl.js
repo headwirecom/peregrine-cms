@@ -35,12 +35,12 @@ let callbacks
 
 function fetch(path) {
 
-    logger.fine('fetch() ', path)
+    logger.fine('Fetch ', path)
     return axios.get(API_BASE+path).then( (response) => {
         return new Promise( (resolve, reject) => {
             resolve(response.data)
         })
-    }).catch( (error) => { logger.error('request to',
+    }).catch( (error) => { logger.error('Fetch request to',
             error.response.request.path, 'failed')
             throw error
         })
@@ -49,44 +49,48 @@ function fetch(path) {
 
 function update(path) {
 
-    logger.fine('update() ', path)
-    return axios.post(API_BASE+path).then( (response) => {
-        return new Promise( (resolve, reject) => {
-            resolve(response.data)
+    logger.fine('Update, path: ', path)
+    return axios.post(API_BASE+path)
+        .then( (response) => {
+            return new Promise( (resolve, reject) => {
+                logger.debug('Update, response data: ' + response.data)
+                resolve(response.data)
+            })
         })
-    }).catch( (error) => { logger.error('request to',
-        error.response.request.path, 'failed')
-        throw error
-    })
-
+        .catch( (error) => {
+            logger.error('Update request to', error.response.request.path, 'failed')
+            throw error
+        })
 }
 
 function updateWithForm(path, data) {
 
-    logger.debug('update() with data, path: ' + path + ', data: ' + data)
-    return axios.post(API_BASE+path, data).then( (response) => {
+    logger.debug('Update with Form, path: ' + path + ', data: ' + data)
+    return axios.post(API_BASE+path, data)
+        .then( (response) => {
             return new Promise( (resolve, reject) => {
-                logger.debug('UpdateWithForm, response data: ' + response.data)
+                logger.debug('Update with Form, response data: ' + response.data)
                 resolve(response.data)
             })
-        }).catch( (error) => {
-                logger.error('request to',
-                error.response.request.path, 'failed')
+        })
+        .catch( (error) => {
+            logger.error('Update with Form request to', error.response.request.path, 'failed')
             throw error
         })
 }
 
 function updateWithFormAndConfig(path, data, config) {
 
-    logger.debug('Upddate with Form and Config, path: ' + path + ', data: ' + data)
-    return axios.post(API_BASE+path, data, config).then( (response) => {
+    logger.debug('Update with Form and Config, path: ' + path + ', data: ' + data)
+    return axios.post(API_BASE+path, data, config)
+        .then( (response) => {
             return new Promise( (resolve, reject) => {
-                logger.debug('updateWithFormAndConfig, response data: ' + response.data)
+                logger.debug('Update with Form and Config, response data: ' + response.data)
                 resolve(response.data)
             })
-        }).catch( (error) => {
-                logger.error('request to',
-                error.response.request.path, 'failed')
+        })
+        .catch( (error) => {
+            logger.error('Update with Form and Config request to', error.response.request.path, 'failed')
             throw error
         })
 }
@@ -263,7 +267,7 @@ class PerAdminImpl {
             let data = new FormData()
             data.append('name', name)
             data.append('templatePath', templatePath)
-            updateWithForm('/admin/createPage.json/path'+parentPath, data)
+            updateWithForm('/admin/createPage.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -274,7 +278,7 @@ class PerAdminImpl {
             let data = new FormData()
             data.append('name', name)
             data.append('templatePath', templatePath)
-            updateWithForm('/admin/createObject.json/path'+parentPath, data)
+            updateWithForm('/admin/createObject.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })

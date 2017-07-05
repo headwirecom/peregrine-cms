@@ -27,10 +27,12 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.util.PerUtil;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
@@ -94,7 +96,21 @@ public class MoveServlet extends AbstractBaseServlet {
                 boolean addAsChild = ORDER_CHILD_TYPE.equals(type);
                 boolean addBefore = ORDER_BEFORE_TYPE.equals(type);
                 Resource target = addAsChild ? to : to.getParent();
-                newResource = resourceRelocation.moveToNewParent(from, target, true);
+                // If To and From resource are the same then ignore the move and just to a re-order
+                if(addAsChild || !target.getPath().equals(from.getPath())) {
+                    try {
+                        newResource = resourceRelocation.moveToNewParent(from, target, true);
+                    } catch(PersistenceException e) {
+                        if(e.getCause() instanceof ItemExistsException) {
+                            ItemExistsException iee = (ItemExistsException) e.getCause();
+                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource: " + target.getPath() + " already exists").setRequestPath(fromPath).setException(iee);
+                        } else {
+                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to move Target Resource: " + target.getPath() + " failed to move").setRequestPath(fromPath).setException(e);
+                        }
+                    }
+                } else {
+                    newResource = target;
+                }
                 // Reorder if needed
                 if(!addAsChild) {
                     try {
