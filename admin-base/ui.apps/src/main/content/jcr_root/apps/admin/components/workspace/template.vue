@@ -49,7 +49,7 @@
               v-if="state.editorVisible && isFullscreen"
               type="button" 
               class="toggle-fullscreen" 
-              v-on:click.prevent="onEditorNarrow">
+              v-on:click.prevent="onEditorExitFullscreen">
               <i class="material-icons">fullscreen_exit</i>
             </button>
             <button 
@@ -78,11 +78,6 @@
 <script>
     export default {
         props: ['model'],
-        data(){
-          return {
-            isFullscreen: false
-          }
-        },
         computed: {
             state: function() {
                 return $perAdminApp.getView().state
@@ -93,6 +88,9 @@
             getRightPanelClasses: function() {
                 // rightPanelVisible: true/false
                 return `right-panel ${$perAdminView.state.rightPanelVisible ? 'visible' : ''}`
+            },
+            isFullscreen(){
+              return $perAdminApp.getView().state.rightPanelFullscreen || false
             }
         },
         methods: {
@@ -108,7 +106,6 @@
                 return null
             },
 
-            // maybe rename to "toggleStateProp"
             showHide(me, name) {
                 if($perAdminApp.getView().state.rightPanelVisible === undefined) {
                     $perAdminApp.getApp().$set($perAdminApp.getView().state,'rightPanelVisible', true)
@@ -118,18 +115,23 @@
             },
 
             showComponentEdit(me, target) {
-//                if(!me.state.editorVisible) {
                 $perAdminApp.stateAction('editComponent', target)
-
-//                }
             },
 
-            onEditorNarrow(){
-              this.isFullscreen = false
+            onEditorExitFullscreen(){
+              if($perAdminApp.getView().state.rightPanelFullscreen === undefined) {
+                $perAdminApp.getApp().$set($perAdminApp.getView().state, 'rightPanelFullscreen', false)
+              } else {
+                $perAdminView.state.rightPanelFullscreen = false
+              }
             },
 
             onEditorFullscreen(){
-              this.isFullscreen = true
+              if($perAdminApp.getView().state.rightPanelFullscreen === undefined) {
+                $perAdminApp.getApp().$set($perAdminApp.getView().state, 'rightPanelFullscreen', true)
+              } else {
+                $perAdminView.state.rightPanelFullscreen = true
+              }
             }
         }
     }
