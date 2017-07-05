@@ -32,8 +32,7 @@
             sling:resourceType="pagerender/vue/structure/page"
             jcr:title="peregrine cms"
             siteCSS="[https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css]"
-            siteJS="[https://code.jquery.com/jquery-3.1.1.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js,https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js]"
-    >
+            siteJS="[https://code.jquery.com/jquery-3.1.1.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js,https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js]">
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">
 

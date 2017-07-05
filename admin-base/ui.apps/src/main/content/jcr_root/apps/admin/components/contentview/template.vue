@@ -41,26 +41,21 @@
                     id             = "editable"
                     draggable      = "true"
                     v-on:dragstart = "onDragStart">
-                    <div class="editable-actions">
+                    <div class="editable-actions" v-bind:style="`width: ${clipboard ? '135' : '90'}px`">
                         <ul v-if="enableTools">
                             <li class="waves-effect waves-light">
                                 <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
-                                    <i class="svg-icon svg-icon-copy"></i>
+                                    <i class="material-icons">content_copy</i>
                                 </a>
                             </li>
                             <li v-if="clipboard" class="waves-effect waves-light">
                                 <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
-                                    <i class="svg-icon svg-icon-paste"></i>
+                                    <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
                             <li class="waves-effect waves-light">
                                 <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
-                                </a>
-                            </li>
-                            <li class="waves-effect waves-light">
-                                <a href="#" title="drag" style="pointer-events: none;">
-                                    <i class="material-icons">drag_handle</i>
                                 </a>
                             </li>
                         </ul>
@@ -227,10 +222,8 @@ export default {
 
         getPosFromMouse: function(e) {
             var elRect = this.getBoundingClientRect(this.$refs.editview)
-
             var posX = e.clientX - elRect.left
             var posY = e.clientY - elRect.top
-
             return {x: posX, y: posY }
         },
 
@@ -268,7 +261,6 @@ export default {
         findIn: function(el, pos) {
             if(!el) return null
             var rect = this.getBoundingClientRect(el)
-            // console.log(rect)
             var ret = null
             if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
                 ret = el
@@ -320,6 +312,10 @@ export default {
 
         leftOverlayArea: function(e) {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
+
+            // check if we only left the area into the overlay for the actions
+            var targetEl = this.getTargetEl(e)
+            if(targetEl) return
             this.selectedComponent = null
             this.editableClass = null
         },
@@ -343,7 +339,6 @@ export default {
         onDragStart(ev) {
             if(this.selectedComponent === null)return
             this.editableClass = 'dragging'
-            console.log(this.selectedComponent.getAttribute('data-per-path'))
             ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
         },
 
@@ -385,14 +380,12 @@ export default {
             var targetEl = this.getTargetEl(ev)
             var componentPath = ev.dataTransfer.getData('text')
             if(typeof targetEl === 'undefined' || targetEl === null){
-                console.log('no target')
                 return false
             }
             if(targetEl.getAttribute('data-per-path') === componentPath) {
                 ev.dataTransfer.clearData('text')
                 return false 
             }
-            console.log('drop componentPath: ', componentPath)
             var view = $perAdminApp.getView()
             var payload = { 
                 pagePath : view.pageView.path, 

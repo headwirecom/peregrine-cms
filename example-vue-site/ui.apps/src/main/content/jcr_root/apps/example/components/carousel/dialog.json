@@ -11,44 +11,35 @@
       "model": "pause"
     },
     {
-      "type": "switch",
+      "type": "materialswitch",
       "label": "Ride",
-      "model": "ride",
-      "textOn": "on",
-      "textOff": "off"
+      "model": "ride"
     },
     {
-      "type": "switch",
+      "type": "materialswitch",
       "label": "Indicators",
-      "model": "indicators",
-      "textOn": "on",
-      "textOff": "off"
+      "model": "indicators"
     },
     {
-      "type": "switch",
+      "type": "materialswitch",
       "label": "Controls",
-      "model": "controls",
-      "textOn": "on",
-      "textOff": "off"
+      "model": "controls"
     },
     {
-      "type": "switch",
+      "type": "materialswitch",
       "label": "Wrap",
-      "model": "wrap",
-      "textOn": "on",
-      "textOff": "off"
+      "model": "wrap"
     },
     {
-      "type": "switch",
+      "type": "materialswitch",
       "label": "Keyboard",
-      "model": "keyboard",
-      "textOn": "on",
-      "textOff": "off"
+      "model": "keyboard"
     },
     {
       "type": "collection",
       "title": "slides",
       "model": "children",
+      "multifield": true,
       "fields" : [
         {
           "type": "pathbrowser",

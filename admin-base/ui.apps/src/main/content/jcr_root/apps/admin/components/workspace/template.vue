@@ -25,8 +25,8 @@
 <template>
     <div :class="`peregrine-workspace ${state.rightPanelVisible ? 'right-panel-visible' : ''}`">
         <component
-                v-bind:is    = "getChildByPath('contentview').component"
-                v-bind:model = "getChildByPath('contentview')">
+          v-bind:is    = "getChildByPath('contentview').component"
+          v-bind:model = "getChildByPath('contentview')">
         </component>
 
         <admin-components-action v-if="!state.rightPanelVisible" v-bind:model="{
@@ -36,7 +36,7 @@
             }"><i class="material-icons">keyboard_arrow_left</i>
         </admin-components-action>
 
-        <div class="right-panel">
+        <aside v-bind:class="`right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
             <admin-components-action v-if="!state.editorVisible" v-bind:model="{
                 classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
@@ -44,25 +44,45 @@
             }">
                 <i class="material-icons">highlight_off</i>
             </admin-components-action>
+            
+            <button 
+              v-if="state.editorVisible && isFullscreen"
+              type="button" 
+              class="toggle-fullscreen" 
+              v-on:click.prevent="onEditorNarrow">
+              <i class="material-icons">fullscreen_exit</i>
+            </button>
+            <button 
+              v-if="state.editorVisible && !isFullscreen"
+              type="button" 
+              class="toggle-fullscreen" 
+              v-on:click.prevent="onEditorFullscreen">
+              <i class="material-icons">fullscreen</i>
+            </button>
 
             <component
-                    v-if         = "state.editorVisible"
-                    v-bind:is    = "getChildByPath('editor').component"
-                    v-bind:model = "getChildByPath('editor')">
+              v-if         = "state.editorVisible"
+              v-bind:is    = "getChildByPath('editor').component"
+              v-bind:model = "getChildByPath('editor')">
             </component>
 
             <component
-                    v-else
-                    v-bind:is    = "getChildByPath('components').component"
-                    v-bind:model = "getChildByPath('components')">
+              v-else
+              v-bind:is    = "getChildByPath('components').component"
+              v-bind:model = "getChildByPath('components')">
             </component>
-        </div>
+        </aside>
     </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
+        data(){
+          return {
+            isFullscreen: false
+          }
+        },
         computed: {
             state: function() {
                 return $perAdminApp.getView().state
@@ -104,6 +124,13 @@
 //                }
             },
 
+            onEditorNarrow(){
+              this.isFullscreen = false
+            },
+
+            onEditorFullscreen(){
+              this.isFullscreen = true
+            }
         }
     }
 </script>

@@ -23,18 +23,19 @@
   #L%
   -->
 <template>
-    <div class="list-field">
+    <div class="field-wrap field-with-button">
         <input
             ref="field"
             class="form-control"
             type="text"
-            style="width: calc(100% - 60px); display: inline; padding-right: 0px"
             :disabled="disabled"
             :maxlength="schema.max"
             :placeholder="schema.placeholder"
             :readonly="schema.readonly" >
-        <button v-on:click.stop.prevent="add" style="float: right; height: 46px; width: 54px;"><i class="material-icons">insert_drive_file</i></button>
-        <div v-for="item in value" style="max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+        <button v-on:click.stop.prevent="add" class="btn-flat">
+          <i class="material-icons">insert_drive_file</i>
+        </button>
+        <div v-for="item in value">
             <a href="#" v-on:click.stop.prevent="remove(item)">D</a> {{item}}
         </div>
     </div>

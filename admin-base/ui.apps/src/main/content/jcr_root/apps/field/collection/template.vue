@@ -23,20 +23,35 @@
   #L%
   -->
 <template>
-	<div class="edit-collection" style="flex:1;">
-		<h5>{{schema.title}} <button type="button" class="btn btn-primary" v-on:click="onAddItem">add</button></h5>
-		<ul class="collapsible">
-            <li v-for="(item, index) in schema.items" v-bind:class="activeItem === index ? 'active' : ''">
-              <div class="collapsible-header" v-on:click="onSetActiveItem(index)">
-                <i class="material-icons" v-on:click="onRemoveItem(index)">clear</i>Item #{{index}}
-              </div>
-              <div class="collapsible-body">
-                <vue-form-generator
-                    :schema="item"
-                    :model="model.children[index]"></vue-form-generator>
-              </div>
-            </li>
-        </ul>
+	<div class="edit-collection">
+		<h5>
+      {{schema.title}} 
+      <button type="button" class="waves-effect waves-light btn-floating" v-on:click="onAddItem">
+        <i class="material-icons">add</i>
+      </button>
+    </h5>
+    <ul v-if="schema.multifield" class="collapsible">
+      <li v-for="(item, index) in schema.items" v-bind:class="activeItem === index ? 'active' : ''">
+        <div class="collapsible-header" v-on:click="onSetActiveItem(index)">
+          <i class="material-icons" v-on:click="onRemoveItem(index)">clear</i>Item #{{index}}
+        </div>
+        <div class="collapsible-body">
+          <vue-form-generator
+            :schema="item"
+            :model="value[index]"></vue-form-generator>
+        </div>
+      </li>
+    </ul>
+    <ul v-else class="collection-fields">
+      <li v-for="(item, index) in schema.items" class="collection-field">
+        <vue-form-generator
+            :schema="item"
+            :model="{[schema.model]: value}"></vue-form-generator>
+        <button v-on:click.stop.prevent="onRemoveItem(index)" class="waves-effect waves-light btn-flat">
+          <i class="material-icons">delete</i>
+        </button>
+      </li>
+    </ul>
 	</div>
 </template>
 
@@ -44,17 +59,23 @@
   export default {
     mixins: [ VueFormGenerator.abstractField ],
     beforeMount(){
-    	/* if model already has child items, create a schema for each */
-  		if(this.model.children.length > 0){
-  			var len = this.model.children.length
+      console.log("value: ", this.value)
+      console.log("schema.items: ", this.schema.items)
+      // this.model[this.schema.model] = this.value
+      var model = this.value
+      /* if model already has child items, create a schema for each */
+      var len = model.length
+  		if(model && len > 0){
   			for(var i=0; i<len; i++){
-  				this.schema.items.push({ fields: this.schema.fields.slice(0)})
+  				this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
+                this.schema.items[i].fields[0].model = this.schema.model + '['+i+']'
   			}
   		}
   	},
   	data(){
   		return{
-  			activeItem: 0
+  			activeItem: 0,
+        singleItemModel: []
   		}
   	},
     computed: {
@@ -69,16 +90,19 @@
     },
     methods: {
       onAddItem(e){
-        this.schema.items.push({ fields: this.schema.fields.slice(0)})
-        this.model.children.push(Object.assign({}, this.itemModel)) 
+        console.log('itemModel: ', this.itemModel)
+        this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
+        this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
+        this.value.push('')
       },
       onRemoveItem(index){
         this.schema.items.splice(index, 1)
-        this.model.children.splice(index, 1)
+        this.value.splice(index, 1)
       },
       onSetActiveItem(index){
       	this.activeItem = index
       }
+
     }
   }
 </script>

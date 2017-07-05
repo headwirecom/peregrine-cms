@@ -232,8 +232,27 @@ class PerAdminImpl {
                     if(component && component.methods && component.methods.augmentEditorSchema) {
                         data.model = component.methods.augmentEditorSchema(data.model)
                     }
-                    populateView('/admin/componentDefinitions', data.name, data.model)
-                    resolve(name)
+
+                    let promises = []
+                    for(let i = 0; i < data.model.fields.length; i++) {
+                        let from = data.model.fields[i].valuesFrom
+                        if(from) {
+                            data.model.fields[i].values = []
+                            let promise = axios.get(from).then( (response) => {
+                                for(var key in response.data) {
+                                    if(response.data[key]['jcr:title']) {
+                                        data.model.fields[i].values.push(response.data[key]['jcr:title'])
+                                    }
+                                }
+                            })
+                            promises.push(promise)
+                        }
+                    }
+                    Promise.all(promises).then( () => {
+                            populateView('/admin/componentDefinitions', data.name, data.model)
+                            resolve(name)
+                        }
+                    )
                 })
                 .catch ( error => {
                     reject(error)
@@ -413,7 +432,7 @@ class PerAdminImpl {
             // get the parent path and set the name of the node (due to problems with sling doing a
             // merge if not using this method to post - seems to have another issue, moves the node
             // to the end
-            // let pathSegments = node.path.split('/')
+            //let pathSegments = node.path.split('/')
             // let name = pathSegments.pop()
             // node.path = pathSegments.join('/')
 
@@ -421,7 +440,7 @@ class PerAdminImpl {
             data.append(':contentType', 'json')
             data.append(':replace', 'true')
             data.append(':replaceProperties', 'true')
-            data.append(':name', name)
+            // data.append(':name', name)
             data.append(':content', JSON.stringify(nodeData))
 
             nodeData['sling:resourceType'] = node.component.split('-').join('/')

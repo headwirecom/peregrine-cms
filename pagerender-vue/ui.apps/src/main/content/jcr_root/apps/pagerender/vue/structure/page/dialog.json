@@ -1,25 +1,46 @@
-{ "fields":[{
-  "type": "input",
-  "inputType": "text",
-  "model": "brand",
-  "label": "Brand",
-  "placeholder": "brand name"
-},{
-  "type": "list",
-  "label": "Site JS Files",
-  "model": "siteJS",
-  "rows": 10,
-  "placeholder": "list all js files for the site"
-},{
-  "type": "list",
-  "label": "Site CSS Files",
-  "model": "siteCSS",
-  "rows": 10,
-  "placeholder": "list all css files for the site"
-},{
-  "type": "list",
-  "label": "Public Domain Names",
-  "model": "domains",
-  "rows": 10,
-  "placeholder": "list of all public domain names for url shortening"
-}]}
+{ "fields":[
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "brand",
+    "label": "Brand",
+    "placeholder": "brand name"
+  },
+  {
+    "type": "collection",
+    "title": "Site JS Files",
+    "model": "siteJS",
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "path/to/file.js",
+        "model": "siteJS"
+      }
+    ],
+    "items": []
+  },
+  {
+    "type": "collection",
+    "title": "Site CSS Files",
+    "model": "siteCSS",
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "path/to/file.css",
+        "model": "siteCSS"
+      }
+    ],
+    "items": []
+  },
+  {
+    "type": "list",
+    "label": "Public Domain Names",
+    "model": "domains",
+    "rows": 10,
+    "placeholder": "list of all public domain names for url shortening"
+  }
+]}

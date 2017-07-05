@@ -23,34 +23,32 @@
   #L%
   -->
 <template>
-    <div class="field-wrap field-with-button">
+    <div>
+        <!--
         <input
+            ref="field"
             class="form-control"
             type="text"
-            v-model="value"
             :disabled="disabled"
             :maxlength="schema.max"
             :placeholder="schema.placeholder"
-            :readonly="schema.readonly" />
-        <button v-on:click.stop.prevent="browse">
+            :readonly="schema.readonly" >
+        <button v-on:click.stop.prevent="add" class="btn-flat">
           <i class="material-icons">insert_drive_file</i>
         </button>
+        <div v-for="item in value">
+            <a href="#" v-on:click.stop.prevent="remove(item)">D</a> {{item}}
+        </div>
+        -->
+        <select v-model="value" class="browser-default" style="height: 8rem" multiple>
+            <option v-bind:value="val" v-for="val in schema.values">{{val}}</option>
+        </select>
     </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
-        mixins: [ VueFormGenerator.abstractField ],
-        methods: {
-            browse() {
-                let root = this.schema.browserRoot
-                if(!root) root = '/content/assets'
-                $perAdminApp.pathBrowser(
-                    root,
-                    (newValue) => { this.value = newValue }
-                )
-            }
-        }
+        mixins: [ VueFormGenerator.abstractField ]
     }
 </script>
