@@ -10,14 +10,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Map;
-
 import static com.peregrine.it.util.TestHarness.checkFolderExists;
 import static com.peregrine.it.util.TestHarness.checkFolders;
 import static com.peregrine.it.util.TestHarness.createFolder;
 import static com.peregrine.it.util.TestHarness.createFolderStructure;
-import static com.peregrine.it.util.TestHarness.deleteFolder;
 
 /**
  * Created by schaefa on 6/30/17.

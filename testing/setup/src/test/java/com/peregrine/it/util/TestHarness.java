@@ -1,5 +1,8 @@
 package com.peregrine.it.util;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.sling.testing.clients.ClientException;
@@ -24,6 +27,7 @@ import static org.apache.jackrabbit.vault.util.JcrConstants.JCR_PRIMARYTYPE;
 import static org.apache.jackrabbit.vault.util.JcrConstants.JCR_TITLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -124,6 +128,20 @@ public class TestHarness {
         return client.doPost(url, formEntry, expectedStatus);
     }
 
+    public static SlingHttpResponse deleteNode(SlingClient client, String path, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "deleteNode.json" + path;
+        logger.info("Delete Node with URL: '{}' and Name: '{}'", url);
+        HttpEntity formEntry = FormEntityBuilder.create().build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
+    public static SlingHttpResponse deletePage(SlingClient client, String path, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "deletePage.json" + path;
+        logger.info("Delete Page with URL: '{}' and Name: '{}'", url);
+        HttpEntity formEntry = FormEntityBuilder.create().build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
     public static SlingHttpResponse createFolder(SlingClient client, String path, String name, int expectedStatus) throws ClientException {
         String url = ADMIN_PREFIX_URL + "createFolder.json" + path;
         logger.info("Create Folder with URL: '{}' and Name: '{}'", url, name);
@@ -134,6 +152,18 @@ public class TestHarness {
     public static SlingHttpResponse createPage(SlingClient client, String path, String name, String templatePath, int expectedStatus) throws ClientException {
         String url = ADMIN_PREFIX_URL + "createPage.json" + path;
         HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).addParameter("templatePath", templatePath).build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
+    public static SlingHttpResponse createObject(SlingClient client, String path, String name, String templatePath, int expectedStatus) throws ClientException {
+        String url = ADMIN_PREFIX_URL + "createObject.json" + path;
+        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).addParameter("templatePath", templatePath).build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
+    public static SlingHttpResponse createTemplate(SlingClient client, String path, String name, int expectedStatus) throws ClientException {
+        String url = ADMIN_PREFIX_URL + "createTemplate.json" + path;
+        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).build();
         return client.doPost(url, formEntry, expectedStatus);
     }
 
@@ -164,6 +194,12 @@ public class TestHarness {
     public static SlingHttpResponse insertNodeAtAsContent(SlingClient client, String path, String content, String type, int expectedStatus) throws ClientException, IOException {
         String url = ADMIN_PREFIX_URL + "insertNodeAt.json" + path;
         HttpEntity formEntry = FormEntityBuilder.create().addParameter("content", content).addParameter("type", type).build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
+    public static SlingHttpResponse executeReplication(SlingClient client, String path, String name, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "repl.json" + path;
+        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).build();
         return client.doPost(url, formEntry, expectedStatus);
     }
 
@@ -261,5 +297,47 @@ public class TestHarness {
             }
         }
         return answer;
+    }
+
+//    public static enum CheckType { allProvided, everythingMatches, }
+    public static void checkResourceByJson(SlingClient client, String path, int levels, String expectedJson, boolean checkProvided) throws ClientException, IOException {
+        SlingHttpResponse response = client.doGet(path + "." + levels + ".json", 200);
+        assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
+        String jsonResponse = response.getContent();
+        ObjectMapper mapper = new ObjectMapper();
+        Map expected = mapper.readValue(expectedJson, Map.class);
+        Map actual = mapper.readValue(jsonResponse, Map.class);
+        compareJson(expected, actual);
+    }
+
+    public static void compareJson(Map<Object, Object> expected, Map actual) throws IOException {
+        for(Entry<Object, Object> entry: expected.entrySet()) {
+            Object key = entry.getKey() + "";
+            assertTrue("Did not find Property with Name: " + key, actual.containsKey(key));
+            Object value = entry.getValue();
+            if(value instanceof Boolean) {
+                assertEquals("Boolean Property mismatch. Name: " + key, value, actual.get(key));
+            } else if(value instanceof Number) {
+                assertEquals("Number Property mismatch. Name: " + key, value, actual.get(key));
+            } else if(value instanceof String) {
+                assertEquals("String Property mismatch. Name: " + key, value, actual.get(key));
+            } else if(value instanceof Object[]) {
+                fail("Sling Json reponse should not contain an array. Name: " + key);
+//                for(Object item: (Object[]) value) {
+//                    if(item instanceof Map) {
+//                        Map expectedChild = (Map) item;
+//                        Map actualChild =
+//                        compareJson();
+//                    }
+//                }
+            } else if(value instanceof Map) {
+                Map expectedChild = (Map) value;
+                Map actualChild = (Map) actual.get(key);
+                assertNotNull("Child: " + key + " not found as child in response", actualChild);
+                compareJson(expectedChild, actualChild);
+            } else {
+                fail("Unkown type of value: " + value.getClass());
+            }
+        }
     }
 }

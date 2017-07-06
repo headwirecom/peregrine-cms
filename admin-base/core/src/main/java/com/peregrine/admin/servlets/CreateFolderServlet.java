@@ -37,6 +37,7 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
@@ -74,7 +75,7 @@ public class CreateFolderServlet extends AbstractBaseServlet {
         }
         try {
             Node parentNode = parent.adaptTo(Node.class);
-            Node newFolder = parentNode.addNode(name, "sling:OrderedFolder");
+            Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             parentNode.getSession().save();
             return new JsonResponse()

@@ -13,6 +13,7 @@ public class PerConstants {
     public static final String SLING_RESOURCE_TYPE = "sling:resourceType";
     public static final String SLING_RESOURCE_SUPER_TYPE = "sling:resourceSuperType";
     public static final String SLING_FOLDER = "sling:Folder";
+    public static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
     public static final String JCR_LAST_MODIFIED = "jcr:lastModified";
     public static final String JCR_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     public static final String JCR_TITLE = "jcr:title";

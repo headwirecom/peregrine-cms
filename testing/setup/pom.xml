@@ -38,6 +38,7 @@
 
     <properties>
         <IT.expected.bundles.count>125</IT.expected.bundles.count>
+        <sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>
     </properties>
 
     <dependencies>
@@ -79,12 +80,12 @@
             <version>2.8.2</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-log4j12</artifactId>-->
-            <!--<version>1.7.21</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.peregrine.nodetypes</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.slf4j</groupId>-->
             <!--<artifactId>slf4j-simple</artifactId>-->
