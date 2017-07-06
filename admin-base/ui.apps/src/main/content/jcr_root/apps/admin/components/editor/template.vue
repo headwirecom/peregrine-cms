@@ -68,14 +68,17 @@
       methods: {
         onOk(e) {
             var view = $perAdminApp.getView()
+            $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
         },
         onCancel(e) {
             var view = $perAdminApp.getView()
+            $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
         },
         onDelete(e) {
             var view = $perAdminApp.getView()
+            $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
         }
       },
