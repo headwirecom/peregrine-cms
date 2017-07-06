@@ -41,7 +41,7 @@
         </div>
         -->
         <select v-model="value" class="browser-default" style="height: 8rem" multiple>
-            <option v-bind:value="val" v-for="val in schema.values">{{val}}</option>
+            <option v-bind:value="val.value" v-for="val in schema.values">{{val.name}}</option>
         </select>
     </div>
 </template>
