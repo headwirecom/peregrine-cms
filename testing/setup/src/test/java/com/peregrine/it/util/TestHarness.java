@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -201,6 +204,16 @@ public class TestHarness {
         String url = ADMIN_PREFIX_URL + "repl.json" + path;
         HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).build();
         return client.doPost(url, formEntry, expectedStatus);
+    }
+
+    public static SlingHttpResponse uploadFile(SlingClient client, String path, String name, byte[] content, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "uploadFiles.json" + path;
+//        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).build();
+        HttpEntity entity = MultipartEntityBuilder.create()
+            .addBinaryBody(name, content, ContentType.create("application/octet-stream"), name)
+            .build();
+        // return the sling response
+        return client.doPost(url, entity, expectedStatus);
     }
 
     public static void checkPages(SlingHttpResponse listResponse, String ... expectedPageNames) throws IOException {
