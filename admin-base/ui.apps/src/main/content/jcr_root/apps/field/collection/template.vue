@@ -64,18 +64,23 @@
       // this.model[this.schema.model] = this.value
       var model = this.value
       /* if model already has child items, create a schema for each */
-      var len = model.length
-  		if(model && len > 0){
-  			for(var i=0; i<len; i++){
-  				this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
-                this.schema.items[i].fields[0].model = this.schema.model + '['+i+']'
-  			}
-  		}
+      if(model){
+        var len = model.length
+    		if(len > 0){
+    			for(var i=0; i<len; i++){
+    				this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
+            if(!this.schema.multifield){
+              this.schema.items[i].fields[0].model = this.schema.model + '['+i+']'
+            }
+    			}
+    		}
+      } else {
+        this.value = []
+      }
   	},
   	data(){
   		return{
-  			activeItem: 0,
-        singleItemModel: []
+  			activeItem: 0
   		}
   	},
     computed: {
@@ -92,8 +97,10 @@
       onAddItem(e){
         console.log('itemModel: ', this.itemModel)
         this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
-        this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
-        this.value.push('')
+        if(!this.schema.multifield){
+          this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
+          this.value.push('')
+        }
       },
       onRemoveItem(index){
         this.schema.items.splice(index, 1)
