@@ -28,17 +28,22 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>testing.setup</artifactId>
+    <artifactId>client-side-servlets</artifactId>
     <packaging>content-package</packaging>
 
     <name>Testing Setup</name>
     <description>
-        This sets up the Sling Test Server
+        This is a set of Client Side Servlets Integration Tests
     </description>
 
     <properties>
         <IT.expected.bundles.count>125</IT.expected.bundles.count>
-        <sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>
+        <sling.vm.options></sling.vm.options>
+        <!--
+            Use this Sling VM Options to debug the Sling server. Connect to the server after the Sling bootstrap
+            To make the test wait for you set the 'suspend' to 'y'
+        -->
+        <!--<sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>-->
     </properties>
 
     <dependencies>
