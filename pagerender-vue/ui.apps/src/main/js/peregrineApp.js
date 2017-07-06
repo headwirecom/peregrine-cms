@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from './logger.js'
-let log = LoggerFactory.logger('peregrineApp').setFineLevel()
+let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 
 import state from './state.js'
 import merge from './merge.js'
