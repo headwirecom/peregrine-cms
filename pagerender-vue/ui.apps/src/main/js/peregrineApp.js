@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from './logger.js'
-let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
+let log = LoggerFactory.logger('peregrineApp').setFineLevel()
 
 import state from './state.js'
 import merge from './merge.js'
@@ -34,6 +34,79 @@ let view
 let loadedComponents = []
 
 let perVueApp = null
+
+function makePathInfo(path) {
+
+    log.fine('makePathInfo for path', path)
+    var htmlPos = path.indexOf('.html')
+    var pathPart = path
+    var suffixPath = ''
+    if(htmlPos >= 0) {
+        suffixPath = path.slice(htmlPos)
+        pathPart = path.slice(0, htmlPos+5)
+    }
+
+    var suffixParams = {}
+    if(suffixPath.length > 0) {
+        suffixPath = suffixPath.slice(6)
+        var suffixParamList = suffixPath.split('//')
+        for(var i = 0; i < suffixParamList.length; i+= 2) {
+            suffixParams[suffixParamList[i]] = suffixParamList[i+1]
+        }
+    }
+
+    var ret = { path: pathPart, suffix: suffixPath , suffixParams: suffixParams }
+    log.fine('makePathInfo res:',ret)
+    return ret
+}
+
+function get(node, path, value) {
+
+    var vue = perVueApp
+    path = path.slice(1).split('/').reverse()
+    while(path.length > 1) {
+        var segment = path.pop()
+        if(!node[segment]) {
+            if(vue) {
+                Vue.set(node, segment, {})
+            } else {
+                node[segment] = {}
+            }
+        }
+        node = node[segment]
+    }
+    if(value && !node[path[0]]) {
+        if(vue) {
+            Vue.set(node, path[0], value)
+        } else {
+            node[path[0]] = value
+        }
+    }
+    return node[path[0]]
+}
+
+function set(node, path, value) {
+
+    var vue = perVueApp
+    path = path.slice(1).split('/').reverse()
+    while(path.length > 1) {
+        var segment = path.pop()
+        if(!node[segment]) {
+            if(vue) {
+                Vue.set(node, segment, {})
+            } else {
+                node[segment] = {}
+            }
+        }
+        node = node[segment]
+    }
+    if(vue) {
+        Vue.set(node, path[0], value)
+    }
+    else {
+        node[path[0]] = value
+    }
+}
 
 function initPeregrineApp() {
 
@@ -91,43 +164,86 @@ function walkTreeAndLoad(node) {
     }
 }
 
-function processLoadedContent(data, path, firstTime, fromPopState) {
-    walkTreeAndLoad(data)
+function getNodeFromImpl(node, path) {
+    return get(node, path)
+}
 
-    log.fine('first time', firstTime)
-    getPerView().page = data;
-    getPerView().path = path.slice(0, path.indexOf('.html'));
-    getPerView().status = 'loaded';
-    if(firstTime) {
-        initPeregrineApp();
-    }
+function processLoaders(loaders) {
 
-    if(document.location !== path && !fromPopState && !firstTime) {
-        log.fine("PUSHSTATE : "+path);
-        document.title = getPerView().page.title
-        var url = document.location.href
-        var domains = (getPerView().page.domains)
-        var newLocation = path
-        if(domains) {
-            for(var i = 0; i < domains.length; i++) {
-                var domain = domains[i]
-                if(url.startsWith(domain)) {
-                    newLocation = '/'+path.split('/').slice(4).join('/')
+    return new Promise( (resolve, reject) => {
+        var promises = []
+        if(loaders) {
+            for(var i = 0; i < loaders.length; i++) {
+                var loader = loaders[i].split(':')
+                if(loader.length < 2) {
+                    log.fine('unknown loader', loaders[i])
+                } else {
+                    log.fine('loading data with', loader[0], loader[1])
+                    var pathFrom = loader[1]
+                    var dataToLoad = getNodeFromImpl(view, pathFrom)
+                    log.fine(dataToLoad)
+                    if(api[loader[0]]) {
+                        promises.push(api[loader[0]](dataToLoad))
+                    } else {
+                        log.error('missing', loader[0])
+                        reject('missing ' + loader[0]+' '+dataToLoad)
+                    }
                 }
             }
         }
-        history.pushState({peregrinevue:true, path: path}, path, newLocation)
-        scroll(0,0)
+        Promise.all(promises).then( () => resolve() )
+    })
+}
 
-        // Create the event.
-        var event = document.createEvent('Event')
+function processLoadedContent(data, path, firstTime, fromPopState) {
+    walkTreeAndLoad(data)
 
-        // Define that the event name is 'build'.
-        event.initEvent('pageRendered', true, true)
-
-        // target can be any Element or other EventTarget.
-        window.dispatchEvent(event)
+    if(data.suffixToParameter) {
+        const pathInfo = makePathInfo(window.location.pathname)
+        for(let i = 0; i < data.suffixToParameter.length; i+=2) {
+            const name = data.suffixToParameter[i]
+            const location =  data.suffixToParameter[i+1]
+            set(getPerView(), location, pathInfo.suffixParams[name])
+        }
     }
+    processLoaders(data.loaders).then( () => {
+
+        log.fine('first time', firstTime)
+        getPerView().page = data;
+        getPerView().path = path.slice(0, path.indexOf('.html'));
+        getPerView().status = 'loaded';
+        if(firstTime) {
+            initPeregrineApp();
+        }
+
+        if(document.location !== path && !fromPopState && !firstTime) {
+            log.fine("PUSHSTATE : " + path);
+            document.title = getPerView().page.title
+            var url = document.location.href
+            var domains = (getPerView().page.domains)
+            var newLocation = path
+            if (domains) {
+                for (var i = 0; i < domains.length; i++) {
+                    var domain = domains[i]
+                    if (url.startsWith(domain)) {
+                        newLocation = '/' + path.split('/').slice(4).join('/')
+                    }
+                }
+            }
+            history.pushState({peregrinevue: true, path: path}, path, newLocation)
+            scroll(0, 0)
+
+            // Create the event.
+            var event = document.createEvent('Event')
+
+            // Define that the event name is 'build'.
+            event.initEvent('pageRendered', true, true)
+
+            // target can be any Element or other EventTarget.
+            window.dispatchEvent(event)
+        }
+
+    })
 }
 
 function loadContentImpl(path, firstTime, fromPopState) {
@@ -194,6 +310,10 @@ var peregrineApp = {
     }, 
     isAuthorMode: function() {
         return isAuthorModeImpl()        
+    },
+
+    getView: function() {
+       return getPerView()
     }
 
 }
