@@ -24,24 +24,12 @@
   -->
 <template>
     <div>
-        <!--
-        <input
-            ref="field"
-            class="form-control"
-            type="text"
-            :disabled="disabled"
-            :maxlength="schema.max"
-            :placeholder="schema.placeholder"
-            :readonly="schema.readonly" >
-        <button v-on:click.stop.prevent="add" class="btn-flat">
-          <i class="material-icons">insert_drive_file</i>
-        </button>
-        <div v-for="item in value">
-            <a href="#" v-on:click.stop.prevent="remove(item)">D</a> {{item}}
-        </div>
-        -->
-        <select v-model="value" class="browser-default" style="height: 8rem" multiple>
-            <option v-bind:value="val.value" v-for="val in schema.values">{{val.name}}</option>
+        <select v-model="value"
+                class="browser-default"
+                v-bind:style="schema.multiple ? 'height: 8rem': ''"
+                v-bind:multiple="schema.multiple">
+            <option v-bind:value="val.value"
+                    v-for="val in schema.values">{{val.name}}</option>
         </select>
     </div>
 </template>
