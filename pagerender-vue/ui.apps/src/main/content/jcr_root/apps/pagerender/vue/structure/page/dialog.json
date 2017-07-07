@@ -37,10 +37,18 @@
     "items": []
   },
   {
-    "type": "list",
-    "label": "Public Domain Names",
+    "type": "collection",
+    "title": "Public Domain Names",
     "model": "domains",
-    "rows": 10,
-    "placeholder": "list of all public domain names for url shortening"
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "http://public-domain.com",
+        "model": "domains"
+      }
+    ],
+    "items": []
   }
 ]}
