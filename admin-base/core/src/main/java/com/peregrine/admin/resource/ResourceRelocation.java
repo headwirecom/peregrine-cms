@@ -10,7 +10,7 @@ import javax.jcr.RepositoryException;
  */
 public interface ResourceRelocation {
 
-    public boolean isParentOf(Resource child, Resource parent);
+    public boolean isChildOfParent(Resource child, Resource parent);
 
     public boolean hasSameParent(Resource first, Resource second);
 

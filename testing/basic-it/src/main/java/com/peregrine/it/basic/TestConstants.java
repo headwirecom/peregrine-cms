@@ -1,4 +1,4 @@
-package com.peregrine.it.util;
+package com.peregrine.it.basic;
 
 /**
  * Created by schaefa on 7/5/17.

@@ -82,7 +82,7 @@ public class MoveNodeTo extends AbstractBaseServlet {
             Resource toResource = request.getResourceByPath(toPath);
             Resource fromResource = request.getResourceByPath(fromPath);
             if(addAsChild) {
-                boolean sameParent = resourceRelocation.hasSameParent(fromResource, toResource);
+                boolean sameParent = resourceRelocation.isChildOfParent(fromResource, toResource);
                 if(!sameParent) {
 //AS TODO: Shouldn't we try to update the references ?
                     // If not the same parent then just move as they are added at the end

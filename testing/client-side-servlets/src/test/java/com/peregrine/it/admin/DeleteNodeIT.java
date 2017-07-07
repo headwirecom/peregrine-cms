@@ -2,7 +2,7 @@ package com.peregrine.it.admin;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.peregrine.it.util.AbstractTest;
+import com.peregrine.it.basic.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
@@ -15,16 +15,16 @@ import org.slf4j.LoggerFactory;
 import java.io.StringWriter;
 import java.util.Map;
 
-import static com.peregrine.it.util.TestConstants.TEMPLATE_PATH;
-import static com.peregrine.it.util.TestHarness.checkResourceByJson;
-import static com.peregrine.it.util.TestHarness.createFolder;
-import static com.peregrine.it.util.TestHarness.createFolderStructure;
+import static com.peregrine.it.basic.TestConstants.TEMPLATE_PATH;
+import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolder;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.createObject;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;
 import static com.peregrine.it.util.TestHarness.deleteNode;
 import static com.peregrine.it.util.TestHarness.deletePage;
-import static com.peregrine.it.util.TestHarness.listResourceAsJson;
+import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
@@ -35,6 +35,7 @@ import static com.peregrine.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.util.PerUtil.TEMPLATE;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by schaefa on 6/30/17.
@@ -88,7 +89,7 @@ public class DeleteNodeIT
         // Delete that folder and make sure the page is gone
         deleteNode(client, rootFolderPath + "/" + nodeName, 200);
 
-        Map rootFolder = listResourceAsJson(client, rootFolderPath);
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
         assertFalse("Removed Node (Page) is still there", rootFolder.containsKey(nodeName));
     }
 
@@ -117,7 +118,36 @@ public class DeleteNodeIT
         // Delete that folder and make sure the page is gone
         deleteNode(client, rootFolderPath + "/" + nodeName, 200);
 
-        Map rootFolder = listResourceAsJson(client, rootFolderPath);
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
+        assertFalse("Removed Node (Object) is still there", rootFolder.containsKey(nodeName));
+    }
+
+    @Test
+    public void testObjectWithTypeDeletion() throws Exception {
+        String rootFolderPath = ROOT_PATH + "/test-owtd";
+        String nodeName = "new-object";
+        SlingClient client = slingInstanceRule.getAdminClient();
+        // This test depends on the Create Folder to work
+        createFolderStructure(client, rootFolderPath);
+
+        // Create the Page and check that it is created correctly
+        createObject(client, rootFolderPath, nodeName, TEMPLATE_PATH, 200);
+        JsonFactory jf = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        JsonGenerator json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, OBJECT_PRIMARY_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, TEMPLATE_PATH);
+        json.writeStringField(JCR_TITLE, nodeName);
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, rootFolderPath + "/" + nodeName, 2, writer.toString(), true);
+
+        // Delete that folder and make sure the page is gone
+        deleteNode(client, rootFolderPath + "/" + nodeName, OBJECT_PRIMARY_TYPE, 200);
+
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
         assertFalse("Removed Node (Object) is still there", rootFolder.containsKey(nodeName));
     }
 
@@ -149,7 +179,39 @@ public class DeleteNodeIT
         // Delete that folder and make sure the page is gone
         deleteNode(client, rootFolderPath + "/" + nodeName, 200);
 
-        Map rootFolder = listResourceAsJson(client, rootFolderPath);
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
+        assertFalse("Removed Node (Template) is still there", rootFolder.containsKey(nodeName));
+    }
+
+    @Test
+    public void testTemplateWithTypeDeletion() throws Exception {
+        String rootFolderPath = ROOT_PATH + "/test-twtd";
+        String nodeName = "new-template";
+        SlingClient client = slingInstanceRule.getAdminClient();
+        // This test depends on the Create Folder to work
+        createFolderStructure(client, rootFolderPath);
+
+        // Create the Page and check that it is created correctly
+        createTemplate(client, rootFolderPath, nodeName, 200);
+        JsonFactory jf = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        JsonGenerator json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(JCR_TITLE, nodeName);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, rootFolderPath + "/" + nodeName, 2, writer.toString(), true);
+
+        // Delete that folder and make sure the page is gone
+        deleteNode(client, rootFolderPath + "/" + nodeName, PAGE_PRIMARY_TYPE, 200);
+
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
         assertFalse("Removed Node (Template) is still there", rootFolder.containsKey(nodeName));
     }
 
@@ -176,8 +238,62 @@ public class DeleteNodeIT
         // Delete that folder and make sure the page is gone
         deleteNode(client, rootFolderPath + "/" + nodeName, 200);
 
-        Map rootFolder = listResourceAsJson(client, rootFolderPath);
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
         assertFalse("Removed Node (Folder) is still there", rootFolder.containsKey(nodeName));
+    }
+
+    @Test
+    public void testFolderWithTypeDeletion() throws Exception {
+        String rootFolderPath = ROOT_PATH + "/test-fwtd";
+        String nodeName = "new-folder";
+        SlingClient client = slingInstanceRule.getAdminClient();
+        // This test depends on the Create Folder to work
+        createFolderStructure(client, rootFolderPath);
+
+        // Create the Page and check that it is created correctly
+        createFolder(client, rootFolderPath, nodeName, 200);
+        JsonFactory jf = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        JsonGenerator json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, SLING_ORDERED_FOLDER);
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, rootFolderPath + "/" + nodeName, 2, writer.toString(), true);
+
+        // Delete that folder and make sure the page is gone
+        deleteNode(client, rootFolderPath + "/" + nodeName, SLING_ORDERED_FOLDER, 200);
+
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
+        assertFalse("Removed Node (Folder) is still there", rootFolder.containsKey(nodeName));
+    }
+
+    @Test
+    public void testFolderWithBadTypeDeletion() throws Exception {
+        String rootFolderPath = ROOT_PATH + "/test-fwbtd";
+        String nodeName = "new-folder";
+        SlingClient client = slingInstanceRule.getAdminClient();
+        // This test depends on the Create Folder to work
+        createFolderStructure(client, rootFolderPath);
+
+        // Create the Page and check that it is created correctly
+        createFolder(client, rootFolderPath, nodeName, 200);
+        JsonFactory jf = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        JsonGenerator json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, SLING_ORDERED_FOLDER);
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, rootFolderPath + "/" + nodeName, 2, writer.toString(), true);
+
+        // Delete that folder and make sure the page is gone
+        deleteNode(client, rootFolderPath + "/" + nodeName, PAGE_PRIMARY_TYPE, 400);
+
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
+        assertTrue("Failed Removed Node (Folder) is not there", rootFolder.containsKey(nodeName));
     }
 
     @Override

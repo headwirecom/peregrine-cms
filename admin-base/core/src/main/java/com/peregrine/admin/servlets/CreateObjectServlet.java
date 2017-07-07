@@ -25,6 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -62,32 +64,21 @@ public class CreateObjectServlet extends AbstractBaseServlet {
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    ResourceManagement resourceManagement;
+
     @Override
     Response handleRequest(Request request) throws IOException {
         String parentPath = request.getParameter("path");
-        Resource parent = request.getResourceByPath(parentPath);
-        if(parent == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parent Path not found").setRequestPath(parentPath);
-        }
         String name = request.getParameter("name");
-        if(name == null || name.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Object Name must be provided").setRequestPath(parentPath);
-        }
         String templatePath = request.getParameter("templatePath");
-        if(templatePath == null || templatePath.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Object Template must be provided").setRequestPath(parentPath);
-        }
         try {
-            Node parentNode = parent.adaptTo(Node.class);
-            Node newNode = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
-            newNode.setProperty(SLING_RESOURCE_TYPE, templatePath);
-            newNode.setProperty(JCR_TITLE, name);
-            parentNode.getSession().save();
+            Resource newNode = resourceManagement.createObject(request.getResourceResolver(), parentPath, name, templatePath);
             return new JsonResponse()
                 .writeAttribute("type", "object").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newNode.getPath()).writeAttribute("templatePath", templatePath);
-        } catch (RepositoryException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create object").setException(e);
+        } catch (ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create object").setRequestPath(parentPath).setException(e);
         }
     }
 }

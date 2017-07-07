@@ -1,4 +1,4 @@
-package com.peregrine.it.util;
+package com.peregrine.it.basic;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

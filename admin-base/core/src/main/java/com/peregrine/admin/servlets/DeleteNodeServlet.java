@@ -25,6 +25,9 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.DeletionResponse;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
@@ -58,23 +61,24 @@ public class DeleteNodeServlet extends AbstractBaseServlet {
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    ResourceManagement resourceManagement;
+
     @Override
     Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
-        Resource resource = request.getResourceByPath(path);
-        if(resource == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found").setRequestPath(path);
-        }
+        String type = request.getParameter("type");
+        logger.debug("Got Delete Node Type: '{}'", type);
         try {
-            String name = resource.getName();
-            Resource parent = resource.getParent();
-            parent.getResourceResolver().delete(resource);
-            parent.getResourceResolver().commit();
+            DeletionResponse response = resourceManagement.deleteResource(request.getResourceResolver(), path, type);
             return new JsonResponse()
-                .writeAttribute("type", "node").writeAttribute("status", "deleted")
-                .writeAttribute("name", name).writeAttribute("parentPath", parent.getPath());
-        } catch (PersistenceException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to delete node: " + path).setException(e);
+                .writeAttribute("type", "node")
+                .writeAttribute("status", "deleted")
+                .writeAttribute("name", response.getName())
+                .writeAttribute("nodeType", response.getType())
+                .writeAttribute("parentPath", response.getParentPath());
+        } catch (ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to delete node: " + path).setRequestPath(path).setException(e);
         }
     }
 

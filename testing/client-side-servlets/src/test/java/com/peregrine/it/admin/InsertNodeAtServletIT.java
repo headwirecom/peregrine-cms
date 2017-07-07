@@ -1,6 +1,6 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.util.AbstractTest;
+import com.peregrine.it.basic.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -16,12 +16,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static com.peregrine.it.util.TestHarness.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
-import static com.peregrine.it.util.TestHarness.extractChildNodes;
+import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsComponent;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsContent;
-import static com.peregrine.it.util.TestHarness.listResourceAsJson;
+import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -64,7 +64,7 @@ public class InsertNodeAtServletIT
         // Insert a new Page to that folder
         SlingHttpResponse response = insertNodeAtAsComponent(client, targetPath, "/apps/components/admin/col", "into", 302);
         // List the children and check if there is a folder
-        Map children = extractChildNodes(listResourceAsJson(client, targetPath));
+        Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No nodes were created", children.isEmpty());
         assertEquals("There are more than one node", 1, children.size());
     }
@@ -79,7 +79,7 @@ public class InsertNodeAtServletIT
         // Insert a new Page to that folder
         SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-one\"}", "into", 302);
         // List the children and check if there is a folder
-        Map children = extractChildNodes(listResourceAsJson(client, targetPath));
+        Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No nodes were created", children.isEmpty());
         assertEquals("There are more than one node", 1, children.size());
         Map child = (Map) children.values().iterator().next();
@@ -98,12 +98,12 @@ public class InsertNodeAtServletIT
         // Insert a new Page to that folder
         SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-one\"}", "into", 302);
         // List the children and check if there is a folder
-        Map children = extractChildNodes(listResourceAsJson(client, targetPath));
+        Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No initial node were created", children.isEmpty());
         assertEquals("There are more than one node", 1, children.size());
         String firstNodeName = children.keySet().iterator().next() + "";
         response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-two\"}", "into-before", 302);
-        children = extractChildNodes(listResourceAsJson(client, targetPath));
+        children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No nodes found", children.isEmpty());
         assertEquals("Unexpected number of nodes found", 2, children.size());
         Iterator<Entry> i = children.entrySet().iterator();
@@ -132,12 +132,12 @@ public class InsertNodeAtServletIT
         // Insert a new Page to that folder
         SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-one\"}", "into", 302);
         // List the children and check if there is a folder
-        Map children = extractChildNodes(listResourceAsJson(client, targetPath));
+        Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No initial node were created", children.isEmpty());
         assertEquals("There are more than one node", 1, children.size());
         String firstNodeName = children.keySet().iterator().next() + "";
         response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-two\"}", "into-after", 302);
-        children = extractChildNodes(listResourceAsJson(client, targetPath));
+        children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No nodes found", children.isEmpty());
         assertEquals("Unexpected number of nodes found", 2, children.size());
         Iterator<Entry> i = children.entrySet().iterator();

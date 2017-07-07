@@ -1,6 +1,6 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.util.AbstractTest;
+import com.peregrine.it.basic.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
@@ -13,17 +13,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.peregrine.it.util.TestHarness.checkFolderExists;
-import static com.peregrine.it.util.TestHarness.createFolder;
-import static com.peregrine.it.util.TestHarness.createFolderStructure;
-import static com.peregrine.it.util.TestHarness.createFolders;
+import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolder;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolders;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
-import static com.peregrine.it.util.TestHarness.listResource;
-import static com.peregrine.it.util.TestHarness.listResourceAsJson;
-import static org.apache.jackrabbit.vault.util.JcrConstants.JCR_PRIMARYTYPE;
-import static org.junit.Assert.assertEquals;
+import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -62,7 +58,7 @@ public class DeleteFolderIT
         checkFolderExists(client, rootFolderPath, folderName);
         // Delete that folder and make sure the folder is gone
         deleteFolder(client, rootFolderPath + "/" + folderName, 200);
-        Map rootFolder = listResourceAsJson(client, rootFolderPath);
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
         assertFalse("Removed Folder is still there", rootFolder.containsKey(folderName));
     }
 
@@ -78,7 +74,7 @@ public class DeleteFolderIT
         createFolders(client, rootFolderPath, folderNamesBefore);
         // Delete that folder and make sure the folder is gone
         deleteFolder(client, rootFolderPath + "/" + folderName, 200);
-        Map rootFolder = listResourceAsJson(client, rootFolderPath);
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
         assertFalse("Removed Folder is still there", rootFolder.containsKey(folderName));
     }
 
@@ -91,7 +87,7 @@ public class DeleteFolderIT
         createFolderStructure(client, rootFolderPath + "/" + folderName);
         // Delete that folder and make sure the folder is gone
         deleteFolder(client, rootFolderPath + "/" + folderName + "-dnef", 400);
-        Map rootFolder = listResourceAsJson(client, rootFolderPath);
+        Map rootFolder = listResourceAsJson(client, rootFolderPath, 1);
         assertTrue("Not Remove Folder is gone", rootFolder.containsKey(folderName));
     }
 
@@ -104,7 +100,7 @@ public class DeleteFolderIT
         createFolderStructure(client, rootFolderPath);
         // Delete that folder and make sure the folder is gone
         deleteFolder(client, rootFolderPath + "/" + folderName + "-dnef", 400);
-        Map rootFolder = listResourceAsJson(client, ROOT_PATH);
+        Map rootFolder = listResourceAsJson(client, ROOT_PATH, 1);
         assertFalse("Not created Folder is found", rootFolder.containsKey(rootFolderPath));
     }
 

@@ -2,7 +2,7 @@ package com.peregrine.it.admin;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.peregrine.it.util.AbstractTest;
+import com.peregrine.it.basic.AbstractTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
@@ -19,9 +19,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import static com.peregrine.it.util.TestConstants.TEMPLATE_PATH;
-import static com.peregrine.it.util.TestHarness.checkResourceByJson;
-import static com.peregrine.it.util.TestHarness.createFolderStructure;
+import static com.peregrine.it.basic.TestConstants.TEMPLATE_PATH;
+import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.uploadFile;
 import static com.peregrine.util.PerConstants.ASSET_CONTENT_TYPE;

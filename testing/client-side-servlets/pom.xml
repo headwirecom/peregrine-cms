@@ -38,15 +38,21 @@
 
     <properties>
         <IT.expected.bundles.count>125</IT.expected.bundles.count>
-        <sling.vm.options></sling.vm.options>
+        <!--<sling.vm.options></sling.vm.options>-->
         <!--
             Use this Sling VM Options to debug the Sling server. Connect to the server after the Sling bootstrap
             To make the test wait for you set the 'suspend' to 'y'
         -->
-        <!--<sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>-->
+        <sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>basic-it</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -91,12 +97,6 @@
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-simple</artifactId>-->
-            <!--<version>1.7.21</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -207,25 +207,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Make sure that the server has all bundles deployed in order to make WCMIO content plugin deploy successfully -->
-            <!--<plugin>-->
-                <!--<artifactId>maven-failsafe-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>integration-test</goal>-->
-                            <!--<goal>verify</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<configuration>-->
-                    <!--<systemPropertyVariables>-->
-                        <!--<launchpad.http.port>${http.port}</launchpad.http.port>-->
-                        <!--<IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>-->
-                    <!--</systemPropertyVariables>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -329,30 +310,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <!--<profile>-->
-            <!--<id>autoInstallPackage</id>-->
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin>-->
-                        <!--<groupId>io.wcm.maven.plugins</groupId>-->
-                        <!--<artifactId>wcmio-content-package-maven-plugin</artifactId>-->
-                        <!--<extensions>true</extensions>-->
-                        <!--<configuration>-->
-                            <!--<group>com.peregrine.admin</group>-->
-                        <!--</configuration>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>install-package</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>install</goal>-->
-                                <!--</goals>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
-        <!--</profile>-->
-    </profiles>
 </project>

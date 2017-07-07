@@ -1,4 +1,4 @@
-package com.peregrine.it.util;
+package com.peregrine.it.basic;
 
 import org.junit.After;
 import org.junit.Before;

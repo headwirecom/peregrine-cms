@@ -25,26 +25,20 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_TITLE;
-import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
-import static com.peregrine.util.PerUtil.TEMPLATE;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -66,37 +60,21 @@ public class CreatePageServlet extends AbstractBaseServlet {
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    ResourceManagement resourceManagement;
+
     @Override
     Response handleRequest(Request request) throws IOException {
         String parentPath = request.getParameter("path");
-        Resource parent = PerUtil.getResource(request.getResourceResolver(), parentPath);
-        if(parent == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parent Path not found").setRequestPath(parentPath);
-        }
         String name = request.getParameter("name");
-        if(name == null || name.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Page Name must be provided").setRequestPath(parentPath);
-        }
         String templatePath = request.getParameter("templatePath");
         try {
-            Resource templateResource = PerUtil.getResource(request.getResourceResolver(), templatePath + "/" + JCR_CONTENT);
-            if(templateResource == null) {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Could not find template with path: " + templatePath).setRequestPath(parentPath);
-            }
-            String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
-            Node parentNode = parent.adaptTo(Node.class);
-            Node newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
-            Node content = newPage.addNode(JCR_CONTENT);
-            content.setPrimaryType(PAGE_CONTENT_TYPE);
-            content.setProperty(SLING_RESOURCE_TYPE, templateComponent);
-            content.setProperty(JCR_TITLE, name);
-            content.setProperty(TEMPLATE, templatePath);
-            newPage.getSession().save();
+            Resource newPage = resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath);
             return new JsonResponse()
                 .writeAttribute("type", "page").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newPage.getPath()).writeAttribute("templatePath", templatePath);
-        } catch (RepositoryException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create page").setException(e);
+        } catch (ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create page").setRequestPath(parentPath).setException(e);
         }
     }
 

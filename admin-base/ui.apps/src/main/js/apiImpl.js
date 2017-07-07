@@ -345,7 +345,7 @@ class PerAdminImpl {
     createTemplate(parentPath, name) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
-            data.append(':name', name)
+            data.append('name', name)
             updateWithForm('/admin/createTemplate.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )

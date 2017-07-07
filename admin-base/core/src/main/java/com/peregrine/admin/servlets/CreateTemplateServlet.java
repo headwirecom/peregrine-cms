@@ -25,6 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -64,31 +66,21 @@ public class CreateTemplateServlet extends AbstractBaseServlet {
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    ResourceManagement resourceManagement;
+
     @Override
     Response handleRequest(Request request) throws IOException {
         String parentPath = request.getParameter("path");
-        Resource parent = request.getResourceByPath(parentPath);
-        if(parent == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parent Path not found").setRequestPath(parentPath);
-        }
         String name = request.getParameter("name");
-        if(name == null || name.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Object Name must be provided").setRequestPath(parentPath);
-        }
         try {
-            Node parentNode = parent.adaptTo(Node.class);
-            Node newTemplate = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
-            Node content = newTemplate.addNode(JCR_CONTENT, PAGE_CONTENT_TYPE);
-            content.setProperty(SLING_RESOURCE_TYPE, "example/components/page");
-            content.setProperty(JCR_TITLE, name);
-            parentNode.getSession().save();
+            Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name);
             return new JsonResponse()
                 .writeAttribute("type", "template").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newTemplate.getPath());
-        } catch (RepositoryException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create template").setException(e);
+        } catch (ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create template").setRequestPath(parentPath).setException(e);
         }
     }
-
 }
 

@@ -88,8 +88,10 @@ public class SearchServlet extends AbstractBaseServlet {
                 answer.writeArray("data");
                 while(nodes.hasNext()) {
                     Node node = nodes.nextNode();
+                    answer.writeObject();
                     answer.writeAttribute("name", node.getName());
                     answer.writeAttribute("path", node.getPath());
+                    answer.writeClose();
                 }
                 answer.writeClose();
                 return answer;

@@ -1,6 +1,6 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.util.AbstractTest;
+import com.peregrine.it.basic.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.peregrine.it.util.TestHarness.checkPages;
-import static com.peregrine.it.util.TestHarness.checkResponse;
-import static com.peregrine.it.util.TestHarness.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
+import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
-import static com.peregrine.it.util.TestHarness.listResource;
+import static com.peregrine.it.basic.BasicTestHelpers.listResource;
 import static com.peregrine.it.util.TestHarness.moveResource;
 import static com.peregrine.it.util.TestHarness.renameResource;
 
@@ -65,7 +65,7 @@ public class MoveServletIT
         // Check the servlet response
         Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/test-page-1", "targetPath", targetPath + "/test-page-1");
         // Check the node json listing
-        response = listResource(client, targetPath + "/test-page-1");
+        response = listResource(client, targetPath + "/test-page-1", 1);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "test-page-1");
     }
@@ -84,7 +84,7 @@ public class MoveServletIT
         // Check the servlet response
         Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/source-page-q", "targetPath", targetPath + "/source-page-q");
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "target-page-z", "target-page-b", "target-page-y", "source-page-q");
     }
@@ -103,7 +103,7 @@ public class MoveServletIT
         // Check the servlet response
         Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/source-page-q", "targetPath", targetPath + "/source-page-q");
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "source-page-q", "target-page-z", "target-page-b", "target-page-y");
     }
@@ -122,7 +122,7 @@ public class MoveServletIT
         // Check the servlet response
         Map responseMap = checkResponse(response, "sourcePath", sourcePath + "/source-page-q", "targetPath", targetPath + "/source-page-q");
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "target-page-z", "source-page-q", "target-page-b", "target-page-y");
     }
@@ -192,7 +192,7 @@ public class MoveServletIT
         response = renameResource(client, targetPath + "/target-page-z", "renamed-z", 200);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         checkPages(response, "target-page-a", "renamed-z", "target-page-b", "target-page-y");
     }
 

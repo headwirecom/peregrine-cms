@@ -1,6 +1,6 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.util.AbstractTest;
+import com.peregrine.it.basic.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.peregrine.it.util.TestHarness.checkPages;
-import static com.peregrine.it.util.TestHarness.checkResponse;
-import static com.peregrine.it.util.TestHarness.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
+import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
-import static com.peregrine.it.util.TestHarness.listResource;
+import static com.peregrine.it.basic.BasicTestHelpers.listResource;
 import static com.peregrine.it.util.TestHarness.moveNodeToResource;
 
 /**
@@ -65,7 +65,7 @@ public class MoveNodeToServletIT
         response = moveNodeToResource(client, sourcePath+ "/test-page-1", targetPath, "child", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
-        response = listResource(client, targetPath + "/test-page-1");
+        response = listResource(client, targetPath + "/test-page-1", 1);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "test-page-1");
     }
@@ -82,7 +82,7 @@ public class MoveNodeToServletIT
         response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "child", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "target-page-z", "target-page-b", "target-page-y", "source-page-q");
     }
@@ -99,9 +99,26 @@ public class MoveNodeToServletIT
         response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "into-before", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "source-page-q", "target-page-a", "target-page-z", "target-page-b", "target-page-y");
+    }
+
+    @Test
+    public void testMoveToSameFolderAsChildBefore() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String sourcePath = ROOT_PATH + "/source/source-m2sfacb";
+        String targetPath = ROOT_PATH + "/target/target-m2sfacb";
+        createPageSetup(client, sourcePath, targetPath);
+
+        // Move the resource
+        response = moveNodeToResource(client, targetPath + "/target-page-z", targetPath, "into-before", 302);
+        logger.info("Response from creating move the resource: '{}'", response.getContent());
+        // Check the node json listing
+        response = listResource(client, targetPath, 2);
+        logger.info("Response from listing the moved page: '{}'", response.getContent());
+        checkPages(response,  "target-page-z", "target-page-a", "target-page-b", "target-page-y");
     }
 
     @Test
@@ -116,7 +133,7 @@ public class MoveNodeToServletIT
         response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "into-after", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "target-page-z", "target-page-b", "target-page-y", "source-page-q");
     }
@@ -133,7 +150,7 @@ public class MoveNodeToServletIT
         response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "before", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "source-page-q", "target-page-z", "target-page-b", "target-page-y");
     }
@@ -150,7 +167,7 @@ public class MoveNodeToServletIT
         response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "after", 302);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
-        response = listResource(client, targetPath);
+        response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "target-page-z", "source-page-q", "target-page-b", "target-page-y");
     }

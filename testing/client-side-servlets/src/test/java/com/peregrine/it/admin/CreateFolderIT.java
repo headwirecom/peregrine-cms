@@ -1,6 +1,6 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.util.AbstractTest;
+import com.peregrine.it.basic.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
@@ -10,10 +10,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.peregrine.it.util.TestHarness.checkFolderExists;
-import static com.peregrine.it.util.TestHarness.checkFolders;
-import static com.peregrine.it.util.TestHarness.createFolder;
-import static com.peregrine.it.util.TestHarness.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
+import static com.peregrine.it.basic.BasicTestHelpers.checkFolders;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolder;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 
 /**
  * Created by schaefa on 6/30/17.

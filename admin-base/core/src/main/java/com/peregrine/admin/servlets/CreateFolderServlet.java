@@ -25,6 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
@@ -62,27 +64,20 @@ public class CreateFolderServlet extends AbstractBaseServlet {
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    ResourceManagement resourceManagement;
+
     @Override
     Response handleRequest(Request request) throws IOException {
         String parentPath = request.getParameter("path");
-        Resource parent = PerUtil.getResource(request.getResourceResolver(), parentPath);
-        if(parent == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parent Path not found").setRequestPath(parentPath);
-        }
         String name = request.getParameter("name");
-        if(name == null || name.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Folder Name must be provided").setRequestPath(parentPath);
-        }
         try {
-            Node parentNode = parent.adaptTo(Node.class);
-            Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
-            newFolder.setProperty(JCR_TITLE, name);
-            parentNode.getSession().save();
+            Resource newFolder = resourceManagement.createFolder(request.getResourceResolver(), parentPath, name);
             return new JsonResponse()
                 .writeAttribute("type", "folder").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newFolder.getPath());
-        } catch (RepositoryException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create folder").setException(e);
+        } catch (ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create folder").setRequestPath(parentPath).setException(e);
         }
     }
 

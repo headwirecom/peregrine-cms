@@ -34,7 +34,7 @@ public class ResourceRelocationService
     private ReferenceLister referenceLister;
 
     @Override
-    public boolean isParentOf(Resource child, Resource parent) {
+    public boolean isChildOfParent(Resource child, Resource parent) {
         Resource childParent = child != null ? child.getParent() : null;
         return childParent != null && parent != null &&
             parent.getPath().equals(childParent.getPath());
@@ -43,7 +43,7 @@ public class ResourceRelocationService
     @Override
     public boolean hasSameParent(Resource first, Resource second) {
         return second != null &&
-            isParentOf(first, second.getParent());
+            isChildOfParent(first, second.getParent());
     }
 
     @Override
