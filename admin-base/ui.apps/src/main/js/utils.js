@@ -107,7 +107,7 @@ export function get(node, path, value) {
         }
         node = node[segment]
     }
-    if(value && !node[path[0]]) {
+    if(value !== undefined && !node[path[0]]) {
         if(vue) {
             Vue.set(node, path[0], value)
         } else {
