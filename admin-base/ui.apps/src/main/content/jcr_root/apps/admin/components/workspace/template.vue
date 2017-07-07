@@ -78,6 +78,10 @@
 <script>
     export default {
         props: ['model'],
+        beforeMount(){
+          Vue.set($perAdminApp.getView().state, 'rightPanelFullscreen', false)
+          Vue.set($perAdminApp.getView().state, 'rightPanelVisible', true)
+        },
         computed: {
             state: function() {
                 return $perAdminApp.getView().state
@@ -107,11 +111,7 @@
             },
 
             showHide(me, name) {
-                if($perAdminApp.getView().state.rightPanelVisible === undefined) {
-                    $perAdminApp.getApp().$set($perAdminApp.getView().state,'rightPanelVisible', true)
-                    return
-                }
-                $perAdminView.state.rightPanelVisible = $perAdminView.state.rightPanelVisible ? false: true
+                $perAdminApp.getView().state.rightPanelVisible = $perAdminApp.getView().state.rightPanelVisible ? false: true
             },
 
             showComponentEdit(me, target) {
@@ -119,19 +119,11 @@
             },
 
             onEditorExitFullscreen(){
-              if($perAdminApp.getView().state.rightPanelFullscreen === undefined) {
-                $perAdminApp.getApp().$set($perAdminApp.getView().state, 'rightPanelFullscreen', false)
-              } else {
-                $perAdminView.state.rightPanelFullscreen = false
-              }
+              $perAdminApp.getView().state.rightPanelFullscreen = false
             },
 
             onEditorFullscreen(){
-              if($perAdminApp.getView().state.rightPanelFullscreen === undefined) {
-                $perAdminApp.getApp().$set($perAdminApp.getView().state, 'rightPanelFullscreen', true)
-              } else {
-                $perAdminView.state.rightPanelFullscreen = true
-              }
+              $perAdminApp.getView().state.rightPanelFullscreen = true
             }
         }
     }
