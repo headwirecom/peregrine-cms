@@ -30,6 +30,9 @@ let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 import { stripNulls} from './utils'
 
 const API_BASE = '/api'
+const postConfig = {
+    withCredentials: true
+}
 
 let callbacks
 
@@ -50,7 +53,7 @@ function fetch(path) {
 function update(path) {
 
     logger.fine('update() ', path)
-    return axios.post(API_BASE+path).then( (response) => {
+    return axios.post(API_BASE+path, null, postConfig).then( (response) => {
         return new Promise( (resolve, reject) => {
             resolve(response.data)
         })
@@ -314,7 +317,8 @@ class PerAdminImpl {
           onUploadProgress: progressEvent => {
             var percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
             cb(percentCompleted)
-          }
+          },
+          withCredentials: true
         }
 
         return new Promise( (resolve, reject) => {
@@ -342,7 +346,7 @@ class PerAdminImpl {
                 var data = new FormData()
                 data.append(name, response.data, name)
 
-                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data).then( (response) => {
+                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data, postConfig).then( (response) => {
                     logger.fine(response.data)
                     this.populateNodesForBrowser(path) })
                     .then( () => resolve() )
@@ -394,7 +398,7 @@ class PerAdminImpl {
 
             nodeData['sling:resourceType'] = node.component.split('-').join('/')
 
-            axios.post(path + node.path, data).then( function(res) {
+            axios.post(path + node.path, data, postConfig).then( function(res) {
                 resolve()
             })
 
@@ -413,7 +417,7 @@ class PerAdminImpl {
             data.append(':replaceProperties', 'true')
             data.append(':content', JSON.stringify(nodeData))
 
-            axios.post(path, data).then( function(res) {
+            axios.post(path, data, postConfig).then( function(res) {
                 resolve()
             })
 
@@ -439,7 +443,7 @@ class PerAdminImpl {
 
             postData.append('content', JSON.stringify(data))
 
-            axios.post('/api/admin/insertNodeAt.json/path//'+path+'//drop//'+drop, postData)
+            axios.post('/api/admin/insertNodeAt.json/path//'+path+'//drop//'+drop, postData, postConfig)
                 .then( (result) => {
                     resolve(result.data)
                 })
