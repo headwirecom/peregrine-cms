@@ -23,24 +23,44 @@
   #L%
   -->
 <template>
-    <div v-if="currentObject">
-        <button class="btn-flat" v-on:click.stop.prevent="onView">view</button>
-        <button class="btn-flat" v-on:click.stop.prevent="onEdit">edit</button>
+    <div v-if="currentObject" :class="`object-editor ${isFullscreen ? 'fullscreen' : 'narrow'}`">
+      <div class="object-editor-content">
+        <button 
+          v-if="isFullscreen"
+          type="button" 
+          class="toggle-fullscreen" 
+          v-on:click.prevent="onPreviewExitFullscreen">
+          <i class="material-icons">fullscreen_exit</i>
+        </button>
+        <button 
+          v-if="!isFullscreen"
+          type="button" 
+          class="toggle-fullscreen" 
+          v-on:click.prevent="onPreviewFullscreen">
+          <i class="material-icons">fullscreen</i>
+        </button>
 
-        <div v-if="!edit">
-            <pre>{{currentObject.data}}</pre>
+        <div class="display-json">
+          <pre>{{currentObject.data}}</pre>
         </div>
-        <form v-else>
-
+        <form v-if="edit">
             <vue-form-generator
-                    v-bind:schema  = "schema"
-                    v-bind:model   = "currentObject.data"
-                    v-bind:options = "formOptions">
+              v-bind:schema  = "schema"
+              v-bind:model   = "currentObject.data"
+              v-bind:options = "formOptions">
             </vue-form-generator>
-            <button class="btn-flat" v-on:click.stop.prevent="onOk">ok</button>
-            <button class="btn-flat" v-on:click.stop.prevent="onCancel">cancel</button>
         </form>
-
+        <div class="right-align">
+          <button v-if="!edit" class="btn btn-raised" v-on:click.stop.prevent="onEdit">
+            <i class="material-icons">edit</i>
+          </button>
+          <button v-if="edit" class="btn btn-raised" v-on:click.stop.prevent="onOk">
+            <i class="material-icons">check</i>
+          </button>
+          <button v-if="edit" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
+            <i class="material-icons">close</i>
+          </button>
+        </div>
     </div>
 </template>
 
@@ -48,40 +68,44 @@
     export default {
         props: ['model'],
         computed: {
-            currentObject: function () {
-                return $perAdminApp.getNodeFromView("/state/tools/object")
-            },
-            schema: function () {
-                let resourceType = this.currentObject.data['sling:resourceType']
-                resourceType = resourceType.split('/').join('-')
-                return $perAdminApp.getNodeFromView('/admin/componentDefinitions/' + resourceType)
-            }
-        }
-        ,
+          currentObject: function () {
+            return $perAdminApp.getNodeFromView("/state/tools/object")
+          },
+          schema: function () {
+            let resourceType = this.currentObject.data['sling:resourceType']
+            resourceType = resourceType.split('/').join('-')
+            return $perAdminApp.getNodeFromView('/admin/componentDefinitions/' + resourceType)
+          }
+        },
         data: function() {
-            return {
-                formOptions: {
-                    validateAfterLoad: true,
-                    validateAfterChanged: true
-                },
-                edit: true
-
-            }
+          return {
+            formOptions: {
+              validateAfterLoad: true,
+              validateAfterChanged: true
+            },
+            edit: false,
+            isFullscreen: false
+          }
         },
         methods: {
-            onView: function() {
-                this.edit = false
-            },
-            onEdit: function() {
-                this.edit = true
-            },
-            onOk: function() {
-                // should store the current node
-                $perAdminApp.stateAction('saveObjectEdit', { data: this.currentObject.data, path: this.currentObject.show } )
-            },
-            onCancel: function() {
-                $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show } )
-            }
+          onEdit: function() {
+            this.edit = true
+          },
+          onOk: function() {
+            // should store the current node
+            $perAdminApp.stateAction('saveObjectEdit', { data: this.currentObject.data, path: this.currentObject.show })
+            this.edit = false
+          },
+          onCancel: function() {
+            $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
+            this.edit = false
+          },
+          onPreviewExitFullscreen(){
+            this.isFullscreen = false
+          },
+          onPreviewFullscreen(){
+            this.isFullscreen = true
+          }
         }
     }
 </script>

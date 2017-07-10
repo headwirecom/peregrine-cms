@@ -24,17 +24,18 @@
   -->
 <template>
     <div class="field-wrap field-with-button">
-        <input
-            class="form-control"
-            type="text"
-            v-model="value"
-            :disabled="disabled"
-            :maxlength="schema.max"
-            :placeholder="schema.placeholder"
-            :readonly="schema.readonly" />
-        <button v-on:click.stop.prevent="browse">
-          <i class="material-icons">insert_drive_file</i>
-        </button>
+      <input
+        :id="getFieldID(schema)"
+        type="text"
+        :value="value"
+        :disabled="disabled"
+        :maxlength="schema.max"
+        :placeholder="schema.placeholder"
+        :readonly="schema.readonly"
+        @input="value = $event.target.value" />
+      <button v-on:click.stop.prevent="browse" class="btn-flat">
+        <i class="material-icons">insert_drive_file</i>
+      </button>
     </div>
 </template>
 
