@@ -226,9 +226,15 @@ export default {
 
         getPosFromMouse: function(e) {
             var elRect = this.getBoundingClientRect(this.$refs.editview)
-            var posX = e.clientX - elRect.left
-            var posY = e.clientY - elRect.top
-            return {x: posX, y: posY }
+            if(e) {
+                var posX = e.clientX - elRect.left
+                var posY = e.clientY - elRect.top
+                return {x: posX, y: posY }
+            }
+            else {
+                // fix for case where mouse event is not defined
+                return {x: -elRect.left, y: -elRect.top }
+            }
         },
 
         getElementStyle: function (e, styleName) {

@@ -208,7 +208,13 @@ class PerAdminImpl {
                             let promise = axios.get(from).then( (response) => {
                                 for(var key in response.data) {
                                     if(response.data[key]['jcr:title']) {
-                                        data.model.fields[i].values.push(response.data[key]['jcr:title'])
+                                        const nodeName = key
+                                        const val = from.replace('.infinity.json', '/'+nodeName)
+                                        let name = response.data[key].name
+                                        if(!name) {
+                                            name = response.data[key]['jcr:title']
+                                        }
+                                        data.model.fields[i].values.push({ value: val, name: name })
                                     }
                                 }
                             })
