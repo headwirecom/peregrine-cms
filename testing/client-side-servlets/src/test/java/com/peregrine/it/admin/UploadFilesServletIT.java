@@ -19,7 +19,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import static com.peregrine.it.basic.TestConstants.TEMPLATE_PATH;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
@@ -29,12 +28,7 @@ import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.JCR_TITLE;
-import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.util.PerUtil.METADATA;
-import static com.peregrine.util.PerUtil.TEMPLATE;
 import static org.junit.Assert.assertTrue;
 
 /**

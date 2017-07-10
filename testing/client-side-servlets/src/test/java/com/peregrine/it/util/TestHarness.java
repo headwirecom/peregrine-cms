@@ -118,4 +118,10 @@ public class TestHarness {
         // return the sling response
         return client.doPost(url, entity, expectedStatus);
     }
+
+    public static SlingHttpResponse updateResource(SlingClient client, String path, String content, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "updateResource.json" + path;
+        HttpEntity formEntry = FormEntityBuilder.create().addParameter("content", content).build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
 }

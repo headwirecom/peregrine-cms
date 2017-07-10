@@ -1,7 +1,8 @@
 package com.peregrine.admin.resource;
 
-import com.peregrine.admin.servlets.AbstractBaseServlet.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.util.PerUtil;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -12,6 +13,11 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
@@ -21,7 +27,8 @@ import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.util.PerUtil.TEMPLATE;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static com.peregrine.util.PerUtil.getModifiableProperties;
+import static com.peregrine.util.PerUtil.getResource;
 
 /**
  * Created by schaefa on 7/6/17.
@@ -154,6 +161,54 @@ public class ResourceManagementService
         } catch (PersistenceException e) {
             throw new ManagementException("Failed to Delete Resource: " + path, e);
         }
+    }
+
+    @Override
+    public Resource updateResource(ResourceResolver resourceResolver, String path, String jsonContent) throws ManagementException {
+        Resource answer = null;
+        try {
+            answer = getResource(resourceResolver, path);
+            if(answer == null) {
+                throw new ManagementException("Resource not found, Path: " + path);
+            }
+            if(jsonContent == null || jsonContent.isEmpty()) {
+                throw new ManagementException("No Content provided, Path: " + path);
+            }
+            Map content = convertToMap(jsonContent);
+            //AS TODO: Check if we could add some guards here to avoid misplaced updates (JCR Primary Type / Sling Resource Type)
+            updateResourceTree(answer, content);
+            resourceResolver.commit();
+        } catch(IOException e) {
+            throw new ManagementException("Failed to parse Json Content: " + jsonContent);
+        }
+        return answer;
+    }
+
+    private void updateResourceTree(Resource resource, Map<String, Object> properties) throws ManagementException {
+        ModifiableValueMap updateProperties = getModifiableProperties(resource, false);
+        for(Entry<String, Object> entry: properties.entrySet()) {
+            String name = entry.getKey();
+            Object value = entry.getValue();
+            if(value instanceof Map) {
+                Resource child = resource.getChild(name);
+                if(child == null) {
+                    throw new ManagementException("Property: '" + name + "' is a map but not child resource found with that name");
+                }
+                updateResourceTree(child, (Map) value);
+            } else {
+//            } else if(value instanceof Object[]) {
+                updateProperties.put(name, value);
+            }
+        }
+    }
+
+    public static Map convertToMap(String json) throws IOException {
+        Map answer = new LinkedHashMap();
+        if(json != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            answer = mapper.readValue(json, LinkedHashMap.class);
+        }
+        return answer;
     }
 
     private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {

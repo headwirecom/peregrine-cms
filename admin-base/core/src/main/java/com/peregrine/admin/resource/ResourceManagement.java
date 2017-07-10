@@ -20,6 +20,8 @@ public interface ResourceManagement {
 
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException;
 
+    public Resource updateResource(ResourceResolver resourceResolver, String path, String jsonContent) throws ManagementException;
+
     public class ManagementException
         extends Exception
     {

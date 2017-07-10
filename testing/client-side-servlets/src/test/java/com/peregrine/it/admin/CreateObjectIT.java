@@ -13,23 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
-import java.util.Map;
 
-import static com.peregrine.it.basic.TestConstants.TEMPLATE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.createObject;
-import static com.peregrine.it.util.TestHarness.createPage;
-import static com.peregrine.it.util.TestHarness.deletePage;
-import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
 import static com.peregrine.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.util.PerUtil.TEMPLATE;
 import static org.junit.Assert.assertFalse;
 
 /**
@@ -64,13 +56,13 @@ public class CreateObjectIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Object and check that it is created correctly
-        createObject(client, rootFolderPath, objectName, TEMPLATE_PATH, 200);
+        createObject(client, rootFolderPath, objectName, EXAMPLE_TEMPLATE_PATH, 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
         json.writeStartObject();
         json.writeStringField(JCR_PRIMARY_TYPE, OBJECT_PRIMARY_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, TEMPLATE_PATH);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_TEMPLATE_PATH);
         json.writeStringField(JCR_TITLE, objectName);
         json.writeEndObject();
         json.close();

@@ -15,7 +15,8 @@ import org.slf4j.LoggerFactory;
 import java.io.StringWriter;
 import java.util.Map;
 
-import static com.peregrine.it.basic.TestConstants.TEMPLATE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.util.TestHarness.createObject;
@@ -64,7 +65,7 @@ public class DeletePageIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Page and check that it is created correctly
-        createPage(client, rootFolderPath, pageName, TEMPLATE_PATH, 200);
+        createPage(client, rootFolderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
@@ -72,9 +73,9 @@ public class DeletePageIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, pageName);
-        json.writeStringField(TEMPLATE, TEMPLATE_PATH);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
         json.writeEndObject();
         json.writeEndObject();
         json.close();
@@ -97,8 +98,8 @@ public class DeletePageIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Page and check that it is created correctly
-        createPage(client, rootFolderPath, parentPageName, TEMPLATE_PATH, 200);
-        createPage(client, rootFolderPath + "/" + parentPageName, childPageName, TEMPLATE_PATH, 200);
+        createPage(client, rootFolderPath, parentPageName, EXAMPLE_TEMPLATE_PATH, 200);
+        createPage(client, rootFolderPath + "/" + parentPageName, childPageName, EXAMPLE_TEMPLATE_PATH, 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
@@ -106,17 +107,17 @@ public class DeletePageIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, parentPageName);
-        json.writeStringField(TEMPLATE, TEMPLATE_PATH);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
         json.writeEndObject();
         json.writeObjectFieldStart(childPageName);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, childPageName);
-        json.writeStringField(TEMPLATE, TEMPLATE_PATH);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
         json.writeEndObject();
         json.writeEndObject();
         json.close();
@@ -133,9 +134,9 @@ public class DeletePageIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, parentPageName);
-        json.writeStringField(TEMPLATE, TEMPLATE_PATH);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
         json.writeEndObject();
         json.writeEndObject();
         json.close();
@@ -153,8 +154,8 @@ public class DeletePageIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Page and check that it is created correctly
-        createPage(client, rootFolderPath, parentPageName, TEMPLATE_PATH, 200);
-        createPage(client, rootFolderPath + "/" + parentPageName, childPageName, TEMPLATE_PATH, 200);
+        createPage(client, rootFolderPath, parentPageName, EXAMPLE_TEMPLATE_PATH, 200);
+        createPage(client, rootFolderPath + "/" + parentPageName, childPageName, EXAMPLE_TEMPLATE_PATH, 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
@@ -162,17 +163,17 @@ public class DeletePageIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, parentPageName);
-        json.writeStringField(TEMPLATE, TEMPLATE_PATH);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
         json.writeEndObject();
         json.writeObjectFieldStart(childPageName);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, childPageName);
-        json.writeStringField(TEMPLATE, TEMPLATE_PATH);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
         json.writeEndObject();
         json.writeEndObject();
         json.close();
@@ -195,13 +196,13 @@ public class DeletePageIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Page and check that it is created correctly
-        createObject(client, rootFolderPath, objectName, TEMPLATE_PATH, 200);
+        createObject(client, rootFolderPath, objectName, EXAMPLE_TEMPLATE_PATH, 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
         json.writeStartObject();
         json.writeStringField(JCR_PRIMARY_TYPE, OBJECT_PRIMARY_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, TEMPLATE_PATH);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_TEMPLATE_PATH);
         json.writeStringField(JCR_TITLE, objectName);
         json.writeEndObject();
         json.close();

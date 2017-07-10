@@ -21,6 +21,7 @@ import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
@@ -80,7 +81,7 @@ public class ReplicationServletIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, templateName);
         json.writeEndObject();
         json.writeEndObject();
@@ -96,7 +97,7 @@ public class ReplicationServletIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, pageName);
         json.writeStringField(TEMPLATE, rootFolderPath + "/" + templateName);
         json.writeEndObject();
@@ -118,7 +119,7 @@ public class ReplicationServletIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, pageName);
         json.writeStringField(TEMPLATE, liveRootFolderPath + "/" + templateName);
         json.writeEndObject();
@@ -132,7 +133,7 @@ public class ReplicationServletIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, templateName);
         json.writeEndObject();
         json.writeEndObject();

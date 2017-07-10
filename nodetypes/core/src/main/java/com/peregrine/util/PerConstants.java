@@ -8,6 +8,7 @@ public class PerConstants {
     public static final String JCR_DATA = "jcr:data";
     public static final String NT_FILE = "nt:file";
     public static final String NT_RESOURCE = "nt:resource";
+    public static final String NT_UNSTRUCTURED = "nt:unstructured";
     public static final String JCR_MIME_TYPE = "jcr:mimeType";
     public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
     public static final String SLING_RESOURCE_TYPE = "sling:resourceType";

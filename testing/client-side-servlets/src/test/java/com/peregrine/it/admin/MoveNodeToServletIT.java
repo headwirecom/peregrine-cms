@@ -17,6 +17,7 @@ import java.util.Map;
 import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.listResource;
@@ -59,7 +60,7 @@ public class MoveNodeToServletIT
         createFolderStructure(client, sourcePath);
         createFolderStructure(client, targetPath);
         // Create a new source page
-        response = createPage(client, sourcePath, "test-page-1", "/content/templates/example", 200);
+        response = createPage(client, sourcePath, "test-page-1", EXAMPLE_TEMPLATE_PATH, 200);
         logger.info("Response from creating test page folder: '{}'", response.getContent());
         // Move the resource
         response = moveNodeToResource(client, sourcePath+ "/test-page-1", targetPath, "child", 302);
@@ -218,7 +219,7 @@ public class MoveNodeToServletIT
         String sourcePath = ROOT_PATH + "/source/source-m2pwpat";
         String targetPath = ROOT_PATH + "/target/target-m2pwpat";
         createPageSetup(client, sourcePath, targetPath);
-        createPage(client, targetPath, "source-page-q", "/content/templates/example", 200);
+        createPage(client, targetPath, "source-page-q", EXAMPLE_TEMPLATE_PATH, 200);
 
         // Move the resource before 'target-page-z'
         response = moveNodeToResource(client, sourcePath + "/source-page-q", targetPath, "child", 400);
@@ -229,11 +230,11 @@ public class MoveNodeToServletIT
         createFolderStructure(client, sourcePath);
         createFolderStructure(client, targetPath);
         // Create a new source page and target pages
-        createPage(client, sourcePath, "source-page-q", "/content/templates/example", 200);
-        createPage(client, targetPath, "target-page-a", "/content/templates/example", 200);
-        createPage(client, targetPath, "target-page-z", "/content/templates/example", 200);
-        createPage(client, targetPath, "target-page-b", "/content/templates/example", 200);
-        createPage(client, targetPath, "target-page-y", "/content/templates/example", 200);
+        createPage(client, sourcePath, "source-page-q", EXAMPLE_TEMPLATE_PATH, 200);
+        createPage(client, targetPath, "target-page-a", EXAMPLE_TEMPLATE_PATH, 200);
+        createPage(client, targetPath, "target-page-z", EXAMPLE_TEMPLATE_PATH, 200);
+        createPage(client, targetPath, "target-page-b", EXAMPLE_TEMPLATE_PATH, 200);
+        createPage(client, targetPath, "target-page-y", EXAMPLE_TEMPLATE_PATH, 200);
     }
 
 

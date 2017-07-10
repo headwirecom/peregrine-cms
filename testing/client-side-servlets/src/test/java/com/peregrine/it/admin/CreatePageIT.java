@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 
-import static com.peregrine.it.basic.TestConstants.TEMPLATE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
@@ -57,7 +58,7 @@ public class CreatePageIT
         SlingClient client = slingInstanceRule.getAdminClient();
         // Create the folder structure
         createFolderStructure(client, rootFolderPath);
-        createPage(client, rootFolderPath, pageName, TEMPLATE_PATH, 200);
+        createPage(client, rootFolderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
@@ -65,9 +66,9 @@ public class CreatePageIT
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
         json.writeObjectFieldStart(JCR_CONTENT);
         json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
-        json.writeStringField(SLING_RESOURCE_TYPE, "example/components/page");
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
         json.writeStringField(JCR_TITLE, pageName);
-        json.writeStringField(TEMPLATE, TEMPLATE_PATH);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
         json.writeEndObject();
         json.writeEndObject();
         json.close();

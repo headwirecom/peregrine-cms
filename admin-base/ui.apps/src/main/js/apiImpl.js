@@ -224,7 +224,6 @@ class PerAdminImpl {
     populateComponentDefinitionFromNode(path) {
         return new Promise( (resolve, reject) => {
             var name;
-            //AS TOOD: Check if we need to have a trailing slash on the api URI
             fetch('/admin/componentDefinition.json'+path)
                 .then( (data) => {
                     name = data.name
@@ -356,7 +355,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('name', name)
-            upupdateWithFormdate('/admin/createFolder.json'+parentPath, data)
+            updateWithForm('/admin/createFolder.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -411,73 +410,47 @@ class PerAdminImpl {
 
     savePageEdit(path, node) {
         return new Promise( (resolve, reject) => {
-
+            let formData = new FormData()
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
-
             let component = callbacks.getComponentByName(nodeData.component)
             if(component && component.methods && component.methods.beforeSave) {
                 nodeData = component.methods.beforeSave(nodeData)
             }
-
             delete nodeData['children']
             delete nodeData['path']
             delete nodeData['component']
             nodeData['jcr:primaryType'] = 'nt:unstructured'
             nodeData['sling:resourceType'] = node.component.split('-').join('/')
-            let data = new FormData();
-
             stripNulls(nodeData)
+            formData.append('content', JSON.stringify(nodeData))
 
-            // get the parent path and set the name of the node (due to problems with sling doing a
-            // merge if not using this method to post - seems to have another issue, moves the node
-            // to the end
-            //let pathSegments = node.path.split('/')
-            // let name = pathSegments.pop()
-            // node.path = pathSegments.join('/')
-
-            data.append(':operation', 'import')
-            data.append(':contentType', 'json')
-            data.append(':replace', 'true')
-            data.append(':replaceProperties', 'true')
-            // data.append(':name', name)
-            data.append(':content', JSON.stringify(nodeData))
-
-            nodeData['sling:resourceType'] = node.component.split('-').join('/')
-
-            axios.post(path + node.path, data).then( function(res) {
-                resolve()
-            })
-
+            updateWithForm('/admin/updateResource.json'+path + node.path, formData)
+                // .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
         })
     }
 
     saveObjectEdit(path, node) {
         return new Promise( (resolve, reject) => {
-
+            let formData = new FormData()
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
-            let data = new FormData();
+            stripNulls(nodeData)
+            formData.append('content', JSON.stringify(nodeData))
 
-            data.append(':operation', 'import')
-            data.append(':contentType', 'json')
-            data.append(':replaceProperties', 'true')
-            data.append(':content', JSON.stringify(nodeData))
-
-            axios.post(path, data).then( function(res) {
-                resolve()
-            })
-
+            updateWithForm('/admin/updateResource.json'+path, formData)
+                .then( () => resolve() )
         })
     }
 
     insertNodeAt(path, component, drop) {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
-            let data = new FormData();
-            data.append('component', component)
-            data.append('drop', drop)
-            updateWithForm('/admin/insertNodeAt.json'+path, data)
+            let formData = new FormData();
+            formData.append('component', component)
+            formData.append('drop', drop)
+            updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
                 })
@@ -487,13 +460,10 @@ class PerAdminImpl {
     insertNodeWithDataAt(path, data, drop) {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
-
-            let postData = new FormData();
-
-            postData.append('content', JSON.stringify(data))
-            postData.append('drop', drop);
-
-            updateWithForm('/admin/insertNodeAt.json'+path, postData)
+            let formData = new FormData();
+            formData.append('content', JSON.stringify(data))
+            formData.append('drop', drop);
+            updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( (result) => {
                     resolve(result.data)
                 })
