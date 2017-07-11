@@ -117,6 +117,7 @@ export default {
             var targetEl = this.selectedComponent
             if(!targetEl) return false
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
+            if(!node) return false
             return !node.fromTemplate
         }
     },
