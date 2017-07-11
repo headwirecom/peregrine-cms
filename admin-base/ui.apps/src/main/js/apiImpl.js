@@ -474,8 +474,8 @@ class PerAdminImpl {
             formData.append('content', JSON.stringify(data))
             formData.append('drop', drop);
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
-                .then( (result) => {
-                    resolve(result.data)
+                .then( (data) => {
+                    resolve(data)
                 })
         })
     }
