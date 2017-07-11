@@ -35,8 +35,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
@@ -45,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -54,8 +54,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + "Peregrine: Replication Servlet",
-        SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Replication Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + "POST",
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/repl"
     }
@@ -68,8 +68,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/api/admin/repl.json/path///content/sites/example//name//local
  */
 public class ReplicationServlet extends AbstractBaseServlet {
-
-    private final Logger log = LoggerFactory.getLogger(ReplicationServlet.class);
 
     @Reference
     private ReferenceLister referenceLister;
@@ -87,7 +85,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
         if(replicationName != null && !replicationName.isEmpty()) {
             replications.put(replicationName, replication);
         } else {
-            log.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
+            logger.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
         }
     }
 
@@ -97,7 +95,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
         if(replications.containsKey(replicationName)) {
             replications.remove(replicationName);
         } else {
-            log.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
+            logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
         }
     }
 
@@ -122,21 +120,20 @@ public class ReplicationServlet extends AbstractBaseServlet {
             } catch(ReplicationException e) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication Failed").setException(e);
             }
-            JsonResponse response = new JsonResponse();
-            JsonGenerator json = response.getJson();
-            json.writeStringField("sourceName", source.getName());
-            json.writeStringField("sourcePath", source.getPath());
-            json.writeArrayFieldStart("replicates");
+            JsonResponse answer = new JsonResponse();
+            answer.writeAttribute("sourceName", source.getName());
+            answer.writeAttribute("sourcePath", source.getPath());
+            answer.writeArray("replicates");
             if(replicates != null) {
                 for(Resource child : replicates) {
-                    json.writeStartObject();
-                    json.writeStringField("name", child.getName());
-                    json.writeStringField("path", child.getPath());
-                    json.writeEndObject();
+                    answer.writeObject();
+                    answer.writeAttribute("name", child.getName());
+                    answer.writeAttribute("path", child.getPath());
+                    answer.writeClose();
                 }
             }
-            json.writeEndArray();
-            return response;
+            answer.writeClose();
+            return answer;
         } else {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Suffix: " + sourcePath + " is not a resource");
         }

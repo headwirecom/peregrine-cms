@@ -38,12 +38,12 @@ let callbacks
 
 function fetch(path) {
 
-    logger.fine('fetch() ', path)
+    logger.fine('Fetch ', path)
     return axios.get(API_BASE+path).then( (response) => {
         return new Promise( (resolve, reject) => {
             resolve(response.data)
         })
-    }).catch( (error) => { logger.error('request to',
+    }).catch( (error) => { logger.error('Fetch request to',
             error.response.request.path, 'failed')
             throw error
         })
@@ -52,16 +52,51 @@ function fetch(path) {
 
 function update(path) {
 
-    logger.fine('update() ', path)
-    return axios.post(API_BASE+path, null, postConfig).then( (response) => {
-        return new Promise( (resolve, reject) => {
-            resolve(response.data)
+    logger.fine('Update, path: ', path)
+    return axios.post(API_BASE+path, null, postConfig)
+        .then( (response) => {
+            return new Promise( (resolve, reject) => {
+                logger.fine('Update, response data: ' + response.data)
+                resolve(response.data)
+            })
         })
-    }).catch( (error) => { logger.error('request to',
-        error.response.request.path, 'failed')
-        throw error
-    })
+        .catch( (error) => {
+            logger.error('Update request to', error.response.request.path, 'failed')
+            throw error
+        })
+}
 
+function updateWithForm(path, data) {
+
+    logger.fine('Update with Form, path: ' + path + ', data: ' + data)
+    return axios.post(API_BASE+path, data, postConfig)
+        .then( (response) => {
+            return new Promise( (resolve, reject) => {
+                logger.fine('Update with Form, response data: ' + response.data)
+                resolve(response.data)
+            })
+        })
+        .catch( (error) => {
+            logger.error('Update with Form request to', error.response.request.path, 'failed')
+            throw error
+        })
+}
+
+function updateWithFormAndConfig(path, data, config) {
+    //AS TODO: How to merge config into postConfig or the other way around?
+    // config.withCredentials: true
+    logger.fine('Update with Form and Config, path: ' + path + ', data: ' + data)
+    return axios.post(API_BASE+path, data, config)
+        .then( (response) => {
+            return new Promise( (resolve, reject) => {
+                logger.fine('Update with Form and Config, response data: ' + response.data)
+                resolve(response.data)
+            })
+        })
+        .catch( (error) => {
+            logger.error('Update with Form and Config request to', error.response.request.path, 'failed')
+            throw error
+        })
 }
 
 function getOrCreate(obj, path) {
@@ -176,8 +211,9 @@ class PerAdminImpl {
 
     populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/nodes.json/path//'+path+'//includeParents//'+includeParents)
-                .then( (data) => populateView('/admin', target, data).then( () => resolve() ))
+            fetch('/admin/nodes.json'+path+'?includeParents='+includeParents)
+                .then( (data) => populateView('/admin', target, data ) )
+                .then( () => resolve() )
         })
     }
 
@@ -192,7 +228,7 @@ class PerAdminImpl {
     populateComponentDefinitionFromNode(path) {
         return new Promise( (resolve, reject) => {
             var name;
-            fetch('/admin/componentDefinition.json/path//'+path)
+            fetch('/admin/componentDefinition.json'+path)
                 .then( (data) => {
                     name = data.name
                     let component = callbacks.getComponentByName(name)
@@ -235,7 +271,7 @@ class PerAdminImpl {
 
     populatePageView(path) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/readNode.json/path//'+path)
+            fetch('/admin/readNode.json'+path)
                 .then( (data) => populateView('/pageView', 'page', data) )
                 .then( () => resolve() )
         })
@@ -243,7 +279,7 @@ class PerAdminImpl {
 
     populateObject(path, target, name) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/getObject.json/'+path)
+            fetch('/admin/getObject.json'+path)
                 .then( (data) => populateView(target, name, data).then( () => {
                     this.populateComponentDefinitionFromNode(path).then( () => {
                         resolve()
@@ -256,7 +292,10 @@ class PerAdminImpl {
 
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createPage.json/path//'+parentPath+'//name//'+name+'//templatePath//'+templatePath)
+            let data = new FormData()
+            data.append('name', name)
+            data.append('templatePath', templatePath)
+            updateWithForm('/admin/createPage.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -264,7 +303,10 @@ class PerAdminImpl {
 
     createObject(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createObject.json/path//'+parentPath+'//name//'+name+'//templatePath//'+templatePath)
+            let data = new FormData()
+            data.append('name', name)
+            data.append('templatePath', templatePath)
+            updateWithForm('/admin/createObject.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -272,7 +314,8 @@ class PerAdminImpl {
 
     deletePage(path) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/deletePage.json/path//'+path)
+            let data = new FormData()
+            updateWithForm('/admin/deletePage.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -280,7 +323,9 @@ class PerAdminImpl {
 
     renamePage(path, newName) {
         return new Promise( (resolve, reject) => {
-            update('/admin/rename.json/path//'+path+'//to//'+newName)
+            let data = new FormData()
+            data.append('to', newName)
+            updateWithForm('/admin/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -288,7 +333,10 @@ class PerAdminImpl {
 
     movePage(path, to, type) {
         return new Promise( (resolve, reject) => {
-            update('/admin/move.json/path//'+path+'//to//'+to+'//type//'+type)
+            let data = new FormData()
+            data.append('to', to)
+            data.append('type', type)
+            updateWithForm('/admin/move.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -296,7 +344,8 @@ class PerAdminImpl {
 
     deletePageNode(path, nodePath) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/deleteNode.json/path//'+nodePath)
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json'+nodePath, data)
                 .then( (data) => this.populatePageView(path) )
                 .then( () => resolve() )
         })
@@ -304,7 +353,9 @@ class PerAdminImpl {
 
     createTemplate(parentPath, name) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createTemplate.json/path//'+parentPath+'//name//'+name)
+            let data = new FormData()
+            data.append('name', name)
+            updateWithForm('/admin/createTemplate.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -312,7 +363,9 @@ class PerAdminImpl {
 
     createFolder(parentPath, name) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/createFolder.json/path//'+parentPath+'//name//'+name)
+            let data = new FormData()
+            data.append('name', name)
+            updateWithForm('/admin/createFolder.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })
@@ -323,25 +376,23 @@ class PerAdminImpl {
           onUploadProgress: progressEvent => {
             var percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
             cb(percentCompleted)
-          },
-          withCredentials: true
+          }
         }
 
         return new Promise( (resolve, reject) => {
 
-                logger.fine('uploading files to', path)
-                logger.fine(files)
+            logger.fine('uploading files to', path)
+            logger.fine(files)
 
-                var data = new FormData()
-                for(var i = 0; i < files.length; i++) {
-                    var file = files[i]
-                    data.append(file.name, file, file.name)
-                }
+            var data = new FormData()
+            for(var i = 0; i < files.length; i++) {
+                var file = files[i]
+                data.append(file.name, file, file.name)
+            }
 
-                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data, config).then( (response) => {
-                        logger.fine(response.data)
-                        this.populateNodesForBrowser(path) })
-                    .then( () => resolve() )
+            updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
+                .then( (response) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
         })
     }
 
@@ -352,9 +403,8 @@ class PerAdminImpl {
                 var data = new FormData()
                 data.append(name, response.data, name)
 
-                axios.post(API_BASE+'/admin/uploadFiles.json/path//'+path, data, postConfig).then( (response) => {
-                    logger.fine(response.data)
-                    this.populateNodesForBrowser(path) })
+                updateWithFormAndConfig('/admin/uploadFiles.json'+path, data)
+                    .then( (response) => this.populateNodesForBrowser(path) )
                     .then( () => resolve() )
             })
         })
@@ -370,97 +420,73 @@ class PerAdminImpl {
 
     savePageEdit(path, node) {
         return new Promise( (resolve, reject) => {
-
+            let formData = new FormData()
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
-
             let component = callbacks.getComponentByName(nodeData.component)
             if(component && component.methods && component.methods.beforeSave) {
                 nodeData = component.methods.beforeSave(nodeData)
             }
-
             delete nodeData['children']
             delete nodeData['path']
             delete nodeData['component']
             nodeData['jcr:primaryType'] = 'nt:unstructured'
             nodeData['sling:resourceType'] = node.component.split('-').join('/')
-            let data = new FormData();
-
             stripNulls(nodeData)
+            formData.append('content', JSON.stringify(nodeData))
 
-            // get the parent path and set the name of the node (due to problems with sling doing a
-            // merge if not using this method to post - seems to have another issue, moves the node
-            // to the end
-            //let pathSegments = node.path.split('/')
-            // let name = pathSegments.pop()
-            // node.path = pathSegments.join('/')
-
-            data.append(':operation', 'import')
-            data.append(':contentType', 'json')
-            data.append(':replace', 'true')
-            data.append(':replaceProperties', 'true')
-            // data.append(':name', name)
-            data.append(':content', JSON.stringify(nodeData))
-
-            nodeData['sling:resourceType'] = node.component.split('-').join('/')
-
-            axios.post(path + node.path, data, postConfig).then( function(res) {
-                resolve()
-            })
-
+            updateWithForm('/admin/updateResource.json'+path + node.path, formData)
+                // .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
         })
     }
 
     saveObjectEdit(path, node) {
         return new Promise( (resolve, reject) => {
-
+            let formData = new FormData()
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
-            let data = new FormData();
+            stripNulls(nodeData)
+            formData.append('content', JSON.stringify(nodeData))
 
-            data.append(':operation', 'import')
-            data.append(':contentType', 'json')
-            data.append(':replaceProperties', 'true')
-            data.append(':content', JSON.stringify(nodeData))
-
-            axios.post(path, data, postConfig).then( function(res) {
-                resolve()
-            })
-
+            updateWithForm('/admin/updateResource.json'+path, formData)
+                .then( () => resolve() )
         })
     }
 
     insertNodeAt(path, component, drop) {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
-
-            fetch('/admin/insertNodeAt.json/path//'+path+'//component//'+component+'//drop//'+drop)
+            let formData = new FormData();
+            formData.append('component', component)
+            formData.append('drop', drop)
+            updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
-            })
+                })
         })
     }
 
     insertNodeWithDataAt(path, data, drop) {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
-
-            let postData = new FormData();
-
-            postData.append('content', JSON.stringify(data))
-
-            axios.post('/api/admin/insertNodeAt.json/path//'+path+'//drop//'+drop, postData, postConfig)
-                .then( (result) => {
-                    resolve(result.data)
+            let formData = new FormData();
+            formData.append('content', JSON.stringify(data))
+            formData.append('drop', drop);
+            updateWithForm('/admin/insertNodeAt.json'+path, formData)
+                .then( (data) => {
+                    resolve(data)
                 })
         })
     }
 
     moveNodeTo(path, component, drop) {
-        logger.debug(arguments)
+        logger.fine('Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
         return new Promise( (resolve, reject) => {
-
-            fetch('/admin/moveNodeTo.json/path//'+path+'//component//'+component+'//drop//'+drop)
+            let formData = new FormData();
+            formData.append('component', component)
+            formData.append('drop', drop)
+            updateWithForm('/admin/moveNodeTo.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
                 })

@@ -28,7 +28,7 @@ let log = LoggerFactory.logger('editComponent').setLevelDebug()
 import { set } from '../utils'
 
 function bringUpEditor(me, view, target) {
-
+    log.debug('Bring Up Editor, ')
     me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
             log.fine('component name is', name)
             set(view, '/state/editor/component', name)
@@ -37,6 +37,7 @@ function bringUpEditor(me, view, target) {
             set(view, '/state/rightPanelVisible', true)
         }
     ).catch( error => {
+        log.debug('Failed to show editor: ' + error)
         $perAdminApp.notifyUser('error', 'was not able to bring up editor for the selected component')
     })
 }

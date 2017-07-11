@@ -25,33 +25,26 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.util.PerUtil;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
+import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.util.PerConstants.ORDER_AFTER_TYPE;
+import static com.peregrine.util.PerConstants.ORDER_BEFORE_TYPE;
+import static com.peregrine.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -62,8 +55,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + "Peregrine: Move Resource Servlet",
-        SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Move Resource Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + "POST",
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/move",
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/rename",
@@ -78,15 +71,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 public class MoveServlet extends AbstractBaseServlet {
 
-    public static final String BEFORE_TYPE = "before";
-    public static final String AFTER_TYPE = "after";
-    public static final String CHILD_TYPE = "child";
 
-    private final Logger log = LoggerFactory.getLogger(MoveServlet.class);
-    private List<String> acceptedTypes = Arrays.asList(BEFORE_TYPE, AFTER_TYPE, CHILD_TYPE);
+    private List<String> acceptedTypes = Arrays.asList(ORDER_BEFORE_TYPE, ORDER_AFTER_TYPE, ORDER_CHILD_TYPE);
 
-//    @Reference
-//    private ReferenceLister referenceLister;
     @Reference
     private ResourceRelocation resourceRelocation;
 
@@ -106,10 +93,24 @@ public class MoveServlet extends AbstractBaseServlet {
             } else if(to == null) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Target Path: " + toPath + " is not found").setRequestPath(fromPath);
             } else {
-                boolean addAsChild = CHILD_TYPE.equals(type);
-                boolean addBefore = BEFORE_TYPE.equals(type);
+                boolean addAsChild = ORDER_CHILD_TYPE.equals(type);
+                boolean addBefore = ORDER_BEFORE_TYPE.equals(type);
                 Resource target = addAsChild ? to : to.getParent();
-                newResource = resourceRelocation.moveToNewParent(from, target, true);
+                // If To and From resource are the same then ignore the move and just to a re-order
+                if(addAsChild || !target.getPath().equals(from.getPath())) {
+                    try {
+                        newResource = resourceRelocation.moveToNewParent(from, target, true);
+                    } catch(PersistenceException e) {
+                        if(e.getCause() instanceof ItemExistsException) {
+                            ItemExistsException iee = (ItemExistsException) e.getCause();
+                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource: " + target.getPath() + " already exists").setRequestPath(fromPath).setException(iee);
+                        } else {
+                            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to move Target Resource: " + target.getPath() + " failed to move").setRequestPath(fromPath).setException(e);
+                        }
+                    }
+                } else {
+                    newResource = target;
+                }
                 // Reorder if needed
                 if(!addAsChild) {
                     try {
@@ -128,7 +129,7 @@ public class MoveServlet extends AbstractBaseServlet {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given New Name: " + toPath + " cannot have a slash").setRequestPath(fromPath);
             } else {
                 String newPath = from.getParent().getPath() + "/" + toPath;
-                log.info("Rename from: '{}' to: '{}'", from.getPath(), newPath);
+                logger.info("Rename from: '{}' to: '{}'", from.getPath(), newPath);
                 try {
                     newResource = resourceRelocation.rename(from, toPath, true);
                 } catch(RepositoryException e) {
@@ -139,11 +140,10 @@ public class MoveServlet extends AbstractBaseServlet {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown request: " + request.getResource().getName());
         }
         JsonResponse answer = new JsonResponse();
-        JsonGenerator json = answer.getJson();
-        json.writeStringField("sourceName", from.getName());
-        json.writeStringField("sourcePath", from.getPath());
-        json.writeStringField("tagetName", newResource.getName());
-        json.writeStringField("targetPath", newResource.getPath());
+        answer.writeAttribute("sourceName", from.getName());
+        answer.writeAttribute("sourcePath", from.getPath());
+        answer.writeAttribute("tagetName", newResource.getName());
+        answer.writeAttribute("targetPath", newResource.getPath());
         return answer;
     }
 }
