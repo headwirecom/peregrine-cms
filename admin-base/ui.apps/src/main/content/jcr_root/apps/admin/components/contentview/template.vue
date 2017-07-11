@@ -29,11 +29,10 @@
         <div 
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
-            v-on:scroll     = "onScrollOverlay"
+            v-on:scroll    = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "onDragOver"
-            v-on:drop      = "onDrop"
-            v-bind:style   = "`right: ${scrollbarWidth}px;`">
+            v-on:drop      = "onDrop">
             <div class="editview-container" ref="editviewContainer">
                 <div 
                     v-bind:class   = "editableClass"
@@ -97,8 +96,8 @@ export default {
             editableClass: null,
             selectedComponent: null,
             clipboard: null,
-            scrollbarWidth: 0,
-            ctrlDown: false
+            ctrlDown: false,
+            scrollTop: 0
         }
     },
 
@@ -165,6 +164,7 @@ export default {
             }
         },
 
+
         /* Iframe (editview) methods ===============
         ============================================ */
         onIframeLoaded(ev){
@@ -208,7 +208,11 @@ export default {
             this.$nextTick(function () {
                 var scrollAmount = ev.target.scrollTop
                 var editview = this.$refs.editview
-                editview.contentWindow.scrollTo(0, scrollAmount)
+                this.scrollTop = scrollAmount
+                console.log('onScrollOverlay scrollAmount: ', scrollAmount)
+                // editview.contentWindow.scrollTo(0, scrollAmount)
+                editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
+                //editview.contentWindow.document.body.style.top = `-${this.scrollTop}px`
             })
         },
 
@@ -411,9 +415,10 @@ export default {
             var editable = this.$refs.editable
             var editview = this.$refs.editview
             var scrollY = editview ? editview.contentWindow.scrollY : 0
+            console.log('scrollY: ', scrollY)
             var scrollX = editview ? editview.contentWindow.scrollX : 0
             if(editable) {
-                editable.style.top    = (targetBox.top + scrollY) + 'px'
+                editable.style.top    = (targetBox.top + scrollY + this.scrollTop) + 'px'
                 editable.style.left   = (targetBox.left + scrollX) + 'px'
                 editable.style.width  = targetBox.width + 'px'
                 editable.style.height = targetBox.height + 'px'

@@ -30,6 +30,9 @@ let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 import { stripNulls} from './utils'
 
 const API_BASE = '/api'
+const postConfig = {
+    withCredentials: true
+}
 
 let callbacks
 
@@ -50,7 +53,7 @@ function fetch(path) {
 function update(path) {
 
     logger.fine('Update, path: ', path)
-    return axios.post(API_BASE+path)
+    return axios.post(API_BASE+path, null, postConfig)
         .then( (response) => {
             return new Promise( (resolve, reject) => {
                 logger.debug('Update, response data: ' + response.data)
@@ -66,7 +69,7 @@ function update(path) {
 function updateWithForm(path, data) {
 
     logger.debug('Update with Form, path: ' + path + ', data: ' + data)
-    return axios.post(API_BASE+path, data)
+    return axios.post(API_BASE+path, data, postConfig)
         .then( (response) => {
             return new Promise( (resolve, reject) => {
                 logger.debug('Update with Form, response data: ' + response.data)

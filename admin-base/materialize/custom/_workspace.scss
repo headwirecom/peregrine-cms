@@ -22,6 +22,7 @@
 			top: 0;
 			bottom: 0;
 			left: 0;
+			right: 0;
 			z-index: 1;
 			overflow-y: auto;
 			.editview-container {
@@ -181,6 +182,7 @@
 		}
 	}
 	.right-panel {
+		vertical-align: top;
 		display: inline-block;
 		height: 100%;
 		position: relative;
