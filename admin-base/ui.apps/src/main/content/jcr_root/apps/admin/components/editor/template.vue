@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-    <div class="editor-panel">
+    <div class="editor-panel" ref="editorPanel">
       <div class="editor-panel-content">
         <span class="panel-title">Editor</span>
         <div v-if="!hasSchema">this component does not have a dialog defined</div>
@@ -47,6 +47,12 @@
 <script>
     export default {
       props: ['model'],
+      mounted(){
+        this.focusFirstField()
+      },
+      updated(){
+        this.focusFirstField()
+      },
       computed: {
         schema: function() {
             var view = $perAdminApp.getView()
@@ -66,6 +72,20 @@
         }
       },
       methods: {
+        focusFirstField(){
+          var field = document.querySelector('.vue-form-generator > fieldset > .form-group')
+          if(field.classList.contains('field-texteditor')){
+            var input = document.querySelector('.vue-form-generator .ql-editor')
+            if(input){
+              input.focus()
+            }
+          } else {
+            var input = document.querySelector('.vue-form-generator input:first-of-type ')
+            if(input){
+              input.focus()
+            }
+          }
+        },
         onOk(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
