@@ -56,7 +56,7 @@ function update(path) {
     return axios.post(API_BASE+path, null, postConfig)
         .then( (response) => {
             return new Promise( (resolve, reject) => {
-                logger.debug('Update, response data: ' + response.data)
+                logger.fine('Update, response data: ' + response.data)
                 resolve(response.data)
             })
         })
@@ -68,11 +68,11 @@ function update(path) {
 
 function updateWithForm(path, data) {
 
-    logger.debug('Update with Form, path: ' + path + ', data: ' + data)
+    logger.fine('Update with Form, path: ' + path + ', data: ' + data)
     return axios.post(API_BASE+path, data, postConfig)
         .then( (response) => {
             return new Promise( (resolve, reject) => {
-                logger.debug('Update with Form, response data: ' + response.data)
+                logger.fine('Update with Form, response data: ' + response.data)
                 resolve(response.data)
             })
         })
@@ -85,11 +85,11 @@ function updateWithForm(path, data) {
 function updateWithFormAndConfig(path, data, config) {
     //AS TODO: How to merge config into postConfig or the other way around?
     // config.withCredentials: true
-    logger.debug('Update with Form and Config, path: ' + path + ', data: ' + data)
+    logger.fine('Update with Form and Config, path: ' + path + ', data: ' + data)
     return axios.post(API_BASE+path, data, config)
         .then( (response) => {
             return new Promise( (resolve, reject) => {
-                logger.debug('Update with Form and Config, response data: ' + response.data)
+                logger.fine('Update with Form and Config, response data: ' + response.data)
                 resolve(response.data)
             })
         })
@@ -481,7 +481,7 @@ class PerAdminImpl {
     }
 
     moveNodeTo(path, component, drop) {
-        logger.debug('Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
+        logger.fine('Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
         return new Promise( (resolve, reject) => {
             let formData = new FormData();
             formData.append('component', component)
