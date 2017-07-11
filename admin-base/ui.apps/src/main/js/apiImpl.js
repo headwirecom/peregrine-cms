@@ -83,7 +83,8 @@ function updateWithForm(path, data) {
 }
 
 function updateWithFormAndConfig(path, data, config) {
-
+    //AS TODO: How to merge config into postConfig or the other way around?
+    // config.withCredentials: true
     logger.debug('Update with Form and Config, path: ' + path + ', data: ' + data)
     return axios.post(API_BASE+path, data, config)
         .then( (response) => {
