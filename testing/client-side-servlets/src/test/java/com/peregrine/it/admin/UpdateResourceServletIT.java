@@ -71,8 +71,6 @@ public class UpdateResourceServletIT
 
     @Test
     public void testUpdatePage() throws Exception {
-//        String pageType = EXAMPLE_PAGE_TYPE_PATH;
-//        String componentType = "example/components/jumbotron";
         SlingClient client = slingInstanceRule.getAdminClient();
         SlingHttpResponse response = null;
         String folderPath = ROOT_PATH + "/test-up";
@@ -160,8 +158,6 @@ public class UpdateResourceServletIT
 
     @Test
     public void testUpdateObject() throws Exception {
-//        String objectComponentPath = "example/objects/sample";
-
         SlingClient client = slingInstanceRule.getAdminClient();
         SlingHttpResponse response = null;
         String folderPath = ROOT_PATH + "/test-uo";

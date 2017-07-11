@@ -406,7 +406,11 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-  <modules>
-      <module>setup</module>
-  </modules>
+
+    <modules>
+        <module>basic-it</module>
+        <module>client-side-servlets</module>
+        <module>per-wrappers</module>
+    </modules>
+
 </project>

@@ -28,18 +28,18 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>client-side-servlets</artifactId>
+    <artifactId>per-wrappers</artifactId>
     <packaging>content-package</packaging>
 
     <name>Testing Setup</name>
     <description>
-        This is a set of Client Side Servlets Integration Tests
+        This is a set of Per Wrappers like PerAsset / PerPage Integration Tests
     </description>
 
     <properties>
         <IT.expected.bundles.count>125</IT.expected.bundles.count>
-        <block.sling.at.the.end>${blockSling}</block.sling.at.the.end>
         <sling.vm.options></sling.vm.options>
+        <block.sling.at.the.end>${blockSling}</block.sling.at.the.end>
         <!--
             Use this Sling VM Options to debug the Sling server. Connect to the server after the Sling bootstrap
             To make the test wait for you set the 'suspend' to 'y'
@@ -49,9 +49,23 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.peregrine.admin</groupId>
+            <artifactId>admin-base-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.peregrine.nodetypes</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>basic-it</artifactId>
             <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -90,12 +104,6 @@
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
             <version>2.8.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.peregrine.nodetypes</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
