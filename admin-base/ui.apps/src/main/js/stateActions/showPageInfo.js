@@ -32,5 +32,9 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    set(view, '/state/tools/page', target.selected)
+    if(target.selected.startsWith('/content/sites')) {
+        set(view, '/state/tools/page', target.selected)
+    } else if(target.selected.startsWith('/content/templates')) {
+        set(view, '/state/tools/template', target.selected)
+    }
 }
