@@ -23,6 +23,8 @@
   #L%
   -->
 <template>
+    <div>
+
     <div v-if="currentObject" :class="`object-editor ${isFullscreen ? 'fullscreen' : 'narrow'}`">
       <div class="object-editor-content">
         <button 
@@ -63,7 +65,16 @@
             <i class="material-icons">close</i>
           </button>
         </div>
+        </div>
     </div>
+        <div v-if="currentObject === undefined" class="asset-preview">
+            <div class="no-asset-selected">
+              <span>no object selected</span>
+              <i class="material-icons">info</i>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <script>
