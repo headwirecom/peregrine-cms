@@ -40,9 +40,11 @@
           <i class="material-icons">fullscreen</i>
         </button>
 
-        <div class="display-json">
+        <span class="panel-title">Object</span>
+        <div v-if="edit === false || edit === undefined" class="display-json">
           <pre>{{currentObject.data}}</pre>
         </div>
+
         <form v-if="edit">
             <vue-form-generator
               v-bind:schema  = "schema"
@@ -75,6 +77,9 @@
             let resourceType = this.currentObject.data['sling:resourceType']
             resourceType = resourceType.split('/').join('-')
             return $perAdminApp.getNodeFromView('/admin/componentDefinitions/' + resourceType)
+          },
+          edit() {
+              return $perAdminApp.getNodeFromView('/state/tools').edit
           }
         },
         data: function() {
@@ -83,22 +88,21 @@
               validateAfterLoad: true,
               validateAfterChanged: true
             },
-            edit: false,
             isFullscreen: false
           }
         },
         methods: {
           onEdit: function() {
-            this.edit = true
+              $perAdminApp.getNodeFromView('/state/tools').edit = true
           },
           onOk: function() {
             // should store the current node
             $perAdminApp.stateAction('saveObjectEdit', { data: this.currentObject.data, path: this.currentObject.show })
-            this.edit = false
+              $perAdminApp.getNodeFromView('/state/tools').edit = false
           },
           onCancel: function() {
             $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
-            this.edit = false
+              $perAdminApp.getNodeFromView('/state/tools').edit = false
           },
           onPreviewExitFullscreen(){
             this.isFullscreen = false

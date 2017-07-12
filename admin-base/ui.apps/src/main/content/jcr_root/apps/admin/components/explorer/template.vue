@@ -93,7 +93,7 @@
 
                         <admin-components-action
                             v-bind:model="{
-                                target: child.path,
+                                target: child,
                                 command: 'deletePage'
                             }">
                             <i class="material-icons">delete</i>
@@ -321,7 +321,13 @@
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
             showInfo: function(me, target) {
-                $perAdminApp.stateAction('showPageInfo', { selected: target })
+                if(target.startsWith('/content/objects')) {
+                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+                    Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', false)
+                    this.selectPath(me, node)
+                } else {
+                    $perAdminApp.stateAction('showPageInfo', { selected: target })
+                }
             },
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
@@ -380,11 +386,21 @@
                 $perAdminApp.stateAction('createObjectWizard', me.pt.path)
             },
             deletePage: function(me, target) {
-                $perAdminApp.stateAction('deletePage', target)
+                const resourceType = target.resourceType
+                if(resourceType === 'per:Object') {
+                    $perAdminApp.stateAction('deleteObject', target.path)
+                } else {
+                    $perAdminApp.stateAction('deletePage', target.path)
+                }
             },
             editPage: function(me, target) {
-                if(me.pt.path.startsWith('/content/templates')) {
+                const path = me.pt.path
+                if(path.startsWith('/content/templates')) {
                     $perAdminApp.stateAction('editTemplate', target )
+                } if(path.startsWith('/content/objects')) {
+                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+                    Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
+                    this.selectPath(me, node)
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }

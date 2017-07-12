@@ -50,6 +50,7 @@ import moveComponentToPath from './stateActions/moveComponentToPath'
 import selectObject from './stateActions/selectObject'
 import unselectObject from './stateActions/unselectObject'
 import saveObjectEdit from './stateActions/saveObjectEdit'
+import deleteObject from './stateActions/deleteObject'
 import createObject from './stateActions/createObject'
 import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
@@ -80,6 +81,7 @@ actions['cancelPageEdit'] = cancelPageEdit
 actions['selectObject'] = selectObject
 actions['unselectObject'] = unselectObject
 actions['saveObjectEdit'] = saveObjectEdit
+actions['deleteObject'] = deleteObject
 actions['createObject'] = createObject
 actions['createObjectWizard'] = createObjectWizard
 actions['selectAsset'] = selectAsset

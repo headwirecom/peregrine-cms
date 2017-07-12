@@ -120,6 +120,10 @@ class PerApi {
         return impl.createObject(parentPath, name, templatePath)
     }
 
+    deleteObject(path) {
+        return impl.deleteObject(path)
+    }
+
     createFolder(parentPath, name) {
         return impl.createFolder(parentPath, name)
     }

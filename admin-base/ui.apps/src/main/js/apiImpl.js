@@ -312,6 +312,15 @@ class PerAdminImpl {
         })
     }
 
+    deleteObject(path) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
     deletePage(path) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
