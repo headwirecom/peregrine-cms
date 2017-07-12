@@ -57,6 +57,8 @@ import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
 import deleteAsset from './stateActions/deleteAsset'
+import renameAsset from './stateActions/renameAsset'
+import moveAsset from './stateActions/moveAsset'
 import showPageInfo from './stateActions/showPageInfo'
 import editPreview from './stateActions/editPreview'
 
@@ -91,6 +93,8 @@ actions['selectAsset'] = selectAsset
 actions['showPageInfo'] = showPageInfo
 actions['unselectAsset'] = unselectAsset
 actions['deleteAsset'] = deleteAsset
+actions['renameAsset'] = renameAsset
+actions['moveAsset'] = moveAsset
 actions['editPreview'] = editPreview
 
 function noopAction(me, target) {

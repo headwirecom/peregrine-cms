@@ -128,6 +128,14 @@ class PerApi {
         return impl.deleteAsset(path)
     }
 
+    renameAsset(path, newName) {
+        return impl.renameAsset(path, newName)
+    }
+
+    moveAsset(path, to, type) {
+        return impl.moveAsset(path, to, type)
+    }
+
     createFolder(parentPath, name) {
         return impl.createFolder(parentPath, name)
     }
