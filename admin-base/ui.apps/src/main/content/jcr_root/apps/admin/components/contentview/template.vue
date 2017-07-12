@@ -115,8 +115,10 @@ export default {
         },
         enableTools: function() {
             var targetEl = this.selectedComponent
-            if(!targetEl) return false
-            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
+            if(targetEl == null || targetEl === undefined) return false
+            const path = targetEl.getAttribute('data-per-path')
+            if(path === undefined || path === null) return false
+            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if(!node) return false
             return !node.fromTemplate
         }
