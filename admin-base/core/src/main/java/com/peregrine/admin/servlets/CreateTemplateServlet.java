@@ -75,6 +75,7 @@ public class CreateTemplateServlet extends AbstractBaseServlet {
         String name = request.getParameter("name");
         try {
             Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name);
+            resourceManagement.updateModification(newTemplate);
             return new JsonResponse()
                 .writeAttribute("type", "template").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newTemplate.getPath());

@@ -5,24 +5,31 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 import static com.peregrine.admin.servlets.ServletHelper.obtainParameters;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.util.PerUtil.getModifiableProperties;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 

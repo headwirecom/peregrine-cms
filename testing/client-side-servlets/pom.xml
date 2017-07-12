@@ -39,12 +39,12 @@
     <properties>
         <IT.expected.bundles.count>125</IT.expected.bundles.count>
         <block.sling.at.the.end>${blockSling}</block.sling.at.the.end>
-        <sling.vm.options></sling.vm.options>
+        <!--<sling.vm.options></sling.vm.options>-->
         <!--
             Use this Sling VM Options to debug the Sling server. Connect to the server after the Sling bootstrap
             To make the test wait for you set the 'suspend' to 'y'
         -->
-        <!--<sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>-->
+        <sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>
     </properties>
 
     <dependencies>

@@ -59,9 +59,9 @@ public class UploadFilesServletIT
 }
 
     @Test
-    public void testSimplePageReplication() throws Exception {
+    public void testSimpleAssetUpload() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
-        String rootFolderPath = ROOT_PATH + "/test-spr";
+        String rootFolderPath = ROOT_PATH + "/test-sau";
         String imageName = "test.png";
         createFolderStructure(client, rootFolderPath);
 

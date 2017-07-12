@@ -26,6 +26,8 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.adaption.PerAsset;
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.admin.transform.ImageTransformationConfiguration;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
@@ -87,6 +89,8 @@ public class RenditionsServlet extends AbstractBaseServlet {
     private ImageTransformationProvider imageTransformationProvider;
     @Reference
     MimeTypeService mimeTypeService;
+    @Reference
+    ResourceManagement resourceManagement;
 
 
     @Override
@@ -113,52 +117,17 @@ public class RenditionsServlet extends AbstractBaseServlet {
             if(index >= 0) {
                 renditionName = renditionName.substring(index + 1);
             }
-            String targetMimeType = mimeTypeService.getMimeType(renditionName);
-
-            List<ImageTransformationConfiguration> imageTransformationConfigurationList =
-                imageTransformationConfigurationProvider.getImageTransformationConfigurations(renditionName);
-            if(imageTransformationConfigurationList != null) {
-                InputStream imageStream = asset.getRenditionStream(renditionName);
-                if(imageStream == null) {
-                    try {
-                        InputStream sourceStream = asset.getRenditionStream((Resource) null);
-                        if(sourceStream != null) {
-                            ImageContext imageContext = transform(renditionName, sourceMimeType, sourceStream, targetMimeType, imageTransformationConfigurationList, false);
-                            asset.addRendition(renditionName, imageContext.getImageStream(), targetMimeType);
-                            imageStream = asset.getRenditionStream(renditionName);
-                        } else {
-                            logger.error("Resource: '{}' does not contain a data element", resource.getName());
-                        }
-                    } catch(TransformationException e) {
-                        logger.error("Transformation failed, image ignore", e);
-                    } catch(RepositoryException e) {
-                        logger.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
-                    }
-                }
-                if(imageStream == null) {
-                    // Rendition was not found and could not be created therefore load and thumbnail the broken image
-                    String imagePath = ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG;
-                    Resource brokenImageResource = request.getResourceResolver().getResource(imagePath);
-                    if(brokenImageResource != null) {
-                        try {
-                            InputStream brokenImageStream = getDataStream(brokenImageResource);
-                            imageTransformationConfigurationList =
-                                imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.png");
-                            ImageContext imageContext = transform(renditionName, "image/svg+xml", brokenImageStream, "image/png", imageTransformationConfigurationList, true);
-                            imageStream = imageContext.getImageStream();
-                        } catch(TransformationException e) {
-                            logger.error("Transformation failed, image ignore", e);
-                        }
-                    }
-                }
-                if(imageStream != null) {
-                    // Got a output stream -> send it back
-                    answer = new StreamResponse(targetMimeType, imageStream);
-                } else {
-                    return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to load or transform the broken image");
-                }
+            ImageContext imageContext = null;
+            try {
+                imageContext = resourceManagement.createRendition(resource, renditionName, sourceMimeType);
+            } catch(ManagementException e) {
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
+            }
+            if(imageContext != null) {
+                // Got a output stream -> send it back
+                answer = new StreamResponse(imageContext.getTargetMimeType(), imageContext.getImageStream());
             } else {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Rendition Transformation found for: " + renditionName);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to load or transform the broken image");
             }
         } else {
             // This was not a request for a rendition but just the original asset -> load and send it back
@@ -168,60 +137,6 @@ public class RenditionsServlet extends AbstractBaseServlet {
             } else {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Data Stream found for requested resource");
             }
-        }
-        return answer;
-    }
-
-    /**
-     * Takes the given source data streams and transforms it into the desired rendition
-     * @param renditionName Name of the Rendition (node name)
-     * @param sourceMimeType Mime Type of the Source
-     * @param sourceStream Data Stream of the Source
-     * @param targetMimeType Desired Target Mime Type
-     * @param imageTransformationConfigurationList List of Image Transformation Configuration
-     * @param noCrop If true then a thumbnail will not crop the image and hence the image might be smaller or shorter
-     * @return Image Context that contains the final Data Stream
-     * @throws TransformationException If the Transformation failed
-     */
-    private ImageContext transform(
-        String renditionName, String sourceMimeType, InputStream sourceStream, String targetMimeType,
-        List<ImageTransformationConfiguration> imageTransformationConfigurationList, boolean noCrop
-    )
-        throws TransformationException
-    {
-        ImageContext imageContext = new ImageContext(sourceMimeType, targetMimeType, sourceStream);
-
-        for(ImageTransformationConfiguration imageTransformationConfiguration : imageTransformationConfigurationList) {
-            ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(imageTransformationConfiguration.getTransformationName());
-            if(imageTransformation != null) {
-                Map<String, String> parameters = null;
-                if(noCrop) {
-                    parameters = new HashMap<>(imageTransformationConfiguration.getParameters());
-                    parameters.put("noCrop", "true");
-                } else {
-                    parameters = imageTransformationConfiguration.getParameters();
-                }
-                OperationContext operationContext = new OperationContext(renditionName, parameters);
-                // Disabled Transformations will stop the rendition creation as it does create incomplete or non-renditioned images
-                imageTransformation.transform(imageContext, operationContext);
-            }
-        }
-        return imageContext;
-    }
-
-    /**
-     * Obtains the Data Stream of the given resource
-     * @param resource Resource containing the data. If this is not the jcr:content node then this node will be obtained first
-     * @return Input Stream if resource, properties and data property was found otherwise <code>null</code>
-     */
-    private InputStream getDataStream(Resource resource) {
-        InputStream answer = null;
-        if(resource != null && !PerConstants.JCR_CONTENT.equals(resource.getName())) {
-            resource = resource.getChild(PerConstants.JCR_CONTENT);
-        }
-        if(resource != null) {
-            ValueMap properties = resource != null ? resource.getValueMap() : null;
-            answer = properties != null ? properties.get(PerConstants.JCR_DATA, InputStream.class) : null;
         }
         return answer;
     }

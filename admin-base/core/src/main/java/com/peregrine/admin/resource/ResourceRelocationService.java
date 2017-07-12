@@ -83,7 +83,8 @@ public class ResourceRelocationService
 //                throw e;
 //            }
 //        }
-        answer.getResourceResolver().commit();
+//AS TODO: Committing here is out of the control of the caller which is not a good idea
+//        answer.getResourceResolver().commit();
         return answer;
     }
 
@@ -117,7 +118,8 @@ public class ResourceRelocationService
             }
             toNode.orderBefore(sourceChildName, nextNodeName);
         }
-        toNode.getSession().save();
+//AS TODO: Committing here is out of the control of the caller which is not a good idea
+//        toNode.getSession().save();
     }
 
     private Node getNextNode(Node parent, String childName) throws RepositoryException {
@@ -181,7 +183,8 @@ public class ResourceRelocationService
                 properties.put(reference.getPropertyName(), answer.getPath());
             }
         }
-        fromNode.getSession().save();
+//AS TODO: Committing here is out of the control of the caller which is not a good idea
+//        fromNode.getSession().save();
         return answer;
     }
 }
