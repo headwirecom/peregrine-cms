@@ -25,16 +25,17 @@
 <template>
     <span>
         <a 
-            v-if                    = "!model.type" 
+            v-if                    = "!model.type"
             v-bind:href             = "model.target +'.html'"
-            v-on:click.stop.prevent = "action" 
+            v-bind:title            = "title"
+            v-on:click.stop.prevent = "action"
             v-bind:class            = "model.classes">
             {{model.title}}
             <slot></slot>
         </a>
         <a 
             v-if                    = "model.type === 'icon'" 
-            v-bind:title            = "model.title" 
+            v-bind:title            = "title"
             v-bind:href             = "model.target" 
             v-on:click.stop.prevent = "action" 
             class                   = "btn-floating waves-effect waves-light" 
@@ -62,6 +63,12 @@ export default {
                 return true
             }
             return false
+        },
+        title() {
+            if(this.model.tooltipTitle) return this.model.tooltipTitle
+            if(this.model.title) return this.model.title
+            console.error('missing alt', this.model.command, this.model.path)
+            return this.model.command
         }
     },
     methods: {

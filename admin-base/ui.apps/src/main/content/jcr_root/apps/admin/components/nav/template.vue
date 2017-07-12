@@ -31,7 +31,8 @@
             v-bind:model="{ 
               command: 'selectPath', 
               target: '/content/admin',
-              classes: 'peregrine-logo'
+              classes: 'peregrine-logo',
+              tooltipTitle: 'home'
             }">
             <admin-components-logo></admin-components-logo>
           </admin-components-action>

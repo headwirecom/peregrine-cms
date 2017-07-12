@@ -40,7 +40,8 @@
                     <admin-components-action
                             v-bind:model="{
                             target: ndivl,
-                            command: 'selectParent'
+                            command: 'selectParent',
+                            tooltipTitle: 'select parent'
                         }"><i class="material-icons">folder</i> ..
                     </admin-components-action>
                 </li>
@@ -60,7 +61,8 @@
                     <admin-components-action
                         v-bind:model="{
                             target: child,
-                            command: 'selectPath'
+                            command: 'selectPath',
+                            tooltipTitle: 'select'
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
@@ -68,7 +70,8 @@
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{ 
                                 target: child.path, 
-                                command: 'editPage'
+                                command: 'editPage',
+                                tooltipTitle: 'edit'
                             }">
                             <i class="material-icons">edit</i>
                         </admin-components-action>
@@ -76,7 +79,8 @@
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
                                 target: child.path,
-                                command: 'showInfo'
+                                command: 'showInfo',
+                                tooltipTitle: 'info'
                             }">
                             <i class="material-icons">info</i>
                         </admin-components-action>
@@ -86,6 +90,7 @@
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
+                                title="view in new tab"
                                 >
                                 <i class="material-icons">visibility</i>
                             </a>
@@ -94,7 +99,8 @@
                         <admin-components-action
                             v-bind:model="{
                                 target: child,
-                                command: 'deletePage'
+                                command: 'deletePage',
+                                tooltipTitle: 'delete'
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
