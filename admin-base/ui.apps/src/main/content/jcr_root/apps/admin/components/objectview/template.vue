@@ -104,7 +104,7 @@
         },
         methods: {
           onEdit: function() {
-              $perAdminApp.getNodeFromView('/state/tools').edit = true
+              Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
           },
           onOk: function() {
             // should store the current node
