@@ -324,7 +324,8 @@
                 if(target.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', false)
-                    this.selectPath(me, node)
+                    me.selectedObject = target
+                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
                 }
@@ -332,11 +333,11 @@
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
                 if(resourceType) {
-                    if(resourceType === 'per:Object') {
-                        me.selectedObject = target.path
-                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
-                        return
-                    }
+//                    if(resourceType === 'per:Object') {
+//                        me.selectedObject = target.path
+//                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
+//                        return
+//                    }
                     if(resourceType === 'per:Asset') {
                         me.selectedAsset = target.path
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
@@ -404,7 +405,8 @@
                 } if(path.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
-                    this.selectPath(me, node)
+                    me.selectedObject = path
+                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }
