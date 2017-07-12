@@ -389,6 +389,10 @@
                 const resourceType = target.resourceType
                 if(resourceType === 'per:Object') {
                     $perAdminApp.stateAction('deleteObject', target.path)
+                } else if(resourceType === 'per:Asset') {
+                        $perAdminApp.stateAction('deleteAsset', target.path)
+                } else if(resourceType === 'sling:OrderedFolder') {
+                    $perAdminApp.stateAction('deleteFolder', target.path)
                 } else {
                     $perAdminApp.stateAction('deletePage', target.path)
                 }
