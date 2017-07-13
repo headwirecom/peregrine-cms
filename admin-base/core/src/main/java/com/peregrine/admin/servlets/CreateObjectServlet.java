@@ -74,7 +74,7 @@ public class CreateObjectServlet extends AbstractBaseServlet {
         String templatePath = request.getParameter("templatePath");
         try {
             Resource newNode = resourceManagement.createObject(request.getResourceResolver(), parentPath, name, templatePath);
-            resourceManagement.updateModification(newNode);
+            request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute("type", "object").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newNode.getPath()).writeAttribute("templatePath", templatePath);

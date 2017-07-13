@@ -18,9 +18,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Calendar;
 
+import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.uploadFile;
 import static com.peregrine.util.PerConstants.ASSET_CONTENT_TYPE;
@@ -81,6 +84,7 @@ public class UploadFilesServletIT
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         IOUtils.copy(new FileInputStream(image), baos);
         byte[] imageContent = baos.toByteArray();
+        Calendar before = createTimestampAndWait();
         uploadFile(client, rootFolderPath, image.getName(), imageContent, 200);
 
         StringWriter writer = new StringWriter();
@@ -109,6 +113,7 @@ public class UploadFilesServletIT
         json.close();
 
         checkResourceByJson(client, rootFolderPath + "/" + imageName, 4, writer.toString(), true);
+        checkLastModified(client, rootFolderPath + "/" + imageName, before);
     }
 
     @Override

@@ -120,6 +120,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
             ImageContext imageContext = null;
             try {
                 imageContext = resourceManagement.createRendition(resource, renditionName, sourceMimeType);
+                request.getResourceResolver().commit();
             } catch(ManagementException e) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }

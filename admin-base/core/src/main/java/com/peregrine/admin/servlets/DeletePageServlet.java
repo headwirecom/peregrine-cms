@@ -71,6 +71,7 @@ public class DeletePageServlet extends AbstractBaseServlet {
         String path = request.getParameter("path");
         try {
             DeletionResponse response = resourceManagement.deleteResource(request.getResourceResolver(), path, PAGE_PRIMARY_TYPE);
+            request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute("type", "page")
                 .writeAttribute("status", "deleted")

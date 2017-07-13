@@ -7,6 +7,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.adaption.PerAsset;
+import com.peregrine.adaption.PerPage;
 import com.peregrine.admin.replication.ImageMetadataSelector;
 import com.peregrine.admin.transform.ImageContext;
 import com.peregrine.admin.transform.ImageTransformation;
@@ -56,6 +57,7 @@ import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
@@ -110,7 +112,6 @@ public class ResourceManagementService
             Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             updateModification(resourceResolver, newFolder);
-            newFolder.getSession().save();
             return resourceResolver.getResource(newFolder.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Folder. Parent Path: '{}', Name: '{}'", parentPath, name);
@@ -135,7 +136,7 @@ public class ResourceManagementService
             Node newObject = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
             newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
-            newObject.getSession().save();
+            updateModification(resourceResolver, newObject);
             return resourceResolver.getResource(newObject.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
@@ -210,7 +211,6 @@ public class ResourceManagementService
                 .setParentPath(parent != null ? parent.getPath() : "")
                 .setType(resource.getValueMap().get(JCR_PRIMARY_TYPE, "not-found"));
             resourceResolver.delete(resource);
-            resourceResolver.commit();
             return response;
         } catch (PersistenceException e) {
             throw new ManagementException("Failed to Delete Resource: " + path, e);
@@ -426,6 +426,7 @@ public class ResourceManagementService
                     if(sourceStream != null) {
                         ImageContext imageContext = transform(renditionName, sourceMimeType, sourceStream, targetMimeType, imageTransformationConfigurationList, false);
                         asset.addRendition(renditionName, imageContext.getImageStream(), targetMimeType);
+                        updateModification(asset.getResource());
                         answer.resetImageStream(asset.getRenditionStream(renditionName));
                     } else {
                         logger.error("Resource: '{}' does not contain a data element", resource.getName());
@@ -540,7 +541,6 @@ public class ResourceManagementService
             Map content = convertToMap(jsonContent);
             //AS TODO: Check if we could add some guards here to avoid misplaced updates (JCR Primary Type / Sling Resource Type)
             updateResourceTree(answer, content);
-            resourceResolver.commit();
         } catch(IOException e) {
             throw new ManagementException("Failed to parse Json Content: " + jsonContent);
         }
@@ -559,10 +559,10 @@ public class ResourceManagementService
                 }
                 updateResourceTree(child, (Map) value);
             } else {
-//            } else if(value instanceof Object[]) {
                 updateProperties.put(name, value);
             }
         }
+        updateModification(resource);
     }
 
     @Override
@@ -586,6 +586,17 @@ public class ResourceManagementService
             ModifiableValueMap properties = getModifiableProperties(resource, false);
             properties.put(JCR_LAST_MODIFIED_BY, user);
             properties.put(JCR_LAST_MODIFIED, now);
+            PerPage page = resource.adaptTo(PerPage.class);
+            if(page != null) {
+                page.markAsModified();
+            } else {
+                Resource jcrContent = PerUtil.getResource(resource, JCR_CONTENT);
+                if(jcrContent != null) {
+                    properties = getModifiableProperties(jcrContent, false);
+                    properties.put(JCR_LAST_MODIFIED_BY, user);
+                    properties.put(JCR_LAST_MODIFIED, now);
+                }
+            }
         }
     }
 
@@ -609,7 +620,7 @@ public class ResourceManagementService
         if(templatePath != null) {
             content.setProperty(TEMPLATE, templatePath);
         }
-        newPage.getSession().save();
+        updateModification(parent.getResourceResolver(), newPage);
         return newPage;
     }
 }

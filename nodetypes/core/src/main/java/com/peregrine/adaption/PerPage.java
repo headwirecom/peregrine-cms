@@ -68,4 +68,6 @@ public interface PerPage
      * - null if no page was found
      **/
     public PerPage getPrevious();
+
+    public void markAsModified();
 }

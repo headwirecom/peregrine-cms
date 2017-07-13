@@ -117,7 +117,7 @@ public class PerAssetImpl
         Binary data = session.getValueFactory().createBinary(dataStream);
         jcrContent.setProperty(JCR_DATA, data);
         jcrContent.setProperty(JCR_MIME_TYPE, mimeType);
-        session.save();
+//        session.save();
     }
 
     @Override
@@ -130,7 +130,7 @@ public class PerAssetImpl
         if(properties != null) {
             properties.put(PerUtil.adjustMetadataName(tag), value);
         }
-        session.save();
+//        session.save();
     }
 
     @Override

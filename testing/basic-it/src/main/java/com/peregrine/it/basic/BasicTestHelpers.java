@@ -1,6 +1,7 @@
 package com.peregrine.it.basic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peregrine.adaption.PerPage;
 import org.apache.http.HttpEntity;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
@@ -10,17 +11,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -34,11 +46,13 @@ public class BasicTestHelpers {
     public static final String ADMIN_PREFIX_URL = "/api/admin/";
 
     private static final Logger logger = LoggerFactory.getLogger(BasicTestHelpers.class.getName());
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
 
     public static Map listResourceAsJson(SlingClient client, String path, int level) throws ClientException, IOException {
-        return convertToMap(
-            client.doGet(path + "." + level + ".json", 200)
-        );
+        SlingHttpResponse response = client.doGet(path + "." + level + ".json", 200);
+        assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
+        return convertToMap(response);
     }
 
     public static SlingHttpResponse listResource(SlingClient client, String path,int level) throws ClientException {
@@ -62,9 +76,7 @@ public class BasicTestHelpers {
                 logger.info("Full Folder Path: '{}'", fullFolderPath);
                 SlingHttpResponse response;
                 try {
-                    response = client.doGet(fullFolderPath + ".0.json", 200);
-                    // Check response
-                    Map listResponse = convertToMap(response.getContent());
+                    Map listResponse = listResourceAsJson(client, fullFolderPath, 0);
                     String primaryType = listResponse.get(JCR_PRIMARY_TYPE) + "";
                     if(
                         "sling:OrderedFolder".equals(primaryType) ||
@@ -80,6 +92,7 @@ public class BasicTestHelpers {
                     if(e.getHttpStatusCode() == 404) {
                         // Create folder
                         response = createFolder(client, folderPath, folder, 200);
+                        logger.info("Create Folder Structure, folder path: '{}', response: '{}'", fullFolderPath, response.getContent());
                         // Check response
                         Map listResponse = convertToMap(response.getContent());
                         checkResponse(listResponse, "type", "folder", "status", "created", "name", folder);
@@ -87,7 +100,6 @@ public class BasicTestHelpers {
                         throw e;
                     }
                 }
-                logger.info("Create Folder Structure, folder path: '{}', response: '{}'", fullFolderPath, response.getContent());
                 folderPath = fullFolderPath;
             }
         }
@@ -118,8 +130,7 @@ public class BasicTestHelpers {
     public static Map convertToMap(String json) throws IOException {
         Map answer = new LinkedHashMap();
         if(json != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            answer = mapper.readValue(json, LinkedHashMap.class);
+            answer = JSON_MAPPER.readValue(json, LinkedHashMap.class);
         }
         return answer;
     }
@@ -226,8 +237,8 @@ public class BasicTestHelpers {
         assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
         String jsonResponse = response.getContent();
         ObjectMapper mapper = new ObjectMapper();
-        Map expected = mapper.readValue(expectedJson, Map.class);
-        Map actual = mapper.readValue(jsonResponse, Map.class);
+        Map expected = convertToMap(expectedJson);
+        Map actual = convertToMap(jsonResponse);
         compareJson(expected, actual);
     }
 
@@ -253,5 +264,78 @@ public class BasicTestHelpers {
                 fail("Unkown type of value: " + value.getClass());
             }
         }
+    }
+
+    public static void checkLastModified(SlingClient client, String path) throws IOException, ClientException, ParseException {
+        checkLastModified(client, path, null);
+    }
+
+    public static void checkLastModified(SlingClient client, String path, Calendar afterThat) throws IOException, ClientException, ParseException {
+        Map actual = listResourceAsJson(client, path, 3);
+        // Check if the Last Modified is within a minute and the Last Modified By is set both in the node as well as in the jcr:content if returned
+        logger.info("Check Last Modified on Resource: '{}'", path);
+        checkLastModifiedOnResource(actual, afterThat);
+        if(actual.containsKey(JCR_CONTENT)) {
+            Object temp = actual.get(JCR_CONTENT);
+            if(temp instanceof Map) {
+                logger.info("Check Last Modified on Resource: '{}'", path + "/" + JCR_CONTENT);
+                checkLastModifiedOnResource((Map) temp, afterThat);
+            } else {
+                fail("jcr:content property is not a resource but: " + temp + ", type: " + (temp == null ? "null" : temp.getClass()));
+            }
+        }
+        // Finally check if this is a page or child of and then check the JCR Content Timestamp
+        String parentPath = path;
+        int index = 0;
+        while((index = parentPath.lastIndexOf('/')) > 0) {
+            parentPath = parentPath.substring(0, index);
+            Map parent = listResourceAsJson(client, parentPath, 1);
+            logger.info("Parent Path: '{}', Map: '{}'", parentPath, parent);
+            String jcrPrimaryType = parent.get(JCR_PRIMARY_TYPE) + "";
+            if(PAGE_CONTENT_TYPE.equals(jcrPrimaryType)) {
+                checkLastModifiedOnResource(parent, afterThat);
+                break;
+            }
+        }
+    }
+
+    private static final String ECMA_DATE_FORMAT = "EEE MMM dd yyyy HH:mm:ss 'GMT'Z";
+    private static final Locale DATE_FORMAT_LOCALE = Locale.US;
+    private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, DATE_FORMAT_LOCALE);
+
+    private static void checkLastModifiedOnResource(Map properties, Calendar afterThat) throws ParseException {
+        //AS TODO: convert the response into a Calendar instnce (how?)
+        Object lastModifiedValue = properties.get(JCR_LAST_MODIFIED);
+        logger.info("Last Modified: '{}'", lastModifiedValue);
+        assertNotNull("Last Modified was not set", lastModifiedValue);
+        Calendar lastModified = Calendar.getInstance();
+        lastModified.setTime(formatter.parse(lastModifiedValue.toString()));
+        long differenceInMillis = -1;
+        if(afterThat == null) {
+            Calendar now = Calendar.getInstance();
+            differenceInMillis = Duration.between(lastModified.toInstant(), now.toInstant()).toMillis();
+            logger.info("Last Modified Millis Difference: '{}'", differenceInMillis);
+            assertTrue("Last Modified is too old", differenceInMillis < 60 * 1000);
+        } else {
+            // Calendar has millis but the JSon formatted response only seconds. We need to convert them
+            // to the same format string and back to a Calendar to compare
+            String afterThatValue = formatter.format(afterThat.getTime());
+            logger.info("After That: '{}'", afterThatValue);
+            Calendar comparableAfterThat = Calendar.getInstance();
+            comparableAfterThat.setTime(formatter.parse(afterThatValue));
+            differenceInMillis = Duration.between(comparableAfterThat.toInstant(), lastModified.toInstant()).toMillis();
+            logger.info("Last Modified Millis Difference: '{}'", differenceInMillis);
+            assertTrue("Last Modified is older as given date: " + afterThat.toString(), differenceInMillis > 0);
+        }
+    }
+
+    public static Calendar createTimestampAndWait() {
+        Calendar answer = Calendar.getInstance();
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException e) {
+            // Ignore
+        }
+        return answer;
     }
 }

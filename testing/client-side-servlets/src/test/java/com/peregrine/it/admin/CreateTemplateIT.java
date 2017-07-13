@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 
+import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
@@ -74,6 +75,7 @@ public class CreateTemplateIT
         json.close();
 
         checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, writer.toString(), true);
+        checkLastModified(client, rootFolderPath + "/" + templateName);
     }
 
     @Test
@@ -101,6 +103,7 @@ public class CreateTemplateIT
         json.close();
 
         checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, writer.toString(), true);
+        checkLastModified(client, rootFolderPath + "/" + templateName);
 
         createPage(client, rootFolderPath, pageName, rootFolderPath + "/" + templateName, 200);
         jf = new JsonFactory();
@@ -118,6 +121,7 @@ public class CreateTemplateIT
         json.close();
 
         checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, writer.toString(), true);
+        checkLastModified(client, rootFolderPath + "/" + pageName);
     }
 
     @Override

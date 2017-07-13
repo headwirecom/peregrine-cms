@@ -71,6 +71,7 @@ public class DeleteNodeServlet extends AbstractBaseServlet {
         logger.debug("Got Delete Node Type: '{}'", type);
         try {
             DeletionResponse response = resourceManagement.deleteResource(request.getResourceResolver(), path, type);
+            request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute("type", "node")
                 .writeAttribute("status", "deleted")
