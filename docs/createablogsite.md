@@ -256,7 +256,7 @@ percli compile -d
 If you now add the header component to a page and click on it the editor will show
 the two fields
 
-(screenshot)
+![Alt text](/docs/img/blog-header-edit.png?raw=true "Blog Header Edit")
 
 ## connect the model to your html
 
@@ -287,7 +287,7 @@ percli compile -d
 go back to a page, add the header component to it and edit the fields in the editor.
 The content pane now updates while you are editing
 
-(screenshot)
+![Alt text](/docs/img/blog-header-edit-working.png?raw=true "Blog Header Edit Working")
 
 Click ok to save your edit. If you click on another component you loose your edit
 
@@ -329,7 +329,7 @@ module.exports = {
 
 now the children of the main component correctly show up in the right location
 
-(screenshot)
+![Alt text](/docs/img/blog-main-setup.png?raw=true "Blog Main Setup")
 
 We also notice that we are missing the sidebar and an area to drop in content to
 the sidebar. Alter the `template.html` file to
@@ -614,23 +614,23 @@ In the `post` and `author` folder add the following file:
 
 Let's compile our project and look at the objects tab in pcms.
 
-(screenshot)
+![Alt text](/docs/img/objects-tab.png?raw=true "Objects Tab")
 
 We can drill into the `blog` folder and then create an object with the (+) button
 in the navigation. The wizard asks us about what object we would like to create
 and a name for the object. 
 
-(screenshot)
+![Alt text](/docs/img/object-create.png?raw=true "Object Create")
 
 After the object is created we can click the edit icon next to the object name
 
-(screenshot)
+![Alt text](/docs/img/object-edit.png?raw=true "Object Edit")
 
 The object only has a name and a value field at the moment. We need to change this
 
 We should also create a sub folder for authors and posts in the object console
 
-(screenshot)
+![Alt text](/docs/img/author-posts-subfolder.png?raw=true "Authors/Posts Subfolder")
 
 ### creating the author object
 
@@ -724,7 +724,7 @@ to
 
 You now get a dropdown where you can choose an author instead of the previous input field. 
 
-(screenshot)
+![Alt text](/docs/img/author-dropdown.png?raw=true "Author Dropdown")
 
 ## sync back created content into your project
 
