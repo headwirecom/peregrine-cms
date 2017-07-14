@@ -24,6 +24,6 @@
  */
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-[per:Object] > nt:unstructured, sling:Resource, sling:VanityPath
+[per:Object] > nt:hierarchyNode, sling:OrderedFolder
   orderable
 

@@ -48,6 +48,8 @@ public class PerUtil {
     public static final String METADATA = "metadata";
     public static final String TEMPLATE = "template";
 
+    public static final String PER_VENDOR = "headwire.com, Inc";
+    public static final String PER_PREFIX = "Peregrine: ";
     public static final String EQUALS = "=";
 
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
@@ -278,6 +280,15 @@ public class PerUtil {
         return name == null ?
             null :
             name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    }
+
+    public static boolean isPrimaryType(Resource resource, String primaryType) {
+        String answer = null;
+        if(resource != null) {
+            ValueMap properties = getProperties(resource, false);
+            answer = properties.get(JCR_PRIMARY_TYPE, String.class);
+        }
+        return answer != null && answer.equals(primaryType);
     }
 
     public static String getPrimaryType(Resource resource) {

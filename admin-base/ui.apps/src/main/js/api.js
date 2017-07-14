@@ -120,8 +120,28 @@ class PerApi {
         return impl.createObject(parentPath, name, templatePath)
     }
 
+    deleteObject(path) {
+        return impl.deleteObject(path)
+    }
+
+    deleteAsset(path) {
+        return impl.deleteAsset(path)
+    }
+
+    renameAsset(path, newName) {
+        return impl.renameAsset(path, newName)
+    }
+
+    moveAsset(path, to, type) {
+        return impl.moveAsset(path, to, type)
+    }
+
     createFolder(parentPath, name) {
         return impl.createFolder(parentPath, name)
+    }
+
+    deleteFolder(parentPath, name) {
+        return impl.deleteFolder(parentPath, name)
     }
 
     uploadFiles(path, files, cb) {

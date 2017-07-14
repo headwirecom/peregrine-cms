@@ -59,21 +59,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.admin.servlets.ServletHelper.obtainParameters;
+import static com.peregrine.util.PerConstants.ASSET_CONTENT_TYPE;
+import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_DATA;
+import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.util.PerUtil.TEMPLATE;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=upload files servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/uploadFiles",
-                ServletResolverConstants.SLING_SERVLET_METHODS+"=POST"
-        }
+    service = Servlet.class,
+    property = {
+        Constants.SERVICE_DESCRIPTION + "=upload files servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "POST",
+        ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/uploadFiles",
+    }
 )
 @SuppressWarnings("serial")
-public class UploadFilesServlet extends SlingAllMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(UploadFilesServlet.class);
+public class UploadFilesServlet extends AbstractBaseServlet {
 
     @Reference
     ModelFactory modelFactory;
@@ -88,27 +101,27 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
     void removeImageMetadataSelector(ImageMetadataSelector selector) { imageMetadataSelectors.remove(selector); }
 
     @Override
-    protected void doPost(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        Session session = request.getResourceResolver().adaptTo(Session.class);
-        Map<String, String> params = convertSuffixToParams(request);
-        String parentPath = params.get("path");
+    Response handleRequest(Request request) throws IOException {
+        String path = request.getParameter("path");
         try {
-            Node node = session.getRootNode().getNode(parentPath.substring(1));
-            log.debug(params.toString());
+            Resource resource = request.getResourceByPath(path);
+            logger.debug("Upload files to resource: '{}'", resource);
+            List<PerAsset> assets = new ArrayList<>();
             for (Part part : request.getParts()) {
-                log.debug("part type {}",part.getContentType());
-                log.debug("part name {}",part.getName());
-                Node newNode = node.addNode(part.getName(), "per:Asset");
-                Node jcrContent = newNode.addNode("jcr:content", "per:AssetContent");
-                Binary data = session.getValueFactory().createBinary(part.getInputStream());
-                jcrContent.setProperty("jcr:data", data);
-                jcrContent.setProperty("jcr:mimeType", part.getContentType());
-                session.save();
-                Resource assetResource = request.getResourceResolver().getResource(newNode.getPath());
+                logger.debug("part type {}",part.getContentType());
+                logger.debug("part name {}",part.getName());
+
+                Node node = resource.adaptTo(Node.class);
+                Node newAsset = node.addNode(part.getName(), ASSET_PRIMARY_TYPE);
+                Node content = newAsset.addNode(JCR_CONTENT, ASSET_CONTENT_TYPE);
+                Binary data = node.getSession().getValueFactory().createBinary(part.getInputStream());
+                content.setProperty(JCR_DATA, data);
+                content.setProperty(JCR_MIME_TYPE, part.getContentType());
+                newAsset.getSession().save();
+
+                Resource assetResource = request.getResourceResolver().getResource(newAsset.getPath());
                 PerAsset perAsset = assetResource.adaptTo(PerAsset.class);
+                assets.add(perAsset);
                 try {
                     Metadata metadata = ImageMetadataReader.readMetadata(perAsset.getRenditionStream((Resource) null));
                     for(Directory directory : metadata.getDirectories()) {
@@ -127,7 +140,7 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
                             String name = tag.getTagName();
                             String tagName = selector != null ? selector.acceptTag(name) : name;
                             if(tagName != null) {
-                                log.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
+                                logger.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
                                 if(asJson) {
                                     json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
                                 } else {
@@ -147,12 +160,23 @@ public class UploadFilesServlet extends SlingAllMethodsServlet {
                     e.printStackTrace();
                 }
             }
-            log.debug("Upload Done successfully and saved");
-            response.setStatus(HttpServletResponse.SC_OK);
+            logger.debug("Upload Done successfully and saved");
+            JsonResponse answer = new JsonResponse()
+                .writeAttribute("resourceName", resource.getName())
+                .writeAttribute("resourcePath", resource.getPath())
+                .writeArray("assets");
+            for(PerAsset asset: assets) {
+                answer.writeObject();
+                answer.writeAttribute("assetName", asset.getName());
+                answer.writeAttribute("assetPath", asset.getPath());
+                answer.writeClose();
+            }
+            return answer;
         } catch (RepositoryException e) {
-            log.debug("Upload Failed", e);
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            e.printStackTrace(response.getWriter());
+            logger.debug("Upload Failed", e);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Upload Failed because of JCR Repository").setRequestPath(path).setException(e);
+        } catch(ServletException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Upload Failed because of Servlet Parts Problem").setRequestPath(path).setException(e);
         }
     }
 

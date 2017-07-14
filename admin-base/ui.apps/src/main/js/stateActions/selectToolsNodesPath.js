@@ -29,7 +29,11 @@ import {set} from '../utils'
 
 export default function(me, target) {
     let view = me.getView()
-    set(view, '/state/tools/page', null)
+    if(target.selected.startsWith('/content/sites')) {
+        set(view, '/state/tools/page', null)
+    } else {
+        set(view, '/state/tools/template', null)
+    }
 
     me.getApi().populateNodesForBrowser(target.selected).then( () => {
     		set(me.getView(), target.path, target.selected)

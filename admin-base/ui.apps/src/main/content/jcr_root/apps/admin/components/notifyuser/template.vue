@@ -25,7 +25,8 @@
 <template>
 <div>
     <transition name="fade">
-        <div v-if="isVisible" class="modal bottom-sheet">
+      <div v-if="isVisible" class="modal-container">
+        <div class="modal bottom-sheet">
             <div class="modal-content">
                 <h4>{{title}}</h4>
                 <p>{{message}}</p>
@@ -34,14 +35,13 @@
                 <a 
                     v-on:click="onOk"
                     href="#!" 
-                    class="modal-action modal-close waves-effect waves-green btn-flat">
+                    class="modal-action modal-close waves-effect waves-light btn-flat">
                     ok
                 </a>
             </div>
         </div>
-    </transition>
-    <transition name="fade">
-        <div v-if="isVisible" v-on:click="onOk" class="modal-overlay"></div>
+        <div v-on:click="onOk" class="modal-overlay"></div>
+      </div>
     </transition>
 </div>
 </template>

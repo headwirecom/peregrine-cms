@@ -31,7 +31,8 @@
             v-bind:model="{ 
               command: 'selectPath', 
               target: '/content/admin',
-              classes: 'peregrine-logo'
+              classes: 'peregrine-logo',
+              tooltipTitle: 'home'
             }">
             <admin-components-logo></admin-components-logo>
           </admin-components-action>
@@ -45,7 +46,7 @@
           </template>
         </div>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>
+            <li><a title="logout" href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>
         </ul>
       </div>
     </div>

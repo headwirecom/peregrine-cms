@@ -38,6 +38,7 @@ import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerUtil.TEMPLATE;
+import static com.peregrine.util.PerUtil.isPrimaryType;
 
 /**
  * Created by schaefa on 6/4/17.
@@ -154,6 +155,10 @@ public class PerPageImpl
                 if(answer == null) {
                     child = parent;
                     parent = parent.getParent();
+                    if(!isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
+                        // The search ends at the first non-page node
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -164,13 +169,12 @@ public class PerPageImpl
 
     private PerPage findNextChildPage(Resource resource, Resource after) {
         PerPage answer = null;
-        boolean found = after == null;
+        boolean found = (after == null);
         for(Resource child: resource.getChildren()) {
             // JCR Content nodes will not yield a page -> ignore
             if(child.getName().equals(JCR_CONTENT)) { continue; }
             if(found) {
-                String primaryType = PerUtil.getPrimaryType(child);
-                if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
+                if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                     answer = new PerPageImpl(child);
                     break;
                 }
@@ -201,6 +205,10 @@ public class PerPageImpl
                 if(answer == null) {
                     child = parent;
                     parent = parent.getParent();
+                    if(!isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
+                        // The search ends at the first non-page node
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -217,8 +225,7 @@ public class PerPageImpl
             if(before != null && child.getName().equals(before.getName())) {
                 break;
             }
-            String primaryType = PerUtil.getPrimaryType(child);
-            if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
+            if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                 // Memorize child so that when the loops ends it is the resource that is last or before the 'before' resource
                 last = child;
             }

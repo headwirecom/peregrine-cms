@@ -25,185 +25,90 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
+import com.peregrine.admin.resource.ResourceRelocation;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.util.PerConstants.ORDER_BEFORE_TYPE;
+import static com.peregrine.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=move node to servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/moveNodeTo"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Move Node To Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "POST",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/moveNodeTo"
+    }
 )
 @SuppressWarnings("serial")
-public class MoveNodeTo extends SlingSafeMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(MoveNodeTo.class);
+public class MoveNodeTo extends AbstractBaseServlet {
 
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    private ResourceRelocation resourceRelocation;
+
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        Map<String, String> params = convertSuffixToParams(request);
-        String path = params.get("path");
-        String component = params.get("component");
-
-        String drop = params.get("drop");
-        log.debug(params.toString());
-
+    Response handleRequest(Request request) throws IOException {
+        Response answer;
+        String toPath = request.getParameter("path");
+        String fromPath = request.getParameter("component");
+        String type = request.getParameter("type");
+        // Next Block is only here to be backwards compatible
+        if(type == null || type.isEmpty()) {
+            type = request.getParameter("drop", "not provided");
+        }
+        boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith("into");
+        boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith("-before");
+        logger.trace("Add resource: '{}' to {}: '{}' {}",
+            fromPath, addAsChild ? "parent" : "sibling", toPath, addBefore ? "before" : "after"
+        );
         try {
-            ResourceResolver rs = request.getResourceResolver();
-            Session session = rs.adaptTo(Session.class);
-            Resource to = rs.getResource(path);
-            Resource from = rs.getResource(component);
-            if("into-after".equals(drop)) {
-                log.debug("mode from {} to {}", component, path);
-                if(!to.getPath().equals(from.getParent().getPath())) {
-                    session.move(component, path + '/' + from.getName());
-                } else {
-                    Node parent = session.getNode(path);
-                    parent.orderBefore(from.getName(), null);
+            Resource toResource = request.getResourceByPath(toPath);
+            Resource fromResource = request.getResourceByPath(fromPath);
+            if(addAsChild) {
+                boolean sameParent = resourceRelocation.isChildOfParent(fromResource, toResource);
+                if(!sameParent) {
+//AS TODO: Shouldn't we try to update the references ?
+                    // If not the same parent then just move as they are added at the end
+                    resourceRelocation.moveToNewParent(fromResource, toResource, false);
                 }
-                session.save();
-                response.sendRedirect(path + ".model.json");
+                if(addBefore || sameParent) {
+                    // If we move to the front or if it is the same parent (move to the end)
+                    // No Target Child Name means we move it the front for before and end for after
+                    resourceRelocation.reorder(toResource, fromResource.getName(), null, addBefore);
+                }
+                answer = new RedirectResponse(toPath + ".model.json");
+            } else {
+                // Both BEFORE and AFTER can be handled in one as the only difference is if added before or after
+                // and if they are the same parent we means we only ORDER otherwise we MOVE first
+                boolean sameParent = resourceRelocation.hasSameParent(fromResource, toResource);
+                if(!sameParent) {
+                    resourceRelocation.moveToNewParent(fromResource, toResource.getParent(), false);
+                }
+                resourceRelocation.reorder(toResource.getParent(), fromResource.getName(), toResource.getName(), addBefore);
+                answer = new RedirectResponse(toResource.getParent().getPath() + ".model.json");
             }
-            else if("into-before".equals(drop)) {
-                log.debug("mode from {} to {}", component, path);
-                Node parent = session.getNode(path);
-                NodeIterator nodes = parent.getNodes();
-                Node firstChild = null;
-                if(nodes.hasNext()) {
-                    firstChild = (Node) nodes.next();
-                }
-                if(!to.getPath().equals(from.getParent().getPath())) {
-                    session.move(component, path + '/' + from.getName());
-                }
-                if(firstChild != null) {
-                    parent.orderBefore(from.getName(), firstChild.getName());
-                }
-                session.save();
-                response.sendRedirect(path + ".model.json");
-            } else if("before".equals(drop)) {
-                if(to.getParent().getPath().equals(from.getParent().getPath())) {
-                    log.debug("same parent, just reorder before");
-                    Node node = session.getNode(to.getParent().getPath());
-                    node.orderBefore(from.getName(), to.getName());
-                    session.save();
-                    response.sendRedirect(to.getParent().getPath()+".model.json");
-                } else {
-                    log.debug("moving from {} to {}", to.getParent().getPath());
-                    session.move(component, to.getParent().getPath()+'/'+from.getName());
-                    Node node = session.getNode(to.getParent().getPath());
-                    node.orderBefore(from.getName(), to.getName());
-                    session.save();
-                    response.sendRedirect(to.getParent().getPath()+".model.json");
-                }
-            } else if("after".equals(drop)) {
-                if(to.getParent().getPath().equals(from.getParent().getPath())) {
-                    log.debug("same parent, just reorder after");
-                    Node node = session.getNode(to.getParent().getPath());
-                    Node toNode = session.getNode(to.getPath());
-                    int toIndexInParent = toNode.getIndex();
-                    Node after = getNodeAfter(node, toNode);
-                    // find the next
-                    node.orderBefore(from.getName(), after != null ? after.getName(): null);
-                    session.save();
-                    response.sendRedirect(to.getParent().getPath()+".model.json");
-                } else {
-                    log.debug("moving from {} to {}", to.getParent().getPath());
-                    session.move(component, to.getParent().getPath()+'/'+from.getName());
-                    Node node = session.getNode(to.getParent().getPath());
-                    Node toNode = session.getNode(to.getPath());
-                    Node after = getNodeAfter(node, toNode);
-                    node.orderBefore(from.getName(), after != null ? after.getName(): null);
-                    session.save();
-                    response.sendRedirect(to.getParent().getPath()+".model.json");
-                }
-            }
-//            if ("into".equals(drop)) {
-//                Node node = session.getNode(path).addNode("n"+UUID.randomUUID(), "nt:unstructured");
-//                node.setProperty("sling:resourceType", component);
-//                session.save();
-//                response.sendRedirect(path+".model.json");
-//            } else if("before".equals(drop)) {
-//                Node node = session.getNode(path);
-//                Node parent = node.getParent();
-//                Node newNode = parent.addNode("n"+UUID.randomUUID(), "nt:unstructured");
-//                newNode.setProperty("sling:resourceType", component);
-//                parent.orderBefore(newNode.getName(), node.getName());
-//                session.save();
-//                response.sendRedirect(parent.getPath()+".model.json");
-//
-//            } else if("after".equals(drop)) {
-//                Node node = session.getNode(path);
-//                Node parent = node.getParent();
-//                Node newNode = parent.addNode("n"+UUID.randomUUID(), "nt:unstructured");
-//                newNode.setProperty("sling:resourceType", component);
-//                Node after = null;
-//                for (NodeIterator it = parent.getNodes(); it.hasNext(); ) {
-//                    Node child = (Node) it.next();
-//                    if(child.getPath().equals(node.getPath())) {
-//                        if(it.hasNext()) {
-//                            after = (Node) it.next();
-//                            break;
-//                        }
-//                    }
-//                }
-//                if(after != null) {
-//                    // if we are inserting in the last position then we are already at the right place
-//                    parent.orderBefore(newNode.getName(), after.getName());
-//                }
-//                session.save();
-//                response.sendRedirect(parent.getPath()+".model.json");
-//
-//            }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            log.error("problems while moving", e);
+            logger.error("problems while moving", e);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to Move Resource").setException(e);
         }
-
+        return answer;
     }
-
-    private Node getNodeAfter(Node node, Node toNode) throws RepositoryException {
-        Node after = null;
-        for (NodeIterator it = node.getNodes(); it.hasNext(); ) {
-            Node child = (Node) it.next();
-            if(child.getPath().equals(toNode.getPath())) {
-                if(it.hasNext()) {
-                    after = (Node) it.next();
-                    break;
-                }
-            }
-        }
-        return after;
-    }
-
 }
 

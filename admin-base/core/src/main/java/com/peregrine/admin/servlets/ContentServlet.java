@@ -25,56 +25,50 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=content servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES +"=api/admin/content"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Content Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "GET",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/content"
+    }
 )
 @SuppressWarnings("serial")
-public class ContentServlet extends SlingSafeMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(ContentServlet.class);
+public class ContentServlet extends AbstractBaseServlet {
 
     @Reference
     ModelFactory modelFactory;
 
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
+    Response handleRequest(Request request) throws IOException {
 
-        String suffix = request.getRequestPathInfo().getSuffix();
-
+        String suffix = request.getSuffix();
         if(suffix.endsWith(".data.json")) {
             suffix = suffix.substring(0, suffix.indexOf(".data.json"));
         }
-        Resource res = request.getResourceResolver().getResource(suffix);
+        Resource res = request.getResourceByPath(suffix);
         RequestDispatcherOptions rdOtions = new RequestDispatcherOptions(
-                RequestDispatcherOptions.OPT_REPLACE_SELECTORS + "=data"
+            RequestDispatcherOptions.OPT_REPLACE_SELECTORS + "=data"
         );
-        request.getRequestDispatcher(res, rdOtions).forward(request, response);
-
+        return new ForwardResponse(res, rdOtions);
     }
-
 }
 

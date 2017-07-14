@@ -41,6 +41,13 @@
             </ul>
             <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show"/>
             <iframe v-else v-bind:src="currentObject.show"></iframe>
+
+            <div>
+                <button class="btn" v-on:click.stop.prevent="renameAsset()">rename</button>
+                <button class="btn" v-on:click.stop.prevent="moveAsset()">move</button>
+                <button class="btn" v-on:click.stop.prevent="deleteAsset()">delete</button>
+            </div>
+
         </template>
         <template v-else>
             <div class="no-asset-selected">
@@ -58,13 +65,40 @@
         computed: {
             currentObject: function () {
                 return $perAdminApp.getNodeFromView("/state/tools/asset")
-            }
+            },
+            asset: function() {
+                return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject.show)
+            },
+
         },
         methods: {
             isImage: function(path) {
-                if(!path) return false
-                let ext = path.split('.').pop().toLowerCase()
-                return ['png','jpeg','jpg','gif','tiff', 'svg'].indexOf(ext) >= 0
+                const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
+                if(!node) return false
+                const mime = node.mimeType
+                return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(mime) >= 0
+            },
+            renameAsset() {
+                let newName = prompt('new name for '+this.asset.name)
+                if(newName) {
+                    $perAdminApp.stateAction('renameAsset', { path: this.asset.path, name: newName})
+                    $perAdminApp.getNodeFromView('/state/tools').asset = null
+                }
+            },
+            deleteAsset() {
+                $perAdminApp.stateAction('deleteAsset', this.asset.path)
+                $perAdminApp.getNodeFromView('/state/tools').asset = null
+            },
+            moveAsset() {
+                let path = this.asset.path
+                $perAdminApp.pathBrowser(
+                    '/content/assets',
+                    (newValue) => {
+                        $perAdminApp.stateAction('moveAsset', { path: path, to: newValue, type: 'child'})
+                        $perAdminApp.getNodeFromView('/state/tools').assets = newValue
+                        $perAdminApp.getNodeFromView('/state/tools').asset = null
+                    }
+                )
             }
         }
     }

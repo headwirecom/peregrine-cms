@@ -25,70 +25,61 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
-import static com.peregrine.admin.servlets.ServletHelper.convertSuffixToParams;
+import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.OBJECT_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.util.PerUtil.PER_PREFIX;
+import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
-        service = Servlet.class,
-        property = {
-                Constants.SERVICE_DESCRIPTION + "=create object servlet",
-                Constants.SERVICE_VENDOR + "=headwire.com, Inc",
-                ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=api/admin/createObject"
-        }
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Create Object Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "POST",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/createObject"
+    }
 )
 @SuppressWarnings("serial")
-public class CreateObjectServlet extends SlingSafeMethodsServlet {
-
-    private final Logger log = LoggerFactory.getLogger(CreateObjectServlet.class);
+public class CreateObjectServlet extends AbstractBaseServlet {
 
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    ResourceManagement resourceManagement;
+
     @Override
-    protected void doGet(SlingHttpServletRequest request,
-                         SlingHttpServletResponse response) throws ServletException,
-            IOException {
-
-        Map<String, String> params = convertSuffixToParams(request);
-        String parentPath = params.get("path");
-        log.debug(params.toString());
-
-        ResourceResolver rr = request.getResourceResolver();
-        Resource parent = rr.getResource(params.get("parentPath"));
-
-        Session session = request.getResourceResolver().adaptTo(Session.class);
+    Response handleRequest(Request request) throws IOException {
+        String parentPath = request.getParameter("path");
+        String name = request.getParameter("name");
+        String templatePath = request.getParameter("templatePath");
         try {
-            Node node = session.getRootNode().addNode(parentPath.substring(1)+"/"+params.get("name"), "per:Object");
-            node.setProperty("sling:resourceType", params.get("templatePath"));
-            node.setProperty("jcr:title", params.get("name"));
-            session.save();
-            response.setStatus(HttpServletResponse.SC_OK);
-        } catch (RepositoryException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            e.printStackTrace(response.getWriter());
+            Resource newNode = resourceManagement.createObject(request.getResourceResolver(), parentPath, name, templatePath);
+            return new JsonResponse()
+                .writeAttribute("type", "object").writeAttribute("status", "created")
+                .writeAttribute("name", name).writeAttribute("path", newNode.getPath()).writeAttribute("templatePath", templatePath);
+        } catch (ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create object").setRequestPath(parentPath).setException(e);
         }
     }
-
 }
 

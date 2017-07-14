@@ -115,8 +115,11 @@ export default {
         },
         enableTools: function() {
             var targetEl = this.selectedComponent
-            if(!targetEl) return false
-            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
+            if(targetEl == null || targetEl === undefined) return false
+            const path = targetEl.getAttribute('data-per-path')
+            if(path === undefined || path === null) return false
+            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+            if(!node) return false
             return !node.fromTemplate
         }
     },
@@ -209,7 +212,6 @@ export default {
                 var scrollAmount = ev.target.scrollTop
                 var editview = this.$refs.editview
                 this.scrollTop = scrollAmount
-                console.log('onScrollOverlay scrollAmount: ', scrollAmount)
                 // editview.contentWindow.scrollTo(0, scrollAmount)
                 editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
                 //editview.contentWindow.document.body.style.top = `-${this.scrollTop}px`
@@ -415,7 +417,6 @@ export default {
             var editable = this.$refs.editable
             var editview = this.$refs.editview
             var scrollY = editview ? editview.contentWindow.scrollY : 0
-            console.log('scrollY: ', scrollY)
             var scrollX = editview ? editview.contentWindow.scrollX : 0
             if(editable) {
                 editable.style.top    = (targetBox.top + scrollY + this.scrollTop) + 'px'

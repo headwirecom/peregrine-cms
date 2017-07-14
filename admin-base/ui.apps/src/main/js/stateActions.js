@@ -38,6 +38,7 @@ import createTemplateWizard from './stateActions/createTemplateWizard'
 import sourceImageWizard from './stateActions/sourceImageWizard'
 import fetchExternalAsset from './stateActions/fetchExternalAsset'
 import createFolder from './stateActions/createFolder'
+import deleteFolder from './stateActions/deleteFolder'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
 import editTemplate from './stateActions/editTemplate'
@@ -50,10 +51,14 @@ import moveComponentToPath from './stateActions/moveComponentToPath'
 import selectObject from './stateActions/selectObject'
 import unselectObject from './stateActions/unselectObject'
 import saveObjectEdit from './stateActions/saveObjectEdit'
+import deleteObject from './stateActions/deleteObject'
 import createObject from './stateActions/createObject'
 import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
+import deleteAsset from './stateActions/deleteAsset'
+import renameAsset from './stateActions/renameAsset'
+import moveAsset from './stateActions/moveAsset'
 import showPageInfo from './stateActions/showPageInfo'
 import editPreview from './stateActions/editPreview'
 
@@ -66,6 +71,7 @@ actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
 actions['createFolder'] = createFolder
+actions['deleteFolder'] = deleteFolder
 actions['uploadFiles'] = uploadFiles
 actions['sourceImageWizard'] = sourceImageWizard
 actions['fetchExternalAsset'] = fetchExternalAsset
@@ -80,11 +86,15 @@ actions['cancelPageEdit'] = cancelPageEdit
 actions['selectObject'] = selectObject
 actions['unselectObject'] = unselectObject
 actions['saveObjectEdit'] = saveObjectEdit
+actions['deleteObject'] = deleteObject
 actions['createObject'] = createObject
 actions['createObjectWizard'] = createObjectWizard
 actions['selectAsset'] = selectAsset
 actions['showPageInfo'] = showPageInfo
 actions['unselectAsset'] = unselectAsset
+actions['deleteAsset'] = deleteAsset
+actions['renameAsset'] = renameAsset
+actions['moveAsset'] = moveAsset
 actions['editPreview'] = editPreview
 
 function noopAction(me, target) {

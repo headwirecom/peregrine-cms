@@ -40,7 +40,8 @@
                     <admin-components-action
                             v-bind:model="{
                             target: ndivl,
-                            command: 'selectParent'
+                            command: 'selectParent',
+                            tooltipTitle: 'select parent'
                         }"><i class="material-icons">folder</i> ..
                     </admin-components-action>
                 </li>
@@ -60,7 +61,8 @@
                     <admin-components-action
                         v-bind:model="{
                             target: child,
-                            command: 'selectPath'
+                            command: 'selectPath',
+                            tooltipTitle: 'select'
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
@@ -68,7 +70,8 @@
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{ 
                                 target: child.path, 
-                                command: 'editPage'
+                                command: 'editPage',
+                                tooltipTitle: 'edit'
                             }">
                             <i class="material-icons">edit</i>
                         </admin-components-action>
@@ -76,7 +79,8 @@
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
                                 target: child.path,
-                                command: 'showInfo'
+                                command: 'showInfo',
+                                tooltipTitle: 'info'
                             }">
                             <i class="material-icons">info</i>
                         </admin-components-action>
@@ -86,6 +90,7 @@
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
+                                title="view in new tab"
                                 >
                                 <i class="material-icons">visibility</i>
                             </a>
@@ -93,8 +98,9 @@
 
                         <admin-components-action
                             v-bind:model="{
-                                target: child.path,
-                                command: 'deletePage'
+                                target: child,
+                                command: 'deletePage',
+                                tooltipTitle: 'delete'
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
@@ -321,16 +327,23 @@
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
             showInfo: function(me, target) {
-                $perAdminApp.stateAction('showPageInfo', { selected: target })
+                if(target.startsWith('/content/objects')) {
+                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+                    Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', false)
+                    me.selectedObject = target
+                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
+                } else {
+                    $perAdminApp.stateAction('showPageInfo', { selected: target })
+                }
             },
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
                 if(resourceType) {
-                    if(resourceType === 'per:Object') {
-                        me.selectedObject = target.path
-                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
-                        return
-                    }
+//                    if(resourceType === 'per:Object') {
+//                        me.selectedObject = target.path
+//                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
+//                        return
+//                    }
                     if(resourceType === 'per:Asset') {
                         me.selectedAsset = target.path
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
@@ -380,11 +393,26 @@
                 $perAdminApp.stateAction('createObjectWizard', me.pt.path)
             },
             deletePage: function(me, target) {
-                $perAdminApp.stateAction('deletePage', target)
+                const resourceType = target.resourceType
+                if(resourceType === 'per:Object') {
+                    $perAdminApp.stateAction('deleteObject', target.path)
+                } else if(resourceType === 'per:Asset') {
+                        $perAdminApp.stateAction('deleteAsset', target.path)
+                } else if(resourceType === 'sling:OrderedFolder') {
+                    $perAdminApp.stateAction('deleteFolder', target.path)
+                } else {
+                    $perAdminApp.stateAction('deletePage', target.path)
+                }
             },
             editPage: function(me, target) {
-                if(me.pt.path.startsWith('/content/templates')) {
+                const path = me.pt.path
+                if(path.startsWith('/content/templates')) {
                     $perAdminApp.stateAction('editTemplate', target )
+                } if(path.startsWith('/content/objects')) {
+                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+                    Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
+                    me.selectedObject = path
+                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }

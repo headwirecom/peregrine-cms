@@ -40,7 +40,8 @@
             <admin-components-action v-if="!state.editorVisible" v-bind:model="{
                 classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
-                command: 'showHide'
+                command: 'showHide',
+                tooltipTitle: isFullscreen ? 'full screen' : 'narrow'
             }">
                 <i class="material-icons">highlight_off</i>
             </admin-components-action>

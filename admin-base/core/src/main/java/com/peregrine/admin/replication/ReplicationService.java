@@ -236,29 +236,57 @@ public class ReplicationService
                 Session session = resourceResolver.adaptTo(Session.class);
                 for(Resource item: resourceList) {
                     if(item != null) {
-                        String targetPath = pathMapping.get(item.getPath());
-                        if(targetPath != null) {
-                            try {
-                                String targetParent = PerUtil.getParent(targetPath);
-                                Resource targetParentResource = resourceResolver.getResource(targetParent);
-                                if(targetParentResource == null) {
-                                    log.warn("Parent: '{}' does not exist -> resource: '{}' ignored", targetParent, item.getPath());
-                                    continue;
-                                }
-                                Resource copy = copy(item, targetParentResource, pathMapping);
-                                session.save();
-                                answer.add(copy);
-                            } catch(PersistenceException e) {
-                                log.error("Failed to replicate resource: '{}' -> ignored", item, e);
-                            } catch(RepositoryException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        handleParents(item, answer, pathMapping, resourceResolver);
                     }
+                }
+                try {
+                    session.save();
+                } catch(RepositoryException e) {
+                    log.warn("Failed to save changes repliate parents", e);
                 }
             }
         }
         return answer;
+    }
+
+    private boolean handleParents(Resource resource, List<Resource> resourceList, Map<String, String> pathMapping, ResourceResolver resourceResolver) {
+        String targetPath = pathMapping.get(resource.getPath());
+        if(targetPath != null) {
+            try {
+                //AS TODO: If the parent is not found because the are intermediate missing parents
+                //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
+                //AS TODO: or we fail and ignore it
+                String targetParent = PerUtil.getParent(targetPath);
+                if(targetParent == null) {
+                    // No more parent -> handling parents failed
+                    return false;
+                }
+                Resource targetParentResource = resourceResolver.getResource(targetParent);
+                if(targetParentResource == null) {
+                    // Parent does not exist so try with its parent
+                    Resource parent = resource.getParent();
+                    if(parent == null) {
+                        // No more parent -> handling parents failed
+                        return false;
+                    }
+                    boolean ok = handleParents(resource.getParent(), resourceList, pathMapping, resourceResolver);
+                    if(!ok) {
+                        // Handling of parent failed -> leaving as failure
+                        return false;
+                    } else {
+                        targetParentResource = resourceResolver.getResource(targetParent);
+                        if(targetParentResource == null) {
+                            log.error("Target Parent:'" + targetParent + "' is still not found even after all parents were handled");
+                        }
+                    }
+                }
+                Resource copy = copy(resource, targetParentResource, pathMapping);
+                resourceList.add(copy);
+            } catch(PersistenceException e) {
+                log.error("Failed to replicate resource: '{}' -> ignored", resource, e);
+            }
+        }
+        return true;
     }
 
     /**
