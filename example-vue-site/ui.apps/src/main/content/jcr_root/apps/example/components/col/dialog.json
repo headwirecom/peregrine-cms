@@ -1,8 +1,7 @@
 { "fields":[{
   "type": "input",
-  "inputType": "input",
+  "inputType": "text",
   "label": "Classes",
   "model": "classes",
-  "rows": 5,
   "placeholder": "test"
 }]}
