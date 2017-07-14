@@ -630,7 +630,7 @@ The object only has a name and a value field at the moment. We need to change th
 
 We should also create a sub folder for authors and posts in the object console
 
-![Alt text](/docs/img/author-posts-subfolder.png?raw=true "Authors/Posts Subfolder")
+![Alt text](/docs/img/author-posts-subfolders.png?raw=true "Authors/Posts Subfolder")
 
 ### creating the author object
 
