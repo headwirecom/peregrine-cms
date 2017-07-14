@@ -560,6 +560,162 @@ and compiled the project with `percli compile -d`.
 
 You can now create a page and test out all the components again. 
 
+## creating object types
+
+We can either create a page for each blog entry or we can opt to use the object
+model within pcms to create our blog entries and for example also our authors. 
+
+Since this is a simple blog we'll opt to use objects and only control the additional 
+pages as well as the `glass` for our blogroll page in pcms
+
+Objects for our site are located in `ui.apps/src/main/content/jcr_root/apps/blog/objects`.
+The objects folder does not exist by default, so let's create it. At the same time lets
+also create a folder for the `post` object and the `author` object. 
+
+In the `post` and `author` folder add the following file: 
+
+`.content.xml`
+
+```xml
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
+          jcr:primaryType="per:ObjectDefinition"
+/>
+```
+
+`dialog.json`
+
+```json
+{ "fields":[{
+  "type": "input",
+  "inputType": "input",
+  "label": "name",
+  "model": "name",
+  "placeholder": "name"
+},
+  {
+    "type": "input",
+    "inputType": "input",
+    "label": "value",
+    "model": "value",
+    "placeholder": "value"
+  }
+]}
+```
+
+Let's compile our project and look at the objects tab in pcms.
+
+(screenshot)
+
+We can drill into the `blog` folder and then create an object with the (+) button
+in the navigation. The wizard asks us about what object we would like to create
+and a name for the object. 
+
+(screenshot)
+
+After the object is created we can click the edit icon next to the object name
+
+(screenshot)
+
+The object only has a name and a value field at the moment. We need to change this
+
+We should also create a sub folder for authors and posts in the object console
+
+(screenshot)
+
+### creating the author object
+
+`author/dialog.json`
+
+```json
+{ "fields":[
+  {
+    "type": "input",
+    "inputType": "input",
+    "label": "Author Name",
+    "model": "name",
+    "placeholder": "name"
+  },
+  {
+    "type":"texteditor",
+    "rows":10,
+    "placeholder":"about",
+    "label":"About the Author",
+    "model":"about"
+  }
+]}
+```
+
+compile and use pcms to create an author, sync it back into your project
+
+### creating the post object
+
+`post/dialog.json`
+
+```json
+{ "fields":[{
+  "type": "input",
+  "inputType": "input",
+  "label": "Title",
+  "model": "title",
+  "placeholder": "title"
+},
+  {
+    "type": "input",
+    "inputType": "input",
+    "label": "Date",
+    "model": "date",
+    "placeholder": "date"
+  },
+  {
+    "type": "input",
+    "inputType": "input",
+    "label": "Author",
+    "model": "author",
+    "placeholder": "author"
+  },
+  {
+    "type":"texteditor",
+    "rows":10,
+    "placeholder":"text",
+    "label":"Text",
+    "model":"text"
+  }
+]}
+```
+
+compile and use pcms to create a post, sync it back into your project
+
+todo: make the date field an actual date field :-) 
+
+At the moment we have to type in the author but we already have author objects. It would be 
+better to list the available authors and allow the user to select the author instead of typing
+in a string every time. To do this we can alter the author field in the `dialog.json` file
+
+change 
+
+```JSON
+  {
+    "type": "input",
+    "inputType": "input",
+    "label": "Author",
+    "model": "author",
+    "placeholder": "author"
+  },
+```
+to
+```JSON
+  {
+    "type": "listselection",
+    "label": "Author",
+    "model": "author",
+    "valuesFrom": "/content/objects/blog/authors.infinity.json"
+  },
+```
+
+You now get a dropdown where you can choose an author instead of the previous input field. 
+
+(screenshot)
+
 ## sync back created content into your project
 
 - talk about intellij and the sling/aem ide plugin
