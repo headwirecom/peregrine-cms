@@ -122,17 +122,27 @@ percli compile -d
 Once the build is complete go to pcms at [http://localhost:8080]() and log in
 with the default credentials (admin/admin)
 
-(screenshot)
+![Alt text](/img/admin-page.png?raw=true "Admin Page")
 
-click on 'admin', then click on 'sites'. You should now see all the sites in 
+click on 'admin', then click on 'sites'. You should now see all the sites in
 your pcms instance. The list should contain your `blog` site
 
-click on `blog` and then on `+` (add page in the top right corner). In the wizard
-click on blog (the default template for our site) then click `next` and enter index
-as the page name. Click `next` again and click `finish`. You should now see the `index`
-page. Click on the `edit` icon to edit the page. 
+click on `blog` and then on `+` (add page in the top right corner).
 
-(screenshot)
+![Alt text](/img/blog-create-page.png?raw=true "Create Index Page")
+
+In the wizard, click on blog (the default template for our site) then click `next` and enter index
+as the page name. Click `next` again and click `finish`.
+
+![Alt text](/img/create-page-step1.png?raw=true "Create Index Page Step 1")
+
+You should now see the `index` page.
+
+![Alt text](/img/created-index-page.png?raw=true "Created Index Page")
+
+Click on the `edit` icon to edit the page.
+
+![Alt text](/img/index-page-edit-mode.png?raw=true "Created Index Page")
 
 We can now drag and drop components onto the page. By default we just output the
 component names. 
