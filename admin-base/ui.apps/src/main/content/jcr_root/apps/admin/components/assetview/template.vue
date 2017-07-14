@@ -76,7 +76,7 @@
                 const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
                 if(!node) return false
                 const mime = node.mimeType
-                return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg'].indexOf(mime) >= 0
+                return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(mime) >= 0
             },
             renameAsset() {
                 let newName = prompt('new name for '+this.asset.name)
