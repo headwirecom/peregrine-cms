@@ -31,21 +31,10 @@
     <artifactId>per-wrappers</artifactId>
     <packaging>content-package</packaging>
 
-    <name>Testing Setup</name>
+    <name>Server-Side Per Wrapper Tests</name>
     <description>
         This is a set of Per Wrappers like PerAsset / PerPage Integration Tests
     </description>
-
-    <properties>
-        <IT.expected.bundles.count>125</IT.expected.bundles.count>
-        <sling.vm.options></sling.vm.options>
-        <block.sling.at.the.end>${blockSling}</block.sling.at.the.end>
-        <!--
-            Use this Sling VM Options to debug the Sling server. Connect to the server after the Sling bootstrap
-            To make the test wait for you set the 'suspend' to 'y'
-        -->
-        <!--<sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303</sling.vm.options>-->
-    </properties>
 
     <dependencies>
         <dependency>
@@ -71,8 +60,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -97,14 +84,10 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
-            <version>2.8.2</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
