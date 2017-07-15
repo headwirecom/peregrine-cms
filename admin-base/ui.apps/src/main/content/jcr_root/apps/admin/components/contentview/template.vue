@@ -38,8 +38,10 @@
                     v-bind:class   = "editableClass"
                     ref            = "editable" 
                     id             = "editable"
-                    draggable      = "true"
-                    v-on:dragstart = "onDragStart">
+                    :draggable     = "selectedComponentDragable"
+                    v-on:dragstart = "onDragStart"
+                    v-on:touchstart = "onEditableTouchStart"
+                    v-on:touchend  = "onEditableTouchEnd">
                     <div v-if="enableTools" class="editable-actions" v-bind:style="`width: ${clipboard ? '135' : '90'}px`">
                         <ul>
                             <li class="waves-effect waves-light">
@@ -75,6 +77,15 @@
 export default {
     mounted() {
         this.$nextTick(function() {
+            /* is this a touch device */
+            this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
+            this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+            console.log('isTouch? ', this.isTouch)
+            console.log('isIOS? ', this.isIOS)
+            if(this.isTouch){
+                /* selected components are not immediatly draggable on touch devices */
+                this.selectedComponentDragable = false
+            }
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
 
@@ -95,9 +106,13 @@ export default {
             editableVisible: false,
             editableClass: null,
             selectedComponent: null,
+            selectedComponentDragable: true,
             clipboard: null,
             ctrlDown: false,
-            scrollTop: 0
+            scrollTop: 0,
+            isTouch: false,
+            isIOS: false,
+            editableTimer: null
         }
     },
 
@@ -208,14 +223,20 @@ export default {
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
         onScrollOverlay(ev){
-            this.$nextTick(function () {
-                var scrollAmount = ev.target.scrollTop
-                var editview = this.$refs.editview
-                this.scrollTop = scrollAmount
-                // editview.contentWindow.scrollTo(0, scrollAmount)
-                editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
-                //editview.contentWindow.document.body.style.top = `-${this.scrollTop}px`
-            })
+            this.scrollTop = ev.target.scrollTop
+            var editview = this.$refs.editview
+            if(this.isIOS){
+                /* ios device, use scroll alternative */
+                this.$nextTick(function() {
+                    editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
+                    //editview.contentWindow.document.body.style.top = `-${this.scrollTop}px` 
+                })
+            } else {
+                /* is not IOS device, scroll normally */
+                this.$nextTick(function() {
+                    editview.contentWindow.scrollTo(0, this.scrollTop)
+                })
+            }
         },
 
         setEditContainerHeight(){
@@ -306,6 +327,7 @@ export default {
         },
 
         onClickOverlay: function(e) {
+            console.log('onClickOverlay')
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
@@ -330,10 +352,11 @@ export default {
             if(targetEl) return
             this.selectedComponent = null
             this.editableClass = null
+            if (this.isTouch) this.selectedComponentDragable = false
         },
 
         mouseMove: function(e) {
-            if(!e) return
+            if(!e || this.isTouch) return
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
@@ -389,6 +412,7 @@ export default {
 
         onDrop(ev) {
             this.editableClass = null
+            if (this.isTouch) this.selectedComponentDragable = false
             var targetEl = this.getTargetEl(ev)
             var componentPath = ev.dataTransfer.getData('text')
             if(typeof targetEl === 'undefined' || targetEl === null){
@@ -413,13 +437,24 @@ export default {
 
         /* Editable methods ========================
         ============================================ */
+        onEditableTouchStart: function(ev){
+            this.editableTimer = setTimeout(this.onLongTouchOverlay, 800) 
+        },
+        onEditableTouchEnd: function(ev){
+            clearTimeout(this.editableTimer)
+        },
+        onLongTouchOverlay: function(){
+            if(this.selectedComponent === null) return
+            this.selectedComponentDragable = true
+            this.editableClass = 'draggable'
+        },
         setEditableStyle: function(targetBox, editableClass) {
             var editable = this.$refs.editable
             var editview = this.$refs.editview
             var scrollY = editview ? editview.contentWindow.scrollY : 0
             var scrollX = editview ? editview.contentWindow.scrollX : 0
             if(editable) {
-                editable.style.top    = (targetBox.top + scrollY + this.scrollTop) + 'px'
+                editable.style.top    = (targetBox.top + scrollY + (this.isIOS ? this.scrollTop : 0)) + 'px'
                 editable.style.left   = (targetBox.left + scrollX) + 'px'
                 editable.style.width  = targetBox.width + 'px'
                 editable.style.height = targetBox.height + 'px'
