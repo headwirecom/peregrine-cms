@@ -32,7 +32,8 @@
 				#editable {
 					position: absolute; 
 					z-index: 2;
-					border: 1px solid transparent;
+					-webkit-tap-highlight-color: rgba(0,0,0,0);
+					-webkit-touch-callout: none;
 					.editable-actions {
 						display: none;
 						position: absolute; 
@@ -80,17 +81,23 @@
 						}
 					}
 					&.drop-top {
-						border-top-color: color("blue-grey", "base");
+						border-top: 2px solid color("blue-grey", "base");
 					}
 					&.drop-bottom {
-						border-bottom-color: color("blue-grey", "base");
+						border-bottom: 2px solid color("blue-grey", "base");
 					}
 					&.selected {
-						border-color: color("blue-grey", "base");
+						border: 2px solid color("blue-grey", "base");
 						.editable-actions {
 							display: block;
 						}
 					}
+
+					&.draggable {
+						border-color: color("blue-grey", "base");
+						border-style: dashed; 
+					}
+
 					&.drag-start {
 						border-color: color("blue-grey", "base");
 						cursor: move;
