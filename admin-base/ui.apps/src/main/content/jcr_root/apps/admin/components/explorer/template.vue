@@ -408,7 +408,7 @@
                 const path = me.pt.path
                 if(path.startsWith('/content/templates')) {
                     $perAdminApp.stateAction('editTemplate', target )
-                } if(path.startsWith('/content/objects')) {
+                } else if(path.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
                     me.selectedObject = path
