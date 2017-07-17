@@ -67,9 +67,9 @@ public class TestHarness {
         return client.doPost(url, formEntry, expectedStatus);
     }
 
-    public static SlingHttpResponse createTemplate(SlingClient client, String path, String name, int expectedStatus) throws ClientException {
+    public static SlingHttpResponse createTemplate(SlingClient client, String path, String name, String component, int expectedStatus) throws ClientException {
         String url = ADMIN_PREFIX_URL + "createTemplate.json" + path;
-        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).build();
+        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).addParameter("component", component).build();
         return client.doPost(url, formEntry, expectedStatus);
     }
 
