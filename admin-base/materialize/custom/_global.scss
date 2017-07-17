@@ -8,6 +8,10 @@ ul.list-inline {
 		display: inline-block;
 	}
 }
+.modal-container {
+	position: relative;
+	z-index: 2;
+}
 .modal.default {
 	z-index: 1003;
 	display: block;
