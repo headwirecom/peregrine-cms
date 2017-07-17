@@ -26,6 +26,9 @@
         props: ['model'],
         methods: {
             namedChildren(name) {
+                for(let i = 0; i < this.model.children.length; i++) {
+                    if(this.model.children[i].path.startsWith(this.model.path+'/'+name)) return this.model.children[i].children
+                }
                 return []
             }
         }
