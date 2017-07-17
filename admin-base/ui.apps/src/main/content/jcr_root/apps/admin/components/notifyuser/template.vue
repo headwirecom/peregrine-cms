@@ -23,27 +23,25 @@
   #L%
   -->
 <template>
-<div>
-    <transition name="fade">
-      <div v-if="isVisible" class="modal-container">
-        <div class="modal bottom-sheet">
-            <div class="modal-content">
-                <h4>{{title}}</h4>
-                <p>{{message}}</p>
-            </div>
-            <div class="modal-footer">
-                <a 
-                    v-on:click="onOk"
-                    href="#!" 
-                    class="modal-action modal-close waves-effect waves-light btn-flat">
-                    ok
-                </a>
-            </div>
-        </div>
-        <div v-on:click="onOk" class="modal-overlay"></div>
+  <transition name="fade">
+    <div v-if="isVisible" class="modal-container">
+      <div class="modal bottom-sheet">
+          <div class="modal-content">
+              <h4>{{title}}</h4>
+              <p>{{message}}</p>
+          </div>
+          <div class="modal-footer">
+              <button 
+                  type="button"
+                  v-on:click="onOk"
+                  class="modal-action modal-close waves-effect waves-light btn-flat">
+                  ok
+              </button>
+          </div>
       </div>
-    </transition>
-</div>
+      <div v-on:click="onOk" class="modal-overlay"></div>
+    </div>
+  </transition>
 </template>
 
 <script>
