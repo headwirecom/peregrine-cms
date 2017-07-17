@@ -13,6 +13,8 @@ import java.util.Map;
  */
 public interface ResourceManagement {
 
+    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException;
+
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException;
 
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException;

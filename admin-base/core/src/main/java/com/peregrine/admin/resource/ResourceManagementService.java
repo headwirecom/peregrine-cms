@@ -455,12 +455,25 @@ public class ResourceManagementService
         return answer;
     }
 
+    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(JCR_PRIMARY_TYPE, primaryType);
+        if(resourceType != null && !resourceType.isEmpty()) {
+            properties.put(SLING_RESOURCE_TYPE, resourceType);
+        }
+        try {
+            return parent.getResourceResolver().create(parent, name, properties);
+        } catch(PersistenceException e) {
+            throw new ManagementException("Failed to create resource: " + name + " on parent: " + parent.getPath(), e);
+        }
+    }
+
     // todo: needs deep clone
     private Node createNode(Node parent, Map data) throws RepositoryException {
         data.remove("path");
         String component = (String) data.remove("component");
 
-        Node newNode = parent.addNode("n"+ UUID.randomUUID(), "nt:unstructured");
+        Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
         newNode.setProperty("sling:resourceType", component);
         for (Object key: data.keySet()) {
             Object val = data.get(key);

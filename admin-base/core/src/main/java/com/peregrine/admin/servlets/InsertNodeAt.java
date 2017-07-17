@@ -107,7 +107,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
                                 logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
                                 if(temp == null) {
                                     try {
-                                        intermediate = resourceManagement.createObject(request.getResourceResolver(), intermediate.getPath(), nodeName, NT_UNSTRUCTURED);
+                                        intermediate = resourceManagement.createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
                                     } catch(ManagementException e) {
                                         return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create intermediate resources").setRequestPath(path);
                                     }
