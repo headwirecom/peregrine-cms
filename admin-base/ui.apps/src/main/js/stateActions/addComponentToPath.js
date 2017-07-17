@@ -50,6 +50,7 @@ export default function(me, target) {
     } else {
         log.error('addComponentToPath() target.drop not in allowed values - value was', target.drop)
     }
+
     if(targetNode) {
         if(target.component) {
             me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
@@ -83,6 +84,23 @@ export default function(me, target) {
                     }
                 })
         }
+    } else {
+        // target path does not exist yet
+        me.getApi().insertNodeAt(target.pagePath+target.path, target.component, target.drop)
+            .then( (data) => {
+                if(targetNodeUpdate.fromTemplate === true) {
+                    me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                } else {
+                    if(target.drop.startsWith('into')) {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    else if(target.drop === 'before' || target.drop === 'after')
+                    {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    log.fine(data)
+                }
+            })
     }
 
     // me.getApi().savePageEdit(view.pageView.path, nodeToSave).then( () => {
