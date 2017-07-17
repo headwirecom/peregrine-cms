@@ -129,18 +129,20 @@ public class PageMerge implements Use {
         for (Iterator it = value.iterator(); it.hasNext(); ) {
             Object val = it.next();
             log.debug("array megre: {}",val.getClass());
-            Map map = (Map) val;
-            String path = (String) map.get("path");
             boolean merged = false;
-            if(path != null) {
-                log.debug("find entry for {}", path);
-                for (int i = 0; i < target.size(); i++) {
-                    Object t = target.get(i);
-                    if(((Map)t).get("path").equals(path)) {
-                        log.debug("found");
-                        target.set(i, merge((Map)t, map));
-                        log.debug("{}", target.get(i));
-                        merged = true;
+            if(val instanceof Map) {
+                Map map = (Map) val;
+                String path = (String) map.get("path");
+                if(path != null) {
+                    log.debug("find entry for {}", path);
+                    for (int i = 0; i < target.size(); i++) {
+                        Object t = target.get(i);
+                        if(((Map)t).get("path").equals(path)) {
+                            log.debug("found");
+                            target.set(i, merge((Map)t, map));
+                            log.debug("{}", target.get(i));
+                            merged = true;
+                        }
                     }
                 }
             }
