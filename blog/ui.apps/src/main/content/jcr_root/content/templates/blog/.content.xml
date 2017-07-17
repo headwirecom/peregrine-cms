@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
     jcr:description="blog Site Root"
     jcr:primaryType="per:Page"
     jcr:title="blog">
@@ -7,5 +7,21 @@
         jcr:primaryType="per:PageContent"
         jcr:title="blog template"
         sling:resourceType="blog/components/page"
-        brand="blog"/>
+        brand="blog">
+        <masthead
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="blog/components/masthead"/>
+        <header
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="blog/components/header"
+            description="peregrine cms blog"
+            title="my blog"/>
+        <main
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="blog/components/main"/>
+        <footer
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="blog/components/footer"
+            text="&lt;p>I am a &lt;a href=&quot;http://www.peregrine-cms.com&quot; target=&quot;_blank&quot;>peregrine cms&lt;/a> blog&lt;/p>"/>
+    </jcr:content>
 </jcr:root>
