@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
+    jcr:lastModified="{Date}2017-07-17T10:24:30.821-07:00"
+    jcr:lastModifiedBy="admin"
+    jcr:primaryType="per:Page">
+    <jcr:content
+        jcr:lastModified="{Date}2017-07-17T10:24:30.821-07:00"
+        jcr:lastModifiedBy="admin"
+        jcr:primaryType="per:PageContent"
+        jcr:title="index"
+        sling:resourceType="blog/components/page"
+        template="/content/templates/blog"/>
+</jcr:root>
