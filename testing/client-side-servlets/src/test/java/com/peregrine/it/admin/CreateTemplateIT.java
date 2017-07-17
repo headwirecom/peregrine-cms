@@ -60,7 +60,7 @@ public class CreateTemplateIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Object and check that it is created correctly
-        createTemplate(client, rootFolderPath, templateName, 200);
+        createTemplate(client, rootFolderPath, templateName, "example/components/page",200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
@@ -88,7 +88,7 @@ public class CreateTemplateIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Object and check that it is created correctly
-        createTemplate(client, rootFolderPath, templateName, 200);
+        createTemplate(client, rootFolderPath, templateName,"example/components/page", 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);

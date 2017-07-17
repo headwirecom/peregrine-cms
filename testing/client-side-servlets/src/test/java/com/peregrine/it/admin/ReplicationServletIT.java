@@ -73,7 +73,7 @@ public class ReplicationServletIT
         createFolderStructure(client, rootFolderPath);
         // First Create a Template, then a Page using it
         String templateName = "replication-template";
-        createTemplate(client, rootFolderPath, templateName, 200);
+        createTemplate(client, rootFolderPath, templateName, "example/components/page", 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);

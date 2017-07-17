@@ -160,7 +160,7 @@ public class DeleteNodeIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Page and check that it is created correctly
-        createTemplate(client, rootFolderPath, nodeName, 200);
+        createTemplate(client, rootFolderPath, nodeName, "example/components/page", 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
@@ -192,7 +192,7 @@ public class DeleteNodeIT
         createFolderStructure(client, rootFolderPath);
 
         // Create the Page and check that it is created correctly
-        createTemplate(client, rootFolderPath, nodeName, 200);
+        createTemplate(client, rootFolderPath, nodeName, "example/components/page", 200);
         JsonFactory jf = new JsonFactory();
         StringWriter writer = new StringWriter();
         JsonGenerator json = jf.createGenerator(writer);
