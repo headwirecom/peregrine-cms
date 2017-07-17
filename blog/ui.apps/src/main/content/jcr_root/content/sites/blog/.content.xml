@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="per:Page"
+          jcr:title="blog"
+          jcr:description="blog Site Root"
+>
+    <jcr:content
+        jcr:primaryType="per:PageContent"
+        sling:resourceType="blog/components/page"
+        jcr:title="blog"
+        brand="blog"
+        template="/content/templates/blog"
+    />
+</jcr:root>

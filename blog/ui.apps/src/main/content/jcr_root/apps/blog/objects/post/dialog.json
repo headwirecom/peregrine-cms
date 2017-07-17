@@ -1,0 +1,28 @@
+{ "fields":[{
+  "type": "input",
+  "inputType": "input",
+  "label": "Title",
+  "model": "title",
+  "placeholder": "title"
+},
+  {
+    "type": "input",
+    "inputType": "input",
+    "label": "Date",
+    "model": "date",
+    "placeholder": "date"
+  },
+  {
+    "type": "listselection",
+    "label": "Author",
+    "model": "author",
+    "valuesFrom": "/content/objects/blog/authors.infinity.json"
+  },
+  {
+    "type":"texteditor",
+    "rows":10,
+    "placeholder":"text",
+    "label":"Text",
+    "model":"text"
+  }
+]}

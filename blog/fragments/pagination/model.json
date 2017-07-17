@@ -1,0 +1,18 @@
+{
+  "definitions": {
+    "Pagination": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "previous": {
+          "type": "string",
+          "x-source": "inject"
+        },
+        "next": {
+          "type": "string",
+          "x-source": "inject"
+        }
+      }
+    }
+  }
+}
