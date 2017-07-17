@@ -1,10 +1,15 @@
 <template>
-  <div v-bind:data-per-path="model.path">text</div>
+  <div v-bind:data-per-path="model.path" v-html="text">text</div>
 </template>
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+            text() {
+                return ( this.model.text ? this.model.text : 'empty' )
+            }
+        }
     }
 </script>
 

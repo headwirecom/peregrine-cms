@@ -112,6 +112,7 @@ public class PageMerge implements Use {
             Object value = page.get(key);
             log.debug("key is {}", key);
             log.debug("value is {}", value == null ? value : value.getClass());
+            if(key.equals("component") && value.equals("nt:unstructured")) continue;
             if(value instanceof Map) {
 
             } else if(value instanceof ArrayList) {
@@ -127,7 +128,24 @@ public class PageMerge implements Use {
     private void mergeArrays(ArrayList target, ArrayList value) {
         for (Iterator it = value.iterator(); it.hasNext(); ) {
             Object val = it.next();
-            if(!target.contains(val)) {
+            log.debug("array megre: {}",val.getClass());
+            Map map = (Map) val;
+            String path = (String) map.get("path");
+            boolean merged = false;
+            if(path != null) {
+                log.debug("find entry for {}", path);
+                for (int i = 0; i < target.size(); i++) {
+                    Object t = target.get(i);
+                    if(((Map)t).get("path").equals(path)) {
+                        log.debug("found");
+                        target.set(i, merge((Map)t, map));
+                        log.debug("{}", target.get(i));
+                        merged = true;
+                    }
+                }
+            }
+
+            if(!target.contains(val) && !merged) {
                 target.add(val);
             }
         }
