@@ -4,6 +4,8 @@
     jcr:primaryType="per:Page"
     jcr:title="blog">
     <jcr:content
+        jcr:lastModified="{Date}2017-07-17T14:59:03.517-07:00"
+        jcr:lastModifiedBy="admin"
         jcr:primaryType="per:PageContent"
         jcr:title="blog template"
         sling:resourceType="blog/components/page"
@@ -18,7 +20,18 @@
             title="my blog"/>
         <main
             jcr:primaryType="nt:unstructured"
-            sling:resourceType="blog/components/main"/>
+            sling:resourceType="blog/components/main">
+            <sidebar jcr:primaryType="nt:unstructured">
+                <na87292fa-c56e-4a64-8681-f84cd7137d7f
+                    jcr:lastModified="{Date}2017-07-17T14:59:03.517-07:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="blog/components/sidebar"
+                    style="sidebar-module-inset"
+                    text="&lt;p>this blog was created to showcase how easy it is to create a blogging website with peregrine cms&lt;/p>"
+                    title="about"/>
+            </sidebar>
+        </main>
         <footer
             jcr:primaryType="nt:unstructured"
             sling:resourceType="blog/components/footer"

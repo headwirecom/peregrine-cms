@@ -5,6 +5,9 @@
     <p class="blog-post-meta">{{model.date}} by
       <a href="#">{{model.author}}</a>
     </p>
+    <template v-for="child in model.children">
+      <component v-bind:is="child.component" v-bind:model="child"></component>
+    </template>
     <pagerender-vue-components-placeholder v-bind:model="{ path: model.path, component: model.component, location: 'after' }"></pagerender-vue-components-placeholder>
   </div>
 </template>
