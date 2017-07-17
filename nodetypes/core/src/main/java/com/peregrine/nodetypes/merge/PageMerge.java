@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
@@ -67,25 +68,35 @@ public class PageMerge implements Use {
     }
 
     public String getMerged() {
+        return toJSON(getMerged(request.getResource()));
+    }
+
+    public Map getMerged(Resource resource) {
         try {
-            Map page = modelFactory.exportModelForResource(request.getResource().getChild("jcr:content"),
+            Map page = modelFactory.exportModelForResource(resource.getChild("jcr:content"),
                     "jackson", Map.class,
                     Collections.<String, String> emptyMap());
             String templatePath = (String) page.get("template");
-            if(templatePath != null) {
-                Map template = modelFactory.exportModelForResource(request.getResourceResolver().getResource(templatePath).getChild("jcr:content"),
-                        "jackson", Map.class,
-                        Collections.<String, String> emptyMap());
-                flagFromTemplate(template);
-                return toJSON(merge(template, page));
+            if(templatePath == null) {
+                if(resource.getParent().getPath().startsWith("/content/templates/")) {
+                    templatePath = resource.getParent().getPath();
+                }
             }
-            return toJSON(page);
+            if(templatePath != null) {
+//                Map template = modelFactory.exportModelForResource(request.getResourceResolver().getResource(templatePath).getChild("jcr:content"),
+//                        "jackson", Map.class,
+//                        Collections.<String, String> emptyMap());
+                Map template = getMerged(request.getResourceResolver().getResource(templatePath));
+                flagFromTemplate(template);
+                return merge(template, page);
+            }
+            return page;
         } catch (ExportException e) {
             log.error("not able to export model", e);
         } catch (MissingExporterException e) {
             log.error("not able to find exporter for model", e);
         }
-        return "{}";
+        return Collections.<String, String> emptyMap();
     }
 
     private void flagFromTemplate(Map template) {
