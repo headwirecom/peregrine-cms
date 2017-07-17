@@ -495,6 +495,10 @@ class PerAdminImpl {
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
             stripNulls(nodeData)
+            delete nodeData['jcr:created']
+            delete nodeData['jcr:createdBy']
+            delete nodeData['jcr:lastModified']
+            delete nodeData['jcr:lastModifiedBy']
             formData.append('content', JSON.stringify(nodeData))
 
             updateWithForm('/admin/updateResource.json'+path, formData)

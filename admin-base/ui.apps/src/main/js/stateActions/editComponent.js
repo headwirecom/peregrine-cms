@@ -28,7 +28,7 @@ let log = LoggerFactory.logger('editComponent').setLevelDebug()
 import { set } from '../utils'
 
 function bringUpEditor(me, view, target) {
-    log.debug('Bring Up Editor, ')
+    log.fine('Bring Up Editor, ')
     me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
             log.fine('component name is', name)
             set(view, '/state/editor/component', name)

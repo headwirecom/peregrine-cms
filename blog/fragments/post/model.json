@@ -1,0 +1,22 @@
+{
+    "definitions": {
+        "Post": {
+            "type": "object",
+            "x-type": "container",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "x-source": "inject"
+                },
+                "date": {
+                    "type": "string",
+                    "x-source": "inject"
+                },
+                "author": {
+                    "type": "string",
+                    "x-source": "inject"
+                }
+            }
+        }
+    }
+}

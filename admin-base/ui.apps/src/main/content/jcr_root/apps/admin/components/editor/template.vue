@@ -48,10 +48,25 @@
     export default {
       props: ['model'],
       mounted(){
-        this.focusFirstField()
+        /* is this a touch device */
+        this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
+        if(!this.isTouch){
+          this.$nextTick(function() {
+             this.focusFirstField()
+          })
+        }
       },
       updated(){
-        this.focusFirstField()
+        if(!this.isTouch){
+          this.$nextTick(function() {
+            this.focusFirstField()
+          })
+        }
+      },
+      data() {
+        return {
+          isTouch: false
+        }
       },
       computed: {
         schema: function() {

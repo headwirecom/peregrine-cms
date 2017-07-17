@@ -3,3 +3,4 @@
 /etc/felibs/pagerender-vue/js/pagerenderVueComponentsPlaceholder.js
 vfg.js
 vue-form-wizard.js
+drag-drop-touch.js
