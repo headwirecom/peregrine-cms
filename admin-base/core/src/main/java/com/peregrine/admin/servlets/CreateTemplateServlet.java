@@ -73,8 +73,9 @@ public class CreateTemplateServlet extends AbstractBaseServlet {
     Response handleRequest(Request request) throws IOException {
         String parentPath = request.getParameter("path");
         String name = request.getParameter("name");
+        String component = request.getParameter("component");
         try {
-            Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name);
+            Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute("type", "template").writeAttribute("status", "created")

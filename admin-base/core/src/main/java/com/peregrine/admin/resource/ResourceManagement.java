@@ -19,7 +19,7 @@ public interface ResourceManagement {
 
     public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException;
 
-    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException;
+    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException;
 
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
 

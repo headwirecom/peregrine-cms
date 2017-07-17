@@ -222,6 +222,10 @@ paths:
           type: string
           in: formData
           description: the name of the new template
+        - name: component
+          type: string
+          in: formData
+          description: the path to the page component for this template
       responses:
         200:
           description: Template created as specified

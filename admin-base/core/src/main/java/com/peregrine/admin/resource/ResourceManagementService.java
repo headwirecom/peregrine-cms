@@ -77,8 +77,6 @@ import static com.peregrine.util.PerUtil.getResource;
 public class ResourceManagementService
     implements ResourceManagement
 {
-    public static final String TEMPLATE_COMPONENT = "example/components/page";
-
     @Reference
     ResourceRelocation resourceRelocation;
     @Reference
@@ -170,7 +168,7 @@ public class ResourceManagementService
     }
 
     @Override
-    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
+    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException {
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
@@ -179,7 +177,7 @@ public class ResourceManagementService
             if(name == null || name.isEmpty()) {
                 throw new ManagementException("Template Name is not provided. Path: " + parentPath);
             }
-            Node newPage = createPageOrTemplate(parent, name, TEMPLATE_COMPONENT, null);
+            Node newPage = createPageOrTemplate(parent, name, component, null);
             return resourceResolver.getResource(newPage.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
