@@ -31,6 +31,7 @@ import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,11 +46,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.util.PerUtil.getResource;
+import static com.peregrine.util.PerUtil.isPrimaryType;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -80,7 +86,42 @@ public class InsertNodeAt extends AbstractBaseServlet {
     @Override
     Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
-        Resource resource = PerUtil.getResource(request.getResourceResolver(), path);
+        Resource resource = getResource(request.getResourceResolver(), path);
+        //AS This is a fix for missing intermediary nodes from templates
+        if(resource == null) {
+            int index = path.lastIndexOf(JCR_CONTENT);
+            if(index > 0 && index < path.length() - JCR_CONTENT.length()) {
+                // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
+                String pagePath = path.substring(0, index - 1);
+                Resource page = getResource(request.getResourceResolver(), pagePath);
+                if(page != null) {
+                    if(isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
+                        // Now we can traverse
+                        String rest = path.substring(index);
+                        logger.debug("Rest of Page Path: '{}'", rest);
+                        String[] nodeNames = rest.split("/");
+                        Resource intermediate = page;
+                        for(String nodeName : nodeNames) {
+                            if(nodeName != null && !nodeName.isEmpty()) {
+                                Resource temp = intermediate.getChild(nodeName);
+                                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
+                                if(temp == null) {
+                                    try {
+                                        intermediate = resourceManagement.createObject(request.getResourceResolver(), intermediate.getPath(), nodeName, NT_UNSTRUCTURED);
+                                    } catch(ManagementException e) {
+                                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create intermediate resources").setRequestPath(path);
+                                    }
+                                } else {
+                                    intermediate = temp;
+                                }
+                            }
+                        }
+                        resource = getResource(request.getResourceResolver(), path);
+                    }
+                }
+            }
+        }
+        //AS End of Patch
         if(resource == null) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found by Path").setRequestPath(path);
         }
