@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-	<div class="edit-collection">
+	<div class="wrap">
 		<h5>
       {{schema.title}} 
       <button type="button" class="waves-effect waves-light btn-floating" v-on:click="onAddItem">
@@ -33,7 +33,7 @@
     <ul v-if="schema.multifield" class="collapsible">
       <li v-for="(item, index) in schema.items" v-bind:class="activeItem === index ? 'active' : ''">
         <div class="collapsible-header" v-on:click="onSetActiveItem(index)">
-          <i class="material-icons" v-on:click="onRemoveItem(index)">clear</i>Item #{{index}}
+          {{parseInt(index + 1)}} <i class="material-icons" v-on:click="onRemoveItem(index)">delete</i>
         </div>
         <div class="collapsible-body">
           <vue-form-generator
