@@ -119,67 +119,6 @@
 						}
 					}
 				}
-				.vue-form-generator {
-            margin: 0 -0.75rem;
-            .vue-form-generator {
-            	margin: 0;
-            }
-            * {
-               box-sizing: border-box;
-            }
-            fieldset {
-                border: 0;
-                padding: 0;
-                margin: 0;
-                min-width: auto;
-                .form-group {
-                    padding: 0 0.75rem;
-                    input:not([type]), 
-                    input[type=text], 
-                    input[type=password], 
-                    input[type=email], 
-                    input[type=url], 
-                    input[type=time], 
-                    input[type=date], 
-                    input[type=datetime], 
-                    input[type=datetime-local], 
-                    input[type=tel], 
-                    input[type=number], 
-                    input[type=search], 
-                    textarea.materialize-textarea,
-                    .form-control {
-                    		background-color: #fff;
-											  border: 1px solid color("blue-grey", "lighten-4");
-											  border-radius: 0;
-											  outline: none;
-											  height: 3rem;
-											  width: 100%;
-											  font-size: 1rem;
-											  margin: 0 0 20px 0;
-											  padding: 0 0.75rem;
-											  box-shadow: none;
-											  transition: all 0.3s;
-                        &:focus:not([readonly]) {
-                            border-bottom-color: color("blue-grey", "base");
-                            box-shadow: 0 1px 0 0 color("blue-grey", "base");
-                        }
-                    }
-                    textarea {
-                        &.form-control {
-                            height: inherit;
-                            padding: 0.75rem;
-                            &:focus {
-                                outline: none;
-                            }
-                        }
-                    }
-                    label {
-                        font-size: 14px;
-                        color: color("blue-grey", "darken-2");
-                    }
-                }
-            }
-        }
         .object-editor {
         	position: relative;
         	.object-editor-content {
