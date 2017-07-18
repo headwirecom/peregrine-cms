@@ -27,13 +27,32 @@ package com.peregrine.admin.servlets;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
+import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_CREATED;
+import static com.peregrine.util.PerConstants.JCR_CREATED_BY;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.JCR_TITLE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
@@ -54,6 +73,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 )
 @SuppressWarnings("serial")
 public class NodesServlet extends AbstractBaseServlet {
+
+    private static final String ECMA_DATE_FORMAT = "EEE MMM dd yyyy HH:mm:ss 'GMT'Z";
+    private static final Locale DATE_FORMAT_LOCALE = Locale.US;
+    private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, DATE_FORMAT_LOCALE);
 
     @Reference
     ModelFactory modelFactory;
@@ -80,7 +103,8 @@ public class NodesServlet extends AbstractBaseServlet {
         Resource res = rs.getResource(path);
         json.writeAttribute("name",res.getName());
         json.writeAttribute("path",res.getPath());
-        json.writeAttribute("resourceType",res.getValueMap().get("jcr:primaryType", String.class));
+        ValueMap properties = res.getValueMap();
+        writeProperties(json, properties);
         json.writeArray("children");
         Iterable<Resource> children = res.getChildren();
         for(Resource child : children) {
@@ -89,26 +113,69 @@ public class NodesServlet extends AbstractBaseServlet {
                 convertResource(json, rs, segments, pos+1, fullPath);
                 json.writeClose();
             } else {
-                if(!"jcr:content".equals(child.getName())) {
+                if(!JCR_CONTENT.equals(child.getName())) {
                     json.writeObject();
                     json.writeAttribute("name",child.getName());
                     json.writeAttribute("path",child.getPath());
-                    String resourceType = child.getValueMap().get("jcr:primaryType", String.class);
-                    json.writeAttribute("resourceType", resourceType);
-                    if("per:Asset".equals(resourceType)) {
-                        String mimeType = child.getChild("jcr:content").getValueMap().get("jcr:mimeType", String.class);
+                    properties = child.getValueMap();
+                    writeProperties(json, properties);
+                    String resourceType = properties.get(JCR_PRIMARY_TYPE, String.class);
+                    if(ASSET_PRIMARY_TYPE.equals(resourceType)) {
+                        String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
                         json.writeAttribute("mimeType", mimeType);
                     }
-                    if("per:Page".equals(resourceType)) {
-                        String title = child.getChild("jcr:content").getValueMap().get("jcr:title", String.class);
-                        json.writeAttribute("title", title);
-
+                    if(PAGE_PRIMARY_TYPE.equals(resourceType)) {
+                        Resource content = child.getChild(JCR_CONTENT);
+                        if(content != null) {
+                            String title = content.getValueMap().get(JCR_TITLE, String.class);
+                            json.writeAttribute("title", title);
+                        } else {
+                            logger.debug("No Content Child found for: '{}'", child.getPath());
+                        }
                     }
                     json.writeClose();
                 }
             }
         }
         json.writeClose();
+    }
+
+    private void writeProperties(JsonResponse json, ValueMap properties) throws IOException {
+        writeIfFound(json, "resourceType", properties, JCR_PRIMARY_TYPE);
+        writeIfFound(json, JCR_CREATED, properties);
+        writeIfFound(json, JCR_CREATED_BY, properties);
+        writeIfFound(json, JCR_LAST_MODIFIED, properties);
+        writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
+        writeIfFound(json, PER_REPLICATED, properties);
+        writeIfFound(json, PER_REPLICATED_BY, properties);
+        writeIfFound(json, PER_REPLICATION, properties);
+        writeIfFound(json, PER_REPLICATION_REF, properties);
+    }
+
+    private void writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
+        writeIfFound(json, propertyName, properties, propertyName);
+    }
+
+    private static final String[] OMIT_PREFIXES = new String[] { "jcr:", "per:" };
+
+    private void writeIfFound(JsonResponse json, String propertyName, ValueMap properties, String responseName) throws IOException {
+        Object value = properties.get(propertyName);
+        String data;
+        if(value instanceof Calendar) {
+            data = formatter.format(((Calendar) value).getTime());
+        } else {
+            data = properties.get(propertyName, String.class);
+        }
+        if(data != null) {
+            String name = responseName;
+            for(String omitPrefix: OMIT_PREFIXES) {
+                if(name.startsWith(omitPrefix)) {
+                    name = name.substring(omitPrefix.length());
+                    break;
+                }
+            }
+            json.writeAttribute(name, data);
+        }
     }
 }
 

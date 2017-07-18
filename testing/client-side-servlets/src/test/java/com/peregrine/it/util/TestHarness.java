@@ -124,4 +124,9 @@ public class TestHarness {
         HttpEntity formEntry = FormEntityBuilder.create().addParameter("content", content).build();
         return client.doPost(url, formEntry, expectedStatus);
     }
+
+    public static SlingHttpResponse getNodes(SlingClient client, String path, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "nodes.json" + path;
+        return client.doGet(url, expectedStatus);
+    }
 }
