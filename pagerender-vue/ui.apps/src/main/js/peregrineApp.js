@@ -37,6 +37,11 @@ let perVueApp = null
 
 function makePathInfo(path) {
 
+    let hash = ''
+    if(path.indexOf('#') >= 0) {
+        hash = path.substring(path.indexOf('#'))
+        path = path.substring(0, path.indexOf('#'))
+    }
     log.fine('makePathInfo for path', path)
     var htmlPos = path.indexOf('.html')
     var pathPart = path
@@ -55,7 +60,7 @@ function makePathInfo(path) {
         }
     }
 
-    var ret = { path: pathPart, suffix: suffixPath , suffixParams: suffixParams }
+    var ret = { path: pathPart, suffix: suffixPath , suffixParams: suffixParams, hash: hash }
     log.fine('makePathInfo res:',ret)
     return ret
 }
@@ -248,6 +253,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
 function loadContentImpl(path, firstTime, fromPopState) {
 
+    console.log(path)
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
