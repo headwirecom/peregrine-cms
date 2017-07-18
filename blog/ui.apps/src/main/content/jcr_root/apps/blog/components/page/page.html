@@ -49,6 +49,9 @@
     var indexOfHtml = window.location.pathname.indexOf('.html')
     var afterhtml = indexOfHtml >= 0 ? suffix.substring(indexOfHtml + 5) : ''
     if(!afterhtml) afterhtml = ''
+    if(afterhtml.indexOf('#') >= 0) {
+        afterhtml = afterhtml.substring(0, afterhtml.indexOf('#'))
+    }
     $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html" + afterhtml, true)
 </script>
 <sly data-sly-include=serviceworker.html"></sly>
