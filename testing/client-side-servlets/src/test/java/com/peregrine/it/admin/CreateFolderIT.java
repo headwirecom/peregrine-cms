@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolders;
+import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 
@@ -48,6 +49,7 @@ public class CreateFolderIT
         createFolderStructure(client, rootFolderPath + "/" + folderName);
         // Check that the folder exists
         checkFolderExists(client, rootFolderPath, folderName);
+        checkLastModified(client, rootFolderPath + "/" + folderName);
     }
 
     @Test
@@ -63,6 +65,7 @@ public class CreateFolderIT
             createFolder(client, rootFolderPath, folderName, 200);
             // Check that the folder exists
             checkFolderExists(client, rootFolderPath, folderName);
+            checkLastModified(client, rootFolderPath + "/" + folderName);
         }
         // Check order of the created folders
         checkFolders(client, rootFolderPath, folderNames);

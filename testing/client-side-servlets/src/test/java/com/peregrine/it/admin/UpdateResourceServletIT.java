@@ -15,12 +15,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Calendar;
 import java.util.Map;
 
+import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
 import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_JUMBOTRON_TYPE_PATH;
@@ -76,6 +79,7 @@ public class UpdateResourceServletIT
         String folderPath = ROOT_PATH + "/test-up";
         createFolderStructure(client, folderPath);
         // Create a new source page
+        Calendar before = createTimestampAndWait();
         String pageName = "test-page-1";
         response = createPage(client, folderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
         logger.info("Response from creating test page: '{}'", response.getContent());
@@ -94,6 +98,7 @@ public class UpdateResourceServletIT
         json.writeEndObject();
         json.close();
         checkResourceByJson(client, folderPath + "/" + pageName, 2, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
 
         insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_JUMBOTRON_TYPE_PATH, "into-after", 302);
         Map<String, Map> children = extractChildNodes(listResourceAsJson(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, 1));
@@ -120,6 +125,7 @@ public class UpdateResourceServletIT
         json.writeEndObject();
         json.close();
         checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
 
         // Not we are ready to update that component
         writer = new StringWriter();

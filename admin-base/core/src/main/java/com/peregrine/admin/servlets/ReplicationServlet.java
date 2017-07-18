@@ -116,6 +116,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
         if(source != null) {
             List<Resource> replicates;
             try {
+                // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
                 replicates = replication.replicate(source, deep);
             } catch(ReplicationException e) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication Failed").setException(e);

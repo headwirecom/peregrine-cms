@@ -1,0 +1,10 @@
+{
+    "definitions": {
+        "Main": {
+            "type": "object",
+            "x-type": "container",
+            "properties": {
+            }
+        }
+    }
+}

@@ -31,59 +31,53 @@
     <artifactId>basic-it</artifactId>
     <packaging>jar</packaging>
 
-    <name>Testing Setup</name>
+    <name>IT Test Support</name>
     <description>
         These are common classes for Peregrine IT Testing
     </description>
 
     <dependencies>
         <dependency>
+            <groupId>com.peregrine.nodetypes</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.junit.core</artifactId>
-            <version>1.0.14</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.clients</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.rules</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.8.7</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.8.7</version>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
-            <version>2.8.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.peregrine.nodetypes</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

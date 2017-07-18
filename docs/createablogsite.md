@@ -122,27 +122,27 @@ percli compile -d
 Once the build is complete go to pcms at [http://localhost:8080]() and log in
 with the default credentials (admin/admin)
 
-![Alt text](/docs/img/admin-page.png?raw=true "Admin Page")
+![Alt text](img/admin-page.png?raw=true "Admin Page")
 
 click on 'admin', then click on 'sites'. You should now see all the sites in
 your pcms instance. The list should contain your `blog` site
 
 click on `blog` and then on `+` (add page in the top right corner).
 
-![Alt text](/docs/img/blog-create-page.png?raw=true "Create Index Page")
+![Alt text](img/blog-create-page.png?raw=true "Create Index Page")
 
 In the wizard, click on blog (the default template for our site) then click `next` and enter index
 as the page name. Click `next` again and click `finish`.
 
-![Alt text](/docs/img/create-page-step1.png?raw=true "Create Index Page Step 1")
+![Alt text](img/create-page-step1.png?raw=true "Create Index Page Step 1")
 
 You should now see the `index` page.
 
-![Alt text](/docs/img/created-index-page.png?raw=true "Created Index Page")
+![Alt text](img/created-index-page.png?raw=true "Created Index Page")
 
 Click on the `edit` icon to edit the page.
 
-![Alt text](/docs/img/index-page-edit-mode.png?raw=true "Created Index Page")
+![Alt text](img/index-page-edit-mode.png?raw=true "Created Index Page")
 
 We can now drag and drop components onto the page. By default we just output the
 component names. 
@@ -256,7 +256,7 @@ percli compile -d
 If you now add the header component to a page and click on it the editor will show
 the two fields
 
-![Alt text](/docs/img/blog-header-edit.png?raw=true "Blog Header Edit")
+![Alt text](img/blog-header-edit.png?raw=true "Blog Header Edit")
 
 ## connect the model to your html
 
@@ -287,7 +287,7 @@ percli compile -d
 go back to a page, add the header component to it and edit the fields in the editor.
 The content pane now updates while you are editing
 
-![Alt text](/docs/img/blog-header-edit-working.png?raw=true "Blog Header Edit Working")
+![Alt text](img/blog-header-edit-working.png?raw=true "Blog Header Edit Working")
 
 Click ok to save your edit. If you click on another component you loose your edit
 
@@ -329,7 +329,7 @@ module.exports = {
 
 now the children of the main component correctly show up in the right location
 
-![Alt text](/docs/img/blog-main-setup.png?raw=true "Blog Main Setup")
+![Alt text](img/blog-main-setup.png?raw=true "Blog Main Setup")
 
 We also notice that we are missing the sidebar and an area to drop in content to
 the sidebar. Alter the `template.html` file to
@@ -614,23 +614,23 @@ In the `post` and `author` folder add the following file:
 
 Let's compile our project and look at the objects tab in pcms.
 
-![Alt text](/docs/img/objects-tab.png?raw=true "Objects Tab")
+![Alt text](img/objects-tab.png?raw=true "Objects Tab")
 
 We can drill into the `blog` folder and then create an object with the (+) button
 in the navigation. The wizard asks us about what object we would like to create
 and a name for the object. 
 
-![Alt text](/docs/img/object-create.png?raw=true "Object Create")
+![Alt text](img/object-create.png?raw=true "Object Create")
 
 After the object is created we can click the edit icon next to the object name
 
-![Alt text](/docs/img/object-edit.png?raw=true "Object Edit")
+![Alt text](img/object-edit.png?raw=true "Object Edit")
 
 The object only has a name and a value field at the moment. We need to change this
 
 We should also create a sub folder for authors and posts in the object console
 
-![Alt text](/docs/img/author-posts-subfolders.png?raw=true "Authors/Posts Subfolder")
+![Alt text](img/author-posts-subfolders.png?raw=true "Authors/Posts Subfolder")
 
 ### creating the author object
 
@@ -724,7 +724,7 @@ to
 
 You now get a dropdown where you can choose an author instead of the previous input field. 
 
-![Alt text](/docs/img/author-dropdown.png?raw=true "Author Dropdown")
+![Alt text](img/author-dropdown.png?raw=true "Author Dropdown")
 
 ## sync back created content into your project
 

@@ -73,6 +73,7 @@ public class CreateFolderServlet extends AbstractBaseServlet {
         String name = request.getParameter("name");
         try {
             Resource newFolder = resourceManagement.createFolder(request.getResourceResolver(), parentPath, name);
+            request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute("type", "folder").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newFolder.getPath());

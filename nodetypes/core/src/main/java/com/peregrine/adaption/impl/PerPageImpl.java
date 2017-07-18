@@ -29,15 +29,20 @@ import com.peregrine.adaption.Filter;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
 import com.peregrine.util.PerUtil;
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.util.PerConstants.JCR_TITLE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerUtil.TEMPLATE;
+import static com.peregrine.util.PerUtil.getModifiableProperties;
 import static com.peregrine.util.PerUtil.isPrimaryType;
 
 /**
@@ -192,6 +197,15 @@ public class PerPageImpl
     public PerPage getPrevious() {
         Resource resource = getResource();
         return findPrevious(resource, true);
+    }
+
+    public void markAsModified() {
+        Resource resource = getResource();
+        String user = resource.getResourceResolver().getUserID();
+        Calendar now = Calendar.getInstance();
+        ModifiableValueMap properties = getModifiableProperties();
+        properties.put(JCR_LAST_MODIFIED_BY, user);
+        properties.put(JCR_LAST_MODIFIED, now);
     }
 
     private PerPage findPrevious(Resource resource, boolean preOrder) {

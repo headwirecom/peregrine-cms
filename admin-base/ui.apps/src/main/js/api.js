@@ -112,8 +112,8 @@ class PerApi {
         return impl.deletePageNode(path, nodePath)
     }
 
-    createTemplate(parentPath, name) {
-        return impl.createTemplate(parentPath, name)
+    createTemplate(parentPath, name, component) {
+        return impl.createTemplate(parentPath, name, component)
     }
 
     createObject(parentPath, name, templatePath) {

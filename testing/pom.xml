@@ -34,12 +34,114 @@
         <sling.password>admin</sling.password>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <block.sling.at.the.end>false</block.sling.at.the.end>
+        <sling.vm.options></sling.vm.options>
     </properties>
 
     <inceptionYear>2017</inceptionYear>
     <organization>
         <name>headwire inc.</name>
     </organization>
+
+    <profiles>
+        <profile>
+            <id>block</id>
+            <properties>
+                <block.sling.at.the.end>true</block.sling.at.the.end>
+            </properties>
+        </profile>
+        <profile>
+            <id>debug</id>
+            <properties>
+                <sling.vm.options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30333</sling.vm.options>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!-- ====================================================================== -->
+    <!-- D E P E N D E N C I E S                                                -->
+    <!-- ====================================================================== -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Basic Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.21</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.junit.core</artifactId>
+                <version>1.0.14</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.clients</artifactId>
+                <version>1.0.0</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.rules</artifactId>
+                <version>1.0.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.junit.teleporter</artifactId>
+                <version>1.0.6</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.8.7</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.8.7</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Basic dependencies for Unit Tests -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jmock</groupId>
+                <artifactId>jmock-junit4</artifactId>
+                <version>2.8.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.21</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!--&lt;!&ndash; Image Metadata Extractor &ndash;&gt;-->
+            <!--<dependency>-->
+                <!--<groupId>com.drewnoakes</groupId>-->
+                <!--<artifactId>metadata-extractor</artifactId>-->
+                <!--<version>2.10.1</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.adobe.xmp</groupId>-->
+                <!--<artifactId>xmpcore</artifactId>-->
+                <!--<version>5.1.3</version>-->
+            <!--</dependency>-->
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -111,33 +213,39 @@
         </plugins>
         <pluginManagement>
             <plugins>
-                <!-- Maven Release Plugin -->
                 <plugin>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>slingstart-maven-plugin</artifactId>
+                    <version>1.7.6</version>
                 </plugin>
-                <!-- Maven Source Plugin -->
-                <plugin>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
+                <!--&lt;!&ndash; Maven Release Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<artifactId>maven-release-plugin</artifactId>-->
+                    <!--<version>2.5.3</version>-->
+                <!--</plugin>-->
+                <!--&lt;!&ndash; Maven Source Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<artifactId>maven-source-plugin</artifactId>-->
+                    <!--<version>3.0.1</version>-->
+                <!--</plugin>-->
                 <!-- Maven Resources Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>2.7</version>
                 </plugin>
-                <!-- Maven Jar Plugin -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
-                </plugin>
-                <!-- Maven Enforcer Plugin -->
-                <plugin>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>1.4.1</version>
-                </plugin>
+                <!--&lt;!&ndash; Maven Jar Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-jar-plugin</artifactId>-->
+                    <!--<version>3.0.2</version>-->
+                <!--</plugin>-->
+                <!--&lt;!&ndash; Maven Enforcer Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<artifactId>maven-enforcer-plugin</artifactId>-->
+                    <!--<version>1.4.1</version>-->
+                <!--</plugin>-->
                 <!-- Maven Compiler Plugin -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -150,30 +258,30 @@
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
-                <!-- Maven Installer Plugin -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
-                </plugin>
-                <!-- Maven Surefire Plugin -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.18.1</version>
-                </plugin>
+                <!--&lt;!&ndash; Maven Installer Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-install-plugin</artifactId>-->
+                    <!--<version>2.5.2</version>-->
+                <!--</plugin>-->
+                <!--&lt;!&ndash; Maven Surefire Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-surefire-plugin</artifactId>-->
+                    <!--<version>2.18.1</version>-->
+                <!--</plugin>-->
                 <!-- Maven Failsafe Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.18.1</version>
+                    <version>2.19.1</version>
                 </plugin>
-                <!-- Maven Deploy Plugin -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
-                </plugin>
+                <!--&lt;!&ndash; Maven Deploy Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-deploy-plugin</artifactId>-->
+                    <!--<version>2.8.2</version>-->
+                <!--</plugin>-->
                 <!-- Apache Sling Plugin -->
                 <plugin>
                     <groupId>org.apache.sling</groupId>
@@ -193,25 +301,25 @@
                         <group>com.peregrine.admin</group>
                     </configuration>
                 </plugin>
-                <!-- Apache Felix Bundle Plugin -->
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.3.0</version>
-                    <inherited>true</inherited>
-                </plugin>
+                <!--&lt;!&ndash; Apache Felix Bundle Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.apache.felix</groupId>-->
+                    <!--<artifactId>maven-bundle-plugin</artifactId>-->
+                    <!--<version>3.3.0</version>-->
+                    <!--<inherited>true</inherited>-->
+                <!--</plugin>-->
                 <!-- Maven Dependency Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>2.10</version>
                 </plugin>
-                <!-- Build Helper Maven Plugin -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.9.1</version>
-                </plugin>
+                <!--&lt;!&ndash; Build Helper Maven Plugin &ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.codehaus.mojo</groupId>-->
+                    <!--<artifactId>build-helper-maven-plugin</artifactId>-->
+                    <!--<version>1.9.1</version>-->
+                <!--</plugin>-->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>license-maven-plugin</artifactId>
@@ -234,178 +342,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <!-- ====================================================================== -->
-    <!-- D E P E N D E N C I E S                                                -->
-    <!-- ====================================================================== -->
-    <dependencyManagement>
-        <dependencies>
-            <!-- OSGi Dependencies -->
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>6.0.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- OSGi annotations: @Version, @ProviderType, @ConsumerType -->
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>osgi.annotation</artifactId>
-                <version>6.0.1</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- OSGi annotations for DS and metatype -->
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.service.component.annotations</artifactId>
-                <version>1.3.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.service.metatype.annotations</artifactId>
-                <version>1.3.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.compendium</artifactId>
-                <version>4.2.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- Web Application API -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>3.1.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- dependency injection annotations -->
-            <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-                <version>1</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- JCR API -->
-            <dependency>
-                <groupId>javax.jcr</groupId>
-                <artifactId>jcr</artifactId>
-                <version>2.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- Basic Logging -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.21</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>3.0.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- Apache Sling Dependencies -->
-            <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.api</artifactId>
-                <version>2.16.2</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.settings</artifactId>
-                <version>1.3.8</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.commons.osgi</artifactId>
-                <version>2.4.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.models.api</artifactId>
-                <version>1.3.2</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jackrabbit</groupId>
-                <artifactId>jackrabbit-api</artifactId>
-                <version>2.11.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- Support -->
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.6</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.5</version>
-            </dependency>
-            <dependency>
-                <artifactId>jackson-core</artifactId>
-                <version>2.8.7</version>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.8.7</version>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- Basic dependencies for Unit Tests -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.11</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jmock</groupId>
-                <artifactId>jmock-junit4</artifactId>
-                <version>2.8.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>1.7.21</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- Image Metadata Extractor -->
-            <dependency>
-                <groupId>com.drewnoakes</groupId>
-                <artifactId>metadata-extractor</artifactId>
-                <version>2.10.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.adobe.xmp</groupId>
-                <artifactId>xmpcore</artifactId>
-                <version>5.1.3</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <modules>
         <module>basic-it</module>

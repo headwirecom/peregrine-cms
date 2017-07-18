@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 
+import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
@@ -68,6 +69,7 @@ public class CreateObjectIT
         json.close();
 
         checkResourceByJson(client, rootFolderPath + "/" + objectName, 1, writer.toString(), true);
+        checkLastModified(client, rootFolderPath + "/" + objectName);
     }
 
     @Override

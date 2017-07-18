@@ -26,9 +26,12 @@ package com.peregrine.admin.servlets;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -38,15 +41,21 @@ import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.util.PerUtil.getResource;
+import static com.peregrine.util.PerUtil.isPrimaryType;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -71,10 +80,48 @@ public class InsertNodeAt extends AbstractBaseServlet {
     @Reference
     ResourceRelocation resourceRelocation;
 
+    @Reference
+    ResourceManagement resourceManagement;
+
     @Override
     Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
-        Resource resource = PerUtil.getResource(request.getResourceResolver(), path);
+        Resource resource = getResource(request.getResourceResolver(), path);
+        //AS This is a fix for missing intermediary nodes from templates
+        if(resource == null) {
+            int index = path.lastIndexOf(JCR_CONTENT);
+            if(index > 0 && index < path.length() - JCR_CONTENT.length()) {
+                // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
+                String pagePath = path.substring(0, index - 1);
+                Resource page = getResource(request.getResourceResolver(), pagePath);
+                if(page != null) {
+                    if(isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
+                        // Now we can traverse
+                        String rest = path.substring(index);
+                        logger.debug("Rest of Page Path: '{}'", rest);
+                        String[] nodeNames = rest.split("/");
+                        Resource intermediate = page;
+                        for(String nodeName : nodeNames) {
+                            if(nodeName != null && !nodeName.isEmpty()) {
+                                Resource temp = intermediate.getChild(nodeName);
+                                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
+                                if(temp == null) {
+                                    try {
+                                        intermediate = resourceManagement.createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
+                                    } catch(ManagementException e) {
+                                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create intermediate resources").setRequestPath(path);
+                                    }
+                                } else {
+                                    intermediate = temp;
+                                }
+                            }
+                        }
+                        resource = getResource(request.getResourceResolver(), path);
+                    }
+                }
+            }
+        }
+        //AS End of Patch
         if(resource == null) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found by Path").setRequestPath(path);
         }
@@ -89,77 +136,30 @@ public class InsertNodeAt extends AbstractBaseServlet {
         if(component != null && component.startsWith("/apps")) {
             component = component.substring(component.indexOf('/', 1) + 1);
         }
+        Map<String, Object> properties = new HashMap<>();
         String data = request.getParameter("content");
-        Map nodeProperties = jsonToMap(data);
+        if(data != null && !data.isEmpty()) {
+            ObjectMapper mapper = new ObjectMapper();
+            properties.putAll(mapper.readValue(data, Map.class));
+        }
+        if(component != null && !component.isEmpty()) {
+            // Component overrides the JSon component if provided
+            properties.put("component", component);
+        } else {
+            component = properties.get("component") + "";
+            if(component != null) {
+                properties.put("component", ServletHelper.componentNameToPath(component));
+            }
+        }
 
         try {
-            Node node = resource.adaptTo(Node.class);
-            Node newNode;
-            if(addAsChild) {
-                Resource firstChild = null;
-                if(addBefore) {
-                    Iterator<Resource> i = resource.listChildren();
-                    if(i.hasNext()) { firstChild = i.next(); }
-                }
-                if(component != null) {
-                    newNode = createNode(node, component);
-                } else {
-                    newNode = createNode(node, nodeProperties);
-                }
-                if(firstChild != null) {
-                    resourceRelocation.reorder(resource, newNode.getName(), firstChild.getName(), true);
-                }
-                node.getSession().save();
-                return new RedirectResponse(path + ".model.json");
-            } else {
-                Node parent = node.getParent();
-                if(component != null) {
-                    newNode = createNode(parent, component);
-                } else {
-                    newNode = createNode(parent, nodeProperties);
-                }
-                resourceRelocation.reorder(resource.getParent(), newNode.getName(), node.getName(), addBefore);
-                node.getSession().save();
-                return new RedirectResponse(parent.getPath() + ".model.json");
-            }
-        } catch (RepositoryException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to insert node at: " + path).setException(e);
+            Resource newResource = resourceManagement.insertNode(resource, properties, addAsChild, addBefore);
+            newResource.getResourceResolver().commit();
+            return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + ".model.json");
+        } catch (ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
         }
 
-    }
-
-    private Map jsonToMap(String data) throws IOException {
-        Map answer;
-        if(data == null || data.isEmpty()) {
-            answer = Collections.EMPTY_MAP;
-        } else {
-            ObjectMapper mapper = new ObjectMapper();
-            answer = mapper.readValue(data, Map.class);
-            logger.debug("Got Map: '{}' from JSon String", answer.toString());
-        }
-        return answer;
-    }
-
-    private Node createNode(Node parent, String component) throws RepositoryException {
-        Node newNode = parent.addNode("n"+ UUID.randomUUID(), "nt:unstructured");
-        newNode.setProperty("sling:resourceType", component);
-        return newNode;
-    }
-
-    // todo: needs deep clone
-    private Node createNode(Node parent, Map data) throws RepositoryException {
-        data.remove("path");
-        String component = (String) data.remove("component");
-
-        Node newNode = parent.addNode("n"+ UUID.randomUUID(), "nt:unstructured");
-        newNode.setProperty("sling:resourceType", ServletHelper.componentNameToPath(component));
-        for (Object key: data.keySet()) {
-            Object val = data.get(key);
-            if(val instanceof String) {
-                newNode.setProperty(key.toString(), (String) val);
-            }
-        }
-        return newNode;
     }
 }
 

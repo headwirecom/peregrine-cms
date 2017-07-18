@@ -68,6 +68,7 @@ public class UpdateResourceServlet extends AbstractBaseServlet {
         String content = request.getParameter("content");
         try {
             Resource updatePage = resourceManagement.updateResource(request.getResourceResolver(), path, content);
+            request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute("type", "page").writeAttribute("status", "created")
                 .writeAttribute("name", updatePage.getName()).writeAttribute("path", updatePage.getPath());

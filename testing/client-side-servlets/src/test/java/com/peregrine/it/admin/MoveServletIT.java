@@ -12,11 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Map;
 
+import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
@@ -58,9 +62,13 @@ public class MoveServletIT
         createFolderStructure(client, sourcePath);
         createFolderStructure(client, targetPath);
         // Create a new source page
+        Calendar before = createTimestampAndWait();
         response = createPage(client, sourcePath, "test-page-1", EXAMPLE_TEMPLATE_PATH, 200);
+        checkLastModified(client, sourcePath + "/" + "test-page-1", before);
+
         logger.info("Response from creating test page folder: '{}'", response.getContent());
         // Move the resource
+        before = createTimestampAndWait();
         response = moveResource(client, sourcePath+ "/test-page-1", targetPath, "child", 200);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the servlet response
@@ -69,6 +77,7 @@ public class MoveServletIT
         response = listResource(client, targetPath + "/test-page-1", 1);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "test-page-1");
+        checkLastModified(client, targetPath + "/test-page-1", before);
     }
 
     @Test
@@ -80,6 +89,7 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource
+        Calendar before = createTimestampAndWait();
         response = moveResource(client, sourcePath + "/source-page-q", targetPath, "child", 200);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the servlet response
@@ -88,6 +98,7 @@ public class MoveServletIT
         response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "target-page-z", "target-page-b", "target-page-y", "source-page-q");
+        checkLastModified(client, targetPath + "/source-page-q", before);
     }
 
     @Test
@@ -99,6 +110,7 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource before 'target-page-z'
+        Calendar before = createTimestampAndWait();
         response = moveResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "before", 200);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the servlet response
@@ -107,6 +119,7 @@ public class MoveServletIT
         response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "source-page-q", "target-page-z", "target-page-b", "target-page-y");
+        checkLastModified(client, targetPath + "/source-page-q", before);
     }
 
     @Test
@@ -118,6 +131,7 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Move the resource before 'target-page-z'
+        Calendar before = createTimestampAndWait();
         response = moveResource(client, sourcePath + "/source-page-q", targetPath + "/target-page-z", "after", 200);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the servlet response
@@ -126,6 +140,7 @@ public class MoveServletIT
         response = listResource(client, targetPath, 2);
         logger.info("Response from listing the moved page: '{}'", response.getContent());
         checkPages(response, "target-page-a", "target-page-z", "source-page-q", "target-page-b", "target-page-y");
+        checkLastModified(client, targetPath + "/source-page-q", before);
     }
 
     @Test
@@ -152,6 +167,22 @@ public class MoveServletIT
         // Move the resource before 'target-page-z'
         response = moveResource(client, sourcePath + "-not-there" + "/source-page-q", targetPath, "child", 400);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
+    }
+
+    @Test
+    public void testMoveInsideSameFolder() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String sourcePath = ROOT_PATH + "/source/source-misf";
+        String targetPath = ROOT_PATH + "/target/target-misf";
+        createPageSetup(client, sourcePath, targetPath);
+
+        // Move the resource before 'target-page-z'
+        Calendar before = createTimestampAndWait();
+        response = moveResource(client, targetPath + "/target-page-a", targetPath + "/target-page-z", "after", 200);
+        logger.info("Response from creating move the resource: '{}'", response.getContent());
+        checkPages(response, "target-page-z", "target-page-a", "target-page-b", "target-page-y");
+        checkLastModified(client, targetPath + "/target-page-a", before);
     }
 
     @Test
@@ -190,11 +221,13 @@ public class MoveServletIT
         createPageSetup(client, sourcePath, targetPath);
 
         // Rename a page
+        Calendar before = createTimestampAndWait();
         response = renameResource(client, targetPath + "/target-page-z", "renamed-z", 200);
         logger.info("Response from creating move the resource: '{}'", response.getContent());
         // Check the node json listing
         response = listResource(client, targetPath, 2);
         checkPages(response, "target-page-a", "renamed-z", "target-page-b", "target-page-y");
+        checkLastModified(client, targetPath + "/renamed-z", before);
     }
 
     @Test
@@ -219,15 +252,21 @@ public class MoveServletIT
         logger.info("Response from failed rename due to an already existing page: '{}'", response.getContent());
     }
 
-    private void createPageSetup(SlingClient client, String sourcePath, String targetPath) throws ClientException, IOException {
+    private void createPageSetup(SlingClient client, String sourcePath, String targetPath) throws ClientException, IOException, ParseException {
         createFolderStructure(client, sourcePath);
         createFolderStructure(client, targetPath);
         // Create a new source page and target pages
+        Calendar before = createTimestampAndWait();
         createPage(client, sourcePath, "source-page-q", EXAMPLE_TEMPLATE_PATH, 200);
+        checkLastModified(client, sourcePath + "/" + "source-page-q", before);
         createPage(client, targetPath, "target-page-a", EXAMPLE_TEMPLATE_PATH, 200);
+        checkLastModified(client, targetPath + "/" + "target-page-a", before);
         createPage(client, targetPath, "target-page-z", EXAMPLE_TEMPLATE_PATH, 200);
+        checkLastModified(client, targetPath + "/" + "target-page-z", before);
         createPage(client, targetPath, "target-page-b", EXAMPLE_TEMPLATE_PATH, 200);
+        checkLastModified(client, targetPath + "/" + "target-page-b", before);
         createPage(client, targetPath, "target-page-y", EXAMPLE_TEMPLATE_PATH, 200);
+        checkLastModified(client, targetPath + "/" + "target-page-y", before);
     }
 
     @Override

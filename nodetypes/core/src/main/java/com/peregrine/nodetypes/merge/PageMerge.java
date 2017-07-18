@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
@@ -67,25 +68,35 @@ public class PageMerge implements Use {
     }
 
     public String getMerged() {
+        return toJSON(getMerged(request.getResource()));
+    }
+
+    public Map getMerged(Resource resource) {
         try {
-            Map page = modelFactory.exportModelForResource(request.getResource().getChild("jcr:content"),
+            Map page = modelFactory.exportModelForResource(resource.getChild("jcr:content"),
                     "jackson", Map.class,
                     Collections.<String, String> emptyMap());
             String templatePath = (String) page.get("template");
-            if(templatePath != null) {
-                Map template = modelFactory.exportModelForResource(request.getResourceResolver().getResource(templatePath).getChild("jcr:content"),
-                        "jackson", Map.class,
-                        Collections.<String, String> emptyMap());
-                flagFromTemplate(template);
-                return toJSON(merge(template, page));
+            if(templatePath == null) {
+                if(resource.getParent().getPath().startsWith("/content/templates/")) {
+                    templatePath = resource.getParent().getPath();
+                }
             }
-            return toJSON(page);
+            if(templatePath != null) {
+//                Map template = modelFactory.exportModelForResource(request.getResourceResolver().getResource(templatePath).getChild("jcr:content"),
+//                        "jackson", Map.class,
+//                        Collections.<String, String> emptyMap());
+                Map template = getMerged(request.getResourceResolver().getResource(templatePath));
+                flagFromTemplate(template);
+                return merge(template, page);
+            }
+            return page;
         } catch (ExportException e) {
             log.error("not able to export model", e);
         } catch (MissingExporterException e) {
             log.error("not able to find exporter for model", e);
         }
-        return "{}";
+        return Collections.<String, String> emptyMap();
     }
 
     private void flagFromTemplate(Map template) {
@@ -112,6 +123,7 @@ public class PageMerge implements Use {
             Object value = page.get(key);
             log.debug("key is {}", key);
             log.debug("value is {}", value == null ? value : value.getClass());
+            if(key.equals("component") && value.equals("nt:unstructured")) continue;
             if(value instanceof Map) {
 
             } else if(value instanceof ArrayList) {
@@ -127,7 +139,26 @@ public class PageMerge implements Use {
     private void mergeArrays(ArrayList target, ArrayList value) {
         for (Iterator it = value.iterator(); it.hasNext(); ) {
             Object val = it.next();
-            if(!target.contains(val)) {
+            log.debug("array megre: {}",val.getClass());
+            boolean merged = false;
+            if(val instanceof Map) {
+                Map map = (Map) val;
+                String path = (String) map.get("path");
+                if(path != null) {
+                    log.debug("find entry for {}", path);
+                    for (int i = 0; i < target.size(); i++) {
+                        Object t = target.get(i);
+                        if(((Map)t).get("path").equals(path)) {
+                            log.debug("found");
+                            target.set(i, merge((Map)t, map));
+                            log.debug("{}", target.get(i));
+                            merged = true;
+                        }
+                    }
+                }
+            }
+
+            if(!target.contains(val) && !merged) {
                 target.add(val);
             }
         }

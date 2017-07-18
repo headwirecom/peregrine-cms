@@ -70,6 +70,7 @@ public class CreatePageServlet extends AbstractBaseServlet {
         String templatePath = request.getParameter("templatePath");
         try {
             Resource newPage = resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath);
+            request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute("type", "page").writeAttribute("status", "created")
                 .writeAttribute("name", name).writeAttribute("path", newPage.getPath()).writeAttribute("templatePath", templatePath);

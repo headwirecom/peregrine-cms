@@ -31,7 +31,7 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    return api.createTemplate(target.parent, target.name).then( () => {
+    return api.createTemplate(target.parent, target.name, target.component).then( () => {
         me.loadContent('/content/admin/templates.html/path//'+ target.parent)
     })
 

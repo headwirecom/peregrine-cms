@@ -25,6 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.ResourceManagement;
+import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.admin.resource.ResourceRelocation;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
@@ -62,6 +64,8 @@ public class MoveNodeTo extends AbstractBaseServlet {
 
     @Reference
     private ResourceRelocation resourceRelocation;
+    @Reference
+    ResourceManagement resourceManagement;
 
     @Override
     Response handleRequest(Request request) throws IOException {
@@ -81,32 +85,12 @@ public class MoveNodeTo extends AbstractBaseServlet {
         try {
             Resource toResource = request.getResourceByPath(toPath);
             Resource fromResource = request.getResourceByPath(fromPath);
-            if(addAsChild) {
-                boolean sameParent = resourceRelocation.isChildOfParent(fromResource, toResource);
-                if(!sameParent) {
-//AS TODO: Shouldn't we try to update the references ?
-                    // If not the same parent then just move as they are added at the end
-                    resourceRelocation.moveToNewParent(fromResource, toResource, false);
-                }
-                if(addBefore || sameParent) {
-                    // If we move to the front or if it is the same parent (move to the end)
-                    // No Target Child Name means we move it the front for before and end for after
-                    resourceRelocation.reorder(toResource, fromResource.getName(), null, addBefore);
-                }
-                answer = new RedirectResponse(toPath + ".model.json");
-            } else {
-                // Both BEFORE and AFTER can be handled in one as the only difference is if added before or after
-                // and if they are the same parent we means we only ORDER otherwise we MOVE first
-                boolean sameParent = resourceRelocation.hasSameParent(fromResource, toResource);
-                if(!sameParent) {
-                    resourceRelocation.moveToNewParent(fromResource, toResource.getParent(), false);
-                }
-                resourceRelocation.reorder(toResource.getParent(), fromResource.getName(), toResource.getName(), addBefore);
-                answer = new RedirectResponse(toResource.getParent().getPath() + ".model.json");
-            }
-        } catch (Exception e) {
+            resourceManagement.moveNode(fromResource, toResource, addAsChild, addBefore);
+            request.getResourceResolver().commit();
+            answer = new RedirectResponse((addAsChild ? toPath : toResource.getParent().getPath()) + ".model.json");
+        } catch(ManagementException e) {
             logger.error("problems while moving", e);
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to Move Resource").setException(e);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
         }
         return answer;
     }

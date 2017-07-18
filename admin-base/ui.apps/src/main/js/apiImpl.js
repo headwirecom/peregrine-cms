@@ -390,10 +390,11 @@ class PerAdminImpl {
         })
     }
 
-    createTemplate(parentPath, name) {
+    createTemplate(parentPath, name, component) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('name', name)
+            data.append('component', component)
             updateWithForm('/admin/createTemplate.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
@@ -495,6 +496,10 @@ class PerAdminImpl {
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
             stripNulls(nodeData)
+            delete nodeData['jcr:created']
+            delete nodeData['jcr:createdBy']
+            delete nodeData['jcr:lastModified']
+            delete nodeData['jcr:lastModifiedBy']
             formData.append('content', JSON.stringify(nodeData))
 
             updateWithForm('/admin/updateResource.json'+path, formData)

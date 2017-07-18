@@ -47,12 +47,21 @@
 <script>
     export default {
         props: ['model'],
+        methods: {
+          getComponentPath() {
+              return 'bla'
+          }
+        },
         data:
             function() {
+                const path = $perAdminApp.getNodeFromView('/state/tools/templates')
+                const siteName = path.split('/')[3]
+                const component = siteName + '/components/page'
                 return {
                     formmodel: {
-                        path: $perAdminApp.getNodeFromView('/state/tools/templates'),
-                        name: ''
+                        path: path,
+                        name: '',
+                        component: component
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -76,7 +85,9 @@
         ,
         methods: {
             onComplete: function() {
-                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name })
+                const path = this.formmodel.path
+                const siteName = path.split('/')[3]
+                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: this.formmodel.component })
             }
 
         }
