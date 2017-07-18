@@ -45,7 +45,11 @@
 <script>
     $peregrineApp.registerView($perView)
     $peregrineApp.getView().app = {}
-    $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
+    var suffix = window.location.pathname
+    var indexOfHtml = window.location.pathname.indexOf('.html')
+    var afterhtml = indexOfHtml >= 0 ? suffix.substring(indexOfHtml + 5) : ''
+    if(!afterhtml) afterhtml = ''
+    $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html" + afterhtml, true)
 </script>
 <sly data-sly-include=serviceworker.html"></sly>
 <sly data-sly-include=tracker-bodyend.html"></sly>

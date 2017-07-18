@@ -199,7 +199,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     walkTreeAndLoad(data)
 
     if(data.suffixToParameter) {
-        const pathInfo = makePathInfo(window.location.pathname)
+        const pathInfo = makePathInfo(path)
         for(let i = 0; i < data.suffixToParameter.length; i+=2) {
             const name = data.suffixToParameter[i]
             const location =  data.suffixToParameter[i+1]
