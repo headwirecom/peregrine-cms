@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-    <div class="field-wrap field-with-button">
+    <div class="wrap">
       <input
         :id="getFieldID(schema)"
         type="text"
