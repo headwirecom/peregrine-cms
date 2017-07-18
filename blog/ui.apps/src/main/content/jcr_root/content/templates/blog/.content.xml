@@ -9,6 +9,8 @@
         jcr:primaryType="per:PageContent"
         jcr:title="blog template"
         sling:resourceType="blog/components/page"
+        loaders="[]"
+        suffixToParameter="[]"
         brand="blog">
         <masthead
             jcr:primaryType="nt:unstructured"
