@@ -36,8 +36,8 @@ input[type=search],
 textarea.materialize-textarea {
 
   // General Styles
-  background-color: transparent;
-  border: none;
+  background-color: $input-background;
+  border: $input-border;
   border-bottom: $input-border;
   border-radius: 0;
   outline: none;
@@ -47,7 +47,7 @@ textarea.materialize-textarea {
   margin: $input-margin;
   padding: $input-padding;
   box-shadow: none;
-  box-sizing: content-box;
+  box-sizing: border-box;
   transition: $input-transition;
 
   // Disabled input style

@@ -153,23 +153,23 @@ $roboto-font-path: "../fonts/roboto/" !default;
 
 // Text Inputs + Textarea
 $input-height: 3rem !default;
-$input-border-color: color("blue-grey", "base") !default;
+$input-border-color: color("blue-grey", "lighten-4") !default;
 $input-border: 1px solid $input-border-color !default;
 $input-background: #fff !default;
 $input-error-color: $error-color !default;
 $input-success-color: $success-color !default;
-$input-focus-color: $secondary-color !default;
+$input-focus-color: color("blue-grey", "base") !default;
 $input-font-size: 1rem !default;
-$input-margin-bottom: 20px;
+$input-margin-bottom: 1.25rem;
 $input-margin: 0 0 $input-margin-bottom 0 !default;
-$input-padding: 0 !default;
+$input-padding: 0 0.75rem !default;
 $input-transition: all .3s !default;
-$label-font-size: .8rem !default;
+$label-font-size: 0.9rem !default;
 $input-disabled-color: rgba(0,0,0, .26) !default;
 $input-disabled-solid-color: #BDBDBD !default;
 $input-disabled-border: 1px dotted $input-disabled-color !default;
 $input-invalid-border: 1px solid $input-error-color !default;
-$placeholder-text-color: lighten($input-border-color, 20%) !default;
+$placeholder-text-color: $input-border-color !default;
 
 // Radio Buttons
 $radio-fill-color: $secondary-color !default;
