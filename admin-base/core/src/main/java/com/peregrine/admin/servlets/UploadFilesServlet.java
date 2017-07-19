@@ -27,6 +27,7 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.ResourceManagement;
 import com.peregrine.admin.resource.ResourceManagement.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.models.factory.ModelFactory;
@@ -40,9 +41,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -66,7 +67,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
     ResourceManagement resourceManagement;
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
         try {
             Resource resource = request.getResourceByPath(path);

@@ -25,8 +25,8 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
-import com.peregrine.util.PerUtil;
-import com.peregrine.util.PerUtil.MissingOrOutdatedResourceChecker;
+import com.peregrine.commons.util.PerUtil;
+import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 
 /**
  * Created by schaefa on 5/25/17.

@@ -1,4 +1,4 @@
-package com.peregrine.util;
+package com.peregrine.commons.util;
 
 /*-
  * #%L
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 
 /**
  * Created by schaefa on 5/26/17.

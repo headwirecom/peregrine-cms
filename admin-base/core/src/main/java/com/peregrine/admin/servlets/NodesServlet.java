@@ -25,6 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -39,23 +40,23 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_CREATED;
-import static com.peregrine.util.PerConstants.JCR_CREATED_BY;
-import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
-import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.JCR_TITLE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.util.PerConstants.PER_REPLICATION;
-import static com.peregrine.util.PerConstants.PER_REPLICATION_REF;
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -82,7 +83,7 @@ public class NodesServlet extends AbstractBaseServlet {
     ModelFactory modelFactory;
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
         if(path == null || path.isEmpty()) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Path provided").setRequestPath(path);

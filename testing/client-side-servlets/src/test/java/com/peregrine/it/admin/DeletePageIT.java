@@ -23,14 +23,14 @@ import static com.peregrine.it.util.TestHarness.createObject;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deletePage;
 import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.JCR_TITLE;
-import static com.peregrine.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.util.PerUtil.TEMPLATE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static org.junit.Assert.assertFalse;
 
 /**

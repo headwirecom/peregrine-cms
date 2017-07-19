@@ -28,25 +28,23 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.resource.ResourceManagement;
 import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.admin.resource.ResourceRelocation;
-import com.peregrine.util.PerUtil;
-import org.apache.sling.api.resource.PersistenceException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.jcr.ItemExistsException;
-import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.peregrine.util.PerConstants.ORDER_AFTER_TYPE;
-import static com.peregrine.util.PerConstants.ORDER_BEFORE_TYPE;
-import static com.peregrine.util.PerConstants.ORDER_CHILD_TYPE;
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerConstants.ORDER_AFTER_TYPE;
+import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
+import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -82,7 +80,7 @@ public class MoveServlet extends AbstractBaseServlet {
     ResourceManagement resourceManagement;
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String fromPath = request.getParameter("path");
         Resource from = PerUtil.getResource(request.getResourceResolver(), fromPath);
         String toPath = request.getParameter("to");

@@ -28,21 +28,20 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
-import com.peregrine.util.PerUtil;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 /**
  * Created by schaefa on 6/4/17.

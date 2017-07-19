@@ -25,6 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.servlets.ServletHelper;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -33,11 +35,11 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.peregrine.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -56,7 +58,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class ComponentDefinitionServlet extends AbstractBaseServlet {
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
         Resource resource = request.getResourceByPath(path);
         String componentPath = "/apps/" + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
