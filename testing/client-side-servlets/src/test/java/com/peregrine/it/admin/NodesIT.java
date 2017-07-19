@@ -96,6 +96,7 @@ public class NodesIT
         assertNotNull("Page was not returned by nodes", page);
         assertEquals("Wrong Page Name", pageName, page.get("name"));
         // Created
+        assertEquals("Wrong Resource Type", "per:Page", page.get("resourceType"));
         assertEquals("Wrong Created By", "admin", page.get("createdBy"));
         String dateString = page.get("created") + "";
         assertNotNull("Created date missing", dateString);

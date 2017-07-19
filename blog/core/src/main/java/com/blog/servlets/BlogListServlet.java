@@ -42,8 +42,8 @@ public class BlogListServlet
             answer = new JsonResponse()
                 .writeAttribute("type", "roll")
                 .writeAttribute("page", 1)
-//                .writeArray("posts");
-                .writeArray("__children__");
+                .writeArray("children");
+//                .writeArray("__children__");
             // Loop
                 answer.writeObject()
                     .writeAttribute("name", "post-1")
