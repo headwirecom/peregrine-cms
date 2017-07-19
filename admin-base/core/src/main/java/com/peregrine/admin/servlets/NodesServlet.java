@@ -142,7 +142,7 @@ public class NodesServlet extends AbstractBaseServlet {
     }
 
     private void writeProperties(JsonResponse json, ValueMap properties) throws IOException {
-        writeIfFound(json, "resourceType", properties, JCR_PRIMARY_TYPE);
+        writeIfFound(json, JCR_PRIMARY_TYPE, properties, "resourceType");
         writeIfFound(json, JCR_CREATED, properties);
         writeIfFound(json, JCR_CREATED_BY, properties);
         writeIfFound(json, JCR_LAST_MODIFIED, properties);
