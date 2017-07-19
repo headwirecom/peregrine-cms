@@ -10,7 +10,7 @@
       <article v-else="" v-for="post in app.posts['__children__']">
         <h2>{{post.title}}</h2>
         <div v-html="post.lead"></div>
-        <a v-bind:href="'index.html/post//'+post['__name__']"
+        <a v-bind:href="'index.html/post//'+post['name']"
         v-on:click.stop.prevent="select(post)">more</a>
       </article>
     </div>
@@ -34,7 +34,7 @@
             currentPost() {
                 const posts = this.app.posts['__children__']
                 for(let i = 0; i < posts.length; i++) {
-                    if(posts[i]['__name__'] === this.postView) {
+                    if(posts[i]['name'] === this.postView) {
                         return posts[i]
                     }
                 }
@@ -43,7 +43,7 @@
         },
         methods: {
             select(post) {
-                $peregrineApp.loadContent('/content/sites/blog/index.html/post//'+post['__name__'])
+                $peregrineApp.loadContent('/content/sites/blog/index.html/post//'+post['name'])
             }
         }
     }
