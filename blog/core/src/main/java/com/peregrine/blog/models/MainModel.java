@@ -1,32 +1,27 @@
-package com.blog.models;
+package com.peregrine.blog.models;
 
-import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import com.peregrine.nodetypes.models.Container;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /*
     //GEN[:DATA
     {
   "definitions": {
-    "Container": {
+    "Main": {
       "type": "object",
       "x-type": "container",
       "properties": {}
     }
   },
-  "name": "Container",
-  "componentPath": "blog/components/container",
-  "package": "com.blog.models",
-  "modelName": "Container",
-  "classNameParent": "Container"
+  "name": "Main",
+  "componentPath": "blog/components/main",
+  "package": "com.peregrine.blog.models",
+  "modelName": "Main",
+  "classNameParent": "AbstractComponent"
 }
 //GEN]
 */
@@ -34,7 +29,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "blog/components/container",
+        resourceType = "blog/components/main",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -44,9 +39,9 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class ContainerModel extends Container {
+public class MainModel extends Container {
 
-    public ContainerModel(Resource r) { super(r); }
+    public MainModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     

@@ -1,31 +1,34 @@
-package com.blog.models;
+package com.peregrine.blog.models;
 
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.Container;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /*
     //GEN[:DATA
     {
   "definitions": {
-    "Main": {
+    "Roll": {
       "type": "object",
-      "x-type": "container",
-      "properties": {}
+      "x-type": "component",
+      "properties": {
+        "text": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-type": "texteditor"
+        }
+      }
     }
   },
-  "name": "Main",
-  "componentPath": "blog/components/main",
-  "package": "com.blog.models",
-  "modelName": "Main",
+  "name": "Roll",
+  "componentPath": "blog/components/roll",
+  "package": "com.peregrine.blog.models",
+  "modelName": "Roll",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -34,7 +37,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "blog/components/main",
+        resourceType = "blog/components/roll",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -44,16 +47,25 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class MainModel extends Container {
+public class RollModel extends AbstractComponent {
 
-    public MainModel(Resource r) { super(r); }
+    public RollModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    
+    	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
+	@Inject
+	private String text;
+
+
 //GEN]
 
     //GEN[:GETTERS
-    
+    	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
+	public String getText() {
+		return text;
+	}
+
+
 //GEN]
 
 }

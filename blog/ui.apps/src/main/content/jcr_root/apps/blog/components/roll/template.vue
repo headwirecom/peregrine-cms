@@ -43,7 +43,7 @@
         },
         methods: {
             select(post) {
-                alert('post '+post)
+                $peregrineApp.loadContent('/content/sites/blog/index.html/post//'+post['name'])
             }
         }
     }

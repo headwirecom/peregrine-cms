@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 
 /**
  * Created by schaefa on 5/26/17.
@@ -53,6 +54,14 @@ public class PerUtil {
     public static final String EQUALS = "=";
 
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
+
+    public static boolean isEmpty(String text) {
+        return text == null || text.isEmpty();
+    }
+
+    public static boolean isNotEmpty(String text) {
+        return text != null && !text.isEmpty();
+    }
 
     /**
      * Provides the relative path of a resource to a given root
@@ -280,6 +289,15 @@ public class PerUtil {
         return name == null ?
             null :
             name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    }
+
+    public static boolean isResourceType(Resource resource, String resourceType) {
+        String answer = null;
+        if(resource != null) {
+            ValueMap properties = getProperties(resource, false);
+            answer = properties.get(SLING_RESOURCE_TYPE, String.class);
+        }
+        return answer != null && answer.equals(resourceType);
     }
 
     public static boolean isPrimaryType(Resource resource, String primaryType) {

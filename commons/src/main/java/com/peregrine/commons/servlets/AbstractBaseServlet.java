@@ -118,6 +118,17 @@ public abstract class AbstractBaseServlet
             return answer == null ? defaultValue : answer;
         }
 
+        public int getIntParameter(String name, int defaultValue) {
+            int answer = defaultValue;
+            try {
+                String parameter = parameters.get(name);
+                answer = Integer.parseInt(parameter);
+            } catch(NumberFormatException e) {
+                // Ignore
+            }
+            return answer;
+        }
+
         public ResourceResolver getResourceResolver() {
             return request.getResourceResolver();
         }
