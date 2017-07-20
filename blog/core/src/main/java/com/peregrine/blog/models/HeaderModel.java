@@ -1,22 +1,19 @@
-package com.blog.models;
+package com.peregrine.blog.models;
 
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.Container;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /*
     //GEN[:DATA
     {
   "definitions": {
-    "Sidebar": {
+    "Header": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -24,22 +21,17 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject"
         },
-        "text": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-type": "texteditor"
-        },
-        "style": {
+        "description": {
           "type": "string",
           "x-source": "inject"
         }
       }
     }
   },
-  "name": "Sidebar",
-  "componentPath": "post/components/sidebar",
-  "package": "com.post.models",
-  "modelName": "Sidebar",
+  "name": "Header",
+  "componentPath": "blog/components/header",
+  "package": "com.peregrine.blog.models",
+  "modelName": "Header",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -48,7 +40,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "blog/components/sidebar",
+        resourceType = "blog/components/header",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -58,22 +50,18 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class SidebarModel extends AbstractComponent {
+public class HeaderModel extends AbstractComponent {
 
-    public SidebarModel(Resource r) { super(r); }
+    public HeaderModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject"} */
 	@Inject
 	private String title;
 
-	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
-	@Inject
-	private String text;
-
 	/* {"type":"string","x-source":"inject"} */
 	@Inject
-	private String style;
+	private String description;
 
 
 //GEN]
@@ -84,14 +72,9 @@ public class SidebarModel extends AbstractComponent {
 		return title;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
-	public String getText() {
-		return text;
-	}
-
 	/* {"type":"string","x-source":"inject"} */
-	public String getStyle() {
-		return style;
+	public String getDescription() {
+		return description;
 	}
 
 

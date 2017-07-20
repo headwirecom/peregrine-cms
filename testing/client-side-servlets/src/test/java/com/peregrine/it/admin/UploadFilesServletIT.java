@@ -26,12 +26,12 @@ import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.uploadFile;
-import static com.peregrine.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.util.PerUtil.METADATA;
+import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerUtil.METADATA;
 import static org.junit.Assert.assertTrue;
 
 /**

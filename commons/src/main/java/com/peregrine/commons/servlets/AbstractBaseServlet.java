@@ -1,37 +1,27 @@
-package com.peregrine.admin.servlets;
+package com.peregrine.commons.servlets;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
-import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-
-import static com.peregrine.admin.servlets.ServletHelper.obtainParameters;
-import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
-import static com.peregrine.util.PerUtil.getModifiableProperties;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 /**
  * Created by schaefa on 6/20/17.
@@ -42,7 +32,7 @@ public abstract class AbstractBaseServlet
 
 //    public static enum ResponseType { JSON, TEXT, ERROR };
 
-    final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private boolean allowAll = false;
 
@@ -68,12 +58,12 @@ public abstract class AbstractBaseServlet
         try {
             out = handleRequest(new Request(request, response));
             if(out == null) {
-                out = new ErrorResponse().setHttpErrorCode(SC_INTERNAL_SERVER_ERROR).setErrorCode(-123).setErrorMessage("Servlet did not return a Response");
+                out = new ErrorResponse().setHttpErrorCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).setErrorCode(-123).setErrorMessage("Servlet did not return a Response");
             }
         } catch(IOException e) {
-            out = new ErrorResponse().setHttpErrorCode(SC_INTERNAL_SERVER_ERROR).setErrorCode(-124).setErrorMessage("Failed with IO exception").setException(e);
+            out = new ErrorResponse().setHttpErrorCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).setErrorCode(-124).setErrorMessage("Failed with IO exception").setException(e);
         } catch(RuntimeException e) {
-            out = new ErrorResponse().setHttpErrorCode(SC_INTERNAL_SERVER_ERROR).setErrorCode(-125).setErrorMessage("Failed with runtime exception").setException(e);
+            out = new ErrorResponse().setHttpErrorCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).setErrorCode(-125).setErrorMessage("Failed with runtime exception").setException(e);
         } catch(Error e) {
             // Do not swallow errors as the system needs to handle that -> log and rethrow
             logger.debug("Servlet Request failed with Error", e);
@@ -98,7 +88,7 @@ public abstract class AbstractBaseServlet
         }
     }
 
-    abstract Response handleRequest(Request request) throws IOException;
+    protected abstract Response handleRequest(Request request) throws IOException;
 
     public static class Request {
         private SlingHttpServletRequest request;
@@ -108,7 +98,7 @@ public abstract class AbstractBaseServlet
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
             this.request = request;
             this.response = response;
-            this.parameters = obtainParameters(request);
+            this.parameters = ServletHelper.obtainParameters(request);
         }
 
         public SlingHttpServletRequest getRequest() {
@@ -126,6 +116,17 @@ public abstract class AbstractBaseServlet
         public String getParameter(String name, String defaultValue) {
             String answer = parameters.get(name);
             return answer == null ? defaultValue : answer;
+        }
+
+        public int getIntParameter(String name, int defaultValue) {
+            int answer = defaultValue;
+            try {
+                String parameter = parameters.get(name);
+                answer = Integer.parseInt(parameter);
+            } catch(NumberFormatException e) {
+                // Ignore
+            }
+            return answer;
         }
 
         public ResourceResolver getResourceResolver() {
@@ -213,6 +214,12 @@ public abstract class AbstractBaseServlet
             return this;
         }
 
+        public JsonResponse writeArray() throws IOException {
+            json.writeStartArray();
+            states.push(STATE.array);
+            return this;
+        }
+
         public JsonResponse writeArray(String name) throws IOException {
             json.writeArrayFieldStart(name);
             states.push(STATE.array);
@@ -262,7 +269,7 @@ public abstract class AbstractBaseServlet
     public static class ErrorResponse
         extends JsonResponse {
 
-        private int httpErrorCode = SC_BAD_REQUEST;
+        private int httpErrorCode = HttpServletResponse.SC_BAD_REQUEST;
 
         public ErrorResponse() throws IOException {
             super("error");

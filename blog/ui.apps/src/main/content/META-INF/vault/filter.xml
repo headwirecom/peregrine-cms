@@ -16,6 +16,7 @@
         Also any sub pckage of this module needs to exclude /apostblog/install
         folder otherwise they wipe all installed bundles.
     -->
+    <filter root="/api/blog"/>
     <filter root="/content/sites/blog"/>
     <filter root="/content/assets/blog"/>
     <filter root="/content/objects/blog"/>

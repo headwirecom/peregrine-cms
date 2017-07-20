@@ -28,34 +28,25 @@ package com.peregrine.admin.servlets;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.resource.ResourceManagement;
 import com.peregrine.admin.resource.ResourceManagement.ManagementException;
-import com.peregrine.admin.transform.ImageTransformationConfiguration;
 import com.peregrine.admin.transform.ImageContext;
-import com.peregrine.admin.transform.ImageTransformation;
-import com.peregrine.admin.transform.ImageTransformation.TransformationException;
 import com.peregrine.admin.transform.ImageTransformationConfigurationProvider;
 import com.peregrine.admin.transform.ImageTransformationProvider;
-import com.peregrine.admin.transform.OperationContext;
-import com.peregrine.util.PerConstants;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -94,7 +85,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
 
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         Response answer = null;
         Resource resource = request.getResource();
         PerAsset asset = resource.adaptTo(PerAsset.class);

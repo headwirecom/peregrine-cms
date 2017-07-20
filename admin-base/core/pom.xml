@@ -98,6 +98,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>com.peregrine.commons</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>

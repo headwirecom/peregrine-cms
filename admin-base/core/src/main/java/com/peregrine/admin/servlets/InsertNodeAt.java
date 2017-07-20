@@ -29,33 +29,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.admin.resource.ResourceManagement;
 import com.peregrine.admin.resource.ResourceManagement.ManagementException;
 import com.peregrine.admin.resource.ResourceRelocation;
-import com.peregrine.util.PerUtil;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.servlets.ServletHelper;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.util.PerConstants.ORDER_BEFORE_TYPE;
-import static com.peregrine.util.PerConstants.ORDER_CHILD_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
-import static com.peregrine.util.PerUtil.getResource;
-import static com.peregrine.util.PerUtil.isPrimaryType;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
+import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -84,7 +79,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
     ResourceManagement resourceManagement;
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
         Resource resource = getResource(request.getResourceResolver(), path);
         //AS This is a fix for missing intermediary nodes from templates

@@ -26,7 +26,7 @@ package com.peregrine.adaption.impl;
  */
 
 import com.peregrine.adaption.PerAsset;
-import com.peregrine.util.PerUtil;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -42,15 +42,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_DATA;
-import static com.peregrine.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.NT_FILE;
-import static com.peregrine.util.PerConstants.NT_RESOURCE;
-import static com.peregrine.util.PerConstants.SLING_FOLDER;
-import static com.peregrine.util.PerUtil.METADATA;
-import static com.peregrine.util.PerUtil.RENDITIONS;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_DATA;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.NT_FILE;
+import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
+import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
+import static com.peregrine.commons.util.PerUtil.METADATA;
+import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 
 /**
  * Created by schaefa on 6/4/17.
