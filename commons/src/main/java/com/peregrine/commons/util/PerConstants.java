@@ -33,4 +33,6 @@ public class PerConstants {
     public static final String ORDER_BEFORE_TYPE = "before";
     public static final String ORDER_AFTER_TYPE = "after";
     public static final String ORDER_CHILD_TYPE = "child";
+
+    public static final String ALLOWED_OBJECTS = "allowedObjects";
 }

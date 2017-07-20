@@ -85,7 +85,19 @@
         ,
         computed: {
             objects: function() {
-                return $perAdminApp.getNodeFromViewOrNull('/admin/objects/data')
+                const path = $perAdminApp.getNodeFromView('/state/tools/objects')
+                const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
+                const objects = $perAdminApp.getNodeFromViewOrNull('/admin/objects/data')
+                if(node.allowedObjects) {
+                    let ret = []
+                    for(let i = 0; i < objects.length; i++) {
+                        if(node.allowedObjects.indexOf(objects[i].name) >= 0) {
+                            ret.push(objects[i])
+                        }
+                        return ret
+                    }
+                }
+                return objects
             }
         }
         ,

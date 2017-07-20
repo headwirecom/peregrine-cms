@@ -34,7 +34,7 @@
             jcr:description="admin base Content Root"
             suffixToParameter="[path,/state/tools/objects]"
             dataFrom="/state/tools/objects" dataDefault="/content/objects"
-            loaders="[populateObjects:/state/tools/objects]"
+            loaders="[populateObjects:/state/tools/objects,populateNodesForBrowser:/state/tools/objects]"
     >
             <nav jcr:primaryType="nt:unstructured"
                  sling:resourceType="admin/components/nav"/>
