@@ -58,6 +58,9 @@
     <filter root="/content/objects">
         <exclude pattern="/content/objects/.*"/>
     </filter>
+    <filter root="/content/objects/tags">
+        <exclude pattern="/content/objects/tags/.*"/>
+    </filter>
     <filter root="/conf/sites">
         <include pattern="/conf/sites/jcr:content.*"/>
         <exclude pattern="/conf/sites/.*"/>

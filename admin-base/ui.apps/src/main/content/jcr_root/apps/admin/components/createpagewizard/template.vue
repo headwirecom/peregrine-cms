@@ -36,6 +36,7 @@
                     <ul class="collection">
                         <li class="collection-item"
                             v-for="template in templates"
+                            v-on:click.stop.prevent="selectTemplate(null, template.path)"
                             v-bind:class="isSelected(template.path) ? 'active' : ''">
                             <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path }">{{template.name}}</admin-components-action>
                         </li>
@@ -107,6 +108,7 @@
         ,
         methods: {
             selectTemplate: function(me, target){
+                if(me === null) me = this
                 me.formmodel.templatePath = target
             },
             isSelected: function(target) {
