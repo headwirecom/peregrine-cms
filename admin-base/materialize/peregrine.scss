@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
 @import "materialize-src/sass/materialize";
+@import "custom/_buttons";
+@import "custom/_forms";
 @import "custom/global";
 @import "custom/typography";
 @import "custom/workspace";
