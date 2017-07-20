@@ -66,7 +66,8 @@
                     formOptions: {
                         validationErrorClass: "has-error",
                         validationSuccessClass: "has-success",
-                        validateAfterChanged: true
+                        validateAfterChanged: true,
+                        focusFirstField: true
                     },
                     nameSchema: {
                         fields: [{

@@ -97,7 +97,8 @@
           return {
             formOptions: {
               validateAfterLoad: true,
-              validateAfterChanged: true
+              validateAfterChanged: true,
+              focusFirstField: true
             },
             isFullscreen: false
           }
