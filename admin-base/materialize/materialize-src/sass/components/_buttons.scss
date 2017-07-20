@@ -56,7 +56,7 @@
 .btn,
 .btn-floating {
   &:focus {
-    background-color: color("orange", "base");
+    background-color: darken($button-raised-background, 10%);
   }
 }
 
@@ -183,6 +183,7 @@ button.btn-floating {
       display: flex;
       top: 0;
       bottom: 0;
+      z-index: 1;
 
       li {
         flex: 1;
@@ -258,18 +259,12 @@ button.btn-floating {
   transition: background-color .2s;
 
   &:focus,
-  &:active {
-    background-color: transparent;
-  }
-
-  &:focus,
   &:hover {
-    background-color: color("blue-grey", "lighten-5");
     box-shadow: none;
   }
 
-  &:active {
-    background-color: color("blue-grey", "lighten-4");
+  &:focus {
+    background-color: rgba(0,0,0,.1);
   }
 
   &.disabled {
