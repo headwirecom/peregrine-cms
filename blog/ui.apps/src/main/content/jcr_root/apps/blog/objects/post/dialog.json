@@ -1,13 +1,13 @@
 { "fields":[{
   "type": "input",
-  "inputType": "input",
+  "inputType": "text",
   "label": "Title",
   "model": "title",
   "placeholder": "title"
 },
   {
     "type": "input",
-    "inputType": "input",
+    "inputType": "text",
     "label": "Date",
     "model": "date",
     "placeholder": "date"
