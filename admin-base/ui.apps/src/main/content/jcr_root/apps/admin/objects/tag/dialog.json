@@ -1,0 +1,15 @@
+{ "fields":[{
+  "type": "input",
+  "inputType": "text",
+  "label": "Name",
+  "model": "name",
+  "placeholder": "name"
+},
+  {
+    "type": "input",
+    "inputType": "text",
+    "label": "Display Value",
+    "model": "value",
+    "placeholder": "value"
+  }
+]}
