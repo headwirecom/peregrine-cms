@@ -1,7 +1,6 @@
 package com.peregrine.it.basic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.peregrine.adaption.PerPage;
 import org.apache.http.HttpEntity;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
@@ -15,11 +14,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -27,12 +25,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.JCR_TITLE;
-import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -294,14 +292,18 @@ public class BasicTestHelpers {
             String jcrPrimaryType = parent.get(JCR_PRIMARY_TYPE) + "";
             if(PAGE_CONTENT_TYPE.equals(jcrPrimaryType)) {
                 checkLastModifiedOnResource(parent, afterThat);
+            } else if(PAGE_PRIMARY_TYPE.equals(jcrPrimaryType)) {
+                checkLastModifiedOnResource(parent, afterThat);
                 break;
             }
         }
     }
 
+    private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final String ECMA_DATE_FORMAT = "EEE MMM dd yyyy HH:mm:ss 'GMT'Z";
     private static final Locale DATE_FORMAT_LOCALE = Locale.US;
     private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, DATE_FORMAT_LOCALE);
+//    private static DateFormat defaultFormatter = new SimpleDateFormat(DEFAULT_DATE_FORMAT, DATE_FORMAT_LOCALE);
 
     private static void checkLastModifiedOnResource(Map properties, Calendar afterThat) throws ParseException {
         //AS TODO: convert the response into a Calendar instnce (how?)
@@ -313,20 +315,46 @@ public class BasicTestHelpers {
         long differenceInMillis = -1;
         if(afterThat == null) {
             Calendar now = Calendar.getInstance();
-            differenceInMillis = Duration.between(lastModified.toInstant(), now.toInstant()).toMillis();
+            differenceInMillis = getDateDifferenceInMillis(lastModified, false, now, false);
             logger.info("Last Modified Millis Difference: '{}'", differenceInMillis);
             assertTrue("Last Modified is too old", differenceInMillis < 60 * 1000);
         } else {
             // Calendar has millis but the JSon formatted response only seconds. We need to convert them
             // to the same format string and back to a Calendar to compare
-            String afterThatValue = formatter.format(afterThat.getTime());
-            logger.info("After That: '{}'", afterThatValue);
-            Calendar comparableAfterThat = Calendar.getInstance();
-            comparableAfterThat.setTime(formatter.parse(afterThatValue));
-            differenceInMillis = Duration.between(comparableAfterThat.toInstant(), lastModified.toInstant()).toMillis();
+            differenceInMillis = getDateDifferenceInMillis(afterThat, true, lastModified, false);
             logger.info("Last Modified Millis Difference: '{}'", differenceInMillis);
-            assertTrue("Last Modified is older as given date: " + afterThat.toString(), differenceInMillis > 0);
+            assertTrue("Last Modified is older as given date: " + afterThat.toString(), differenceInMillis < 0);
         }
+    }
+
+    public static long getDateDifferenceInMillis(String firstDateString, Calendar second, boolean truncateSecond) throws ParseException {
+        Calendar first = Calendar.getInstance();
+        first.setTime(formatter.parse(firstDateString));
+        return getDateDifferenceInMillis(first, false, second, truncateSecond);
+    }
+
+    public static long getDateDifferenceInMillis(Calendar first, boolean truncateFirst, Calendar second, boolean truncateSecond) throws ParseException {
+        if(truncateFirst) {
+            String firstDateString = formatter.format(first.getTime());
+            logger.info("First Date Format: '{}'", firstDateString);
+            first = Calendar.getInstance();
+            Date date;
+//            try {
+                date = formatter.parse(firstDateString);
+//            } catch(ParseException e) {
+
+//                date = defaultFormatter.parse(firstDateString);
+//            }
+        }
+        if(truncateSecond) {
+            String secondDateString = formatter.format(second.getTime());
+            logger.info("Second Date Format: '{}'", secondDateString);
+            second = Calendar.getInstance();
+            second.setTime(formatter.parse(secondDateString));
+        }
+        long answer = Duration.between(first.toInstant(), second.toInstant()).toMillis();
+        logger.info("Date Difference in millis: '{}'", answer);
+        return answer;
     }
 
     public static Calendar createTimestampAndWait() {

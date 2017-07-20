@@ -1,4 +1,4 @@
-package com.peregrine.admin.servlets;
+package com.peregrine.commons.servlets;
 
 /*-
  * #%L

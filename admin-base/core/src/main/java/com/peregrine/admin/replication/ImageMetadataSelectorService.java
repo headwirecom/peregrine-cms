@@ -25,7 +25,7 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
-import com.peregrine.util.PerUtil;
+import com.peregrine.commons.util.PerUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;

@@ -86,6 +86,18 @@ public class PageModel extends Container {
     @Inject @Named("jcr:title") @Optional
     private String title;
 
+    @Inject
+    private String dataFrom;
+
+    @Inject
+    private String dataDefault;
+
+    @Inject
+    private String[] loaders;
+
+    @Inject
+    private String[] suffixToParameter;
+
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split("/");
@@ -170,4 +182,21 @@ public class PageModel extends Container {
     public String getTitle() {
         return title;
     }
+
+    public String getDataFrom() {
+        return dataFrom;
+    }
+
+    public String getDataDefault() {
+        return dataDefault;
+    }
+
+    public String[] getLoaders() {
+        return loaders;
+    }
+
+    public String[] getSuffixToParameter() {
+        return suffixToParameter;
+    }
+
 }

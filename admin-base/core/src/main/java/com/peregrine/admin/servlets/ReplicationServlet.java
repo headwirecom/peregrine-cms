@@ -25,10 +25,10 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.admin.replication.Replication.ReplicationException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,9 +42,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -100,7 +100,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
     }
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String sourcePath = request.getParameter("path");
         String replicationName = request.getParameter("name");
         if(replicationName == null || replicationName.isEmpty()) {

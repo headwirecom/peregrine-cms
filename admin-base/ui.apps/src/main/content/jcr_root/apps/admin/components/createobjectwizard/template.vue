@@ -29,6 +29,7 @@
             <ul class="collection">
                 <li class="collection-item"
                     v-for="item in objects"
+                    v-on:click.stop.prevent="selectItem(null, item.path)"
                     v-bind:class="isSelected(item.path) ? 'grey lighten-2' : ''">
                     <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path }">{{item.name}}</admin-components-action>
                 </li>
@@ -90,6 +91,7 @@
         ,
         methods: {
             selectItem: function(me, target){
+                if(me === null) me = this
                 me.formmodel.objectPath = target
             },
             isSelected: function(target) {

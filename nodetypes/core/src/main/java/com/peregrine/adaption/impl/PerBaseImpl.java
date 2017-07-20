@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.Session;
 import java.util.Calendar;
 
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 
 /**
  * Created by schaefa on 6/4/17.

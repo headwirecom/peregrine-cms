@@ -25,6 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
@@ -34,9 +35,9 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -58,7 +59,7 @@ public class ContentServlet extends AbstractBaseServlet {
     ModelFactory modelFactory;
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
 
         String suffix = request.getSuffix();
         if(suffix.endsWith(".data.json")) {

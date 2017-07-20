@@ -1,40 +1,41 @@
-package com.blog.models;
+package com.peregrine.blog.models;
 
-import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import com.peregrine.nodetypes.models.Container;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /*
     //GEN[:DATA
     {
   "definitions": {
-    "Pagination": {
+    "Post": {
       "type": "object",
-      "x-type": "component",
+      "x-type": "container",
       "properties": {
-        "previous": {
+        "title": {
           "type": "string",
           "x-source": "inject"
         },
-        "next": {
+        "date": {
+          "type": "string",
+          "x-source": "inject"
+        },
+        "author": {
           "type": "string",
           "x-source": "inject"
         }
       }
     }
   },
-  "name": "Pagination",
-  "componentPath": "post/components/pagination",
-  "package": "com.post.models",
-  "modelName": "Pagination",
+  "name": "Post",
+  "componentPath": "blog/components/post",
+  "package": "com.peregrine.blog.models",
+  "modelName": "Post",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -43,7 +44,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "blog/components/pagination",
+        resourceType = "blog/components/post",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -53,31 +54,40 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class PaginationModel extends AbstractComponent {
+public class PostModel extends Container {
 
-    public PaginationModel(Resource r) { super(r); }
+    public PostModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject"} */
 	@Inject
-	private String previous;
+	private String title;
 
 	/* {"type":"string","x-source":"inject"} */
 	@Inject
-	private String next;
+	private String date;
+
+	/* {"type":"string","x-source":"inject"} */
+	@Inject
+	private String author;
 
 
 //GEN]
 
     //GEN[:GETTERS
     	/* {"type":"string","x-source":"inject"} */
-	public String getPrevious() {
-		return previous;
+	public String getTitle() {
+		return title;
 	}
 
 	/* {"type":"string","x-source":"inject"} */
-	public String getNext() {
-		return next;
+	public String getDate() {
+		return date;
+	}
+
+	/* {"type":"string","x-source":"inject"} */
+	public String getAuthor() {
+		return author;
 	}
 
 

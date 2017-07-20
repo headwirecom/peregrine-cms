@@ -35,11 +35,12 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.osgi.service.component.annotations.Component;
 
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
@@ -61,7 +62,7 @@ public class SearchServlet extends AbstractBaseServlet {
     private static final long ROWS_PER_PAGE = 100;
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String query = request.getParameter("q", "");
         if(query.trim().length() == 0) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Query Provided");

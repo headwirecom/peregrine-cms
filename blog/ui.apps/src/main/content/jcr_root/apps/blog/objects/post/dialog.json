@@ -1,13 +1,13 @@
 { "fields":[{
   "type": "input",
-  "inputType": "input",
+  "inputType": "text",
   "label": "Title",
   "model": "title",
   "placeholder": "title"
 },
   {
     "type": "input",
-    "inputType": "input",
+    "inputType": "text",
     "label": "Date",
     "model": "date",
     "placeholder": "date"
@@ -17,6 +17,13 @@
     "label": "Author",
     "model": "author",
     "valuesFrom": "/content/objects/blog/authors.infinity.json"
+  },
+  {
+    "type":"texteditor",
+    "rows":10,
+    "placeholder":"text",
+    "label":"Lead",
+    "model":"lead"
   },
   {
     "type":"texteditor",

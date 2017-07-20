@@ -25,9 +25,9 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
-import com.peregrine.util.PerUtil;
-import com.peregrine.util.PerUtil.MissingOrOutdatedResourceChecker;
-import com.peregrine.util.PerUtil.ResourceChecker;
+import com.peregrine.commons.util.PerUtil;
+import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
+import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -54,10 +54,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.util.PerConstants.PER_REPLICATION;
-import static com.peregrine.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 
 /**
  * Created by schaefa on 5/25/17.

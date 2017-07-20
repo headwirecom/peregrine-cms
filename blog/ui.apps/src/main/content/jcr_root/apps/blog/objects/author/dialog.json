@@ -1,7 +1,7 @@
 { "fields":[
   {
     "type": "input",
-    "inputType": "input",
+    "inputType": "text",
     "label": "Author Name",
     "model": "name",
     "placeholder": "name"

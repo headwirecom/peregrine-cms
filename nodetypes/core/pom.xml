@@ -55,7 +55,7 @@
                         <Export-Package>
                             com.peregrine.adaption,
                             com.peregrine.nodetypes.*,
-                            com.peregrine.util
+                            com.peregrine.commons.util
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.nodetypes.models</Sling-Model-Packages>
@@ -113,6 +113,12 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>com.peregrine.commons</groupId>
+            <artifactId>commons</artifactId>
+            <!--<version>${project.version}</version>-->
+        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

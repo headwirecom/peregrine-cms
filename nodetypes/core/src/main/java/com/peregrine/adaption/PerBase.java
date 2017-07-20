@@ -54,9 +54,9 @@ public interface PerBase
     public boolean isValid();
     /** @return The Content Resource node if available otherwise null **/
     public Resource getContentResource();
-    /** @eturn Value Map of the Content Resource if the page has a content **/
+    /** @return Value Map of the Content Resource if the page has a content **/
     public ValueMap getProperties();
-    /** @eturn Modifiable Value Map of the Content Resource if the page has a content **/
+    /** @return Modifiable Value Map of the Content Resource if the page has a content **/
     public ModifiableValueMap getModifiableProperties();
 
     /**

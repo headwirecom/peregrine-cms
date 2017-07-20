@@ -27,24 +27,18 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.ResourceManagement;
 import com.peregrine.admin.resource.ResourceManagement.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.util.PerConstants.JCR_TITLE;
-import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.util.PerUtil.EQUALS;
-import static com.peregrine.util.PerUtil.PER_PREFIX;
-import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -70,7 +64,7 @@ public class CreateTemplateServlet extends AbstractBaseServlet {
     ResourceManagement resourceManagement;
 
     @Override
-    Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException {
         String parentPath = request.getParameter("path");
         String name = request.getParameter("name");
         String component = request.getParameter("component");
