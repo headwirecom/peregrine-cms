@@ -127,6 +127,7 @@ public class UpdateResourceServletIT
         checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
+        before = createTimestampAndWait();
         // Not we are ready to update that component
         writer = new StringWriter();
         json = jf.createGenerator(writer);
@@ -159,6 +160,7 @@ public class UpdateResourceServletIT
         json.writeEndObject();
         json.close();
         checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
     }
 
 

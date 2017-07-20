@@ -295,6 +295,8 @@ public class BasicTestHelpers {
             String jcrPrimaryType = parent.get(JCR_PRIMARY_TYPE) + "";
             if(PAGE_CONTENT_TYPE.equals(jcrPrimaryType)) {
                 checkLastModifiedOnResource(parent, afterThat);
+            } else if(PAGE_PRIMARY_TYPE.equals(jcrPrimaryType)) {
+                checkLastModifiedOnResource(parent, afterThat);
                 break;
             }
         }

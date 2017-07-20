@@ -56,6 +56,8 @@ import static com.peregrine.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.util.PerUtil.EQUALS;
 import static com.peregrine.util.PerUtil.PER_PREFIX;
 import static com.peregrine.util.PerUtil.PER_VENDOR;
+import static com.peregrine.util.PerUtil.getProperties;
+import static com.peregrine.util.PerUtil.isPrimaryType;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -103,8 +105,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Resource res = rs.getResource(path);
         json.writeAttribute("name",res.getName());
         json.writeAttribute("path",res.getPath());
-        ValueMap properties = res.getValueMap();
-        writeProperties(json, properties);
+        writeProperties(res, json);
         json.writeArray("children");
         Iterable<Resource> children = res.getChildren();
         for(Resource child : children) {
@@ -117,14 +118,12 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeObject();
                     json.writeAttribute("name",child.getName());
                     json.writeAttribute("path",child.getPath());
-                    properties = child.getValueMap();
-                    writeProperties(json, properties);
-                    String resourceType = properties.get(JCR_PRIMARY_TYPE, String.class);
-                    if(ASSET_PRIMARY_TYPE.equals(resourceType)) {
+                    writeProperties(child, json);
+                    if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                         String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
                         json.writeAttribute("mimeType", mimeType);
                     }
-                    if(PAGE_PRIMARY_TYPE.equals(resourceType)) {
+                    if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);
                         if(content != null) {
                             String title = content.getValueMap().get(JCR_TITLE, String.class);
@@ -140,25 +139,37 @@ public class NodesServlet extends AbstractBaseServlet {
         json.writeClose();
     }
 
-    private void writeProperties(JsonResponse json, ValueMap properties) throws IOException {
+    private void writeProperties(Resource resource, JsonResponse json) throws IOException {
+        ValueMap properties = resource.getValueMap();
         writeIfFound(json, JCR_PRIMARY_TYPE, properties, "resourceType");
         writeIfFound(json, JCR_CREATED, properties);
         writeIfFound(json, JCR_CREATED_BY, properties);
         writeIfFound(json, JCR_LAST_MODIFIED, properties);
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
-        writeIfFound(json, PER_REPLICATED, properties);
-        writeIfFound(json, PER_REPLICATED_BY, properties);
-        writeIfFound(json, PER_REPLICATION, properties);
-        writeIfFound(json, PER_REPLICATION_REF, properties);
+        // For the Replication data we need to obtain the content properties
+        ValueMap contentProperties = getProperties(resource);
+        if(contentProperties != null) {
+            String replicationDate = writeIfFound(json, PER_REPLICATED, contentProperties);
+            writeIfFound(json, PER_REPLICATED_BY, contentProperties);
+            //        String replicationLocation = writeIfFound(json, PER_REPLICATION, properties);
+            String replicationLocationRef = writeIfFound(json, PER_REPLICATION_REF, contentProperties);
+            if(replicationDate != null && !replicationDate.isEmpty()) {
+                String status = "activated";
+                if(replicationLocationRef == null || replicationLocationRef.isEmpty()) {
+                    status = "deactivated";
+                }
+                json.writeAttribute("ReplicationStatus", status);
+            }
+        }
     }
 
-    private void writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
-        writeIfFound(json, propertyName, properties, propertyName);
+    private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
+        return writeIfFound(json, propertyName, properties, propertyName);
     }
 
     private static final String[] OMIT_PREFIXES = new String[] { "jcr:", "per:" };
 
-    private void writeIfFound(JsonResponse json, String propertyName, ValueMap properties, String responseName) throws IOException {
+    private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties, String responseName) throws IOException {
         Object value = properties.get(propertyName);
         String data;
         if(value instanceof Calendar) {
@@ -176,6 +187,7 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             json.writeAttribute(name, data);
         }
+        return data;
     }
 }
 

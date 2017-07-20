@@ -203,7 +203,12 @@ public class PerPageImpl
         Resource resource = getResource();
         String user = resource.getResourceResolver().getUserID();
         Calendar now = Calendar.getInstance();
+        // Update Content Properties
         ModifiableValueMap properties = getModifiableProperties();
+        properties.put(JCR_LAST_MODIFIED_BY, user);
+        properties.put(JCR_LAST_MODIFIED, now);
+        // Update Page
+        properties = resource.adaptTo(ModifiableValueMap.class);
         properties.put(JCR_LAST_MODIFIED_BY, user);
         properties.put(JCR_LAST_MODIFIED, now);
     }

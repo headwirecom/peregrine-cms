@@ -25,14 +25,23 @@ import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.BasicTestHelpers.getDateDifferenceInMillis;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
+import static com.peregrine.it.util.TestHarness.createTemplate;
+import static com.peregrine.it.util.TestHarness.executeReplication;
 import static com.peregrine.it.util.TestHarness.getNodes;
 import static com.peregrine.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.JCR_TITLE;
 import static com.peregrine.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.util.PerUtil.TEMPLATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -44,6 +53,8 @@ public class NodesIT
     extends AbstractTest
 {
     public static final String ROOT_PATH = "/content/tests/get-nodes";
+    public static final String LIVE_ROOT_PATH = "/live/tests/get-nodes";
+    public static final String REPLICATION_PATH = "/live";
 
     private static final Logger logger = LoggerFactory.getLogger(NodesIT.class.getName());
 
@@ -109,6 +120,131 @@ public class NodesIT
         dateDifference = getDateDifferenceInMillis(dateString, before, true);
         logger.info("Last Modified Date Difference: '{}|'", dateDifference);
         assertTrue("Wrong Last Modified Date", dateDifference < 0);
+    }
+
+
+    @Test
+    public void testNodesForReplication() throws Exception {
+        // START: The following code was taken from Replication Servlet IT testSimplePageReplication() with minor path adjustments
+        SlingClient client = slingInstanceRule.getAdminClient();
+        String rootFolderPath = ROOT_PATH + "/test-nfr";
+        String liveRootFolderPath = LIVE_ROOT_PATH + "/test-nfr";
+        createFolderStructure(client, rootFolderPath);
+        // First Create a Template, then a Page using it
+        String templateName = "replication-template";
+        createTemplate(client, rootFolderPath, templateName, "example/components/page", 200);
+        JsonFactory jf = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        JsonGenerator json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, templateName);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, writer.toString(), true);
+
+        String pageName = "replication-page";
+        createPage(client, rootFolderPath, pageName, rootFolderPath + "/" + templateName, 200);
+        jf = new JsonFactory();
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, rootFolderPath + "/" + templateName);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, writer.toString(), true);
+
+        // Create Target Replication Folder
+        createFolderStructure(client, REPLICATION_PATH);
+
+        Calendar before = createTimestampAndWait();
+        // Replicate the Page and check its new content
+        executeReplication(client, rootFolderPath + "/" + pageName, "local", 200);
+
+        // Check page and template
+        jf = new JsonFactory();
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, liveRootFolderPath + "/" + templateName);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, liveRootFolderPath + "/" + pageName, 2, writer.toString(), true);
+        jf = new JsonFactory();
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, templateName);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, liveRootFolderPath + "/" + templateName, 2, writer.toString(), true);
+        //END Now we start testing Nodes
+
+        SlingHttpResponse response = getNodes(client, rootFolderPath + "/" + pageName, 200);
+        Map data = convertToMap(response);
+        logger.info("Nodes.json response: '{}'", data);
+        // Look for the node and then check the page data
+        Map<String, Object> page = traverse((Map<String, Object>) data, rootFolderPath + "/" + pageName);
+        assertNotNull("Page was not returned by nodes", page);
+        assertEquals("Wrong Page Name", pageName, page.get("name"));
+        // Created
+        assertEquals("Wrong Created By", "admin", page.get("createdBy"));
+        String dateString = getValue(page, "created");
+        assertNotNull("Created date missing", dateString);
+        long dateDifference = getDateDifferenceInMillis(dateString, before, true);
+        logger.info("Created Date Difference: '{}|'", dateDifference);
+        assertTrue("Wrong Created Date: " + dateDifference, dateDifference >= 0);
+        // Last Modified
+        assertEquals("Wrong Last Modified By", "admin", page.get("createdBy"));
+        dateString = getValue(page, "lastModified");
+        assertNotNull("Last Modified date missing", dateString);
+        dateDifference = getDateDifferenceInMillis(dateString, before, true);
+        logger.info("Last Modified Date Difference: '{}|'", dateDifference);
+        assertTrue("Wrong Last Modified Date: " + dateDifference, dateDifference >= 0);
+        // Now we check the Replicated Date, User and Location as well as the replication status
+        String replicated = getValue(page, "Replicated");
+        assertNotNull("Replicated date missing", replicated);
+        dateDifference = getDateDifferenceInMillis(replicated, before, true);
+        logger.info("Replicated Date Difference: '{}|'", dateDifference);
+        assertTrue("Wrong Replicated Date: "+ dateDifference, dateDifference < 0);
+        String replicatedBy = getValue(page, "ReplicatedBy");
+        assertEquals("Wrong Replicated By", "admin", replicatedBy);
+        String replicationRef = getValue(page, "ReplicationRef");
+        assertEquals("Wrong Replication Location By", liveRootFolderPath + "/" + pageName, replicationRef);
+        String replicationStatus = getValue(page, "ReplicationStatus");
+        assertEquals("Wrong Replication Status", "activated", replicationStatus);
+    }
+
+    private String getValue(Map<String, Object> map, String key) {
+        String answer = null;
+        if(map.containsKey(key)) {
+            Object value = map.get(key);
+            if(value != null) {
+                answer = value.toString();
+            }
+        }
+        return answer;
     }
 
     private Map<String, Object> traverse(Map<String, Object> map, String path) {
