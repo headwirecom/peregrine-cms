@@ -33,7 +33,7 @@
             jcr:title="home"
             jcr:description="admin base Content Root"
             siteCSS="[http://fonts.googleapis.com/icon?family=Material+Icons,/etc/felibs/materialize/materialize.css,https://cdn.quilljs.com/1.2.6/quill.snow.css]"
-            siteJS="[https://code.jquery.com/jquery-2.1.1.min.js,https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js,https://cdn.quilljs.com/1.2.6/quill.js]"
+            siteJS="[https://code.jquery.com/jquery-2.1.1.min.js,https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js,https://cdn.quilljs.com/1.2.6/quill.js]"
     >
         <nav jcr:primaryType="nt:unstructured"
              sling:resourceType="admin/components/nav"/>

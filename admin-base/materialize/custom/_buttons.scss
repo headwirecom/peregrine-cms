@@ -1,0 +1,19 @@
+// Shared focus button style
+.btn,
+.btn-floating {
+  &:focus {
+    background-color: color("orange", "base");
+  }
+}
+
+// Flat button
+.btn-flat {
+  &:focus,
+  &:hover {
+    background-color: color("blue-grey", "lighten-5");
+  }
+
+  &:active {
+    background-color: color("blue-grey", "lighten-4");
+  }
+}
