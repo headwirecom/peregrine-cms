@@ -48,20 +48,7 @@
     export default {
       props: ['model'],
       mounted(){
-        /* is this a touch device */
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
-        if(!this.isTouch){
-          this.$nextTick(function() {
-             this.focusFirstField()
-          })
-        }
-      },
-      updated(){
-        if(!this.isTouch){
-          this.$nextTick(function() {
-            this.focusFirstField()
-          })
-        }
       },
       data() {
         return {
@@ -87,20 +74,6 @@
         }
       },
       methods: {
-        focusFirstField(){
-          var field = document.querySelector('.vue-form-generator > fieldset > .form-group')
-          if(field.classList.contains('field-texteditor')){
-            var input = document.querySelector('.vue-form-generator .ql-editor')
-            if(input){
-              input.focus()
-            }
-          } else {
-            var input = document.querySelector('.vue-form-generator input:first-of-type ')
-            if(input){
-              input.focus()
-            }
-          }
-        },
         onOk(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
@@ -121,7 +94,8 @@
         return {
           formOptions: {
             validateAfterLoad: true,
-            validateAfterChanged: true
+            validateAfterChanged: true,
+            focusFirstField: true
           }
         }
       }
