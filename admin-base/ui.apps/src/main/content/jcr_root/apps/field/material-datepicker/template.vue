@@ -13,7 +13,7 @@
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
 		mounted() {
-			if(window.Picker){
+			if (window.Picker && window.$ && window.$.fn.pickadate) {
 				var options = Object.assign({}, this.schema.options, {
 				  onSet: context => {
 				  	// context is timestamp
