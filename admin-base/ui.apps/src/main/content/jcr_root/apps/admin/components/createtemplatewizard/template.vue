@@ -93,7 +93,7 @@
                             label: "Template Name",
                             model: "name",
                             required: true,
-                            validator: VueFormGenerator.validators.string
+                            validator: this.nameAvailable
                         }
                         ]
                     }
@@ -119,6 +119,19 @@
                 if(me === null) me = this
                 me.formmodel.component = target
             },
+            nameAvailable(value) {
+                if(!value || value.length === 0) {
+                    return ['name is required']
+                } else {
+                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
+                    for(let i = 0; i < folder.children.length; i++) {
+                        if(folder.children[i].name === value) {
+                            return ['name aready in use']
+                        }
+                    }
+                    return []
+                }
+            },
             isSelected: function(target) {
                 return this.formmodel.component === target
             },
@@ -126,7 +139,11 @@
                 const path = this.formmodel.path
                 const siteName = path.split('/')[3]
                 $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: this.formmodel.component })
+            },
+            leaveTabTwo: function() {
+                return this.$refs.nameTab.validate()
             }
+
 
         }
     }
