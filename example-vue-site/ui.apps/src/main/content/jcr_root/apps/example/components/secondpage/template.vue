@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   example site - UI Apps
@@ -23,12 +22,18 @@
   under the License.
   #L%
   -->
+<template>
+    <div v-bind:data-per-path="model.path">
+        <pagerender-vue-components-placeholder v-bind:model="{ path: model.path, component: model.component, location: 'before' }"></pagerender-vue-components-placeholder>
+        <template v-for="child in model.children">
+            <component v-bind:is="child.component" v-bind:model="child"></component>
+        </template>
+    <pagerender-vue-components-placeholder v-bind:model="{ path: model.path, component: model.component, location: 'after' }"></pagerender-vue-components-placeholder>
+    </div>
+</template>
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Component"
-          sling:resourceSuperType="pagerender/vue/structure/page"
-          group=".hidden"
-          cardinality="1"
-          jcr:title="page component (example site)"
-          templateComponent="true"
-          />
+<script>
+    export default {
+        props: [ 'model' ]
+    }
+</script>

@@ -29,6 +29,24 @@
       v-bind:subtitle="''" @on-complete="onComplete" 
       error-color="#d32f2f"
       color="#546e7a">
+        <tab-content title="select component" :before-change="leaveTabOne">
+            <fieldset class="vue-form-generator">
+                <div class="form-group required">
+                    <label>Select Component</label>
+                    <ul class="collection">
+                        <li class="collection-item"
+                            v-for="component in components"
+                            v-on:click.stop.prevent="selectComponent(null, component.path)"
+                            v-bind:class="isSelected(component.path) ? 'active' : ''">
+                            <admin-components-action v-bind:model="{ command: 'selectComponent', target: component.path }">{{component.name}}</admin-components-action>
+                        </li>
+                    </ul>
+                    <div v-if="!formmodel.component" class="errors">
+                        <span track-by="index">selection required</span>
+                    </div>
+                </div>
+            </fieldset>
+        </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
             <vue-form-generator :model="formmodel"
                                 :schema="nameSchema"
@@ -56,12 +74,11 @@
             function() {
                 const path = $perAdminApp.getNodeFromView('/state/tools/templates')
                 const siteName = path.split('/')[3]
-                const component = siteName + '/components/page'
                 return {
                     formmodel: {
                         path: path,
                         name: '',
-                        component: component
+                        component: null
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -82,9 +99,29 @@
                     }
                 }
 
+        },
+        computed: {
+            components: function() {
+                const templates = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
+                const siteRootParts = this.formmodel.path.split('/').slice(0,4)
+                siteRootParts[1] = 'apps'
+                siteRootParts[2] = siteRootParts[3]
+                const siteRoot = siteRootParts.slice(0,3).join('/')
+                console.log(siteRoot)
+                return templates.filter( (item) => item.path.startsWith(siteRoot) && (
+                    item.name === 'page' || item.templateComponent
+                ))
+            }
         }
         ,
         methods: {
+            selectComponent: function(me, target){
+                if(me === null) me = this
+                me.formmodel.component = target
+            },
+            isSelected: function(target) {
+                return this.formmodel.component === target
+            },
             onComplete: function() {
                 const path = this.formmodel.path
                 const siteName = path.split('/')[3]
