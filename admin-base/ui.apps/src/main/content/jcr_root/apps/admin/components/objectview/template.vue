@@ -47,7 +47,7 @@
           <pre>{{currentObject.data}}</pre>
         </div>
 
-        <form v-if="edit">
+        <form v-if="edit && currentObject.data && schema">
             <vue-form-generator
               v-bind:schema  = "schema"
               v-bind:model   = "currentObject.data"
