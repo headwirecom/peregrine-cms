@@ -7,6 +7,9 @@
         margin: 0;
         min-width: auto;
         .form-group {
+            .picker--opened .picker__frame {
+                top: calc(112px + 1.5rem) !important;
+            }
             &.field-list {
                  .field-wrap {
                     &.field-with-button {
