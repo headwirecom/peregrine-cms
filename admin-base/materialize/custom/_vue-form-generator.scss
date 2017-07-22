@@ -44,6 +44,19 @@
                     }
                 } 
             }
+            &.field-material-datetime {
+                .wrapper {
+                    > input {
+                        width: calc(50% - 0.375rem);
+                        &:first-of-type {
+                            float: left;
+                        }
+                        &:last-of-type {
+                            float: right;
+                        }
+                    }
+                }
+            }
             &.field-materialswitch {
                 display: inline-block;
                 .switch {
