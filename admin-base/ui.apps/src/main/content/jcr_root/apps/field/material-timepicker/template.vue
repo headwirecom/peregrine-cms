@@ -9,7 +9,7 @@
 </template>
 
 <script>	
-	/* TODO: local time zone date format (everything after t) */
+	/* TODO: clear model when using 'clear' button in UI */
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
 		mounted() {
@@ -43,8 +43,18 @@
 				this.$nextTick(function () {
 					$(this.$el).pickatime(options)
 					if(this.value){
-						// format Date object into human readable date (12:00PM)
-						this.$el.value = this.value
+						// TODO: better check that value is a time string (HH:MM:SS.000Z)
+						if(isNaN(this.value)) {
+							let timeString = this.value.trim()
+							let today = new Date().toJSON()
+							let fauxDate = today.substring(0, today.indexOf('T'))
+							// create date object with time from model so we can use native date methods
+							let d = new Date(fauxDate + 'T' + timeString)
+							let time = d.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })
+							this.$el.value = time
+						} else {
+							console.warn('model must be a date string')
+						}
 					}
 				})
 				

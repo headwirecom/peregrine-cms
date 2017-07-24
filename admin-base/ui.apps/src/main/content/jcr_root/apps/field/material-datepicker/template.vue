@@ -9,7 +9,6 @@
 </template>
 
 <script>	
-	/* TODO: local date format  at midnight (00:00:00) */
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
 		mounted() {
@@ -29,8 +28,19 @@
 				this.$nextTick(function () {
 					$(this.$el).pickadate(options)
 					if(this.value){
-						// format Date object into human readable date (21 July, 2017)
-						this.$el.value = this.value
+						// TODO: better check that value is a date string (yyyy-mm-dd)
+						if (isNaN(this.value)) {
+							let dateString = this.value
+							let dateParts = dateString.split('-')
+							let dateObject = new Date(dateParts[0], dateParts[1] - 1, dateParts[2])
+							let day = dateObject.getDate()
+							let month = dateObject.toLocaleString("en-us", { month: "long" })
+							let year = dateObject.getFullYear()
+							let formatedDate = `${day} ${month}, ${year}`
+							this.$el.value = formatedDate
+						} else {
+							console.warn('model must be a date string')
+						}
 					}
 				})
 			}
