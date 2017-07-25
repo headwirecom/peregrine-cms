@@ -55,6 +55,11 @@
                         root,
                         (newValue) => { this.value = newValue }
                     )
+                } else if(root.startsWith('/content/sites') || root.startsWith('/content/templates')) {
+                    $perAdminApp.pageBrowser(
+                        root,
+                        (newValue) => { this.value = newValue }
+                    )
                 } else {
                     $perAdminApp.pathBrowser(
                         root,

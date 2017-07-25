@@ -27,9 +27,10 @@
         <template v-for="child in model.children">
             <component v-bind:is="child.component" v-bind:model="child"></component>
         </template>
-        <admin-components-notifyuser>I am a Notification</admin-components-notifyuser>
-        <admin-components-pathbrowser>I am a Notification</admin-components-pathbrowser>
-        <admin-components-assetbrowser>I am a Notification</admin-components-assetbrowser>
+        <admin-components-notifyuser>general notification</admin-components-notifyuser>
+        <admin-components-pathbrowser>path browser</admin-components-pathbrowser>
+        <admin-components-assetbrowser>asset browser</admin-components-assetbrowser>
+        <admin-components-pagebrowser>page browser</admin-components-pagebrowser>
     </div>
 </template>
 
