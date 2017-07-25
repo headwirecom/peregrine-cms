@@ -374,10 +374,7 @@
                 }
             },
             addFolder: function(me, target) {
-                var folderName = prompt('add folder at '+me.pt.path)
-                if(folderName) {
-                    $perAdminApp.stateAction('createFolder', { parent: me.pt.path, name: folderName })
-                }
+                $perAdminApp.stateAction('createAssetWizard', me.pt.path)
             },
             sourceImage: function(me, target) {
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path )
