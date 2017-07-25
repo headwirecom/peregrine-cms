@@ -37,7 +37,7 @@
                     return this.model.imagePath
                 }
                 if(window.parent && window.parent.$perAdminApp) {
-                    return '/empty'
+                    return '/empty.png'
                 }
             }
         }
