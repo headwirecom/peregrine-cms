@@ -61,6 +61,8 @@ import renameAsset from './stateActions/renameAsset'
 import moveAsset from './stateActions/moveAsset'
 import showPageInfo from './stateActions/showPageInfo'
 import editPreview from './stateActions/editPreview'
+import createAsset from './stateActions/createAsset'
+import createAssetWizard from './stateActions/createAssetWizard'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createPageWizard'] = createPageWizard
@@ -96,6 +98,8 @@ actions['deleteAsset'] = deleteAsset
 actions['renameAsset'] = renameAsset
 actions['moveAsset'] = moveAsset
 actions['editPreview'] = editPreview
+actions['createAsset'] = createAsset
+actions['createAssetWizard'] = createAssetWizard
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)
