@@ -11,5 +11,19 @@
     "label": "value",
     "model": "value",
     "placeholder": "value"
+  },
+  {
+    "type": "pathbrowser",
+    "label": "page",
+    "model": "pagePath",
+    "browserRoot": "/content/sites",
+    "placeholder": "select path"
+  },
+  {
+    "type": "pathbrowser",
+    "label": "image",
+    "model": "imagePath",
+    "browserRoot": "/content/assets",
+    "placeholder": "select path"
   }
 ]}
