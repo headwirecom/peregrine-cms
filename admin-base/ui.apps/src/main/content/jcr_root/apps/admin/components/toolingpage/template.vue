@@ -29,6 +29,7 @@
         </template>
         <admin-components-notifyuser>I am a Notification</admin-components-notifyuser>
         <admin-components-pathbrowser>I am a Notification</admin-components-pathbrowser>
+        <admin-components-assetbrowser>I am a Notification</admin-components-assetbrowser>
     </div>
 </template>
 

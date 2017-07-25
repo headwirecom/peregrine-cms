@@ -46,11 +46,21 @@
         methods: {
             browse() {
                 let root = this.schema.browserRoot
+                if(this.value) {
+                    root = this.value
+                }
                 if(!root) root = '/content/assets'
-                $perAdminApp.pathBrowser(
-                    root,
-                    (newValue) => { this.value = newValue }
-                )
+                if(root.startsWith('/content/assets')) {
+                    $perAdminApp.assetBrowser(
+                        root,
+                        (newValue) => { this.value = newValue }
+                    )
+                } else {
+                    $perAdminApp.pathBrowser(
+                        root,
+                        (newValue) => { this.value = newValue }
+                    )
+                }
             }
         }
     }

@@ -306,6 +306,19 @@ function pathBrowserImpl(root, cb) {
     })
 }
 
+function assetBrowserImpl(root, cb) {
+    api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
+        set(view, '/state/assetbrowser/root', root)
+        set(view, '/state/assetbrowser/isVisible', false)
+        set(view, '/state/assetbrowser/methods', {
+            onShow: function(){ set(view, '/state/assetbrowser/isVisible', true) },
+            onHide: function(){ set(view, '/state/assetbrowser/isVisible', false) },
+            setItemPath: cb
+        })
+        view.state.assetbrowser.methods.onShow()
+    })
+}
+
 function isPreviewModeImpl() {
     let mode = getNodeFromOrNullImpl(view, '/state/tools/workspace/view')
     if(mode == null) return false
@@ -406,6 +419,10 @@ var PerAdminApp = {
 
     pathBrowser(rootPath, cb) {
         pathBrowserImpl(rootPath, cb)
+    },
+
+    assetBrowser(rootPath, cb) {
+        assetBrowserImpl(rootPath, cb)
     },
 
     isPreviewMode() {
