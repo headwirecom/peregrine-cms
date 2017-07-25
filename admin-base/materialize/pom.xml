@@ -23,12 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>admin-base</artifactId>
-        <groupId>com.peregrine.admin</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>admin.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>admin-base.ui.materialize</artifactId>
+    <artifactId>admin.ui.materialize</artifactId>
     <packaging>content-package</packaging>
 
     <name>admin base - Materialize</name>
@@ -47,7 +48,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>admin-base-core</artifactId>
+            <artifactId>admin.core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -155,7 +156,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>admin-base-core</artifactId>
+                                    <artifactId>admin.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>

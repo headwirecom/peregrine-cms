@@ -23,12 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>nodetypes</artifactId>
-        <groupId>com.peregrine.nodetypes</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>base.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>nodetypes.ui.apps</artifactId>
+    <artifactId>base.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>peregrine default node types - UI Apps</name>
@@ -47,7 +48,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>base.core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -103,7 +104,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>core</artifactId>
+                                    <artifactId>base.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>

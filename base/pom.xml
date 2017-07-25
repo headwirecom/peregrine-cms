@@ -27,10 +27,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>example-vue.parent</artifactId>
+    <artifactId>base.parent</artifactId>
     <packaging>pom</packaging>
 
-    <description>example site Parent POM</description>
+    <description>peregrine default node types Parent POM</description>
 
     <!--
         ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'

@@ -22,13 +22,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>example-vue-site</artifactId>
-        <groupId>com.example.site</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>example-vue.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>example.core</artifactId>
+    <artifactId>example-vue.core</artifactId>
     <packaging>bundle</packaging>
 
     <name>example site - Core</name>
@@ -93,6 +93,13 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
@@ -153,13 +160,6 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-        </dependency>
-
-        <dependency>
-            <artifactId>core</artifactId>
-            <groupId>com.peregrine.nodetypes</groupId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

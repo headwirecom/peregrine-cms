@@ -22,13 +22,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>nodetypes</artifactId>
-        <groupId>com.peregrine.nodetypes</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>base.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>base.core</artifactId>
     <packaging>bundle</packaging>
 
     <name>peregrine default node types - Core</name>
@@ -45,6 +45,11 @@
     </description>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -114,9 +119,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>com.peregrine.commons</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>commons</artifactId>
-            <!--<version>${project.version}</version>-->
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

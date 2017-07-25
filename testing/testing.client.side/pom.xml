@@ -23,38 +23,32 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>testing-base</artifactId>
-        <groupId>com.peregrine.testing</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>testing.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>per-wrappers</artifactId>
+    <artifactId>testing.client.side</artifactId>
     <packaging>content-package</packaging>
 
-    <name>Server-Side Per Wrapper Tests</name>
+    <name>Client Side Servlet Tests</name>
     <description>
-        This is a set of Per Wrappers like PerAsset / PerPage Integration Tests
+        This is a set of Client Side Servlets Integration Tests
     </description>
 
     <dependencies>
         <dependency>
-            <groupId>com.peregrine.admin</groupId>
-            <artifactId>admin-base-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.peregrine.nodetypes</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>basic-it</artifactId>
+            <artifactId>testing.basic</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.peregrine.cms</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -65,20 +59,14 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.junit.core</artifactId>
-            <version>1.0.14</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.rules</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.junit.teleporter</artifactId>
-            <version>1.0.6</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -247,38 +235,38 @@
                         <configuration>
                             <packageFiles>
                                 <packageFile>
-                                    <groupId>com.peregrine.nodetypes</groupId>
-                                    <artifactId>nodetypes.ui.apps</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>base.ui.apps</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                 </packageFile>
                                 <packageFile>
-                                    <groupId>com.peregrine.felib</groupId>
+                                    <groupId>${project.groupId}</groupId>
                                     <artifactId>felib.ui.apps</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                 </packageFile>
                                 <packageFile>
-                                    <groupId>com.peregrine.pagerender</groupId>
-                                    <artifactId>pagerender.ui.apps</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>pagerender-vue.ui.apps</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                 </packageFile>
                                 <packageFile>
-                                    <groupId>com.peregrine.admin</groupId>
-                                    <artifactId>admin-base.ui.materialize</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>admin.ui.materialize</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                 </packageFile>
                                 <packageFile>
-                                    <groupId>com.peregrine.admin</groupId>
-                                    <artifactId>admin-base.ui.apps</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>admin.ui.apps</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                 </packageFile>
                                 <packageFile>
-                                    <groupId>com.example.site</groupId>
-                                    <artifactId>example.ui.apps</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>example-vue.ui.apps</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                 </packageFile>
