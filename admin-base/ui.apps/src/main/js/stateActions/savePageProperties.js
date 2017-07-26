@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('showPageInfo').setLevelDebug()
+let log = LoggerFactory.logger('savePageProperties').setLevelFine()
 
 import { set } from '../utils'
 
@@ -31,12 +31,25 @@ export default function(me, target) {
 
     log.fine(target)
 
-    let view = me.getView()
-    me.getApi().populateExplorerDialog(target.selected).then( () => {
-        if(target.selected.startsWith('/content/sites')) {
-            set(view, '/state/tools/page', target.selected)
-        } else if(target.selected.startsWith('/content/templates')) {
-            set(view, '/state/tools/template', target.selected)
+    const view = me.getView()
+    const nodeData = {}
+
+    nodeData.path = '/jcr:content'
+    nodeData.component = target.component
+
+    const component = target.component
+    const schema = view.admin.componentDefinitions[component]
+
+    for(let i = 0; i < schema.fields.length; i++) {
+        if(!schema.fields[i].readonly) {
+            const srcName = schema.fields[i].model
+            const dstName = schema.fields[i]['x-model'] ? schema.fields[i]['x-model'] : srcName
+            nodeData[dstName] = target[srcName]
         }
+    }
+
+    log.fine(nodeData)
+
+    me.getApi().savePageEdit(target.path, nodeData).then( () => {
     })
 }

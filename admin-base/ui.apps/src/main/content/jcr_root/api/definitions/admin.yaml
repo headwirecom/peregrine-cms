@@ -38,7 +38,9 @@ paths:
           name: name
           type: string
           in: query
-        - description: the path to a content node to look up the corresponding component
+        - description: the path to a content node to look up the corresponding component. If
+                       a path to a per:Page node is provided the explorer_dialog.json is used
+                       for the model otherwise the dialog.json file of the component is used.
           name: path
           type: string
           in: query

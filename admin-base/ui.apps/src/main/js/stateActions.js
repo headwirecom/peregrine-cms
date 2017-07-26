@@ -63,6 +63,7 @@ import showPageInfo from './stateActions/showPageInfo'
 import editPreview from './stateActions/editPreview'
 import createAsset from './stateActions/createAsset'
 import createAssetWizard from './stateActions/createAssetWizard'
+import savePageProperties from './stateActions/savePageProperties'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createPageWizard'] = createPageWizard
@@ -100,6 +101,7 @@ actions['moveAsset'] = moveAsset
 actions['editPreview'] = editPreview
 actions['createAsset'] = createAsset
 actions['createAssetWizard'] = createAssetWizard
+actions['savePageProperties'] = savePageProperties
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)
