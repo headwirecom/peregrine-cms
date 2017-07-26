@@ -24,103 +24,56 @@
   -->
 <template>
     <transition name="fade">
-        <div v-if="isVisible" class="modal-container">
-            <div id="pathBrowserModal" class="modal default">
+        <div v-if="isVisible" class="pathbrowser pagebrowser modal-container">
+            <div id="pageBrowserModal" class="modal default modal-fixed-footer">
                 <div class="modal-content">
-                    <div class="row">
-                        <div class="col s12">
-                            <ul class="tabs">
-                                <li class="tab col s4"><a href="#" v-on:click="select('browse')">Browse</a></li>
-                                <!-- <li class="tab col s4"><a href="#" v-on:click="select('cards')">Cards</a></li> -->
-                                <li class="tab col s8"><a href="#">
-                                    <input placeholder="search"  type="text" v-model="search" style="width: 100%">
-                                </a></li>
-                            </ul>
-                            <div class="col s12" v-if="tab === 'browse'">
-                                <div v-if="!search" class="collection" style="height: 300px; overflow: scroll;">
-                                    <a href="#!" v-on:click.stop.prevent="selectParent" class="collection-item">{{path}}</a>
-                                    <template v-for="item in nodes.children">
-                                        <a class="collection-item" v-if="isFolder(item)" v-on:click.stop.prevent="selectFolder(item)">[] {{item.name}}</a>
-                                    </template>
-                                </div>
-                                <div v-else style="height: 300px; overflow: scroll;">
-                                    <table >
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Path</th>
-                                        </tr>
-                                        </thead>
+                    <h4>Page Browser</h4>
+                    <input placeholder="search" 
+                           type="text" 
+                           v-model="search" 
+                           style="width: 100%" />
+                    <template v-if="tab === 'browse'">
+                        <h6>{{path}}</h6>
+                        <ul v-if="!search" class="browse-list">
+                            <li v-on:click.stop.prevent="selectParent">
+                                <i class="material-icons">folder</i> <label>..</label>
+                            </li>
+                            <li v-if="isFolder(item)" 
+                                v-for="item in nodes.children" 
+                                v-on:click.stop.prevent="selectFolder(item)">
+                                <i class="material-icons">folder</i>
+                                <label>{{item.name}}</label>
+                            </li>
+                        </ul>
+                        <div v-else>
+                            <table >
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Path</th>
+                                </tr>
+                                </thead>
 
-                                        <tbody>
-                                        <tr v-for="item in nodes.children" v-if="searchFilter(item)">
-                                            <td>{{item.name}}</td>
-                                            <td>{{item.path}}</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!--<div class="col s12" v-if="tab === 'cards'">-->
-                                <!--<form action="#">-->
-                                    <!--<p class="range-field">-->
-                                        <!--<input type="range" id="test5" min="2" max="5" v-model="cardSize"/>-->
-                                    <!--</p>-->
-                                <!--</form>-->
-                                <!--<div class="row" style="height: 300px; overflow: scroll;">-->
-                                    <!--<div class="col" v-bind:class="cardClass" >-->
-                                        <!--<div class="card" v-bind:style="cardStyle" v-on:click.stop.prevent="selectParent()">-->
-                                            <!--<div class="card-image active">-->
-                                                <!--<div>..</div>-->
-                                            <!--</div>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                    <!--<template v-for="item in nodes.children" v-if="searchFilter(item)">-->
-                                        <!--<div class="col" v-bind:class="cardClass" >-->
-                                            <!--<div class="card" v-bind:style="cardStyle" v-if="isFolder(item)" v-bind:src="item.path" v-on:click.stop.prevent="selectFolder(item)">-->
-                                                <!--<div class="card-image active">-->
-                                                    <!--<div>{{item.name}}</div>-->
-                                                <!--</div>-->
-                                            <!--</div>-->
-                                            <!--<div class="card" v-bind:style="cardStyle" v-if="isFile(item)" v-bind:src="item.path" v-on:click.stop.prevent="selectFolder(item)">-->
-                                                <!--<div class="card-image active">-->
-                                                    <!--<img v-if="isFile(item)" v-bind:src="item.path" v-on:click.stop.prevent="selectItem(item)">-->
-                                                <!--</div>-->
-                                            <!--</div>-->
-                                        <!--</div>-->
-                                    <!--</template>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                            <div class="col s12" v-if="tab === 'search'">
-                                <input placeholder="search"  type="text" value="">
-                            </div>
+                                <tbody>
+                                <tr v-for="item in nodes.children" v-if="searchFilter(item)">
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.path}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <!--<div class="col s6">-->
-                            <!--<h6>Preview</h6>-->
-                            <!--<div style="max-height: 300px; width: 100%; overflow: scroll;">-->
-                                <!--<img v-bind:src="preview" style="max-width: 100%">-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    </div>
+                    </template>
+                    <input v-if="tab === 'search'" 
+                           placeholder="search"  
+                           type="text" 
+                           value="" />
                 </div>
                 <div class="modal-footer">
-                    <div class="row">
-                        <div class="col s10">
-                            <input type="text" v-bind:value="preview">
-                        </div>
-                        <div class="col s2">
-                            <button v-on:click="onHide">cancel</button>
-                            <button v-on:click="onOk">select</button>
-                        </div>
-                    </div>
-                    <!--
-                    <button
-                        type="button"
-                        v-on:click="onOk"
-                        class="modal-action modal-close waves-effect waves-light btn-flat">
-                        ok
-                    </button>
-                    -->
+
+                    <!-- <input type="text" v-bind:value="preview"> -->
+
+                    <button v-on:click="onHide" class="modal-action modal-close waves-effect waves-light btn-flat">cancel</button>
+                    <button v-on:click="onOk" class="modal-action modal-close waves-effect waves-light btn-flat">select</button>
                 </div>
             </div>
             <div v-on:click="onHide" class="modal-overlay"></div>
