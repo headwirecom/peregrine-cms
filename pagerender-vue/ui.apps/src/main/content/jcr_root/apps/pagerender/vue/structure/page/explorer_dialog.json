@@ -18,6 +18,38 @@
   {
     "type": "input",
     "inputType": "text",
+    "model": "created",
+    "label": "Created",
+    "readonly": true,
+    "placeholder": "created"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "createdBy",
+    "label": "Created By",
+    "readonly": true,
+    "placeholder": "created by"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "lastModified",
+    "label": "Last Modified",
+    "readonly": true,
+    "placeholder": "lastModified"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "lastModifiedBy",
+    "label": "Last Modified By",
+    "readonly": true,
+    "placeholder": "lastModifiedBy"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
     "model": "tags",
     "label": "Tags",
     "placeholder": "tags"
