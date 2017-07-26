@@ -43,7 +43,7 @@ export default function(me, target) {
     for(let i = 0; i < schema.fields.length; i++) {
         if(!schema.fields[i].readonly) {
             const srcName = schema.fields[i].model
-            const dstName = schema.fields[i]['x-model'] ? schema.fields[i].x-model : srcName
+            const dstName = schema.fields[i]['x-model'] ? schema.fields[i]['x-model'] : srcName
             nodeData[dstName] = target[srcName]
         }
     }
