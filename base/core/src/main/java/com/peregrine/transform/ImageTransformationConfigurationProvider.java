@@ -1,4 +1,4 @@
-package com.peregrine.admin.transform;
+package com.peregrine.transform;
 
 /*-
  * #%L

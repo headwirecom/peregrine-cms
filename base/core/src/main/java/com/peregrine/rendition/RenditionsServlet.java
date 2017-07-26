@@ -1,4 +1,4 @@
-package com.peregrine.admin.servlets;
+package com.peregrine.rendition;
 
 /*-
  * #%L
@@ -26,11 +26,10 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.adaption.PerAsset;
-import com.peregrine.admin.resource.ResourceManagement;
-import com.peregrine.admin.resource.ResourceManagement.ManagementException;
-import com.peregrine.admin.transform.ImageContext;
-import com.peregrine.admin.transform.ImageTransformationConfigurationProvider;
-import com.peregrine.admin.transform.ImageTransformationProvider;
+import com.peregrine.rendition.BaseResourceHandler.HandlerException;
+import com.peregrine.transform.ImageContext;
+import com.peregrine.transform.ImageTransformationConfigurationProvider;
+import com.peregrine.transform.ImageTransformationProvider;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
@@ -72,8 +71,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 public class RenditionsServlet extends AbstractBaseServlet {
 
-    public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
-    
     @Reference
     private ImageTransformationConfigurationProvider imageTransformationConfigurationProvider;
     @Reference
@@ -81,7 +78,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
     @Reference
     MimeTypeService mimeTypeService;
     @Reference
-    ResourceManagement resourceManagement;
+    BaseResourceHandler renditionHandler;
 
 
     @Override
@@ -110,9 +107,9 @@ public class RenditionsServlet extends AbstractBaseServlet {
             }
             ImageContext imageContext = null;
             try {
-                imageContext = resourceManagement.createRendition(resource, renditionName, sourceMimeType);
+                imageContext = renditionHandler.createRendition(resource, renditionName, sourceMimeType);
                 request.getResourceResolver().commit();
-            } catch(ManagementException e) {
+            } catch(HandlerException e) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }
             if(imageContext != null) {

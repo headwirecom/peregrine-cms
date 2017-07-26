@@ -1,4 +1,4 @@
-package com.peregrine.admin.transform.operation;
+package com.peregrine.transform.operation;
 
 /*-
  * #%L
@@ -25,9 +25,9 @@ package com.peregrine.admin.transform.operation;
  * #L%
  */
 
-import com.peregrine.admin.transform.ImageContext;
-import com.peregrine.admin.transform.ImageTransformation;
-import com.peregrine.admin.transform.OperationContext;
+import com.peregrine.transform.ImageContext;
+import com.peregrine.transform.ImageTransformation;
+import com.peregrine.transform.OperationContext;
 import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;

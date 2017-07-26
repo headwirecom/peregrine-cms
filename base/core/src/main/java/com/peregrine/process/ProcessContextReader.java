@@ -1,4 +1,4 @@
-package com.peregrine.admin.process;
+package com.peregrine.process;
 
 /*-
  * #%L

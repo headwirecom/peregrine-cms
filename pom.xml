@@ -72,7 +72,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.peregrine.apidocs</group>
+                    <group>com.peregrine.cms</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -181,7 +181,7 @@
                         <userId>${sling.user}</userId>
                         <password>${sling.password}</password>
                         <failOnMissingEmbed>true</failOnMissingEmbed>
-                        <group>com.peregrine</group>
+                        <group>com.peregrine.cms</group>
                     </configuration>
                 </plugin>
                 <!-- Apache Felix Bundle Plugin -->
@@ -224,7 +224,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.peregrine.commons</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -391,6 +391,13 @@
                 <groupId>com.adobe.xmp</groupId>
                 <artifactId>xmpcore</artifactId>
                 <version>5.1.3</version>
+            </dependency>
+
+            <dependency>
+                <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
+                <version>1.0.8</version>
+                <groupId>org.apache.sling</groupId>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Basic dependencies for Unit Tests -->

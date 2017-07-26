@@ -1,4 +1,4 @@
-package com.peregrine.admin.transform.operation;
+package com.peregrine.transform.operation;
 
 /*-
  * #%L
@@ -25,11 +25,11 @@ package com.peregrine.admin.transform.operation;
  * #L%
  */
 
-import com.peregrine.admin.process.ExternalProcessException;
-import com.peregrine.admin.process.ProcessContext;
-import com.peregrine.admin.process.ProcessRunner;
-import com.peregrine.admin.transform.ImageContext;
-import com.peregrine.admin.transform.ImageTransformation;
+import com.peregrine.process.ExternalProcessException;
+import com.peregrine.process.ProcessContext;
+import com.peregrine.process.ProcessRunner;
+import com.peregrine.transform.ImageContext;
+import com.peregrine.transform.ImageTransformation;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.commons.mime.MimeTypeService;
 import org.slf4j.Logger;

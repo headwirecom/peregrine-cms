@@ -22,13 +22,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>blog-parent</artifactId>
-        <groupId>com.peregrine.blog</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>blog.parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>blog.core</artifactId>
     <packaging>bundle</packaging>
 
     <name>blog - Core</name>
@@ -85,8 +85,15 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>com.peregrine.commons</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -148,13 +155,6 @@
         </dependency>
 
         <dependency>
-            <artifactId>core</artifactId>
-            <groupId>com.peregrine.nodetypes</groupId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <artifactId>jackson-core</artifactId>
             <groupId>com.fasterxml.jackson.core</groupId>
             <scope>provided</scope>
@@ -170,13 +170,12 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>1</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
-            <version>1.0.8</version>
+            <!--<version>1.0.8</version>-->
             <groupId>org.apache.sling</groupId>
             <scope>provided</scope>
         </dependency>

@@ -1,6 +1,6 @@
 package com.peregrine.admin.resource;
 
-import com.peregrine.admin.transform.ImageContext;
+import com.peregrine.transform.ImageContext;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Created by schaefa on 7/6/17.
  */
-public interface ResourceManagement {
+public interface AdminResourceHandler {
 
     public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException;
 
@@ -37,11 +37,11 @@ public interface ResourceManagement {
 
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException;
 
-    public ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws ManagementException;
+//    public ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws ManagementException;
 
-    public void updateModification(ResourceResolver resourceResolver, Node node);
-
-    public void updateModification(Resource resource);
+//    public void updateModification(ResourceResolver resourceResolver, Node node);
+//
+//    public void updateModification(Resource resource);
 
     public class ManagementException
         extends Exception

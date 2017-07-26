@@ -25,8 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.ResourceManagement;
-import com.peregrine.admin.resource.ResourceManagement.ManagementException;
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
@@ -66,7 +66,7 @@ public class MoveNodeTo extends AbstractBaseServlet {
     @Reference
     private ResourceRelocation resourceRelocation;
     @Reference
-    ResourceManagement resourceManagement;
+    AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

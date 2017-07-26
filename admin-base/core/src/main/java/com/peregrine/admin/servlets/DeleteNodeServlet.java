@@ -25,9 +25,9 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.ResourceManagement;
-import com.peregrine.admin.resource.ResourceManagement.DeletionResponse;
-import com.peregrine.admin.resource.ResourceManagement.ManagementException;
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.DeletionResponse;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -61,7 +61,7 @@ public class DeleteNodeServlet extends AbstractBaseServlet {
     ModelFactory modelFactory;
 
     @Reference
-    ResourceManagement resourceManagement;
+    AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

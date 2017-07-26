@@ -39,8 +39,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.peregrine.nodetypes</groupId>
-            <artifactId>core</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

@@ -26,8 +26,8 @@ package com.peregrine.admin.servlets;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.peregrine.admin.resource.ResourceManagement;
-import com.peregrine.admin.resource.ResourceManagement.ManagementException;
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
@@ -76,7 +76,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
     ResourceRelocation resourceRelocation;
 
     @Reference
-    ResourceManagement resourceManagement;
+    AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

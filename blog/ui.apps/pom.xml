@@ -23,13 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>blog-parent</artifactId>
-        <groupId>com.peregrine.blog</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>blog.parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ui.apps</artifactId>
+    <artifactId>blog.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>blog - UI Apps</name>
@@ -48,7 +48,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>blog.core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -144,7 +144,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>core</artifactId>
+                                    <artifactId>blog.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
@@ -152,6 +152,18 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>peregrine-cms-license</licenseName>
+                    <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
+                    <excludes>
+                        <!-- Need to provide a pattern that deals with folders as well -->
+                        <exclude>**/apps/per/**/*.html</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -163,6 +175,10 @@
                     <plugin>
                         <groupId>io.wcm.maven.plugins</groupId>
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <group>com.peregrine.cms</group>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>install-package</id>

@@ -143,7 +143,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.example</group>
+                    <group>com.peregrine.cms.example</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -184,7 +184,7 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <configuration>
-                            <group>com.example</group>
+                            <group>com.peregrine.cms.example</group>
                         </configuration>
                         <executions>
                             <execution>

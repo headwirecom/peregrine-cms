@@ -60,6 +60,9 @@
                         <Export-Package>
                             com.peregrine.adaption,
                             com.peregrine.nodetypes.*,
+                            com.peregrine.rendition,
+                            com.peregrine.transform,
+                            com.peregrine.transform.*,
                             com.peregrine.commons.util
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
@@ -166,6 +169,11 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.commons.mime</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -175,6 +183,10 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
 
         <dependency>

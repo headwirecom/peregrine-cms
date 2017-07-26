@@ -1,8 +1,8 @@
 package com.peregrine.it.wrapper;
 
 import com.peregrine.adaption.PerPage;
-import com.peregrine.admin.resource.ResourceManagement;
-import com.peregrine.admin.resource.ResourceManagement.ManagementException;
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -78,7 +78,7 @@ public class PageTraversingIT
         try {
             resourceResolver = getResourceResolver();
             // Create a Page Structure to be traversed in the test
-            ResourceManagement resourceManagement = teleporter.getService(ResourceManagement.class);
+            AdminResourceHandler resourceManagement = teleporter.getService(AdminResourceHandler.class);
             String testFolderPath = ROOT_PATH + "/test-fpt";
             Resource testFolder = createFolderStructure(resourceResolver, resourceManagement, testFolderPath);
             String rootPageName = "root";
@@ -122,7 +122,7 @@ public class PageTraversingIT
         try {
             resourceResolver = getResourceResolver();
             // Create a Page Structure to be traversed in the test
-            ResourceManagement resourceManagement = teleporter.getService(ResourceManagement.class);
+            AdminResourceHandler resourceManagement = teleporter.getService(AdminResourceHandler.class);
             String testFolderPath = ROOT_PATH + "/test-fipt";
             Resource testFolder = createFolderStructure(resourceResolver, resourceManagement, testFolderPath);
             String rootPageName = "root";
@@ -168,7 +168,7 @@ public class PageTraversingIT
         try {
             resourceResolver = getResourceResolver();
             // Create a Page Structure to be traversed in the test
-            ResourceManagement resourceManagement = teleporter.getService(ResourceManagement.class);
+            AdminResourceHandler resourceManagement = teleporter.getService(AdminResourceHandler.class);
             String testFolderPath = ROOT_PATH + "/test-bpt";
             Resource testFolder = createFolderStructure(resourceResolver, resourceManagement, testFolderPath);
             String rootPageName = "root";
@@ -218,7 +218,7 @@ public class PageTraversingIT
         try {
             resourceResolver = getResourceResolver();
             // Create a Page Structure to be traversed in the test
-            ResourceManagement resourceManagement = teleporter.getService(ResourceManagement.class);
+            AdminResourceHandler resourceManagement = teleporter.getService(AdminResourceHandler.class);
             String testFolderPath = ROOT_PATH + "/test-bipt";
             Resource testFolder = createFolderStructure(resourceResolver, resourceManagement, testFolderPath);
             String rootPageName = "root";
@@ -271,7 +271,7 @@ public class PageTraversingIT
         return resourceResolver;
     }
 
-    private Resource createChildPage(ResourceManagement resourceManagement, Resource parent, String childPageName) throws ManagementException, IOException {
+    private Resource createChildPage(AdminResourceHandler resourceManagement, Resource parent, String childPageName) throws ManagementException, IOException {
         Resource newPage = resourceManagement.createPage(
             parent.getResourceResolver(), parent.getPath(), childPageName, EXAMPLE_TEMPLATE_PATH
         );
@@ -308,7 +308,7 @@ public class PageTraversingIT
         }
     }
 
-    private Resource createFolderStructure(ResourceResolver resourceResolver, ResourceManagement resourceManagement, String folderPath) throws ManagementException {
+    private Resource createFolderStructure(ResourceResolver resourceResolver, AdminResourceHandler resourceManagement, String folderPath) throws ManagementException {
         String[] folders = folderPath.split("/");
         String path = "/";
         Resource parent = getResource(resourceResolver, path);
