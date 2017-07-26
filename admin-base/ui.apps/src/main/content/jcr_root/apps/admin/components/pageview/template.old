@@ -25,21 +25,60 @@
 <template>
     <div class="asset-preview">
         <template v-if="currentObject">
-            <p/>
+            <ul class="asset-info">
+                <li>
+                    <span class="asset-name">path:</span>
+                    <span class="asset-value">{{currentObject}}</span>
+                </li>
+                <li>
+                    <span class="asset-name">name:</span>
+                    <span class="asset-value">{{page.name}}</span>
+                </li>
+                <li>
+                    <span class="asset-name">title:</span>
+                    <span class="asset-value">{{page.name}}</span>
+                </li>
+                <li>
+                    <span class="asset-name">path:</span>
+                    <span class="asset-value">{{currentObject}}</span>
+                </li>
+                <li>
+                    <span class="asset-name">created:</span>
+                    <span class="asset-value">{{page.created}} by {{page.createdBy}}</span>
+                </li>
+                <li>
+                    <span class="asset-name">modified:</span>
+                    <span class="asset-value">{{page.lastModified}} by {{page.lastModifiedBy}}</span>
+                </li>
+                <li>
+                    <span class="asset-name">modified:</span>
+                    <span class="asset-value">{{page.lastModified}} by {{page.lastModifiedBy}}</span>
+                </li>
+                <li><pre>{{JSON.stringify(page, true, 2)}}</pre></li>
+            </ul>
             <template v-if="allowOperations">
                 <button class="btn" v-on:click.stop.prevent="renamePage()">rename</button>
                 <button class="btn" v-on:click.stop.prevent="movePage()">move</button>
                 <button class="btn" v-on:click.stop.prevent="deletePage()">delete</button>
             </template>
-            <vue-form-generator v-bind:schema="schema"
-                                v-bind:model="page"
-                                v-bind:options="options">
-
-            </vue-form-generator>
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onCancel">
-                <i class="material-icons">close</button>
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onOk">
-                <i class="material-icons">check</i></button>
+            <!--
+            <ul class="asset-info">
+                <li>
+                    <span class="asset-name">created:</span>
+                    <span class="asset-value">April 1st, 2017</span>
+                </li>
+                <li>
+                    <span class="asset-name">modified:</span>
+                    <span class="asset-value">April 1st, 2017</span>
+                </li>
+                <li>
+                    <span class="asset-name">source:</span>
+                    <span class="asset-value">{{ currentObject.show }}</span>
+                </li>
+            </ul>
+            <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show"/>
+            <iframe v-else v-bind:src="currentObject.show"></iframe>
+            -->
         </template>
         <template v-else>
             <div class="no-asset-selected">
@@ -55,31 +94,16 @@
     export default {
         props: ['model'],
         computed: {
-            currentObject() {
+            currentObject: function () {
                 return $perAdminApp.getNodeFromViewOrNull("/state/tools/page")
             },
-            page() {
+            page: function() {
                 return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject)
             },
-            allowOperations() {
+            allowOperations: function() {
                 return this.currentObject.split('/').length > 4
-            },
-            schema() {
-                const view = $perAdminApp.getView()
-                const component = this.page.component
-                const schema = view.admin.componentDefinitions[component]
-                return schema
-            },
-
-        },
-        data: function() {
-            return {
-                options: {
-                    validateAfterLoad: true,
-                    validateAfterChanged: true,
-                    focusFirstField: true
-                }
             }
+
         },
         methods: {
             renamePage() {
@@ -106,12 +130,6 @@
                         $perAdminApp.getNodeFromView('/state/tools').page = null
                     }
                 )
-            },
-            onCancel() {
-
-            },
-            onOk() {
-                $perAdminApp.stateAction('savePageProperties', this.page )
             }
         }
     }

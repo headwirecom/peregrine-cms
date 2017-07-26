@@ -269,6 +269,10 @@ class PerAdminImpl {
         })
     }
 
+    populateExplorerDialog(path) {
+        return this.populateComponentDefinitionFromNode(path)
+    }
+
     populatePageView(path) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/readNode.json'+path)

@@ -73,7 +73,12 @@ class PerApi {
         return impl.populateComponentDefinitionFromNode(path)
     }
 
-    populateObject(path, target, name) {
+    populateExplorerDialog(path) {
+        return impl.populateExplorerDialog(path)
+    }
+
+
+        populateObject(path, target, name) {
         return impl.populateObject(path, target, name)
     }
 

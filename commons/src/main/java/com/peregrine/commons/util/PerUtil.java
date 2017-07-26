@@ -25,6 +25,8 @@ package com.peregrine.commons.util;
  * #L%
  */
 
+import com.google.common.base.CaseFormat;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -359,6 +361,18 @@ public class PerUtil {
         @Override
         public boolean doAdd(Resource resource) {
             return true;
+        }
+    }
+
+    public static String getComponentNameFromResource(Resource resource) {
+        String resourceType = resource.getResourceType();
+        if (resourceType != null) {
+            if(resourceType.startsWith("/")) {
+                resourceType = StringUtils.substringAfter(resourceType, "/");
+            }
+            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll("/", "-"));
+        } else {
+            return "";
         }
     }
 }

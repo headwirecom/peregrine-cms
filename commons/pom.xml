@@ -157,6 +157,19 @@
             <version>4.11</version>
         </dependency>
 
+        <dependency>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.5</version>
+            <groupId>org.apache.commons</groupId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <artifactId>guava</artifactId>
+            <version>15.0</version>
+            <groupId>com.google.guava</groupId>
+            <scope>provided</scope>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>javax.inject</groupId>-->
             <!--<artifactId>javax.inject</artifactId>-->

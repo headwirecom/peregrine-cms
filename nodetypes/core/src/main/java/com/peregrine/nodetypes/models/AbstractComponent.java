@@ -26,8 +26,7 @@ package com.peregrine.nodetypes.models;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.CaseFormat;
-import org.apache.commons.lang3.StringUtils;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.Collections;
@@ -59,15 +58,7 @@ public class AbstractComponent implements IComponent {
     }
 
     public String getComponent() {
-        String resourceType = resource.getResourceType();
-        if (resourceType != null) {
-            if(resourceType.startsWith("/")) {
-                resourceType = StringUtils.substringAfter(resourceType, "/");
-            }
-            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll("/", "-"));
-        } else {
-            return "";
-        }
+        return PerUtil.getComponentNameFromResource(resource);
     }
 
     @Override
