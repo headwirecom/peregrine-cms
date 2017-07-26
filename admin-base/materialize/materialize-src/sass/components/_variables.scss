@@ -35,7 +35,7 @@
 // ==========================================================================
 
 $primary-color: color("blue-grey", "base") !default;
-$primary-color-light: color("blue-grey", "lighten-4") !default;
+$primary-color-light: color("blue-grey", "lighten-3") !default;
 $primary-color-dark: color("blue-grey", "darken-2") !default;
 
 $secondary-color: color("blue-grey", "darken-3") !default;
@@ -171,8 +171,8 @@ $input-invalid-border: 1px solid $input-error-color !default;
 $placeholder-text-color: $input-border-color !default;
 
 // Radio Buttons
-$radio-fill-color: $secondary-color !default;
-$radio-empty-color: #5a5a5a !default;
+$radio-fill-color: color("blue-grey", "darken-1") !default;
+$radio-empty-color: color("blue-grey", "darken-2") !default;
 $radio-border: 2px solid $radio-fill-color !default;
 
 // Range
@@ -263,8 +263,8 @@ $spinner-default-color: $secondary-color !default;
 // 17. Tabs
 // ==========================================================================
 
-$tabs-underline-color: $primary-color-light !default;
-$tabs-text-color: $primary-color !default;
+$tabs-underline-color: color("blue-grey", "lighten-1") !default;
+$tabs-text-color: color("blue-grey", "darken-1") !default;
 $tabs-bg-color: #fff !default;
 
 
