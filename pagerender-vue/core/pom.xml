@@ -22,13 +22,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>pagerender-vue</artifactId>
-        <groupId>com.peregrine.pagerender</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>pagerender-vue.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>pagerender.core</artifactId>
+    <artifactId>pagerender-vue.core</artifactId>
     <packaging>bundle</packaging>
 
     <name>peregrine vuejs page renderer - Core</name>
@@ -92,6 +92,13 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -161,14 +168,6 @@
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
         </dependency>
-
-        <dependency>
-            <artifactId>core</artifactId>
-            <groupId>com.peregrine.nodetypes</groupId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
 
     <profiles>

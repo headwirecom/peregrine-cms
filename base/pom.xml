@@ -1,256 +1,133 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations
-under the License.
--->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>peregrinecms-base</artifactId>
-    <packaging>content-package</packaging>
-    <groupId>com.peregrinecms</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <parent>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>base.parent</artifactId>
+    <packaging>pom</packaging>
+
+    <description>peregrine default node types Parent POM</description>
+
+    <!--
+        ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'
+                   Both of these modules are empty and you can start filling
+                   it in with your files.
+                   There are two other modules: 'core.example' and 'ui.apps.example'
+                   with have the same structure but have provide examples
+                   for showing a Page with the usage of a Sling Model. The
+                   idea is that a developer can copy any file he wants into
+                   the regular module. Unfortunately the Maven Archetype
+                   generating this project is adding all four modules to
+                   this POM. Even though the POMs for the example modules
+                   will not deploy it is best to remove them from this POM.
+
+                   Look for the modules at the end of this file.
+    -->
 
     <properties>
-        <j2v8.version>4.6.0</j2v8.version>
         <sling.host>localhost</sling.host>
         <sling.port>8080</sling.port>
         <sling.user>admin</sling.user>
         <sling.password>admin</sling.password>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <swagger.ui.version>3.0.5</swagger.ui.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.wcm.maven.plugins</groupId>
-            <artifactId>wcmio-content-package-maven-plugin</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.headwire.sling</groupId>
-            <artifactId>sling-swagger-ui</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <type>content-package</type>
-        </dependency>
-
-        <dependency>
-            <groupId>com.headwire.sling</groupId>
-            <artifactId>sling-node-project</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <type>content-package</type>
-        </dependency>
-
-    </dependencies>
-
-    <name>Peregrine CMS - Base</name>
-    <description>
-        base package for the peregrine cms
-    </description>
-
     <build>
-        <resources>
-            <!-- define the resources that will go into the package -->
-            <resource>
-                <!--
-                we want to keep some of the META-INF files and not configure
-                everything in the plugin.
-                -->
-                <directory>${basedir}/src/main/content/META-INF</directory>
-                <targetPath>../vault-work/META-INF</targetPath>
-            </resource>
-            <resource>
-                <!-- add the swagger-ui main screen to the project -->
-                <directory>${basedir}/src/main/content/jcr_root</directory>
-                <excludes>
-                    <!-- exclude .vlt control files and other undesired resources in the package -->
-                    <exclude>**/.vlt</exclude>
-                    <exclude>**/.vltignore</exclude>
-                    <exclude>**/.gitignore</exclude>
-                    <exclude>**/*.iml</exclude>
-                    <exclude>**/.classpath</exclude>
-                    <exclude>**/.project</exclude>
-                    <exclude>**/.settings</exclude>
-                    <exclude>**/.DS_Store</exclude>
-                    <exclude>**/target/**</exclude>
-                    <exclude>**/pom.xml</exclude>
-                </excludes>
-            </resource>
-            <!-- add the swagger ui dist folder to the project -->
-        </resources>
-
         <plugins>
-            <!-- configuration for upload into the sling instance -->
+            <!-- Maven Release Plugin -->
             <plugin>
-                <groupId>io.wcm.maven.plugins</groupId>
-                <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                <extensions>true</extensions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
                 <configuration>
-                    <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
-                    <userId>${sling.user}</userId>
-                    <password>${sling.password}</password>
-                    <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.headwire.sling</group>
-                    <subPackages>
-                        <subPackage>
-                            <groupId>com.headwire.sling</groupId>
-                            <artifactId>sling-swagger-ui</artifactId>
-                            <filter>true</filter>
-                        </subPackage>
-                        <subPackage>
-                            <groupId>com.headwire.sling</groupId>
-                            <artifactId>sling-node-project</artifactId>
-                            <filter>true</filter>
-                        </subPackage>
-                    </subPackages>
+                    <scmCommentPrefix>[maven-scm] :</scmCommentPrefix>
+                    <preparationGoals>clean install</preparationGoals>
+                    <goals>install</goals>
+                    <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
+            <!-- Maven Source Plugin -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>1.13</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
+            <!-- Maven Resources Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
-                    <licenseName>peregrine-cms-license</licenseName>
-                    <licenseResolver>${project.baseUri}/../src/license</licenseResolver>
-                    <extraExtensions>
-                        <cnd>java</cnd>
-                        <vue>xml</vue>
-                    </extraExtensions>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <!-- Maven Jar Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+            <!-- Maven Enforcer Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[2.2.1,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <message>Project must be compiled with Java 6 or higher</message>
+                                    <version>1.7.0</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>6</source>
+                    <target>6</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <profiles>
 
-        <!-- profile to deploy package to sling -->
-        <profile>
-            <id>autoInstallPackage</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.wcm.maven.plugins</groupId>
-                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>install-package</id>
-                                <goals>
-                                    <goal>install</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <!-- == profiles to install j2v8 ================================================= -->
-        <profile>
-            <id>installJ2V8Unix</id>
-            <activation>
-                <os>
-                    <family>unix</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.sling</groupId>
-                        <artifactId>maven-sling-plugin</artifactId>
-                        <configuration>
-                            <groupId>com.eclipsesource.j2v8</groupId>
-                            <artifactId>j2v8_linux_x86_64</artifactId>
-                            <version>${j2v8.version}</version>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install-file</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>install-file</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>installJ2V8Mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.sling</groupId>
-                        <artifactId>maven-sling-plugin</artifactId>
-                        <configuration>
-                            <groupId>com.eclipsesource.j2v8</groupId>
-                            <artifactId>j2v8_macosx_x86_64</artifactId>
-                            <version>${j2v8.version}</version>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install-file</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>install-file</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>installJ2V8Windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.sling</groupId>
-                        <artifactId>maven-sling-plugin</artifactId>
-                        <configuration>
-                            <groupId>com.eclipsesource.j2v8</groupId>
-                            <artifactId>j2v8_win32_x86_64</artifactId>
-                            <version>${j2v8.version}</version>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install-file</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>install-file</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-    </profiles>
+  <modules>
+    <module>core</module>
+    <module>ui.apps</module>
+  </modules>
 </project>

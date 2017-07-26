@@ -23,12 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>pagerender-vue</artifactId>
-        <groupId>com.peregrine.pagerender</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>pagerender-vue.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>pagerender.ui.apps</artifactId>
+    <artifactId>pagerender-vue.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>peregrine vuejs page renderer - UI Apps</name>
@@ -47,8 +48,14 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>pagerender.core</artifactId>
+            <artifactId>pagerender-vue.core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.github.eirslett/frontend-maven-plugin -->
@@ -143,7 +150,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.peregrine</group>
+                    <group>com.peregrine.cms</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -155,7 +162,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>pagerender.core</artifactId>
+                                    <artifactId>pagerender-vue.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
@@ -189,7 +196,7 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <configuration>
-                            <group>com.peregrine</group>
+                            <group>com.peregrine.cms</group>
                         </configuration>
                         <executions>
                             <execution>

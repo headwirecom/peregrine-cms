@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -114,8 +115,18 @@ public class NodesServlet extends AbstractBaseServlet {
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);
                         if(content != null) {
-                            String title = content.getValueMap().get(JCR_TITLE, String.class);
-                            json.writeAttribute("title", title);
+                            for (String key: content.getValueMap().keySet()) {
+                                if(key.equals(JCR_TITLE)) {
+                                    String title = content.getValueMap().get(JCR_TITLE, String.class);
+                                    json.writeAttribute("title", title);
+                                } else {
+                                    if(key.indexOf(":") < 0) {
+                                        json.writeAttribute(key, content.getValueMap().get(key, String.class));
+                                    }
+                                }
+                            }
+                            String component = PerUtil.getComponentNameFromResource(content);
+                            json.writeAttribute("component", component);
                         } else {
                             logger.debug("No Content Child found for: '{}'", child.getPath());
                         }

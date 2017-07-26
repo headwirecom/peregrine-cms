@@ -23,12 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>admin-base</artifactId>
-        <groupId>com.peregrine.admin</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>admin.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>admin-base.ui.apps</artifactId>
+    <artifactId>admin.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>admin base - UI Apps</name>
@@ -47,7 +48,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>admin-base-core</artifactId>
+            <artifactId>admin.core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -149,7 +150,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.peregrine.admin</group>
+                    <group>com.peregrine.cms</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -161,7 +162,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>admin-base-core</artifactId>
+                                    <artifactId>admin.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
@@ -196,7 +197,7 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <configuration>
-                            <group>com.peregrine.admin</group>
+                            <group>com.peregrine.cms</group>
                         </configuration>
                         <executions>
                             <execution>

@@ -23,12 +23,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>example-vue-site</artifactId>
-        <groupId>com.example.site</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>example-vue.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>example.ui.apps</artifactId>
+    <artifactId>example-vue.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>example site - UI Apps</name>
@@ -48,7 +49,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>example.core</artifactId>
+            <artifactId>example-vue.core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -142,7 +143,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.example</group>
+                    <group>com.peregrine.cms.example</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -154,7 +155,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>example.core</artifactId>
+                                    <artifactId>example-vue.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
@@ -183,7 +184,7 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <configuration>
-                            <group>com.example</group>
+                            <group>com.peregrine.cms.example</group>
                         </configuration>
                         <executions>
                             <execution>

@@ -23,9 +23,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>felib</artifactId>
-        <groupId>com.peregrine.felib</groupId>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>felib.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>felib.ui.apps</artifactId>
@@ -91,7 +92,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.peregrine</group>
+                    <group>com.peregrine.cms</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -138,7 +139,7 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <configuration>
-                            <group>com.peregrine</group>
+                            <group>com.peregrine.cms</group>
                         </configuration>
                         <executions>
                             <execution>

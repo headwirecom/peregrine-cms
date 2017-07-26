@@ -32,9 +32,11 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    if(target.selected.startsWith('/content/sites')) {
-        set(view, '/state/tools/page', target.selected)
-    } else if(target.selected.startsWith('/content/templates')) {
-        set(view, '/state/tools/template', target.selected)
-    }
+    me.getApi().populateExplorerDialog(target.selected).then( () => {
+        if(target.selected.startsWith('/content/sites')) {
+            set(view, '/state/tools/page', target.selected)
+        } else if(target.selected.startsWith('/content/templates')) {
+            set(view, '/state/tools/template', target.selected)
+        }
+    })
 }

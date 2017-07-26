@@ -27,6 +27,7 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
+import com.peregrine.commons.util.PerConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -61,12 +62,17 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
         Resource resource = request.getResourceByPath(path);
+        boolean page = false;
+        if(resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
+            page = true;
+            resource = resource.getChild(PerConstants.JCR_CONTENT);
+        }
         String componentPath = "/apps/" + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
         Resource component = request.getResourceByPath(componentPath);
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
-        Resource dialog = component.getChild("dialog.json");
+        Resource dialog = component.getChild(page ? "explorer_dialog.json" : "dialog.json");
         if(dialog == null) {
-            dialog = getDialogFromSuperType(component);
+            dialog = getDialogFromSuperType(component, page);
         }
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute("path", componentPath);
@@ -77,7 +83,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    private Resource getDialogFromSuperType(Resource resource) {
+    private Resource getDialogFromSuperType(Resource resource, boolean page) {
         String componentPath = resource.getValueMap().get(SLING_RESOURCE_SUPER_TYPE, String.class);
         if(componentPath != null) {
             if (!componentPath.startsWith("/apps")) {
@@ -85,9 +91,9 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             }
             ResourceResolver resourceResolver = resource.getResourceResolver();
             Resource component = resourceResolver.getResource(componentPath);
-            Resource dialog = component.getChild("dialog.json");
+            Resource dialog = component.getChild(page ? "explorer_dialog.json" : "dialog.json");
             if (dialog == null) {
-                return getDialogFromSuperType(component);
+                return getDialogFromSuperType(component, page);
             } else {
                 return dialog;
             }
