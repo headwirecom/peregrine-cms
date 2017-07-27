@@ -16,3 +16,11 @@ used as a root component of a template and drives the list of the create templat
 if a component has a property group that is set to .hidden then the component does not
 show up in the component explorer to be dragged onto a page
 
+# need to document the basic extension mechanism
+
+apps/example/extensions is a sample of an extension for admin.pages. In general the page
+defines an extension point with an id and the example project registers an extension for
+that location. 
+
+We still need to implement a way in the toolingpage/renderer.html to pull and define all
+the extensions that can be found in the system. 
