@@ -87,7 +87,8 @@
                             SLING-INF/nodetypes/felib.cnd,
                             SLING-INF/nodetypes/object.cnd,
                             SLING-INF/nodetypes/replication.cnd,
-                            SLING-INF/nodetypes/objectdefinition.cnd
+                            SLING-INF/nodetypes/objectdefinition.cnd,
+                            SLING-INF/nodetypes/extension.cnd
                         </Sling-Nodetypes>
 
                     </instructions>

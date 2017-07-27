@@ -357,6 +357,21 @@ function getOSBrowserImpl() {
     return OSBrowser
 }
 
+const extensions = []
+
+function registerExtensionImpl(id, name) {
+    let extensionList = extensions[id]
+    if(!extensionList) {
+        extensions[id] = [name]
+    } else {
+        extensionList.push(name)
+    }
+}
+
+function getExtensionImpl(id) {
+    return extensions[id]
+}
+
 var PerAdminApp = {
 
     init(perAdminAppView) {
@@ -448,6 +463,15 @@ var PerAdminApp = {
 
     getOSBrowser(){
         return getOSBrowserImpl()
+    },
+
+
+    registerExtension(id, name) {
+        registerExtensionImpl(id, name)
+    },
+
+    getExtension(id) {
+        return getExtensionImpl(id)
     }
 }
 
