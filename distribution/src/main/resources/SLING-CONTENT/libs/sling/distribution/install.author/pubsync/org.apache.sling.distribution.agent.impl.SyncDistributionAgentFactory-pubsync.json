@@ -1,0 +1,20 @@
+{
+    "jcr:primaryType": "sling:OsgiConfig",
+    "name": "pubsync",
+
+    "serviceName" : "distributionService",
+
+    "packageExporter.endpoints": [
+        "http://localhost:4503/libs/sling/distribution/services/exporters/reverse-pubsync",
+        "http://localhost:4504/libs/sling/distribution/services/exporters/reverse-pubsync",
+        "http://localhost:4505/libs/sling/distribution/services/exporters/reverse-pubsync"
+    ],
+
+    "packageImporter.endpoints": [
+        "http://localhost:4503/libs/sling/distribution/services/importers/default",
+        "http://localhost:4504/libs/sling/distribution/services/importers/default",
+        "http://localhost:4505/libs/sling/distribution/services/importers/default"
+
+    ]
+
+}

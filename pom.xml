@@ -488,6 +488,7 @@
     <modules>
         <module>commons</module>
         <module>base</module>
+        <module>distribution</module>
         <!-- <module>base</module> -->
         <module>felib</module>
         <module>pagerender-vue</module>

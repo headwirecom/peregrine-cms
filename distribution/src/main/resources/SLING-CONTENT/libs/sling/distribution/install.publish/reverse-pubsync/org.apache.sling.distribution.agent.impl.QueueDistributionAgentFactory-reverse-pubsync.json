@@ -1,0 +1,6 @@
+{
+    "jcr:primaryType": "sling:OsgiConfig",
+    "name": "reverse-pubsync",
+
+    "serviceName" : "distributionService"
+}

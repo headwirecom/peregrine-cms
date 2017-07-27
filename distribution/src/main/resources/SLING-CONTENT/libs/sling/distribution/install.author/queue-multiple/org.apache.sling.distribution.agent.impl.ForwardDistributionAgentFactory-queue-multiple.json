@@ -1,0 +1,12 @@
+{
+    "jcr:primaryType": "sling:OsgiConfig",
+
+    "name": "queue-multiple",
+
+    "serviceName" : "distributionService",
+
+    "packageImporter.endpoints" : [
+        "endpoint1=http://localhost:1/libs/sling/distribution/services/importers/bad1",
+        "endpoint2=http://localhost:2/libs/sling/distribution/services/importers/bad2"
+    ]
+}
