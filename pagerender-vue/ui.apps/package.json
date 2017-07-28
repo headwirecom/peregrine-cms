@@ -5,15 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./node_modules/rollup/bin/rollup -c && node ../../buildscripts/buildvue.js pagerender-vue"
+    "build": "node ./node_modules/rollup/bin/rollup -c && node ../../buildscripts/buildvue.js pagerender-vue",
+    "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
     "fs-extra": "^3.0.0",
+    "jsdoc": "^3.5.3",
+    "jsdoc-vue": "^1.0.0",
     "rollup": "^0.41.6",
     "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-vue": "^2.3.1",
-    "vue": "^2.2.6"
+    "vue": "^2.4.2",
+    "vue-template-compiler": "^2.4.2"
   }
 }
