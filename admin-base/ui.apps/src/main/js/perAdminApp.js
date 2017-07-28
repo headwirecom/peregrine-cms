@@ -372,31 +372,82 @@ function getExtensionImpl(id) {
     return extensions[id]
 }
 
+/**
+ * @exports PerAdminApp
+ * @namespace PerAdminApp
+ *
+ */
 var PerAdminApp = {
 
+    /**
+     *
+     * initialize the peregrine administation console with a view object
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param {Object} perAdminAppView - the basic view object with all the root level nodes defined
+     */
     init(perAdminAppView) {
         view = perAdminAppView
         api = new PeregrineApi(new PerAdminImpl(PerAdminApp))
     },
 
+    /**
+     * returns a list of all loggers. This is mostly used by the debug console to display/manage the loggers
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @return {*}
+     */
     getLoggers() {
         return LoggerFactory.getLoggers()
     },
 
+    /**
+     *
+     * get a named logger
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param {string} name - the name of the logger to fetch, always returns a logger
+     * @return {Logger}
+     */
     getLogger(name) {
         if(!name) return logger
         logger.fine('getting logger for',name)
         return LoggerFactory.logger(name)
     },
 
+    /**
+     * convenience method to get the api
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @return {*}
+     */
     getApi() {
         return api
     },
 
+    /**
+     * convenience method to get the view the admin console is based on
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @return {*}
+     */
     getView() {
         return view
     },
 
+    /**
+     * load content (eg go to another page)
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param {string} path - the path to load the content from
+     * @param {boolean} firstTime - is vuejs already instantiated?
+     */
     loadContent(path, firstTime = false) {
         loadContentImpl(path, firstTime)
     },

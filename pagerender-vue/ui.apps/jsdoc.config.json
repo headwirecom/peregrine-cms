@@ -1,6 +1,6 @@
 {
   "opts": {
-    "recursive": true,
+    "recurse": true,
     "destination": "target/site/jsdoc"
   },
   "plugins": ["node_modules/jsdoc-vue"],
