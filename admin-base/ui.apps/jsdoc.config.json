@@ -1,12 +1,15 @@
 {
+  "tags": {
+	"allowUnkownTags": true
+  },
   "opts": {
     "recurse": true,
     "destination": "target/site/jsdoc"
   },
   "plugins": ["node_modules/jsdoc-vue", "plugins/markdown"],
   "source": {
-    "include": ["src/main/js", "src/main/content/jcr_root/apps"],
-    "includePattern": "\\.(vue|js)$"
+    "include": ["src/main/js", "src/main/content/jcr_root/apps", "./readme.md", "./package.json"],
+    "includePattern": "\\.(vue|js|md)$"
 
   }
 }
