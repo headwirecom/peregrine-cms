@@ -100,6 +100,8 @@
         if(!this.schema.multifield){
           this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
           this.value.push('')
+        } else {
+            this.value.push({ name: 'n' +Date.now()})
         }
       },
       onRemoveItem(index){
