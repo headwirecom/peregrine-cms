@@ -66,6 +66,8 @@
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
+                    <admin-components-extensions v-bind:model="{id: 'admin.components.explorer', item: child}"></admin-components-extensions>
+
                     <div class="secondary-content">
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{ 

@@ -49,9 +49,46 @@
 </template>
 
 <script>
-export default {
+    /**
+     * admin-components-action can be used to trigger a UI action in the app. This component
+     * renders either a basic link or an icon. The component supports rendering of a default slot
+     *
+     * on click of this component triggers a $perAdminApp.action() and tries to find a vue component
+     * in the parents that defines a method with the name of the command. If not found in the parent
+     * hierarchy then the complete vue tree will be searched for the action
+     *
+     * @example <caption>simple use case</caption>
+     * <admin-components-action :model="{ action: 'save', target: item, title: 'save' }"></admin-components-action>
+     *
+     * @example <caption>icon use case</caption>
+     * <admin-components-action :model="{ action: 'save', target: item, type: 'icon', title: 'open' }"></admin-components-action>
+     *
+     * @example <caption>slot</caption>
+     * <admin-components-action :model="{ action: 'save', target: item }">
+     *     <div>hello world</div>
+     * </admin-components-action>
+     *
+     * @module admin/components/action
+     * @param {Object} model - the model for this component
+     * @param {string} model.action - the name of the action
+     * @param {Object} model.target - an object containing all the information for this action
+     * @param {string} model.tooltipTitle - used for tooltip/hover
+     * @param {string} model.title - the title to be displayed
+     * @param {string} model.type - if type === icon the action will be rendered as an icon
+     * @param {string{ model.classes - additional classes to be added to the action
+     *
+     */
+    export default {
     props: ['model' ],
     computed: {
+        /**
+         *
+         * checks if this action is currently selected using the model.stateFrom and model.stateFromDefault
+         * properties of the action
+         *
+         * @return {boolean}
+         *
+         */
         isSelected() {
             if(!this.model.stateFrom) return false
             let currentState = $perAdminApp.getNodeFromViewOrNull(this.model.stateFrom)
@@ -64,6 +101,16 @@ export default {
             }
             return false
         },
+
+        /**
+         *
+         * returns the display title for this action. Logs an error if no title and no tooltipTitle
+         * is defined in the model
+         *
+         * @method computed:title
+         * @return {string} - the display title
+         *
+         */
         title() {
             if(this.model.tooltipTitle) return this.model.tooltipTitle
             if(this.model.title) return this.model.title
@@ -72,6 +119,12 @@ export default {
         }
     },
     methods: {
+        /**
+         *  triggers the action specified by the model
+         *
+         *  @method methods:action
+         * @param {event} e - event
+         */
         action: function(e) {
             $perAdminApp.action(this, this.model.command, this.model.target)
         }

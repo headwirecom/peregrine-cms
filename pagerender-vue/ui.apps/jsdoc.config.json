@@ -1,0 +1,12 @@
+{
+  "opts": {
+    "recurse": true,
+    "destination": "target/site/jsdoc"
+  },
+  "plugins": ["node_modules/jsdoc-vue"],
+  "source": {
+    "include": ["src/main/js", "src/main/content/jcr_root/apps"],
+    "includePattern": "\\.(vue|js)$"
+
+  }
+}
