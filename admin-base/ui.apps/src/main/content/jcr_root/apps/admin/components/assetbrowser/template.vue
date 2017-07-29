@@ -257,7 +257,7 @@
                 preview: '',
                 isotopeLoading: true,
                 sortBy: '',
-                filterBy: ''
+                filterBy: '*'
             }
         },
         watch: {
