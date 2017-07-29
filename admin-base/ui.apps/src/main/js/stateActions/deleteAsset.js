@@ -30,6 +30,7 @@ import {set} from '../utils'
 export default function(me, target) {
 
     log.fine('deleteAsset',target)
+    me.getNodeFromView('/state/tools').asset = null
     var api = me.getApi()
     return api.deleteAsset(target)
 
