@@ -66,6 +66,7 @@
                             type: "input",
                             inputType: "text",
                             label: "Folder Name",
+                            placeholder: "Folder Name",
                             model: "name",
                             required: true,
                             validator: this.nameAvailable
