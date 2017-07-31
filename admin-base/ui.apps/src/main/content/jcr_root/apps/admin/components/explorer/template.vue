@@ -78,6 +78,15 @@
                             <i class="material-icons">edit</i>
                         </admin-components-action>
 
+                        <admin-components-action v-if="replicatable(child)"
+                                                 v-bind:model="{
+                                target: child.path,
+                                command: 'replicate',
+                                tooltipTitle: 'replicate'
+                            }">
+                            <i class="material-icons" v-bind:class="replicatedClass(child)">public</i>
+                        </admin-components-action>
+
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
                                 target: child.path,
@@ -196,6 +205,25 @@
                 $perAdminApp.action(this, 'selectPath', item)
             },
 
+            replicatedClass(item) {
+                if(item.ReplicationStatus) {
+                    const created = item.created
+                    const modified = item.lastModified ? item.lastModified : created
+                    const replicated = item.Replicated
+                    if(replicated > modified) {
+                        return 'item-'+item.ReplicationStatus
+                    } else {
+                        return 'item-'+item.ReplicationStatus+'-modified'
+                    }
+                }
+                return 'item-replication-unknown'
+            },
+            replicate(me, path) {
+                $perAdminApp.stateAction('replicate', path)
+            },
+            replicatable(item) {
+                return true
+            },
             /* row drag events */
             onDragRowStart(item, ev){
                 ev.dataTransfer.setData('text', item.path)
@@ -420,3 +448,21 @@
 
     }
 </script>
+
+<style>
+    .item-activated {
+        color: green;
+    }
+
+    .item-replication-unknown {
+    }
+
+    .item-deactivated {
+        color: red;
+    }
+
+    .item-activated-modified {
+        color: purple;
+    }
+
+</style>

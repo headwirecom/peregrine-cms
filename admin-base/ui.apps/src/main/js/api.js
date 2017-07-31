@@ -176,6 +176,10 @@ class PerApi {
     moveNodeTo(path, component, drop) {
         return impl.moveNodeTo(path, component, drop)
     }
+
+    replicate(path) {
+        return impl.replicate(path)
+    }
 }
 
 export default PerApi

@@ -549,6 +549,18 @@ class PerAdminImpl {
                 })
         })
     }
+
+    replicate(path) {
+        return new Promise( (resolve, reject) => {
+            let formData = new FormData();
+            formData.append('deep', 'false')
+            formData.append('name', 'remote')
+            updateWithForm('/admin/repl.json'+path, formData)
+                .then( function(data) {
+                    resolve(data)
+                })
+        })
+    }
 }
 
 export default PerAdminImpl
