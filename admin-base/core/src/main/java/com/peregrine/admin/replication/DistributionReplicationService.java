@@ -26,13 +26,15 @@ package com.peregrine.admin.replication;
  */
 
 import com.peregrine.commons.util.PerUtil;
-import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.distribution.DistributionRequestType;
+import org.apache.sling.distribution.DistributionResponse;
+import org.apache.sling.distribution.Distributor;
+import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -46,7 +48,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,20 +61,22 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 
 /**
- * Created by schaefa on 5/25/17.
+ * This service is replicating resource to a remote sling instance
+ * using the Sling Distribution's Forward Agent on the local Sling instance
+ * and an Importer Service on the remove Sling instance.
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,
     service = Replication.class,
     immediate = true
 )
-@Designate(ocd = ReplicationService.Configuration.class, factory = true)
-public class ReplicationService
+@Designate(ocd = DistributionReplicationService.Configuration.class, factory = true)
+public class DistributionReplicationService
     implements Replication
 {
     @ObjectClassDefinition(
-        name = "Peregrine: Replication Service",
-        description = "Each instance provides the configuration for the Replication"
+        name = "Peregrine: Remote Replication Service",
+        description = "Each instance provides the configuration for Remote Replication through Sling Distribution"
     )
     @interface Configuration {
         @AttributeDefinition(
@@ -83,23 +86,11 @@ public class ReplicationService
         )
         String name();
         @AttributeDefinition(
-            name = "Local",
-            description = "If true then the replication is done locally to the destination folder",
+            name = "Forward Agent",
+            description = "Name of the Forward Agent to use for the Replication.",
             required = true
         )
-        boolean local() default false;
-        @AttributeDefinition(
-            name = "Local Mapping",
-            description = "JCR Root Path Mapping: <source path>=<target path> (only used if this is local). Anything outside will not be copied.",
-            required = false
-        )
-        String localMapping();
-        @AttributeDefinition(
-            name = "Destination URL",
-            description = "URL to the Receiving Replication Service (only used if this is not local)",
-            required = false
-        )
-        String destinationUrl();
+        String agentName();
     }
     @Activate
     @SuppressWarnings("unused")
@@ -110,55 +101,24 @@ public class ReplicationService
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    @Reference
+    Distributor distributor;
+
     private String name;
-    private boolean local;
-    private String localSource;
-    private String localTarget;
-    private String destinationUrl;
+    private String agentName;
 
     private void setup(Configuration configuration) {
         name = configuration.name();
         if(name.isEmpty()) {
             throw new IllegalArgumentException("Replication Name cannot be empty");
         }
-        local = configuration.local();
-        if(local) {
-            localSource = localTarget = null;
-            String mapping = configuration.localMapping();
-            String[] tokens = mapping.split("=");
-            if(tokens.length == 2) {
-                localSource = tokens[0];
-                localTarget = tokens[1];
-            } else {
-                throw new IllegalArgumentException("Local Mapping has the wrong format: '" + mapping + "'");
-            }
-            destinationUrl = null;
-            if(localSource == null || localSource.isEmpty() || !localSource.startsWith("/")) {
-                throw new IllegalArgumentException("For local Replication local mapping needs to provide a local source (before =) that starts with a '/'. Mapping was: " + mapping);
-            }
-            if(localTarget == null || localTarget.isEmpty() || !localTarget.startsWith("/")) {
-                throw new IllegalArgumentException("For local Replication local mapping needs to provide a local target (after =) that starts with a '/'. Mapping was: " + mapping);
-            }
-            if(localSource.endsWith("/")) {
-                localSource = localSource.substring(0, localSource.length() - 1);
-            }
-            if(localTarget.endsWith("/")) {
-                localTarget = localTarget.substring(0, localTarget.length() - 1);
-            }
-            log.trace("Local Replication Service Name: '{}' created", name);
-            log.trace("Local Source: '{}', Target: '{}'", localSource, localTarget);
-        } else {
-            destinationUrl = configuration.destinationUrl();
-            localSource = localTarget = null;
-            if(destinationUrl.isEmpty()) {
-                throw new IllegalArgumentException("For remote Replication: '{}' destination url must be provided");
-            }
+        log.info("Distributor: '{}'", distributor);
+        agentName = configuration.agentName();
+        if(agentName == null || agentName.isEmpty()) {
+            throw new IllegalArgumentException("Agent Name must be provided");
         }
     }
 
-    @Reference
-    @SuppressWarnings("unused")
-    ResourceResolverFactory resourceResolverFactory;
     @Reference
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
@@ -173,17 +133,16 @@ public class ReplicationService
         throws ReplicationException
     {
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
-        Resource source = resourceResolver.getResource(localSource);
-        if(source == null) {
-            throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
-        }
-        Resource target = resourceResolver.getResource(localTarget);
-        if(target == null) {
-            throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
-        }
-        List<Resource> referenceList = referenceLister.getReferenceList(startingResource, true, source, target);
+        log.debug("Starting Resource: '{}'", startingResource.getPath());
+        List<Resource> referenceList = referenceLister.getReferenceList(startingResource, true);
+        log.debug("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
-        ResourceChecker resourceChecker = new MissingOrOutdatedResourceChecker(source, target);
+        ResourceChecker resourceChecker = new ResourceChecker() {
+            @Override
+            public boolean doAdd(Resource resource) {
+                return true;
+            }
+        };
         // Need to check this list of they need to be replicated first
         for(Resource resource: referenceList) {
             if(resourceChecker.doAdd(resource)) {
@@ -194,16 +153,15 @@ public class ReplicationService
         for(Resource reference: new ArrayList<Resource>(replicationList)) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
-        PerUtil.listMissingParents(startingResource, replicationList, source, resourceChecker);
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
+        log.debug("List for Replication: '{}'", replicationList);
         return replicate(replicationList);
     }
 
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
-        if(local) {
-            // Replicate the resources
+        if(distributor != null) {
             ResourceResolver resourceResolver = null;
             for(Resource item: resourceList) {
                 if(item != null) {
@@ -212,38 +170,13 @@ public class ReplicationService
                 }
             }
             if(resourceResolver != null) {
-                Resource source = resourceResolver.getResource(localSource);
-                if(source == null) {
-                    throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+                String[] paths = new String[resourceList.size()];
+                int i = 0;
+                for(Resource resource : resourceList) {
+                    paths[i++] = resource.getPath();
                 }
-                Resource target = resourceResolver.getResource(localTarget);
-                if(target == null) {
-                    throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
-                }
-                // Prepare the Mappings for the Properties mapping
-                Map<String, String> pathMapping = new HashMap<>();
-                for(Resource item: resourceList) {
-                    if(item != null) {
-                        String relativePath = PerUtil.relativePath(source, item);
-                        if(relativePath != null) {
-                            String targetPath = localTarget + '/' + relativePath;
-                            pathMapping.put(item.getPath(), targetPath);
-                        } else {
-                            log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
-                        }
-                    }
-                }
-                Session session = resourceResolver.adaptTo(Session.class);
-                for(Resource item: resourceList) {
-                    if(item != null) {
-                        handleParents(item, answer, pathMapping, resourceResolver);
-                    }
-                }
-                try {
-                    session.save();
-                } catch(RepositoryException e) {
-                    log.warn("Failed to save changes repliate parents", e);
-                }
+                DistributionResponse response = distributor.distribute(agentName, resourceResolver, new SimpleDistributionRequest(DistributionRequestType.ADD, paths));
+                log.debug("Distributor Response: '{}'", response);
             }
         }
         return answer;
@@ -340,7 +273,6 @@ public class ReplicationService
         } catch(RepositoryException e) {
             e.printStackTrace();
         }
-//        if(JCR_CONTENT.equals(source.getName())) {
         if(replicationMixin) {
             Calendar replicated = Calendar.getInstance();
             properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());

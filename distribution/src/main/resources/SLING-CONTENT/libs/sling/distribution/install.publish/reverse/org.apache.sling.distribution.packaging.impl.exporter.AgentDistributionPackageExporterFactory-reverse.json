@@ -1,6 +1,0 @@
-{
-    "jcr:primaryType": "sling:OsgiConfig",
-    "name": "reverse",
-
-    "agent.target": "(name=reverse)"
-}

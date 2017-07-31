@@ -69,6 +69,8 @@ public class CreateDistributionUsersAndPermissions {
                 AccessControlUtils.addAccessControlEntry(session, "/var/sling/distribution/packages", defaultAgentUser.getPrincipal(), new String[]{ Privilege.JCR_ALL }, true);
                 ((User) distributorUser).getImpersonation().grantImpersonation(defaultAgentUser.getPrincipal());
                 serviceUser.getImpersonation().grantImpersonation(defaultAgentUser.getPrincipal());
+                // We need the 'distribution-agent-user' user to have full access to the nodes we disteribution from and to to set the replication properties
+                AccessControlUtils.addAccessControlEntry(session, "/content", defaultAgentUser.getPrincipal(), new String[]{ Privilege.JCR_ALL }, true);
             }
 
             session.save();

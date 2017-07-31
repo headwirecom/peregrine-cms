@@ -1,9 +1,0 @@
-{
-    "jcr:primaryType": "sling:OsgiConfig",
-    "name": "reverse",
-
-    "serviceName" : "distributionService",
-
-    "triggers.target": "(name=reverse-userGeneratedContent)"
-
-}
