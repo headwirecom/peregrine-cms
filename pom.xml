@@ -349,7 +349,7 @@
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.distribution.api</artifactId>
-                <version>0.3.1-SNAPSHOT</version>
+                <version>0.3.0</version>
                 <scope>provided</scope>
             </dependency>
 
