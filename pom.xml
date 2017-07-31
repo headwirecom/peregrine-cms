@@ -21,6 +21,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
+        <distribution.api.version>0.3.0</distribution.api.version>
+        <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
     </properties>
 
     <build>
@@ -349,7 +352,7 @@
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.distribution.api</artifactId>
-                <version>0.3.0</version>
+                <version>${distribution.api.version}</version>
                 <scope>provided</scope>
             </dependency>
 
