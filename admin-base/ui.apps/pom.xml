@@ -138,6 +138,19 @@
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>npm run site</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>site</phase>
+                        <configuration>
+                            <environmentVariables>
+                                <NODE_PATH>./node_modules</NODE_PATH>
+                            </environmentVariables>
+                            <arguments>run site</arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 

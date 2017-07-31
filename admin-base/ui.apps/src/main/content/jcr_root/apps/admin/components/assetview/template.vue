@@ -87,7 +87,6 @@
             },
             deleteAsset() {
                 $perAdminApp.stateAction('deleteAsset', this.asset.path)
-                $perAdminApp.getNodeFromView('/state/tools').asset = null
             },
             moveAsset() {
                 let path = this.asset.path

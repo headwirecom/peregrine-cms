@@ -8,6 +8,15 @@ ul.list-inline {
 		display: inline-block;
 	}
 }
+dl {
+	margin: 0;
+	padding: 0;
+	> dt,
+	> dd {
+		margin: 0;
+		padding: 0;
+	}
+}
 .modal-container {
 	position: relative;
 	z-index: 2;

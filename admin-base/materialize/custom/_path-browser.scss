@@ -1,20 +1,137 @@
 .pathbrowser {
 	.modal {
+		width: 80%;
+		max-width: 1200px;
 		.modal-content {
-			h4 {
-				color: color("blue-grey", "darken-3");
-				font-weight: 300;
+			padding: 0;
+			.col-browse {
+				width: 100%;
+				padding: 0.75rem 0.75rem 60px;
+				.cards-toolbar {
+					display: inline-block;
+					margin: 0;
+					padding: 0;
+					width: auto;
+					> li {
+						display: inline-block;
+						padding-left: 0.375rem;
+						.cards-toolbar-title {
+							text-transform: uppercase;
+							display: inline-block;
+							color: color("blue-grey", "darken-3");
+						}
+						label {
+							color: color("blue-grey", "base");
+							padding-left: 1.75rem;
+						}
+						.btn-flat {
+							background-color: color("blue-grey", "lighten-5");
+							padding: 0 1.5rem;
+						}
+					}
+					&.sort-nav {
+						margin-right: 1.5rem;
+					}
+					&.filter-nav {
+
+					}
+				}
+				.item-file,
+				.item-folder {
+					cursor: pointer;
+					width: auto;
+					max-width: 100%;
+					margin-bottom: 15px;
+					&.item-folder-parent {
+						position: relative;
+					}
+				}
+				.item-folder {
+					text-align: center;
+					background-color: color("blue-grey", "lighten-5");
+					.item-content {
+						width: 100%;
+						color: color("blue-grey", "darken-2");
+						position: absolute;
+						top: 50%;
+						transform: translateY(-60%);
+						padding: 0.75rem;
+						.material-icons {
+							color: color("blue-grey", "darken-1");
+						}
+					}
+				}
+				.item-file {
+					&.selected {
+
+					}
+				}
+				.isotopes {
+					.item {
+					}
+				}
+			}
+			.col-preview {
+				width: 100%;
+				padding: 0.75rem 0.75rem 60px;
+				background-color: color("blue-grey", "lighten-5");
+				.preview-folder {
+					padding: 0.75rem;
+					padding-left: 0;
+					.material-icons {
+						font-size: 100px;
+						margin-left: -0.5rem;
+						color: color("blue-grey", "lighten-3");
+					}
+				}
+				.preview-image {
+					max-width: 100%;
+					max-height: 100%;
+					width: auto;
+					height: auto;
+					margin-bottom: 1.5rem;
+				}
+				.preview-data {
+					color: color("blue-grey", "darken-2");
+					dt {
+						color: color("blue-grey", "lighten-2");
+						text-transform: uppercase;
+					}
+					dd {
+						margin-bottom: 0.75rem;
+						padding-bottom: 0.75rem;
+						border-bottom: 1px solid color("blue-grey", "lighten-4");
+						word-break: break-all;
+						&:last-of-type {
+							border-bottom: none;
+						}
+					}
+				}
+				.no-asset-selected {
+					text-align: center;
+					color: color("blue-grey", "lighten-1");
+					> span {
+						display: inline-block;
+						width: 100%;
+					}
+					.material-icons {
+						font-size: 50px;
+						color: color("blue-grey", "lighten-2");
+					}
+				}
 			}
 			.browse-list {
+				margin: 0 -0.75rem;
 				> li {
 					position: relative;
-					padding: 0.75rem 0;
+					padding: 0.75rem;
+					cursor: pointer;
 					label {
 						color: color("blue-grey", "darken-2");
 					}
 					.material-icons {
 					  position: absolute;
-					  left: 0;
+					  left: 0.75rem;
 					  top: 0.75rem;
 						color: color("blue-grey", "darken-2");
 						+ label {
@@ -31,38 +148,105 @@
 						  user-select: none; 
 						}
 					}
-				}
-			}
-		}
-		
-	}
-	&.assetbrowser {
-		.modal {
-			.modal-content {
-				padding: 0;
-				.tabs {
-					margin-bottom: 1.5rem;
-					.indicator {
-						width: 50%;
-						left: 0;
-						will-change: transform;
-						-webkit-transition: transform .25s ease;
-						-moz-transition: transform .25s ease;
-						-ms-transition: transform .25s ease;
-						transition: transform .25s ease;
+					&:hover,
+					&:focus,
+					&:active,
+					&.selected {
+						background-color: color("blue-grey", "lighten-5");
 					}
 				}
 			}
-			.modal-footer {
-				.path-preview {
-					width: 100%;
-					text-align: left;
-					color: color("blue-grey", "lighten-1");
-					font-weight: 300;
-					padding-left: calc(0.75rem - 4px);
+		}
+		.modal-footer {
+			.current-folder {
+				float: left;
+				margin: 6px 0;
+				line-height: 36px;
+				color: color("blue-grey", "darken-2");
+				.btn-flat {
+					padding: 0 0.75rem;
+					margin: 0;
+					margin-right: 0.75rem;
+					background-color: color("blue-grey", "lighten-5");
+					color: color("blue-grey", "darken-2");
 				}
-				.modal-actions{
-					width: 100%;
+			}
+		}
+	}
+	&.assetbrowser {
+		.modal {
+			padding-top: 48px;
+			.pathbrowser-tabs {
+				margin: 0;
+				padding: 0;
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				background-color: transparent;
+			  overflow-x: auto;
+			  overflow-y: hidden;
+			  height: 48px;
+			  width: auto;
+			  white-space: nowrap;
+			  .tab {
+			    display: inline-block;
+			    text-align: center;
+			    line-height: 48px;
+			    height: 48px;
+			    padding: 0;
+			    margin: 0;
+			    text-transform: uppercase;
+			    a {
+			      color: color("blue-grey", "lighten-1");
+			      display: block;
+			      width: 100%;
+			      height: 100%;
+			      padding: 0 24px;
+			      font-size: 14px;
+			      text-overflow: ellipsis;
+			      overflow: hidden;
+			      transition: color .28s ease; 
+			      &:hover, 
+			      &.active {
+			        background-color: transparent;
+			        color: color("blue-grey", "darken-1"); 
+			      }
+			  	}
+			  }
+				.indicator {
+			    position: absolute;
+			    bottom: 0;
+			    height: 2px;
+			    background-color: color("blue-grey", "base");
+
+					width: 72px;
+					left: 0;
+					will-change: transform;
+					-webkit-transition: transform .25s ease;
+					-moz-transition: transform .25s ease;
+					-ms-transition: transform .25s ease;
+					transition: transform .25s ease;
+				}
+				.material-icons {
+					line-height: 48px;
+				}
+			}
+			.pathbrowser-filter {
+				position: absolute;
+				top: 0;
+				right: 0;
+				width: calc(100% - 144px);
+
+				input {
+					height: 47px;
+					border-top: 0;
+					border-right: 0;
+				}
+			}
+			.modal-content {
+				.range-field {
+					margin: 0;
 				}
 			}
 		}
@@ -75,24 +259,25 @@
 	@media #{$medium-and-up} {
 		&.assetbrowser {
 			.modal {
-				.modal-footer {
-					text-align: left;
-					.path-preview {
-						display: inline-block;
-						width: calc(100% - 235px);
-						position: relative;
-						word-break: break-all;
-						top: 50%;
-						-webkit-transform: translateY(-50%);
-						-moz-transform: translateY(-50%);
-						-ms-transform: translateY(-50%);
-						transform: translateY(-50%);
+				.modal-content {
+					.col-browse {
+						position: absolute;
+						top: 0;
+						left: 0;
+						bottom: 0;
+						right: auto;
+						width: 66.66667%;
+						overflow: auto;
 					}
-					.modal-actions {
-						display: inline-block;
-						float: right;
-						width: auto;
-					}			
+					.col-preview {
+						position: absolute;
+						top: 0;
+						right: 0;
+						bottom: 0;
+						left: auto;
+						width: 33.33333%;
+						overflow: auto;
+					}
 				}
 			}
 		}

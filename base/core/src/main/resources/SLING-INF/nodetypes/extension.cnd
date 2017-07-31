@@ -1,6 +1,6 @@
 /*-
  * #%L
- * admin base - UI Apps
+ * peregrine default node types - Core
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -22,16 +22,8 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('deleteAsset').setLevelDebug()
+<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-import {set} from '../utils'
+[per:Extension] > nt:unstructured, sling:Folder
+  - id (string)
 
-export default function(me, target) {
-
-    log.fine('deleteAsset',target)
-    me.getNodeFromView('/state/tools').asset = null
-    var api = me.getApi()
-    return api.deleteAsset(target)
-
-}

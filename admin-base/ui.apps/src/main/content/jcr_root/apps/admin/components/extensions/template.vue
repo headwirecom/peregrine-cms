@@ -22,25 +22,20 @@
   under the License.
   #L%
   -->
-<!-- js includes required for this renderer -->
-
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://unpkg.com/vue"></script>
-
-<script src="/etc/felibs/admin/dependencies.js"></script>
-<script src="/etc/felibs/admin.js"></script>
-
-<!--extensions, this should be replaced with pulling in the actual extensions defined in the system?
-<script src="/etc/felibs/examplesite/js/exampleExtensionsAdminpagessubnav.js"></script>
-<script>
-    Vue.component('example-extensions-adminpagessubnav', cmpExampleExtensionsAdminpagessubnav)
-</script>
-/extensions-->
+<template>
+    <span v-if="extensions">
+        <component v-for="extension in extensions" v-bind:is="extension" v-bind:model="model"></component>
+    </span>
+</template>
 
 <script>
-    var VueFormGenerator = window.VueFormGenerator;
-    Vue.component('vue-form-generator', VueFormGenerator.component)
-    Vue.use(VueFormWizard)
+    export default {
+        props: ['model'],
+        computed: {
+            extensions() {
+                const ext = $perAdminApp.getExtension(this.model.id)
+                return ext
+            }
+        }
+    }
 </script>
-
-

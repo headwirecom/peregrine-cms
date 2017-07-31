@@ -1,6 +1,10 @@
 /etc/felibs/pagerender-vue/js/pagerenderVueStructureContainer.js
 /etc/felibs/pagerender-vue/js/pagerenderVueComponentsBase.js
 /etc/felibs/pagerender-vue/js/pagerenderVueComponentsPlaceholder.js
+lodash.js
+isotope.js
+vue-isotope.js
+vue-imagesloaded.js
 vfg.js
 vue-form-wizard.js
 drag-drop-touch.js
