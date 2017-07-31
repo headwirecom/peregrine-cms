@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.peregrine.commons.util.PerConstants.DISTRIBUTION_SUB_SERVICE;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
@@ -50,7 +51,6 @@ import static com.peregrine.commons.util.PerUtil.loginService;
 public class DistributionEventHandlerService
     implements EventHandler
 {
-    public static final String DEFAULT_AGENT_SERVICE = "defaultAgentService";
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Reference
@@ -101,7 +101,7 @@ public class DistributionEventHandlerService
     private void setReplicationProperties(String path, String kind) {
         ResourceResolver resourceResolver = null;
         try {
-            resourceResolver = loginService(resourceResolverFactory, DEFAULT_AGENT_SERVICE);
+            resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
             log.debug("Resource Resolver: '{}'", resourceResolver);
             Resource resource = getResource(resourceResolver, path);
             log.debug("Resource for Path: '{}': '{}'", path, resource);

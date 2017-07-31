@@ -27,8 +27,6 @@ package com.peregrine.admin.replication;
 
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -46,19 +44,11 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.nodetype.NodeType;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
+import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
 
 /**
  * This service is replicating resource to a remote sling instance
@@ -112,7 +102,7 @@ public class DistributionReplicationService
         if(name.isEmpty()) {
             throw new IllegalArgumentException("Replication Name cannot be empty");
         }
-        log.info("Distributor: '{}'", distributor);
+        log.trace("Distributor: '{}'", distributor);
         agentName = configuration.agentName();
         if(agentName == null || agentName.isEmpty()) {
             throw new IllegalArgumentException("Agent Name must be provided");
@@ -132,7 +122,7 @@ public class DistributionReplicationService
     public List<Resource> replicate(Resource startingResource, boolean deep)
         throws ReplicationException
     {
-        ResourceResolver resourceResolver = startingResource.getResourceResolver();
+//        ResourceResolver resourceResolver = startingResource.getResourceResolver();
         log.debug("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(startingResource, true);
         log.debug("Reference List: '{}'", referenceList);
@@ -175,126 +165,16 @@ public class DistributionReplicationService
                 for(Resource resource : resourceList) {
                     paths[i++] = resource.getPath();
                 }
-                DistributionResponse response = distributor.distribute(agentName, resourceResolver, new SimpleDistributionRequest(DistributionRequestType.ADD, paths));
-                log.debug("Distributor Response: '{}'", response);
-            }
-        }
-        return answer;
-    }
-
-    private boolean handleParents(Resource resource, List<Resource> resourceList, Map<String, String> pathMapping, ResourceResolver resourceResolver) {
-        String targetPath = pathMapping.get(resource.getPath());
-        if(targetPath != null) {
-            try {
-                //AS TODO: If the parent is not found because the are intermediate missing parents
-                //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
-                //AS TODO: or we fail and ignore it
-                String targetParent = PerUtil.getParent(targetPath);
-                if(targetParent == null) {
-                    // No more parent -> handling parents failed
-                    return false;
-                }
-                Resource targetParentResource = resourceResolver.getResource(targetParent);
-                if(targetParentResource == null) {
-                    // Parent does not exist so try with its parent
-                    Resource parent = resource.getParent();
-                    if(parent == null) {
-                        // No more parent -> handling parents failed
-                        return false;
+                if(distributor != null) {
+                    DistributionResponse response = distributor.distribute(agentName, resourceResolver, new SimpleDistributionRequest(DistributionRequestType.ADD, paths));
+                    log.debug("Distributor Response: '{}'", response);
+                    if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
+                        throw new ReplicationException("Distribution failed due to: " + response);
                     }
-                    boolean ok = handleParents(resource.getParent(), resourceList, pathMapping, resourceResolver);
-                    if(!ok) {
-                        // Handling of parent failed -> leaving as failure
-                        return false;
-                    } else {
-                        targetParentResource = resourceResolver.getResource(targetParent);
-                        if(targetParentResource == null) {
-                            log.error("Target Parent:'" + targetParent + "' is still not found even after all parents were handled");
-                        }
-                    }
-                }
-                Resource copy = copy(resource, targetParentResource, pathMapping);
-                resourceList.add(copy);
-            } catch(PersistenceException e) {
-                log.error("Failed to replicate resource: '{}' -> ignored", resource, e);
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Copy of a Single Resource rather than the ResourceResolver's copy which copies the entire sub tree
-     *
-     * @param source Source to be copied
-     * @param targetParent Parent Resource which the copy will be added to
-     * @param pathMapping Path Mappings used to check and rewrite references
-     * @return The newly created (copied) resource
-     *
-     * @throws PersistenceException If the resource could not be created like it already exists or parent missing
-     */
-    private Resource copy(Resource source, Resource targetParent, Map<String, String> pathMapping)
-        throws PersistenceException
-    {
-        Resource answer = null;
-        Map<String, Object> newProperties = new HashMap<>();
-        ModifiableValueMap properties = PerUtil.getModifiableProperties(source, false);
-        for(String key : properties.keySet()) {
-            Object value = properties.get(key);
-            if(value instanceof String) {
-                String stringValue = (String) value;
-                String targetValue = pathMapping.get(value);
-                if(targetValue != null) {
-                    log.trace("Adjusted Property. Key: '{}', Old Value: '{}', New Value: '{}'", new String[]{key, stringValue, targetValue});
-                    value = targetValue;
+                } else {
+                    throw new ReplicationException("No Distributor available -> configure Sling Distribution first");
                 }
             }
-            newProperties.put(key, value);
-        }
-        Node sourceNode = source.adaptTo(Node.class);
-        boolean replicationMixin = false;
-        try {
-            NodeType[] mixins = sourceNode.getMixinNodeTypes();
-            for(NodeType mixin: mixins) {
-                if(mixin.getName().equals("per:Replication")) {
-                    replicationMixin = true;
-                    break;
-                }
-            }
-            if(!replicationMixin) {
-                NodeType nodeType = sourceNode.getPrimaryNodeType();
-                NodeType[] superTypes = nodeType.getSupertypes();
-                for(NodeType mixin: superTypes) {
-                    if(mixin.getName().equals(PER_REPLICATION)) {
-                        replicationMixin = true;
-                        break;
-                    }
-                }
-            }
-        } catch(RepositoryException e) {
-            e.printStackTrace();
-        }
-        if(replicationMixin) {
-            Calendar replicated = Calendar.getInstance();
-            properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-            properties.put(PER_REPLICATED, replicated);
-            properties.put(PER_REPLICATION_REF, targetParent.getPath());
-            newProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-            newProperties.put(PER_REPLICATED, replicated);
-            newProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
-        }
-        Resource newTarget = targetParent.getChild(source.getName());
-        if(newTarget != null) {
-            ModifiableValueMap newTargetProperties = PerUtil.getModifiableProperties(newTarget, false);
-            for(String key: newProperties.keySet()) {
-                try {
-                    newTargetProperties.put(key, newProperties.get(key));
-                } catch(Exception e) {
-                    // Ignore
-                }
-            }
-            answer = newTarget;
-        } else {
-            answer = source.getResourceResolver().create(targetParent, source.getName(), newProperties);
         }
         return answer;
     }
