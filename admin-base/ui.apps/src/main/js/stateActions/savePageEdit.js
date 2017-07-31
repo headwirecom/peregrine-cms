@@ -36,6 +36,9 @@ export default function(me, target) {
     me.getApi().savePageEdit(view.pageView.path, nodeToSave).then( () => {
         delete view.state.editor;
         set(view, '/state/editorVisible', false)
+        if(view.pageView.page.serverSide) {
+            me.action(me.getApp().$children[0], 'refreshEditor', view.pageView.page)
+        }
     })
     // me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
     //         log.fine('component name is', name)
