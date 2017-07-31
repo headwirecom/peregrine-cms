@@ -99,7 +99,6 @@ public class LocalReplicationService
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String name;
-    private boolean local;
     private String localSource;
     private String localTarget;
     private String destinationUrl;
@@ -181,48 +180,46 @@ public class LocalReplicationService
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
-        if(local) {
-            // Replicate the resources
-            ResourceResolver resourceResolver = null;
+        // Replicate the resources
+        ResourceResolver resourceResolver = null;
+        for(Resource item: resourceList) {
+            if(item != null) {
+                resourceResolver = item.getResourceResolver();
+                break;
+            }
+        }
+        if(resourceResolver != null) {
+            Resource source = resourceResolver.getResource(localSource);
+            if(source == null) {
+                throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+            }
+            Resource target = resourceResolver.getResource(localTarget);
+            if(target == null) {
+                throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+            }
+            // Prepare the Mappings for the Properties mapping
+            Map<String, String> pathMapping = new HashMap<>();
             for(Resource item: resourceList) {
                 if(item != null) {
-                    resourceResolver = item.getResourceResolver();
-                    break;
+                    String relativePath = PerUtil.relativePath(source, item);
+                    if(relativePath != null) {
+                        String targetPath = localTarget + '/' + relativePath;
+                        pathMapping.put(item.getPath(), targetPath);
+                    } else {
+                        log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
+                    }
                 }
             }
-            if(resourceResolver != null) {
-                Resource source = resourceResolver.getResource(localSource);
-                if(source == null) {
-                    throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+            Session session = resourceResolver.adaptTo(Session.class);
+            for(Resource item: resourceList) {
+                if(item != null) {
+                    handleParents(item, answer, pathMapping, resourceResolver);
                 }
-                Resource target = resourceResolver.getResource(localTarget);
-                if(target == null) {
-                    throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
-                }
-                // Prepare the Mappings for the Properties mapping
-                Map<String, String> pathMapping = new HashMap<>();
-                for(Resource item: resourceList) {
-                    if(item != null) {
-                        String relativePath = PerUtil.relativePath(source, item);
-                        if(relativePath != null) {
-                            String targetPath = localTarget + '/' + relativePath;
-                            pathMapping.put(item.getPath(), targetPath);
-                        } else {
-                            log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
-                        }
-                    }
-                }
-                Session session = resourceResolver.adaptTo(Session.class);
-                for(Resource item: resourceList) {
-                    if(item != null) {
-                        handleParents(item, answer, pathMapping, resourceResolver);
-                    }
-                }
-                try {
-                    session.save();
-                } catch(RepositoryException e) {
-                    log.warn("Failed to save changes repliate parents", e);
-                }
+            }
+            try {
+                session.save();
+            } catch(RepositoryException e) {
+                log.warn("Failed to save changes repliate parents", e);
             }
         }
         return answer;
@@ -285,6 +282,10 @@ public class LocalReplicationService
         Map<String, Object> newProperties = new HashMap<>();
         ModifiableValueMap properties = PerUtil.getModifiableProperties(source, false);
         for(String key : properties.keySet()) {
+            if("jcr:uuid".equals(key)) {
+                // UUIDs cannot be copied over -> ignore them
+                continue;
+            }
             Object value = properties.get(key);
             if(value instanceof String) {
                 String stringValue = (String) value;
