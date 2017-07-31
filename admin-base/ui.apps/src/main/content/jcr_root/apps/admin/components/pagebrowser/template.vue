@@ -26,26 +26,30 @@
     <transition name="fade">
         <div v-if="isVisible" class="pathbrowser pagebrowser modal-container">
             <div id="pageBrowserModal" class="modal default modal-fixed-footer">
-                <div class="modal-content">
-                    <h4>Page Browser</h4>
+                <ul class="pathbrowser-tabs">
+                    <li class="tab">
+                        <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
+                            <i class="material-icons">list</i>
+                        </a>
+                    </li>
+                    <li class="tab">
+                        <a href="#" :class="tab === 'cards' ? 'active' : ''" v-on:click="select('cards')">
+                            <i class="material-icons">view_module</i>
+                        </a>
+                    </li>
+                    <li 
+                        class="indicator" 
+                        :style="`transform: translateX(${tab === 'browse' ? '0' : '72px'})`">
+                    </li>
+                </ul>
+                <div class="pathbrowser-filter">
                     <input placeholder="search" 
-                           type="text" 
-                           v-model="search" 
-                           style="width: 100%" />
-                    <template v-if="tab === 'browse'">
-                        <h6>{{path}}</h6>
-                        <ul v-if="!search" class="browse-list">
-                            <li v-on:click.stop.prevent="selectParent">
-                                <i class="material-icons">folder</i> <label>..</label>
-                            </li>
-                            <li v-if="isFolder(item)" 
-                                v-for="item in nodes.children" 
-                                v-on:click.stop.prevent="selectFolder(item)">
-                                <i class="material-icons">folder</i>
-                                <label>{{item.name}}</label>
-                            </li>
-                        </ul>
-                        <div v-else>
+                           type="search" 
+                           v-model="search" />
+                </div>
+                <div class="modal-content">
+                    <div class="col-browse"> 
+                        <div v-if="search">
                             <table >
                                 <thead>
                                 <tr>
@@ -62,18 +66,125 @@
                                 </tbody>
                             </table>
                         </div>
-                    </template>
-                    <input v-if="tab === 'search'" 
-                           placeholder="search"  
-                           type="text" 
-                           value="" />
+                        <template v-if="tab === 'browse' && !search"">
+                            <ul v-if="!search" class="browse-list">
+                                <li v-on:click.stop.prevent="selectParent">
+                                    <i class="material-icons">folder</i> <label>..</label>
+                                </li>
+                                <li v-if="isFolder(item)" 
+                                    v-for="item in nodes.children" 
+                                    v-on:click.stop.prevent="selectFolder(item)">
+                                    <i class="material-icons">folder</i>
+                                    <label>{{item.name}}</label>
+                                </li>
+                            </ul>
+                        </template>
+                        <template v-if="tab === 'cards' && !search">
+                            <template v-if="list.length > 0">
+                                <ul class="cards-toolbar sort-nav">
+                                    <li>
+                                        <span class="cards-toolbar-title">Sort</span>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="pagebrowser_sort_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="pagebrowser_sort_cards_name" 
+                                            :checked="sortBy === 'name'"/>
+                                        <label v-on:click="onSort('name')" for="pagebrowser_sort_cards_name">name</label>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="pagebrowser_sort_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="pagebrowser_sort_cards_date" 
+                                            :checked="sortBy === 'created'"/>
+                                        <label v-on:click="onSort('created')" for="pagebrowser_sort_cards_date">date</label>
+                                    </li>
+                                </ul>
+                            
+                                <p class="range-field">
+                                    <input 
+                                        type="range" 
+                                        min="120" 
+                                        max="400" 
+                                        v-model="cardSize"/>
+                                </p>
+                                <!--<admin-components-spinner 
+                                    v-if="isotopeLoading"
+                                    width="60" 
+                                    position="center">
+                                </admin-components-spinner> -->
+                                
+                                <isotope 
+                                    ref="isotope" 
+                                    class="isotopes" 
+                                    v-bind:options="getIsotopeOptions()"
+                                    v-images-loaded:on="getImagesLoadedCbs()" 
+                                    v-bind:list="list">
+                                    <div 
+                                        v-for="(item, index) in list" 
+                                        :key="item.path">
+                                        <div 
+                                            v-if="isFolder(item)" 
+                                            class="item-folder"
+                                            v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
+                                            v-on:click.stop.prevent="selectFolder(item)">
+                                                <div class="item-content">
+                                                    <i 
+                                                        class="material-icons"
+                                                        :style="`font-size: ${cardIconSize(cardSize)}px`">folder_open</i>
+                                                    <br/>{{item.name}}
+                                                </div>
+                                        </div>
+                                    </div>
+                                </isotope>
+                            </template>
+                            <p v-else class="flow-text">This folder is empty.</p>
+                        </template>
+                    </div>
+                    <div class="col-preview">
+                        <template v-if="preview">
+                            <div v-if="isFolder(preview)" class="preview-folder">
+                                <i class="material-icons">folder_open</i>
+                            </div>
+                            <img v-else class="preview-image" v-bind:src="preview.path">
+                            <dl class="preview-data">
+                                <dt>Name</dt>
+                                <dd>{{preview.name}}</dd>
+                                <dt>Type</dt>
+                                <dd>{{preview.resourceType}}</dd>
+                                <dt>Path</dt>
+                                <dd>{{preview.path}}</dd>
+                                <dt>Created</dt>
+                                <dd>{{preview.created}}</dd>
+                            </dl>
+                        </template>
+                        <div v-else class="no-asset-selected">
+                            <span>no asset selected</span>
+                            <i class="material-icons">info</i>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-
-                    <!-- <input type="text" v-bind:value="preview"> -->
-
-                    <button v-on:click="onHide" class="modal-action modal-close waves-effect waves-light btn-flat">cancel</button>
-                    <button v-on:click="onOk" class="modal-action modal-close waves-effect waves-light btn-flat">select</button>
+                    <span class="current-folder">
+                        <button 
+                            :disabled="path === '/content'" 
+                            type="button" 
+                            class="btn-flat" 
+                            v-on:click.stop.prevent="selectParent">
+                            <i class="material-icons">keyboard_arrow_left</i> 
+                        </button>
+                        {{path}} ({{list.length}})
+                    </span>
+                    <button 
+                        v-on:click="onHide" 
+                        class="modal-action modal-close waves-effect waves-light btn-flat">cancel</button>
+                    <button 
+                        v-on:click="onOk" 
+                        class="modal-action modal-close waves-effect waves-light btn-flat">select</button>
                 </div>
             </div>
             <div v-on:click="onHide" class="modal-overlay"></div>
@@ -88,9 +199,14 @@
 
             return {
                 tab: 'browse',
-                cardSize: 2,
+                cardSize: 120,
                 search: '',
                 preview: ''
+            }
+        },
+        watch: {
+            cardSize: function (newCardSize) {
+                this.updatedIsotopeLayout('masonry')
             }
         },
         computed: {
@@ -106,6 +222,10 @@
                 }
                 return {}
             },
+            list(){
+                console.log('list: ', this.nodes.children)
+                return this.nodes.children || []
+            },
             isVisible() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/isVisible')
             },
@@ -118,6 +238,52 @@
             }
         },
         methods: {
+            cardIconSize: function(cardSize){
+                return Math.floor(cardSize/3)
+            },
+            getImagesLoadedCbs: function() {
+              return {
+                progress: (instance, img ) => {
+                  console.log('progress')
+                },
+                always: (instance) => {
+                  console.log('always')
+                },
+                done: (instance) => {
+                  console.log('done')
+                },
+                fail: (instance) => {
+                  console.log('fail')
+                }
+              }
+            },
+            updatedIsotopeLayout: function(layout){
+                this.$refs.isotope.layout(layout)
+            },
+            getIsotopeOptions: function() {
+                return {
+                    layoutMode: 'masonry',
+                    itemSelector: '.card',
+                    stamp: '.stamp',
+                    masonry: {
+                        gutter: 15
+                    },
+                    getSortData: {
+                        name: function(itemElem){
+                            return itemElem.name.toLowerCase()    
+                        },
+                        created: function(itemElem){
+                            return Date.parse(itemElem.created)
+                        }
+                    }
+                }
+            },
+
+            onSort(sortType){
+                this.sortBy = sortType
+                this.$refs.isotope.sort(sortType)
+            },
+
             select(name) {
                 this.tab = name
             },
@@ -134,9 +300,6 @@
             display(item) {
                 return item.name !== 'jcr:content'
             },
-            isFile(item) {
-                return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
-            },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
             },
@@ -147,11 +310,14 @@
                 $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser').then( () => {
                     let pb = $perAdminApp.getNodeFromView('/state/pagebrowser')
                     pb.root = item.path
-                    this.preview = item.path
+                    if(this.tab === 'cards'){
+                        this.updatedIsotopeLayout('masonry')
+                    }
+                    this.preview = item
                 })
             },
             selectItem(item) {
-                this.preview = item.path
+                this.preview = item
             },
             setItemPath(path){
                 return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/methods').setItemPath(path)
