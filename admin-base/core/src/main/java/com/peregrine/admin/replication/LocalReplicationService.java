@@ -67,13 +67,13 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
     service = Replication.class,
     immediate = true
 )
-@Designate(ocd = ReplicationService.Configuration.class, factory = true)
-public class ReplicationService
+@Designate(ocd = LocalReplicationService.Configuration.class, factory = true)
+public class LocalReplicationService
     implements Replication
 {
     @ObjectClassDefinition(
-        name = "Peregrine: Replication Service",
-        description = "Each instance provides the configuration for the Replication"
+        name = "Peregrine: Local Replication Service",
+        description = "Each instance provides the configuration for a Local Replication"
     )
     @interface Configuration {
         @AttributeDefinition(
@@ -83,23 +83,11 @@ public class ReplicationService
         )
         String name();
         @AttributeDefinition(
-            name = "Local",
-            description = "If true then the replication is done locally to the destination folder",
-            required = true
-        )
-        boolean local() default false;
-        @AttributeDefinition(
             name = "Local Mapping",
             description = "JCR Root Path Mapping: <source path>=<target path> (only used if this is local). Anything outside will not be copied.",
-            required = false
+            required = true
         )
         String localMapping();
-        @AttributeDefinition(
-            name = "Destination URL",
-            description = "URL to the Receiving Replication Service (only used if this is not local)",
-            required = false
-        )
-        String destinationUrl();
     }
     @Activate
     @SuppressWarnings("unused")
@@ -111,7 +99,6 @@ public class ReplicationService
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String name;
-    private boolean local;
     private String localSource;
     private String localTarget;
     private String destinationUrl;
@@ -121,39 +108,30 @@ public class ReplicationService
         if(name.isEmpty()) {
             throw new IllegalArgumentException("Replication Name cannot be empty");
         }
-        local = configuration.local();
-        if(local) {
-            localSource = localTarget = null;
-            String mapping = configuration.localMapping();
-            String[] tokens = mapping.split("=");
-            if(tokens.length == 2) {
-                localSource = tokens[0];
-                localTarget = tokens[1];
-            } else {
-                throw new IllegalArgumentException("Local Mapping has the wrong format: '" + mapping + "'");
-            }
-            destinationUrl = null;
-            if(localSource == null || localSource.isEmpty() || !localSource.startsWith("/")) {
-                throw new IllegalArgumentException("For local Replication local mapping needs to provide a local source (before =) that starts with a '/'. Mapping was: " + mapping);
-            }
-            if(localTarget == null || localTarget.isEmpty() || !localTarget.startsWith("/")) {
-                throw new IllegalArgumentException("For local Replication local mapping needs to provide a local target (after =) that starts with a '/'. Mapping was: " + mapping);
-            }
-            if(localSource.endsWith("/")) {
-                localSource = localSource.substring(0, localSource.length() - 1);
-            }
-            if(localTarget.endsWith("/")) {
-                localTarget = localTarget.substring(0, localTarget.length() - 1);
-            }
-            log.trace("Local Replication Service Name: '{}' created", name);
-            log.trace("Local Source: '{}', Target: '{}'", localSource, localTarget);
+        localSource = localTarget = null;
+        String mapping = configuration.localMapping();
+        String[] tokens = mapping.split("=");
+        if(tokens.length == 2) {
+            localSource = tokens[0];
+            localTarget = tokens[1];
         } else {
-            destinationUrl = configuration.destinationUrl();
-            localSource = localTarget = null;
-            if(destinationUrl.isEmpty()) {
-                throw new IllegalArgumentException("For remote Replication: '{}' destination url must be provided");
-            }
+            throw new IllegalArgumentException("Local Mapping has the wrong format: '" + mapping + "'");
         }
+        destinationUrl = null;
+        if(localSource == null || localSource.isEmpty() || !localSource.startsWith("/")) {
+            throw new IllegalArgumentException("For local Replication local mapping needs to provide a local source (before =) that starts with a '/'. Mapping was: " + mapping);
+        }
+        if(localTarget == null || localTarget.isEmpty() || !localTarget.startsWith("/")) {
+            throw new IllegalArgumentException("For local Replication local mapping needs to provide a local target (after =) that starts with a '/'. Mapping was: " + mapping);
+        }
+        if(localSource.endsWith("/")) {
+            localSource = localSource.substring(0, localSource.length() - 1);
+        }
+        if(localTarget.endsWith("/")) {
+            localTarget = localTarget.substring(0, localTarget.length() - 1);
+        }
+        log.trace("Local Replication Service Name: '{}' created", name);
+        log.trace("Local Source: '{}', Target: '{}'", localSource, localTarget);
     }
 
     @Reference
@@ -202,48 +180,46 @@ public class ReplicationService
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
-        if(local) {
-            // Replicate the resources
-            ResourceResolver resourceResolver = null;
+        // Replicate the resources
+        ResourceResolver resourceResolver = null;
+        for(Resource item: resourceList) {
+            if(item != null) {
+                resourceResolver = item.getResourceResolver();
+                break;
+            }
+        }
+        if(resourceResolver != null) {
+            Resource source = resourceResolver.getResource(localSource);
+            if(source == null) {
+                throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+            }
+            Resource target = resourceResolver.getResource(localTarget);
+            if(target == null) {
+                throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+            }
+            // Prepare the Mappings for the Properties mapping
+            Map<String, String> pathMapping = new HashMap<>();
             for(Resource item: resourceList) {
                 if(item != null) {
-                    resourceResolver = item.getResourceResolver();
-                    break;
+                    String relativePath = PerUtil.relativePath(source, item);
+                    if(relativePath != null) {
+                        String targetPath = localTarget + '/' + relativePath;
+                        pathMapping.put(item.getPath(), targetPath);
+                    } else {
+                        log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
+                    }
                 }
             }
-            if(resourceResolver != null) {
-                Resource source = resourceResolver.getResource(localSource);
-                if(source == null) {
-                    throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+            Session session = resourceResolver.adaptTo(Session.class);
+            for(Resource item: resourceList) {
+                if(item != null) {
+                    handleParents(item, answer, pathMapping, resourceResolver);
                 }
-                Resource target = resourceResolver.getResource(localTarget);
-                if(target == null) {
-                    throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
-                }
-                // Prepare the Mappings for the Properties mapping
-                Map<String, String> pathMapping = new HashMap<>();
-                for(Resource item: resourceList) {
-                    if(item != null) {
-                        String relativePath = PerUtil.relativePath(source, item);
-                        if(relativePath != null) {
-                            String targetPath = localTarget + '/' + relativePath;
-                            pathMapping.put(item.getPath(), targetPath);
-                        } else {
-                            log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
-                        }
-                    }
-                }
-                Session session = resourceResolver.adaptTo(Session.class);
-                for(Resource item: resourceList) {
-                    if(item != null) {
-                        handleParents(item, answer, pathMapping, resourceResolver);
-                    }
-                }
-                try {
-                    session.save();
-                } catch(RepositoryException e) {
-                    log.warn("Failed to save changes repliate parents", e);
-                }
+            }
+            try {
+                session.save();
+            } catch(RepositoryException e) {
+                log.warn("Failed to save changes repliate parents", e);
             }
         }
         return answer;
@@ -306,6 +282,10 @@ public class ReplicationService
         Map<String, Object> newProperties = new HashMap<>();
         ModifiableValueMap properties = PerUtil.getModifiableProperties(source, false);
         for(String key : properties.keySet()) {
+            if("jcr:uuid".equals(key)) {
+                // UUIDs cannot be copied over -> ignore them
+                continue;
+            }
             Object value = properties.get(key);
             if(value instanceof String) {
                 String stringValue = (String) value;
@@ -340,7 +320,6 @@ public class ReplicationService
         } catch(RepositoryException e) {
             e.printStackTrace();
         }
-//        if(JCR_CONTENT.equals(source.getName())) {
         if(replicationMixin) {
             Calendar replicated = Calendar.getInstance();
             properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());

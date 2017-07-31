@@ -21,6 +21,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
+        <distribution.api.version>0.3.0</distribution.api.version>
+        <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
     </properties>
 
     <build>
@@ -165,12 +168,6 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.8.2</version>
                 </plugin>
-                <!-- Apache Sling Plugin -->
-                <plugin>
-                    <groupId>org.apache.sling</groupId>
-                    <artifactId>maven-sling-plugin</artifactId>
-                    <version>2.1.0</version>
-                </plugin>
                 <!-- Content Package Plugin -->
                 <plugin>
                     <groupId>io.wcm.maven.plugins</groupId>
@@ -182,6 +179,16 @@
                         <password>${sling.password}</password>
                         <failOnMissingEmbed>true</failOnMissingEmbed>
                         <group>com.peregrine.cms</group>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.sling</groupId>
+                    <artifactId>maven-sling-plugin</artifactId>
+                    <version>2.1.0</version>
+                    <configuration>
+                        <slingUrl>http://${sling.host}:${sling.port}/system/console</slingUrl>
+                        <user>admin</user>
+                        <password>admin</password>
                     </configuration>
                 </plugin>
                 <!-- Apache Felix Bundle Plugin -->
@@ -342,6 +349,12 @@
                 <version>2.11.0</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.distribution.api</artifactId>
+                <version>${distribution.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
             <!-- Support -->
             <dependency>
@@ -488,6 +501,7 @@
     <modules>
         <module>commons</module>
         <module>base</module>
+        <module>distribution</module>
         <!-- <module>base</module> -->
         <module>felib</module>
         <module>pagerender-vue</module>

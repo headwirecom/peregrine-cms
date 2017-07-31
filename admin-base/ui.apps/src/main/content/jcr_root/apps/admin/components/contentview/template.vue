@@ -499,6 +499,10 @@ export default {
                 drop: dropPosition
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
+        },
+        refreshEditor(me, target) {
+            console.log('refresh editor')
+            me.$refs['editview'].contentWindow.location.reload();
         }
     }
 }

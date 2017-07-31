@@ -27,9 +27,11 @@ package com.peregrine.commons.util;
 
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
@@ -37,7 +39,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
@@ -280,6 +284,12 @@ public class PerUtil {
                 }
             }
         }
+    }
+
+    public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
+        Map<String, Object> authInfo = new HashMap<String, Object>();
+        authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
+        return resolverFactory.getServiceResourceResolver(authInfo);
     }
 
     /**

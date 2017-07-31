@@ -79,7 +79,10 @@ public class PageMerge implements Use {
             String templatePath = (String) page.get("template");
             if(templatePath == null) {
                 if(resource.getParent().getPath().startsWith("/content/templates/")) {
-                    templatePath = resource.getParent().getPath();
+                    // only use the parent as a template of a template if it is in fact a page
+                    if(resource.getParent().getResourceType().equals("per:Page")) {
+                        templatePath = resource.getParent().getPath();
+                    }
                 }
             }
             if(templatePath != null) {

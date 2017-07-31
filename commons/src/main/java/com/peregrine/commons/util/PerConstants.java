@@ -35,4 +35,6 @@ public class PerConstants {
     public static final String ORDER_CHILD_TYPE = "child";
 
     public static final String ALLOWED_OBJECTS = "allowedObjects";
+
+    public static final String DISTRIBUTION_SUB_SERVICE = "peregrine-distribution-sub-service";
 }
