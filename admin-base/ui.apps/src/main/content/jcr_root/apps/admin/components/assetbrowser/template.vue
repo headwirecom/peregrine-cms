@@ -95,30 +95,30 @@
                                     </li>
                                     <li>
                                         <input 
-                                            name="sort_cards" 
+                                            name="assetbrowser_sort_cards" 
                                             type="radio" 
                                             class="with-gap" 
-                                            id="sort_cards_name" 
+                                            id="assetbrowser_sort_cards_name" 
                                             :checked="sortBy === 'name'"/>
-                                        <label v-on:click="onSort('name')" for="sort_cards_name">name</label>
+                                        <label v-on:click="onSort('name')" for="assetbrowser_sort_cards_name">name</label>
                                     </li>
                                     <li>
                                         <input 
-                                            name="sort_cards" 
+                                            name="assetbrowser_sort_cards" 
                                             type="radio" 
                                             class="with-gap" 
-                                            id="sort_cards_type" 
+                                            id="assetbrowser_sort_cards_type" 
                                             :checked="sortBy === 'resourceType'"/>
-                                        <label v-on:click="onSort('resourceType')" for="sort_cards_type">type</label>
+                                        <label v-on:click="onSort('resourceType')" for="assetbrowser_sort_cards_type">type</label>
                                     </li>
                                     <li>
                                         <input 
-                                            name="sort_cards" 
+                                            name="assetbrowser_sort_cards" 
                                             type="radio" 
                                             class="with-gap" 
-                                            id="sort_cards_date" 
+                                            id="assetbrowser_sort_cards_date" 
                                             :checked="sortBy === 'created'"/>
-                                        <label v-on:click="onSort('created')" for="sort_cards_date">date</label>
+                                        <label v-on:click="onSort('created')" for="assetbrowser_sort_cards_date">date</label>
                                     </li>
                                 </ul>
                                 <ul class="cards-toolbar filter-nav">
@@ -127,30 +127,30 @@
                                     </li>
                                     <li>
                                         <input 
-                                            name="filter_cards" 
+                                            name="assetbrowser_filter_cards" 
                                             type="radio" 
                                             class="with-gap" 
-                                            id="filter_cards_all" 
+                                            id="assetbrowser_filter_cards_all" 
                                             :checked="filterBy === '*'"/>
-                                        <label v-on:click="onFilter('*')" for="filter_cards_all">all</label>
+                                        <label v-on:click="onFilter('*')" for="assetbrowser_filter_cards_all">all</label>
                                     </li>
                                     <li>
                                         <input 
-                                            name="filter_cards" 
+                                            name="assetbrowser_filter_cards" 
                                             type="radio" 
                                             class="with-gap" 
-                                            id="filter_cards_files" 
+                                            id="assetbrowser_filter_cards_files" 
                                             :checked="filterBy === 'files'"/>
-                                        <label v-on:click="onFilter('files')" for="filter_cards_files">files</label>
+                                        <label v-on:click="onFilter('files')" for="assetbrowser_filter_cards_files">files</label>
                                     </li>
                                     <li>
                                         <input 
-                                            name="filter_cards" 
+                                            name="assetbrowser_filter_cards" 
                                             type="radio" 
                                             class="with-gap" 
-                                            id="filter_cards_folders" 
+                                            id="assetbrowser_filter_cards_folders" 
                                             :checked="filterBy === 'folders'"/>
-                                        <label v-on:click="onFilter('folders')" for="filter_cards_folders">folders</label>
+                                        <label v-on:click="onFilter('folders')" for="assetbrowser_filter_cards_folders">folders</label>
                                     </li>
 
                                 </ul>
@@ -214,6 +214,8 @@
                                 <dd>{{preview.resourceType}}</dd>
                                 <dt>Path</dt>
                                 <dd>{{preview.path}}</dd>
+                                <dt>Created</dt>
+                                <dd>{{preview.created}}</dd>
                             </dl>
                         </template>
                         <div v-else class="no-asset-selected">
@@ -252,7 +254,7 @@
         data: function() {
             return {
                 tab: 'browse',
-                cardSize: 80,
+                cardSize: 120,
                 search: '',
                 preview: '',
                 isotopeLoading: true,
