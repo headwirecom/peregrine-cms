@@ -302,7 +302,7 @@ public class UpdateResourceServletIT
         json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
         json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
         json.writeObjectFieldStart(slide1Name);
-        json.writeStringField("name", slide1Name);
+//        json.writeStringField("name", slide1Name);
         json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH);
         json.writeStringField("imagePath", image1Path);
         json.writeEndObject();
