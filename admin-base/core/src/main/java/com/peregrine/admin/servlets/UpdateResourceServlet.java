@@ -71,8 +71,10 @@ public class UpdateResourceServlet extends AbstractBaseServlet {
             Resource updatePage = resourceManagement.updateResource(request.getResourceResolver(), path, content);
             request.getResourceResolver().commit();
             return new JsonResponse()
-                .writeAttribute("type", "page").writeAttribute("status", "created")
-                .writeAttribute("name", updatePage.getName()).writeAttribute("path", updatePage.getPath());
+                .writeAttribute("type", "page")
+                .writeAttribute("status", "created")
+                .writeAttribute("name", updatePage.getName())
+                .writeAttribute("path", updatePage.getPath());
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to Update Page").setRequestPath(path).setException(e);
         }

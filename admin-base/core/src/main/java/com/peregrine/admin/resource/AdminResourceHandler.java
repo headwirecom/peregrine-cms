@@ -37,12 +37,6 @@ public interface AdminResourceHandler {
 
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException;
 
-//    public ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws ManagementException;
-
-//    public void updateModification(ResourceResolver resourceResolver, Node node);
-//
-//    public void updateModification(Resource resource);
-
     public class ManagementException
         extends Exception
     {
