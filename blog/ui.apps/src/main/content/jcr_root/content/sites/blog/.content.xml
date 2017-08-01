@@ -10,5 +10,6 @@
         brand="blog"
         template="/content/templates/blog"/>
     <index/>
+    <post/>
     <about/>
 </jcr:root>
