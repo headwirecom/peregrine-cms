@@ -333,10 +333,11 @@ function assetBrowserImpl(root, cb) {
     })
 }
 
-function pageBrowserImpl(root, cb) {
+function pageBrowserImpl(root, withLinkTab, cb) {
     api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
         set(view, '/state/pagebrowser/root', root)
         set(view, '/state/pagebrowser/isVisible', false)
+        set(view, '/state/pagebrowser/withLinkTab', withLinkTab)
         set(view, '/state/pagebrowser/methods', {
             onShow: function(){ set(view, '/state/pagebrowser/isVisible', true) },
             onHide: function(){ set(view, '/state/pagebrowser/isVisible', false) },
@@ -633,8 +634,8 @@ var PerAdminApp = {
      * @param rootPath
      * @param cb
      */
-    pageBrowser(rootPath, cb) {
-        pageBrowserImpl(rootPath, cb)
+    pageBrowser(rootPath, withLinkTab, cb) {
+        pageBrowserImpl(rootPath, withLinkTab, cb)
     },
 
     /**

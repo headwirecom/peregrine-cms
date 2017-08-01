@@ -58,6 +58,7 @@
                 } else if(root.startsWith('/content/sites') || root.startsWith('/content/templates')) {
                     $perAdminApp.pageBrowser(
                         root,
+                        this.schema.withLinkTab || false, // with link tab?
                         (newValue) => { this.value = newValue }
                     )
                 } else {
