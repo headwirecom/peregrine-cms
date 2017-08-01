@@ -82,6 +82,20 @@
                     }
                 }
             }
+            &.field-checkbox {
+                .field-wrap {
+                    display: inline-block;
+                    padding-left: 0.75rem;
+                    [type="checkbox"] {
+                        position: relative;
+                        opacity: 1;
+                        left: auto;
+                    }
+                }
+            }
+            &.field-material-checkbox {
+
+            }
             &.field-collection {
                 padding: 1.5rem 0 0;
                 margin: 0;
