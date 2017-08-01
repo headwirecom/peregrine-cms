@@ -26,7 +26,7 @@
     <transition name="fade">
         <div v-if="isVisible" class="pathbrowser pagebrowser modal-container">
             <div id="pageBrowserModal" class="modal default modal-fixed-footer">
-                <ul class="pathbrowser-tabs">
+                <ul ref="pbtabs" class="pathbrowser-tabs">
                     <li class="tab">
                         <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
                             <i class="material-icons">list</i>
@@ -37,12 +37,17 @@
                             <i class="material-icons">view_module</i>
                         </a>
                     </li>
+                    <li class="tab" v-if="withLinkTab">
+                        <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')">
+                            <i class="material-icons">link</i>
+                        </a>
+                    </li>
                     <li 
                         class="indicator" 
-                        :style="`transform: translateX(${tab === 'browse' ? '0' : '72px'})`">
+                        :style="`transform: translateX(${tabIndicatorPosition}px)`">
                     </li>
                 </ul>
-                <div class="pathbrowser-filter">
+                <div class="pathbrowser-filter" :style="`width: calc(100% - ${searchTabOffset}px)`">
                     <input placeholder="search" 
                            type="search" 
                            v-model="search" />
@@ -144,6 +149,13 @@
                             </template>
                             <p v-else class="flow-text">This folder is empty.</p>
                         </template>
+                        <template v-if="withLinkTab && tab === 'link' && !search"">
+                            <vue-form-generator
+                                v-bind:schema  = "linkSchema"
+                                v-bind:model   = "linkModel"
+                                v-bind:options = "linkFormOptions">
+                            </vue-form-generator>
+                        </template>
                     </div>
                     <div class="col-preview">
                         <template v-if="preview">
@@ -196,12 +208,38 @@
     export default {
         props: ['model'],
         data: function() {
-
             return {
                 tab: 'browse',
                 cardSize: 120,
                 search: '',
-                preview: ''
+                preview: '',
+                linkModel: {
+                    url: '',
+                    newWindow: false
+                },
+                linkSchema: {
+                    fields: [
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Url",
+                            model: "url",
+                            placeholder: 'https://',
+                            min: 6,
+                            required: true
+                        },
+                        {
+                            type: "checkbox",
+                            label: "Open in new window?",
+                            model: "newWindow", 
+                            default: true
+                        }
+                    ]
+                },
+                linkFormOptions: {
+                    validateAfterLoad: true,
+                    validateAfterChanged: true
+                }
             }
         },
         watch: {
@@ -210,6 +248,35 @@
             }
         },
         computed: {
+            withLinkTab(){
+                return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/withLinkTab')
+            },
+            tabIndicatorPosition(){
+                let position
+                switch(this.tab) {
+                    case ('browse'):
+                        position = 0
+                        break
+                    case ('cards'):
+                        position = 72
+                        break
+                    case ('link'):
+                        position = 144
+                        break
+                        break;
+                    default:
+                        position = 0
+                        break
+                }
+                return position
+            },
+            searchTabOffset(){
+                if(this.withLinkTab){
+                    return 216
+                } else {
+                    return 144
+                }
+            },
             path() {
                 let root = $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/root')
                 return root
@@ -228,13 +295,6 @@
             },
             isVisible() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/isVisible')
-            },
-            cardClass() {
-                return 's' + this.cardSize
-            },
-            cardStyle() {
-                const pix = [20, 40,60,80,100,120,140][this.cardSize]
-                return 'height: '+pix+'px; overflow: hidden'
             }
         },
         methods: {
@@ -326,8 +386,8 @@
                 return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/methods').onHide()
             },
             onOk() {
-                $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/methods')
-                    .setItemPath(this.preview)
+                this.setItemPath(this.tab === 'link' ? this.linkModel.url : this.preview.path)
+                // TODO: set additional props such as newWindow? true/false
                 this.onHide()
             }
         }
