@@ -23,8 +23,8 @@
   #L%
   -->
 <template>
-    <div class="wrapper" style="display: flex; flex-direction: column; min-height: 200px;">
-        <div ref="quilleditor" style="width: 100%"></div>
+    <div class="wrapper">
+        <div ref="quilleditor"></div>
     </div>
 </template>
 
@@ -50,7 +50,8 @@
                 this.quill = new Quill(this.$refs.quilleditor, {
                     theme: 'snow',
                     modules: {
-                        toolbar: [
+                        toolbar: {
+                          container: [
                             [{ header: [1, 2, 3, 4, 5, false] }],
                             ['bold', 'italic', 'underline'],
                             ['link'],
@@ -59,11 +60,32 @@
                             [{ 'indent': '-1'}, { 'indent': '+1' }],
                             ['code-block'],
                             ['clean']
-                        ]
-                    }                })
+                          ],
+                          handlers: {
+                            'link': (value) => {
+                              if (value) {
+                                this.showPageBrowser()
+                              } else {
+                                this.quill.format('link', false);
+                              }
+                            }
+                          } 
+                        }
+                    }            
+                })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
                     this.value = this.$refs.quilleditor.children[0].innerHTML
                 } )
+            },
+            showPageBrowser() {
+              $perAdminApp.pageBrowser(
+                '/content/sites',
+                true, // with Link tab?
+                (newValue) => { 
+                  console.log('newValue: ', newValue)
+                  this.quill.format('link', newValue) 
+                }
+              )
             }
         }
     }
