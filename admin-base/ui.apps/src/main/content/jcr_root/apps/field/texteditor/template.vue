@@ -46,7 +46,7 @@
         },
         methods: {
             initialize() {
-                this.$refs.quilleditor.innerHTML = this.value
+                this.$refs.quilleditor.innerHTML = this.value ? this.value : ''
                 this.quill = new Quill(this.$refs.quilleditor, {
                     theme: 'snow',
                     modules: {
