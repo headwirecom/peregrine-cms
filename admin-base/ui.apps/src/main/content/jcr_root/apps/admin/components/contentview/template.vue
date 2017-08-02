@@ -115,6 +115,17 @@ export default {
             editableTimer: null
         }
     },
+    watch: {
+        // whenever question changes, this function will run
+        viewMode: function (newViewMode) {
+            const iframeBody = this.$refs.editview.contentWindow.document.body
+          if(newViewMode === 'preview'){
+            iframeBody.style.overflow = 'auto'
+          } else {
+            iframeBody.style.overflow = 'hidden'
+          }
+        }
+      },
 
     computed: {
         pagePath: function() {
@@ -215,6 +226,7 @@ export default {
             heightChangeListener.style.height = '100%'
             heightChangeListener.style.width = '100%'
             heightChangeListener.style.border = '0'
+            heightChangeListener.style['z-index'] = '-1'
             heightChangeListener.style['background-color'] = 'transparent'
             iframeDoc.body.appendChild(heightChangeListener)
             heightChangeListener.contentWindow.addEventListener("resize", this.updateOverlay)
