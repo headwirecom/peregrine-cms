@@ -118,14 +118,9 @@ export default {
     watch: {
         // whenever question changes, this function will run
         viewMode: function (newViewMode) {
-            const iframeBody = this.$refs.editview.contentWindow.document.body
-          if(newViewMode === 'preview'){
-            iframeBody.style.overflow = 'auto'
-          } else {
-            iframeBody.style.overflow = 'hidden'
-          }
+            this.setIframeScrollState(newViewMode)
         }
-      },
+    },
 
     computed: {
         pagePath: function() {
@@ -197,10 +192,18 @@ export default {
         /* Iframe (editview) methods ===============
         ============================================ */
         onIframeLoaded(ev){
-            var iframeDoc = ev.target.contentWindow.document
-            iframeDoc.body.style.overflow = 'hidden'
+            this.setIframeScrollState(this.viewMode)
             iframeDoc.body.style.position = 'relative'
             this.createHeightChangeListener(iframeDoc)
+        },
+
+        setIframeScrollState(viewMode) {
+             var iframeDoc = this.$refs.editview.contentWindow.document
+            if(viewMode === 'preview'){
+                iframeDoc.body.style.overflow = 'auto'
+            } else {
+                iframeDoc.body.style.overflow = 'hidden'
+            }
         },
 
         updateOverlay(){
