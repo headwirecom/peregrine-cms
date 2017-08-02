@@ -116,7 +116,6 @@ export default {
         }
     },
     watch: {
-        // whenever question changes, this function will run
         viewMode: function (newViewMode) {
             this.setIframeScrollState(newViewMode)
         }
@@ -192,6 +191,7 @@ export default {
         /* Iframe (editview) methods ===============
         ============================================ */
         onIframeLoaded(ev){
+            const iframeDoc = ev.target.contentWindow.document
             this.setIframeScrollState(this.viewMode)
             iframeDoc.body.style.position = 'relative'
             this.createHeightChangeListener(iframeDoc)
