@@ -83,6 +83,19 @@
                     }
                 }
             }
+             &.field-material-timepicker {
+                input {
+                    width: 100%;
+                    &:focus,
+                    &.picker__input--active {
+                        border-bottom: 1px solid $input-focus-color;
+                        box-shadow: 0 1px 0 0 $input-focus-color;
+                    }
+                }
+                .picker--opened .picker__frame {
+                    top: calc(112px + 1.5rem) !important;
+                }
+            }
             &.field-material-datetime {
                 .wrapper {
                     > input {
