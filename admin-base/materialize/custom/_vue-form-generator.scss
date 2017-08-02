@@ -61,6 +61,7 @@
                 .wrap {
                     input {
                         width: calc(100% - 3rem);
+                        pointer-events: none;
                         &:focus,
                         &.picker__input--active {
                             border-bottom: 1px solid $input-focus-color;
