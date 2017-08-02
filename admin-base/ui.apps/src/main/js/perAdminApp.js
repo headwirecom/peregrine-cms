@@ -302,7 +302,7 @@ function notifyUserImpl(title, message, cb) {
     set(view, '/state/notification/message', message)
     set(view, '/state/notification/onOk', function(){
         set(view, '/state/notification/isVisible', false)
-        cb()
+        if(cb && cb !== null) cb()
     })
     set(view, '/state/notification/isVisible', true)
 }
