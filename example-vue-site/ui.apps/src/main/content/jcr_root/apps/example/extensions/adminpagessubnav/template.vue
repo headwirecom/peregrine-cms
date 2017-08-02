@@ -3,7 +3,9 @@
 </template>
 
 <script>
-    if($perAdminApp) $perAdminApp.registerExtension('admin.pages.subnav', 'example-extensions-adminpagessubnav')
+    if(typeof $perAdminApp != 'undefined') {
+        $perAdminApp.registerExtension('admin.pages.subnav', 'example-extensions-adminpagessubnav')
+    }
     export default {
         props: ['model']
     }
