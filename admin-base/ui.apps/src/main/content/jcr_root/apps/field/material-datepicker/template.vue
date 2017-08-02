@@ -2,12 +2,13 @@
   <!-- datepicker -->
   <div class="wrap">
 		<input 
+			tabindex="-1" 
 			ref="datepicker"
-			class="form-control datepicker" 
+			class="form-control" 
 			type="text"
 	    :placeholder="schema.placeholder"
 	    :name="schema.inputName" />
-	  <button class="btn-flat" v-on:click="showPicker">
+	  <button ref="showPickerBtn" class="btn-flat" v-on:click="showPicker">
 	  	<i class="material-icons">date_range</i>
 	  </button>
 	</div>
@@ -35,10 +36,8 @@
 		},
 		mounted() {
 			if (window.Picker && window.$ && window.$.fn.pickadate) {
-				const options = Object.assign({}, this.schema.options, {
-					editable: true
-				})
-				let input = $(this.$refs.datepicker).pickadate(options)
+				const options = Object.assign({}, this.schema.options)
+				let input = $(this.$refs.datepicker).pickadate()
 				this.picker = input.pickadate('picker')
 				this.picker.on({
 				  // open: () => {
@@ -46,8 +45,8 @@
 				  // },
 				  close: () => {
 				  	console.log('close')
-				  	// adding focus to input prevents autoopening of picker (if the option: editable  === true)
-				  	this.$refs.datepicker.focus()
+				  	// adding focus to diff element prevents auto-opening of picker
+				  	this.$refs.showPickerBtn.focus()
 				  },
 				  // render: () => {
 				  //   console.log('render')
