@@ -26,6 +26,7 @@ package com.peregrine.admin.replication;
  */
 
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -49,6 +50,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,8 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.getResource;
 
 /**
  * Created by schaefa on 5/25/17.
@@ -178,6 +182,26 @@ public class LocalReplicationService
     }
 
     @Override
+    public List<Resource> deactivate(Resource startingResource)
+        throws ReplicationException
+    {
+        ResourceResolver resourceResolver = startingResource.getResourceResolver();
+        Resource source = resourceResolver.getResource(localSource);
+        if(source == null) {
+            throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+        }
+        Resource target = resourceResolver.getResource(localTarget);
+        if(target == null) {
+            throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+        }
+
+        List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
+        ResourceChecker resourceChecker = new MatchingResourceChecker(source, target);
+        PerUtil.listMatchingResources(startingResource, replicationList, resourceChecker, true);
+        return deactivate(startingResource, replicationList);
+    }
+
+    @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         // Replicate the resources
@@ -216,6 +240,70 @@ public class LocalReplicationService
                     handleParents(item, answer, pathMapping, resourceResolver);
                 }
             }
+            try {
+                session.save();
+            } catch(RepositoryException e) {
+                log.warn("Failed to save changes repliate parents", e);
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * This method deactivates the given resource to deactivate it and then updates
+     * the given list of source resources with the replication properties
+     *
+     * @param toBeDeleted The staring resource to be removed which removes all its children
+     * @param resourceList The list of the source dependencies to be updated
+     * @return List of all updated source dependencies
+     * @throws ReplicationException
+     */
+    public List<Resource> deactivate(Resource toBeDeleted, List<Resource> resourceList) throws ReplicationException {
+        List<Resource> answer = new ArrayList<>();
+        // Replicate the resources
+        ResourceResolver resourceResolver = null;
+        for(Resource item: resourceList) {
+            if(item != null) {
+                resourceResolver = item.getResourceResolver();
+                break;
+            }
+        }
+        if(resourceResolver != null) {
+            Resource source = resourceResolver.getResource(localSource);
+            if(source == null) {
+                throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+            }
+            Resource target = resourceResolver.getResource(localTarget);
+            if(target == null) {
+                throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+            }
+            // Update all replication targets by setting the new Replication Date, User and remove the Ref to indicate the deactivation
+            for(Resource item: resourceList) {
+                boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(item);
+                if(replicationMixin) {
+                    ModifiableValueMap properties = getModifiableProperties(item, false);
+                    Calendar replicated = Calendar.getInstance();
+                    properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+                    properties.put(PER_REPLICATED, replicated);
+                    properties.put(PER_REPLICATION_REF, "");
+                }
+            }
+            // Delete the replicated target resource
+            String relativePath = PerUtil.relativePath(source, toBeDeleted);
+            if(relativePath != null) {
+                String targetPath = localTarget + '/' + relativePath;
+                Resource targetResource = getResource(resourceResolver, targetPath);
+                if(targetResource != null) {
+                    try {
+                        resourceResolver.delete(targetResource);
+                    } catch(PersistenceException e) {
+                        throw new ReplicationException("Failed to delete a target resource: " + targetPath, e);
+                    }
+                }
+            } else {
+                log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", toBeDeleted, localSource);
+            }
+            Session session = resourceResolver.adaptTo(Session.class);
             try {
                 session.save();
             } catch(RepositoryException e) {
@@ -297,29 +385,7 @@ public class LocalReplicationService
             }
             newProperties.put(key, value);
         }
-        Node sourceNode = source.adaptTo(Node.class);
-        boolean replicationMixin = false;
-        try {
-            NodeType[] mixins = sourceNode.getMixinNodeTypes();
-            for(NodeType mixin: mixins) {
-                if(mixin.getName().equals("per:Replication")) {
-                    replicationMixin = true;
-                    break;
-                }
-            }
-            if(!replicationMixin) {
-                NodeType nodeType = sourceNode.getPrimaryNodeType();
-                NodeType[] superTypes = nodeType.getSupertypes();
-                for(NodeType mixin: superTypes) {
-                    if(mixin.getName().equals(PER_REPLICATION)) {
-                        replicationMixin = true;
-                        break;
-                    }
-                }
-            }
-        } catch(RepositoryException e) {
-            e.printStackTrace();
-        }
+        boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
         if(replicationMixin) {
             Calendar replicated = Calendar.getInstance();
             properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());

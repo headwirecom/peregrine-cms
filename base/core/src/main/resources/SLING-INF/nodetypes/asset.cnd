@@ -29,6 +29,6 @@
   + jcr:content (per:AssetContent) = per:AssetContent
   + * (nt:base) = nt:base version
 
-[per:AssetContent] > nt:unstructured
+[per:AssetContent] > nt:unstructured, per:Replication
   orderable
   + renditions (nt:folder)

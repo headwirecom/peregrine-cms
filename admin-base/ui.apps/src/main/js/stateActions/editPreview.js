@@ -33,4 +33,5 @@ export default function(me, target) {
 
     let view = me.getView()
     set(view, '/state/tools/workspace/view', target)
+    set(view, '/pageView/view', target)
 }

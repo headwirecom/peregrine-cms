@@ -108,6 +108,8 @@ public class ReplicationServlet extends AbstractBaseServlet {
         }
         String deepParameter = request.getParameter("deep");
         boolean deep = deepParameter != null && "true".equals(deepParameter.toLowerCase());
+        String deactivateParameter = request.getParameter("deactivate");
+        boolean deactivate = deactivateParameter != null && "true".equals(deactivateParameter.toLowerCase());
         Replication replication = replications.get(replicationName);
         if(replication == null) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication not found for name: " + replicationName);
@@ -116,8 +118,12 @@ public class ReplicationServlet extends AbstractBaseServlet {
         if(source != null) {
             List<Resource> replicates;
             try {
-                // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-                replicates = replication.replicate(source, deep);
+                if(!deactivate) {
+                    // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
+                    replicates = replication.replicate(source, deep);
+                } else {
+                    replicates = replication.deactivate(source);
+                }
             } catch(ReplicationException e) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication Failed").setException(e);
             }

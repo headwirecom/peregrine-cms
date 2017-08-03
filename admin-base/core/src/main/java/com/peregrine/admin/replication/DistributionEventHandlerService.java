@@ -27,7 +27,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.DISTRIBUTION_SUB_SERVICE;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
@@ -81,14 +83,14 @@ public class DistributionEventHandlerService
             }
             kind = "IMPORTER";
         } else {
-            log.debug("Received unhandled event: '{}'", event);
+            log.trace("Received unhandled event: '{}'", event);
             return;
         }
         Object value = event.getProperty(DistributionEventProperties.DISTRIBUTION_PATHS);
         if(value instanceof String[]) {
             String[] paths = (String[]) value;
             for(String path: paths) {
-                log.debug("Set Replication Properties on: '{}'", path);
+                log.trace("Set Replication Properties on: '{}'", path);
                 try {
                     setReplicationProperties(path, kind);
                 } catch(Throwable t) {
@@ -102,43 +104,21 @@ public class DistributionEventHandlerService
         ResourceResolver resourceResolver = null;
         try {
             resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
-            log.debug("Resource Resolver: '{}'", resourceResolver);
+            log.trace("Resource Resolver: '{}'", resourceResolver);
             Resource resource = getResource(resourceResolver, path);
-            log.debug("Resource for Path: '{}': '{}'", path, resource);
-            if(resource != null) {
-                Node node = resource.adaptTo(Node.class);
-                boolean replicationMixin = false;
-                try {
-                    NodeType[] mixins = node.getMixinNodeTypes();
-                    for(NodeType mixin : mixins) {
-                        if(mixin.getName().equals("per:Replication")) {
-                            replicationMixin = true;
-                            break;
-                        }
+            log.trace("Resource for Path: '{}': '{}'", path, resource);
+            if(resource != null && supportsReplicationProperties(resource)) {
+                ModifiableValueMap properties = getModifiableProperties(resource, false);
+                if(properties != null) {
+                    Calendar replicated = Calendar.getInstance();
+                    if(!properties.containsKey(PER_REPLICATED_BY)) {
+                        log.trace("Replicated By is not set in: '{}', set to: '{}'", properties, resourceResolver.getUserID());
+                        properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
                     }
-                    if(!replicationMixin) {
-                        NodeType nodeType = node.getPrimaryNodeType();
-                        NodeType[] superTypes = nodeType.getSupertypes();
-                        for(NodeType mixin : superTypes) {
-                            if(mixin.getName().equals(PerConstants.PER_REPLICATION)) {
-                                replicationMixin = true;
-                                break;
-                            }
-                        }
-                    }
-                } catch(RepositoryException e) {
-                    e.printStackTrace();
-                }
-                if(replicationMixin) {
-                    ModifiableValueMap properties = getModifiableProperties(resource, false);
-                    if(properties != null) {
-                        Calendar replicated = Calendar.getInstance();
-                        properties.put(PerConstants.PER_REPLICATED_BY, resourceResolver.getUserID());
-                        properties.put(PerConstants.PER_REPLICATED, replicated);
-                        properties.put(PerConstants.PER_REPLICATION_REF, kind + "://" + path);
-                    } else {
-                        log.error("Could not obtain modifiable properties from resource: '{}'", resource);
-                    }
+                    properties.put(PerConstants.PER_REPLICATED, replicated);
+                    properties.put(PerConstants.PER_REPLICATION_REF, kind + "://" + path);
+                } else {
+                    log.error("Could not obtain modifiable properties from resource: '{}'", resource);
                 }
                 resourceResolver.commit();
             }
@@ -177,15 +157,15 @@ public class DistributionEventHandlerService
             if(tokens.length == 2) {
                 Object value = event.getProperty(tokens[0]);
                 if(value == null) {
-                    log.debug("Event Property: '{}' is not found", tokens[0]);
+                    log.trace("Event Property: '{}' is not found", tokens[0]);
                     answer = false;
                 } else {
                     String text = value + "";
                     answer = text.equals(tokens[1]);
-                    log.debug("Event Property: '{}' does not match. Found: '{}', Expected: '{}'", tokens[0], text, tokens[1]);
+                    log.trace("Event Property: '{}' does not match. Found: '{}', Expected: '{}'", tokens[0], text, tokens[1]);
                 }
             } else {
-                log.debug("Pair: '{}' is not of 'name=value' format", pair);
+                log.trace("Pair: '{}' is not of 'name=value' format", pair);
             }
         }
         return answer;

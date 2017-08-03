@@ -31,6 +31,8 @@
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
             jcr:title="about"
+            tags="about"
+            description="this is the about page description for the example project"
             template="/content/templates/example"
     >
         <content jcr:primaryType="nt:unstructured"

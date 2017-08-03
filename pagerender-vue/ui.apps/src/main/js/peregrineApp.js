@@ -203,6 +203,9 @@ function processLoaders(loaders) {
 function processLoadedContent(data, path, firstTime, fromPopState) {
     walkTreeAndLoad(data)
 
+    if(data.description) document.getElementsByTagName('meta').description.content=data.description
+    if(data.tags) document.getElementsByTagName('meta').keywords.content=data.tags
+
     if(data.suffixToParameter) {
         const pathInfo = makePathInfo(path)
         for(let i = 0; i < data.suffixToParameter.length; i+=2) {
@@ -214,6 +217,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     processLoaders(data.loaders).then( () => {
 
         log.fine('first time', firstTime)
+
         getPerView().page = data;
         getPerView().path = path.slice(0, path.indexOf('.html'));
         getPerView().status = 'loaded';

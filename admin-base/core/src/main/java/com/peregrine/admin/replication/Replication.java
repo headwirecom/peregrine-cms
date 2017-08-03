@@ -48,6 +48,9 @@ public interface Replication {
     List<Resource> replicate(Resource source, boolean deep)
         throws ReplicationException;
 
+    List<Resource> deactivate(Resource source)
+        throws ReplicationException;
+
     /**
      * Replicates all the given resources and only them. This means JCR Content
      * nodes must be part of the given list
@@ -58,6 +61,9 @@ public interface Replication {
      */
     List<Resource> replicate(List<Resource> resourceList)
         throws ReplicationException;
+
+//    List<Resource> deactivate(List<Resource> resourceList)
+//        throws ReplicationException;
 
     class ReplicationException
         extends Exception

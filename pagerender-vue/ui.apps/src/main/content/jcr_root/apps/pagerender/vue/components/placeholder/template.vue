@@ -36,7 +36,7 @@ export default {
         isEditMode: function() {
             if(window.parent) {
                 if(window.parent.$perAdminApp && window.parent !== window) {
-                    return !window.parent.$perAdminApp.isPreviewMode()
+                    return this.$root.view !== 'preview'
                 }
             }
             return false

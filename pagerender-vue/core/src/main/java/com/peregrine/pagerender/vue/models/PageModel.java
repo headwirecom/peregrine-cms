@@ -98,6 +98,12 @@ public class PageModel extends Container {
     @Inject
     private String[] suffixToParameter;
 
+    @Inject
+    private String tags;
+
+    @Inject
+    private String description;
+
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split("/");
@@ -199,4 +205,11 @@ public class PageModel extends Container {
         return suffixToParameter;
     }
 
+    public String getTags() {
+        return tags;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }
