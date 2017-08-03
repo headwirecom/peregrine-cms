@@ -55,7 +55,6 @@
 		},
 		methods: {
 			modelFromTime(){
-				console.log('modelFromTime')
 				const parent = this.$refs.timepicker.parentNode
       	let hours = parseInt(parent.querySelector('.clockpicker-span-hours').textContent)
       	let minutes = parseInt(parent.querySelector('.clockpicker-span-minutes').textContent)
