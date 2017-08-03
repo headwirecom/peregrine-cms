@@ -348,6 +348,7 @@ public class BasicTestHelpers {
         try {
             time = formatter.parse(firstDateString);
         } catch(ParseException e) {
+            // This date format contains milli seconds and so we need to truncate them
             time = formatter2.parse(firstDateString);
             truncatFirst = true;
         }
