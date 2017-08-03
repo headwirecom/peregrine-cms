@@ -260,10 +260,24 @@
                 if(this.isDraggingRow){
                     ev.target.classList.remove('active-drop-zone')
                     /* reorder row logic */
-                    $perAdminApp.stateAction('movePage', { 
-                        path: ev.dataTransfer.getData("text"), 
-                        to: item.path, 
-                        type: 'after' 
+                    const dataFrom = this.model.dataFrom
+                    const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
+
+                    let action = 'movePage'
+                    if(path.startsWith('/content/sites/')) {
+                        // keep default
+                    } else if(path.startsWith('/content/templates/')) {
+                        action = 'moveTemplate'
+                    } else if(path.startsWith('/content/objects/')) {
+                        action = 'moveObject'
+                    } else if(path.startsWith('/content/assets/')) {
+                        action = 'moveAsset'
+                    }
+
+                    $perAdminApp.stateAction(action, {
+                        path: ev.dataTransfer.getData("text"),
+                        to: item.path,
+                        type: 'after'
                     })
                 }
             },
