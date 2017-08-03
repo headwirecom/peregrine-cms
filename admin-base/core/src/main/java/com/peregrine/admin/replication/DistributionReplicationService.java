@@ -27,6 +27,8 @@ package com.peregrine.admin.replication;
 
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -47,6 +49,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
 import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
 
@@ -122,10 +128,9 @@ public class DistributionReplicationService
     public List<Resource> replicate(Resource startingResource, boolean deep)
         throws ReplicationException
     {
-//        ResourceResolver resourceResolver = startingResource.getResourceResolver();
-        log.debug("Starting Resource: '{}'", startingResource.getPath());
+        log.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(startingResource, true);
-        log.debug("Reference List: '{}'", referenceList);
+        log.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
@@ -144,12 +149,37 @@ public class DistributionReplicationService
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
-        log.debug("List for Replication: '{}'", replicationList);
+        log.trace("List for Replication: '{}'", replicationList);
         return replicate(replicationList);
     }
 
     @Override
+    public List<Resource> deactivate(Resource startingResource)
+        throws ReplicationException
+    {
+        log.trace("Starting Resource: '{}'", startingResource.getPath());
+        List<Resource> replicationList = new ArrayList<>();
+        ResourceChecker resourceChecker = new ResourceChecker() {
+            @Override
+            public boolean doAdd(Resource resource) {
+                return true;
+            }
+        };
+        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, true);
+        log.trace("List for Replication: '{}'", replicationList);
+        return deactivate(replicationList);
+    }
+
+    @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+        return replicate(resourceList, true);
+    }
+
+    public List<Resource> deactivate(List<Resource> resourceList) throws ReplicationException {
+        return replicate(resourceList, false);
+    }
+
+    public List<Resource> replicate(List<Resource> resourceList, boolean activate) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         if(distributor != null) {
             ResourceResolver resourceResolver = null;
@@ -164,10 +194,34 @@ public class DistributionReplicationService
                 int i = 0;
                 for(Resource resource : resourceList) {
                     paths[i++] = resource.getPath();
+                    // In order to make it possible to have the correct user set and Replicated By we need to set it here and now
+                    if(supportsReplicationProperties(resource)) {
+                        ModifiableValueMap properties = getModifiableProperties(resource, false);
+                        if(properties != null) {
+                            log.trace("Set Replication User to: '{}' on properties: '{}'", resourceResolver.getUserID(), properties);
+                            properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
+                            if(!activate) {
+                                properties.remove(PER_REPLICATION_REF);
+                            }
+                        }
+                    }
+                }
+                try {
+                    resourceResolver.commit();
+                } catch(PersistenceException e) {
+                    throw new ReplicationException("Could not set Replication User before distribution", e);
                 }
                 if(distributor != null) {
-                    DistributionResponse response = distributor.distribute(agentName, resourceResolver, new SimpleDistributionRequest(DistributionRequestType.ADD, paths));
-                    log.debug("Distributor Response: '{}'", response);
+                    DistributionResponse response = distributor.distribute(
+                        agentName,
+                        resourceResolver,
+                        new SimpleDistributionRequest(
+                            activate ?
+                                DistributionRequestType.ADD :
+                                DistributionRequestType.DELETE,
+                            paths)
+                    );
+                    log.trace("Distributor Response: '{}'", response);
                     if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
                         throw new ReplicationException("Distribution failed due to: " + response);
                     }

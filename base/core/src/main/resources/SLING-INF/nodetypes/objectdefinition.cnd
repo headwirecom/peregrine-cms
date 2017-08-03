@@ -24,5 +24,5 @@
  */
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-[per:ObjectDefinition] > nt:unstructured, sling:Folder
+[per:ObjectDefinition] > nt:unstructured, sling:Folder, per:Replication
 

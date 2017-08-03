@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
@@ -299,11 +300,12 @@ public class BasicTestHelpers {
         }
     }
 
-    private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    private static final String ECMA_DATE_FORMAT = "EEE MMM dd yyyy HH:mm:ss 'GMT'Z";
+//    private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    private static final String LONG_ECMA_DATE_FORMAT = "EEE MMM dd yyyy HH:mm:ss 'GMT'Z";
     private static final Locale DATE_FORMAT_LOCALE = Locale.US;
-    private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, DATE_FORMAT_LOCALE);
-//    private static DateFormat defaultFormatter = new SimpleDateFormat(DEFAULT_DATE_FORMAT, DATE_FORMAT_LOCALE);
+    private static DateFormat formatter = new SimpleDateFormat(LONG_ECMA_DATE_FORMAT, DATE_FORMAT_LOCALE);
+    private static DateFormat formatter2 = new SimpleDateFormat(ECMA_DATE_FORMAT, DATE_FORMAT_LOCALE);
+    private static DateFormat printFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", DATE_FORMAT_LOCALE);
 
     private static void checkLastModifiedOnResource(Map properties, Calendar afterThat) throws ParseException {
         //AS TODO: convert the response into a Calendar instnce (how?)
@@ -323,34 +325,63 @@ public class BasicTestHelpers {
             // to the same format string and back to a Calendar to compare
             differenceInMillis = getDateDifferenceInMillis(afterThat, true, lastModified, false);
             logger.info("Last Modified Millis Difference: '{}'", differenceInMillis);
-            assertTrue("Last Modified is older as given date: " + afterThat.toString(), differenceInMillis < 0);
+            assertTrue("Last Modified is older as given date: " + afterThat.toString(), differenceInMillis > 0);
         }
     }
 
+    /**
+     * Get the time differences in dates
+     *
+     * @param firstDateString Textual Representation of a Date
+     * @param second Calendar Date to check against
+     * @param truncateSecond If true then the second date is truncated to seconds
+     * @return The time differences of the two dates in millis. A positive number means that
+     *         the first date is older, 0 means they are equal and negative means that the
+     *         first is younger
+     * @throws ParseException If the parsing failed
+     */
     public static long getDateDifferenceInMillis(String firstDateString, Calendar second, boolean truncateSecond) throws ParseException {
+        logger.info("First Date String: '{}'", firstDateString);
         Calendar first = Calendar.getInstance();
-        first.setTime(formatter.parse(firstDateString));
-        return getDateDifferenceInMillis(first, false, second, truncateSecond);
+        Date time = null;
+        boolean truncatFirst = false;
+        try {
+            time = formatter.parse(firstDateString);
+        } catch(ParseException e) {
+            time = formatter2.parse(firstDateString);
+            truncatFirst = true;
+        }
+        first.setTime(time);
+        return getDateDifferenceInMillis(first, truncatFirst, second, truncateSecond);
     }
 
+    /**
+     * Get the time differences in dates in milli seconds
+     * @param first First calendar date entry
+     * @param truncateFirst If true the first calendar entry will be truncated to seconds
+     * @param second Second calendar date entry
+     * @param truncateSecond If true the second calendar entry will be truncated to seconds
+     * @return The time differences of the two dates in millis. A positive number means that
+     *         the first date is older, 0 means they are equal and negative means that the
+     *         first is younger
+     * @throws ParseException If the parsing failed
+     */
     public static long getDateDifferenceInMillis(Calendar first, boolean truncateFirst, Calendar second, boolean truncateSecond) throws ParseException {
         if(truncateFirst) {
             String firstDateString = formatter.format(first.getTime());
             logger.info("First Date Format: '{}'", firstDateString);
             first = Calendar.getInstance();
-            Date date;
-//            try {
-                date = formatter.parse(firstDateString);
-//            } catch(ParseException e) {
-
-//                date = defaultFormatter.parse(firstDateString);
-//            }
+            first.setTime(formatter.parse(firstDateString));
+        } else {
+            logger.info("Untruncated First Date Format: '{}'", printFormatter.format(first.getTime()));
         }
         if(truncateSecond) {
             String secondDateString = formatter.format(second.getTime());
             logger.info("Second Date Format: '{}'", secondDateString);
             second = Calendar.getInstance();
             second.setTime(formatter.parse(secondDateString));
+        } else {
+            logger.info("Untruncated Second Date Format: '{}'", printFormatter.format(first.getTime()));
         }
         long answer = Duration.between(first.toInstant(), second.toInstant()).toMillis();
         logger.info("Date Difference in millis: '{}'", answer);

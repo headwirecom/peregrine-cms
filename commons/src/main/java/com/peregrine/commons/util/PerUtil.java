@@ -256,6 +256,26 @@ public class PerUtil {
         }
     }
 
+    public static void listMatchingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
+        ResourceChecker childResourceChecker = resourceChecker;
+        if(startingResource != null && resourceChecker != null && response != null) {
+            if(resourceChecker.doAdd(startingResource)) {
+                response.add(startingResource);
+                // If this is JCR Content we need to add all children
+                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
+                    childResourceChecker = new AddAllResourceChecker();
+                }
+            }
+            for(Resource child : startingResource.getChildren()) {
+                if(child.getName().equals(PerConstants.JCR_CONTENT)) {
+                    listMatchingResources(child, response, childResourceChecker, true);
+                } else if(deep) {
+                    listMatchingResources(child, response, childResourceChecker, true);
+                }
+            }
+        }
+    }
+
     public static boolean containsResource(List<Resource> resourceList, Resource resource) {
         for(Resource item: resourceList) {
             if(item.getPath().equals(resource.getPath())) {
@@ -362,6 +382,25 @@ public class PerUtil {
                 }
             }
             return answer;
+        }
+    }
+
+    public static class MatchingResourceChecker
+        implements ResourceChecker
+    {
+        private Resource source;
+        private Resource target;
+
+        public MatchingResourceChecker(Resource source, Resource target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        @Override
+        public boolean doAdd(Resource resource) {
+            String relativePath = relativePath(source, resource);
+            Resource targetResource = target.getChild(relativePath);
+            return targetResource != null;
         }
     }
 

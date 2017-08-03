@@ -488,6 +488,11 @@ paths:
           in: formData
           description: flag indicating if only the given node and its content is replicated or all sub nodes
           required: false
+        - name: deactivate
+          type: boolean
+          in: formData
+          description: flag indicating if the target nodes are removed aka deactivated
+          required: false
       responses:
         200:
           description: returns the root node name / path and the list of the nodes referenced
