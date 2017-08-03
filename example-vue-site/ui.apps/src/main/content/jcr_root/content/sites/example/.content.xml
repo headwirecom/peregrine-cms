@@ -33,6 +33,8 @@
             sling:resourceType="example/components/page"
             jcr:title="example vuejs site"
             brand="example"
+            tags="exampletag"
+            description="this is an example site"
             template="/content/templates/example"
     >
         <jumbotron jcr:primaryType="nt:unstructured"

@@ -10,7 +10,7 @@
     <article v-else="" v-for="post in app.posts['children']">
       <h2>{{post.title}}</h2>
       <div v-html="post.lead"></div>
-      <a v-bind:href="'index.html/post//'+post['name']"
+      <a v-bind:href="'post.html/post//'+post['name']"
       v-on:click.stop.prevent="select(post)">more</a>
     </article>
   </div>
@@ -43,7 +43,7 @@
         },
         methods: {
             select(post) {
-                $peregrineApp.loadContent('/content/sites/blog/index.html/post//'+post['name'])
+                $peregrineApp.loadContent('/content/sites/blog/post.html/post//'+post['name'])
             }
         }
     }

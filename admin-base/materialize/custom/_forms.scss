@@ -17,8 +17,7 @@ textarea.materialize-textarea {
   border: $input-border;
   box-sizing: border-box;
 }
-form {
-	label {
-		color: color("blue-grey", "base");
-	}
+
+label {
+	color: color("blue-grey", "base");
 }

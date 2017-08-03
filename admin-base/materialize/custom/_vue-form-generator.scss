@@ -7,9 +7,6 @@
         margin: 0;
         min-width: auto;
         .form-group {
-            .picker--opened .picker__frame {
-                top: calc(112px + 1.5rem) !important;
-            }
             &.field-list {
                  .field-wrap {
                     &.field-with-button {
@@ -30,6 +27,19 @@
 
                 }
             }
+            &.field-listselection {
+                .select-wrapper {
+                    background-color: #fff;
+                    input {
+                        background-color: transparent;
+                    }
+                    .caret {
+                        .material-icons {
+                            color: color("blue-grey", "base");
+                        }
+                    }
+                }
+            }
             &.field-pathbrowser {
                 .wrap {
                     input {
@@ -46,6 +56,32 @@
                         }
                     }
                 } 
+            }
+            &.field-material-datepicker {
+                .wrap {
+                    input {
+                        width: calc(100% - 3rem);
+                        pointer-events: none;
+                        &:focus,
+                        &.picker__input--active {
+                            border-bottom: 1px solid $input-focus-color;
+                            box-shadow: 0 1px 0 0 $input-focus-color;
+                        }
+                    }
+                    > .btn-flat {
+                        width: 3rem;
+                        height: 3rem;
+                        border: 1px solid color("blue-grey", "lighten-4");
+                        border-left: 0;
+                        float:right;
+                        display: inline-block;
+                        padding: 0;
+                        color: color("blue-grey", "darken-1");
+                    }
+                    > .picker--opened .picker__frame {
+                        top: calc(112px + 1.5rem) !important;
+                    }
+                }
             }
             &.field-material-datetime {
                 .wrapper {

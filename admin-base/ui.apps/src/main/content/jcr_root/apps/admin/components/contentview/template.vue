@@ -115,6 +115,11 @@ export default {
             editableTimer: null
         }
     },
+    watch: {
+        viewMode: function (newViewMode) {
+            this.setIframeScrollState(newViewMode)
+        }
+    },
 
     computed: {
         pagePath: function() {
@@ -186,10 +191,19 @@ export default {
         /* Iframe (editview) methods ===============
         ============================================ */
         onIframeLoaded(ev){
-            var iframeDoc = ev.target.contentWindow.document
-            iframeDoc.body.style.overflow = 'hidden'
+            const iframeDoc = ev.target.contentWindow.document
+            this.setIframeScrollState(this.viewMode)
             iframeDoc.body.style.position = 'relative'
             this.createHeightChangeListener(iframeDoc)
+        },
+
+        setIframeScrollState(viewMode) {
+             var iframeDoc = this.$refs.editview.contentWindow.document
+            if(viewMode === 'preview'){
+                iframeDoc.body.style.overflow = 'auto'
+            } else {
+                iframeDoc.body.style.overflow = 'hidden'
+            }
         },
 
         updateOverlay(){
@@ -215,6 +229,7 @@ export default {
             heightChangeListener.style.height = '100%'
             heightChangeListener.style.width = '100%'
             heightChangeListener.style.border = '0'
+            heightChangeListener.style['z-index'] = '-1'
             heightChangeListener.style['background-color'] = 'transparent'
             iframeDoc.body.appendChild(heightChangeListener)
             heightChangeListener.contentWindow.addEventListener("resize", this.updateOverlay)

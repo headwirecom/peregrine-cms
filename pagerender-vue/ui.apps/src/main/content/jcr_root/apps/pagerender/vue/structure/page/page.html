@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#c0c0c0">
+    <meta name="description" content="${helper.model.description}">
+    <meta name="keywords" content="${helper.model.tags}">
 
     <title>${resource.jcr:title}</title>
 
@@ -40,7 +42,7 @@
 <sly data-sly-include="renderer.html"></sly>
 
 <script>
-    var $perView = {};
+    var $perView = { view: 'preview' };
     $peregrineApp.registerView($perView)
     $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
 </script>

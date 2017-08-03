@@ -70,7 +70,10 @@ public class MastheadModel extends AbstractComponent {
         Iterable<Resource> children = homePage.getChildren();
         for (Resource child: children) {
             if(!child.getName().equals("jcr:content")) {
-                ret.add(new NavItem(child));
+                boolean hideInNav = child.getChild("jcr:content").getValueMap().get("hideInNav", false);
+                if(!hideInNav) {
+                    ret.add(new NavItem(child));
+                }
             }
         }
 

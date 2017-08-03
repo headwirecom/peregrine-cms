@@ -26,3 +26,15 @@ that location.
 
 We still need to implement a way in the toolingpage/renderer.html to pull and define all
 the extensions that can be found in the system. 
+
+## percli changes to support author and publish node
+
+`percli server start [-a|-p]`
+
+## explain how distribution works
+
+https://github.com/apache/sling/tree/trunk/contrib/extensions/distribution for more info
+
+## documentation about the existing field types
+
+we need to document the field types currently available in peregrine

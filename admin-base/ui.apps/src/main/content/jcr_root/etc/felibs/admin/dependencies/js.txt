@@ -8,3 +8,4 @@ vue-imagesloaded.js
 vfg.js
 vue-form-wizard.js
 drag-drop-touch.js
+spectrum.js

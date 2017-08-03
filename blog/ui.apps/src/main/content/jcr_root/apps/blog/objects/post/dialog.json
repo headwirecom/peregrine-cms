@@ -6,8 +6,7 @@
   "placeholder": "title"
 },
   {
-    "type": "input",
-    "inputType": "text",
+    "type": "material-datepicker",
     "label": "Date",
     "model": "date",
     "placeholder": "date"
