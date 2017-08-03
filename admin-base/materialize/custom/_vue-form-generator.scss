@@ -148,6 +148,11 @@
                     }
                 }
             }
+            &.field-texteditor {
+                .ql-tooltip {
+                    display: none;
+                }
+            }
             &.field-checkbox {
                 .field-wrap {
                     display: inline-block;
