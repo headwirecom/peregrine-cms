@@ -98,13 +98,30 @@
             }
             &.field-material-datetime {
                 .wrapper {
-                    > input {
-                        width: calc(50% - 0.375rem);
-                        &:first-of-type {
-                            float: left;
+                    > .date-wrapper {
+                        float: left;
+                        width: calc(70% - 0.375rem);
+                        > input {
+                            display: inline-block;
+                            width: calc(100% - 3rem);
+                            pointer-events: none;
                         }
-                        &:last-of-type {
-                            float: right;
+                        > .btn-flat {
+                            width: 3rem;
+                            height: 3rem;
+                            border: 1px solid color("blue-grey", "lighten-4");
+                            border-left: 0;
+                            float:right;
+                            display: inline-block;
+                            padding: 0;
+                            color: color("blue-grey", "darken-1");
+                        }
+                    }
+                    > .time-wrapper {
+                        float: right;
+                        width: calc(30% - 0.375rem);
+                        > input {
+                            width: 100%;
                         }
                     }
                 }
