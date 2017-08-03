@@ -34,12 +34,7 @@ export default {
     props: ['model'],
     computed: {
         isEditMode: function() {
-            if(window.parent) {
-                if(window.parent.$perAdminApp && window.parent !== window) {
-                    return !window.parent.$perAdminApp.isPreviewMode()
-                }
-            }
-            return false
+            return this.$root.view !== 'preview'
         },
         componentName: function() {
             let post = ''

@@ -40,7 +40,7 @@
 <sly data-sly-include="renderer.html"></sly>
 
 <script>
-    var $perView = {};
+    var $perView = { view: 'preview' };
     $peregrineApp.registerView($perView)
     $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
 </script>
