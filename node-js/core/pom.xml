@@ -50,7 +50,7 @@
                             the bundle symbolic name is set here to ensure that the Service User Mapping will work
                             even if the group or artifact id is changed.
                         -->
-                        <Bundle-Activator>com.peregrine.node.osgi.Activator</Bundle-Activator>
+                        <Bundle-Activator>com.peregrine.nodejs.osgi.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>com.peregrine.nodejs</Bundle-SymbolicName>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.nodejs.models</Sling-Model-Packages>
