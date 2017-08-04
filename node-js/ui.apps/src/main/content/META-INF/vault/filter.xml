@@ -13,14 +13,14 @@
         filter list and add filter entries until all of the app provides
         nodes are included but none of the customer generatedd nodes.
 
-        Also any sub pckage of this module needs to exclude /apps/node/install
+        Also any sub pckage of this module needs to exclude /apps/nodejs/install
         folder otherwise they wipe all installed bundles.
     -->
     <!--<filter root="/home/users/system/wEr2LXLE1mi10nrb_kTyt" mode="update"/>-->
-    <filter root="/api/node/swaggereditor"/>
-    <filter root="/etc/openapi/node"/>
-    <filter root="/content/node/example"/>
-    <filter root="/apps/node">
-        <exclude pattern="/apps/node/install(/.*)?"/>
+    <filter root="/api/nodejs/swaggereditor"/>
+    <filter root="/etc/openapi/nodejs"/>
+    <filter root="/content/nodejs/example"/>
+    <filter root="/apps/nodejs">
+        <exclude pattern="/apps/nodejs/install(/.*)?"/>
     </filter>
 </workspaceFilter>

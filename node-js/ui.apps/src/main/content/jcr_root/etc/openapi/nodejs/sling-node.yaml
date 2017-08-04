@@ -1,0 +1,157 @@
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  contact:
+    email: apiinfo@peregrine-cms.com
+    name: Api Information Team
+    url: 'https://api.peregrine-cms.com'
+  description: 'peregrine cms api'
+  license:
+    name: Apache-2.0
+  title: peregrine-cms-nodejs
+  version: '1.0'
+
+# array of all schemes that your API supports
+schemes:
+  - http
+
+# will be prefixed to all paths
+basePath: /api/nodejs
+
+produces:
+  - application/json
+
+paths:
+  # List all installed packages
+  /list:
+    get:
+      summary: Installed Packages
+      description: |
+        Gets all the installed packages in Sling
+        Optional query param of **size** determines
+        size of returned array
+      parameters:
+        - name: name
+          in: query
+          description: Name of a package to look for
+          required: false
+          type: string
+        - name: depth
+          in: query
+          description: Depth of the Dependency List
+          required: false
+          type: number
+          format: double
+          default: 0
+        - name: type
+          in: query
+          description: Type of the packages (all, dev or production)
+          required: false
+          type: string
+      responses:
+        200:
+          description: Dependencies of Packages. For depth greater than 0 the returned object contains dependencies for each package
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Dependencies'
+        400:
+          description: Expected Error
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/Error'
+  /package/install:
+    post:
+      description: Installs a new Package
+      operationId: installPackage
+      parameters:
+        - name: name
+          in: query
+          description: Package Name
+          required: true
+          type: string
+        - name: version
+          in: query
+          description: Package Version
+          required: false
+          type: string
+      responses:
+        200:
+          description: Success Message
+          schema:
+            $ref: '#/definitions/Success'
+        400:
+          description: Expected Error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: User does not have permission
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/Error'
+  /package/remove:
+    post:
+      description: Remove an existing Package
+      operationId: removePackage
+      parameters:
+        - name: name
+          in: query
+          description: Package Name
+          required: true
+          type: string
+        - name: version
+          in: query
+          description: Package Version
+          required: false
+          type: string
+      responses:
+        200:
+          description: Success Message
+          schema:
+            $ref: '#/definitions/Success'
+        400:
+          description: Expected Error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: User does not have permission
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Dependencies:
+    type: object
+    properties:
+      version:
+        type: string
+      from:
+        type: string
+      resolved:
+        type: string
+  Success:
+    type: object
+    properties:
+      message:
+        type: string
+      output:
+        type: string
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      error:
+        type: string
