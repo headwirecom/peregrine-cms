@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workspaceFilter version="1.0">
+    <!--
+        Any node that will contain customer data needs to be excluded
+        otherwise a Pacakge Installation will wipe them.
+
+        If there is a mix then all provided nodes must be included and
+        all custom nodes excluded.
+
+        If unsure what to do then go to the Composum Package Manager
+        (/bin/packages.html) and create a test package. To to the package
+        filter list and add filter entries until all of the app provides
+        nodes are included but none of the customer generatedd nodes.
+
+        Also any sub pckage of this module needs to exclude /apps/node/install
+        folder otherwise they wipe all installed bundles.
+    -->
+    <!--<filter root="/home/users/system/wEr2LXLE1mi10nrb_kTyt" mode="update"/>-->
+    <filter root="/api/node/swaggereditor"/>
+    <filter root="/etc/openapi/node"/>
+    <filter root="/content/node/example"/>
+    <filter root="/apps/node">
+        <exclude pattern="/apps/node/install(/.*)?"/>
+    </filter>
+</workspaceFilter>

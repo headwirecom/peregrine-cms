@@ -1,0 +1,73 @@
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  contact:
+    email: apiinfo@peregrine-cms.com
+    name: Api Information Team
+    url: 'https://api.peregrine-cms.com'
+  description: 'peregrine cms api'
+  license:
+    name: Apache-2.0
+  title: peregrine-cms-nodejs-scripts
+  version: '1.0'
+
+# array of all schemes that your API supports
+schemes:
+  - http
+
+# will be prefixed to all paths
+basePath: /api/node/execute
+
+produces:
+  - text/plain
+
+paths:
+  # Executes a Script through Nodes
+  /node:
+    get:
+      summary: Execute Script through Nodes
+      description: |
+        The given script is executed inside Nodes.js
+      parameters:
+        - name: path
+          in: query
+          description: JCR Path to the Script to execute
+          required: true
+          type: string
+      responses:
+        200:
+          description: Output
+          schema:
+            type: string
+        default:
+          description: Unexpected Error
+          schema:
+            type: string
+  /j2v8:
+    get:
+      summary: Execute Script through J2V8
+      description: |
+        The given script is executed inside J2V8
+      parameters:
+        - name: path
+          in: query
+          description: JCR Path to the Script to execute
+          required: true
+          type: string
+        - name: arguments
+          in: query
+          description: List of arguments
+          required: false
+#          type: array
+#          items:
+          type: string
+      responses:
+        200:
+          description: Output
+          schema:
+            type: string
+        default:
+          description: Unexpected Error
+          schema:
+            type: string

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+    jcr:primaryType="rep:SystemUser"
+    jcr:uuid="6a3236b2-c23c-38e6-a685-99176849d3eb"
+    rep:authorizableId="nodejs-service-user"
+    rep:principalName="nodejs-service-user"/>

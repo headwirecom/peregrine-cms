@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>admin.parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>node-js.j2v8-installation</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Sling Node Package Manager - All</name>
+    <description>
+        This POM installs the necessary J2V8 bundled based on the users OS.
+
+        ATTENTION: only install this one ONCE into your running sling instance
+                   as multiple installation causes the JNI requests to fail.
+                   If that happens then Sling must be restarted in order to fix
+                   classloader issue.
+    </description>
+
+    <properties>
+        <j2v8.version>4.6.0</j2v8.version>
+    </properties>
+
+    <profiles>
+        <!--NOTE: as the Mac OS X is also Unix it is important that it comes after the Linux configuration-->
+        <profile>
+            <id>installJ2V8Unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <groupId>com.eclipsesource.j2v8</groupId>
+                            <artifactId>j2v8_linux_x86_64</artifactId>
+                            <version>${j2v8.version}</version>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-file</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installJ2V8Mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                  <plugin>
+                      <groupId>org.apache.sling</groupId>
+                      <artifactId>maven-sling-plugin</artifactId>
+                      <configuration>
+                          <groupId>com.eclipsesource.j2v8</groupId>
+                          <artifactId>j2v8_macosx_x86_64</artifactId>
+                          <version>${j2v8.version}</version>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <id>install-file</id>
+                              <phase>install</phase>
+                              <goals>
+                                  <goal>install-file</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installJ2V8Windows32</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                  <plugin>
+                      <groupId>org.apache.sling</groupId>
+                      <artifactId>maven-sling-plugin</artifactId>
+                      <configuration>
+                          <groupId>com.eclipsesource.j2v8</groupId>
+                          <artifactId>j2v8_win32_x86</artifactId>
+                          <version>${j2v8.version}</version>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <id>install-file</id>
+                              <phase>install</phase>
+                              <goals>
+                                  <goal>install-file</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!--<profile>-->
+            <!--<id>installJ2V8Windows64</id>-->
+            <!--<activation>-->
+                <!--<os>-->
+                    <!--<family>windows</family>-->
+                <!--</os>-->
+            <!--</activation>-->
+            <!--<build>-->
+                <!--<plugins>-->
+                  <!--<plugin>-->
+                      <!--<groupId>org.apache.sling</groupId>-->
+                      <!--<artifactId>maven-sling-plugin</artifactId>-->
+                      <!--<configuration>-->
+                          <!--<groupId>com.eclipsesource.j2v8</groupId>-->
+                          <!--<artifactId>j2v8_win32_x86_64</artifactId>-->
+                          <!--<version>${j2v8.version}</version>-->
+                      <!--</configuration>-->
+                      <!--<executions>-->
+                          <!--<execution>-->
+                              <!--<id>install-file</id>-->
+                              <!--<phase>install</phase>-->
+                              <!--<goals>-->
+                                  <!--<goal>install-file</goal>-->
+                              <!--</goals>-->
+                          <!--</execution>-->
+                      <!--</executions>-->
+                  <!--</plugin>-->
+                <!--</plugins>-->
+            <!--</build>-->
+        <!--</profile>-->
+    </profiles>
+</project>

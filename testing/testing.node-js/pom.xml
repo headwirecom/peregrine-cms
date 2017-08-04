@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.peregrine.cms</groupId>
+        <artifactId>testing.parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>testing.node-js</artifactId>
+    <packaging>content-package</packaging>
+
+    <name>Sling Node Package Manager - IT Tests</name>
+    <description>
+        This module will test the Sling Node against an existing and running
+        server. Please make sure the server is up and running and the project
+        is deployed.
+    </description>
+
+    <properties>
+        <!-- This must be the same version as the one use in the SlingTestBase class (see module org.apache.sling.testing.serversetup for that) -->
+        <slf4j.version>1.7.6</slf4j.version>
+        <!-- Current J2V8 version -->
+        <j2v8.version>4.6.0</j2v8.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>testing.basic</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.peregrine.cms</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.junit.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.rules</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.junit.teleporter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-junit4</artifactId>
+        </dependency>
+
+        <!--&lt;!&ndash; Additional bundles needed by the Sling instance under test &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.sling</groupId>-->
+            <!--<artifactId>org.apache.sling.junit.scriptable</artifactId>-->
+            <!--<version>1.0.10</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.sling</groupId>-->
+            <!--<artifactId>org.apache.sling.junit.remote</artifactId>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.tools</artifactId>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.sling</groupId>-->
+            <!--<artifactId>org.apache.sling.servlets.post</artifactId>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; sling testing tools bundles requires httpclient &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.httpcomponents</groupId>-->
+            <!--<artifactId>httpclient-osgi</artifactId>-->
+            <!--<version>4.5.2</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.httpcomponents</groupId>-->
+            <!--<artifactId>httpcore-osgi</artifactId>-->
+            <!--<version>4.4.5</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; actual dependencies &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.sling</groupId>-->
+            <!--<artifactId>org.apache.sling.commons.json</artifactId>-->
+            <!--&lt;!&ndash;<version>2.0.20</version>&ndash;&gt;-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>commons-io</groupId>-->
+            <!--<artifactId>commons-io</artifactId>-->
+            <!--<version>1.4</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-simple</artifactId>-->
+            <!--<scope>test</scope>-->
+            <!--<version>${slf4j.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>junit</groupId>-->
+            <!--<artifactId>junit</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+    </dependencies>
+
+    <build>
+        <resources>
+            <!-- define the resources that will go into the package -->
+            <resource>
+                <!--
+                    we want to keep some of the META-INF files and not configure
+                    everything in the plugin.
+                -->
+                <directory>${basedir}/src/main/content/META-INF</directory>
+                <targetPath>../vault-work/META-INF</targetPath>
+            </resource>
+            <resource>
+                <!--
+                    we want to keep some of the META-INF files and not configure
+                    everything in the plugin.
+                -->
+                <directory>${basedir}/../../docs</directory>
+                <targetPath>apps/admin/docs</targetPath>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/content/jcr_root</directory>
+                <excludes>
+                    <!-- exclude .vlt control files in the package -->
+                    <exclude>**/.vlt</exclude>
+                    <exclude>**/.vltignore</exclude>
+                    <exclude>**/.gitignore</exclude>
+                    <exclude>**/*.iml</exclude>
+                    <exclude>**/.classpath</exclude>
+                    <exclude>**/.project</exclude>
+                    <exclude>**/.settings</exclude>
+                    <exclude>**/.DS_Store</exclude>
+                    <exclude>**/target/**</exclude>
+                    <exclude>**/pom.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <!-- Find free ports to run our server -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>reserve-server-port</id>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <portNames>
+                                <!-- used port name must be stored in property because it must be used for the base url -->
+                                <portName>http.port</portName>
+                            </portNames>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+           <!--<plugin>-->
+                <!--<artifactId>maven-clean-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<filesets>-->
+                        <!--<fileset>-->
+                            <!--<directory>${basedir}</directory>-->
+                            <!--<includes>-->
+                                <!--&lt;!&ndash; sling folder is the workdir of the executable jar that we test &ndash;&gt;-->
+                                <!--<include>sling/**</include>-->
+                            <!--</includes>-->
+                        <!--</fileset>-->
+                    <!--</filesets>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-surefire-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--&lt;!&ndash; We run all tests in the integration-tests phase &ndash;&gt;-->
+                    <!--<excludes>-->
+                        <!--<exclude>**</exclude>-->
+                    <!--</excludes>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <plugin>
+                <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
+                <groupId>org.apache.sling</groupId>
+                <artifactId>slingstart-maven-plugin</artifactId>
+                <version>1.7.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>prepare-launchpad-package</id>
+                        <goals>
+                            <goal>prepare-package</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>build-launchpad-package</id>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>start-container-before-IT</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-container-after-IT</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
+                            <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
+                        </configuration>
+                    </execution>
+
+                </executions>
+                <configuration>
+                    <servers>
+                        <server>
+                            <id>singleinstance</id>
+                            <port>${http.port}</port>
+                            <vmOpts>${sling.vm.options}</vmOpts>
+                        </server>
+                    </servers>
+                </configuration>
+            </plugin>
+            <!--&lt;!&ndash; Wait until Composum is up and running so that we can deploy packages &ndash;&gt;-->
+            <!--<plugin>-->
+                <!--<groupId>org.sonatype.plugins</groupId>-->
+                <!--<artifactId>wait-maven-plugin</artifactId>-->
+                <!--<version>1.0</version>-->
+                <!--<configuration>-->
+                    <!--<host>${http.host}</host>-->
+                    <!--<port>${http.port}</port>-->
+                    <!--<file>/bin/browser.html</file>-->
+                    <!--<timeout>10000</timeout>-->
+                    <!--<maxcount>10</maxcount>-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>pre-integration-test</id>-->
+                        <!--<phase>pre-integration-test</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>wait</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+            <!-- Deploy our Bundle to be tested onto the server -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.19.1</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <systemPropertyVariables>
+                        <launchpad.http.port>${http.port}</launchpad.http.port>
+                        <IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>
+
+                        <launchpad.http.server.url>http://${sling.host}:${http.port}</launchpad.http.server.url>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>io.wcm.maven.plugins</groupId>
+                <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <serviceURL>http://${sling.host}:${http.port}/bin/cpm/package.service.html</serviceURL>
+                    <userId>${sling.user}</userId>
+                    <password>${sling.password}</password>
+                    <failOnMissingEmbed>true</failOnMissingEmbed>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                        <configuration>
+                            <packageFiles>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>base.ui.apps</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>felib.ui.apps</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>pagerender-vue.ui.apps</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>admin.ui.materialize</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>admin.ui.apps</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>example-vue.ui.apps</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>node-js.ui.apps</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                                <packageFile>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>node-js.ui.apps.script</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                </packageFile>
+                            </packageFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>peregrine-cms-license</licenseName>
+                    <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
+                    <excludes>
+                        <!-- Need to provide a pattern that deals with folders as well -->
+                        <exclude>**/api/swaggereditor/**/*</exclude>
+                        <exclude>**/*.svg</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!--NOTE: as the Mac OS X is also Unix it is important that it comes after the Linux configuration-->
+        <profile>
+            <id>installJ2V8Unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <groupId>com.eclipsesource.j2v8</groupId>
+                            <artifactId>j2v8_linux_x86_64</artifactId>
+                            <version>${j2v8.version}</version>
+                            <slingUrl>http://${sling.host}:${http.port}/system/console</slingUrl>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-file</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installJ2V8Mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <groupId>com.eclipsesource.j2v8</groupId>
+                            <artifactId>j2v8_macosx_x86_64</artifactId>
+                            <version>${j2v8.version}</version>
+                            <slingUrl>http://${sling.host}:${http.port}/system/console</slingUrl>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-file</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installJ2V8Windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <configuration>
+                            <groupId>com.eclipsesource.j2v8</groupId>
+                            <artifactId>j2v8_win32_x86_64</artifactId>
+                            <version>${j2v8.version}</version>
+                            <slingUrl>http://${sling.host}:${http.port}/system/console</slingUrl>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-file</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>integrationTests</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-failsafe-plugin</artifactId>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>integration-test</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>integration-test</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                            <!--<execution>-->
+                                <!--<id>verify</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>verify</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                        <!--<configuration>-->
+                            <!--<debugForkedProcess>${maven.surefire.debug}</debugForkedProcess>-->
+                            <!--<includes>-->
+                                <!--<include>${tests.to.run}</include>-->
+                            <!--</includes>-->
+                            <!--<systemPropertyVariables>-->
+                                <!--<test.server.url>http://${http.host}:${http.port}</test.server.url>-->
+                                <!--<test.server.hostname>${http.host}</test.server.hostname>-->
+                                <!--<test.server.username>${test.server.username}</test.server.username>-->
+                                <!--<test.server.password>${test.server.password}</test.server.password>-->
+
+                                <!--<additional.bundles.path>${project.basedir}/target/sling/additional-bundles</additional.bundles.path>-->
+                                <!--<keepJarRunning>${keepJarRunning}</keepJarRunning>-->
+                                <!--<server.ready.timeout.seconds>90</server.ready.timeout.seconds>-->
+                                <!--<sling.testing.timeout.multiplier>${sling.testing.timeout.multiplier}</sling.testing.timeout.multiplier>-->
+                                <!--<server.ready.path.1>/index.html:html</server.ready.path.1>-->
+                                <!--<start.bundles.timeout.seconds>40</start.bundles.timeout.seconds>-->
+                                <!--<bundle.install.timeout.seconds>30</bundle.install.timeout.seconds>-->
+                            <!--</systemPropertyVariables>-->
+                        <!--</configuration>-->
+                    <!--</plugin>-->
+
+                    <!--
+                        AS TODO: The System User is not created correctly by adding as a node inside UI Apps
+                                 -> Create a Service like in Replication to create that user and hopefully
+                                    this is ready when we import the UI Apps. Maybe this prevents to double-import
+                                    the package to have the user ready when permissions need to be set
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <launchpad.http.port>${http.port}</launchpad.http.port>
+                                <IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>
+
+                                <launchpad.http.server.url>http://${sling.host}:${http.port}</launchpad.http.server.url>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

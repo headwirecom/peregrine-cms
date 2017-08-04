@@ -24,6 +24,8 @@
 
         <distribution.api.version>0.3.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
+
+        <jackrabbit.version>2.14.0</jackrabbit.version>
     </properties>
 
     <build>
@@ -346,7 +348,13 @@
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>jackrabbit-api</artifactId>
-                <version>2.11.0</version>
+                <version>${jackrabbit.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>jackrabbit-jcr-commons</artifactId>
+                <version>${jackrabbit.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -506,6 +514,7 @@
         <module>felib</module>
         <module>pagerender-vue</module>
         <module>admin-base</module>
+        <module>node-js</module>
         <module>example-vue-site</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->

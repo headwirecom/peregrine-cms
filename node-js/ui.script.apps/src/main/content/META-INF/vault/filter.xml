@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workspaceFilter version="1.0">
+    <filter root="/api/node/execute/swaggereditor"/>
+    <filter root="/etc/openapi/script"/>
+</workspaceFilter>

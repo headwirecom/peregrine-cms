@@ -173,7 +173,6 @@
                         </configuration>
                     </execution>
 
-
                 </executions>
                 <configuration>
                     <servers>
@@ -183,7 +182,6 @@
                             <vmOpts>${sling.vm.options}</vmOpts>
                         </server>
                     </servers>
-                    <!--<keepLaunchpadRunning>true</keepLaunchpadRunning>-->
                 </configuration>
             </plugin>
 
