@@ -95,6 +95,7 @@
             <activation>
                 <os>
                     <family>windows</family>
+                    <arch>x86</arch>
                 </os>
             </activation>
             <build>
@@ -120,35 +121,36 @@
                 </plugins>
             </build>
         </profile>
-        <!--<profile>-->
-            <!--<id>installJ2V8Windows64</id>-->
-            <!--<activation>-->
-                <!--<os>-->
-                    <!--<family>windows</family>-->
-                <!--</os>-->
-            <!--</activation>-->
-            <!--<build>-->
-                <!--<plugins>-->
-                  <!--<plugin>-->
-                      <!--<groupId>org.apache.sling</groupId>-->
-                      <!--<artifactId>maven-sling-plugin</artifactId>-->
-                      <!--<configuration>-->
-                          <!--<groupId>com.eclipsesource.j2v8</groupId>-->
-                          <!--<artifactId>j2v8_win32_x86_64</artifactId>-->
-                          <!--<version>${j2v8.version}</version>-->
-                      <!--</configuration>-->
-                      <!--<executions>-->
-                          <!--<execution>-->
-                              <!--<id>install-file</id>-->
-                              <!--<phase>install</phase>-->
-                              <!--<goals>-->
-                                  <!--<goal>install-file</goal>-->
-                              <!--</goals>-->
-                          <!--</execution>-->
-                      <!--</executions>-->
-                  <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
-        <!--</profile>-->
+        <profile>
+            <id>installJ2V8Windows64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                  <plugin>
+                      <groupId>org.apache.sling</groupId>
+                      <artifactId>maven-sling-plugin</artifactId>
+                      <configuration>
+                          <groupId>com.eclipsesource.j2v8</groupId>
+                          <artifactId>j2v8_win32_x86_64</artifactId>
+                          <version>${j2v8.version}</version>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <id>install-file</id>
+                              <phase>install</phase>
+                              <goals>
+                                  <goal>install-file</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
