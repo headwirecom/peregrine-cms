@@ -514,7 +514,7 @@
         <module>felib</module>
         <module>pagerender-vue</module>
         <module>admin-base</module>
-        <module>node-js</module>
+        <!-- <module>node-js</module> -->
         <module>example-vue-site</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
