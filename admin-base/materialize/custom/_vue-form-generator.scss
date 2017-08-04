@@ -27,19 +27,6 @@
 
                 }
             }
-            &.field-listselection {
-                .select-wrapper {
-                    background-color: #fff;
-                    input {
-                        background-color: transparent;
-                    }
-                    .caret {
-                        .material-icons {
-                            color: color("blue-grey", "base");
-                        }
-                    }
-                }
-            }
             &.field-pathbrowser {
                 .wrap {
                     input {
@@ -123,6 +110,40 @@
                         > input {
                             width: 100%;
                         }
+                    }
+                }
+            }
+            &.field-material-select {
+
+                .select-wrapper {
+                    background-color: #fff;
+                    input {
+                        background-color: transparent;
+                        padding-left: 0.75rem;
+                        padding-right: 10px;
+                    }
+                    .caret {
+                        .material-icons {
+                            color: color("blue-grey", "base");
+                            line-height: inherit;
+                        }
+                    }
+                    .dropdown-content {
+                        &.active {
+                            display: block; 
+                            position: absolute; 
+                            top: 0; 
+                            opacity: 1;  
+                        }
+                    }
+                    .dropdown-bg {
+                        display: none; 
+                        position: fixed; 
+                        z-index: 998; 
+                        top: 0; 
+                        left: 0; 
+                        right: 0; 
+                        bottom: 0;
                     }
                 }
             }
