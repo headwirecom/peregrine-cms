@@ -58,7 +58,7 @@
             function() {
                 return {
                     formmodel: {
-                        path: $perAdminApp.getNodeFromView('/state/tools/objects'),
+                        path: $perAdminApp.getNodeFromView(this.model.dataFrom),
                         name: '',
                         objectPath: ''
 
@@ -86,7 +86,7 @@
         ,
         computed: {
             objects: function() {
-                const path = $perAdminApp.getNodeFromView('/state/tools/objects')
+                const path = $perAdminApp.getNodeFromView(this.model.dataFrom)
                 const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
                 const objects = $perAdminApp.getNodeFromViewOrNull('/admin/objects/data')
                 if(node.allowedObjects) {
@@ -95,8 +95,8 @@
                         if(node.allowedObjects.indexOf(objects[i].name) >= 0) {
                             ret.push(objects[i])
                         }
-                        return ret
                     }
+                    return ret
                 }
                 return objects
             }
@@ -113,7 +113,7 @@
             onComplete: function() {
                 let objectPath = this.formmodel.objectPath
                 objectPath = objectPath.split('/').slice(2).join('/')
-                $perAdminApp.stateAction('createObject', { parent: this.formmodel.path, name: this.formmodel.name, template: objectPath })
+                $perAdminApp.stateAction('createObject', { parent: this.formmodel.path, name: this.formmodel.name, template: objectPath, returnTo: this.model.returnTo })
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {

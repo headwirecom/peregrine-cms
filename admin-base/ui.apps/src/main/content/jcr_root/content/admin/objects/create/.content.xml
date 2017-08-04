@@ -40,6 +40,8 @@
                  sling:resourceType="admin/components/nav"/>
 
             <wizard jcr:primaryType="nt:unstructured"
+                    dataFrom="/state/tools/objects"
+                    returnTo="/content/admin/objects"
                     sling:resourceType="admin/components/createobjectwizard">
             </wizard>
 
