@@ -424,11 +424,11 @@ public class AdminResourceHandlerService
 
     private void updateResourceTree(Resource resource, Map<String, Object> properties) throws ManagementException {
         ModifiableValueMap updateProperties = getModifiableProperties(resource, false);
-        // Find all children nodes to remove the one not provided
-        List<String> children = new ArrayList<>();
-        for(Resource child: resource.getChildren()) {
-            children.add(child.getName());
-        }
+//        // Find all children nodes to remove the one not provided
+//        List<String> children = new ArrayList<>();
+//        for(Resource child: resource.getChildren()) {
+//            children.add(child.getName());
+//        }
         for(Entry<String, Object> entry: properties.entrySet()) {
             String name = entry.getKey();
             Object value = entry.getValue();
@@ -454,22 +454,22 @@ public class AdminResourceHandlerService
                     }
                 } else {
                     updateResourceTree(child, (Map) value);
-                    children.remove(name);
+//                    children.remove(name);
                 }
             } else {
                 updateProperties.put(name, value);
             }
         }
-        for(String childNameToBeRemoved: children) {
-            Resource childToBeRemoved = getResource(resource, childNameToBeRemoved);
-            if(childNameToBeRemoved != null) {
-                try {
-                    resource.getResourceResolver().delete(childToBeRemoved);
-                } catch(PersistenceException e) {
-                    throw new ManagementException("Deletion of Child: '" + childNameToBeRemoved + "' could not be deleted from parent: " + resource.getPath(), e);
-                }
-            }
-        }
+//        for(String childNameToBeRemoved: children) {
+//            Resource childToBeRemoved = getResource(resource, childNameToBeRemoved);
+//            if(childNameToBeRemoved != null) {
+//                try {
+//                    resource.getResourceResolver().delete(childToBeRemoved);
+//                } catch(PersistenceException e) {
+//                    throw new ManagementException("Deletion of Child: '" + childNameToBeRemoved + "' could not be deleted from parent: " + resource.getPath(), e);
+//                }
+//            }
+//        }
         baseResourceHandler.updateModification(resource);
     }
 

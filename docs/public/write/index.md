@@ -38,3 +38,10 @@ https://github.com/apache/sling/tree/trunk/contrib/extensions/distribution for m
 ## documentation about the existing field types
 
 we need to document the field types currently available in peregrine
+
+## support for percli htmltovue * added
+
+we can now compile all fragments at once with `percli htmltovue *`. This can also be used
+in the `ui.apps/packages.json` file (add to the beginning of build: 
+`cd .. && percli htmltovue * && cd ui.apps &&`). node for archetype needs to be bumped to 7.10+
+

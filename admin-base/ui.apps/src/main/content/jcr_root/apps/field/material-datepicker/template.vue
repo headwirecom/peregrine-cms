@@ -44,7 +44,7 @@
 				  //   console.log('open')
 				  // },
 				  close: () => {
-				  	console.log('close')
+				  	// console.log('close')
 				  	// adding focus to diff element prevents auto-opening of picker
 				  	this.$refs.showPickerBtn.focus()
 				  },
@@ -55,7 +55,7 @@
 				  //   console.log('stop')
 				  // },
 				  set: context => {
-				    console.log('set date:', context)
+				    // console.log('set date:', context)
 				    if(context.select){
 					    const fullDate = new Date(context.select).toJSON()
 					    // get everything before the "T" in the date ( we dont want the time)
