@@ -1,0 +1,33 @@
+{ "fields":[{
+  "type": "input",
+  "inputType": "text",
+  "label": "text field",
+  "model": "textfield",
+  "placeholder": "text field"
+},
+  {
+    "type": "material-select",
+    "label": "Select",
+    "model": "select",
+    "values": [
+      { "name": "test1", "value": "test 1"},
+      { "name": "test2", "value": "test 2"},
+      { "name": "test3", "value": "test 3"},
+      { "name": "test4", "value": "test 4"}
+    ]
+  },
+  {
+    "type": "pathbrowser",
+    "label": "page",
+    "model": "pagePath",
+    "browserRoot": "/content/sites",
+    "placeholder": "select path"
+  },
+  {
+    "type": "pathbrowser",
+    "label": "image",
+    "model": "imagePath",
+    "browserRoot": "/content/assets",
+    "placeholder": "select path"
+  }
+]}
