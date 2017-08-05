@@ -3,7 +3,9 @@
   "inputType": "text",
   "label": "text field",
   "model": "textfield",
-  "placeholder": "text field"
+  "placeholder": "text field",
+  "required": true,
+  "validator": "string"
 },
   {
     "type": "material-select",

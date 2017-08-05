@@ -49,6 +49,7 @@
 
         <form v-if="edit && currentObject.data && schema">
             <vue-form-generator
+              v-on:validated = "onValidated"
               v-bind:schema  = "schema"
               v-bind:model   = "currentObject.data"
               v-bind:options = "formOptions">
@@ -58,7 +59,7 @@
           <button v-if="!edit" class="btn btn-raised" v-on:click.stop.prevent="onEdit">
             <i class="material-icons">edit</i>
           </button>
-          <button v-if="edit" class="btn btn-raised" v-on:click.stop.prevent="onOk">
+          <button v-if="edit" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
             <i class="material-icons">check</i>
           </button>
           <button v-if="edit" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
@@ -100,10 +101,14 @@
               validateAfterChanged: true,
               focusFirstField: true
             },
-            isFullscreen: false
+            isFullscreen: false,
+              valid: false
           }
         },
         methods: {
+            onValidated(isValid, errors) {
+                this.valid = isValid
+            },
           onEdit: function() {
               Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
           },
