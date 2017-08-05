@@ -17,7 +17,7 @@ schemes:
   - http
 
 # will be prefixed to all paths
-basePath: /api/node/execute
+basePath: /api/nodejs/execute
 
 produces:
   - text/plain

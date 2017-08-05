@@ -37,16 +37,16 @@ call.
 
 1. NPM Package Manager
 
-Open the Swagger UI on this URL: http://localhost:8080/content/node/api/npm/index.html
+Open the Swagger UI on this URL: http://localhost:8080/content/nodejs/api/npm/index.html
 
 1. Scrip Caller
 
-Open the Swagger UI on this URL: http://localhost:8080/content/node/api/script/index.html
+Open the Swagger UI on this URL: http://localhost:8080/content/nodejs/api/script/index.html
 
 ### Permissions
 
 Permissions to list or modify packages are managed through
-the folders under **/apps/node/permission**. Any user that has
+the folders under **/apps/nodejs/permission**. Any user that has
 read access to the respective folder will get the permission
 to execute the methods. Out of the box only user 'admin' has
 the default permission.

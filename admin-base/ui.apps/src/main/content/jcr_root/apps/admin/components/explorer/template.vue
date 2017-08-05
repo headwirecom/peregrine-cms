@@ -431,7 +431,7 @@
                 }
             },
             addObject: function(me, target) {
-                $perAdminApp.stateAction('createObjectWizard', me.pt.path)
+                $perAdminApp.stateAction('createObjectWizard', { path: me.pt.path, target: target })
             },
             deletePage: function(me, target) {
                 const resourceType = target.resourceType

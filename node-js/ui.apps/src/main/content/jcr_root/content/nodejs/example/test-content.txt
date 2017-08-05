@@ -1,0 +1,7 @@
+This is a simple
+text file we use
+for testing reading
+it.
+
+It it read this then
+it worked.

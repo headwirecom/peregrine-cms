@@ -29,6 +29,10 @@ export default function(me, target) {
 
     log.fine(target)
 
-    me.loadContent('/content/admin/objects/create.html/path//'+target)
+    if(target.target) {
+        me.loadContent(target.target+'.html/path//'+target.path)
+    } else {
+        me.loadContent('/content/admin/objects/create.html/path//'+target.path)
+    }
 
 }
