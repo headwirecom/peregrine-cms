@@ -38,8 +38,11 @@
 /extensions-->
 
 <script>
-    var VueFormGenerator = window.VueFormGenerator;
+    const VueFormGenerator = window.VueFormGenerator;
+    const VueMultiselect = window.VueMultiselect
     Vue.component('vue-form-generator', VueFormGenerator.component)
+    Vue.component('vue-multiselect' , VueMultiselect)
+    Vue.component('multiselect' , VueMultiselect.Multiselect)
     Vue.use(VueFormWizard)
 </script>
 
