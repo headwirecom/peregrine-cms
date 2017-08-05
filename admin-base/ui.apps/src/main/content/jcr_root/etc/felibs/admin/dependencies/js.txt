@@ -6,6 +6,7 @@ isotope.js
 vue-isotope.js
 vue-imagesloaded.js
 vfg.js
+vue-multiselect.js
 vue-form-wizard.js
 drag-drop-touch.js
 spectrum.js
