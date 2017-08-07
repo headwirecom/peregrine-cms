@@ -6,7 +6,48 @@
         padding: 0;
         margin: 0;
         min-width: auto;
+        > div {
+            &:first-child {
+                border-top: 0;
+            }
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
         .form-group {
+            position: relative;
+            padding: 1.5rem 0;
+            border-top: 1px solid #fff;
+            border-bottom: 1px solid color("blue-grey", "lighten-4");
+            &.required {
+                > label:after {
+                    display: inline-block;
+                    vertical-align: top;
+                    content: '*';
+                    padding-left: 0.375rem;
+                }
+            }
+            &.error {
+                > label:after {
+                    color: color("red", "base");
+                }
+            }
+            .hint, 
+            .help-block {
+                font-size: 13px;
+                margin-top: 0.375rem;
+            }
+            .hint + .help-block {
+                margin-top: 0;
+            }
+            .errors {
+                color: color("red", "base");
+            }
+            .field-wrap {
+                input {
+                    margin: 0;
+                }
+            }
             &.field-list {
                  .field-wrap {
                     &.field-with-button {
@@ -113,7 +154,13 @@
                     }
                 }
             }
-            &.field-material-select {
+            &.field-material-checkbox {
+                > label {
+                    display: none;
+                }
+            }
+            &.field-material-select,
+            &.field-material-checklist {
 
                 .select-wrapper {
                     background-color: #fff;
@@ -123,9 +170,21 @@
                         padding-right: 10px;
                     }
                     .caret {
-                        .material-icons {
+                        font-size: 0.75rem;
+                        &:after {
+                            display: inline-block;
+                            transition: transform 0.2s ease;
                             color: color("blue-grey", "base");
+                            content: "\25BC";
+                            font-size: 12px;
+                            padding: 0 0.75rem;
                             line-height: inherit;
+                        }
+                        
+                    }
+                    &.active {
+                        .caret:after {
+                          transform: rotateZ(180deg);
                         }
                     }
                     .dropdown-content {
@@ -187,6 +246,12 @@
             }
             &.field-material-checkbox {
 
+            }
+            &.field-material-radios {
+                .radio-list {
+                    margin: 0;
+                    padding: 0;
+                }
             }
             &.field-collection {
                 padding: 1.5rem 0 0;
