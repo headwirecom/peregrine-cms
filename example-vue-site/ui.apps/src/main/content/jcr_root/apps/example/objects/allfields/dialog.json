@@ -7,7 +7,6 @@
     "placeholder": "text field",
     "hint": "This is some additional help text.",
     "required": true,
-    "required": true,
     "validator": "required"
   },
   {
