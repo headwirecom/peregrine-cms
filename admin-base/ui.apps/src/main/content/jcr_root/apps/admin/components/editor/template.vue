@@ -93,7 +93,7 @@
       data: function() {
         return {
           formOptions: {
-            validateAfterLoad: true,
+            validateAfterLoad: false,
             validateAfterChanged: true,
             focusFirstField: true
           }
