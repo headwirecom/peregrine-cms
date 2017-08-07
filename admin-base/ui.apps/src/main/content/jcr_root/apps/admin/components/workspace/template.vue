@@ -32,7 +32,8 @@
         <admin-components-action v-if="!state.rightPanelVisible" v-bind:model="{
             classes: 'show-right-panel',
             target: 'rightPanelVisible',
-            command: 'showHide'
+            command: 'showHide',
+            tooltipTitle: 'show components panel'
             }"><i class="material-icons">keyboard_arrow_left</i>
         </admin-components-action>
 
@@ -41,8 +42,8 @@
                 classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
                 command: 'showHide',
-                tooltipTitle: isFullscreen ? 'full screen' : 'narrow'
-            }">
+                tooltipTitle: 'hide components panel'
+            }">,
                 <i class="material-icons">highlight_off</i>
             </admin-components-action>
             
