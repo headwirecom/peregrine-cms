@@ -92,7 +92,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect--active .multiselect__select:before {
-  transform: rotateZ(90deg);
+  transform: rotateZ(180deg);
 }
 
 .multiselect--above.multiselect--active .multiselect__current,
@@ -200,18 +200,15 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__select {
-  background-color: color("blue-grey", "lighten-5");
-  border: 1px solid color("blue-grey", "lighten-4");
-  line-height: 16px;
   display: block;
   position: absolute;
   box-sizing: border-box;
-  width: 3rem;
-  height: 3rem;
   right: 0;
-  top: 0;
-  padding: 0.75rem;
+  top: 18px;
+  padding: 0 0.75rem;
   margin: 0;
+  height: 10px;
+  line-height: 10px;
   text-decoration: none;
   text-align: center;
   cursor: pointer;
@@ -222,6 +219,7 @@ fieldset[disabled] .multiselect {
   transition: transform 0.2s ease;
   color: color("blue-grey", "base");
   content: "\25BC";
+  font-size: 12px;
 }
 
 .multiselect__placeholder {
