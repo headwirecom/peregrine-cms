@@ -95,6 +95,10 @@
 				}
 			},
 			isValidTime(timeString) {
+				if(!timeString){
+					console.warn('Value is undefined. Are you sure the model property exists?')
+					return false
+				}
 				var regEx = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
 				let firstPart = timeString.substring(0, timeString.indexOf('.'))
 				let lastPart = timeString.substring(timeString.indexOf('.') + 1)

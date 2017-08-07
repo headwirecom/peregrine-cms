@@ -130,6 +130,10 @@
 				this.picker.open(false)
 			},
 			isValideDateTime(dateString){
+				if(!dateString){
+					console.warn('Value is undefined. Are you sure the model property exists?')
+					return false
+				}
 				let dateParts = dateString.split('T')
 				let date = dateParts[0]
 				let time = dateParts[1]
