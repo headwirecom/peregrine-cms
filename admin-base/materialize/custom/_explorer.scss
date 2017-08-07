@@ -130,20 +130,20 @@
 					.toggle-fullscreen {
 						position: absolute;
 						right: 0;
-						top: 0;
+						top: 1.25rem;
 						border: 0;
 						background: none;
 						padding: 0;
 						.material-icons {
-							font-size: 30px;
-							color: color("blue-grey", "base");
+							font-size: 34px;
+							color: color("blue-grey", "darken-2");
 							transition: color .1s ease-in-out;
 						}
 						&:hover,
 						&:focus,
 						&:active {
 							.material-icons {
-								color: color("blue-grey", "darken-2");
+								color: color("blue-grey", "base");
 							}
 						}
 			    }
@@ -154,9 +154,12 @@
         		left: 0;
         		bottom: 0;
         		width: 100%;
-        		padding: 0.75rem;
+        		padding: 0 0.75rem;
         		background-color: color("blue-grey", "lighten-5");
         		overflow: auto;
+        		.toggle-fullscreen {
+        			right: 0.75rem;
+        		}
         	}
         	&.narrow {
 

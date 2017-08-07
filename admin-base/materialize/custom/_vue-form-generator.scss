@@ -29,7 +29,13 @@
             }
             &.error {
                 > label:after {
-                    color: color("red", "base");
+                    color: color("red", "lighten-1");
+                }
+                .field-wrap {
+                    input:focus {
+                        border-bottom-color: color("red", "lighten-2");
+                        box-shadow: 0 1px 0 0 color("red", "lighten-2");
+                    }
                 }
             }
             .hint, 
@@ -41,7 +47,7 @@
                 margin-top: 0;
             }
             .errors {
-                color: color("red", "base");
+                color: color("red", "lighten-1");
             }
             .field-wrap {
                 input {
@@ -192,6 +198,7 @@
                             display: block; 
                             position: absolute; 
                             top: 0; 
+                            width: 100%;
                             opacity: 1;  
                         }
                     }

@@ -33,11 +33,11 @@
             v-bind:options = "formOptions">
         </vue-form-generator>
         <div class="right-align">
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onDelete">
+            <button class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
               <i class="material-icons">delete</button>
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onCancel">
+            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
               <i class="material-icons">close</button>
-            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onOk">
+            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
               <i class="material-icons">check</i></button>
         </div>
       <div/>
