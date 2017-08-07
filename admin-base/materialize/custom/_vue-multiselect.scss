@@ -153,9 +153,9 @@ fieldset[disabled] .multiselect {
   border-top: none;
   border-left: none;
   border-right: none;
+  border-bottom-color: transparent;
   padding-left: 0;
-  margin-bottom: 0.75rem;
-  width: calc(100% - 14px);
+  width: 100%;
 }
 .multiselect__tag {
   display: inline-block;
