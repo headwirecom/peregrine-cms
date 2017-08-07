@@ -23,10 +23,8 @@
   #L%
   -->
 <template>
-  <div class="select-wrapper">
-      <span class="caret">
-        <i class="material-icons">arrow_drop_down</i>
-      </span>
+  <div :class="`select-wrapper ${dropdownActive ? 'active' : ''}`">
+      <span class="caret"></span>
       <input 
         ref="selectInput"
         type="text" 
