@@ -1,35 +1,133 @@
-{ "fields":[{
-  "type": "input",
-  "inputType": "text",
-  "label": "text field",
-  "model": "textfield",
-  "placeholder": "text field",
-  "required": true,
-  "validator": "string"
-},
+{ "fields":[
+  {
+    "type": "input",
+    "inputType": "text",
+    "label": "text field",
+    "model": "textfield",
+    "placeholder": "text field",
+    "hint": "This is some additional help text.",
+    "required": true,
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "material-radios",
+    "label": "Radios",
+    "model": "friend",
+    "withGap": true,
+    "values": [
+      { "name": "Byron Ponce", "value": "bp@headwire.com"},
+      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
+      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
+      { "name": "Li Qin", "value": "lq@headwire.com"},
+      { "name": "Robert Jolly", "value": "rj@headwire.com"},
+      { "name": "Jason Groves", "value": "jg@headwire.com"}
+    ],
+    "hint": "This is the Material Radios.",
+    "required": true,
+    "validator": "required"
+  },
   {
     "type": "material-select",
     "label": "Select",
     "model": "select",
     "values": [
-      { "name": "test1", "value": "test 1"},
-      { "name": "test2", "value": "test 2"},
-      { "name": "test3", "value": "test 3"},
-      { "name": "test4", "value": "test 4"}
-    ]
+      { "name": "Byron Ponce", "value": "bp@headwire.com"},
+      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
+      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
+      { "name": "Li Qin", "value": "lq@headwire.com"},
+      { "name": "Robert Jolly", "value": "rj@headwire.com"},
+      { "name": "Jason Groves", "value": "jg@headwire.com"}
+    ],
+    "hint": "This is the material select.",
+    "required": true,
+    "validator": "required"
+  }, 
+  {
+    "type": "vueMultiSelect",
+    "label": "Multiselect",
+    "placeholder": "Select a language",
+    "model": "author",
+    "selectOptions": {
+      "multiple": true,
+      "trackBy": "name",
+      "label": "name",
+      "searchable": true,
+      "clearOnSelect": true,
+      "closeOnSelect": false,
+      "taggable": true
+    },
+    "values": [
+      { "name": "Byron Ponce", "value": "bp@headwire.com"},
+      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
+      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
+      { "name": "Li Qin", "value": "lq@headwire.com"},
+      { "name": "Robert Jolly", "value": "rj@headwire.com"},
+      { "name": "Jason Groves", "value": "jg@headwire.com"}
+    ],
+    "hint": "This is the vue multiselect.",
+    "required": true,
+    "validator": "required"
+  }, 
+  {
+    "type": "material-checkbox",
+    "label": "Status",
+    "model": "status",
+    "default": true,
+    "hint": "This is the material checkbox.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "materialswitch",
+    "label": "Switch",
+    "model": "switch",
+    "hint": "This is the material switch.",
+    "required": true,
+    "validator": "required"
   },
   {
     "type": "pathbrowser",
-    "label": "page",
+    "label": "Page Browser",
     "model": "pagePath",
     "browserRoot": "/content/sites",
-    "placeholder": "select path"
+    "placeholder": "select path",
+    "hint": "This is the page browser.",
+    "required": true,
+    "validator": "required"
   },
   {
     "type": "pathbrowser",
-    "label": "image",
+    "label": "Image Browser",
     "model": "imagePath",
     "browserRoot": "/content/assets",
-    "placeholder": "select path"
+    "placeholder": "select path",
+    "hint": "This is the path browser.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "material-datepicker",
+    "label": "Date",
+    "model": "date",
+    "hint": "This is the date picker.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "material-timepicker",
+    "label": "Time",
+    "model": "Time",
+    "hint": "This is the time picker.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "material-datetime",
+    "label": "DateTime",
+    "model": "datetime",
+    "hint": "This is the datetime picker.",
+    "required": true,
+    "validator": "required"
   }
 ]}
