@@ -62,7 +62,7 @@
                         v-bind:model="{
                             target: child,
                             command: 'selectPath',
-                            tooltipTitle: 'select'
+                            tooltipTitle: `select '${child.title || child.name}'`
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
@@ -73,7 +73,7 @@
                             v-bind:model="{ 
                                 target: child.path, 
                                 command: 'editPage',
-                                tooltipTitle: 'edit'
+                                tooltipTitle: `edit '${child.title || child.name}'`
                             }">
                             <i class="material-icons">edit</i>
                         </admin-components-action>
@@ -82,7 +82,7 @@
                                                  v-bind:model="{
                                 target: child.path,
                                 command: 'replicate',
-                                tooltipTitle: 'replicate'
+                                tooltipTitle: `copy '${child.title || child.name}'`
                             }">
                             <i class="material-icons" v-bind:class="replicatedClass(child)">public</i>
                         </admin-components-action>
@@ -91,7 +91,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'showInfo',
-                                tooltipTitle: 'info'
+                                tooltipTitle: `'${child.title || child.name}' info`
                             }">
                             <i class="material-icons">info</i>
                         </admin-components-action>
@@ -101,7 +101,7 @@
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
-                                title="view in new tab"
+                                v-bind:title="`view '${child.title || child.name}' in new tab`"
                                 >
                                 <i class="material-icons">visibility</i>
                             </a>
@@ -111,7 +111,7 @@
                             v-bind:model="{
                                 target: child,
                                 command: 'deletePage',
-                                tooltipTitle: 'delete'
+                                tooltipTitle: `delete '${child.title || child.name}'`
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
