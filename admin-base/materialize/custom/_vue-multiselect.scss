@@ -164,7 +164,7 @@ fieldset[disabled] .multiselect {
   font-weight: 500;
   color: color("blue-grey", "darken-1");
   line-height: 32px;
-  padding: 0 12px;
+  padding: 0 0 0 12px;
   border-radius: 16px;
   background-color: color("blue-grey", "lighten-4");
   margin-right: 0.375rem;
@@ -172,13 +172,22 @@ fieldset[disabled] .multiselect {
   margin-bottom: 0.375rem;
 }
 
-
 .multiselect__tag-icon {
   cursor: pointer;
   float: right;
   font-size: 16px;
   line-height: 32px;
   padding-left: 8px;
+  padding-right: 12px;
+}
+.multiselect__tag {
+  &:hover,
+  &:focus,
+  &:active {
+    .multiselect__tag-icon {
+      color: color("blue-grey", "darken-3");
+    }
+  }
 }
 .multiselect__tag-icon:after {
   content: "\00d7";
