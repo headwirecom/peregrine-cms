@@ -9,6 +9,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class NpmExternalProcessService
 
     private ProcessRunner processRunner = new ProcessRunner();
 
-    @Reference
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     private J2V8ProcessExecution executor;
 
     /**
@@ -164,7 +165,11 @@ public class NpmExternalProcessService
     {
         ProcessContext answer = null;
         if(withJ2V8) {
-            answer = processRunner.executeWithJ2V8(executor, scriptJcrPath, command);
+            if(executor != null) {
+                answer = processRunner.executeWithJ2V8(executor, scriptJcrPath, command);
+            } else {
+                throw new ExternalProcessException("J2V8 Executor is not installed").setCommand(command);
+            }
         } else {
             answer = processRunner.execute(command);
         }

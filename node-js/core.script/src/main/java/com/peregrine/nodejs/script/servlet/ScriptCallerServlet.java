@@ -12,6 +12,7 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public class ScriptCallerServlet
 
     private ProcessRunner processRunner = new ProcessRunner();
 
-    @Reference
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     private J2V8ProcessExecution executor;
 
     @Override
@@ -74,14 +75,17 @@ public class ScriptCallerServlet
         List<String> argumentList = tokens != null ? new ArrayList<String>(Arrays.asList(tokens)) : null;
         log.trace("Arguments Token: {}", argumentList);
         if(EXECUTE_SCRIPT_WITH_J2V8.equals(request.getPathInfo())) {
-//            if(executor != null) {
+            if(executor != null) {
                 try {
                     processRunner.executeWithJ2V8(executor, path, argumentList);
-//                    executor.executeScript(path, request, response, argumentList);
                 } catch(ExternalProcessException e) {
                     log.error("Execution of JCR Script with j2v8 failed. Path: '{}'", path, e);
                 }
-//            }
+            } else {
+                log.error("J2V8 Executor is not installed here");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("J2V8 Executor is not installed for: " + request.getPathInfo());
+            }
         } else
         if(EXECUTE_SCRIPT_WITH_NODE_JS.equals(request.getPathInfo())) {
             // Read JS file from Resource
