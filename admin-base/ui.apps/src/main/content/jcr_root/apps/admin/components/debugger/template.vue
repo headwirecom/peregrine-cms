@@ -24,8 +24,8 @@
   -->
 <template>
 <div v-bind:class="`debugger ${elementStyle}`">
-    <a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" title="show data" class="toggle-debugger show-debugger"><i class="material-icons">bug_report</i></a>
-    <a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" title="hide data" class="toggle-debugger hide-debugger"><i class="material-icons">highlight_off</i></a>
+    <a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" title="show debug data" class="toggle-debugger show-debugger"><i class="material-icons">bug_report</i></a>
+    <a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" title="hide debug data" class="toggle-debugger hide-debugger"><i class="material-icons">highlight_off</i></a>
     <div v-if="visible" class="debugger-content">
         <div class="row">
             <div class="col s12 m4 l3 debugger-levels">
