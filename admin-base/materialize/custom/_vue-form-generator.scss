@@ -165,8 +165,7 @@
                     display: none;
                 }
             }
-            &.field-material-select,
-            &.field-material-checklist {
+            &.field-material-select {
 
                 .select-wrapper {
                     background-color: #fff;
@@ -204,6 +203,57 @@
                     }
                     .dropdown-bg {
                         display: none; 
+                        position: fixed; 
+                        z-index: 998; 
+                        top: 0; 
+                        left: 0; 
+                        right: 0; 
+                        bottom: 0;
+                    }
+                }
+            }
+            &.field-material-checklist {
+                .check-list {
+                    margin: 0;
+                    padding: 0;
+                    > li {
+                        padding: 0 0 0.375rem;
+                        
+                    }
+                }
+                .checklist-dropdown {
+                    background-color: #fff;
+                    input {
+                        background-color: transparent;
+                        padding-left: 0.75rem;
+                        padding-right: 10px;
+                    }
+                    .caret {
+                        font-size: 0.75rem;
+                        &:after {
+                            display: inline-block;
+                            transition: transform 0.2s ease;
+                            color: color("blue-grey", "base");
+                            content: "\25BC";
+                            font-size: 12px;
+                            padding: 0 0.75rem;
+                            line-height: inherit;
+                        }
+                        
+                    }
+                    &.expanded {
+                        .caret:after {
+                          transform: rotateZ(180deg);
+                        }
+                    }
+                    .dropdown-content {
+                        display: block; 
+                        position: absolute; 
+                        top: 0; 
+                        width: 100%;
+                        opacity: 1; 
+                    }
+                    .dropdown-bg {
                         position: fixed; 
                         z-index: 998; 
                         top: 0; 
@@ -258,6 +308,9 @@
                 .radio-list {
                     margin: 0;
                     padding: 0;
+                    > li {
+                        padding: 0 0 0.375rem;
+                    }
                 }
             }
             &.field-collection {
