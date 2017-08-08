@@ -61,10 +61,10 @@
           <button v-if="!edit" title="edit" class="btn btn-raised" v-on:click.stop.prevent="onEdit">
             <i class="material-icons">edit</i>
           </button>
-          <button v-if="edit" title="check" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
+          <button v-if="edit" title="save" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
             <i class="material-icons">check</i>
           </button>
-          <button v-if="edit" title="close" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
+          <button v-if="edit" title="cancel" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
             <i class="material-icons">close</i>
           </button>
         </div>

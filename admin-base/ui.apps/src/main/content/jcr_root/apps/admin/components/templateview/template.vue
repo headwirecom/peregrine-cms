@@ -36,9 +36,9 @@
                                 v-bind:options="options">
 
             </vue-form-generator>
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onCancel">
+            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
                 <i class="material-icons">close</button>
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onOk">
+            <button class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
                 <i class="material-icons">check</i></button>
         </template>
         <template v-else>
