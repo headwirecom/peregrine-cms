@@ -43,6 +43,25 @@
     "validator": "required"
   }, 
   {
+    "type": "material-checklist",
+    "listBox": false,
+    "label": "Checklist",
+    "model": "skills",
+    "multi": true,
+    "multiSelect": true,
+    "values": [
+      { "name": "Byron Ponce", "value": "bp@headwire.com"},
+      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
+      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
+      { "name": "Li Qin", "value": "lq@headwire.com"},
+      { "name": "Robert Jolly", "value": "rj@headwire.com"},
+      { "name": "Jason Groves", "value": "jg@headwire.com"}
+    ],
+    "hint": "This is the material checklist.",
+    "required": true,
+    "validator": "required"
+  },
+  {
     "type": "vueMultiSelect",
     "label": "Multiselect",
     "placeholder": "Select a language",
