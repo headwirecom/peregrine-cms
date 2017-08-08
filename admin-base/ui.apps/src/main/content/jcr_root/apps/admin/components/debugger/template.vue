@@ -43,7 +43,7 @@
                 <h5>Root Objects</h5>
                 <ul class="list-inline">
                     <li v-for="(value, key) of this.$root.$data">
-                        <a v-bind:class="selected === key ? 'active' : ''" v-on:click.stop.prevent="select(key)">{{key}}</a>
+                        <a v-bind:title="`show '${key}' debug data`" v-bind:class="selected === key ? 'active' : ''" v-on:click.stop.prevent="select(key)">{{key}}</a>
                     </li>
                 </ul>
                 <code><pre>{{this.$root.$data[this.selected]}}</pre></code>
