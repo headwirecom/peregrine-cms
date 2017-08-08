@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+// Store z-index values here.
+@import "custom/zindex";
+
 @import "materialize-src/sass/materialize";
 @import "custom/_buttons";
 @import "custom/_forms";
