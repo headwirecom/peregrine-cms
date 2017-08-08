@@ -34,7 +34,8 @@
               <button 
                   type="button"
                   v-on:click="onOk"
-                  class="modal-action modal-close waves-effect waves-light btn-flat">
+                  class="modal-action modal-close waves-effect waves-light btn-flat"
+                  title="ok">
                   ok
               </button>
           </div>

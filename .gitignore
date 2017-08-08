@@ -7,3 +7,5 @@ target/
 .settings/
 node
 node_modules
+sling
+out

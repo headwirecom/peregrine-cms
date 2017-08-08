@@ -79,10 +79,10 @@
                         </admin-components-action>
 
                         <admin-components-action v-if="replicatable(child)"
-                                                 v-bind:model="{
+                            v-bind:model="{
                                 target: child.path,
                                 command: 'replicate',
-                                tooltipTitle: `copy '${child.title || child.name}'`
+                                tooltipTitle: `replicate '${child.title || child.name}'`
                             }">
                             <i class="material-icons" v-bind:class="replicatedClass(child)">public</i>
                         </admin-components-action>

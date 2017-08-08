@@ -28,7 +28,7 @@
         <div class="col s12">
             <input v-model="querystring">
             <div class="right">
-                <button v-on:click="executeQuery" class="btn">go</button>
+                <button title="go" v-on:click="executeQuery" class="btn">go</button>
             </div>
         </div>
     </div>
