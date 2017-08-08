@@ -24,6 +24,7 @@
         <groupId>com.peregrine.cms</groupId>
         <artifactId>parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>admin.parent</artifactId>

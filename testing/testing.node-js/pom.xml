@@ -86,63 +86,10 @@
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
         </dependency>
-
-        <!--&lt;!&ndash; Additional bundles needed by the Sling instance under test &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.sling</groupId>-->
-            <!--<artifactId>org.apache.sling.junit.scriptable</artifactId>-->
-            <!--<version>1.0.10</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.sling</groupId>-->
-            <!--<artifactId>org.apache.sling.junit.remote</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.tools</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.sling</groupId>-->
-            <!--<artifactId>org.apache.sling.servlets.post</artifactId>-->
-        <!--</dependency>-->
-
-        <!--&lt;!&ndash; sling testing tools bundles requires httpclient &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.httpcomponents</groupId>-->
-            <!--<artifactId>httpclient-osgi</artifactId>-->
-            <!--<version>4.5.2</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.httpcomponents</groupId>-->
-            <!--<artifactId>httpcore-osgi</artifactId>-->
-            <!--<version>4.4.5</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--&lt;!&ndash; actual dependencies &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.sling</groupId>-->
-            <!--<artifactId>org.apache.sling.commons.json</artifactId>-->
-            <!--&lt;!&ndash;<version>2.0.20</version>&ndash;&gt;-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>commons-io</groupId>-->
-            <!--<artifactId>commons-io</artifactId>-->
-            <!--<version>1.4</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-simple</artifactId>-->
-            <!--<scope>test</scope>-->
-            <!--<version>${slf4j.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>junit</groupId>-->
-            <!--<artifactId>junit</artifactId>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -203,30 +150,6 @@
                     </execution>
                 </executions>
             </plugin>
-           <!--<plugin>-->
-                <!--<artifactId>maven-clean-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<filesets>-->
-                        <!--<fileset>-->
-                            <!--<directory>${basedir}</directory>-->
-                            <!--<includes>-->
-                                <!--&lt;!&ndash; sling folder is the workdir of the executable jar that we test &ndash;&gt;-->
-                                <!--<include>sling/**</include>-->
-                            <!--</includes>-->
-                        <!--</fileset>-->
-                    <!--</filesets>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-surefire-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--&lt;!&ndash; We run all tests in the integration-tests phase &ndash;&gt;-->
-                    <!--<excludes>-->
-                        <!--<exclude>**</exclude>-->
-                    <!--</excludes>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
             <plugin>
                 <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
                 <groupId>org.apache.sling</groupId>
@@ -275,58 +198,6 @@
                     </servers>
                 </configuration>
             </plugin>
-            <!--&lt;!&ndash; Wait until Composum is up and running so that we can deploy packages &ndash;&gt;-->
-            <!--<plugin>-->
-                <!--<groupId>org.sonatype.plugins</groupId>-->
-                <!--<artifactId>wait-maven-plugin</artifactId>-->
-                <!--<version>1.0</version>-->
-                <!--<configuration>-->
-                    <!--<host>${http.host}</host>-->
-                    <!--<port>${http.port}</port>-->
-                    <!--<file>/bin/browser.html</file>-->
-                    <!--<timeout>10000</timeout>-->
-                    <!--<maxcount>10</maxcount>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>pre-integration-test</id>-->
-                        <!--<phase>pre-integration-test</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>wait</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-            <!-- Deploy our Bundle to be tested onto the server -->
-
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-failsafe-plugin</artifactId>-->
-                <!--<version>2.19.1</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>integration-test</id>-->
-                        <!--<goals>-->
-                            <!--<goal>integration-test</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>verify</id>-->
-                        <!--<goals>-->
-                            <!--<goal>verify</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<configuration>-->
-                    <!--<systemPropertyVariables>-->
-                        <!--<launchpad.http.port>${http.port}</launchpad.http.port>-->
-                        <!--<IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>-->
-
-                        <!--<launchpad.http.server.url>http://${sling.host}:${http.port}</launchpad.http.server.url>-->
-                    <!--</systemPropertyVariables>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>io.wcm.maven.plugins</groupId>
                 <artifactId>wcmio-content-package-maven-plugin</artifactId>
@@ -509,44 +380,6 @@
             </activation>
             <build>
                 <plugins>
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-failsafe-plugin</artifactId>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>integration-test</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>integration-test</goal>-->
-                                <!--</goals>-->
-                            <!--</execution>-->
-                            <!--<execution>-->
-                                <!--<id>verify</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>verify</goal>-->
-                                <!--</goals>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                        <!--<configuration>-->
-                            <!--<debugForkedProcess>${maven.surefire.debug}</debugForkedProcess>-->
-                            <!--<includes>-->
-                                <!--<include>${tests.to.run}</include>-->
-                            <!--</includes>-->
-                            <!--<systemPropertyVariables>-->
-                                <!--<test.server.url>http://${http.host}:${http.port}</test.server.url>-->
-                                <!--<test.server.hostname>${http.host}</test.server.hostname>-->
-                                <!--<test.server.username>${test.server.username}</test.server.username>-->
-                                <!--<test.server.password>${test.server.password}</test.server.password>-->
-
-                                <!--<additional.bundles.path>${project.basedir}/target/sling/additional-bundles</additional.bundles.path>-->
-                                <!--<keepJarRunning>${keepJarRunning}</keepJarRunning>-->
-                                <!--<server.ready.timeout.seconds>90</server.ready.timeout.seconds>-->
-                                <!--<sling.testing.timeout.multiplier>${sling.testing.timeout.multiplier}</sling.testing.timeout.multiplier>-->
-                                <!--<server.ready.path.1>/index.html:html</server.ready.path.1>-->
-                                <!--<start.bundles.timeout.seconds>40</start.bundles.timeout.seconds>-->
-                                <!--<bundle.install.timeout.seconds>30</bundle.install.timeout.seconds>-->
-                            <!--</systemPropertyVariables>-->
-                        <!--</configuration>-->
-                    <!--</plugin>-->
                     <plugin>
                         <groupId>io.wcm.maven.plugins</groupId>
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>

@@ -27,4 +27,5 @@
 
 <workspaceFilter version="1.0">
     <filter root="/content/apidocs/cms"/>
+    <filter root="/content/jsdocs/cms"/>
 </workspaceFilter>

@@ -1,14 +1,7 @@
 package com.peregrine.rendition;
 
-//import com.drew.imaging.ImageMetadataReader;
-//import com.drew.imaging.ImageProcessingException;
-//import com.drew.metadata.Directory;
-//import com.drew.metadata.Metadata;
-//import com.drew.metadata.Tag;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
-//import com.peregrine.admin.replication.ImageMetadataSelector;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.transform.ImageContext;
@@ -26,37 +19,21 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
 
 /**
  * Created by schaefa on 7/6/17.
@@ -70,8 +47,6 @@ public class BaseResourceHandlerService
 {
     public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
 
-//    @Reference
-//    ResourceRelocation resourceRelocation;
     @Reference
     MimeTypeService mimeTypeService;
     @Reference
@@ -79,88 +54,7 @@ public class BaseResourceHandlerService
     @Reference
     private ImageTransformationProvider imageTransformationProvider;
 
-//    private List<ImageMetadataSelector> imageMetadataSelectors = new ArrayList<>();
-//    @Reference(
-//        cardinality = ReferenceCardinality.MULTIPLE,
-//        policy = ReferencePolicy.DYNAMIC
-//    )
-//    void addImageMetadataSelector(ImageMetadataSelector selector)    { imageMetadataSelectors.add(selector); }
-//    void removeImageMetadataSelector(ImageMetadataSelector selector) { imageMetadataSelectors.remove(selector); }
-
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-
-//    @Override
-//    public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
-//        Resource answer = null;
-//        if(parent == null) {
-//            throw new ManagementException("Parent Resource must be provided to create Asset");
-//        }
-//        if(assetName == null || assetName.isEmpty()) {
-//            throw new ManagementException("Asset Name must be provided to create Asset");
-//        }
-//        if(contentType == null || contentType.isEmpty()) {
-//            throw new ManagementException("Content Type must be provided to create Asset");
-//        }
-//        if(inputStream == null) {
-//            throw new ManagementException("Input Stream must be provided to create Asset");
-//        }
-//        try {
-//            Node parentNode = parent.adaptTo(Node.class);
-//            Node newAsset = parentNode.addNode(assetName, ASSET_PRIMARY_TYPE);
-//            Node content = newAsset.addNode(JCR_CONTENT, ASSET_CONTENT_TYPE);
-//            Binary data = parentNode.getSession().getValueFactory().createBinary(inputStream);
-//            content.setProperty(JCR_DATA, data);
-//            content.setProperty(JCR_MIME_TYPE, contentType);
-//            updateModification(parent.getResourceResolver(), newAsset);
-//
-//            answer = parent.getResourceResolver().getResource(newAsset.getPath());
-//            PerAsset perAsset = answer.adaptTo(PerAsset.class);
-//            try {
-//                Metadata metadata = ImageMetadataReader.readMetadata(perAsset.getRenditionStream((Resource) null));
-//                for(Directory directory : metadata.getDirectories()) {
-//                    String directoryName = directory.getName();
-//                    ImageMetadataSelector selector = null;
-//                    for(ImageMetadataSelector item : imageMetadataSelectors) {
-//                        String temp = item.acceptCategory(directoryName);
-//                        if(temp != null) {
-//                            selector = item;
-//                            directoryName = temp;
-//                        }
-//                    }
-//                    boolean asJson = selector != null && selector.asJsonProperty();
-//                    String json = "{";
-//                    for(Tag tag : directory.getTags()) {
-//                        String name = tag.getTagName();
-//                        String tagName = selector != null ? selector.acceptTag(name) : name;
-//                        if(tagName != null) {
-//                            logger.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
-//                            if(asJson) {
-//                                json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
-//                            } else {
-//                                perAsset.addTag(directoryName, tagName, tag.getDescription());
-//                            }
-//                        }
-//                    }
-//                    if(asJson) {
-//                        if(json.length() > 1) {
-//                            json = json.substring(0, json.length() - 1);
-//                            json += "}";
-//                            perAsset.addTag(directoryName, "raw_tags", json);
-//                        }
-//                    }
-//                }
-//            } catch(ImageProcessingException e) {
-//                e.printStackTrace();
-//            }
-//        } catch(RepositoryException e) {
-//            throw new ManagementException("Failed to Create Asset Node in Parent: " + parent.getPath() + ", name: " + assetName, e);
-//        } catch(IOException e) {
-//            throw new ManagementException("Failed to Create Rendition in Parent: " + parent.getPath() + ", name: " + assetName, e);
-//        }
-//        return answer;
-//    }
 
     public ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws HandlerException {
         if(resource == null) {
@@ -282,44 +176,6 @@ public class BaseResourceHandlerService
         return answer;
     }
 
-//    @Override
-//    public Resource updateResource(ResourceResolver resourceResolver, String path, String jsonContent) throws ManagementException {
-//        Resource answer = null;
-//        try {
-//            answer = getResource(resourceResolver, path);
-//            if(answer == null) {
-//                throw new ManagementException("Resource not found, Path: " + path);
-//            }
-//            if(jsonContent == null || jsonContent.isEmpty()) {
-//                throw new ManagementException("No Content provided, Path: " + path);
-//            }
-//            Map content = convertToMap(jsonContent);
-//            //AS TODO: Check if we could add some guards here to avoid misplaced updates (JCR Primary Type / Sling Resource Type)
-//            updateResourceTree(answer, content);
-//        } catch(IOException e) {
-//            throw new ManagementException("Failed to parse Json Content: " + jsonContent);
-//        }
-//        return answer;
-//    }
-//
-//    private void updateResourceTree(Resource resource, Map<String, Object> properties) throws ManagementException {
-//        ModifiableValueMap updateProperties = getModifiableProperties(resource, false);
-//        for(Entry<String, Object> entry: properties.entrySet()) {
-//            String name = entry.getKey();
-//            Object value = entry.getValue();
-//            if(value instanceof Map) {
-//                Resource child = resource.getChild(name);
-//                if(child == null) {
-//                    throw new ManagementException("Property: '" + name + "' is a map but not child resource found with that name");
-//                }
-//                updateResourceTree(child, (Map) value);
-//            } else {
-//                updateProperties.put(name, value);
-//            }
-//        }
-//        updateModification(resource);
-//    }
-
     @Override
     public void updateModification(ResourceResolver resourceResolver, Node node) {
         if(resourceResolver != null && node != null) {
@@ -354,28 +210,4 @@ public class BaseResourceHandlerService
             }
         }
     }
-
-//    public static Map convertToMap(String json) throws IOException {
-//        Map answer = new LinkedHashMap();
-//        if(json != null) {
-//            ObjectMapper mapper = new ObjectMapper();
-//            answer = mapper.readValue(json, LinkedHashMap.class);
-//        }
-//        return answer;
-//    }
-//
-//    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
-//        Node parentNode = parent.adaptTo(Node.class);
-//        Node newPage = null;
-//        newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
-//        Node content = newPage.addNode(JCR_CONTENT);
-//        content.setPrimaryType(PAGE_CONTENT_TYPE);
-//        content.setProperty(SLING_RESOURCE_TYPE, templateComponent);
-//        content.setProperty(JCR_TITLE, name);
-//        if(templatePath != null) {
-//            content.setProperty(TEMPLATE, templatePath);
-//        }
-//        updateModification(parent.getResourceResolver(), newPage);
-//        return newPage;
-//    }
 }

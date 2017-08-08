@@ -61,6 +61,20 @@
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                 </configuration>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>io.wcm.maven.plugins</groupId>-->
+                <!--<artifactId>wcmio-content-package-maven-plugin</artifactId>-->
+                <!--<extensions>true</extensions>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>aggregate-install</id>-->
+                        <!--<goals>-->
+                            <!--<goal>install</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>dont-execute</phase>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
     <dependencies>
