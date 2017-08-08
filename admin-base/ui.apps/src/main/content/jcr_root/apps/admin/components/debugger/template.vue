@@ -33,7 +33,9 @@
                 <ul class="collection">
                     <li v-for="(logger, key) of getLoggers()" class="collection-item right-align">
                         <span class="logger-name">{{logger.name}}:</span> 
-                        <a class="logger-level" v-on:click.stop.prevent="changeLogLevel(logger.name)">
+                        <a  class="logger-level" 
+                            v-bind:title="`set ${logger.name} logging level: ${levelToName(logger.level)}`" 
+                            v-on:click.stop.prevent="changeLogLevel(logger.name)">
                             {{levelToName(logger.level)}}
                         </a>
                     </li>
