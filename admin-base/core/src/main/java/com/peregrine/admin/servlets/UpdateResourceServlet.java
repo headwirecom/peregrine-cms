@@ -45,6 +45,19 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * Servlet to provide Update Resources support
+ *
+ * These are the rules:
+ * 1) The properties / node structure is provided as JSon on the parameter: 'content'
+ * 2) The node structure is a JSon Map where each property is a property of the node
+ *    and each Map is a sub node
+ * 3) Sub nodes can be deleted by:
+ *    a) providing a property on the node called 'delete'
+ *       and either be null or 'true'
+ *    b) providing a property on the parent called 'delete' and providing the name of the child
+ *       node. If found it will be deleted
+ */
 @Component(
     service = Servlet.class,
     property = {
