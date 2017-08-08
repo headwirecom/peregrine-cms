@@ -27,18 +27,18 @@
         <template v-if="currentObject">
             <p/>
             <template v-if="allowOperations">
-                <button class="btn" v-on:click.stop.prevent="renamePage()">rename</button>
-                <button class="btn" v-on:click.stop.prevent="movePage()">move</button>
-                <button class="btn" v-on:click.stop.prevent="deletePage()">delete</button>
+                <button class="btn" title="rename" v-on:click.stop.prevent="renamePage()">rename</button>
+                <button class="btn" title="move"   v-on:click.stop.prevent="movePage()">move</button>
+                <button class="btn" title="delete"   v-on:click.stop.prevent="deletePage()">delete</button>
             </template>
             <vue-form-generator v-bind:schema="schema"
                                 v-bind:model="page"
                                 v-bind:options="options">
 
             </vue-form-generator>
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onCancel">
+            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
                 <i class="material-icons">close</button>
-            <button class="waves-effect waves-light btn btn-raised" v-on:click.stop.prevent="onOk">
+            <button class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
                 <i class="material-icons">check</i></button>
         </template>
         <template v-else>
