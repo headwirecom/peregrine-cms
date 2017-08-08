@@ -31,6 +31,7 @@
           v-if="isFullscreen"
           type="button" 
           class="toggle-fullscreen" 
+          title="exit fullscreen"
           v-on:click.prevent="onPreviewExitFullscreen">
           <i class="material-icons">fullscreen_exit</i>
         </button>
@@ -38,6 +39,7 @@
           v-if="!isFullscreen"
           type="button" 
           class="toggle-fullscreen" 
+          title="enter fullscreen"
           v-on:click.prevent="onPreviewFullscreen">
           <i class="material-icons">fullscreen</i>
         </button>
@@ -56,13 +58,13 @@
             </vue-form-generator>
         </form>
         <div class="right-align">
-          <button v-if="!edit" class="btn btn-raised" v-on:click.stop.prevent="onEdit">
+          <button v-if="!edit" title="edit" class="btn btn-raised" v-on:click.stop.prevent="onEdit">
             <i class="material-icons">edit</i>
           </button>
-          <button v-if="edit" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
+          <button v-if="edit" title="check" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
             <i class="material-icons">check</i>
           </button>
-          <button v-if="edit" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
+          <button v-if="edit" title="close" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
             <i class="material-icons">close</i>
           </button>
         </div>
