@@ -35,7 +35,7 @@
         :class="dropDownClasses">
         <li  
           v-if="!selectOptions.hideNoneSelectedText"
-          class="disabled">
+          v-on:click="onClick('', '')">
           <span>{{ selectOptions.noneSelectedText || "&lt;Nothing selected&gt;" }}</span>
         </li>
         <li 
@@ -93,6 +93,9 @@
         },
         methods: {
           onClick(name, value){
+              if(name === '') {
+                  name = '< Nothing selected >'
+              }
             this.value = value
             this.dropdownValue = name
             this.dropdownActive = false

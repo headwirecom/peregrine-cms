@@ -2,6 +2,7 @@ package com.peregrine.commons.servlets;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
@@ -169,6 +170,7 @@ public abstract class AbstractBaseServlet
     public static class JsonResponse
         extends Response
     {
+
         private enum STATE { object, array };
 
         private JsonGenerator json;
@@ -191,6 +193,16 @@ public abstract class AbstractBaseServlet
             json.useDefaultPrettyPrinter();
             json.writeStartObject();
             states.push(STATE.object);
+        }
+
+        public JsonResponse writeMap(Map object) throws IOException {
+            StringWriter writer = new StringWriter();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(writer, object);
+            writer.close();
+            String data = writer.toString();
+            json.writeRaw(data.substring(1, data.length()-1));
+            return this;
         }
 
         public JsonResponse writeAttribute(String name, boolean value) throws IOException {
