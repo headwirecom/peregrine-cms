@@ -20,11 +20,7 @@
 <body>
 <sly data-sly-include="tracker-bodystart.html"></sly>
 <div id="peregrine-app">
-    ${helper.path}
-    <div data-sly-list.item="${resource.listChildren}" data-per-path="${helper.model.path}">
-        <sly data-sly-resource="${item.path}"></sly>
-    </div>
-
+    here goes the app
 </div>
 
 <sly data-sly-list="${helper.model.siteJS}">
@@ -32,6 +28,13 @@
 </sly>
 
 <sly data-sly-include="renderer.html"></sly>
+
+<script>
+    var $perView = { view: 'preview' };
+    $peregrineApp.registerView($perView)
+    $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
+</script>
+
 
 <sly data-sly-include=serviceworker.html"></sly>
 <sly data-sly-include=tracker-bodyend.html"></sly>

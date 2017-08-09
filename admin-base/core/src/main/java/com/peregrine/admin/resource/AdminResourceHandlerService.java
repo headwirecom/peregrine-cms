@@ -423,12 +423,41 @@ public class AdminResourceHandlerService
     }
 
     private void updateResourceTree(Resource resource, Map<String, Object> properties) throws ManagementException {
+        // Handle Deletion:
+        // 1) Delete property with either 'true' or null as value -> remove the given resource
+        // 2) Delete Property's value converted to string and then looked up as child of the given resource
+        //    - If found delete that resource
+        //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
+        if(properties.containsKey("delete")) {
+            Object value = properties.get("delete");
+            if(value == null || "true".equalsIgnoreCase(value.toString())) {
+                // This indicates that this node shall be removed
+                try {
+                    resource.getResourceResolver().delete(resource);
+                    // This resource is gone so there is noting left that can be done here
+                    return;
+                } catch(PersistenceException e) {
+                    throw new ManagementException("Failed to delete resource: " + resource.getPath(), e);
+                }
+            } else {
+                String name = value.toString();
+                Resource child = resource.getChild(name);
+                if(child != null) {
+                    try {
+                        resource.getResourceResolver().delete(child);
+                        if(properties.containsKey(name)) {
+                            value = properties.get(name);
+                            if(value instanceof Map) {
+                                properties.remove(name);
+                            }
+                        }
+                    } catch(PersistenceException e) {
+                        throw new ManagementException("Failed to delete child resource: " + child.getPath(), e);
+                    }
+                }
+            }
+        }
         ModifiableValueMap updateProperties = getModifiableProperties(resource, false);
-//        // Find all children nodes to remove the one not provided
-//        List<String> children = new ArrayList<>();
-//        for(Resource child: resource.getChildren()) {
-//            children.add(child.getName());
-//        }
         for(Entry<String, Object> entry: properties.entrySet()) {
             String name = entry.getKey();
             Object value = entry.getValue();
@@ -454,22 +483,11 @@ public class AdminResourceHandlerService
                     }
                 } else {
                     updateResourceTree(child, (Map) value);
-//                    children.remove(name);
                 }
             } else {
                 updateProperties.put(name, value);
             }
         }
-//        for(String childNameToBeRemoved: children) {
-//            Resource childToBeRemoved = getResource(resource, childNameToBeRemoved);
-//            if(childNameToBeRemoved != null) {
-//                try {
-//                    resource.getResourceResolver().delete(childToBeRemoved);
-//                } catch(PersistenceException e) {
-//                    throw new ManagementException("Deletion of Child: '" + childNameToBeRemoved + "' could not be deleted from parent: " + resource.getPath(), e);
-//                }
-//            }
-//        }
         baseResourceHandler.updateModification(resource);
     }
 

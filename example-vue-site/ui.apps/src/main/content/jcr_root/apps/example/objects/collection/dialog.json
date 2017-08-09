@@ -1,0 +1,22 @@
+{ "fields":[
+  {
+    "type": "collection",
+    "title": "Collection",
+    "model": "list",
+    "multifield": true,
+    "fields" : [
+      {
+        "type": "input",
+        "label": "Key",
+        "model": "key"
+      },
+      {
+        "type": "input",
+        "label": "Value",
+        "model": "value"
+      }
+    ],
+    "items": []
+  }
+
+]}
