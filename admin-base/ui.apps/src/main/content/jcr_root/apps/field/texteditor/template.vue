@@ -24,6 +24,28 @@
   -->
 <template>
     <div class="wrapper">
+        <div tabindex="-1" ref="quilltoolbar">
+            <select tabindex="-1" class="ql-header">
+                <option value="1"></option>
+                <option value="2"></option>
+                <option value="3"></option>
+                <option value="4"></option>
+                <option value="5"></option>
+                <option selected></option>
+            </select>
+            <button tabindex="-1" class="ql-bold"></button>
+            <button tabindex="-1" class="ql-italic"></button>
+            <button tabindex="-1" class="ql-underline"></button>
+            <button tabindex="-1" class="ql-link"></button>
+            <button tabindex="-1" class="ql-list" value="ordered"></button>
+            <button tabindex="-1" class="ql-list" value="bullet"></button>
+            <button tabindex="-1" class="ql-script" value="sub"></button>
+            <button tabindex="-1" class="ql-script" value="super"></button>
+            <button tabindex="-1" class="ql-indent" value="-1"></button>
+            <button tabindex="-1" class="ql-indent" value="+1"></button>
+            <button tabindex="-1" class="ql-code-block"></button>
+            <button tabindex="-1" class="ql-clean"></button>
+        </div>
         <div ref="quilleditor"></div>
     </div>
 </template>
@@ -50,28 +72,12 @@
                 this.quill = new Quill(this.$refs.quilleditor, {
                     theme: 'snow',
                     modules: {
-                        toolbar: {
-                          container: [
-                            [{ header: [1, 2, 3, 4, 5, false] }],
-                            ['bold', 'italic', 'underline'],
-                            ['link'],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'script': 'sub'}, { 'script': 'super' }],
-                            [{ 'indent': '-1'}, { 'indent': '+1' }],
-                            ['code-block'],
-                            ['clean']
-                          ],
-                          handlers: {
-                            'link': (value) => {
-                              if (value) {
-                                this.showPageBrowser()
-                              } else {
-                                this.quill.format('link', false);
-                              }
-                            }
-                          } 
-                        }
+                        toolbar: this.$refs.quilltoolbar
                     }            
+                })
+                const toolbar = this.quill.getModule('toolbar')
+                toolbar.addHandler('link', (value) => { 
+                    value ? this.showPageBrowser() : this.quill.format('link', false)
                 })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
                     this.value = this.$refs.quilleditor.children[0].innerHTML
