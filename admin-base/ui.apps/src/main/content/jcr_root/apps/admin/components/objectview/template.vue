@@ -45,8 +45,20 @@
         </button>
 
         <span class="panel-title">Object</span>
-        <div v-if="edit === false || edit === undefined" class="display-json">
-          <pre>{{currentObject.data}}</pre>
+        <div v-if="(edit === false || edit === undefined) && schema !== undefined" class="display-json">
+            <div class="row" v-for="field in schema.fields">
+                <template v-if="!field.fields">
+                    <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{currentObject.data[field.model]}}</div>
+                </template>
+                <template v-else>
+                    <div class="col s12"><b>{{field.title}}</b></div>
+                    <div class="row" v-for="item in currentObject.data[field.model]">
+                        <div v-for="child in field.fields">
+                            <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{item[child.model]}}</div>
+                        </div>
+                    </div>
+                </template>
+            </div>
         </div>
 
         <form v-if="edit && currentObject.data && schema">
