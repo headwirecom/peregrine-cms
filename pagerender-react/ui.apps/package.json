@@ -1,23 +1,20 @@
 {
-  "name": "pagrender-react",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ../../buildscripts/buildvue.js pagerender-react",
-    "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json"
-  },
-  "author": "",
-  "license": "Apache-2.0",
+  "name": "rollup-peregrine-react-compilation",
   "dependencies": {
-    "fs-extra": "^3.0.0",
-    "jsdoc": "^3.5.3",
-    "jsdoc-vue": "^1.0.0",
-    "rollup": "^0.41.6",
+    "babel-core": "^6.25.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-latest": "^6.24.1",
+    "camelcase": "^4.1.0",
+    "fs-extra": "^4.0.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "rollup": "^0.45.2",
+    "rollup-plugin-babel": "^3.0.1",
     "rollup-plugin-buble": "^0.15.0",
-    "rollup-plugin-vue": "^2.3.1",
-    "vue": "^2.4.2",
-    "vue-template-compiler": "^2.4.2"
+    "rollup-plugin-node-resolve": "^3.0.0"
+  },
+  "scripts": {
+    "build": "node ./node_modules/rollup/bin/rollup -c && node ../../buildscripts/buildreact.js pagerender-react"
   }
 }
