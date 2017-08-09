@@ -25,15 +25,22 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ExportException;
+import org.apache.sling.models.factory.MissingExporterException;
+import org.apache.sling.models.factory.ModelClassException;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.Map;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -66,6 +73,25 @@ public class GetObjectServlet extends AbstractBaseServlet {
         if(resource == null) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found").setRequestPath(path);
         }
+
+        try {
+            Map object = modelFactory.exportModelForResource(resource,
+                    "jackson", Map.class,
+                    Collections.<String, String>emptyMap());
+            try {
+                JsonResponse response = new JsonResponse();
+                response.writeMap(object);
+                return response;
+            } catch (IOException e) {
+            }
+
+        } catch (ExportException e) {
+        } catch (MissingExporterException e) {
+        } catch (ModelClassException e) {
+            // doesnt exist, continue
+        }
+
+
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
         return new ForwardResponse(resource, rdOptions);
     }

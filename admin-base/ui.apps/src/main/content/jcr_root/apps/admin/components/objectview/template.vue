@@ -88,7 +88,7 @@
             return $perAdminApp.getNodeFromView("/state/tools/object")
           },
           schema: function () {
-            let resourceType = this.currentObject.data['sling:resourceType']
+            let resourceType = this.currentObject.data['component'] ? this.currentObject.data['component'] : this.currentObject.data['sling:resourceType']
             resourceType = resourceType.split('/').join('-')
             return $perAdminApp.getNodeFromView('/admin/componentDefinitions/' + resourceType)
           },
