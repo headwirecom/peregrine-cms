@@ -314,6 +314,276 @@ public class UpdateResourceServletIT
         checkLastModified(client, folderPath + "/" + pageName, before);
     }
 
+    @Test
+    public void testUpdatePageWithDeletedChildNodeByFlag() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String folderPath = ROOT_PATH + "/test-upwdcnbf";
+        createFolderStructure(client, folderPath);
+        // Create a new source page
+        Calendar before = createTimestampAndWait();
+        String pageName = "test-page-1";
+        response = createPage(client, folderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
+        logger.info("Response from creating test page: '{}'", response.getContent());
+
+        JsonFactory jf = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        JsonGenerator json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, folderPath + "/" + pageName, 2, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+
+        insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_CAROUSEL_TYPE_PATH, "into-after", 302);
+        Map<String, Map> children = extractChildNodes(listResourceAsJson(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, 1));
+        logger.info("List ");
+        assertFalse("No Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.isEmpty());
+        assertTrue("Too many Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.size() == 1);
+        String carouselNodeName = children.keySet().iterator().next() + "";
+        assertFalse("Carousel Name is not provided", carouselNodeName == null || carouselNodeName.isEmpty());
+
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeObjectFieldStart(carouselNodeName);
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+
+        String slide1Name = "slide-1";
+        String image1Path = "/content/asset/slide-1-image";
+        before = createTimestampAndWait();
+        // Not we are ready to update that component by adding a slide
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeObjectFieldStart(slide1Name);
+        json.writeStringField("name", slide1Name);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH);
+        json.writeStringField("imagePath", image1Path);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, writer.toString(), 200);
+
+        // Check page now
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeObjectFieldStart(carouselNodeName);
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeObjectFieldStart(slide1Name);
+        //        json.writeStringField("name", slide1Name);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH);
+        json.writeStringField("imagePath", image1Path);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+
+        // Now remove that child by indicating that the node has to be deleted
+        before = createTimestampAndWait();
+        // Not we are ready to update that component by adding a slide
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeObjectFieldStart(slide1Name);
+        json.writeStringField("delete", "true");
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, writer.toString(), 200);
+
+        // Check page now
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeObjectFieldStart(carouselNodeName);
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+    }
+
+    @Test
+    public void testUpdatePageWithDeletedChildNodeByPath() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String folderPath = ROOT_PATH + "/test-upwdcnbp";
+        createFolderStructure(client, folderPath);
+        // Create a new source page
+        Calendar before = createTimestampAndWait();
+        String pageName = "test-page-1";
+        response = createPage(client, folderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
+        logger.info("Response from creating test page: '{}'", response.getContent());
+
+        JsonFactory jf = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        JsonGenerator json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, folderPath + "/" + pageName, 2, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+
+        insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_CAROUSEL_TYPE_PATH, "into-after", 302);
+        Map<String, Map> children = extractChildNodes(listResourceAsJson(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, 1));
+        logger.info("List ");
+        assertFalse("No Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.isEmpty());
+        assertTrue("Too many Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.size() == 1);
+        String carouselNodeName = children.keySet().iterator().next() + "";
+        assertFalse("Carousel Name is not provided", carouselNodeName == null || carouselNodeName.isEmpty());
+
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeObjectFieldStart(carouselNodeName);
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+
+        String slide1Name = "slide-1";
+        String image1Path = "/content/asset/slide-1-image";
+        before = createTimestampAndWait();
+        // Not we are ready to update that component by adding a slide
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeObjectFieldStart(slide1Name);
+        json.writeStringField("name", slide1Name);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH);
+        json.writeStringField("imagePath", image1Path);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, writer.toString(), 200);
+
+        // Check page now
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeObjectFieldStart(carouselNodeName);
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeObjectFieldStart(slide1Name);
+        //        json.writeStringField("name", slide1Name);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH);
+        json.writeStringField("imagePath", image1Path);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+
+        // Now remove that child by indicating that the node has to be deleted
+        before = createTimestampAndWait();
+        // Not we are ready to update that component by adding a slide
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeStringField("delete", slide1Name);
+        json.writeEndObject();
+        json.close();
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, writer.toString(), 200);
+
+        // Check page now
+        writer = new StringWriter();
+        json = jf.createGenerator(writer);
+        json.writeStartObject();
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
+        json.writeObjectFieldStart(JCR_CONTENT);
+        json.writeStringField(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_PAGE_TYPE_PATH);
+        json.writeStringField(JCR_TITLE, pageName);
+        json.writeStringField(TEMPLATE, EXAMPLE_TEMPLATE_PATH);
+        json.writeObjectFieldStart(carouselNodeName);
+        json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
+        json.writeEndObject();
+        json.writeEndObject();
+        json.writeEndObject();
+        json.close();
+
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, writer.toString(), true);
+        checkLastModified(client, folderPath + "/" + pageName, before);
+    }
+
     @Override
     public Logger getLogger() {
         return logger;
