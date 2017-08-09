@@ -36,6 +36,9 @@
             <ul class="collection">
                 <li v-if="showNavigateToParent"
                     v-on:click.stop.prevent="selectParent()"
+                    v-on:dragenter.stop.prevent ="onDragEnterRow"
+                    v-on:dragleave.stop.prevent ="onDragLeaveRow" 
+                    v-on:drop.prevent      ="onDropRow(pt.children[0], $event)"
                     class="collection-item">
                     <admin-components-action
                             v-bind:model="{
