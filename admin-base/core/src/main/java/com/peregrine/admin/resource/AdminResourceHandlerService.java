@@ -65,6 +65,8 @@ import static com.peregrine.commons.util.PerUtil.getResource;
 public class AdminResourceHandlerService
     implements AdminResourceHandler
 {
+    public static final String DELETION_PROPERTY_NAME = "_opDelete";
+
     @Reference
     ResourceRelocation resourceRelocation;
     @Reference
@@ -428,8 +430,8 @@ public class AdminResourceHandlerService
         // 2) Delete Property's value converted to string and then looked up as child of the given resource
         //    - If found delete that resource
         //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
-        if(properties.containsKey("delete")) {
-            Object value = properties.get("delete");
+        if(properties.containsKey(DELETION_PROPERTY_NAME)) {
+            Object value = properties.get(DELETION_PROPERTY_NAME);
             if(value == null || "true".equalsIgnoreCase(value.toString())) {
                 // This indicates that this node shall be removed
                 try {
