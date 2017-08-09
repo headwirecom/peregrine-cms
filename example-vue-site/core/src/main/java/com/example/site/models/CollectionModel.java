@@ -35,7 +35,7 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by rr on 4/18/2017.
@@ -50,9 +50,9 @@ public class CollectionModel extends AbstractComponent {
 
     @Inject
     @Named("list")
-    private List<Resource> list;
+    private List<IComponent> list;
 
-    public List<Resource> getList() {
+    public List<IComponent> getList() {
         return list;
     }
 

@@ -36,6 +36,9 @@
             <ul class="collection">
                 <li v-if="showNavigateToParent"
                     v-on:click.stop.prevent="selectParent()"
+                    v-on:dragenter.stop.prevent ="onDragEnterRow"
+                    v-on:dragleave.stop.prevent ="onDragLeaveRow" 
+                    v-on:drop.prevent      ="onDropRow(pt.children[0], $event, 'before')"
                     class="collection-item">
                     <admin-components-action
                             v-bind:model="{
@@ -56,7 +59,7 @@
                     v-on:dragenter.stop.prevent ="onDragEnterRow"
                     v-on:dragover.stop.prevent  ="onDragOverRow"
                     v-on:dragleave.stop.prevent ="onDragLeaveRow" 
-                    v-on:drop.prevent      ="onDropRow(child, $event)"
+                    v-on:drop.prevent      ="onDropRow(child, $event, 'after')"
                     v-on:click.stop.prevent="selectItem(child)">
                     <admin-components-action
                         v-bind:model="{
@@ -256,7 +259,7 @@
                 }
             },
 
-            onDropRow(item, ev) {
+            onDropRow(item, ev, type) {
                 if(this.isDraggingRow){
                     ev.target.classList.remove('active-drop-zone')
                     /* reorder row logic */
@@ -277,7 +280,7 @@
                     $perAdminApp.stateAction(action, {
                         path: ev.dataTransfer.getData("text"),
                         to: item.path,
-                        type: 'after'
+                        type: type 
                     })
                 }
             },
