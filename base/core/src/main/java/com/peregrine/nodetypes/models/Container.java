@@ -58,4 +58,8 @@ public class Container extends AbstractComponent {
         return children;
     }
 
+    @JsonIgnore(value = false)
+    public String getName() {
+        return getResource().getName();
+    }
 }
