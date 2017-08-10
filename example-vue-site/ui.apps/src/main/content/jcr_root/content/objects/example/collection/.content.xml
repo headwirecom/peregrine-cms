@@ -29,6 +29,7 @@
           jcr:primaryType="per:Object"
           jcr:title="sample"
           sling:resourceType="example/objects/collection"
+          singleList="[hello,world]"
           >
           <list jcr:primaryType="nt:unstructured">
                 <item1 jcr:primaryType="nt:unstructured"

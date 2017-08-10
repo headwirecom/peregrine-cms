@@ -17,6 +17,20 @@
       }
     ],
     "items": []
+  },
+  {
+    "type": "collection",
+    "title": "Collection",
+    "model": "singleList",
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "label": "Key",
+        "model": "key"
+      }
+    ],
+    "items": []
   }
 
 ]}
