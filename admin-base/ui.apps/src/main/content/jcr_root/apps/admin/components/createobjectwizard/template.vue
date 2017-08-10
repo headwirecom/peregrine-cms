@@ -89,10 +89,11 @@
                 const path = $perAdminApp.getNodeFromView(this.model.dataFrom)
                 const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
                 const objects = $perAdminApp.getNodeFromViewOrNull('/admin/objects/data')
-                if(node.allowedObjects) {
+                const allowedObjects = this.findAllowedObjects(path)
+                if(allowedObjects) {
                     let ret = []
                     for(let i = 0; i < objects.length; i++) {
-                        if(node.allowedObjects.indexOf(objects[i].name) >= 0) {
+                        if(allowedObjects.indexOf(objects[i].name) >= 0) {
                             ret.push(objects[i])
                         }
                     }
@@ -103,6 +104,18 @@
         }
         ,
         methods: {
+            findAllowedObjects(path) {
+
+                const pathSegments = path.split('/')
+                while(pathSegments.length > 1) {
+                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, pathSegments.join('/'))
+                    if(node.allowedObjects) {
+                        return node.allowedObjects
+                    }
+                    pathSegments.pop()
+                }
+                return undefined
+            },
             selectItem: function(me, target){
                 if(me === null) me = this
                 me.formmodel.objectPath = target
