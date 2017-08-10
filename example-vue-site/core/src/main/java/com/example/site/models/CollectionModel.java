@@ -52,8 +52,16 @@ public class CollectionModel extends AbstractComponent {
     @Named("list")
     private List<IComponent> list;
 
+    @Inject
+    @Named("singleList")
+    private String[] singleList;
+
     public List<IComponent> getList() {
         return list;
+    }
+
+    public String[] getSingleList() {
+        return singleList;
     }
 
 }

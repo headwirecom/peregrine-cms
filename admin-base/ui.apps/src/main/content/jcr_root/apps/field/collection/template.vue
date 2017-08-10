@@ -61,7 +61,7 @@
       <li v-for="(item, index) in value" class="collection-field">
         <vue-form-generator
             :schema="schema"
-            :model="item"></vue-form-generator>
+            :model="{[schema.fields[0].model]: item}"></vue-form-generator>
         <button v-on:click.stop.prevent="onRemoveItem(index)" class="waves-effect waves-light btn-flat">
           <i class="material-icons">delete</i>
         </button>
