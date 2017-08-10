@@ -31,9 +31,10 @@
           sling:resourceType="example/objects/collection"
           >
           <list jcr:primaryType="nt:unstructured">
-              <list jcr:primaryType="nt:unstructured"
-                    key="hello"
-                    value="world"
-              />
-          </list>
+                <item1 jcr:primaryType="nt:unstructured"
+                       key="hello"
+                       value="world"
+                />
+
+          />
 </jcr:root>

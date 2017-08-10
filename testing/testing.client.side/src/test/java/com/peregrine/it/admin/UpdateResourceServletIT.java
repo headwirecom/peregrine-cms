@@ -18,10 +18,9 @@ import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.Map;
 
+import static com.peregrine.admin.resource.AdminResourceHandlerService.DELETION_PROPERTY_NAME;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
-import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
-import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
@@ -422,7 +421,7 @@ public class UpdateResourceServletIT
         json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
         json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
         json.writeObjectFieldStart(slide1Name);
-        json.writeStringField("delete", "true");
+        json.writeStringField(DELETION_PROPERTY_NAME, "true");
         json.writeEndObject();
         json.writeEndObject();
         json.close();
@@ -557,7 +556,7 @@ public class UpdateResourceServletIT
         json.writeStartObject();
         json.writeStringField(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
         json.writeStringField(SLING_RESOURCE_TYPE, EXAMPLE_CAROUSEL_TYPE_PATH);
-        json.writeStringField("delete", slide1Name);
+        json.writeStringField(DELETION_PROPERTY_NAME, slide1Name);
         json.writeEndObject();
         json.close();
         response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, writer.toString(), 200);
