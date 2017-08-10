@@ -43,7 +43,7 @@
                 target: 'rightPanelVisible',
                 command: 'showHide',
                 tooltipTitle: 'hide components panel'
-            }">,
+            }">
                 <i class="material-icons">highlight_off</i>
             </admin-components-action>
             
