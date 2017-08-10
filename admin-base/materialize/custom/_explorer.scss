@@ -12,6 +12,7 @@
 				.collection {
 					border: 0;
 					margin: 0;
+					padding-top: 5px;
 					.collection-item {
 						position: relative;
 						color: color("blue-grey", "darken-2");
@@ -40,8 +41,12 @@
 							color: color("blue-grey", "darken-4");
 					    background-color: color("blue-grey", "lighten-5");
 						}
-						&.active-drop-zone {
+						&.drop-after {
 							border-bottom: 1px solid color("orange", "lighten-3") !important;
+						}
+						&.drop-before {
+							border-top: 1px solid color("orange", "lighten-3") !important;
+							margin-top: -1px;
 						}
 						.secondary-content {
 							color: $primary-color-dark;
