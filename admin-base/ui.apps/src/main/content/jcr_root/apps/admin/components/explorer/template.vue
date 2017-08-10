@@ -36,9 +36,6 @@
             <ul class="collection">
                 <li v-if="showNavigateToParent"
                     v-on:click.stop.prevent="selectParent()"
-                    v-on:dragenter.stop.prevent ="onDragEnterRow"
-                    v-on:dragleave.stop.prevent ="onDragLeaveRow" 
-                    v-on:drop.prevent      ="onDropRow(pt.children[0], $event, 'before')"
                     class="collection-item">
                     <admin-components-action
                             v-bind:model="{
@@ -59,7 +56,7 @@
                     v-on:dragenter.stop.prevent ="onDragEnterRow"
                     v-on:dragover.stop.prevent  ="onDragOverRow"
                     v-on:dragleave.stop.prevent ="onDragLeaveRow" 
-                    v-on:drop.prevent      ="onDropRow(child, $event, 'after')"
+                    v-on:drop.prevent      ="onDropRow(child, $event)"
                     v-on:click.stop.prevent="selectItem(child)">
                     <admin-components-action
                         v-bind:model="{
@@ -244,24 +241,26 @@
 
             /* row drop zone events */
             onDragOverRow(ev){
-
+                if(this.isDraggingRow){
+                    const center = ev.target.offsetHeight / 2 ;
+                    this.dropType = ev.offsetY > center ? 'after' : 'before';
+                    ev.target.classList.toggle('drop-after', ev.offsetY > center );
+                    ev.target.classList.toggle('drop-before', ev.offsetY < center );
+                }
             },
 
             onDragEnterRow(ev){
-                if(this.isDraggingRow){
-                    ev.target.classList.add('active-drop-zone')
-                }
             },
 
             onDragLeaveRow(ev){
                 if(this.isDraggingRow){
-                    ev.target.classList.remove('active-drop-zone')
+                    ev.target.classList.remove(`drop-after`,`drop-before`)
                 }
             },
 
             onDropRow(item, ev, type) {
                 if(this.isDraggingRow){
-                    ev.target.classList.remove('active-drop-zone')
+                    ev.target.classList.remove(`drop-after`,`drop-before`)
                     /* reorder row logic */
                     const dataFrom = this.model.dataFrom
                     const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
@@ -280,7 +279,7 @@
                     $perAdminApp.stateAction(action, {
                         path: ev.dataTransfer.getData("text"),
                         to: item.path,
-                        type: type 
+                        type: this.dropType 
                     })
                 }
             },
