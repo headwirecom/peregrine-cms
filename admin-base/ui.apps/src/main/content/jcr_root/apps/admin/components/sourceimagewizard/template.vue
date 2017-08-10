@@ -24,8 +24,11 @@
   -->
 <template>
     <div class="container">
-        <input type="text" v-model="input">
-        <button class="btn" v-on:click.stop="search()">search</button>
+        <form v-on:submit.prevent="search()">
+            <input type="text" v-model="input">
+                <button class="btn" type="submit">search</button>
+            </input>
+        </form>
         <div class="row">
             <div class="col s2" v-for="item in results"><a href="#" v-on:click.stop="select(item)" class="hoverable"><img v-bind:src="item.previewURL"></a></div>
         </div>
