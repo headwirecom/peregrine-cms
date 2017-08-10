@@ -109,7 +109,7 @@
         if(this.activeItem === index){
           return 'active'
         }
-        if(item.deleted){
+        if(item._opDelete){
           return'deleted'
         }
         return false
@@ -139,9 +139,9 @@
         }
       },
       onRemoveItem(item, index){
-        item.deleted = true
+        item._opDelete = true
         let modelItem = this.value[index]
-        modelItem.deleted = true
+        modelItem._opDelete = true
         this.$set(this.schema.items, index, item)
         this.$set(this.value, index, modelItem)
       },
