@@ -38,8 +38,8 @@
             </div>
             <div class="collapsible-body">
                 <vue-form-generator
-                            :schema="schema"
-                            :model="item"></vue-form-generator>
+                  :schema="schema"
+                  :model="item"></vue-form-generator>
             </div>
         </li>
         <!--
@@ -96,7 +96,7 @@
     mounted(){
 //      console.log('this.model: ', this.model)
       if(this.schema.multifield){
-        $(this.$refs.collapsible).collapsible()
+        $(this.$refs.collapsible).collapsible({accordion: false})
       }
     },
     beforeDestroy(){
@@ -132,7 +132,7 @@
               const len = this.schema.fieldLabel.length
               for(let i=0; i<len; i++){
                   let label = this.schema.fieldLabel[i]
-                  let childItem = this.model.children[index]
+                  let childItem = this.value[index]
                   // console.log('child item: ', childItem)
                   if(childItem[label]){
                       return childItem[label]
@@ -159,7 +159,10 @@
         this.$set(this.value, index, modelItem)
       },
       onSetActiveItem(index){
-        if(index !== this.activeItem){
+        if(index === this.activeItem){
+          $(this.$refs.collapsible).collapsible('close', this.activeItem)
+          this.activeItem = null
+        } else {
           this.$nextTick(function () {
             if(this.activeItem !== null){
               $(this.$refs.collapsible).collapsible('close', this.activeItem)
