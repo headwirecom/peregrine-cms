@@ -31,24 +31,37 @@
       </button>
     </h5>
     <ul v-if="schema.multifield" class="collapsible" ref="collapsible">
+        <li v-for="(item, index) in value"
+            v-bind:class="getItemClass(item, index)">
+            <div class="collapsible-header" v-on:click.stop.prevent="onSetActiveItem(index)">
+                {{itemName(item, index)}} <i class="material-icons" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
+            </div>
+            <div class="collapsible-body">
+                <vue-form-generator
+                            :schema="schema"
+                            :model="item"></vue-form-generator>
+            </div>
+        </li>
+        <!--
       <li 
-        v-for="(item, index) in schema.items" 
+        v-for="(item, index) in [schema.model]"
         v-bind:class="getItemClass(item, index)">
         <div class="collapsible-header" v-on:click.stop.prevent="onSetActiveItem(index)">
           {{itemName(item, index)}} <i class="material-icons" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
         </div>
         <div class="collapsible-body">
           <vue-form-generator
-            :schema="item"
+            :schema="schema.fields"
             :model="value[index]"></vue-form-generator>
         </div>
       </li>
+      -->
     </ul>
     <ul v-else class="collection-fields">
-      <li v-for="(item, index) in schema.items" class="collection-field">
+      <li v-for="(item, index) in value" class="collection-field">
         <vue-form-generator
-            :schema="item"
-            :model="{[schema.model]: value}"></vue-form-generator>
+            :schema="schema"
+            :model="item"></vue-form-generator>
         <button v-on:click.stop.prevent="onRemoveItem(index)" class="waves-effect waves-light btn-flat">
           <i class="material-icons">delete</i>
         </button>
@@ -64,18 +77,18 @@
 //      console.log("value: ", this.value)
 //      console.log("schema.items: ", this.schema.items)
       // this.model[this.schema.model] = this.value
-      var model = this.value
+//      var model = this.value
       /* if model already has child items, create a schema for each */
-      if(model){
-        var len = model.length
-    		if(len > 0){
-    			for(var i=0; i<len; i++){
-    				this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
-            if(!this.schema.multifield){
-              this.schema.items[i].fields[0].model = this.schema.model + '['+i+']'
-            }
-    			}
-    		}
+      if(this.value){
+//        var len = model.length
+//    		if(len > 0){
+//    			for(var i=0; i<len; i++){
+//    				this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
+//            if(!this.schema.multifield){
+//              this.schema.items[i].fields[0].model = this.schema.model + '['+i+']'
+//            }
+//    			}
+//    		}
       } else {
         this.value = []
       }
@@ -129,20 +142,20 @@
           return parseInt(index) + 1
       },
       onAddItem(e){
-        this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
+//        this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
         if(!this.schema.multifield){
-          this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
+//          this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
           this.value.push('')
         } else {
             this.value.push({ name: 'n' +Date.now()})
-            this.onSetActiveItem(this.schema.items.length - 1)
+            this.onSetActiveItem(this.value.length - 1)
         }
       },
       onRemoveItem(item, index){
         item._opDelete = true
         let modelItem = this.value[index]
         modelItem._opDelete = true
-        this.$set(this.schema.items, index, item)
+//        this.$set(this.schema.items, index, item)
         this.$set(this.value, index, modelItem)
       },
       onSetActiveItem(index){
