@@ -16,9 +16,7 @@
         }
         .form-group {
             position: relative;
-            padding: 1.5rem 0;
-            border-top: 1px solid #fff;
-            border-bottom: 1px solid color("blue-grey", "lighten-4");
+            padding: 0.75rem 0;
             &.required {
                 > label:after {
                     display: inline-block;
@@ -319,9 +317,8 @@
                 clear: both;
                 .wrap {
                     h5 {
-                        color: color("blue-grey", "darken-2");
-                        font-size: 1rem;
-                        text-transform: capitalize;
+                        color: color("blue-grey", "base");
+                        font-size: 1.25rem;
                         .btn-floating {
                             width: 30px;
                             height: 30px;
@@ -336,34 +333,43 @@
                     .collapsible {
                         margin: 0 -0.75rem 1.5rem;
                         box-shadow: none;
-                        border-left: 0;
-                        border-right: 0;
-                        border-color: color("blue-grey", "lighten-4");
+                        border: none;
                         clear: both;
                         > li {
                             .collapsible-header {
                                 background-color: #fff;
                                 border-bottom-color: color("blue-grey", "lighten-4");
                                 color: color("blue-grey", "darken-2");
-                                i {
+                                .material-icons {
                                     float: none;
                                     float: right;
                                     margin: 0 0 0 0.75rem;
+                                    &:hover,
+                                    &:focus, 
+                                    &:active {
+                                        color: color("blue-grey", "base");
+                                    }
                                 }
                             }
                             .collapsible-body {
                                 border-color: color("blue-grey", "lighten-4"); 
                                 padding: 0.75rem 0.75rem 0;
+
+                                label {
+                                    font-size: 0.9rem;
+                                }
                             }
                             &.active {
                                 .collapsible-header {
-                                    background-color: transparent;
-                                    border-bottom-color: transparent;
-                                    border-top: 1px solid #fff !important;
+                                    font-weight: 500;
                                 }
-                                .collapsible-body {
-                                    padding: 0.75rem 0.75rem 0;
-                                    display: block;
+                            }
+                            &.deleted {
+                                display: none;
+                            }
+                            &:first-child {
+                                .collapsible-header {
+                                    border-top: 1px solid color("blue-grey", "lighten-4");
                                 }
                             }
                             &:last-child {
@@ -376,15 +382,18 @@
                     .collection-fields {
                         width: 100%;
                         margin: 0;
-                        padding: 0 0.75rem;
+                        padding: 0;
                         clear: both;
                         > .collection-field {
                             padding: 0;
                             position: relative;
+                            label {
+                                font-size: 0.9rem;
+                            }
                             .vue-form-generator { 
                                 display: inline-block;
                                 width: calc(100% - 3rem);
-                                background-color: #fff;
+                                background-color: transparent;
                                 fieldset { 
                                     .form-group {
                                         padding: 0;
@@ -392,8 +401,7 @@
                                             .wrapper {
                                                 input {
                                                     width: 100%;
-                                                    border-top: 0;
-                                                    margin: 0 0 1px;
+                                                    margin: 0;
                                                 }
                                             }
                                         }
@@ -403,43 +411,42 @@
                             .btn-flat {
                                 width: 3rem;
                                 height: 100%;
-                                float:right;
                                 display: inline-block;
                                 padding: 0;
                                 color: color("blue-grey", "darken-1");
                             }
                         }
-                        > li:first-child {
-                           .vue-form-generator { 
-                                fieldset { 
-                                    .form-group {
-                                        .field-wrap {
-                                            .wrapper {
-                                                input {
-                                                    border-top: 1px solid color("blue-grey", "lighten-4");
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        > li:last-child,
-                        > li:only-child {
-                           .vue-form-generator { 
-                                fieldset { 
-                                    .form-group {
-                                        .field-wrap {
-                                            .wrapper {
-                                                input {
-                                                    margin-bottom: 0;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        // > li:first-child {
+                        //    .vue-form-generator { 
+                        //         fieldset { 
+                        //             .form-group {
+                        //                 .field-wrap {
+                        //                     .wrapper {
+                        //                         input {
+                        //                             border-top: 1px solid color("blue-grey", "lighten-4");
+                        //                         }
+                        //                     }
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        // }
+                        // > li:last-child,
+                        // > li:only-child {
+                        //    .vue-form-generator { 
+                        //         fieldset { 
+                        //             .form-group {
+                        //                 .field-wrap {
+                        //                     .wrapper {
+                        //                         input {
+                        //                             margin-bottom: 0;
+                        //                         }
+                        //                     }
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        // }
                     }
                 }
             }
