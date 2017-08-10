@@ -384,6 +384,12 @@ public class AdminResourceHandlerService
         try {
             return parent.getResourceResolver().create(parent, name, properties);
         } catch(PersistenceException e) {
+//            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
+//            logger.trace("Failure Exception", e);
+            throw new ManagementException("Failed to create resource: " + name + " on parent: " + parent.getPath(), e);
+        } catch(RuntimeException e) {
+            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
+            logger.trace("Failure Exception", e);
             throw new ManagementException("Failed to create resource: " + name + " on parent: " + parent.getPath(), e);
         }
     }
@@ -496,6 +502,9 @@ public class AdminResourceHandlerService
                         if(temp != null) {
                             childName = temp.toString();
                         }
+                        if(childName == null || childName.isEmpty()) {
+                            throw new ManagementException("Name for item: '" + item + "' does not have a name (parent: '" + resource.getPath() + "'");
+                        }
                         Resource listChild = child.getChild(childName);
                         // If child is missing then create it
                         if(listChild == null) {
@@ -513,6 +522,8 @@ public class AdminResourceHandlerService
                         } else {
                             updateResourceTree(listChild, childProperties);
                         }
+                    } else {
+                        throw new ManagementException("Property: '" + name + "' is a map, is not found and cannot be created due to missing Sling Resource Type");
                     }
                 }
             } else {
