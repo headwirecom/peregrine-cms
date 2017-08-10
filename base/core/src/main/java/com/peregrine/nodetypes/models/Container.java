@@ -39,7 +39,7 @@ import java.util.Map;
  * Created by rr on 12/2/2016.
  */
 @Model(adaptables = Resource.class, resourceType = {
-        "per/components/structure/container", "per/components/structure/page", "nt:unstructured"
+        "per/components/structure/container", "per/components/structure/page"
 }, adapters = IComponent.class)
 @Exporter(name = "jackson", extensions = "json")
 public class Container extends AbstractComponent {

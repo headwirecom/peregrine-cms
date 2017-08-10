@@ -65,6 +65,8 @@ import static com.peregrine.commons.util.PerUtil.getResource;
 public class AdminResourceHandlerService
     implements AdminResourceHandler
 {
+    public static final String DELETION_PROPERTY_NAME = "_opDelete";
+
     @Reference
     ResourceRelocation resourceRelocation;
     @Reference
@@ -382,6 +384,12 @@ public class AdminResourceHandlerService
         try {
             return parent.getResourceResolver().create(parent, name, properties);
         } catch(PersistenceException e) {
+//            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
+//            logger.trace("Failure Exception", e);
+            throw new ManagementException("Failed to create resource: " + name + " on parent: " + parent.getPath(), e);
+        } catch(RuntimeException e) {
+            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
+            logger.trace("Failure Exception", e);
             throw new ManagementException("Failed to create resource: " + name + " on parent: " + parent.getPath(), e);
         }
     }
@@ -428,8 +436,8 @@ public class AdminResourceHandlerService
         // 2) Delete Property's value converted to string and then looked up as child of the given resource
         //    - If found delete that resource
         //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
-        if(properties.containsKey("delete")) {
-            Object value = properties.get("delete");
+        if(properties.containsKey(DELETION_PROPERTY_NAME)) {
+            Object value = properties.get(DELETION_PROPERTY_NAME);
             if(value == null || "true".equalsIgnoreCase(value.toString())) {
                 // This indicates that this node shall be removed
                 try {
@@ -467,22 +475,56 @@ public class AdminResourceHandlerService
                 // If child is missing then create it
                 if(child == null) {
                     Object val = childProperties.get(SLING_RESOURCE_TYPE);
-                    if(val instanceof String) {
-                        String resourceType = (String) val;
-                        childProperties.remove("name");
-                        childProperties.remove(SLING_RESOURCE_TYPE);
-                        childProperties.remove(JCR_PRIMARY_TYPE);
-                        child = createNode(resource, name, NT_UNSTRUCTURED, resourceType);
-                        // Now update the child with any remaining properties
-                        ModifiableValueMap newChildProperties = getModifiableProperties(child, false);
-                        for(Object childPropertyKey : childProperties.keySet()) {
-                            newChildProperties.put(childPropertyKey + "", childProperties.get(childPropertyKey));
+                    String resourceType = val == null ? null : (String) val;
+                    childProperties.remove("name");
+                    childProperties.remove(SLING_RESOURCE_TYPE);
+                    childProperties.remove(JCR_PRIMARY_TYPE);
+                    child = createNode(resource, name, NT_UNSTRUCTURED, resourceType);
+                    // Now update the child with any remaining properties
+                    ModifiableValueMap newChildProperties = getModifiableProperties(child, false);
+                    for(Object childPropertyKey : childProperties.keySet()) {
+                        newChildProperties.put(childPropertyKey + "", childProperties.get(childPropertyKey));
+                    }
+                } else {
+                    updateResourceTree(child, childProperties);
+                }
+            } else if(value instanceof List) {
+                Resource child = resource.getChild(name);
+                if(child == null) {
+                    child = createNode(resource, name, NT_UNSTRUCTURED, null);
+                }
+                List list = (List) value;
+                for(Object item: list) {
+                    if(item instanceof Map) {
+                        Map childProperties = (Map) item;
+                        Object temp = childProperties.get("name");
+                        String childName = null;
+                        if(temp != null) {
+                            childName = temp.toString();
+                        }
+                        if(childName == null || childName.isEmpty()) {
+                            throw new ManagementException("Name for item: '" + item + "' does not have a name (parent: '" + resource.getPath() + "'");
+                        }
+                        Resource listChild = child.getChild(childName);
+                        // If child is missing then create it
+                        if(listChild == null) {
+                            Object val = childProperties.get(SLING_RESOURCE_TYPE);
+                            String resourceType = val == null ? null : (String) val;
+                            childProperties.remove("name");
+                            childProperties.remove(SLING_RESOURCE_TYPE);
+                            childProperties.remove(JCR_PRIMARY_TYPE);
+                            listChild = createNode(child, childName, NT_UNSTRUCTURED, resourceType);
+                            // Now update the child with any remaining properties
+                            ModifiableValueMap newChildProperties = getModifiableProperties(listChild, false);
+                            for(Object childPropertyKey : childProperties.keySet()) {
+                                newChildProperties.put(childPropertyKey + "", childProperties.get(childPropertyKey));
+                            }
+                        } else {
+                            updateResourceTree(listChild, childProperties);
                         }
                     } else {
                         throw new ManagementException("Property: '" + name + "' is a map, is not found and cannot be created due to missing Sling Resource Type");
                     }
-                } else {
-                    updateResourceTree(child, (Map) value);
                 }
             } else {
                 updateProperties.put(name, value);

@@ -52,6 +52,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.peregrine.cms</groupId>
+            <artifactId>admin.core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

@@ -1,5 +1,25 @@
 { "fields":[
   {
+    "type": "collection",
+    "title": "Collection",
+    "model": "children",
+    "multifield": true,
+    "fieldLabel": ["key", "value"],
+    "fields" : [
+      {
+        "type": "input",
+        "label": "Key",
+        "model": "key"
+      },
+      {
+        "type": "input",
+        "label": "Value",
+        "model": "value"
+      }
+    ],
+    "items": []
+  },
+  {
     "type": "input",
     "inputType": "text",
     "label": "text field",
@@ -147,25 +167,6 @@
     "hint": "This is the datetime picker.",
     "required": true,
     "validator": "required"
-  },
-  {
-    "type": "collection",
-    "title": "Collection",
-    "model": "children",
-    "multifield": true,
-    "fields" : [
-      {
-        "type": "input",
-        "label": "Key",
-        "model": "key"
-      },
-      {
-        "type": "input",
-        "label": "Value",
-        "model": "value"
-      }
-    ],
-    "items": []
   }
 
 ]}
