@@ -342,14 +342,15 @@ export default {
         },
 
         onClickOverlay: function(e) {
-            console.log('onClickOverlay')
             if(!e) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if(node.fromTemplate) {
-                    $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', () => {})
+                    $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', () => {
+                        this.removeEditOverlay()
+                    })
                 } else {
                     this.selectedComponent = targetEl
                     var targetBox = this.getBoundingClientRect(targetEl)
@@ -365,6 +366,10 @@ export default {
             // check if we only left the area into the overlay for the actions
             var targetEl = this.getTargetEl(e)
             if(targetEl) return
+            this.removeEditOverlay()
+        },
+
+        removeEditOverlay() {
             this.selectedComponent = null
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
