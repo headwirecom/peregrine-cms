@@ -523,7 +523,11 @@ public class AdminResourceHandlerService
                             updateResourceTree(listChild, childProperties);
                         }
                     } else {
-                        throw new ManagementException("Property: '" + name + "' is a map, is not found and cannot be created due to missing Sling Resource Type");
+                        if(item == null || item.toString().isEmpty()) {
+                            logger.trace("Item is either null or empty and therefore ignored");
+                        } else {
+                            throw new ManagementException("Property: '" + name + "' is not a map, is not found and cannot be created due to missing Sling Resource Type");
+                        }
                     }
                 }
             } else {
