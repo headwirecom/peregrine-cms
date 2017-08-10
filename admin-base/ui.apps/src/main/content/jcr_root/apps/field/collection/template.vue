@@ -61,8 +61,8 @@
   export default {
     mixins: [ VueFormGenerator.abstractField ],
     beforeMount(){
-      console.log("value: ", this.value)
-      console.log("schema.items: ", this.schema.items)
+//      console.log("value: ", this.value)
+//      console.log("schema.items: ", this.schema.items)
       // this.model[this.schema.model] = this.value
       var model = this.value
       /* if model already has child items, create a schema for each */
@@ -81,7 +81,7 @@
       }
   	},
     mounted(){
-      console.log('this.model: ', this.model)
+//      console.log('this.model: ', this.model)
       if(this.schema.multifield){
         $(this.$refs.collapsible).collapsible()
       }
@@ -115,16 +115,18 @@
         return false
       },
       itemName(item, index) {
-        const len = this.schema.fieldLabel.length
-        for(let i=0; i<len; i++){
-          let label = this.schema.fieldLabel[i]
-          let childItem = this.model.children[index]
-          console.log('child item: ', childItem)
-          if(childItem[label]){
-            return childItem[label]
+          if(this.schema.fieldLabel) {
+              const len = this.schema.fieldLabel.length
+              for(let i=0; i<len; i++){
+                  let label = this.schema.fieldLabel[i]
+                  let childItem = this.model.children[index]
+                  // console.log('child item: ', childItem)
+                  if(childItem[label]){
+                      return childItem[label]
+                  }
+              }
           }
-        }
-        return parseInt(index) + 1
+          return parseInt(index) + 1
       },
       onAddItem(e){
         this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
