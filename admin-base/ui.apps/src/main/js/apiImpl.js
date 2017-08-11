@@ -283,13 +283,20 @@ class PerAdminImpl {
 
     populateObject(path, target, name) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/getObject.json'+path)
-                .then( (data) => populateView(target, name, data).then( () => {
-                    this.populateComponentDefinitionFromNode(path).then( () => {
-                        resolve()
+            // fetch('/admin/getObject.json'+path)
+            //     .then( (data) => populateView(target, name, data).then( () => {
+            //         this.populateComponentDefinitionFromNode(path).then( () => {
+            //             resolve()
+            //         })
+            //     } ) )
+            //
+            this.populateComponentDefinitionFromNode(path).then( () => {
+                fetch('/admin/getObject.json'+path).then( (data) => {
+                    populateView(target, name, data).then( () => {
+                        resolve();
                     })
-                } ) )
-
+                })
+            })
         })
     }
 

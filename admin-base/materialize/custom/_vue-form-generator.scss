@@ -336,19 +336,40 @@
                         border: none;
                         clear: both;
                         > li {
+                            position: relative;
                             .collapsible-header {
                                 background-color: #fff;
                                 border-bottom-color: color("blue-grey", "lighten-4");
                                 color: color("blue-grey", "darken-2");
                                 .material-icons {
-                                    float: none;
-                                    float: right;
-                                    margin: 0 0 0 0.75rem;
-                                    &:hover,
-                                    &:focus, 
-                                    &:active {
-                                        color: color("blue-grey", "base");
+                                    color: color("blue-grey", "lighten-2");
+                                    &.delete-icon {
+                                        float: none;
+                                        float: right;
+                                        margin: 0 0 0 0.75rem;
+                                        color: color("blue-grey", "darken-1");
+                                        &:hover,
+                                        &:focus, 
+                                        &:active {
+                                            color: color("blue-grey", "base");
+                                        }
                                     }
+                                }
+                                &.drop-before:before,
+                                &.drop-after:after {
+                                    position: absolute;
+                                    display: block;
+                                    left: 0;
+                                    right: 0;
+                                    height: 1px;
+                                    background-color: color("orange", "base");
+                                    content: '';
+                                }
+                                &.drop-before:before {
+                                    top: -1px;
+                                }
+                                &.drop-after:after {
+                                    bottom: 0;
                                 }
                             }
                             .collapsible-body {
@@ -368,9 +389,9 @@
                                 display: none;
                             }
                             &:first-child {
-                                .collapsible-header {
-                                    border-top: 1px solid color("blue-grey", "lighten-4");
-                                }
+                                // .collapsible-header {
+                                //     border-top: 1px solid color("blue-grey", "lighten-4");
+                                // }
                             }
                             &:last-child {
                                 .collapsible-body {
@@ -416,37 +437,6 @@
                                 color: color("blue-grey", "darken-1");
                             }
                         }
-                        // > li:first-child {
-                        //    .vue-form-generator { 
-                        //         fieldset { 
-                        //             .form-group {
-                        //                 .field-wrap {
-                        //                     .wrapper {
-                        //                         input {
-                        //                             border-top: 1px solid color("blue-grey", "lighten-4");
-                        //                         }
-                        //                     }
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
-                        // > li:last-child,
-                        // > li:only-child {
-                        //    .vue-form-generator { 
-                        //         fieldset { 
-                        //             .form-group {
-                        //                 .field-wrap {
-                        //                     .wrapper {
-                        //                         input {
-                        //                             margin-bottom: 0;
-                        //                         }
-                        //                     }
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
                     }
                 }
             }

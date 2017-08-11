@@ -31,15 +31,25 @@
       </button>
     </h5>
     <ul v-if="schema.multifield" class="collapsible" ref="collapsible">
-        <li v-for="(item, index) in value"
-            v-bind:class="getItemClass(item, index)">
-            <div class="collapsible-header" v-on:click.stop.prevent="onSetActiveItem(index)">
-                {{itemName(item, index)}} <i class="material-icons" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
+        <li v-for="(item, index) in value">
+            <div 
+              class="collapsible-header" 
+              v-bind:class="getItemClass(item, index)" 
+              draggable="true" 
+              v-on:dragstart = "onDragStart(item, index, $event)"
+              v-on:dragover.prevent  ="onDragOver"
+              v-on:dragenter.prevent ="onDragEnter"
+              v-on:dragleave.prevent ="onDragLeave"
+              v-on:drop.prevent      ="onDrop(item, index, $event)"
+              v-on:click.stop.prevent="onSetActiveItem(index)">
+                <i class="material-icons">drag_handle</i>
+                {{itemName(item, index)}} 
+                <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
             </div>
             <div class="collapsible-body">
                 <vue-form-generator
-                            :schema="schema"
-                            :model="item"></vue-form-generator>
+                  :schema="schema"
+                  :model="item"></vue-form-generator>
             </div>
         </li>
         <!--
@@ -60,9 +70,9 @@
     <ul v-else class="collection-fields">
       <li v-for="(item, index) in value" class="collection-field">
         <vue-form-generator
-            :schema="schema"
-            :model="{[schema.fields[0].model]: item}"></vue-form-generator>
-        <button v-on:click.stop.prevent="onRemoveItem(index)" class="waves-effect waves-light btn-flat">
+            :schema="getSchemaForIndex(schema, index)"
+            :model="value"></vue-form-generator>
+        <button v-on:click.stop.prevent="onRemoveItem(item, index)" class="waves-effect waves-light btn-flat">
           <i class="material-icons">delete</i>
         </button>
       </li>
@@ -74,29 +84,11 @@
   export default {
     mixins: [ VueFormGenerator.abstractField ],
     beforeMount(){
-//      console.log("value: ", this.value)
-//      console.log("schema.items: ", this.schema.items)
-      // this.model[this.schema.model] = this.value
-//      var model = this.value
-      /* if model already has child items, create a schema for each */
-      if(this.value){
-//        var len = model.length
-//    		if(len > 0){
-//    			for(var i=0; i<len; i++){
-//    				this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
-//            if(!this.schema.multifield){
-//              this.schema.items[i].fields[0].model = this.schema.model + '['+i+']'
-//            }
-//    			}
-//    		}
-      } else {
-        this.value = []
-      }
-  	},
+      if(!this.value) this.value = []
+    },
     mounted(){
-//      console.log('this.model: ', this.model)
       if(this.schema.multifield){
-        $(this.$refs.collapsible).collapsible()
+        $(this.$refs.collapsible).collapsible({accordion: false})
       }
     },
     beforeDestroy(){
@@ -118,6 +110,11 @@
     	}
     },
     methods: {
+	    getSchemaForIndex(schema, index) {
+          const newSchema = JSON.parse(JSON.stringify(schema));
+          newSchema.fields[0].model = ''+index
+          return newSchema
+      },
       getItemClass(item, index){
         if(this.activeItem === index){
           return 'active'
@@ -132,7 +129,7 @@
               const len = this.schema.fieldLabel.length
               for(let i=0; i<len; i++){
                   let label = this.schema.fieldLabel[i]
-                  let childItem = this.model.children[index]
+                  let childItem = this.value[index]
                   // console.log('child item: ', childItem)
                   if(childItem[label]){
                       return childItem[label]
@@ -142,9 +139,7 @@
           return parseInt(index) + 1
       },
       onAddItem(e){
-//        this.schema.items.push({ fields: JSON.parse(JSON.stringify(this.schema.fields.slice(0)))})
         if(!this.schema.multifield){
-//          this.schema.items[this.schema.items.length - 1].fields[0].model = this.schema.model + '['+(this.schema.items.length - 1)+']'
           this.value.push('')
         } else {
             this.value.push({ name: 'n' +Date.now()})
@@ -152,14 +147,20 @@
         }
       },
       onRemoveItem(item, index){
-        item._opDelete = true
-        let modelItem = this.value[index]
-        modelItem._opDelete = true
-//        this.$set(this.schema.items, index, item)
-        this.$set(this.value, index, modelItem)
+        if(!this.schema.multifield){
+          this.value.splice(index, 1)
+        } else {
+          item._opDelete = true
+          let modelItem = this.value[index]
+          modelItem._opDelete = true
+          this.$set(this.value, index, modelItem)
+        }
       },
       onSetActiveItem(index){
-        if(index !== this.activeItem){
+        if(index === this.activeItem){
+          $(this.$refs.collapsible).collapsible('close', this.activeItem)
+          this.activeItem = null
+        } else {
           this.$nextTick(function () {
             if(this.activeItem !== null){
               $(this.$refs.collapsible).collapsible('close', this.activeItem)
@@ -171,8 +172,34 @@
             firstField.focus()
           })
         }
+      },
+      onDragStart(item, index, ev){
+        ev.dataTransfer.setData('text', index)
+      },
+      onDragOver(ev){
+        const center = ev.target.offsetHeight / 2 
+        ev.target.classList.toggle('drop-after', ev.offsetY > center )
+        ev.target.classList.toggle('drop-before', ev.offsetY < center )
+      },
+      onDragEnter(ev){
+      },
+      onDragLeave(ev){
+        ev.target.classList.remove('drop-after','drop-before')
+      },
+      onDrop(item, index, ev) {
+          ev.target.classList.remove('drop-after','drop-before')
+          const oldIndex = parseInt(ev.dataTransfer.getData("text"))
+          this.onReorder(oldIndex, index)
+      },
+      onReorder(old_index, new_index) {
+        if (new_index >= this.length) {
+            var k = new_index - this.length;
+            while ((k--) + 1) {
+                this.value.push(undefined);
+            }
+        }
+        this.value.splice(new_index, 0, this.value.splice(old_index, 1)[0]);
       }
-
     }
   }
 </script>

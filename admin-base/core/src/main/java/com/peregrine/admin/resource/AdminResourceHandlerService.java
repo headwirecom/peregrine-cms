@@ -489,13 +489,15 @@ public class AdminResourceHandlerService
                     updateResourceTree(child, childProperties);
                 }
             } else if(value instanceof List) {
-                Resource child = resource.getChild(name);
-                if(child == null) {
-                    child = createNode(resource, name, NT_UNSTRUCTURED, null);
-                }
                 List list = (List) value;
+                List<String> newSingleList = null;
                 for(Object item: list) {
                     if(item instanceof Map) {
+                        Resource child = resource.getChild(name);
+                        if(child == null) {
+                            child = createNode(resource, name, NT_UNSTRUCTURED, null);
+                        }
+
                         Map childProperties = (Map) item;
                         Object temp = childProperties.get("name");
                         String childName = null;
@@ -522,9 +524,46 @@ public class AdminResourceHandlerService
                         } else {
                             updateResourceTree(listChild, childProperties);
                         }
+                    } else if(item instanceof String) {
+                        String listItem = item.toString();
+                        if(listItem.isEmpty()) { continue; }
+                        if(newSingleList == null) { newSingleList = new ArrayList<>(); }
+                        newSingleList.add(listItem);
+//                        childProperties.put(propertyName, null);
+//                        Resource listChild = child.getChild(childName);
+//                        // If child is missing then create it
+//                        if(listChild == null) {
+//                            listChild = createNode(child, childName, NT_UNSTRUCTURED, null);
+//                        }
                     } else {
-                        throw new ManagementException("Property: '" + name + "' is a map, is not found and cannot be created due to missing Sling Resource Type");
+                        if(item == null || item.toString().isEmpty()) {
+                            logger.trace("Item is either null or empty and therefore ignored");
+                        } else {
+                            throw new ManagementException("Property: '" + name + "' (value: '" + item + "', type: '" + item.getClass().getName() + "') is not a map, is not found and cannot be created due to missing Sling Resource Type");
+                        }
                     }
+                }
+                if(newSingleList != null) {
+                    ModifiableValueMap childProperties = getModifiableProperties(resource, false);
+//                    String[] singleListValues = childProperties.get(name, String[].class);
+//                    if(singleListValues == null) {
+//                        singleListValues = new String[1];
+//                        singleListValues[0] = listItem;
+//                    } else {
+//                        boolean found = false;
+//                        for(String token: singleListValues) {
+//                            if(listItem.equals(token)) {
+//                                found = true;
+//                            }
+//                        }
+//                        if(!found) {
+//                            String[] temp = singleListValues;
+//                            singleListValues = new String[temp.length + 1];
+//                            System.arraycopy(temp, 0, singleListValues, 0, temp.length);
+//                            singleListValues[temp.length] = listItem;
+//                        }
+//                    }
+                    childProperties.put(name, newSingleList.toArray(new String[newSingleList.size()]));
                 }
             } else {
                 updateProperties.put(name, value);
