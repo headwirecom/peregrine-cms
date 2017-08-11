@@ -4,6 +4,7 @@
 			ref="textarea"
 			class="form-control materialize-textarea" 
 			v-model="value" 
+			v-bind:style="{minHeight: `${schema.rows}em`}"
 			:id="getFieldID(schema)" 
 			:disabled="disabled" 
 			:maxlength="schema.max" 
@@ -22,10 +23,9 @@
 			$(this.$refs.textarea).trigger('autoresize');
 		},
 		updated() {
-			$(this.$refs.textarea).trigger('autoresize');
-		}
+			if( document.activeElement != this.$refs.textarea ){
+				$(this.$refs.textarea).trigger('autoresize');
+			}
+		},
 	}
 </script>
-
-<style>
-</style>
