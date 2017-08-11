@@ -60,7 +60,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class RestrictedSearchServlet extends AbstractBaseServlet {
 
-    private static final long ROWS_PER_PAGE = 100;
+    private static final long ROWS_PER_PAGE = 1000;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

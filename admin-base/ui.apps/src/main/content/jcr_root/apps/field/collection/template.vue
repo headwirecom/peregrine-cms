@@ -60,8 +60,8 @@
     <ul v-else class="collection-fields">
       <li v-for="(item, index) in value" class="collection-field">
         <vue-form-generator
-            :schema="schema"
-            :model="{[schema.fields[0].model]: item}"></vue-form-generator>
+            :schema="getSchemaForIndex(schema, index)"
+            :model="value"></vue-form-generator>
         <button v-on:click.stop.prevent="onRemoveItem(index)" class="waves-effect waves-light btn-flat">
           <i class="material-icons">delete</i>
         </button>
@@ -118,6 +118,11 @@
     	}
     },
     methods: {
+  	    getSchemaForIndex(schema, index) {
+            const newSchema = JSON.parse(JSON.stringify(schema));
+            newSchema.fields[0].model = ''+index
+            return newSchema
+        },
       getItemClass(item, index){
         if(this.activeItem === index){
           return 'active'
