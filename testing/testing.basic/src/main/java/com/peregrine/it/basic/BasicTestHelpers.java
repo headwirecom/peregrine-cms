@@ -238,29 +238,35 @@ public class BasicTestHelpers {
         ObjectMapper mapper = new ObjectMapper();
         Map expected = convertToMap(expectedJson);
         Map actual = convertToMap(jsonResponse);
+        logger.info("Expected Map: '{}'", expected);
+        logger.info("Actual Map: '{}'", actual);
         compareJson(expected, actual);
     }
 
     public static void compareJson(Map<Object, Object> expected, Map actual) throws IOException {
+        compareJson(expected, actual, "");
+    }
+    public static void compareJson(Map<Object, Object> expected, Map actual, String path) throws IOException {
         for(Entry<Object, Object> entry: expected.entrySet()) {
             Object key = entry.getKey() + "";
-            assertTrue("Did not find Property with Name: " + key, actual.containsKey(key));
+            assertTrue("Did not find Property with Name: " + key + " (path: " + path + ")", actual.containsKey(key));
+            String childPath = path + "/" + key;
             Object value = entry.getValue();
             if(value instanceof Boolean) {
-                assertEquals("Boolean Property mismatch. Name: " + key, value, actual.get(key));
+                assertEquals("Boolean Property mismatch. Name: " + key + " (path: " + path + ")", value, actual.get(key));
             } else if(value instanceof Number) {
-                assertEquals("Number Property mismatch. Name: " + key, value, actual.get(key));
+                assertEquals("Number Property mismatch. Name: " + key + " (path: " + path + ")", value, actual.get(key));
             } else if(value instanceof String) {
-                assertEquals("String Property mismatch. Name: " + key, value, actual.get(key));
+                assertEquals("String Property mismatch. Name: " + key + " (path: " + path + ")", value, actual.get(key));
             } else if(value instanceof Object[]) {
-                fail("Sling Json reponse should not contain an array. Name: " + key);
+                fail("Sling Json response should not contain an array. Name: " + key + " (path: " + path + ")");
             } else if(value instanceof Map) {
                 Map expectedChild = (Map) value;
                 Map actualChild = (Map) actual.get(key);
-                assertNotNull("Child: " + key + " not found as child in response", actualChild);
-                compareJson(expectedChild, actualChild);
+                assertNotNull("Child: " + key + " not found as child in response" + " (path: " + path + ")", actualChild);
+                compareJson(expectedChild, actualChild, childPath);
             } else {
-                fail("Unkown type of value: " + value.getClass());
+                fail("Unknown type of value: " + value.getClass() + " (path: " + path + ")");
             }
         }
     }

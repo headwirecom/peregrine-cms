@@ -157,7 +157,7 @@
         data(){
             return {
                 isDraggingFile: false,
-                isDraggingRow: false,
+                isDraggingUiEl: false,
                 isFileUploadVisible: false,
                 uploadProgress: 0
             }
@@ -167,9 +167,13 @@
                 return this.path.split('/').length > 3
             },
             path: function() {
-                var dataFrom    = this.model.dataFrom
+                var dataFrom = this.model.dataFrom
                 var node = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
+                console.log('node: ', node)
                 return node
+            },
+            isAssets(){
+                return this.path.includes('assets')
             },
             pt: function() {
                 var node = this.path
@@ -228,7 +232,7 @@
             onDragRowStart(item, ev){
                 ev.dataTransfer.setData('text', item.path)
                 if(this.isDraggingFile){ this.isDraggingFile = false }
-                this.isDraggingRow = true
+                this.isDraggingUiEl = true
             },
 
             onDragRow(ev){
@@ -236,12 +240,12 @@
             },
 
             onDragRowEnd(item, ev){
-                this.isDraggingRow = false
+                this.isDraggingUiEl = false
             },
 
             /* row drop zone events */
             onDragOverRow(ev){
-                if(this.isDraggingRow){
+                if(this.isDraggingUiEl){
                     const center = ev.target.offsetHeight / 2 ;
                     this.dropType = ev.offsetY > center ? 'after' : 'before';
                     ev.target.classList.toggle('drop-after', ev.offsetY > center );
@@ -253,14 +257,14 @@
             },
 
             onDragLeaveRow(ev){
-                if(this.isDraggingRow){
-                    ev.target.classList.remove(`drop-after`,`drop-before`)
+                if(this.isDraggingUiEl){
+                    ev.target.classList.remove('drop-after','drop-before')
                 }
             },
 
             onDropRow(item, ev, type) {
-                if(this.isDraggingRow){
-                    ev.target.classList.remove(`drop-after`,`drop-before`)
+                if(this.isDraggingUiEl){
+                    ev.target.classList.remove('drop-after','drop-before')
                     /* reorder row logic */
                     const dataFrom = this.model.dataFrom
                     const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
@@ -290,10 +294,10 @@
             },
 
             onDragEnterExplorer(ev){
-                if(!this.isDraggingRow){
-                    this.isDraggingFile = true
-                    this.isFileUploadVisible = true
-                }  
+                if(!this.isAssets) return
+                if(this.isDraggingUiEl) return
+                this.isDraggingFile = true
+                this.isFileUploadVisible = true
             },
 
             onDragLeaveExplorer(ev){
@@ -306,6 +310,8 @@
             },
 
             onDropExplorer(ev){
+                if(!this.isAssets) return
+                if(this.isDraggingUiEl) return
                 if(this.isDraggingFile){
                     /* file uploade logic */
                     this.uploadFile(ev.dataTransfer.files)
