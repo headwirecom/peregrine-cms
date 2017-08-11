@@ -42,7 +42,9 @@
               v-on:dragleave.prevent ="onDragLeave"
               v-on:drop.prevent      ="onDrop(item, index, $event)"
               v-on:click.stop.prevent="onSetActiveItem(index)">
-                {{itemName(item, index)}} <i class="material-icons" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
+                <i class="material-icons">drag_handle</i>
+                {{itemName(item, index)}} 
+                <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
             </div>
             <div class="collapsible-body">
                 <vue-form-generator
