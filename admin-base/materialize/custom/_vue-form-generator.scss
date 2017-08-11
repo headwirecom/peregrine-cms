@@ -341,14 +341,18 @@
                                 background-color: #fff;
                                 border-bottom-color: color("blue-grey", "lighten-4");
                                 color: color("blue-grey", "darken-2");
-                                .delete-icon {
-                                    float: none;
-                                    float: right;
-                                    margin: 0 0 0 0.75rem;
-                                    &:hover,
-                                    &:focus, 
-                                    &:active {
-                                        color: color("blue-grey", "base");
+                                .material-icons {
+                                    color: color("blue-grey", "lighten-2");
+                                    &.delete-icon {
+                                        float: none;
+                                        float: right;
+                                        margin: 0 0 0 0.75rem;
+                                        color: color("blue-grey", "darken-1");
+                                        &:hover,
+                                        &:focus, 
+                                        &:active {
+                                            color: color("blue-grey", "base");
+                                        }
                                     }
                                 }
                                 &.drop-before:before,
@@ -433,37 +437,6 @@
                                 color: color("blue-grey", "darken-1");
                             }
                         }
-                        // > li:first-child {
-                        //    .vue-form-generator { 
-                        //         fieldset { 
-                        //             .form-group {
-                        //                 .field-wrap {
-                        //                     .wrapper {
-                        //                         input {
-                        //                             border-top: 1px solid color("blue-grey", "lighten-4");
-                        //                         }
-                        //                     }
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
-                        // > li:last-child,
-                        // > li:only-child {
-                        //    .vue-form-generator { 
-                        //         fieldset { 
-                        //             .form-group {
-                        //                 .field-wrap {
-                        //                     .wrapper {
-                        //                         input {
-                        //                             margin-bottom: 0;
-                        //                         }
-                        //                     }
-                        //                 }
-                        //             }
-                        //         }
-                        //     }
-                        // }
                     }
                 }
             }
