@@ -48,13 +48,13 @@
         <div v-if="(edit === false || edit === undefined) && schema !== undefined" class="display-json">
             <div class="row" v-for="field in schema.fields">
                 <template v-if="!field.fields">
-                    <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{currentObject.data[field.model]}}</div>
+                    <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{get(currentObject.data,field.model)}}</div>
                 </template>
                 <template v-else>
                     <div class="col s12"><b>{{field.title}}</b></div>
                     <div class="row" v-for="item in currentObject.data[field.model]">
                         <div v-for="child in field.fields">
-                            <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{item[child.model]}}</div>
+                            <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{get(item,child.model)}}</div>
                         </div>
                     </div>
                 </template>
@@ -120,6 +120,17 @@
           }
         },
         methods: {
+            get(obj, path) {
+                const segments = path.split('.')
+                if(segments.length == 1) {
+                    return obj[segments[0]]
+                } else {
+                    if(obj[segments[0]]) {
+                        return obj[segments[0]][segments[1]]
+                    }
+                }
+                return '-'
+            },
             onValidated(isValid, errors) {
                 this.valid = isValid
             },
