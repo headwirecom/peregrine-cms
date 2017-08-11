@@ -1,20 +1,31 @@
 <template>
-	<textarea 
-		class="form-control materialize-textarea" 
-		v-model="value" 
-		:id="getFieldID(schema)" 
-		:disabled="disabled" 
-		:maxlength="schema.max" 
-		:minlength="schema.min" 
-		:placeholder="schema.placeholder" 
-		:readonly="schema.readonly" 
-		:rows="schema.rows || 2" 
-		:name="schema.inputName">
-	</textarea>
+	<div class="input-field">
+		<textarea 
+			ref="textarea"
+			class="form-control materialize-textarea" 
+			v-model="value" 
+			:id="getFieldID(schema)" 
+			:disabled="disabled" 
+			:maxlength="schema.max" 
+			:minlength="schema.min" 
+			:placeholder="schema.placeholder" 
+			:readonly="schema.readonly" 
+			:name="schema.inputName">
+		</textarea>
+	</div>
 </template>
 
 <script>	
 	export default {
-		mixins: [ VueFormGenerator.abstractField ]
+		mixins: [ VueFormGenerator.abstractField ],
+		mounted() {
+			$(this.$refs.textarea).trigger('autoresize');
+		},
+		updated() {
+			$(this.$refs.textarea).trigger('autoresize');
+		}
 	}
 </script>
+
+<style>
+</style>
