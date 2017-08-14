@@ -491,14 +491,16 @@ public class AdminResourceHandlerService
             } else if(value instanceof List) {
                 List list = (List) value;
                 List<String> newSingleList = null;
+                // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
+                // for which we have to get all the values in a list and then afterwards if such values were found update
+                // them as a property
                 for(Object item: list) {
                     if(item instanceof Map) {
                         Resource child = resource.getChild(name);
+                        Map childProperties = (Map) item;
                         if(child == null) {
                             child = createNode(resource, name, NT_UNSTRUCTURED, null);
                         }
-
-                        Map childProperties = (Map) item;
                         Object temp = childProperties.get("name");
                         String childName = null;
                         if(temp != null) {
@@ -522,6 +524,15 @@ public class AdminResourceHandlerService
                                 newChildProperties.put(childPropertyKey + "", childProperties.get(childPropertyKey));
                             }
                         } else {
+                            if(childProperties.containsKey(DELETION_PROPERTY_NAME) && "true".equals(childProperties.get(DELETION_PROPERTY_NAME))) {
+                                try {
+                                    logger.trace("Remove List Child: '{}' ('{}')", name, listChild.getPath());
+                                    resource.getResourceResolver().delete(listChild);
+                                    continue;
+                                } catch(PersistenceException e) {
+                                    throw new ManagementException("Failed to delete resource: " + listChild.getPath(), e);
+                                }
+                            }
                             updateResourceTree(listChild, childProperties);
                         }
                     } else if(item instanceof String) {
@@ -529,12 +540,6 @@ public class AdminResourceHandlerService
                         if(listItem.isEmpty()) { continue; }
                         if(newSingleList == null) { newSingleList = new ArrayList<>(); }
                         newSingleList.add(listItem);
-//                        childProperties.put(propertyName, null);
-//                        Resource listChild = child.getChild(childName);
-//                        // If child is missing then create it
-//                        if(listChild == null) {
-//                            listChild = createNode(child, childName, NT_UNSTRUCTURED, null);
-//                        }
                     } else {
                         if(item == null || item.toString().isEmpty()) {
                             logger.trace("Item is either null or empty and therefore ignored");
@@ -545,24 +550,6 @@ public class AdminResourceHandlerService
                 }
                 if(newSingleList != null) {
                     ModifiableValueMap childProperties = getModifiableProperties(resource, false);
-//                    String[] singleListValues = childProperties.get(name, String[].class);
-//                    if(singleListValues == null) {
-//                        singleListValues = new String[1];
-//                        singleListValues[0] = listItem;
-//                    } else {
-//                        boolean found = false;
-//                        for(String token: singleListValues) {
-//                            if(listItem.equals(token)) {
-//                                found = true;
-//                            }
-//                        }
-//                        if(!found) {
-//                            String[] temp = singleListValues;
-//                            singleListValues = new String[temp.length + 1];
-//                            System.arraycopy(temp, 0, singleListValues, 0, temp.length);
-//                            singleListValues[temp.length] = listItem;
-//                        }
-//                    }
                     childProperties.put(name, newSingleList.toArray(new String[newSingleList.size()]));
                 }
             } else {

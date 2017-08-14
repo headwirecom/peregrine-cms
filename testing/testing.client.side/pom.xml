@@ -45,17 +45,17 @@
         </dependency>
         
         <dependency>
-            <groupId>com.peregrine.cms</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>base.core</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
+            <!--<scope>test</scope>-->
         </dependency>
 
         <dependency>
-            <groupId>com.peregrine.cms</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>admin.core</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
+            <!--<scope>test</scope>-->
         </dependency>
 
         <dependency>

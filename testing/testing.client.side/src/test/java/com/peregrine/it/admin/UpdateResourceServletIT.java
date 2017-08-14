@@ -1,9 +1,15 @@
 package com.peregrine.it.admin;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.it.basic.JsonTest;
+import com.peregrine.it.basic.JsonTest.BasicImpl;
+import com.peregrine.it.basic.JsonTest.BasicListObject;
+import com.peregrine.it.basic.JsonTest.BasicObject;
+import com.peregrine.it.basic.JsonTest.ChildObject;
+import com.peregrine.it.basic.JsonTest.NoNameObject;
+import com.peregrine.it.basic.JsonTest.ObjectComponent;
+import com.peregrine.it.basic.JsonTest.Prop;
+import com.peregrine.it.basic.JsonTest.TestPage;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -15,9 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.peregrine.admin.resource.AdminResourceHandlerService.DELETION_PROPERTY_NAME;
@@ -39,14 +43,8 @@ import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsComponent;
 import static com.peregrine.it.util.TestHarness.updateResource;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -76,10 +74,10 @@ public class UpdateResourceServletIT
     }
 
     @Test
-    public void testUpdatePage() throws Exception {
+    public void testUpdateSimplePage() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
         SlingHttpResponse response = null;
-        String folderPath = ROOT_PATH + "/test-up";
+        String folderPath = ROOT_PATH + "/test-usp";
         createFolderStructure(client, folderPath);
         // Create a new source page
         Calendar before = createTimestampAndWait();
@@ -100,46 +98,166 @@ public class UpdateResourceServletIT
         assertFalse("Jumbo Tron Name is not provided", jumboTronNodeName == null || jumboTronNodeName.isEmpty());
 
         testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        testPage.content.addChild(jumboTronNodeName, EXAMPLE_JUMBOTRON_TYPE_PATH);
+        testPage.getContent().addChild(new ChildObject(jumboTronNodeName, EXAMPLE_JUMBOTRON_TYPE_PATH));
         checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         before = createTimestampAndWait();
-        SimpleObject simpleObject = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_JUMBOTRON_TYPE_PATH, null)
-            .addProps(new Prop("title", "Hello"), new Prop("text", "Peregrine"));
+        NoNameObject simpleObject = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType(EXAMPLE_JUMBOTRON_TYPE_PATH)
+            .addProperties(new Prop("title", "Hello"), new Prop("text", "Peregrine"));
         response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + jumboTronNodeName, simpleObject.toJSon(), 200);
 
         // Check page now
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        testPage.content.addChild(jumboTronNodeName, EXAMPLE_JUMBOTRON_TYPE_PATH, new Prop("title", "Hello"), new Prop("text", "Peregrine"));
+        testPage = new JsonTest.TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        testPage.getContent()
+            .addChild(
+                new JsonTest.ChildObject(jumboTronNodeName, EXAMPLE_JUMBOTRON_TYPE_PATH)
+                    .addProperties(new Prop("title", "Hello"), new Prop("text", "Peregrine")
+                )
+            );
         checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
     }
 
-
     @Test
-    public void testUpdateObject() throws Exception {
+    public void testUpdateSimpleObject() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
         SlingHttpResponse response = null;
-        String folderPath = ROOT_PATH + "/test-uo";
+        String folderPath = ROOT_PATH + "/test-uso";
         createFolderStructure(client, folderPath);
         // Create a new source page
         String objectName = "test-object-1";
         response = createObject(client, folderPath, objectName, EXAMPLE_OBJECT_TYPE_PATH, 200);
         logger.info("Response from creating test object: '{}'", response.getContent());
 
-        SimpleObject simpleObject = new SimpleObject(OBJECT_PRIMARY_TYPE, EXAMPLE_OBJECT_TYPE_PATH, objectName);
+        ObjectComponent simpleObject = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH, null);
         checkResourceByJson(client, folderPath + "/" + objectName, 2, simpleObject.toJSon(), true);
 
         // Now we are ready to update that component
-        simpleObject = new SimpleObject(OBJECT_PRIMARY_TYPE, EXAMPLE_OBJECT_TYPE_PATH, objectName)
-            .addProps(new Prop("name", "Hello"), new Prop("value", "Peregrine"));
-        response = updateResource(client, folderPath + "/" + objectName, simpleObject.toJSon(), 200);
+        BasicObject addPropertiesToObject = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
+            .addProperties(new Prop("name", "Hello"), new Prop("value", "Peregrine"));
+        response = updateResource(client, folderPath + "/" + objectName, addPropertiesToObject.toJSon(), 200);
 
         // Check page now
-        simpleObject = new SimpleObject(OBJECT_PRIMARY_TYPE, EXAMPLE_OBJECT_TYPE_PATH, objectName)
-            .addProps(new Prop("name", "Hello"), new Prop("value", "Peregrine"));
-        checkResourceByJson(client, folderPath + "/" + objectName, 1, simpleObject.toJSon(), true);
+        ObjectComponent simpleObjectWithProperties = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH,
+            new Prop("name", "Hello"), new Prop("value", "Peregrine"));
+        checkResourceByJson(client, folderPath + "/" + objectName, 1, simpleObjectWithProperties.toJSon(), true);
+    }
+
+    @Test
+    public void testUpdateObjectWithList() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String folderPath = ROOT_PATH + "/test-uowl";
+        createFolderStructure(client, folderPath);
+        // Create a new source page
+        String objectName = "test-object-1";
+        response = createObject(client, folderPath, objectName, EXAMPLE_OBJECT_TYPE_PATH, 200);
+        logger.info("Response from creating test object: '{}'", response.getContent());
+
+        ObjectComponent simpleObject = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH, null);
+        checkResourceByJson(client, folderPath + "/" + objectName, 2, simpleObject.toJSon(), true);
+
+        // Now we are ready to add a list to the Object
+        BasicObject addListToObject = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
+            .addChild(new BasicListObject("list",
+                new BasicImpl("11").addProperties(
+                    new Prop("name", "11"), new Prop("key", "one"), new Prop("value", "two")),
+                new BasicImpl("12").addProperties(
+                    new Prop("name", "12"), new Prop("key", "eins"), new Prop("value", "zwei")),
+                new BasicImpl("13").addProperties(
+                    new Prop("name", "13"), new Prop("key", "une"), new Prop("value", "deux"))
+            ));
+        response = updateResource(client, folderPath + "/" + objectName, addListToObject.toJSon(), 200);
+
+        // Check page now
+        // NOTE: Sling will not return this as a list but rather as a map with the name as object name
+        //       and the rest as properties of that object something along the lines of:
+        //       ..., "list": {"11"={"key":"one", "value":"two"}, "12"=...
+        ObjectComponent simpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
+            .addChild(new BasicImpl("list")
+                .addChildren(
+                    new BasicImpl("11").addProperties(
+                        new Prop("key", "one"), new Prop("value", "two")),
+                    new BasicImpl("12").addProperties(
+                        new Prop("key", "eins"), new Prop("value", "zwei")),
+                    new BasicImpl("13").addProperties(
+                        new Prop("key", "une"), new Prop("value", "deux"))
+                )
+            );
+        checkResourceByJson(client, folderPath + "/" + objectName, 3, simpleObjectWithList.toJSon(), true);
+
+        BasicObject addAndRemoveListItems = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
+            .addChild(new BasicListObject("list",
+                new BasicImpl("11").addProperties(
+                    new Prop("name", "11"), new Prop("key", "one"), new Prop("value", "two")),
+                new BasicImpl("12").addProperties(
+                    new Prop("name", "12"), new Prop(DELETION_PROPERTY_NAME, "true")),
+                new BasicImpl("13").addProperties(
+                    new Prop("name", "13"), new Prop("key", "one"), new Prop("value", "two")),
+                new BasicImpl("14").addProperties(
+                    new Prop("name", "14"), new Prop("key", "uno"), new Prop("value", "due")),
+                new BasicImpl("15").addProperties(
+                    new Prop("name", "15"), new Prop("key", "1"), new Prop("value", "2"))
+            ));
+        response = updateResource(client, folderPath + "/" + objectName, addAndRemoveListItems.toJSon(), 200);
+
+        ObjectComponent updatedSimpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
+            .addChild(new BasicImpl("list")
+                .addChildren(
+                    new BasicImpl("11").addProperties(
+                        new Prop("key", "one"), new Prop("value", "two")),
+                    new BasicImpl("13").addProperties(
+                        new Prop("key", "one"), new Prop("value", "two")),
+                    new BasicImpl("14").addProperties(
+                        new Prop("key", "uno"), new Prop("value", "due")),
+                    new BasicImpl("15").addProperties(
+                        new Prop("key", "1"), new Prop("value", "2"))
+                )
+            );
+        checkResourceByJson(client, folderPath + "/" + objectName, 3, updatedSimpleObjectWithList.toJSon(), true);
+    }
+
+    @Test
+    public void testUpdateObjectWithSingleList() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        SlingHttpResponse response = null;
+        String folderPath = ROOT_PATH + "/test-uowsl";
+        createFolderStructure(client, folderPath);
+        // Create a new source page
+        String objectName = "test-object-1";
+        response = createObject(client, folderPath, objectName, EXAMPLE_OBJECT_TYPE_PATH, 200);
+        logger.info("Response from creating test object: '{}'", response.getContent());
+
+        ObjectComponent simpleObject = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH, null);
+        checkResourceByJson(client, folderPath + "/" + objectName, 2, simpleObject.toJSon(), true);
+
+        // Now we are ready to add a list to the Object
+        BasicObject addListToObject = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
+            .addChild(new BasicListObject("singleList",
+                "one", "two", "three"
+                )
+            );
+        response = updateResource(client, folderPath + "/" + objectName, addListToObject.toJSon(), 200);
+
+        // Check page now
+        // NOTE: Sling will not return this as a list but rather as a map with the name as object name
+        //       and the rest as properties of that object something along the lines of:
+        //       ..., "list": {"11"={"key":"one", "value":"two"}, "12"=...
+        ObjectComponent simpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
+            .addProperty(new Prop("singleList", "one", "two", "three"));
+        checkResourceByJson(client, folderPath + "/" + objectName, 3, simpleObjectWithList.toJSon(), true);
+
+        BasicObject addAndRemoveListItems = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
+            .addChild(new BasicListObject("singleList",
+                    "one", "five", "three", "seven"
+                )
+            );
+        response = updateResource(client, folderPath + "/" + objectName, addAndRemoveListItems.toJSon(), 200);
+
+        ObjectComponent updatedSimpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
+            .addProperty(new Prop("singleList", "one", "five", "three", "seven"));
+        checkResourceByJson(client, folderPath + "/" + objectName, 3, updatedSimpleObjectWithList.toJSon(), true);
     }
 
     @Test
@@ -154,11 +272,8 @@ public class UpdateResourceServletIT
         response = createPage(client, folderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
         logger.info("Response from creating test page: '{}'", response.getContent());
 
-        JsonFactory jf = new JsonFactory();
-        StringWriter writer = new StringWriter();
-        JsonGenerator json = jf.createGenerator(writer);
-        TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 2, testPage.toJSon(), true);
+        TestPage emptyPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        checkResourceByJson(client, folderPath + "/" + pageName, 2, emptyPage.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_CAROUSEL_TYPE_PATH, "into-after", 302);
@@ -169,22 +284,27 @@ public class UpdateResourceServletIT
         String carouselNodeName = children.keySet().iterator().next() + "";
         assertFalse("Carousel Name is not provided", carouselNodeName == null || carouselNodeName.isEmpty());
 
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        testPage.content.addChild(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
+        TestPage pageWithCarousel = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pageWithCarousel.getContent().addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH));
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pageWithCarousel.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         String slide1Name = "slide-1";
         String image1Path = "/content/asset/slide-1-image";
-        SimpleObject simpleObject = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null);
-        simpleObject.addChild(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH, new Prop("imagePath", image1Path));
-        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, simpleObject.toJSon(), 200);
+        NoNameObject noNameObject = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType(EXAMPLE_CAROUSEL_TYPE_PATH)
+            .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
+                .addProperties(new Prop("imagePath", image1Path))
+            );
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, noNameObject.toJSon(), 200);
 
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        SimpleObject carousel = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null);
-        testPage.content.addChild(carouselNodeName, carousel);
-        carousel.addChild(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH, new Prop("imagePath", image1Path));
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
+        TestPage pageWithCarouselAndImage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pageWithCarouselAndImage.getContent()
+            .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH)
+                .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
+                    .addProperties(new Prop("imagePath", image1Path))
+                )
+            );
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pageWithCarouselAndImage.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
     }
 
@@ -200,8 +320,8 @@ public class UpdateResourceServletIT
         response = createPage(client, folderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
         logger.info("Response from creating test page: '{}'", response.getContent());
 
-        TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 2, testPage.toJSon(), true);
+        TestPage emptyPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        checkResourceByJson(client, folderPath + "/" + pageName, 2, emptyPage.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_CAROUSEL_TYPE_PATH, "into-after", 302);
@@ -212,37 +332,49 @@ public class UpdateResourceServletIT
         String carouselNodeName = children.keySet().iterator().next() + "";
         assertFalse("Carousel Name is not provided", carouselNodeName == null || carouselNodeName.isEmpty());
 
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        testPage.content.addChild(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
+        TestPage pageWithCarousel = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pageWithCarousel.getContent()
+            .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH));
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pageWithCarousel.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         String slide1Name = "slide-1";
         String image1Path = "/content/asset/slide-1-image";
         before = createTimestampAndWait();
-        SimpleObject simpleObject = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null);
-        simpleObject.addChild(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH, new Prop("name", slide1Name), new Prop("imagePath", image1Path));
-        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, simpleObject.toJSon(), 200);
+        NoNameObject insertSlide = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType(EXAMPLE_CAROUSEL_TYPE_PATH)
+            .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
+                .addProperties(new Prop("name", slide1Name), new Prop("imagePath", image1Path))
+            );
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, insertSlide.toJSon(), 200);
 
         // Check page now
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        SimpleObject carousel = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null);
-        testPage.content.addChild(carouselNodeName, carousel);
-        carousel.addChild(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH, new Prop("imagePath", image1Path));
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
+        TestPage pageWithCarouselAndSlide = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pageWithCarouselAndSlide.getContent()
+            .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH)
+                .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
+                    .addProperties(new Prop("imagePath", image1Path))
+//AS TODO: Check if ignoring the 'name' property is done on purpose
+//                    .addProperties(new Prop("name", slide1Name), new Prop("imagePath", image1Path))
+                )
+            );
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pageWithCarouselAndSlide.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         // Now remove that child by indicating that the node has to be deleted
         before = createTimestampAndWait();
         // Not we are ready to update that component by adding a slide
-        simpleObject = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null);
-        simpleObject.addChild(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH, new Prop(DELETION_PROPERTY_NAME, "true"));
-        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, simpleObject.toJSon(), 200);
+        NoNameObject deleteNode = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType(EXAMPLE_CAROUSEL_TYPE_PATH)
+            .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
+                .addProperties(new Prop(DELETION_PROPERTY_NAME, "true"))
+            );
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, deleteNode.toJSon(), 200);
 
         // Check page now
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        testPage.content.addChild(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);        checkLastModified(client, folderPath + "/" + pageName, before);
+        TestPage pageWithCarouselWithoutSlide = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pageWithCarouselWithoutSlide.getContent()
+            .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH)
+            );
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pageWithCarouselWithoutSlide.toJSon(), true);        checkLastModified(client, folderPath + "/" + pageName, before);
     }
 
     @Test
@@ -257,8 +389,8 @@ public class UpdateResourceServletIT
         response = createPage(client, folderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
         logger.info("Response from creating test page: '{}'", response.getContent());
 
-        TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 2, testPage.toJSon(), true);
+        TestPage emptyPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        checkResourceByJson(client, folderPath + "/" + pageName, 2, emptyPage.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_CAROUSEL_TYPE_PATH, "into-after", 302);
@@ -269,165 +401,52 @@ public class UpdateResourceServletIT
         String carouselNodeName = children.keySet().iterator().next() + "";
         assertFalse("Carousel Name is not provided", carouselNodeName == null || carouselNodeName.isEmpty());
 
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        testPage.content.addChild(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
+        TestPage pathWithCarousel = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pathWithCarousel.getContent()
+            .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH));
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pathWithCarousel.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         String slide1Name = "slide-1";
         String image1Path = "/content/asset/slide-1-image";
         before = createTimestampAndWait();
         // Not we are ready to update that component by adding a slide
-        SimpleObject simpleObject = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null);
-        simpleObject.addChild(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH, new Prop("name", slide1Name), new Prop("imagePath", image1Path));
-        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, simpleObject.toJSon(), 200);
+        NoNameObject insertSlide = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType(EXAMPLE_CAROUSEL_TYPE_PATH)
+            .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
+                .addProperties(new Prop("name", slide1Name), new Prop("imagePath", image1Path))
+            );
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, insertSlide.toJSon(), 200);
 
         // Check page now
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        SimpleObject carousel = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null);
-        testPage.content.addChild(carouselNodeName, carousel);
-        carousel.addChild(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH, new Prop("imagePath", image1Path));
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
+        TestPage pathWithCarouselAndSlide = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pathWithCarouselAndSlide.getContent()
+            .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH)
+                .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
+                    .addProperties(new Prop("imagePath", image1Path))
+//AS TODO: Check if ignoring the 'name' property is done on purpose
+//                    .addProperties(new Prop("name", slide1Name), new Prop("imagePath", image1Path))
+                )
+            );
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pathWithCarouselAndSlide.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
 
         // Now remove that child by indicating that the node has to be deleted
         before = createTimestampAndWait();
         // Not we are ready to update that component by adding a slide
-        simpleObject = new SimpleObject(NT_UNSTRUCTURED, EXAMPLE_CAROUSEL_TYPE_PATH, null).addProps(new Prop(DELETION_PROPERTY_NAME, slide1Name));
-        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, simpleObject.toJSon(), 200);
+        NoNameObject deleteNode = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType(EXAMPLE_CAROUSEL_TYPE_PATH)
+            .addProperty(new Prop(DELETION_PROPERTY_NAME, slide1Name));
+        response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, deleteNode.toJSon(), 200);
 
         // Check page now
-        testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        testPage.content.addChild(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH);
-        checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);        checkLastModified(client, folderPath + "/" + pageName, before);
+        TestPage pathWithCarouselWithoutSlide = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        pathWithCarouselWithoutSlide.getContent()
+            .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH));
+        checkResourceByJson(client, folderPath + "/" + pageName, 3, pathWithCarouselWithoutSlide.toJSon(), true);        checkLastModified(client, folderPath + "/" + pageName, before);
         checkLastModified(client, folderPath + "/" + pageName, before);
     }
 
     @Override
     public Logger getLogger() {
         return logger;
-    }
-
-    private static interface TestObject {
-        String toJSon();
-        Map getMap();
-    }
-
-    private static class BaseTestObject implements TestObject {
-        Map map = new LinkedHashMap();
-        @Override
-        public String toJSon() {
-            StringWriter writer = new StringWriter();
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                mapper.writeValue(writer, map);
-                writer.close();
-            } catch (IOException e) {
-                logger.error("not able to create string writer", e);
-            }
-            return writer.toString();
-        }
-
-        @Override
-        public Map getMap() {
-            return map;
-        }
-    }
-
-    private static class TestPage extends BaseTestObject {
-        ContentObject content;
-        public TestPage(String name, String slingResourceType, String templatePath) {
-            map.put(JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE);
-            content = new ContentObject(slingResourceType);
-            content.map.put(JCR_TITLE, name);
-            content.map.put(TEMPLATE, templatePath);
-            map.put(JCR_CONTENT, content.map);
-        }
-    }
-
-    private static class SimpleObject extends BaseTestObject {
-        public SimpleObject(String primaryType, String slingResourceType, String title) {
-            map.put(JCR_PRIMARY_TYPE, primaryType);
-            map.put(SLING_RESOURCE_TYPE, slingResourceType);
-            if(title != null && !title.isEmpty()) {
-                map.put(JCR_TITLE, title);
-            }
-        }
-
-        public SimpleObject addProps(Prop...props) {
-            if(props != null) {
-                for(Prop prop : props) {
-                    map.put(prop.name, prop.value);
-                }
-            }
-            return this;
-        }
-
-        public SimpleObject addChild(SimpleObject child) {
-            return addChild(null, child);
-        }
-
-        public SimpleObject addChild(String name, SimpleObject child) {
-            if(name == null || name.isEmpty()) {
-                Object temp = child.map.get("name");
-                if(temp == null) {
-                    throw new IllegalArgumentException("No Name provided");
-                }
-                name = temp.toString();
-            }
-            map.put(name, child.getMap());
-            return this;
-        }
-
-        public SimpleObject addChild(String name, String slingResourceType) {
-            return addChild(name, slingResourceType, null);
-        }
-
-        public SimpleObject addChild(String name, String slingResourceType, Prop...props) {
-            ChildObject childObject = new ChildObject(slingResourceType);
-            if(props != null) {
-                for(Prop prop : props) {
-                    childObject.map.put(prop.name, prop.value);
-                }
-            }
-            map.put(name, childObject.getMap());
-            return this;
-        }
-
-        public SimpleObject addChild(String name, String primaryType, String slingResourceType, Prop...props) {
-            ChildObject childObject = new ChildObject(primaryType, slingResourceType);
-            if(props != null) {
-                for(Prop prop : props) {
-                    childObject.map.put(prop.name, prop.value);
-                }
-            }
-            map.put(name, childObject.getMap());
-            return this;
-        }
-    }
-
-    private static class ContentObject extends SimpleObject {
-        public ContentObject(String slingResourceType) {
-            super(PAGE_CONTENT_TYPE, slingResourceType, null);
-        }
-    }
-
-    private static class ChildObject extends BaseTestObject {
-        public ChildObject(String slingResourceType) {
-            this(NT_UNSTRUCTURED, slingResourceType);
-        }
-
-        public ChildObject(String primaryType, String slingResourceType) {
-            map.put(JCR_PRIMARY_TYPE, primaryType);
-            map.put(SLING_RESOURCE_TYPE, slingResourceType);
-        }
-    }
-
-    private static class Prop {
-        String name, value;
-        public Prop(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
     }
 }
