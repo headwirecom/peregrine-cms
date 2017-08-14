@@ -46,6 +46,16 @@
 
         <span class="panel-title">Object</span>
         <div v-if="(edit === false || edit === undefined) && schema !== undefined" class="display-json">
+
+            <form v-if="currentObject.data && schema">
+                <vue-form-generator
+                        v-on:validated = "onValidated"
+                        v-bind:schema  = "readOnlySchema"
+                        v-bind:model   = "currentObject.data"
+                        v-bind:options = "formOptions">
+                </vue-form-generator>
+            </form>
+<!--
             <div class="row" v-for="field in schema.fields">
                 <template v-if="!field.fields">
                     <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{get(currentObject.data,field.model)}}</div>
@@ -59,6 +69,7 @@
                     </div>
                 </template>
             </div>
+-->
         </div>
 
         <form v-if="edit && currentObject.data && schema">
@@ -73,12 +84,12 @@
           <button v-if="!edit" title="edit" class="btn btn-raised" v-on:click.stop.prevent="onEdit">
             <i class="material-icons">edit</i>
           </button>
-          <button v-if="edit" title="save" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
-            <i class="material-icons">check</i>
-          </button>
           <button v-if="edit" title="cancel" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
             <i class="material-icons">close</i>
           </button>
+            <button v-if="edit" title="save" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
+                <i class="material-icons">check</i>
+            </button>
         </div>
         </div>
     </div>
@@ -96,6 +107,22 @@
     export default {
         props: ['model'],
         computed: {
+            readOnlySchema() {
+                if(!this.schema) return {}
+                const roSchema = JSON.parse(JSON.stringify(this.schema))
+                roSchema.fields.forEach( (field) => {
+                    field.readonly = true
+                    field.disabled = true
+                    if(field.fields) {
+                        field.fields.forEach( (field) => {
+                            field.readonly = true
+                            field.disabled = true
+                        })
+                    }
+                })
+                return roSchema
+
+            },
           currentObject: function () {
             return $perAdminApp.getNodeFromView("/state/tools/object")
           },
