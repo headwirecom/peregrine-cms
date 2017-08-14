@@ -25,7 +25,7 @@
 import { LoggerFactory } from './logger'
 let logger = LoggerFactory.logger('utils').setLevelDebug()
 
-import { DATA_EXTENSION, COMPONENT_PREFIX } from './constants.js'
+import { DATA_EXTENSION } from './constants.js'
 
 export function makePathInfo(path) {
 

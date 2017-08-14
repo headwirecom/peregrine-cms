@@ -25,8 +25,6 @@
 import { LoggerFactory } from '../logger'
 let log = LoggerFactory.logger('deleteFolder').setLevelDebug()
 
-import {set} from '../utils'
-
 export default function(me, target) {
 
     log.fine('deleteFolder',target)
