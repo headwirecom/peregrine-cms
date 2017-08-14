@@ -55,7 +55,7 @@
     "placeholder": "tags"
   },
   {
-    "type": "textArea",
+    "type": "material-textarea",
     "inputType": "text",
     "model": "description",
     "label": "Description",
