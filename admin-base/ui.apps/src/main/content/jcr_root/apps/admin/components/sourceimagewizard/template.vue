@@ -23,15 +23,53 @@
   #L%
   -->
 <template>
-    <div class="container">
-        <form v-on:submit.prevent="search()">
-            <input type="text" v-model="input">
-                <button class="btn" type="submit">search</button>
-            </input>
-        </form>
-        <div class="row">
-            <div class="col s2" v-for="item in results"><a href="#" v-on:click.stop="select(item)" class="hoverable"><img v-bind:src="item.previewURL"></a></div>
+    <div v-bind:class="['sourceimagewizard', {'initial-search':  !results}]">
+        <div class="container">
+            <form v-on:submit.prevent="search()" class="container">
+                <input type="text" v-model="input" placeholder="Search for an image asset" autofocus/>
+                <button class="" type="submit"><i class="material-icons">search</i></button>
+            </form>
         </div>
+
+        <template v-if="results">
+            <span v-if="results.length < 1" class="no-results">No images found for '{{ input }}'</span>
+
+            <div v-else-if="viewing">
+                <div class="container image-preview">
+                    <button v-on:click.prevent.stop="select('prev')">
+                        <i class="material-icons">keyboard_arrow_left</i>
+                    </button>
+                    <img v-bind:src="results[viewing.index].webformatURL || null">
+                    <button v-on:click.prevent.stop="select('next')">
+                        <i class="material-icons">keyboard_arrow_right</i>
+                    </button>
+                </div>
+                <button v-on:click.prevent.stop="addImage(results[viewing.index])">
+                    <i class="material-icons">check</i>
+                </button>
+                <button v-on:click.prevent.stop="deSelect()">
+                    <i class="material-icons">clear</i>
+                </button>
+            </div>
+
+            <div v-else class="container image-results">
+                <div
+                    v-for="(item,i) in results"
+                    v-on:click.stop="select(i)"
+                    v-bind:style="{backgroundImage: `url('${item.previewURL}')`}" 
+                    class="image-item hoverable">
+                </div>
+                <div v-if="pages > 0" class="image-pagination">
+                    <span>Displaying page {{currentPage}} of {{pages}}</span>
+                    <ul class="pagination">
+                        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                        <li v-for="(page,i) in pages" v-on:click.stop="selectPage(i + 1)"><a href="#!">{{ i + 1}}</a></li>
+                        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </template>
     </div>
 </template>
 
@@ -39,28 +77,41 @@
 
     export default {
         props: ['model'],
+        data() {
+            return {
+                results: null,
+                currentPage: 1,
+                totalHits: null,
+                viewing: null
+            }
+        },
         computed: {
-            results() {
-                var node = $perAdminApp.getNodeFromViewOrNull('/admin/images')
-                return node;
+            pages() {
+                return Math.ceil(this.totalHits / 20);
             }
         },
         methods: {
             search() {
                 var API_KEY = '5575459-c51347c999199b9273f4544d4';
-                var URL = "https://pixabay.com/api/?key="+API_KEY+"&q="+encodeURIComponent(this.input);
-                $.getJSON(URL, function(data){
-                    var node = $perAdminApp.getNodeFromView('/admin')
-                    if (parseInt(data.totalHits) > 0) {
-                        Vue.set(node, 'images', data.hits)
-                    }
-                    else {
-                        console.log('No hits');
-                        Vue.set(node, 'images', [])
-                    }
+                var URL = `https://pixabay.com/api/?key=${API_KEY}&page=${ this.currentPage }&q=${ encodeURIComponent(this.input) }`
+                $.getJSON(URL, data => {
+                    this.totalHits = parseInt(data.totalHits);
+                    this.results = this.totalHits > 0 ? data.hits : [];
                 });
             },
-            select(item) {
+            select(index) {
+                if (index === 'next') this.viewing.index += 1;
+                else if (index === 'prev') this.viewing.index -=1;
+                else this.viewing = { index: index };
+            },
+            deSelect() {
+                this.viewing = null
+            },
+            selectPage(index) {
+                this.currentPage = index;
+                this.search();
+            },
+            addImage(item) {
                 var name = item.previewURL.split('/').pop()
                 $perAdminApp.stateAction('fetchExternalAsset', { url: item.webformatURL, path: $perAdminApp.getNodeFromView('/state/tools/assets'), name: name})
             }

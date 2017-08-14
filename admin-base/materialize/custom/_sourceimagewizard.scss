@@ -1,0 +1,60 @@
+.sourceimagewizard {
+    &.initial-search { top: 45%}
+
+    position: absolute;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: top 150ms;
+
+
+    form {
+        width: 100%;
+        display: flex;
+
+        button {
+            background: none;
+            border: none;
+            height: $input-height;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: -40px;
+            i {
+                font-size: 30px;
+            }
+        }
+    }
+
+    .image-results {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        width: 100%;
+
+        .image-item {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            background-size: cover;
+            margin-bottom: 20px;
+        }
+
+    }
+    .image-preview {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .image-pagination {
+        display: flex;
+        justify-content: space-between;
+    }
+
+}
