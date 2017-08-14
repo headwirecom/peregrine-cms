@@ -48,8 +48,6 @@ export default function(me, target) {
         .then( (data) => {
                 var node = me.findNodeFromPath(view.pageView.page, target.component)
                 var parent = me.findNodeFromPath(view.pageView.page, parentPath(target.component).parentPath)
-                console.log(node)
-                console.log(parent)
                 let index = parent.children.indexOf(node)
                 parent.children.splice(index, 1)
                 if(targetNodeUpdate.fromTemplate === true) {
@@ -64,18 +62,4 @@ export default function(me, target) {
                     }
                 }
             })
-//    }
-
-    // me.getApi().savePageEdit(view.pageView.path, nodeToSave).then( () => {
-    //     delete view.state.editor;
-    //     set(view, '/state/editorVisible', false)
-    // })
-    // me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
-    //         log.fine('component name is', name)
-    //         set(view, '/state/editor/component', name)
-    //         set(view, '/state/editor/path', target)
-    //         set(view, '/state/editorVisible', true)
-    //         set(view, '/state/rightPanelVisible', true)
-    //     }
-    // )
 }

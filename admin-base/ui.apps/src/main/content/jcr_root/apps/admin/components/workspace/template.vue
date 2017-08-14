@@ -95,7 +95,7 @@
             },
             getRightPanelClasses: function() {
                 // rightPanelVisible: true/false
-                return `right-panel ${$perAdminView.state.rightPanelVisible ? 'visible' : ''}`
+                return `right-panel ${$perAdminApp.getView().state.rightPanelVisible ? 'visible' : ''}`
             },
             isFullscreen(){
               return $perAdminApp.getView().state.rightPanelFullscreen || false

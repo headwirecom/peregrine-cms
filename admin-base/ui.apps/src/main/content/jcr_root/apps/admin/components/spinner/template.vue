@@ -9,6 +9,9 @@
 
 <script>
 export default {
-  props: ['width', 'position']
+  props: [
+      'width',
+      'position'
+  ]
 }
 </script>

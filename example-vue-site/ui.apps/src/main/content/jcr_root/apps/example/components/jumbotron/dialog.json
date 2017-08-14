@@ -6,9 +6,9 @@
   "placeholder": "enter a title"
 },
   {
-    "type": "textArea",
+    "type": "material-textarea",
     "label": "text",
     "model": "text",
     "rows": 5,
-    "placeholder": "enter a text"
+    "placeholder": "enter text"
   }]}

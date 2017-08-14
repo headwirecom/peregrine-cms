@@ -231,7 +231,7 @@
                         {
                             type: "checkbox",
                             label: "Open in new window?",
-                            model: "newWindow", 
+                            model: "newWindow",
                             default: true
                         }
                     ]
@@ -263,7 +263,6 @@
                     case ('link'):
                         position = 144
                         break
-                        break;
                     default:
                         position = 0
                         break
@@ -290,7 +289,6 @@
                 return {}
             },
             list(){
-                console.log('list: ', this.nodes.children)
                 return this.nodes.children || []
             },
             isVisible() {
@@ -330,7 +328,7 @@
                     },
                     getSortData: {
                         name: function(itemElem){
-                            return itemElem.name.toLowerCase()    
+                            return itemElem.name.toLowerCase()
                         },
                         created: function(itemElem){
                             return Date.parse(itemElem.created)
@@ -361,7 +359,13 @@
                 return item.name !== 'jcr:content'
             },
             isFolder(item) {
-                return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
+                const FOLDERS = [
+                    'per:Page',
+                    'nt:folder',
+                    'sling:Folder',
+                    'sling:OrderedFolder'
+                ]
+                return FOLDERS.indexOf(item.resourceType) >= 0
             },
             isSelected(name) {
                 return name === this.selected
