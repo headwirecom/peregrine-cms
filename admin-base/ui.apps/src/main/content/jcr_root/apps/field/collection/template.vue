@@ -30,11 +30,10 @@
         <i class="material-icons">add</i>
       </button>
     </h5>
-    <ul v-if="schema.multifield" class="collapsible" ref="collapsible">
-        <li v-for="(item, index) in value">
+    <ul class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'not-multifield'" ref="collapsible">
+        <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)">
             <div 
               class="collapsible-header" 
-              v-bind:class="getItemClass(item, index)" 
               draggable="true" 
               v-on:dragstart = "onDragStart(item, index, $event)"
               v-on:dragover.prevent  ="onDragOver"
@@ -43,39 +42,19 @@
               v-on:drop.prevent      ="onDrop(item, index, $event)"
               v-on:click.stop.prevent="onSetActiveItem(index)">
                 <i class="material-icons">drag_handle</i>
-                {{itemName(item, index)}} 
+                <span v-if="schema.multifield">{{itemName(item, index)}}</span> 
+                <vue-form-generator
+                  v-else
+                  :schema="getSchemaForIndex(schema, index)"
+                  :model="value"></vue-form-generator>
                 <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
             </div>
-            <div class="collapsible-body">
+            <div v-if="schema.multifield" class="collapsible-body">
                 <vue-form-generator
                   :schema="schema"
                   :model="item"></vue-form-generator>
             </div>
         </li>
-        <!--
-      <li 
-        v-for="(item, index) in [schema.model]"
-        v-bind:class="getItemClass(item, index)">
-        <div class="collapsible-header" v-on:click.stop.prevent="onSetActiveItem(index)">
-          {{itemName(item, index)}} <i class="material-icons" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
-        </div>
-        <div class="collapsible-body">
-          <vue-form-generator
-            :schema="schema.fields"
-            :model="value[index]"></vue-form-generator>
-        </div>
-      </li>
-      -->
-    </ul>
-    <ul v-else class="collection-fields">
-      <li v-for="(item, index) in value" class="collection-field">
-        <vue-form-generator
-            :schema="getSchemaForIndex(schema, index)"
-            :model="value"></vue-form-generator>
-        <button v-on:click.stop.prevent="onRemoveItem(item, index)" class="waves-effect waves-light btn-flat">
-          <i class="material-icons">delete</i>
-        </button>
-      </li>
     </ul>
 	</div>
 </template>
@@ -116,11 +95,12 @@
           return newSchema
       },
       getItemClass(item, index){
+        if(!this.schema.multifield) return
         if(this.activeItem === index){
           return 'active'
         }
         if(item._opDelete){
-          return'deleted'
+          return 'deleted'
         }
         return false
       },
@@ -150,6 +130,7 @@
         if(!this.schema.multifield){
           this.value.splice(index, 1)
         } else {
+          if(index === this.activeItem) this.activeItem = null
           item._opDelete = true
           let modelItem = this.value[index]
           modelItem._opDelete = true
@@ -157,6 +138,7 @@
         }
       },
       onSetActiveItem(index){
+        if(!this.schema.multifield) return
         if(index === this.activeItem){
           $(this.$refs.collapsible).collapsible('close', this.activeItem)
           this.activeItem = null
