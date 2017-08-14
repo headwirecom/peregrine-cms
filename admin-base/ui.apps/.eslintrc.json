@@ -2,7 +2,8 @@
 	"globals": {
 		"Vue": true,
 		"$perAdminApp": true,
-		"axios": true
+		"axios": true,
+        "$": true
 	},
 
     "env": {
@@ -10,10 +11,12 @@
         "es6": true
     },
     "extends": "eslint:recommended",
+    "plugins": ["vue"],
     "parserOptions": {
         "sourceType": "module"
     },
     "rules": {
+        "vue/jsx-uses-vars": 2,
         "accessor-pairs": "error",
         "array-bracket-newline": "error",
         "array-bracket-spacing": [

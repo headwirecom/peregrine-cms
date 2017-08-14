@@ -79,8 +79,9 @@
      *
      */
     export default {
-    props: ['model' ],
+    props: ['model'],
     computed: {
+
         /**
          *
          * checks if this action is currently selected using the model.stateFrom and model.stateFromDefault
@@ -114,11 +115,14 @@
         title() {
             if(this.model.tooltipTitle) return this.model.tooltipTitle
             if(this.model.title) return this.model.title
+            /* eslint-disable no-console */
             console.error('missing alt', this.model.command, this.model.path)
+            /* eslint-enable no-console */
             return this.model.command
         }
     },
     methods: {
+
         /**
          *  triggers the action specified by the model
          *

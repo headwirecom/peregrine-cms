@@ -55,7 +55,7 @@ export default {
       isDragging: false,
       uploadProgress: 0,
       formModel: { file: '' },
-      schema: { 
+      schema: {
         fields: [
           {
             type: "input",
@@ -78,7 +78,7 @@ export default {
         validateAfterChanged: true
       }
     }
-  }, 
+  },
   methods: {
     setDragState(ev){
       ev.stopPropagation()
@@ -97,20 +97,20 @@ export default {
       ev.stopPropagation()
     },
     uploadFile(files) {
-      $perAdminApp.stateAction('uploadFiles', { 
-        path: $perAdminApp.getView().state.tools.assets, 
+      $perAdminApp.stateAction('uploadFiles', {
+        path: $perAdminApp.getView().state.tools.assets,
         files: files,
         cb: this.setUploadProgress
-      })    
+      })
     },
     setUploadProgress(percentCompleted){
-      this.uploadProgress = percentCompleted 
+      this.uploadProgress = percentCompleted
       if(percentCompleted === 100){
         $perAdminApp.notifyUser(
-          'Success', 
-          'File uploaded successfully.', 
+          'Success',
+          'File uploaded successfully.',
           () => { this.uploadProgress = 0 }
-        ) 
+        )
       }
     }
   }

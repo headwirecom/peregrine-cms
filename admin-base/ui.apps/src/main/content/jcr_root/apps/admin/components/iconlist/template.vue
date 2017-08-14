@@ -30,8 +30,7 @@
 
 <script>
     export default {
-        props: ['model']
-        ,
+        props: ['model'],
         computed: {
             fromSource: function() {
                 var segments = this.model.source.split('/').slice(1)
