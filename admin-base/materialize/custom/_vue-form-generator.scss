@@ -52,6 +52,29 @@
                     margin: 0;
                 }
             }
+            &.field-input {
+                .wrapper {
+                    position: relative;
+                    input[type="color"]{
+                        width: 100%;
+                        height: 3rem;
+                        padding: 0 5rem 0 0.15rem;
+                        background-color: #fff;
+                        border-color: color("blue-grey", "lighten-4");
+                        &:focus {
+                            border-bottom-color: color("blue-grey", "base");
+                        }
+                    }
+                    span.helper {
+                        position: absolute;
+                        right: 0;
+                        line-height: 3rem;
+                        padding: 0 0.75rem;
+                        font-style: 1rem;
+                        color: color("blue-grey", "base");
+                    }
+                }
+            }
             &.field-list {
                  .field-wrap {
                     &.field-with-button {
@@ -341,9 +364,13 @@
                                 background-color: #fff;
                                 border-bottom-color: color("blue-grey", "lighten-4");
                                 color: color("blue-grey", "darken-2");
+                                padding: 0 0.75rem;
                                 .material-icons {
-                                    color: color("blue-grey", "lighten-2");
+                                    color: color("blue-grey", "lighten-1");
+                                    cursor: move;
+                                    margin-right: 0.75rem;
                                     &.delete-icon {
+                                        cursor: pointer;
                                         float: none;
                                         float: right;
                                         margin: 0 0 0 0.75rem;
@@ -399,42 +426,35 @@
                                 }
                             }
                         }
-                    }
-                    .collection-fields {
-                        width: 100%;
-                        margin: 0;
-                        padding: 0;
-                        clear: both;
-                        > .collection-field {
-                            padding: 0;
-                            position: relative;
+                        &.not-multifield {
                             label {
-                                font-size: 0.9rem;
+                                display: none;
                             }
                             .vue-form-generator { 
                                 display: inline-block;
-                                width: calc(100% - 3rem);
+                                width: calc(100% - 6rem);
                                 background-color: transparent;
+                                
                                 fieldset { 
                                     .form-group {
                                         padding: 0;
                                         .field-wrap {
-                                            .wrapper {
-                                                input {
-                                                    width: 100%;
-                                                    margin: 0;
+                                            input {
+                                                width: 100%;
+                                                padding-left: 0;
+                                                border-color: transparent;
+                                                border-top: none;
+                                                border-right: none;
+                                                border-left: none;
+                                                margin: 0;
+                                                &:focus {
+                                                    border-bottom-color: color("blue-grey", "base");
+                                                    box-shadow: 0 1px 0 0 color("blue-grey", "base");
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            .btn-flat {
-                                width: 3rem;
-                                height: 100%;
-                                display: inline-block;
-                                padding: 0;
-                                color: color("blue-grey", "darken-1");
                             }
                         }
                     }

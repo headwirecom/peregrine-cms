@@ -23,11 +23,14 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let logger = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
+let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
 
 import {set} from '../utils'
 
 export default function(me, target) {
+
+    log.fine(target)
+
     let view = me.getView()
     if(target.selected.startsWith('/content/sites')) {
         set(view, '/state/tools/page', null)
@@ -36,7 +39,7 @@ export default function(me, target) {
     }
 
     me.getApi().populateNodesForBrowser(target.selected).then( () => {
-    		set(me.getView(), target.path, target.selected)
+        set(me.getView(), target.path, target.selected)
         let path = document.location.pathname
         let html = path.indexOf('.html')
         let newPath = path.slice(0,html) + '.html/path//'+target.selected

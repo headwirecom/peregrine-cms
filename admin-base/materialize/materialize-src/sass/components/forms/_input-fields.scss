@@ -255,6 +255,7 @@ textarea {
     overflow-y: hidden; /* prevents scroll bar flash */
     padding-top: .8rem; /* prevents text jump on Enter keypress */
     resize: none;
+    overflow: auto;
     min-height: $input-height;
   }
 }

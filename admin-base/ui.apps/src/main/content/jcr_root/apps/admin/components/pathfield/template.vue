@@ -37,11 +37,10 @@
 
 <script>
     export default {
-        props: ['model']
-        ,
+        props: ['model'],
         computed: {
             path: function() {
-                var dataFrom    = this.model.dataFrom
+                var dataFrom = this.model.dataFrom
                 var node = $perAdminApp.getNodeFrom(this.$root.$data, dataFrom)
                 return node
             },

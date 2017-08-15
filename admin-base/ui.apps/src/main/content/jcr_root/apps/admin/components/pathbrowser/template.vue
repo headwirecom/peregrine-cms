@@ -97,10 +97,20 @@
                 return item.name !== 'jcr:content'
             },
             isFile(item) {
-                return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
+                const FILE_TYPES = [
+                    'per:Asset',
+                    'nt:file'
+                ]
+                return FILE_TYPES.indexOf(item.resourceType) >= 0
             },
             isFolder(item) {
-                return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
+                const FOLDER_TYPES = [
+                    'per:Page',
+                    'nt:folder',
+                    'sling:Folder',
+                    'sling:OrderedFolder'
+                ]
+                return FOLDER_TYPES.indexOf(item.resourceType) >= 0
             },
             isSelected(name) {
                 return name === this.selected
@@ -118,7 +128,6 @@
                 })
             },
             selectItem(item) {
-                console.log(item)
                 this.setItemPath(item.path)
                 this.onHide()
             },

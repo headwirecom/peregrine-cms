@@ -29,6 +29,8 @@ import {set} from '../utils'
 
 export default function(me, target) {
 
+    log.fine(target)
+
     var api = me.getApi()
     api.populatePageView(target.pagePath).then( () => {
         let view = me.getView()

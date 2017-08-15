@@ -23,9 +23,8 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
+import {SUFFIX_PARAM_SEPARATOR} from "../constants";
 let log = LoggerFactory.logger('movePage').setLevelDebug()
-
-import {set} from '../utils'
 
 export default function(me, target) {
 
@@ -33,7 +32,7 @@ export default function(me, target) {
     var api = me.getApi()
     api.movePage(target.path, target.to, target.type).then( () => {
         let path = me.getNodeFromView('/state/tools/templates')
-        me.loadContent('/content/admin/templates.html/path//'+ path)
+        me.loadContent('/content/admin/templates.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
     })
 
 }

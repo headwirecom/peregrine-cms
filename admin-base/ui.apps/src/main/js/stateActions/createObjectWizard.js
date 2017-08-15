@@ -23,6 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
+import {SUFFIX_PARAM_SEPARATOR} from "../constants";
 let log = LoggerFactory.logger('createObjectWizard').setLevelDebug()
 
 export default function(me, target) {
@@ -30,9 +31,9 @@ export default function(me, target) {
     log.fine(target)
 
     if(target.target) {
-        me.loadContent(target.target+'.html/path//'+target.path)
+        me.loadContent(target.target+'.html/path' + SUFFIX_PARAM_SEPARATOR +target.path)
     } else {
-        me.loadContent('/content/admin/objects/create.html/path//'+target.path)
+        me.loadContent('/content/admin/objects/create.html/path'+ SUFFIX_PARAM_SEPARATOR +target.path)
     }
 
 }

@@ -544,6 +544,7 @@
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
         <module>tooling/maven/archetypes/project</module>
+        <module>login</module>
     </modules>
 
 </project>

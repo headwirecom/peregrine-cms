@@ -23,12 +23,13 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
+import {SUFFIX_PARAM_SEPARATOR} from "../constants";
 let log = LoggerFactory.logger('sourceImageWizard').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
-    me.loadContent('/content/admin/assets/source.html/path//'+target)
+    me.loadContent('/content/admin/assets/source.html/path'+SUFFIX_PARAM_SEPARATOR+target)
 
 }

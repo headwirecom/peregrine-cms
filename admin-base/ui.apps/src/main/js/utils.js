@@ -25,7 +25,7 @@
 import { LoggerFactory } from './logger'
 let logger = LoggerFactory.logger('utils').setLevelDebug()
 
-import { DATA_EXTENSION, COMPONENT_PREFIX } from './constants.js'
+import { DATA_EXTENSION, SUFFIX_PARAM_SEPARATOR } from './constants.js'
 
 export function makePathInfo(path) {
 
@@ -41,7 +41,7 @@ export function makePathInfo(path) {
     var suffixParams = {}
     if(suffixPath.length > 0) {
         suffixPath = suffixPath.slice(6)
-        var suffixParamList = suffixPath.split('//')
+        var suffixParamList = suffixPath.split(SUFFIX_PARAM_SEPARATOR)
         for(var i = 0; i < suffixParamList.length; i+= 2) {
             suffixParams[suffixParamList[i]] = suffixParamList[i+1]
         }

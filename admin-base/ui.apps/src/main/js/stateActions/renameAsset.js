@@ -23,9 +23,8 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
+import {SUFFIX_PARAM_SEPARATOR} from "../constants";
 let log = LoggerFactory.logger('renameAsset').setLevelDebug()
-
-import {set} from '../utils'
 
 export default function(me, target) {
 
@@ -33,7 +32,7 @@ export default function(me, target) {
     var api = me.getApi()
     api.renameAsset(target.path, target.name).then( () => {
         let path = me.getNodeFromView('/state/tools/assets')
-        me.loadContent('/content/admin/assets.html/path//'+ path)
+        me.loadContent('/content/admin/assets.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
     })
 
 }

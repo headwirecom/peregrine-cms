@@ -100,6 +100,7 @@ export class Logger {
         }
     }
 
+    /* eslint-disable no-console */
     fine() {
         if(this.level < LogLevel.FINE) return
         var args = Array.prototype.slice.call(arguments);
@@ -129,6 +130,7 @@ export class Logger {
         var args = Array.prototype.slice.call(arguments);
         this.applyTo(console.error, '[error]', args)
     }
+    /* eslint-enable no-console */
 
 }
 

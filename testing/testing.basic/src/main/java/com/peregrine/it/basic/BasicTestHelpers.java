@@ -265,6 +265,62 @@ public class BasicTestHelpers {
                 Map actualChild = (Map) actual.get(key);
                 assertNotNull("Child: " + key + " not found as child in response" + " (path: " + path + ")", actualChild);
                 compareJson(expectedChild, actualChild, childPath);
+            } else if(value instanceof List) {
+                List expectedlist = (List) value;
+                List actualList = (List) actual.get(key);
+                List actualList2 = new ArrayList(actualList);
+                logger.info("Expected List: '{}', Actual List: '{}'", expectedlist, actualList);
+                for(Object temp: expectedlist) {
+                    if(temp instanceof Map) {
+                        Map expectedListMap = (Map) temp;
+                        String name = (String) expectedListMap.get("name");
+                        if(name == null) {
+                            fail("Expected List Map entry has no name: " + expectedListMap);
+                        }
+                        Map actualListMap = null;
+                        for(Object temp2 : actualList2) {
+                            if(temp2 instanceof Map) {
+                                Map tempMap = (Map) temp2;
+                                String name2 = (String) tempMap.get("name");
+                                if(name == null) {
+                                    fail("Given List Map entry has no name: " + tempMap);
+                                }
+                                if(name2.equals(name2)) {
+                                    actualListMap = tempMap;
+                                    break;
+                                }
+                            }
+                        }
+                        if(actualListMap == null) {
+                            fail("No Actual List Map Entry found for: " + name);
+                        }
+                        actualList2.remove(actualListMap);
+                        compareJson(expectedListMap, actualListMap, path);
+                    } else if(temp instanceof String) {
+                        String item = (String) temp;
+                        logger.info("Expected List Item String: '{}'", item);
+                        String actualItem = null;
+                        for(Object temp2 : actualList2) {
+                            logger.info("Compare List Item, Expected: '{}', Actual: '{}'", item, temp2);
+                            if(temp2 instanceof String) {
+                                String temp2a = (String) temp2;
+                                if(item.equals(temp2a)) {
+                                    actualItem = temp2a;
+                                    break;
+                                }
+                            }
+                        }
+                        if(actualItem != null) {
+                            logger.info("Found and remove it: '{}'", actualItem);
+                            actualList2.remove(actualItem);
+                        } else {
+                            fail("No actual list item found for: " + item);
+                        }
+                    } else {
+                        fail("Unknown type of list value: " + temp.getClass() + " (path: " + path + ")");
+                    }
+                }
+                if(!actualList2.isEmpty()) { fail("Actual List has more entries: " + actualList2); }
             } else {
                 fail("Unknown type of value: " + value.getClass() + " (path: " + path + ")");
             }

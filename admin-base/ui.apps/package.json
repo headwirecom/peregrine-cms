@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node ./node_modules/rollup/bin/rollup -c && node ../../buildscripts/buildvue.js admin && node src/main/buildjs/mdtopage.js",
-    "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json"
+    "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json",
+    "lint-vue": "node node_modules/eslint/bin/eslint.js src/main/content/jcr_root --ext vue",
+    "lint-js": "node node_modules/eslint/bin/eslint.js src/main/js"
   },
   "author": "",
   "license": "Apache-2.0",
@@ -22,5 +24,14 @@
     "vue": "^2.4.2",
     "vue-template-compiler": "^2.4.2",
     "xml-escape": "^1.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.4.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "eslint-plugin-vue": "^2.1.0"
   }
 }

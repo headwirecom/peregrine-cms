@@ -23,13 +23,14 @@
  * #L%
  */
 import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('api').setLevelDebug()
+let log = LoggerFactory.logger('api').setLevelDebug()
 
 let impl = null
 
 class PerApi {
 
     constructor(implementation) {
+        log.fine('contructor')
         impl = implementation
     }
 

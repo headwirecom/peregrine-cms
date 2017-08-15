@@ -31,19 +31,72 @@ import {makePathInfo, pagePathToDataPath, set, get} from './utils'
 
 import StateActions from './stateActions'
 
+import { SUFFIX_PARAM_SEPARATOR } from "./constants"
+
+/**
+ * registers a pop state listener for the adminui to track back/forward button and loads
+ * the correct screen accordingly
+ *
+ * @private
+ * @param e
+ */
 window.onpopstate = function(e) {
     if(e && e.state && e.state.path) {
         loadContentImpl(e.state.path, false, true)
     }
 }
 
+/**
+ * the view object containing all the data used to render the UI
+
+ * @private
+ * @type {null}
+ */
 let view = null
+
+/**
+ * reference to the API Interface that's used to implement all backend functionality
+ *
+ * @private
+ * @type {null}
+ */
 let api = null
+
+/**
+ * the vuejs app that is created to render the admin ui
+ *
+ * @private
+ * @type {null}
+ */
 let app = null
+
+/**
+ * list of currently loaded vuejs components
+ *
+ * @private
+ * @type {Array}
+ */
 let loadedComponents = []
+
+/** ?
+ *
+ * @private
+ * @type {null}
+ */
 let OSBrowser = null
 
-/** dynamic component initializer
+/**
+ * list of all the currently installed extensions
+ *
+ * @private
+ * @type {Array}
+ */
+const extensions = []
+
+/**
+ * dynamic component initializer\ - this function takes a name of a component and tries to
+ * find the matching variable in the global scope if the component has not been registered
+ * with vuejs yet.
  *
  * @private
  */
@@ -63,6 +116,14 @@ function loadComponentImpl(name) {
     }
 }
 
+/**
+ * gets the global varibale backing a component by it's name (vuejs - name converted to camel case
+ * and cmp added in front of it)
+ *
+ * @private
+ * @param name
+ * @return {*}
+ */
 function getComponentByNameImpl(name) {
     var segments = name.split('-')
     for(var i = 0; i < segments.length; i++) {
@@ -71,12 +132,20 @@ function getComponentByNameImpl(name) {
     return window['cmp'+segments.join('')]
 }
 
+/**
+ * loads data into the view through the populateByName function of the api
+ *
+ * @private
+ * @param source
+ * @return {*}
+ */
 function loadData(source) {
     logger.fine('requesting to load data for', source)
     return api.populateByName(source)
 }
 
-/** tree walker
+/**
+ * walks the current node tree and loads all the necessary data related to the page
  *
  * @private
 
@@ -103,6 +172,11 @@ function walkTreeAndLoad(node) {
     })
 }
 
+/**
+ * initializes the vuejs app
+ *
+ * @private
+ */
 function initPeregrineApp() {
     logger.fine('initPeregrineApp')
     logger.fine(JSON.stringify(view, true, 2))
@@ -112,6 +186,13 @@ function initPeregrineApp() {
     });
 }
 
+/**
+ * conversion of suffix paramters to model
+ *
+ * @private
+ * @param suffixParams
+ * @param mappers
+ */
 function suffixParamsToModel(suffixParams, mappers) {
 
     if(mappers) {
@@ -130,6 +211,13 @@ function suffixParamsToModel(suffixParams, mappers) {
 
 }
 
+/**
+ * process all the defined loaders from the data model
+ *
+ * @private
+ * @param loaders
+ * @return {Promise}
+ */
 function processLoaders(loaders) {
 
     return new Promise( (resolve, reject) => {
@@ -157,7 +245,12 @@ function processLoaders(loaders) {
     })
 }
 
-/** simple data loader
+/**
+ * Implementation of the loadContent function of the $perAdminApp interface.
+ *
+ * checks if user is logged in then laods the data for the given page and processes the tree
+ * for all loaders and component registration. Finally updates the history and applies the
+ * changes to the view
  *
  * @private
  *
@@ -200,11 +293,11 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                                         if(i === 0) {
                                             suffix += '/'
                                         } else {
-                                            suffix += '//'
+                                            suffix += SUFFIX_PARAM_SEPARATOR
                                         }
 
                                         suffix += params[0]
-                                        suffix += '//'
+                                        suffix += SUFFIX_PARAM_SEPARATOR
                                         suffix += getNodeFromImpl(view, params[i+1])
                                     }
                                 }
@@ -224,6 +317,15 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
         })
 }
 
+/**
+ * finds a UI action in the node tree that makes up the currently rendered page. Walks the full tree
+ *
+ * @private
+ * @param component
+ * @param command
+ * @param target
+ * @return {boolean}
+ */
 function findActionInTree(component, command, target) {
     if(component.$options.methods && component.$options.methods[command]) {
         component.$options.methods[command](component, target)
@@ -237,6 +339,14 @@ function findActionInTree(component, command, target) {
     }
 }
 
+/**
+ * implementation of $perAdminApp.action()
+ *
+ * @private
+ * @param component
+ * @param command
+ * @param target
+ */
 function actionImpl(component, command, target) {
     if(component.$options.methods && component.$options.methods[command]) {
         component.$options.methods[command](component, target)
@@ -251,16 +361,39 @@ function actionImpl(component, command, target) {
     }
 }
 
+/**
+ * implementation of $perAdminApp.stateAction()
+ *
+ * @private
+ * @param name
+ * @param target
+ */
 function stateActionImpl(name, target) {
 
     StateActions(name)($perAdminApp, target)
 
 }
 
+/**
+ * implementation of $perAdminApp.getNodeFrom()
+ *
+ * @private
+ * @param node
+ * @param path
+ * @return {*}
+ */
 function getNodeFromImpl(node, path) {
     return get(node, path)
 }
 
+/**
+ * implementation of $perAdminApp.getNodeFromOrNull()
+ *
+ * @private
+ * @param node
+ * @param path
+ * @return {*}
+ */
 function getNodeFromOrNullImpl(node, path) {
 
     path = path.slice(1).split('/').reverse()
@@ -274,14 +407,28 @@ function getNodeFromOrNullImpl(node, path) {
     return node
 }
 
+/**
+ * implementation of $perAdminApp.getNodeFromWithDefault()
+ *
+ * @private
+ * @param node
+ * @param path
+ * @param value
+ * @return {*}
+ */
 function getNodeFromWithDefaultImpl(node, path, value) {
     return get(node, path, value)
 }
 
+/**
+ * implementation of $perAdminApp.findNodeFromPath()
+ *
+ * @private
+ * @param node
+ * @param path
+ * @return {*}
+ */
 function findNodeFromPathImpl(node, path) {
-
-//    logger.debug(path)
-//    logger.debug(JSON.stringify(readNode, true, 2))
 
     if(node.path === path) return node
     if(node.children) {
@@ -297,6 +444,14 @@ function findNodeFromPathImpl(node, path) {
     }
 }
 
+/**
+ * implementation of $perAdminApp.notifyUser()
+ *
+ * @private
+ * @param title
+ * @param message
+ * @param cb
+ */
 function notifyUserImpl(title, message, cb) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
@@ -307,6 +462,13 @@ function notifyUserImpl(title, message, cb) {
     set(view, '/state/notification/isVisible', true)
 }
 
+/**
+ * implemenation of $perAdminApp.pathBrowser()
+ *
+ * @private
+ * @param root
+ * @param cb
+ */
 function pathBrowserImpl(root, cb) {
     api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
         set(view, '/state/pathbrowser/root', root)
@@ -320,6 +482,13 @@ function pathBrowserImpl(root, cb) {
     })
 }
 
+/**
+ * implementation of $perAdminApp.assetBrowser()
+ *
+ * @private
+ * @param root
+ * @param cb
+ */
 function assetBrowserImpl(root, cb) {
     api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
         set(view, '/state/assetbrowser/root', root)
@@ -333,6 +502,14 @@ function assetBrowserImpl(root, cb) {
     })
 }
 
+/**
+ * implementation of $perAdminApp.pageBrowser()
+ *
+ * @private
+ * @param root
+ * @param withLinkTab
+ * @param cb
+ */
 function pageBrowserImpl(root, withLinkTab, cb) {
     api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
         set(view, '/state/pagebrowser/root', root)
@@ -347,12 +524,24 @@ function pageBrowserImpl(root, withLinkTab, cb) {
     })
 }
 
+/**
+ * implementation of $perAdminApp.isPreviewMode()
+ *
+ * @private
+ * @return {boolean}
+ */
 function isPreviewModeImpl() {
     let mode = getNodeFromOrNullImpl(view, '/state/tools/workspace/view')
     if(mode == null) return false
     return mode === 'preview'
 }
 
+/**
+ * implementation of $perAdminApp.getOSBrowser()
+ *
+ * @private
+ * @return {null}
+ */
 function getOSBrowserImpl() {
     if(OSBrowser == null){
         switch(true) {
@@ -372,8 +561,13 @@ function getOSBrowserImpl() {
     return OSBrowser
 }
 
-const extensions = []
-
+/**
+ * implementation of $perAdminApp.registerExtension()
+ *
+ * @private
+ * @param id
+ * @param name
+ */
 function registerExtensionImpl(id, name) {
     let extensionList = extensions[id]
     if(!extensionList) {
@@ -383,6 +577,13 @@ function registerExtensionImpl(id, name) {
     }
 }
 
+/**
+ * implementation of $perAdminApp.getExtension()
+ *
+ * @private
+ * @param id
+ * @return {*}
+ */
 function getExtensionImpl(id) {
     return extensions[id]
 }
@@ -520,6 +721,7 @@ var PerAdminApp = {
     },
 
     /**
+     * trigger a registered state action with the provided target information
      *
      * @memberOf PerAdminApp
      * @method
@@ -531,6 +733,7 @@ var PerAdminApp = {
     },
 
     /**
+     * get a node from the given objec with the given path
      *
      * @memberOf PerAdminApp
      * @method
@@ -542,6 +745,7 @@ var PerAdminApp = {
     },
 
     /**
+     * get a node from the current view object with the given path
      *
      * @memberOf PerAdminApp
      * @method
@@ -552,6 +756,7 @@ var PerAdminApp = {
     },
 
     /**
+     * get a node from the current view object with the given path or null if not defined
      *
      * @memberOf PerAdminApp
      * @method
@@ -562,6 +767,9 @@ var PerAdminApp = {
     },
 
     /**
+     *
+     * get a node from the current view object with the given path and set value as the
+     * default if not yet defined
      *
      * @memberOf PerAdminApp
      * @method
@@ -574,6 +782,9 @@ var PerAdminApp = {
 
     /**
      *
+     *  find a node with a property path that is equal to path. This also looks at all the
+     *  children of the node.
+     *
      * @memberOf PerAdminApp
      * @method
      * @param node
@@ -584,6 +795,7 @@ var PerAdminApp = {
     },
 
     /**
+     * get the backing application that has been created for peregrine (vue object)
      *
      * @memberOf PerAdminApp
      * @method
@@ -594,6 +806,8 @@ var PerAdminApp = {
     },
 
     /**
+     * modal with the given title and message to notify the user, calls the callback on close if provided
+     *
      *
      * @memberOf PerAdminApp
      * @method
@@ -606,6 +820,7 @@ var PerAdminApp = {
     },
 
     /**
+     * open a path browser for the provided root, notify the callback on selection
      *
      * @memberOf PerAdminApp
      * @method
@@ -617,6 +832,7 @@ var PerAdminApp = {
     },
 
     /**
+     * open an asset browser for the provided root, notify the callback on selection
      *
      * @memberOf PerAdminApp
      * @method
@@ -628,6 +844,7 @@ var PerAdminApp = {
     },
 
     /**
+     * open a page browser for the provided root, notify the callback on selection
      *
      * @memberOf PerAdminApp
      * @method
@@ -639,6 +856,7 @@ var PerAdminApp = {
     },
 
     /**
+     * returns true if the editor is currently in preview mode
      *
      * @memberOf PerAdminApp
      * @method
@@ -648,6 +866,7 @@ var PerAdminApp = {
     },
 
     /**
+     * returns the OS? Used for some browser dependent code
      *
      * @memberOf PerAdminApp
      * @method
@@ -658,6 +877,7 @@ var PerAdminApp = {
 
 
     /**
+     * allows for an extension to be registered to implement custom UI code in the admin console
      *
      * @memberOf PerAdminApp
      * @method
@@ -669,6 +889,7 @@ var PerAdminApp = {
     },
 
     /**
+     * entry point for front end to grab extensions to the UI
      *
      * @memberOf PerAdminApp
      * @method

@@ -46,3 +46,5 @@ in the `ui.apps/packages.json` file (add to the beginning of build:
 `cd .. && percli htmltovue * && cd ui.apps &&`). node for archetype needs to be bumped to 7.10+
 
 also mention `blockgenerator` file to block htmltovue on a component
+
+## document support in percli for named servers
