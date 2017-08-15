@@ -7,5 +7,6 @@ target/
 .settings/
 node
 node_modules
-sling
+!sling/auth
+sling/!auth
 out
