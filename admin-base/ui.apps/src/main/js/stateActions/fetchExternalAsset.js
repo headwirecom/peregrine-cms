@@ -34,6 +34,4 @@ export default function(me, target) {
     api.fetchExternalImage(target.path, target.url, target.name, target.config).then( () => {
         me.loadContent('/content/admin/assets.html/path//'+target.path)
     })
-
-
 }
