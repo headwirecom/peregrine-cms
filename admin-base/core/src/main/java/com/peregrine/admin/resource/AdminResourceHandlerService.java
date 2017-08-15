@@ -490,73 +490,139 @@ public class AdminResourceHandlerService
                 }
             } else if(value instanceof List) {
                 List list = (List) value;
-                List<String> newSingleList = null;
-                // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
-                // for which we have to get all the values in a list and then afterwards if such values were found update
-                // them as a property
-                for(Object item: list) {
-                    if(item instanceof Map) {
-                        Resource child = resource.getChild(name);
-                        Map childProperties = (Map) item;
-                        if(child == null) {
-                            child = createNode(resource, name, NT_UNSTRUCTURED, null);
-                        }
-                        Object temp = childProperties.get("name");
-                        String childName = null;
-                        if(temp != null) {
-                            childName = temp.toString();
-                        }
-                        if(childName == null || childName.isEmpty()) {
-                            throw new ManagementException("Name for item: '" + item + "' does not have a name (parent: '" + resource.getPath() + "'");
-                        }
-                        Resource listChild = child.getChild(childName);
-                        // If child is missing then create it
-                        if(listChild == null) {
-                            Object val = childProperties.get(SLING_RESOURCE_TYPE);
-                            String resourceType = val == null ? null : (String) val;
-                            childProperties.remove("name");
-                            childProperties.remove(SLING_RESOURCE_TYPE);
-                            childProperties.remove(JCR_PRIMARY_TYPE);
-                            listChild = createNode(child, childName, NT_UNSTRUCTURED, resourceType);
-                            // Now update the child with any remaining properties
-                            ModifiableValueMap newChildProperties = getModifiableProperties(listChild, false);
-                            for(Object childPropertyKey : childProperties.keySet()) {
-                                newChildProperties.put(childPropertyKey + "", childProperties.get(childPropertyKey));
-                            }
-                        } else {
-                            if(childProperties.containsKey(DELETION_PROPERTY_NAME) && "true".equals(childProperties.get(DELETION_PROPERTY_NAME))) {
-                                try {
-                                    logger.trace("Remove List Child: '{}' ('{}')", name, listChild.getPath());
-                                    resource.getResourceResolver().delete(listChild);
-                                    continue;
-                                } catch(PersistenceException e) {
-                                    throw new ManagementException("Failed to delete resource: " + listChild.getPath(), e);
-                                }
-                            }
-                            updateResourceTree(listChild, childProperties);
-                        }
-                    } else if(item instanceof String) {
-                        String listItem = item.toString();
-                        if(listItem.isEmpty()) { continue; }
-                        if(newSingleList == null) { newSingleList = new ArrayList<>(); }
-                        newSingleList.add(listItem);
-                    } else {
-                        if(item == null || item.toString().isEmpty()) {
-                            logger.trace("Item is either null or empty and therefore ignored");
-                        } else {
-                            throw new ManagementException("Property: '" + name + "' (value: '" + item + "', type: '" + item.getClass().getName() + "') is not a map, is not found and cannot be created due to missing Sling Resource Type");
-                        }
-                    }
+                int type = 0;
+                Object first = null;
+                if(!list.isEmpty()) {
+                    first = list.get(0);
+                    type = first instanceof Map ? 2 :
+                        first instanceof String ? 1 :
+                            -1;
                 }
-                if(newSingleList != null) {
-                    ModifiableValueMap childProperties = getModifiableProperties(resource, false);
-                    childProperties.put(name, newSingleList.toArray(new String[newSingleList.size()]));
+                if(type == 2) {
+                    Resource child = resource.getChild(name);
+                    if(child == null) {
+                        child = createNode(resource, name, NT_UNSTRUCTURED, null);
+                    }
+                    // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
+                    // for which we have to get all the values in a list and then afterwards if such values were found update
+                    // them as a property
+                    updateObjectList(list, child);
+                } else if(type == 1) {
+                    updateObjectSingleList(name, list, resource);
+                } else if(type < 0) {
+                    throw new ManagementException("Object List had an unsupported first entry: '" + first + "' (type: " + (first == null ? "null" : first.getClass().getName()));
                 }
             } else {
                 updateProperties.put(name, value);
             }
         }
         baseResourceHandler.updateModification(resource);
+    }
+
+    private void updateObjectSingleList(String name, List incomingList, Resource resource) throws ManagementException {
+        List<String> newSingleList = new ArrayList<>();
+        for(Object item : incomingList) {
+            if(item instanceof String) {
+                String listItem = item.toString();
+                if(listItem.isEmpty()) {
+                    continue;
+                }
+                newSingleList.add(listItem);
+            } else {
+                throw new ManagementException("Object List was a single list but had an unsupported entry: '" + item + "' (type: " + (item == null ? "null" : item.getClass().getName()));
+            }
+        }
+        ModifiableValueMap childProperties = getModifiableProperties(resource, false);
+        childProperties.put(name, newSingleList.toArray(new String[newSingleList.size()]));
+    }
+
+    private void updateObjectList(List incomingList, Resource resource) throws ManagementException {
+        Resource lastResourceItem = null;
+        for(int i = 0; i < incomingList.size(); i++) {
+            Object item = incomingList.get(i);
+            if(item instanceof Map) {
+                Map incomingItemProperties = (Map) item;
+                Object temp = incomingItemProperties.get("name");
+                String incomingItemName = null;
+                if(temp != null) {
+                    incomingItemName = temp.toString();
+                }
+                if(incomingItemName == null || incomingItemName.isEmpty()) {
+                    throw new ManagementException("Item: '" + item + "' does not have a name (parent: '" + resource.getPath() + "'");
+                }
+                // Get index of the matching resource child to compare with the index in the list
+                int index = -1;
+                Resource resourceListItem = null;
+                for(Resource tempResource: resource.getChildren()) {
+                    index++;
+                    if(incomingItemName.equals(tempResource.getName())) {
+                        resourceListItem = tempResource;
+                        break;
+                    }
+                }
+                // Handle new item
+                if(resourceListItem == null) {
+                    Object val = incomingItemProperties.get(SLING_RESOURCE_TYPE);
+                    String resourceType = val == null ? null : (String) val;
+                    incomingItemProperties.remove("name");
+                    incomingItemProperties.remove(SLING_RESOURCE_TYPE);
+                    incomingItemProperties.remove(JCR_PRIMARY_TYPE);
+                    resourceListItem = createNode(resource, incomingItemName, NT_UNSTRUCTURED, resourceType);
+                    // Move the child to the correct position
+                    if(lastResourceItem == null) {
+                        // No saved last resource item so we need to place it as the first entry
+                        Resource first = null;
+                        for(Resource tempResource: resource.getChildren()) {
+                            first = tempResource;
+                            break;
+                        }
+                        // If there are no items then ignore it (it will be first
+                        if(first != null) {
+                            moveNode(resourceListItem, first, false, true);
+                        }
+                    } else {
+                        // There is a resource item -> move the new one after the last one
+                        moveNode(resourceListItem, lastResourceItem, false, false);
+                    }
+                    // Now update the child with any remaining properties
+                    ModifiableValueMap newChildProperties = getModifiableProperties(resourceListItem, false);
+                    for(Object childPropertyKey : incomingItemProperties.keySet()) {
+                        newChildProperties.put(childPropertyKey + "", incomingItemProperties.get(childPropertyKey));
+                    }
+                } else {
+                    if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME) && "true".equals(incomingItemProperties.get(DELETION_PROPERTY_NAME))) {
+                        try {
+                            logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
+                            resource.getResourceResolver().delete(resourceListItem);
+                            continue;
+                        } catch(PersistenceException e) {
+                            throw new ManagementException("Failed to delete resource: " + resourceListItem.getPath(), e);
+                        }
+                    }
+                    updateResourceTree(resourceListItem, incomingItemProperties);
+                    // Check order
+                    if(i != index) {
+                        if(lastResourceItem == null) {
+                            // No saved last resource item so we need to place it as the first entry
+                            Resource first = null;
+                            for(Resource tempResource : resource.getChildren()) {
+                                first = tempResource;
+                                break;
+                            }
+                            // If there are no items then ignore it (it will be first
+                            if(first != null) {
+                                moveNode(resourceListItem, first, false, true);
+                            }
+                        } else {
+                            moveNode(resourceListItem, lastResourceItem, false, false);
+                        }
+                    }
+                }
+                lastResourceItem = resourceListItem;
+            } else {
+                throw new ManagementException("Object List was a full list but had an unsupported entry: '" + item + "' (type: " + (item == null ? "null" : item.getClass().getName()));
+            }
+        }
     }
 
     public static Map convertToMap(String json) throws IOException {

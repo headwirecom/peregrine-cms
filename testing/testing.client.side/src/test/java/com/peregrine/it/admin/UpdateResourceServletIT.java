@@ -2,12 +2,8 @@ package com.peregrine.it.admin;
 
 import com.peregrine.it.basic.AbstractTest;
 import com.peregrine.it.basic.JsonTest;
-import com.peregrine.it.basic.JsonTest.BasicImpl;
-import com.peregrine.it.basic.JsonTest.BasicListObject;
-import com.peregrine.it.basic.JsonTest.BasicObject;
 import com.peregrine.it.basic.JsonTest.ChildObject;
 import com.peregrine.it.basic.JsonTest.NoNameObject;
-import com.peregrine.it.basic.JsonTest.ObjectComponent;
 import com.peregrine.it.basic.JsonTest.Prop;
 import com.peregrine.it.basic.JsonTest.TestPage;
 import org.apache.sling.testing.clients.ClientException;
@@ -34,17 +30,14 @@ import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_CAROUSEL_ITEM_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_CAROUSEL_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_JUMBOTRON_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_OBJECT_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
-import static com.peregrine.it.util.TestHarness.createObject;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsComponent;
 import static com.peregrine.it.util.TestHarness.updateResource;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -117,147 +110,6 @@ public class UpdateResourceServletIT
             );
         checkResourceByJson(client, folderPath + "/" + pageName, 3, testPage.toJSon(), true);
         checkLastModified(client, folderPath + "/" + pageName, before);
-    }
-
-    @Test
-    public void testUpdateSimpleObject() throws Exception {
-        SlingClient client = slingInstanceRule.getAdminClient();
-        SlingHttpResponse response = null;
-        String folderPath = ROOT_PATH + "/test-uso";
-        createFolderStructure(client, folderPath);
-        // Create a new source page
-        String objectName = "test-object-1";
-        response = createObject(client, folderPath, objectName, EXAMPLE_OBJECT_TYPE_PATH, 200);
-        logger.info("Response from creating test object: '{}'", response.getContent());
-
-        ObjectComponent simpleObject = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH, null);
-        checkResourceByJson(client, folderPath + "/" + objectName, 2, simpleObject.toJSon(), true);
-
-        // Now we are ready to update that component
-        BasicObject addPropertiesToObject = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
-            .addProperties(new Prop("name", "Hello"), new Prop("value", "Peregrine"));
-        response = updateResource(client, folderPath + "/" + objectName, addPropertiesToObject.toJSon(), 200);
-
-        // Check page now
-        ObjectComponent simpleObjectWithProperties = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH,
-            new Prop("name", "Hello"), new Prop("value", "Peregrine"));
-        checkResourceByJson(client, folderPath + "/" + objectName, 1, simpleObjectWithProperties.toJSon(), true);
-    }
-
-    @Test
-    public void testUpdateObjectWithList() throws Exception {
-        SlingClient client = slingInstanceRule.getAdminClient();
-        SlingHttpResponse response = null;
-        String folderPath = ROOT_PATH + "/test-uowl";
-        createFolderStructure(client, folderPath);
-        // Create a new source page
-        String objectName = "test-object-1";
-        response = createObject(client, folderPath, objectName, EXAMPLE_OBJECT_TYPE_PATH, 200);
-        logger.info("Response from creating test object: '{}'", response.getContent());
-
-        ObjectComponent simpleObject = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH, null);
-        checkResourceByJson(client, folderPath + "/" + objectName, 2, simpleObject.toJSon(), true);
-
-        // Now we are ready to add a list to the Object
-        BasicObject addListToObject = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
-            .addChild(new BasicListObject("list",
-                new BasicImpl("11").addProperties(
-                    new Prop("name", "11"), new Prop("key", "one"), new Prop("value", "two")),
-                new BasicImpl("12").addProperties(
-                    new Prop("name", "12"), new Prop("key", "eins"), new Prop("value", "zwei")),
-                new BasicImpl("13").addProperties(
-                    new Prop("name", "13"), new Prop("key", "une"), new Prop("value", "deux"))
-            ));
-        response = updateResource(client, folderPath + "/" + objectName, addListToObject.toJSon(), 200);
-
-        // Check page now
-        // NOTE: Sling will not return this as a list but rather as a map with the name as object name
-        //       and the rest as properties of that object something along the lines of:
-        //       ..., "list": {"11"={"key":"one", "value":"two"}, "12"=...
-        ObjectComponent simpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
-            .addChild(new BasicImpl("list")
-                .addChildren(
-                    new BasicImpl("11").addProperties(
-                        new Prop("key", "one"), new Prop("value", "two")),
-                    new BasicImpl("12").addProperties(
-                        new Prop("key", "eins"), new Prop("value", "zwei")),
-                    new BasicImpl("13").addProperties(
-                        new Prop("key", "une"), new Prop("value", "deux"))
-                )
-            );
-        checkResourceByJson(client, folderPath + "/" + objectName, 3, simpleObjectWithList.toJSon(), true);
-
-        BasicObject addAndRemoveListItems = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
-            .addChild(new BasicListObject("list",
-                new BasicImpl("11").addProperties(
-                    new Prop("name", "11"), new Prop("key", "one"), new Prop("value", "two")),
-                new BasicImpl("12").addProperties(
-                    new Prop("name", "12"), new Prop(DELETION_PROPERTY_NAME, "true")),
-                new BasicImpl("13").addProperties(
-                    new Prop("name", "13"), new Prop("key", "one"), new Prop("value", "two")),
-                new BasicImpl("14").addProperties(
-                    new Prop("name", "14"), new Prop("key", "uno"), new Prop("value", "due")),
-                new BasicImpl("15").addProperties(
-                    new Prop("name", "15"), new Prop("key", "1"), new Prop("value", "2"))
-            ));
-        response = updateResource(client, folderPath + "/" + objectName, addAndRemoveListItems.toJSon(), 200);
-
-        ObjectComponent updatedSimpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
-            .addChild(new BasicImpl("list")
-                .addChildren(
-                    new BasicImpl("11").addProperties(
-                        new Prop("key", "one"), new Prop("value", "two")),
-                    new BasicImpl("13").addProperties(
-                        new Prop("key", "one"), new Prop("value", "two")),
-                    new BasicImpl("14").addProperties(
-                        new Prop("key", "uno"), new Prop("value", "due")),
-                    new BasicImpl("15").addProperties(
-                        new Prop("key", "1"), new Prop("value", "2"))
-                )
-            );
-        checkResourceByJson(client, folderPath + "/" + objectName, 3, updatedSimpleObjectWithList.toJSon(), true);
-    }
-
-    @Test
-    public void testUpdateObjectWithSingleList() throws Exception {
-        SlingClient client = slingInstanceRule.getAdminClient();
-        SlingHttpResponse response = null;
-        String folderPath = ROOT_PATH + "/test-uowsl";
-        createFolderStructure(client, folderPath);
-        // Create a new source page
-        String objectName = "test-object-1";
-        response = createObject(client, folderPath, objectName, EXAMPLE_OBJECT_TYPE_PATH, 200);
-        logger.info("Response from creating test object: '{}'", response.getContent());
-
-        ObjectComponent simpleObject = new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH, null);
-        checkResourceByJson(client, folderPath + "/" + objectName, 2, simpleObject.toJSon(), true);
-
-        // Now we are ready to add a list to the Object
-        BasicObject addListToObject = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
-            .addChild(new BasicListObject("singleList",
-                "one", "two", "three"
-                )
-            );
-        response = updateResource(client, folderPath + "/" + objectName, addListToObject.toJSon(), 200);
-
-        // Check page now
-        // NOTE: Sling will not return this as a list but rather as a map with the name as object name
-        //       and the rest as properties of that object something along the lines of:
-        //       ..., "list": {"11"={"key":"one", "value":"two"}, "12"=...
-        ObjectComponent simpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
-            .addProperty(new Prop("singleList", "one", "two", "three"));
-        checkResourceByJson(client, folderPath + "/" + objectName, 3, simpleObjectWithList.toJSon(), true);
-
-        BasicObject addAndRemoveListItems = (BasicObject) new BasicObject(objectName, OBJECT_PRIMARY_TYPE).addSlingResourceType(EXAMPLE_OBJECT_TYPE_PATH)
-            .addChild(new BasicListObject("singleList",
-                    "one", "five", "three", "seven"
-                )
-            );
-        response = updateResource(client, folderPath + "/" + objectName, addAndRemoveListItems.toJSon(), 200);
-
-        ObjectComponent updatedSimpleObjectWithList = (ObjectComponent) new ObjectComponent(objectName, EXAMPLE_OBJECT_TYPE_PATH)
-            .addProperty(new Prop("singleList", "one", "five", "three", "seven"));
-        checkResourceByJson(client, folderPath + "/" + objectName, 3, updatedSimpleObjectWithList.toJSon(), true);
     }
 
     @Test
