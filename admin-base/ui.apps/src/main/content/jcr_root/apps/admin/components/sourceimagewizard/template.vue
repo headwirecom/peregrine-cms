@@ -112,10 +112,10 @@
                 })
             },
 
-            select(index) {
-                if (index === 'next') this.viewing.index += 1;
-                else if (index === 'prev') this.viewing.index -=1;
-                else this.viewing = { index: index };
+            select(item) {
+                if (index === 'next') this.viewing.index += 1
+                else if (index === 'prev') this.viewing.index -=1
+                else this.viewing = item
             },
             deSelect() {
                 this.viewing = null
@@ -125,9 +125,18 @@
                 this.search();
             },
 
+            uploadProgress(percent) {
+                this.progress = percent;
+            },
+
             addImage(item) {
                 var name = item.previewURL.split('/').pop()
-                $perAdminApp.stateAction('fetchExternalAsset', { url: item.webformatURL, path: $perAdminApp.getNodeFromView('/state/tools/assets'), name: name})
+                $perAdminApp.stateAction('fetchExternalAsset', { 
+                    url: item.webformatURL, 
+                    path: $perAdminApp.getNodeFromView('/state/tools/assets'), 
+                    name: name,
+                    config: { onUploadProgress: ev => this.uploadProgress(Math.floor((ev.loaded * 100) / ev.total)) }
+                })
             }
         }
     }
