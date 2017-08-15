@@ -23,28 +23,28 @@
   #L%
   -->
 <template>
-    <div v-bind:class="['sourceimagewizard', {'initial-search':  !results}]">
+    <div v-bind:class="['sourceimagewizard', {'initial-search':  !state.results}]">
         <div class="container">
             <form v-on:submit.prevent="search()" class="container">
-                <input type="text" v-model="input" placeholder="Search for an image asset" autofocus/>
+                <input type="text" v-model="state.input" placeholder="Search for an image asset" autofocus/>
                 <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
             </form>
         </div>
 
-        <template v-if="results">
-            <span v-if="results.length < 1" class="no-results">No images found for '{{ input }}'</span>
+        <template v-if="state.results">
+            <span v-if="state.results.length < 1" class="no-results">No images found for '{{ state.input }}'</span>
 
             <div v-else-if="viewing">
                 <div class="container image-preview">
                     <button v-on:click.prevent.stop="select('prev')">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </button>
-                    <img v-bind:src="results[viewing.index].webformatURL || null">
+                    <img v-bind:src="state.results[viewing.index].webformatURL || null">
                     <button v-on:click.prevent.stop="select('next')">
                         <i class="material-icons">keyboard_arrow_right</i>
                     </button>
                 </div>
-                <button v-on:click.prevent.stop="addImage(results[viewing.index])">
+                <button v-on:click.prevent.stop="addImage(state.results[viewing.index])">
                     <i class="material-icons">check</i>
                 </button>
                 <button v-on:click.prevent.stop="deSelect()">
@@ -54,13 +54,13 @@
 
             <div v-else class="container image-results">
                 <div
-                    v-for="(item,i) in results"
+                    v-for="(item,i) in state.results"
                     v-on:click.stop="select(i)"
                     v-bind:style="{backgroundImage: `url('${item.previewURL}')`}" 
                     class="image-item hoverable">
                 </div>
                 <div v-if="numPages > 0" class="image-pagination">
-                    <span>Displaying page {{currentPage}} of {{numPages}}</span>
+                    <span>Displaying page {{state.currentPage}} of {{numPages}}</span>
                     <ul class="pagination">
                         <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
                         <li v-for="(page,i) in numPages" v-on:click.stop="selectPage(i + 1)"><a href="#!">{{ i + 1}}</a></li>
@@ -79,32 +79,35 @@
         props: ['model'],
 
         beforeCreate() {
-            let state = $perAdminApp.getNodeFromViewOrNull('/state'); 
-            state.imageSearch = state.imageSearch || {
+            let perState = $perAdminApp.getNodeFromViewOrNull('/state'); 
+            perState.imageSearch = perState.imageSearch || {
                 results: null,
                 totalHits: null,
                 currentPage: null,
-                input: null
+                input: null,
             }
         },
 
         data() {
-            return $perAdminApp.getNodeFromViewOrNull('/state/imageSearch')
+            return {
+                state: $perAdminApp.getNodeFromViewOrNull('/state/imageSearch'),
+                viewing: null
+            }
         },
 
         computed: {
-            numPages() {return Math.ceil(this.totalHits / 20)},
+            numPages() {return Math.ceil(this.state.totalHits / 20)},
         },
 
         methods: {
 
             search() {
-                var API_KEY = '5575459-c51347c999199b9273f4544d4';
-                if (this.currentPage == null) this.currentPage = 1;
-                var URL = `https://pixabay.com/api/?key=${API_KEY}&page=${ this.currentPage }&q=${ encodeURIComponent(this.input) }`
+                if (this.state.currentPage == null) this.state.currentPage = 1;
+                const API_KEY = '5575459-c51347c999199b9273f4544d4';
+                const URL = `https://pixabay.com/api/?key=${API_KEY}&page=${ this.state.currentPage }&q=${ encodeURIComponent(this.state.input) }`
                 $.getJSON( URL, data => {
-                    this.results = data.hits;
-                    this.totalHits = data.totalHits;
+                    this.state.results = data.hits;
+                    this.state.totalHits = data.totalHits;
                 })
             },
 
