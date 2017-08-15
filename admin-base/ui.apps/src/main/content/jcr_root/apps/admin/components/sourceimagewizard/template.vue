@@ -27,12 +27,12 @@
         <div class="container">
             <form v-on:submit.prevent="search()" class="container">
                 <input type="text" v-model="input" placeholder="Search for an image asset" autofocus/>
-                <button class="" type="submit"><i class="material-icons">search</i></button>
+                <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
             </form>
         </div>
 
         <template v-if="results">
-            <span v-if="results.hits.length < 1" class="no-results">No images found for '{{ input }}'</span>
+            <span v-if="results.length < 1" class="no-results">No images found for '{{ input }}'</span>
 
             <div v-else-if="viewing">
                 <div class="container image-preview">
@@ -77,20 +77,35 @@
 
     export default {
         props: ['model'],
-        data() {
-            return {
-                viewing: null
+
+        beforeCreate() {
+            let state = $perAdminApp.getNodeFromViewOrNull('/state'); 
+            state.imageSearch = state.imageSearch || {
+                results: null,
+                totalHits: null,
+                currentPage: null,
+                input: null
             }
         },
-        computed: {
-            results: () => $perAdminApp.getNodeFromViewOrNull('/state/imageSearch')
+
+        data() {
+            return $perAdminApp.getNodeFromViewOrNull('/state/imageSearch')
         },
+
+        computed: {
+            numPages() {return Math.ceil(this.totalHits / 20)},
+        },
+
         methods: {
 
             search() {
                 var API_KEY = '5575459-c51347c999199b9273f4544d4';
+                if (this.currentPage == null) this.currentPage = 1;
                 var URL = `https://pixabay.com/api/?key=${API_KEY}&page=${ this.currentPage }&q=${ encodeURIComponent(this.input) }`
-                $.getJSON( URL, data => Vue.set($perAdminApp.getNodeFromView('/state') ,'imageSearch', data) )
+                $.getJSON( URL, data => {
+                    this.results = data.hits;
+                    this.totalHits = data.totalHits;
+                })
             },
 
             select(index) {
@@ -102,7 +117,7 @@
                 this.viewing = null
             },
             selectPage(index) {
-                this.currentPage = index;
+                this.state.currentPage = index;
                 this.search();
             },
 
