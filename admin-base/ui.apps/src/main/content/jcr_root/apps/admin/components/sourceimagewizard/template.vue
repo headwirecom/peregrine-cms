@@ -23,19 +23,17 @@
   #L%
   -->
 <template>
-    <div v-bind:class="['sourceimagewizard', {'initial-search':  !state.results}]">
-        <div class="container">
-            <form v-on:submit.prevent="search()" class="container">
-                <input type="text" v-model="state.input" placeholder="Search for an image asset" autofocus/>
-                <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
-            </form>
-        </div>
+    <div ref="wrapper" v-bind:class="['sourceimagewizard', 'container', {'initial-search':  !state.results}]">
+        <form v-on:submit.prevent="search()" class="container">
+            <input type="text" v-model="state.input" placeholder="Search for an image asset" tabindex="1" autofocus/>
+            <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
+        </form>
 
         <template v-if="state.results">
             <span v-if="state.results.length < 1" class="no-results">No images found for '{{ state.input }}'</span>
 
             <div v-else-if="viewing">
-                <div class="container image-preview">
+                <div class="image-preview">
                     <button v-on:click.prevent.stop="select('prev')">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </button>
@@ -52,7 +50,7 @@
                 </button>
             </div>
 
-            <div v-else class="container image-results">
+            <div v-else class="image-results">
                 <div
                     v-for="(item,i) in state.results"
                     v-on:click.stop="select(i)"
