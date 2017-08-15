@@ -23,6 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
+import {SUFFIX_PARAM_SEPARATOR} from "../constants";
 let log = LoggerFactory.logger('sourceImageWizard').setLevelDebug()
 
 export default function(me, target) {
@@ -31,7 +32,7 @@ export default function(me, target) {
 
     var api = me.getApi()
     api.fetchExternalImage(target.path, target.url, target.name).then( () => {
-        me.loadContent('/content/admin/assets.html/path//'+target.path)
+        me.loadContent('/content/admin/assets.html/path'+SUFFIX_PARAM_SEPARATOR+target.path)
     })
 
 

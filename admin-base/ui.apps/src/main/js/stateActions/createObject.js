@@ -23,6 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
+import {SUFFIX_PARAM_SEPARATOR} from "../constants";
 let log = LoggerFactory.logger('createObject').setLevelDebug()
 
 export default function(me, target) {
@@ -31,9 +32,9 @@ export default function(me, target) {
     var api = me.getApi()
     return api.createObject(target.parent, target.name, target.template).then( () => {
         if(target.returnTo) {
-            me.loadContent(target.returnTo+'.html/path//'+ target.parent)
+            me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + target.parent)
         } else {
-            me.loadContent('/content/admin/objects.html/path//'+ target.parent)
+            me.loadContent('/content/admin/objects.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
         }
     })
 

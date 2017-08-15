@@ -31,6 +31,8 @@ import {makePathInfo, pagePathToDataPath, set, get} from './utils'
 
 import StateActions from './stateActions'
 
+import { SUFFIX_PARAM_SEPARATOR } from "./constants"
+
 /**
  * registers a pop state listener for the adminui to track back/forward button and loads
  * the correct screen accordingly
@@ -291,11 +293,11 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                                         if(i === 0) {
                                             suffix += '/'
                                         } else {
-                                            suffix += '//'
+                                            suffix += SUFFIX_PARAM_SEPARATOR
                                         }
 
                                         suffix += params[0]
-                                        suffix += '//'
+                                        suffix += SUFFIX_PARAM_SEPARATOR
                                         suffix += getNodeFromImpl(view, params[i+1])
                                     }
                                 }
