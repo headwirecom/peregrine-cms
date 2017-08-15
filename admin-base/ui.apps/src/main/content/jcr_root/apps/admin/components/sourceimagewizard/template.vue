@@ -112,10 +112,10 @@
                 })
             },
 
-            select(item) {
+            select(index) {
                 if (index === 'next') this.viewing.index += 1
                 else if (index === 'prev') this.viewing.index -=1
-                else this.viewing = item
+                else this.viewing = {index: index}
             },
             deSelect() {
                 this.viewing = null
