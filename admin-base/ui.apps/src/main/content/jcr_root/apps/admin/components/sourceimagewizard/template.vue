@@ -108,6 +108,7 @@
                 $.getJSON( URL, data => {
                     this.state.results = data.hits;
                     this.state.totalHits = data.totalHits;
+                    this.viewing = null;
                 })
             },
 
