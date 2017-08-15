@@ -4,7 +4,7 @@
 			ref="textarea"
 			class="form-control materialize-textarea" 
 			v-model="value" 
-			v-bind:style="{minHeight: `${schema.rows}em`}"
+			v-bind:style="{minHeight: `${schema.rows}em`, maxHeight: schema.maxHeight}"
 			:id="getFieldID(schema)" 
 			:disabled="disabled" 
 			:maxlength="schema.max" 
