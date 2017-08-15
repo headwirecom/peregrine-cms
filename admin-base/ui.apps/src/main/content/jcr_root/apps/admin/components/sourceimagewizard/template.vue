@@ -32,7 +32,7 @@
         </div>
 
         <template v-if="results">
-            <span v-if="results.length < 1" class="no-results">No images found for '{{ input }}'</span>
+            <span v-if="results.hits.length < 1" class="no-results">No images found for '{{ input }}'</span>
 
             <div v-else-if="viewing">
                 <div class="container image-preview">
@@ -59,11 +59,11 @@
                     v-bind:style="{backgroundImage: `url('${item.previewURL}')`}" 
                     class="image-item hoverable">
                 </div>
-                <div v-if="pages > 0" class="image-pagination">
-                    <span>Displaying page {{currentPage}} of {{pages}}</span>
+                <div v-if="numPages > 0" class="image-pagination">
+                    <span>Displaying page {{currentPage}} of {{numPages}}</span>
                     <ul class="pagination">
                         <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                        <li v-for="(page,i) in pages" v-on:click.stop="selectPage(i + 1)"><a href="#!">{{ i + 1}}</a></li>
+                        <li v-for="(page,i) in numPages" v-on:click.stop="selectPage(i + 1)"><a href="#!">{{ i + 1}}</a></li>
                         <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
                     </ul>
                 </div>
@@ -79,26 +79,20 @@
         props: ['model'],
         data() {
             return {
-                results: null,
-                currentPage: 1,
-                totalHits: null,
                 viewing: null
             }
         },
         computed: {
-            pages() {
-                return Math.ceil(this.totalHits / 20);
-            }
+            results: () => $perAdminApp.getNodeFromViewOrNull('/state/imageSearch')
         },
         methods: {
+
             search() {
                 var API_KEY = '5575459-c51347c999199b9273f4544d4';
                 var URL = `https://pixabay.com/api/?key=${API_KEY}&page=${ this.currentPage }&q=${ encodeURIComponent(this.input) }`
-                $.getJSON(URL, data => {
-                    this.totalHits = parseInt(data.totalHits);
-                    this.results = this.totalHits > 0 ? data.hits : [];
-                });
+                $.getJSON( URL, data => Vue.set($perAdminApp.getNodeFromView('/state') ,'imageSearch', data) )
             },
+
             select(index) {
                 if (index === 'next') this.viewing.index += 1;
                 else if (index === 'prev') this.viewing.index -=1;
@@ -111,6 +105,7 @@
                 this.currentPage = index;
                 this.search();
             },
+
             addImage(item) {
                 var name = item.previewURL.split('/').pop()
                 $perAdminApp.stateAction('fetchExternalAsset', { url: item.webformatURL, path: $perAdminApp.getNodeFromView('/state/tools/assets'), name: name})
