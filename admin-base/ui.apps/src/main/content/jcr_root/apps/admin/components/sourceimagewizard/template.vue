@@ -30,15 +30,6 @@
         </form>
 
         <div v-if="state.results" class="search-content">
-                <!-- Pagination -->
-                <div v-if="state.numPages > 0" class="image-pagination">
-                    <span>Displaying page {{state.currentPage}} of {{state.numPages}}</span>
-                    <ul class="pagination">
-                        <li class="waves-effect"><a href="#!" v-on:click.stop="selectPage(currentPage - 1)"><i class="material-icons">chevron_left</i></a></li>
-                        <li v-for="(page,i) in state.numPages" :class="[{'active': state.currentPage == i+1}]"><a href="#!" v-on:click.stop="selectPage(i + 1)">{{ i + 1}}</a></li>
-                        <li class="waves-effect"><a href="#!" v-on:click.stop="selectPage(currentPage + 1)"><i class="material-icons">chevron_right</i></a></li>
-                    </ul>
-                </div>
             <span v-if="state.results.length < 1" class="no-results">No images found for '{{ state.input }}'</span>
 
             <!-- Image Preview --> 
@@ -69,6 +60,15 @@
                 </div>
             </div>
 
+                <!-- Pagination -->
+                <div v-if="state.numPages > 0" class="image-pagination">
+                    <span>Displaying page {{state.currentPage}} of {{state.numPages}}</span>
+                    <ul class="pagination">
+                        <li class="waves-effect"><a href="#!" v-on:click.stop="selectPage(currentPage - 1)"><i class="material-icons">chevron_left</i></a></li>
+                        <li v-for="(page,i) in state.numPages" :class="[{'active': state.currentPage == i+1}]"><a href="#!" v-on:click.stop="selectPage(i + 1)">{{ i + 1}}</a></li>
+                        <li class="waves-effect"><a href="#!" v-on:click.stop="selectPage(currentPage + 1)"><i class="material-icons">chevron_right</i></a></li>
+                    </ul>
+                </div>
             <!-- Image Results Grid --> 
             <div v-else class="image-results">
                 <div
@@ -79,7 +79,7 @@
                 </div>
                 <!-- Pagination -->
                 <div v-if="state.numPages > 0" class="image-pagination">
-                    <span>Displaying page {{state.currentPage}} of {{state.numPages}}</span>
+                    <span></span>
                     <ul class="pagination">
                         <li class="waves-effect"><a href="#!" v-on:click.stop="selectPage(currentPage - 1)"><i class="material-icons">chevron_left</i></a></li>
                         <li v-for="(page,i) in state.numPages" :class="[{'active': state.currentPage == i+1}]"><a href="#!" v-on:click.stop="selectPage(i + 1)">{{ i + 1}}</a></li>
