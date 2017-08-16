@@ -82,7 +82,7 @@
             onComplete: function() {
                 let payload = { parent: this.formmodel.path, name: this.formmodel.name }
                 console.log('createFolder payload: ', payload)
-                $perAdminApp.stateAction('createAsset', payload)
+                $perAdminApp.stateAction('createAssetFolder', payload)
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {

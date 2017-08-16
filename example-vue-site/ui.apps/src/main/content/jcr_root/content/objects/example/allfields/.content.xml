@@ -29,5 +29,54 @@
           jcr:primaryType="per:Object"
           jcr:title="sample"
           sling:resourceType="example/objects/allfields"
->
+          spectrumcolor="#ffad27" 
+          colorfield="#ffad27" 
+          singlechildren="[single item one,single item two,single item three]"
+          textfield="Byron Ponce" 
+          searchfield="Byron Ponce" 
+          numberfield="100" 
+          urlfield="http://peregrine-cms.com" 
+          telfield="18581234567" 
+          rangefield="50"  
+          textarea="Lorem ipsum dolor sit amet." 
+          texteditor="Lorem ipsum dolor sit amet." 
+          checkbox="true" 
+          switch="true" 
+          pagePath="/content/sites/example" 
+          imagePath="/content/assets/images" 
+          date="2017-08-16" 
+          time="19:30:00.000Z" 
+          datetime="2017-09-01T01:30:00.000Z"
+          radios="bp@headwire.com" 
+          select="bp@headwire.com"
+          skills="[bp@headwire.com,rr@headwire.com,dp@headwire.com]">
+
+  <author jcr:primaryType="nt:unstructured">
+    <author0 
+        jcr:primaryType="nt:unstructured" 
+        name="Byron Ponce" 
+        value="bp@headwire.com" />
+    <author1 
+        jcr:primaryType="nt:unstructured" 
+        name="Ruben Reusser" 
+        value="rr@headwire.com" />
+    <author2  
+        jcr:primaryType="nt:unstructured" 
+        name="Dustin Pelland" 
+        value="dp@headwire.com" />
+  </author>
+  <collection jcr:primaryType="nt:unstructured">
+      <collection0 
+        jcr:primaryType="nt:unstructured" 
+        key="multi item one key" 
+        value="multi item one value" />
+      <collection1 
+        jcr:primaryType="nt:unstructured" 
+        key="multi item two key" 
+        value="multi item two value" />
+      <collection2 
+        jcr:primaryType="nt:unstructured" 
+        key="multi item three key" 
+        value="multi item three value" />
+  </collection>
 </jcr:root>

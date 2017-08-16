@@ -61,8 +61,10 @@ import renameAsset from './stateActions/renameAsset'
 import moveAsset from './stateActions/moveAsset'
 import showPageInfo from './stateActions/showPageInfo'
 import editPreview from './stateActions/editPreview'
-import createAsset from './stateActions/createAsset'
-import createAssetWizard from './stateActions/createAssetWizard'
+import createAssetFolder from './stateActions/createAssetFolder'
+import createObjectFolder from './stateActions/createObjectFolder'
+import createAssetFolderWizard from './stateActions/createAssetFolderWizard'
+import createObjectFolderWizard from './stateActions/createObjectFolderWizard'
 import savePageProperties from './stateActions/savePageProperties'
 import replicate from './stateActions/replicate'
 import moveTemplate from './stateActions/moveTemplate'
@@ -102,8 +104,10 @@ actions['deleteAsset'] = deleteAsset
 actions['renameAsset'] = renameAsset
 actions['moveAsset'] = moveAsset
 actions['editPreview'] = editPreview
-actions['createAsset'] = createAsset
-actions['createAssetWizard'] = createAssetWizard
+actions['createAssetFolder'] = createAssetFolder
+actions['createAssetFolderWizard'] = createAssetFolderWizard
+actions['createObjectFolder'] = createObjectFolder
+actions['createObjectFolderWizard'] = createObjectFolderWizard
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
 actions['moveObject'] = moveObject

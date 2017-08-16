@@ -426,7 +426,11 @@
                 }
             },
             addFolder: function(me, target) {
-                $perAdminApp.stateAction('createAssetWizard', me.pt.path)
+                if(me.pt.path.startsWith('/content/assets/')) {
+                    $perAdminApp.stateAction('createAssetFolderWizard', me.pt.path)
+                } else if(me.pt.path.startsWith('/content/objects')) {
+                    $perAdminApp.stateAction('createObjectFolderWizard', me.pt.path)
+                }
             },
             sourceImage: function(me, target) {
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path )

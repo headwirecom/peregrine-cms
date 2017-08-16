@@ -24,6 +24,7 @@
   -->
 <template>
     <div class="wrapper">
+      <template v-if="!schema.preview">
         <div tabindex="-1" ref="quilltoolbar">
             <select tabindex="-1" class="ql-header">
                 <option value="1"></option>
@@ -47,6 +48,8 @@
             <button tabindex="-1" class="ql-clean"></button>
         </div>
         <div ref="quilleditor"></div>
+      </template>
+      <p v-else v-html="value"></p>
     </div>
 </template>
 
@@ -54,7 +57,7 @@
     export default {
         mixins: [ VueFormGenerator.abstractField ],
         mounted() {
-            this.initialize()
+            if(!this.schema.preview) this.initialize()
         },
         beforeDestroy() {
             this.quill = null
@@ -77,7 +80,7 @@
                 })
                 const toolbar = this.quill.getModule('toolbar')
                 toolbar.addHandler('link', (value) => { 
-                    value ? this.showPageBrowser() : this.quill.format('link', false)
+                  this.showPageBrowser()
                 })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
                     this.value = this.$refs.quilleditor.children[0].innerHTML
@@ -88,8 +91,7 @@
                 '/content/sites',
                 true, // with Link tab?
                 (newValue) => { 
-                  console.log('newValue: ', newValue)
-                  this.quill.format('link', newValue) 
+                  newValue ? this.quill.format('link', newValue) : this.quill.format('link', false)
                 }
               )
             }

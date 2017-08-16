@@ -2,13 +2,13 @@
   {
     "type": "spectrum",
     "label": "Spectrum",
-    "model": "spectrum_color"
+    "model": "spectrumcolor"
   },
   {
     "type": "input",
     "inputType": "color",
     "label": "Color field",
-    "model": "color",
+    "model": "colorfield",
     "placeholder": "select a color",
     "hint": "This is a native color picker.",
     "required": true,
@@ -17,7 +17,7 @@
   {
     "type": "collection",
     "title": "Single Collection",
-    "model": "single_children",
+    "model": "singlechildren",
     "multifield": false,
     "fields" : [
       {
@@ -30,7 +30,7 @@
   {
     "type": "collection",
     "title": "Multi Collection",
-    "model": "multi_children",
+    "model": "collection",
     "multifield": true,
     "fieldLabel": ["key", "value"],
     "fields" : [
@@ -57,6 +57,58 @@
     "validator": "required"
   },
   {
+    "type": "input",
+    "inputType": "search",
+    "label": "Search field",
+    "model": "searchfield",
+    "placeholder": "text field",
+    "hint": "This is the native html5 search field.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "input",
+    "inputType": "number",
+    "label": "Number field",
+    "model": "numberfield",
+    "placeholder": "enter a number",
+    "hint": "This is the native html5 number field.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "input",
+    "inputType": "url",
+    "label": "URL field",
+    "model": "urlfield",
+    "placeholder": "enter a number",
+    "hint": "This is the native html5 url field.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "input",
+    "inputType": "tel",
+    "label": "Telephone field",
+    "model": "telfield",
+    "placeholder": "enter a number",
+    "hint": "This is the native html5 telephone field.",
+    "required": true,
+    "validator": "required"
+  },
+  {    
+    "type": "input",
+    "inputType": "range",
+    "label": "Range field",
+    "model": "rangefield",
+    "placeholder": "0 - 100",
+    "hint": "This is the materialize range field.",
+    "min": 10,
+    "max": 100,
+    "required": true,
+    "validator": "required"
+  }, 
+  {
     "type": "material-textarea",
     "label": "Text Area",
     "model": "textarea",
@@ -67,9 +119,16 @@
     "validator": "required"
   },
   {
+    "type": "texteditor",
+    "label": "Rich text editor",
+    "model": "texteditor",
+    "placeholder": "Lorem ipsum dolor...",
+    "validator": "required"
+  },
+  {
     "type": "material-radios",
     "label": "Radios",
-    "model": "friend",
+    "model": "radios",
     "withGap": true,
     "values": [
       { "name": "Byron Ponce", "value": "bp@headwire.com"},
@@ -146,8 +205,8 @@
   }, 
   {
     "type": "material-checkbox",
-    "label": "Status",
-    "model": "status",
+    "label": "Checkbox",
+    "model": "checkbox",
     "default": true,
     "hint": "This is the material checkbox.",
     "required": true,
@@ -192,7 +251,7 @@
   {
     "type": "material-timepicker",
     "label": "Time",
-    "model": "Time",
+    "model": "time",
     "hint": "This is the time picker.",
     "required": true,
     "validator": "required"
