@@ -48,7 +48,8 @@
         <div v-if="(edit === false || edit === undefined) && schema !== undefined" class="display-json">
 
             <form v-if="currentObject.data && schema">
-                <vue-form-generator
+                <vue-form-generator 
+                        class="vfg-preview"
                         v-on:validated = "onValidated"
                         v-bind:schema  = "readOnlySchema"
                         v-bind:model   = "currentObject.data"
@@ -111,12 +112,10 @@
                 if(!this.schema) return {}
                 const roSchema = JSON.parse(JSON.stringify(this.schema))
                 roSchema.fields.forEach( (field) => {
-                    field.readonly = true
-                    field.disabled = true
+                    field.preview = true
                     if(field.fields) {
                         field.fields.forEach( (field) => {
-                            field.readonly = true
-                            field.disabled = true
+                            field.preview = true
                         })
                     }
                 })
@@ -125,7 +124,7 @@
             },
           currentObject: function () {
             return $perAdminApp.getNodeFromView("/state/tools/object")
-          },
+          }, 
           schema: function () {
             let resourceType = this.currentObject.data['component'] ? this.currentObject.data['component'] : this.currentObject.data['sling:resourceType']
             resourceType = resourceType.split('/').join('-')
