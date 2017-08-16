@@ -1,22 +1,25 @@
 <template>
   <div class="wrapper">
-  	<div class="date-wrapper">
-			<input 
-				ref="datepicker"
-				class="form-control datepicker" 
-				type="date" 
-				:placeholder="schema.datePlaceholder" />
-			<button ref="showPickerBtn" class="btn-flat" v-on:click="showPicker">
-		  	<i class="material-icons">date_range</i>
-		  </button>
-		</div>
-		<div class="time-wrapper">
-		  <input 
-		  	ref="timepicker" 
-				class="timepicker" 
-				type="text" 
-				:placeholder="schema.timePlaceholder"/>
-		</div>
+  	<template v-if="!schema.preview">
+	  	<div class="date-wrapper">
+				<input 
+					ref="datepicker"
+					class="form-control datepicker" 
+					type="date" 
+					:placeholder="schema.datePlaceholder" />
+				<button ref="showPickerBtn" class="btn-flat" v-on:click="showPicker">
+			  	<i class="material-icons">date_range</i>
+			  </button>
+			</div>
+			<div class="time-wrapper">
+			  <input 
+			  	ref="timepicker" 
+					class="timepicker" 
+					type="text" 
+					:placeholder="schema.timePlaceholder"/>
+			</div>
+		</template>
+		<p v-else>{{value}}</p>
 	</div>
 </template>
 
@@ -36,7 +39,7 @@
 			}
 		},
 		mounted() {
-			if (window.Picker && window.$) {
+			if (window.Picker && window.$ && !this.schema.preview) {
 				/* Date Picker */
 				if(window.$.fn.pickadate){
 					const dateOptions = Object.assign({}, this.schema.options)

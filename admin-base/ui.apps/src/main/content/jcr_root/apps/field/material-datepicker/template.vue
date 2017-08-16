@@ -1,16 +1,19 @@
 <template>
   <!-- datepicker -->
   <div class="wrap">
-		<input 
-			tabindex="-1" 
-			ref="datepicker"
-			class="form-control" 
-			type="text"
-	    :placeholder="schema.placeholder"
-	    :name="schema.inputName" />
-	  <button ref="showPickerBtn" class="btn-flat" v-on:click="showPicker">
-	  	<i class="material-icons">date_range</i>
-	  </button>
+  	<template v-if="!schema.preview">
+			<input 
+				tabindex="-1" 
+				ref="datepicker"
+				class="form-control" 
+				type="text"
+		    :placeholder="schema.placeholder"
+		    :name="schema.inputName" />
+		  <button ref="showPickerBtn" class="btn-flat" v-on:click="showPicker">
+		  	<i class="material-icons">date_range</i>
+		  </button>
+		 </template>
+		 <p v-else>{{value}}</p>
 	</div>
 </template>
 
@@ -35,7 +38,7 @@
 			}
 		},
 		mounted() {
-			if (window.Picker && window.$ && window.$.fn.pickadate) {
+			if (window.Picker && window.$ && window.$.fn.pickadate && !this.schema.preview) {
 				const options = Object.assign({}, this.schema.options)
 				let input = $(this.$refs.datepicker).pickadate()
 				this.picker = input.pickadate('picker')
@@ -68,6 +71,7 @@
 				})
 
 				this.$nextTick(function () {
+					console.log('picker: ', this.picker)
 					if(this.value){
 						// regex to check string is four numbers - two numbers - two numbers 
 						if (this.isValidDate(this.value)) {

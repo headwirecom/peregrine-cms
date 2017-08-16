@@ -23,29 +23,32 @@
   #L%
   -->
 <template>
-  <div :class="`select-wrapper ${dropdownActive ? 'active' : ''}`">
-      <span class="caret"></span>
-      <input 
-        ref="selectInput"
-        type="text" 
-        class="form-control select-dropdown" 
-        :value="dropdownValue"
-        v-on:click="showDropdown" />
-      <ul 
-        :class="dropDownClasses">
-        <li  
-          v-if="!selectOptions.hideNoneSelectedText"
-          v-on:click="onClick('', '')">
-          <span>{{ selectOptions.noneSelectedText || "&lt;Nothing selected&gt;" }}</span>
-        </li>
-        <li 
-          v-for="val in schema.values" 
-          class="" 
-          v-on:click="onClick(val.name, val.value)">
-          <span>{{ val.name }}</span>
-        </li>
-      </ul>
-      <div class="dropdown-bg" :style="dropDownBgStyle" v-on:click="hideDropdown"></div>
+  <div class="wrap">
+    <div v-if="!schema.preview" :class="`select-wrapper ${dropdownActive ? 'active' : ''}`">
+        <span class="caret"></span>
+        <input 
+          ref="selectInput"
+          type="text" 
+          class="form-control select-dropdown" 
+          :value="dropdownValue"
+          v-on:click="showDropdown" />
+        <ul 
+          :class="dropDownClasses">
+          <li  
+            v-if="!selectOptions.hideNoneSelectedText"
+            v-on:click="onClick('', '')">
+            <span>{{ selectOptions.noneSelectedText || "&lt;Nothing selected&gt;" }}</span>
+          </li>
+          <li 
+            v-for="val in schema.values" 
+            class="" 
+            v-on:click="onClick(val.name, val.value)">
+            <span>{{ val.name }}</span>
+          </li>
+        </ul>
+        <div class="dropdown-bg" :style="dropDownBgStyle" v-on:click="hideDropdown"></div>
+    </div>
+    <p v-else>{{ dropdownValue }}</p>
   </div>
 </template>
 

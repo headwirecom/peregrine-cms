@@ -462,4 +462,73 @@
             }
         }
     }
+    &.vfg-preview {
+        .form-group {
+            p {
+                margin: 0;
+            }
+            button, 
+            .hint  {
+                display: none;
+            }
+            .preview-list {
+                margin: 0;
+                padding: 0 0 0 1.25rem;
+            }
+            ul.preview-list {
+                list-style: outside;
+                > li {
+                    list-style-type: circle;
+                }
+
+            }
+            ol.preview-list {
+                list-style: outside;
+                > li {
+                    list-style-type: decimal;
+                }
+            }
+            .color-preview {
+                display: inline-block;
+                height: 21px;
+                width: 21px;
+                border: 1px solid color("blue-grey", "lighten-4");
+                vertical-align: top;
+            }
+            &.required {
+                > label:after {
+                    content: '';
+                }
+            }
+            &.field-collection {
+                .preview-list {
+                    > li.preview-item {
+                        .singlefield {
+                            .form-group {
+                                padding: 0;
+                            }
+                            label {
+                                display: none;
+                            }
+                        }
+                        .multifield {
+                            padding-bottom: 0.75rem;
+                            .form-group {
+                                padding: 0;
+                            }
+                            label {
+                                font-size: 1rem;
+                                &:after {
+                                    content: ':';
+                                }
+                            }
+                            .field-wrap {
+                                display: inline-block;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
