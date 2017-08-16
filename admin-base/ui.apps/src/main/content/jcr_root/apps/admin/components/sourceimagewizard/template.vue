@@ -34,24 +34,30 @@
 
             <!-- Image Preview --> 
             <div v-else-if="viewing">
+                <button v-on:click.prevent.stop="deSelect()">
+                    <i class="material-icons">grid_on</i>back to image results
+                </button>
                 <div class="image-preview">
-                    <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="[{'disabled': viewing.index == 0}]">
-                        <i class="material-icons">keyboard_arrow_left</i>
-                    </button>
-                    <img v-bind:src="viewing.webformatURL">
-                    <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="[{'disabled': viewing.index == state.results.length - 1}]">
-                        <i class="material-icons">keyboard_arrow_right</i>
-                    </button>
+                    <div class="image-row">
+                        <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="[{'disabled': viewing.index == 0}]">
+                            <i class="material-icons">keyboard_arrow_left</i>
+                        </button>
+                        <img v-bind:src="viewing.webformatURL">
+                        <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="[{'disabled': viewing.index == state.results.length - 1}]">
+                            <i class="material-icons">keyboard_arrow_right</i>
+                        </button>
+                    </div>
+
+                    <div v-if="uploading" class="progress">
+                        <div class="determinate" :style="{width: `${uploading}%`}"></div>
+                    </div>                   
+                    <form v-else>
+                        <input type="text" v-model="viewing.name" autofocus/>
+                        <button v-on:click.prevent.stop="addImage(state.results[viewing.index], viewing.name)">
+                            <i class="material-icons">save</i>
+                        </button>
+                    </form>
                 </div>
-                <form>
-                    <input type="text" v-model="viewing.name" autofocus/>
-                    <button v-on:click.prevent.stop="addImage(state.results[viewing.index], name)">
-                        <i class="material-icons">save</i>
-                    </button>
-                    <button v-on:click.prevent.stop="deSelect()">
-                        <i class="material-icons">grid_on</i>
-                    </button>
-                </form>
             </div>
 
             <!-- Image Results Grid --> 
@@ -96,7 +102,8 @@
             return {
                 state: $perAdminApp.getNodeFromViewOrNull('/state/imageSearch'),
                 viewing: null,
-                containerWidth: null
+                containerWidth: null,
+                uploading: null
             }
         },
 
@@ -127,6 +134,7 @@
             },
 
             select(index) {
+                this.uploading = null
                 this.viewing = this.state.results[index]
                 this.viewing.index = index
                 this.viewing.name = this.viewing.previewURL.split('/').pop()
@@ -140,10 +148,11 @@
             },
 
             uploadProgress(percent) {
-                this.progress = percent;
+                this.uploading = percent;
             },
 
             addImage(item, name) {
+                this.uploading = 0;
                 $perAdminApp.stateAction('fetchExternalAsset', { 
                     url: item.webformatURL, 
                     path: $perAdminApp.getNodeFromView('/state/tools/assets'), 
