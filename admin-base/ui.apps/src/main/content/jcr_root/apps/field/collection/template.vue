@@ -30,7 +30,7 @@
         <i class="material-icons">add</i>
       </button>
     </h5>
-    <ul class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'not-multifield'" ref="collapsible">
+    <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'not-multifield'" ref="collapsible">
         <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)">
             <div 
               class="collapsible-header" 
@@ -56,6 +56,21 @@
             </div>
         </li>
     </ul>
+    <ol v-else class="preview-list">
+      <li v-for="(item, index) in value" class="preview-item">
+        <vue-form-generator
+          v-if="schema.multifield" 
+          class="multifield"
+          :schema="schema"
+          :model="item"></vue-form-generator>
+        <vue-form-generator
+          v-else 
+          class="singlefield"
+          :schema="getSchemaForIndex(schema, index)"
+          :model="value">
+        </vue-form-generator>
+      </li>
+    </ol>
 	</div>
 </template>
 

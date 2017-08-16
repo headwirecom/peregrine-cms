@@ -64,14 +64,15 @@
                         &:focus {
                             border-bottom-color: color("blue-grey", "base");
                         }
-                    }
-                    span.helper {
-                        position: absolute;
-                        right: 0;
-                        line-height: 3rem;
-                        padding: 0 0.75rem;
-                        font-style: 1rem;
-                        color: color("blue-grey", "base");
+                        + span.helper {
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            line-height: 3rem;
+                            padding: 0 0.75rem;
+                            font-style: 1rem;
+                            color: color("blue-grey", "base");
+                        }
                     }
                 }
             }
@@ -455,6 +456,81 @@
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    &.vfg-preview {
+        .form-group {
+            p {
+                margin: 0;
+            }
+            button, 
+            .hint  {
+                display: none;
+            }
+            .preview-list {
+                margin: 0;
+                padding: 0 0 0 1.25rem;
+                > li.preview-item {
+                    > label {
+                        font-size: 1rem;
+                        color: color("blue-grey", "base");
+                    }
+                }
+            }
+            ul.preview-list {
+                list-style: outside;
+                > li {
+                    list-style-type: circle;
+                }
+
+            }
+            ol.preview-list {
+                list-style: outside;
+                > li {
+                    list-style-type: decimal;
+                    padding-bottom: 0.75rem;
+                }
+            }
+            .color-preview {
+                display: inline-block;
+                height: 21px;
+                width: 21px;
+                border: 1px solid color("blue-grey", "lighten-4");
+                vertical-align: top;
+            }
+            &.required {
+                > label:after {
+                    content: '';
+                }
+            }
+            &.field-collection {
+                .preview-list {
+                    > li.preview-item {
+                        .singlefield {
+                            .form-group {
+                                padding: 0;
+                            }
+                            label {
+                                display: none;
+                            }
+                        }
+                        .multifield {
+                            .form-group {
+                                padding: 0;
+                            }
+                            label {
+                                font-size: 1rem;
+                                &:after {
+                                    content: ':';
+                                }
+                            }
+                            .field-wrap {
+                                display: inline-block;
                             }
                         }
                     }

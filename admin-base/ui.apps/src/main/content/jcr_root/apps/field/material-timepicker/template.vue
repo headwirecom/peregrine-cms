@@ -1,12 +1,16 @@
 <template>
   <!-- timepicker -->
-	<input 
-		ref 				 ="timepicker"
-		class        ="form-control timepicker" 
-		type         ="text"
-		:disabled    ="disabled"
-		:placeholder ="schema.placeholder"
-		:name        ="schema.inputName" />
+  <div class="wrap">
+		<input 
+			v-if 				 ="!schema.preview"
+			ref 				 ="timepicker"
+			class        ="form-control timepicker" 
+			type         ="text"
+			:disabled    ="disabled"
+			:placeholder ="schema.placeholder"
+			:name        ="schema.inputName" />
+		<p v-else>{{value}}</p>
+	</div>
 </template>
 
 <script>	
@@ -14,7 +18,7 @@
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
 		mounted() {
-			if (window.Picker && window.$ && window.$.fn.pickatime) {
+			if (window.Picker && window.$ && window.$.fn.pickatime && !this.schema.preview) {
 				const options = {
 					// TODO: update model to empty string when clicking clear 
 					twelvehour: true,

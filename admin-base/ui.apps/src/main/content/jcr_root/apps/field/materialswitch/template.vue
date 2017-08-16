@@ -1,21 +1,23 @@
 <template>
   <!-- Switch -->
-  <div class="switch">
-    <label :for="getFieldID(schema)">
-      {{schema.textOff ? schema.textOff : ''}}
-      <input 
-	      type="checkbox" 
-				v-model="value" 
-				:autocomplete="schema.autocomplete" 
-				:disabled="disabled" 
-				:name="schema.inputName" 
-				:id="getFieldID(schema)">
-      <span 
-      	class="lever"></span>
-      {{schema.textOn ? schema.textOn : ''}}
-    </label>
-  </div>
-
+  <div class="wrap">
+	  <div v-if="!schema.preview" class="switch">
+	    <label :for="getFieldID(schema)">
+	      {{schema.textOff ? schema.textOff : ''}}
+	      <input 
+		      type="checkbox" 
+					v-model="value" 
+					:autocomplete="schema.autocomplete" 
+					:disabled="disabled" 
+					:name="schema.inputName" 
+					:id="getFieldID(schema)">
+	      <span 
+	      	class="lever"></span>
+	      {{schema.textOn ? schema.textOn : ''}}
+	    </label>
+	  </div>
+  	<p v-else>{{value}}</p>
+	</div>
 </template>
 
 <script>	

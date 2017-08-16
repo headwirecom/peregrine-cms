@@ -24,16 +24,12 @@
  */
 import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('sourceImageWizard').setLevelDebug()
+let log = LoggerFactory.logger('createObjectFolderWizard').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
-    var api = me.getApi()
-    api.fetchExternalImage(target.path, target.url, target.name, target.config).then( () => {
-        me.loadContent('/content/admin/assets.html/path'+SUFFIX_PARAM_SEPARATOR+target.path)
-    }).catch( () => {
-        me.notifyUser('Error', 'Could not upload asset', target.error) 
-    })
+    me.loadContent('/content/admin/objects/createFolder.html/path' +SUFFIX_PARAM_SEPARATOR +target)
+
 }

@@ -24,18 +24,21 @@
   -->
 <template>
     <div class="wrap">
-      <input
-        :id="getFieldID(schema)"
-        type="text"
-        :value="value"
-        :disabled="disabled"
-        :maxlength="schema.max"
-        :placeholder="schema.placeholder"
-        :readonly="schema.readonly"
-        @input="value = $event.target.value" />
-      <button v-on:click.stop.prevent="browse" class="btn-flat">
-        <i class="material-icons">insert_drive_file</i>
-      </button>
+      <template v-if="!schema.preview">
+        <input
+          :id="getFieldID(schema)"
+          type="text"
+          :value="value"
+          :disabled="disabled"
+          :maxlength="schema.max"
+          :placeholder="schema.placeholder"
+          :readonly="schema.readonly"
+          @input="value = $event.target.value" />
+        <button v-on:click.stop.prevent="browse" class="btn-flat">
+          <i class="material-icons">insert_drive_file</i>
+        </button>
+      </template>
+      <p v-else>{{value}}</p>
     </div>
 </template>
 

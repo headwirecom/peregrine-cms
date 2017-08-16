@@ -1,7 +1,35 @@
 { "fields":[
   {
+    "type": "spectrum",
+    "label": "Spectrum",
+    "model": "spectrumcolor"
+  },
+  {
+    "type": "input",
+    "inputType": "color",
+    "label": "Color field",
+    "model": "colorfield",
+    "placeholder": "select a color",
+    "hint": "This is a native color picker.",
+    "required": true,
+    "validator": "required"
+  },
+  {
     "type": "collection",
-    "title": "Collection",
+    "title": "Single Collection",
+    "model": "singlechildren",
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "label": "Key",
+        "model": "singleKey"
+      }
+    ]
+  },
+  {
+    "type": "collection",
+    "title": "Multi Collection",
     "model": "collection",
     "multifield": true,
     "fieldLabel": ["key", "value"],
@@ -16,13 +44,12 @@
         "label": "Value",
         "model": "value"
       }
-    ],
-    "items": []
+    ]
   },
   {
     "type": "input",
     "inputType": "text",
-    "label": "text field",
+    "label": "Text field",
     "model": "textfield",
     "placeholder": "text field",
     "hint": "This is some additional help text.",
@@ -30,9 +57,78 @@
     "validator": "required"
   },
   {
+    "type": "input",
+    "inputType": "search",
+    "label": "Search field",
+    "model": "searchfield",
+    "placeholder": "text field",
+    "hint": "This is the native html5 search field.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "input",
+    "inputType": "number",
+    "label": "Number field",
+    "model": "numberfield",
+    "placeholder": "enter a number",
+    "hint": "This is the native html5 number field.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "input",
+    "inputType": "url",
+    "label": "URL field",
+    "model": "urlfield",
+    "placeholder": "enter a number",
+    "hint": "This is the native html5 url field.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "input",
+    "inputType": "tel",
+    "label": "Telephone field",
+    "model": "telfield",
+    "placeholder": "enter a number",
+    "hint": "This is the native html5 telephone field.",
+    "required": true,
+    "validator": "required"
+  },
+  {    
+    "type": "input",
+    "inputType": "range",
+    "label": "Range field",
+    "model": "rangefield",
+    "placeholder": "0 - 100",
+    "hint": "This is the materialize range field.",
+    "min": 10,
+    "max": 100,
+    "required": true,
+    "validator": "required"
+  }, 
+  {
+    "type": "material-textarea",
+    "label": "Text Area",
+    "model": "textarea",
+    "hint": "Max 500 characters",
+    "max": 500,
+    "placeholder": "Lorem ipsum dolor...",
+    "rows": 4,
+    "validator": "required"
+  },
+  {
+    "type": "texteditor",
+    "label": "Rich text editor",
+    "model": "texteditor",
+    "placeholder": "Lorem ipsum dolor...",
+    "validator": "required"
+  },
+  {
     "type": "material-radios",
     "label": "Radios",
-    "model": "friend",
+    "model": "radios",
     "withGap": true,
     "values": [
       { "name": "Byron Ponce", "value": "bp@headwire.com"},
@@ -109,8 +205,8 @@
   }, 
   {
     "type": "material-checkbox",
-    "label": "Status",
-    "model": "status",
+    "label": "Checkbox",
+    "model": "checkbox",
     "default": true,
     "hint": "This is the material checkbox.",
     "required": true,
@@ -155,7 +251,7 @@
   {
     "type": "material-timepicker",
     "label": "Time",
-    "model": "Time",
+    "model": "time",
     "hint": "This is the time picker.",
     "required": true,
     "validator": "required"
@@ -168,5 +264,4 @@
     "required": true,
     "validator": "required"
   }
-
 ]}

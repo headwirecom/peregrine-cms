@@ -25,7 +25,7 @@
 <template>
   <div class="wrap">
 
-    <ul v-if="schema.listBox" class="check-list" :disabled="disabled">
+    <ul v-if="schema.listBox && !schema.preview" class="check-list" :disabled="disabled">
       <li v-for="item in items">
         <span>
           <input :id="`material-checklist-${getItemName(item)}`" type="checkbox" :checked="isItemChecked(item)" :disabled="disabled" @change="onChanged($event, item)"/>
@@ -34,7 +34,7 @@
       </li>
     </ul>
 
-    <div v-if="!schema.listBox" class="select-wrapper checklist-dropdown" :class="{ expanded: isExpanded }">
+    <div v-if="!schema.listBox && !schema.preview" class="select-wrapper checklist-dropdown" :class="{ expanded: isExpanded }">
       <span class="caret"></span>
       <input 
         ref="selectInput"
@@ -60,6 +60,10 @@
         <div class="dropdown-bg" @click="onExpandCombo"></div>
       </template>
     </div>
+
+    <ul v-if="schema.preview" class="preview-list">
+      <li v-for="item in items" v-if="isItemChecked(item)" class="preview-item">{{ getItemName(item) }}</li>
+    </ul>
 </template>
 
 <script>
