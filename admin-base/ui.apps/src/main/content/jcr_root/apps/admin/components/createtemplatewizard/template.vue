@@ -65,11 +65,6 @@
 <script>
     export default {
         props: ['model'],
-        methods: {
-          getComponentPath() {
-              return 'bla'
-          }
-        },
         data:
             function() {
                 const path = $perAdminApp.getNodeFromView('/state/tools/templates')

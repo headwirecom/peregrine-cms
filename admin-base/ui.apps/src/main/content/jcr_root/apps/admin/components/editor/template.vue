@@ -52,7 +52,12 @@
       },
       data() {
         return {
-          isTouch: false
+          isTouch: false,
+          formOptions: {
+            validateAfterLoad: true,
+            validateAfterChanged: true,
+            focusFirstField: true
+          }
         }
       },
       computed: {
@@ -88,15 +93,6 @@
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
-        }
-      },
-      data: function() {
-        return {
-          formOptions: {
-            validateAfterLoad: true,
-            validateAfterChanged: true,
-            focusFirstField: true
-          }
         }
       }
 //      ,
