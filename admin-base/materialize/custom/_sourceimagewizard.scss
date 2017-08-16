@@ -13,6 +13,11 @@
     transition: top 150ms;
 
 
+    .search-content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
     .image-search {
         width: 100%;
         display: flex;
@@ -53,11 +58,19 @@
 
     .image-preview {
         width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
+        flex: auto;
+
+        .image-row {
+            width: 100%;
+        }
+        .image-rename-form {
+            display: flex;
+        }
+
     }
 
     .image-pagination {

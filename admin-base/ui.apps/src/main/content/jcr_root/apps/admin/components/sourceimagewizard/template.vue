@@ -29,35 +29,32 @@
             <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
         </form>
 
-        <template v-if="state.results">
+        <div v-if="state.results" class="search-content">
             <span v-if="state.results.length < 1" class="no-results">No images found for '{{ state.input }}'</span>
 
             <!-- Image Preview --> 
-            <div v-else-if="viewing">
+            <div v-else-if="viewing" class="image-preview">
                 <button v-on:click.prevent.stop="deSelect()">
                     <i class="material-icons">grid_on</i>back to image results
                 </button>
-                <div class="image-preview">
-                    <div class="image-row">
-                        <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="[{'disabled': viewing.index == 0}]">
-                            <i class="material-icons">keyboard_arrow_left</i>
-                        </button>
-                        <img v-bind:src="viewing.webformatURL">
-                        <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="[{'disabled': viewing.index == state.results.length - 1}]">
-                            <i class="material-icons">keyboard_arrow_right</i>
-                        </button>
-                    </div>
-
-                    <div v-if="uploading" class="progress">
-                        <div class="determinate" :style="{width: `${uploading}%`}"></div>
-                    </div>                   
-                    <form v-else>
-                        <input type="text" v-model="viewing.name" autofocus/>
-                        <button v-on:click.prevent.stop="addImage(state.results[viewing.index], viewing.name)">
-                            <i class="material-icons">save</i>
-                        </button>
-                    </form>
+                <div class="image-row">
+                    <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="[{'disabled': viewing.index == 0}]">
+                        <i class="material-icons">keyboard_arrow_left</i>
+                    </button>
+                    <img v-bind:src="viewing.webformatURL">
+                    <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="[{'disabled': viewing.index == state.results.length - 1}]">
+                        <i class="material-icons">keyboard_arrow_right</i>
+                    </button>
                 </div>
+                <div v-if="uploading" class="progress">
+                    <div class="determinate" :style="{width: `${uploading}%`}"></div>
+                </div>                   
+                <form class="image-rename-form" v-else>
+                    <input type="text" v-model="viewing.name" autofocus/>
+                    <button v-on:click.prevent.stop="addImage(state.results[viewing.index], viewing.name)">
+                        <i class="material-icons">save</i>
+                    </button>
+                </form>
             </div>
 
             <!-- Image Results Grid --> 
@@ -79,7 +76,7 @@
                 </div>
             </div>
 
-        </template>
+        </div>
     </div>
 </template>
 
