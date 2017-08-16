@@ -13,10 +13,9 @@
     transition: top 150ms;
 
 
-    form {
+    .image-search {
         width: 100%;
         display: flex;
-        margin-bottom: 10px;
 
         button {
             background: none;
@@ -43,7 +42,7 @@
             height: 150px;
             overflow: hidden;
             background-size: cover;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
         &:after {
             content: "";

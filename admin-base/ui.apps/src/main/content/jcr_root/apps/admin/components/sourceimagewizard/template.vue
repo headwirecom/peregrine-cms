@@ -24,7 +24,7 @@
   -->
 <template>
     <div ref="wrapper" v-bind:class="['sourceimagewizard', 'container', {'initial-search':  !state.results}]">
-        <form v-on:submit.prevent="search()">
+        <form v-on:submit.prevent="search()" class="image-search">
             <input type="text" v-model="state.input" placeholder="Search for an image asset" tabindex="1" autofocus/>
             <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
         </form>
@@ -35,16 +35,16 @@
             <!-- Image Preview --> 
             <div v-else-if="viewing">
                 <div class="image-preview">
-                    <button v-on:click.prevent.stop="select('prev')">
+                    <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="[{'disabled': viewing.index == 0}]">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </button>
                     <img v-bind:src="viewing.webformatURL">
-                    <button v-on:click.prevent.stop="select('next')">
+                    <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="[{'disabled': viewing.index == state.results.length - 1}]">
                         <i class="material-icons">keyboard_arrow_right</i>
                     </button>
                 </div>
                 <form>
-                    <input type="text" v-bind="viewing.name" autofocus/>
+                    <input type="text" v-model="viewing.name" autofocus/>
                     <button v-on:click.prevent.stop="addImage(state.results[viewing.index], name)">
                         <i class="material-icons">save</i>
                     </button>
