@@ -24,6 +24,7 @@
   -->
 <template>
     <div class="wrapper">
+      <template v-if="!schema.preview">
         <div tabindex="-1" ref="quilltoolbar">
             <select tabindex="-1" class="ql-header">
                 <option value="1"></option>
@@ -47,6 +48,8 @@
             <button tabindex="-1" class="ql-clean"></button>
         </div>
         <div ref="quilleditor"></div>
+      </template>
+      <p v-else>{{value}}</p>
     </div>
 </template>
 
@@ -54,7 +57,7 @@
     export default {
         mixins: [ VueFormGenerator.abstractField ],
         mounted() {
-            this.initialize()
+            if(!this.schema.preview) this.initialize()
         },
         beforeDestroy() {
             this.quill = null
