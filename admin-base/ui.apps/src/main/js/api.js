@@ -66,8 +66,8 @@ class PerApi {
         return impl.populateNodesForBrowser(path, target, includeParents)
     }
 
-    populateComponentDefinition(component) {
-        return impl.populateComponentDefinition(component)
+    populateComponentDefinitionFor(component) {
+        return impl.populateComponentDefinitionFor(component)
     }
 
     populateComponentDefinitionFromNode(path) {

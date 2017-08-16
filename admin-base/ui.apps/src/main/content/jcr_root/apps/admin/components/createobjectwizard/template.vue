@@ -45,7 +45,12 @@
             </vue-form-generator>
         </tab-content>
         <tab-content title="verify">
-            <pre v-html="JSON.stringify(formmodel, true, 2)"></pre>
+            <vue-form-generator :model="formmodel"
+                                :schema="objectSchema"
+                                :options="formOptions"
+                                ref="nameTab">
+
+            </vue-form-generator>
         </tab-content>
     </form-wizard>
 </div>
@@ -85,6 +90,16 @@
         }
         ,
         computed: {
+            objectSchema: function() {
+                if(this.formmodel.objectPath !== '') {
+                    const path = this.formmodel.objectPath.split('/')
+                    const componentName = path.slice(2).join('-')
+                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
+                    if(definitions) {
+                        return $perAdminApp.getNodeFromView('/admin/componentDefinitions')[componentName]
+                    }
+                }
+            },
             objects: function() {
                 const path = $perAdminApp.getNodeFromView(this.model.dataFrom)
                 const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
@@ -126,7 +141,7 @@
             onComplete: function() {
                 let objectPath = this.formmodel.objectPath
                 objectPath = objectPath.split('/').slice(2).join('/')
-                $perAdminApp.stateAction('createObject', { parent: this.formmodel.path, name: this.formmodel.name, template: objectPath, returnTo: this.model.returnTo })
+                $perAdminApp.stateAction('createObject', { parent: this.formmodel.path, name: this.formmodel.name, template: objectPath, data: this.formmodel, returnTo: this.model.returnTo })
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
@@ -142,6 +157,9 @@
                 }
             },
             leaveTabOne: function() {
+                if('' !== ''+this.formmodel.objectPath) {
+                    $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.objectPath)
+                }
                 return ! ('' === ''+this.formmodel.objectPath)
             },
             leaveTabTwo: function() {
