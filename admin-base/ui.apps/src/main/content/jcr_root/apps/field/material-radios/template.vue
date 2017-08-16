@@ -1,19 +1,24 @@
 <template>
-	<ul :class="schema.inline ? 'radio-list inline' : 'radio-list'" :disabled="disabled" :id="getFieldID(schema)">
-	  <li v-for="item in items">
-	    <input 
-	    	class="form-control"
-	    	:id="getItemName(item)"
-	    	type="radio" 
-	    	:class="schema.withGap ? 'with-gap' : ''"
-	    	:disabled="disabled" 
-	    	:name="id" 
-	    	@click="onSelection(item)" 
-	    	:value="getItemValue(item)" 
-	    	:checked="isItemChecked(item)"/>
-	    <label :for="getItemName(item)">{{ getItemName(item) }}</label>
-	  </li>
-	</ul>
+	<div class="wrap">
+		<ul v-if="!schema.preview" :class="schema.inline ? 'radio-list inline' : 'radio-list'" :disabled="disabled" :id="getFieldID(schema)">
+		  <li v-for="item in items" :class="isItemChecked(item) ? 'checked' : ''">
+		    <input 
+		    	class="form-control"
+		    	:id="getItemName(item)"
+		    	type="radio" 
+		    	:class="schema.withGap ? 'with-gap' : ''"
+		    	:disabled="disabled" 
+		    	:name="id" 
+		    	@click="onSelection(item)" 
+		    	:value="getItemValue(item)" 
+		    	:checked="isItemChecked(item)"/>
+		    <label :for="getItemName(item)">{{ getItemName(item) }}</label>
+		  </li>
+		</ul>
+		<template v-else>
+			<p v-for="item in items" v-if="isItemChecked(item)">{{ getItemName(item) }}</p>
+		</template>
+	</div>
 </template>
 
 <script>	
