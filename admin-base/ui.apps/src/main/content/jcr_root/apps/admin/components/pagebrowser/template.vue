@@ -192,6 +192,10 @@
                         {{path}} ({{list.length}})
                     </span>
                     <button 
+                        v-if="withLinkTab"
+                        v-on:click="onUnlink"
+                        class="modal-action modal-close waves-effect waves-light btn-flat">unlink</button>
+                    <button 
                         v-on:click="onHide" 
                         class="modal-action modal-close waves-effect waves-light btn-flat">cancel</button>
                     <button 
@@ -385,6 +389,10 @@
             },
             setItemPath(path){
                 return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/methods').setItemPath(path)
+            },
+            onUnlink() {
+                this.setItemPath('')
+                this.onHide()
             },
             onHide() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/methods').onHide()

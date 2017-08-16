@@ -80,7 +80,7 @@
                 })
                 const toolbar = this.quill.getModule('toolbar')
                 toolbar.addHandler('link', (value) => { 
-                    value ? this.showPageBrowser() : this.quill.format('link', false)
+                  this.showPageBrowser()
                 })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
                     this.value = this.$refs.quilleditor.children[0].innerHTML
@@ -91,8 +91,7 @@
                 '/content/sites',
                 true, // with Link tab?
                 (newValue) => { 
-                  console.log('newValue: ', newValue)
-                  this.quill.format('link', newValue) 
+                  newValue ? this.quill.format('link', newValue) : this.quill.format('link', false)
                 }
               )
             }
