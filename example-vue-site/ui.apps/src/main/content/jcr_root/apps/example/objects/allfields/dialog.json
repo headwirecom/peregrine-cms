@@ -119,6 +119,13 @@
     "validator": "required"
   },
   {
+    "type": "texteditor",
+    "label": "Rich text editor",
+    "model": "texteditor",
+    "placeholder": "Lorem ipsum dolor...",
+    "validator": "required"
+  },
+  {
     "type": "material-radios",
     "label": "Radios",
     "model": "radios",

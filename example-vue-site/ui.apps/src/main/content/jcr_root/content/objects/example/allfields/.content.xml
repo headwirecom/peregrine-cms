@@ -39,6 +39,7 @@
           telfield="18581234567" 
           rangefield="50"  
           textarea="Lorem ipsum dolor sit amet." 
+          texteditor="Lorem ipsum dolor sit amet." 
           checkbox="true" 
           switch="true" 
           pagePath="/content/sites/example" 
