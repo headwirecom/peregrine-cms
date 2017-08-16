@@ -64,14 +64,15 @@
                         &:focus {
                             border-bottom-color: color("blue-grey", "base");
                         }
-                    }
-                    span.helper {
-                        position: absolute;
-                        right: 0;
-                        line-height: 3rem;
-                        padding: 0 0.75rem;
-                        font-style: 1rem;
-                        color: color("blue-grey", "base");
+                        + span.helper {
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            line-height: 3rem;
+                            padding: 0 0.75rem;
+                            font-style: 1rem;
+                            color: color("blue-grey", "base");
+                        }
                     }
                 }
             }
@@ -474,6 +475,12 @@
             .preview-list {
                 margin: 0;
                 padding: 0 0 0 1.25rem;
+                > li.preview-item {
+                    > label {
+                        font-size: 1rem;
+                        color: color("blue-grey", "base");
+                    }
+                }
             }
             ul.preview-list {
                 list-style: outside;
@@ -486,6 +493,7 @@
                 list-style: outside;
                 > li {
                     list-style-type: decimal;
+                    padding-bottom: 0.75rem;
                 }
             }
             .color-preview {
@@ -512,7 +520,6 @@
                             }
                         }
                         .multifield {
-                            padding-bottom: 0.75rem;
                             .form-group {
                                 padding: 0;
                             }
