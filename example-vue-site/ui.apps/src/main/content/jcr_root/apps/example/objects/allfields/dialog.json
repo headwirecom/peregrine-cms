@@ -1,8 +1,36 @@
 { "fields":[
   {
+    "type": "spectrum",
+    "label": "Spectrum",
+    "model": "spectrum_color"
+  },
+  {
+    "type": "input",
+    "inputType": "color",
+    "label": "Color field",
+    "model": "color",
+    "placeholder": "select a color",
+    "hint": "This is a native color picker.",
+    "required": true,
+    "validator": "required"
+  },
+  {
     "type": "collection",
-    "title": "Collection",
-    "model": "collection",
+    "title": "Single Collection",
+    "model": "single_children",
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "label": "Key",
+        "model": "singleKey"
+      }
+    ]
+  },
+  {
+    "type": "collection",
+    "title": "Multi Collection",
+    "model": "multi_children",
     "multifield": true,
     "fieldLabel": ["key", "value"],
     "fields" : [
@@ -16,17 +44,26 @@
         "label": "Value",
         "model": "value"
       }
-    ],
-    "items": []
+    ]
   },
   {
     "type": "input",
     "inputType": "text",
-    "label": "text field",
+    "label": "Text field",
     "model": "textfield",
     "placeholder": "text field",
     "hint": "This is some additional help text.",
     "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "material-textarea",
+    "label": "Text Area",
+    "model": "textarea",
+    "hint": "Max 500 characters",
+    "max": 500,
+    "placeholder": "Lorem ipsum dolor...",
+    "rows": 4,
     "validator": "required"
   },
   {
@@ -168,5 +205,4 @@
     "required": true,
     "validator": "required"
   }
-
 ]}
