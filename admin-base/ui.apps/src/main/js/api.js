@@ -154,8 +154,8 @@ class PerApi {
         return impl.uploadFiles(path, files, cb)
     }
 
-    fetchExternalImage(path, url, name) {
-        return impl.fetchExternalImage(path, url, name)
+    fetchExternalImage(path, url, name, config) {
+        return impl.fetchExternalImage(path, url, name, config)
     }
 
     savePageEdit(path, node) {

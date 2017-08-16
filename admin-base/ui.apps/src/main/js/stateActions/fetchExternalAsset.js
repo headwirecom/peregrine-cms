@@ -31,9 +31,9 @@ export default function(me, target) {
     log.fine(target)
 
     var api = me.getApi()
-    api.fetchExternalImage(target.path, target.url, target.name).then( () => {
+    api.fetchExternalImage(target.path, target.url, target.name, target.config).then( () => {
         me.loadContent('/content/admin/assets.html/path'+SUFFIX_PARAM_SEPARATOR+target.path)
+    }).catch( () => {
+        me.notifyUser('Error', 'Could not upload asset', target.error) 
     })
-
-
 }

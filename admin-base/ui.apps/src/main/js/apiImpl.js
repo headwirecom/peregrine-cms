@@ -456,16 +456,17 @@ class PerAdminImpl {
         })
     }
 
-    fetchExternalImage(path, url, name) {
+    fetchExternalImage(path, url, name, config) {
         return new Promise( (resolve, reject) => {
             axios.get(url, {responseType: "blob"}).then( (response) => {
                 //alert(response.data)
                 var data = new FormData()
                 data.append(name, response.data, name)
 
-                updateWithFormAndConfig('/admin/uploadFiles.json'+path, data)
+                updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
                     .then( (response) => this.populateNodesForBrowser(path) )
                     .then( () => resolve() )
+                    .catch( err => reject() )
             })
         })
     }
