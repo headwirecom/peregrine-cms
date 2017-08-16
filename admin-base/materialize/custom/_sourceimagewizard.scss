@@ -42,7 +42,6 @@
         flex-wrap: wrap;
         justify-content: space-between;
         width: 100%;
-        margin-top: -10px;
 
         .image-item {
             width: 150px;
@@ -79,7 +78,8 @@
         .image-rename-form {
             display: flex;
             button {
-                height: 200px;
+                height: 3rem;
+                margin-bottom: -1px;
             }
         }
     }
