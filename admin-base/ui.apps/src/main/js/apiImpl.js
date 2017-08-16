@@ -466,6 +466,7 @@ class PerAdminImpl {
                 updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
                     .then( (response) => this.populateNodesForBrowser(path) )
                     .then( () => resolve() )
+                    .catch( err => reject() )
             })
         })
     }

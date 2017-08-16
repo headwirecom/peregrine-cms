@@ -37,6 +37,7 @@
     }
 
     .image-results {
+        flex-grow: 1;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
@@ -57,20 +58,29 @@
     }
 
     .image-preview {
-        width: 100%;
+        flex-grow: 1;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        flex: auto;
+        width: 100%;
 
-        .image-row {
-            width: 100%;
-        }
-        .image-rename-form {
+        .back-to-grid {
+            position: fixed;
             display: flex;
         }
 
+        .image-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .image-rename-form {
+            display: flex;
+            button {
+                height: 200px;
+            }
+        }
     }
 
     .image-pagination {

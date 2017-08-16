@@ -34,27 +34,30 @@
 
             <!-- Image Preview --> 
             <div v-else-if="viewing" class="image-preview">
-                <button v-on:click.prevent.stop="deSelect()">
-                    <i class="material-icons">grid_on</i>back to image results
+                <button v-on:click.prevent.stop="deSelect()" class="back-to-grid btn-flat btn-large">
+                    <i class="material-icons">grid_on</i> back to image results
                 </button>
                 <div class="image-row">
-                    <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="[{'disabled': viewing.index == 0}]">
+                    <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="['btn-flat','btn-large',{'disabled': viewing.index == 0}]">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </button>
-                    <img v-bind:src="viewing.webformatURL">
-                    <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="[{'disabled': viewing.index == state.results.length - 1}]">
+                    <div class="image-container" :style="{width: `${viewing.width}px`}">
+                        <img v-bind:src="viewing.webformatURL">
+                        <!-- Image rename form -->
+                        <div v-if="uploading" class="progress">
+                            <div class="determinate" :style="{width: `${uploading}%`}"></div>
+                        </div>                   
+                        <form v-else v-on:submit.prevent="addImage(state.results[viewing.index], viewing.name)" class="image-rename-form">
+                            <input type="text" v-model="viewing.name" autofocus/>
+                            <button type="submit"  class="btn waves-effect waves-light">
+                                <i class="material-icons">save</i>
+                            </button>
+                        </form>
+                    </div>
+                    <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="['btn-flat','btn-large',{'disabled': viewing.index == state.results.length - 1}]">
                         <i class="material-icons">keyboard_arrow_right</i>
                     </button>
                 </div>
-                <div v-if="uploading" class="progress">
-                    <div class="determinate" :style="{width: `${uploading}%`}"></div>
-                </div>                   
-                <form class="image-rename-form" v-else>
-                    <input type="text" v-model="viewing.name" autofocus/>
-                    <button v-on:click.prevent.stop="addImage(state.results[viewing.index], viewing.name)">
-                        <i class="material-icons">save</i>
-                    </button>
-                </form>
             </div>
 
             <!-- Image Results Grid --> 
@@ -66,12 +69,12 @@
                     class="image-item hoverable">
                 </div>
                 <!-- Pagination -->
-                <div v-if="numPages > 0" class="image-pagination">
-                    <span>Displaying page {{state.currentPage}} of {{numPages}}</span>
+                <div v-if="state.numPages > 0" class="image-pagination">
+                    <span>Displaying page {{state.currentPage}} of {{state.numPages}}</span>
                     <ul class="pagination">
-                        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                        <li v-for="(page,i) in numPages" v-on:click.stop="selectPage(i + 1)"><a href="#!">{{ i + 1}}</a></li>
-                        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                        <li class="waves-effect"><a href="#!" v-on:click.stop="selectPage(currentPage - 1)"><i class="material-icons">chevron_left</i></a></li>
+                        <li v-for="(page,i) in state.numPages" :class="[{'active': state.currentPage == i+1}]"><a href="#!" v-on:click.stop="selectPage(i + 1)">{{ i + 1}}</a></li>
+                        <li class="waves-effect"><a href="#!" v-on:click.stop="selectPage(currentPage + 1)"><i class="material-icons">chevron_right</i></a></li>
                     </ul>
                 </div>
             </div>
@@ -92,6 +95,7 @@
                 totalHits: null,
                 currentPage: null,
                 input: null,
+                numPages: null
             }
         },
 
@@ -100,18 +104,17 @@
                 state: $perAdminApp.getNodeFromViewOrNull('/state/imageSearch'),
                 viewing: null,
                 containerWidth: null,
-                uploading: null
+                uploading: null,
+                containerWidth: null,
+                columns: null,
+                itemsPerPage: null
             }
         },
 
-        computed: {
-            columns() {return Math.floor(this.containerWidth / 160)},
-            itemsPerPage() {return this.columns * 5},
-            numPages() {return Math.ceil(this.state.totalHits / this.itemsPerPage)},
-        },
-
         mounted() {
-            this.containerWidth = this.$refs.wrapper.offsetWidth;
+            this.containerWidth = this.$refs.wrapper.offsetWidth
+            this.columns = Math.floor(this.containerWidth / 160)
+            this.itemsPerPage = this.columns * 5
         },
 
         methods: {
@@ -126,6 +129,7 @@
                 $.getJSON( URL, data => {
                     this.state.results = data.hits;
                     this.state.totalHits = data.totalHits;
+                    this.state.numPages = Math.ceil(data.totalHits/this.itemsPerPage);
                     this.viewing = null;
                 })
             },
@@ -154,7 +158,8 @@
                     url: item.webformatURL, 
                     path: $perAdminApp.getNodeFromView('/state/tools/assets'), 
                     name: name,
-                    config: { onUploadProgress: ev => this.uploadProgress(Math.floor((ev.loaded * 100) / ev.total)) }
+                    config: { onUploadProgress: ev => this.uploadProgress(Math.floor((ev.loaded * 100) / ev.total)) },
+                    error: () => this.uploading = null
                 })
             }
         }
