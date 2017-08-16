@@ -38,17 +38,20 @@
                     <button v-on:click.prevent.stop="select('prev')">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </button>
-                    <img v-bind:src="state.results[viewing.index].webformatURL || null">
+                    <img v-bind:src="viewing.webformatURL">
                     <button v-on:click.prevent.stop="select('next')">
                         <i class="material-icons">keyboard_arrow_right</i>
                     </button>
                 </div>
-                <button v-on:click.prevent.stop="addImage(state.results[viewing.index])">
-                    <i class="material-icons">check</i>
-                </button>
-                <button v-on:click.prevent.stop="deSelect()">
-                    <i class="material-icons">clear</i>
-                </button>
+                <form>
+                    <input type="text" v-bind="viewing.name" autofocus/>
+                    <button v-on:click.prevent.stop="addImage(state.results[viewing.index], name)">
+                        <i class="material-icons">save</i>
+                    </button>
+                    <button v-on:click.prevent.stop="deSelect()">
+                        <i class="material-icons">grid_on</i>
+                    </button>
+                </form>
             </div>
 
             <!-- Image Results Grid --> 
@@ -124,9 +127,9 @@
             },
 
             select(index) {
-                if (index === 'next') this.viewing.index += 1
-                else if (index === 'prev') this.viewing.index -=1
-                else this.viewing = {index: index}
+                this.viewing = this.state.results[index]
+                this.viewing.index = index
+                this.viewing.name = this.viewing.previewURL.split('/').pop()
             },
             deSelect() {
                 this.viewing = null
@@ -140,8 +143,7 @@
                 this.progress = percent;
             },
 
-            addImage(item) {
-                var name = item.previewURL.split('/').pop()
+            addImage(item, name) {
                 $perAdminApp.stateAction('fetchExternalAsset', { 
                     url: item.webformatURL, 
                     path: $perAdminApp.getNodeFromView('/state/tools/assets'), 
