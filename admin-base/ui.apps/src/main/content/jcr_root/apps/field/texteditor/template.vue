@@ -49,7 +49,7 @@
         </div>
         <div ref="quilleditor"></div>
       </template>
-      <p v-else>{{value}}</p>
+      <p v-else v-html="value"></p>
     </div>
 </template>
 
