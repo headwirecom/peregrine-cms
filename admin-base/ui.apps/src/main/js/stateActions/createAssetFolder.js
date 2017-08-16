@@ -24,7 +24,7 @@
  */
 import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('createAsset').setLevelDebug()
+let log = LoggerFactory.logger('createAssetFolder').setLevelDebug()
 
 export default function(me, target) {
     log.fine(target)

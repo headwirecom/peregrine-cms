@@ -24,12 +24,13 @@
  */
 import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('createAssetWizard').setLevelDebug()
+let log = LoggerFactory.logger('createObjectFolder').setLevelDebug()
 
 export default function(me, target) {
-
     log.fine(target)
-
-    me.loadContent('/content/admin/assets/create.html/path' +SUFFIX_PARAM_SEPARATOR +target)
+    var api = me.getApi()
+    api.createFolder(target.parent, target.name).then( () => {
+        me.loadContent('/content/admin/objects.html/path'+ SUFFIX_PARAM_SEPARATOR + target.parent)
+    })
 
 }
