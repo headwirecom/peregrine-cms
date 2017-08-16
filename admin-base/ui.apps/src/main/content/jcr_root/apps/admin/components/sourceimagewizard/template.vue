@@ -24,7 +24,7 @@
   -->
 <template>
     <div ref="wrapper" v-bind:class="['sourceimagewizard', 'container', {'initial-search':  !state.results}]">
-        <form v-on:submit.prevent="search()" class="container">
+        <form v-on:submit.prevent="search()">
             <input type="text" v-model="state.input" placeholder="Search for an image asset" tabindex="1" autofocus/>
             <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
         </form>
@@ -32,6 +32,7 @@
         <template v-if="state.results">
             <span v-if="state.results.length < 1" class="no-results">No images found for '{{ state.input }}'</span>
 
+            <!-- Image Preview --> 
             <div v-else-if="viewing">
                 <div class="image-preview">
                     <button v-on:click.prevent.stop="select('prev')">
@@ -50,6 +51,7 @@
                 </button>
             </div>
 
+            <!-- Image Results Grid --> 
             <div v-else class="image-results">
                 <div
                     v-for="(item,i) in state.results"
@@ -57,6 +59,7 @@
                     v-bind:style="{backgroundImage: `url('${item.previewURL}')`}" 
                     class="image-item hoverable">
                 </div>
+                <!-- Pagination -->
                 <div v-if="numPages > 0" class="image-pagination">
                     <span>Displaying page {{state.currentPage}} of {{numPages}}</span>
                     <ul class="pagination">
@@ -89,12 +92,19 @@
         data() {
             return {
                 state: $perAdminApp.getNodeFromViewOrNull('/state/imageSearch'),
-                viewing: null
+                viewing: null,
+                containerWidth: null
             }
         },
 
         computed: {
-            numPages() {return Math.ceil(this.state.totalHits / 20)},
+            columns() {return Math.floor(this.containerWidth / 160)},
+            itemsPerPage() {return this.columns * 5},
+            numPages() {return Math.ceil(this.state.totalHits / this.itemsPerPage)},
+        },
+
+        mounted() {
+            this.containerWidth = this.$refs.wrapper.offsetWidth;
         },
 
         methods: {
@@ -102,7 +112,10 @@
             search() {
                 if (this.state.currentPage == null) this.state.currentPage = 1;
                 const API_KEY = '5575459-c51347c999199b9273f4544d4';
-                const URL = `https://pixabay.com/api/?key=${API_KEY}&page=${ this.state.currentPage }&q=${ encodeURIComponent(this.state.input) }`
+                const URL = `https://pixabay.com/api/?key=${API_KEY}`+
+                            `&page=${ this.state.currentPage }`+
+                            `&per_page=${ this.itemsPerPage }`+
+                            `&q=${ encodeURIComponent(this.state.input) }`
                 $.getJSON( URL, data => {
                     this.state.results = data.hits;
                     this.state.totalHits = data.totalHits;
