@@ -136,9 +136,10 @@ public class DistributionReplicationService
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
-            public boolean doAdd(Resource resource) {
-                return true;
-            }
+            public boolean doAdd(Resource resource) { return true; }
+
+            @Override
+            public boolean doAddChildren(Resource resource) { return true; }
         };
         // Need to check this list of they need to be replicated first
         for(Resource resource: referenceList) {
@@ -163,9 +164,9 @@ public class DistributionReplicationService
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
-            public boolean doAdd(Resource resource) {
-                return true;
-            }
+            public boolean doAdd(Resource resource) { return true; }
+            @Override
+            public boolean doAddChildren(Resource resource) { return true; }
         };
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, true);
         log.trace("List for Replication: '{}'", replicationList);

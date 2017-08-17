@@ -28,6 +28,7 @@ package com.peregrine.admin.replication.impl;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.admin.replication.ReplicationUtil;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
@@ -99,27 +100,32 @@ public abstract class BaseFileReplicationService
 //        if(target == null) {
 //            throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
 //        }
-//        List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
+        List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         replicationList.add(startingResource);
-//        ResourceChecker resourceChecker = new ResourceChecker() {
-//            @Override
-//            public boolean doAdd(Resource resource) {
-//                return true;
-//            }
-//        };
-//        // Need to check this list of they need to be replicated first
-//        for(Resource resource: referenceList) {
-//            if(resourceChecker.doAdd(resource)) {
-//                replicationList.add(resource);
-//            }
-//        }
-//        // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-//        for(Resource reference: new ArrayList<Resource>(replicationList)) {
-//            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
-//        }
+        ResourceChecker resourceChecker = new ResourceChecker() {
+            @Override
+            public boolean doAdd(Resource resource) {
+                return !resource.getName().equals(PerConstants.JCR_CONTENT);
+            }
+
+            @Override
+            public boolean doAddChildren(Resource resource) {
+                return !resource.getName().equals(PerConstants.JCR_CONTENT);
+            }
+        };
+        // Need to check this list of they need to be replicated first
+        for(Resource resource: referenceList) {
+            if(resourceChecker.doAdd(resource)) {
+                replicationList.add(resource);
+            }
+        }
+        // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
+        for(Resource reference: new ArrayList<Resource>(replicationList)) {
+            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
+        }
 //        PerUtil.listMissingParents(startingResource, replicationList, resourceResolver.getResource("/"), resourceChecker);
-//        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
+        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
         return replicate(replicationList);
     }
 
