@@ -32,7 +32,7 @@
             v-on:scroll    = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "onDragOver"
-            v-on:drop      = "onDrop">
+            v-on:drop.prevent = "onDrop">
             <div class="editview-container" ref="editviewContainer">
                 <div 
                     v-bind:class   = "editableClass"
