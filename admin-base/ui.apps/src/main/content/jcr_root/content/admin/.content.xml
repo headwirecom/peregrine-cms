@@ -61,6 +61,13 @@
 
         <jsonview jcr:primaryType="nt:unstructured"
                   sling:resourceType="admin/components/debugger" dataFrom="/"/>
+        <tour jcr:primaryType="nt:unstructured"
+              sling:resourceType="admin/components/tour">
+            <item1 jcr:primaryType="nt:unstructured" locator="/jcr:content/content/row/col1/text" text="yeh, that's us"/>
+            <item2 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/pages" text="manage pages for your websites"/>
+            <item3 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/assets" text="create and manage assets for your websites"/>
+            <item4 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/objects" text="create and manage objects for your site"/>
+        </tour>
 
     </jcr:content>
 </jcr:root>
