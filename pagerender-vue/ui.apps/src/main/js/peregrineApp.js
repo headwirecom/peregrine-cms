@@ -28,6 +28,7 @@ let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 import state from './state.js'
 import merge from './merge.js'
 import { pagePathToDataPath, componentNameToVarName } from './util.js'
+import {Logger} from "./logger";
 
 
 let view
@@ -308,7 +309,7 @@ var peregrineApp = {
     },
 
     logger: function(name) {
-        return logger.logger(name)
+        return LoggerFactory.logger(name)
     },
 
     loadComponent: function(name) {
