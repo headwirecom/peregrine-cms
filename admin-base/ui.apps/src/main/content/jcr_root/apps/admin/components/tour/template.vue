@@ -48,6 +48,8 @@
             return { enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0 }
         },
         computed: {
+            bottom() { return this.top + this.height },
+            right() { return this.left + this.width },
             tourClass() {
                 return '__pcms_tour'
             },
@@ -55,22 +57,22 @@
                 return 'top: 0; left: 0;'
             },
             leftStyle() {
-                return { top: (this.top) + 'px', left: '0px', height: (this.height) + 'px', width: (this.left) + 'px'}
+                return { top: `${ this.top }px`, left: '0px', height: `${ this.height }px`, width: `${ this.left }px`}
             },
             rightStyle() {
-                return { top: (this.top) + 'px', left: (this.left + this.width)+'px', height: (this.height) + 'px', width: window.innerWidth - (this.width + this.left) + 'px'}
+                return { top: `${ this.top }px`, left: `${ this.right }px`, height: `${ this.height }px`, width: `${window.innerWidth - this.right}px`}
             },
             bottomStyle() {
-                return { top: (this.top + this.height) + 'px', left: '0px', width: '100%', height: window.innerHeight - (this.height + this.top) + 'px'}
+                return { top: `${ this.bottom }px`, left: '0px', width: '100%', height: `${window.innerHeight - this.bottom}px`}
             },
             topStyle() {
-                return { top: '0px', left: '0px', width: '100%', height: (this.top) + 'px'}
+                return { top: '0px', left: '0px', width: '100%', height: `${ this.top }px`}
             },
             highliteStyle() {
-                return { top: this.top + 'px', left: this.left + 'px', width: this.width + 'px', height: this.height + 'px'}
+                return { top: `${this.top}px`, left: `${this.left}px`, width: `${this.width}px`, height: `${this.height}px`}
             },
             infoStyle() {
-                return { top: (this.top + this.height + 10) + 'px', left: this.left + 'px'}
+                return { top: `${this.bottom + 10}px`, left: `${this.left}px` }
             }
 
 
