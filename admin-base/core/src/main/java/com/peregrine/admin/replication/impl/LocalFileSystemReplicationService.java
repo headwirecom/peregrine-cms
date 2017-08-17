@@ -38,6 +38,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.engine.SlingRequestProcessor;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -60,6 +61,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
@@ -102,17 +104,17 @@ public class LocalFileSystemReplicationService
 
     @Activate
     @SuppressWarnings("unused")
-    void activate(Configuration configuration) { setup(configuration); }
+    void activate(BundleContext context, Configuration configuration) { setup(context, configuration); }
     @Modified
     @SuppressWarnings("unused")
-    void modified(Configuration configuration) { setup(configuration); }
+    void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String name;
     private File targetFolder;
 
-    private void setup(Configuration configuration) {
+    private void setup(BundleContext context, Configuration configuration) {
         name = configuration.name();
         if(name.isEmpty()) {
             throw new IllegalArgumentException("Replication Name cannot be empty");
@@ -121,6 +123,7 @@ public class LocalFileSystemReplicationService
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException("Replication Target Folder cannot be empty");
         } else {
+            targetFolderPath = handlePlaceholders(context, targetFolderPath);
             File temp = new File(targetFolderPath);
             if(!temp.exists()) {
                 throw new IllegalArgumentException("Replication Target Folder: '" + targetFolderPath + "' does not exist");
@@ -205,5 +208,44 @@ public class LocalFileSystemReplicationService
         } catch(IOException e) {
             throw new ReplicationException("Failed to write rending content to file: " + renderingFile.getAbsolutePath(), e);
         }
+    }
+
+    public static final String PLACEHOLDER_START_TOKEN = "${";
+    public static final String PLACEHOLDER_END_TOKEN = "}";
+
+    private String handlePlaceholders(BundleContext context, String source) {
+        log.trace("System Properties: '{}'", System.getProperties());
+        String answer = source;
+        log.trace("Handle Place Holder: '{}'", source);
+        while(true) {
+            int startIndex = answer.indexOf(PLACEHOLDER_START_TOKEN);
+            log.trace("Handle Place Holder, start index; '{}'", startIndex);
+            if(startIndex >= 0) {
+                int endIndex = answer.indexOf(PLACEHOLDER_END_TOKEN, startIndex);
+                log.trace("Handle Place Holder, end index; '{}'", endIndex);
+                if(endIndex >= 0) {
+                    String placeHolderName = answer.substring(startIndex + PLACEHOLDER_START_TOKEN.length(), endIndex);
+                    String value = System.getProperty(placeHolderName);
+                    log.trace("Placeholder found: '{}', property value: '{}'", placeHolderName, value);
+                    if(value == null) {
+                        value = context.getProperty(placeHolderName);
+                        log.trace("Placeholder found through bundle context: '{}', property value: '{}'", placeHolderName, value);
+                    }
+                    if(value != null) {
+                        answer = answer.substring(0, startIndex) + value +
+                            (answer.length() - 1 > endIndex ? answer.substring(endIndex + 1) : "");
+                    } else {
+                        throw new IllegalArgumentException("Place Holder: '" + placeHolderName + "' did not yield a value");
+                    }
+                } else {
+                    throw new IllegalArgumentException("Place Holder String opened a Place Holder with '" + PLACEHOLDER_START_TOKEN + "' but did not close it with: '" + PLACEHOLDER_END_TOKEN + "'");
+                }
+            } else {
+                // Done -> exit
+                break;
+            }
+        }
+        log.trace("Place Holder hanlded: '{}'", answer);
+        return answer;
     }
 }
