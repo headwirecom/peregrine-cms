@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.admin.replication.impl;
 
 /*-
  * #%L
@@ -25,6 +25,7 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
+import com.peregrine.admin.replication.ImageMetadataSelector;
 import com.peregrine.commons.util.PerUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -58,8 +59,6 @@ public class ImageMetadataSelectorService
     @interface Configuration {
         @AttributeDefinition(
             name = "Category",
-// Should we do that?
-//            description = "Metadata Category Name. Call one '*default*' for a general one that is used if no other category matches",
             description = "Metadata Category Name",
             required = true
         )

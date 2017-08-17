@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.admin.replication.impl;
 
 /*-
  * #%L
@@ -25,6 +25,9 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
+import com.peregrine.admin.replication.ReferenceLister;
+import com.peregrine.admin.replication.Replication;
+import com.peregrine.admin.replication.ReplicationUtil;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
@@ -45,10 +48,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -58,7 +59,6 @@ import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;

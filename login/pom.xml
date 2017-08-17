@@ -49,8 +49,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!--AS NOTE: Not sure if that is needed or what it is good for but it works -->
+                        <!--The Bundle Category is a tag to group bundles separated by a dot. This might not be necessary -->
                         <Bundle-Category>sling</Bundle-Category>
+                        <!-- Our Fragment is extending the Sling Form Authentication by providing a classloader resource therefore this must be the Symbolic Name of the bundle we extend -->
                         <Fragment-Host>org.apache.sling.auth.form</Fragment-Host>
                     </instructions>
                 </configuration>
