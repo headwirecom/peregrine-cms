@@ -47,6 +47,7 @@
         </div>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a title="logout" href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>
+            <li v-if="help"><a title="help" href="#" v-on:click="onShowHelp">help</a></li>
         </ul>
       </div>
     </div>
@@ -66,8 +67,17 @@ export default {
         },
         isExtended: function() {
             return this.model.children && this.model.children.length > 0
+        },
+        help() {
+            return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
         }
 
+    },
+    methods: {
+
+        onShowHelp() {
+            $perAdminApp.action(this, 'showTour', '')
+        }
     }
 }
 </script>
