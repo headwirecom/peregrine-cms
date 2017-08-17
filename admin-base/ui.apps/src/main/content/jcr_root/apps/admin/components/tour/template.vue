@@ -24,16 +24,19 @@
   -->
 <template>
     <div v-if="enabled" v-bind:class="tourClass">
-        <div class="__pcms_tour_overlay" ref="left" v-bind:style="leftStyle"></div>
-        <div class="__pcms_tour_overlay" ref="right" v-bind:style="rightStyle"></div>
-        <div class="__pcms_tour_overlay" ref="top" v-bind:style="topStyle"></div>
-        <div class="__pcms_tour_overlay" ref="bottom" v-bind:style="bottomStyle"></div>
+        <div class="__pcms_tour_overlay tour-left" ref="left" v-bind:style="leftStyle"></div>
+        <div class="__pcms_tour_overlay tour-right" ref="right" v-bind:style="rightStyle"></div>
+        <div class="__pcms_tour_overlay tour-top" ref="top" v-bind:style="topStyle"></div>
+        <div class="__pcms_tour_overlay tour-bot" ref="bottom" v-bind:style="bottomStyle"></div>
         <div class="__pcms_tour_highlite" ref="highlite" v-bind:style="highliteStyle"></div>
-        <div class="__pcms_tour_info" ref="info" v-bind:style="infoStyle">
-            <div ref="tourText" v-html="text"></div>
-            <button v-on:click="onPrevious">prev</button>
-            <button v-on:click="onNext">next</button>
-            <button v-on:click="enabled = false">close</button>
+        <div class="__pcms_tour_info card" ref="info" v-bind:style="infoStyle">
+            <button v-on:click="enabled = false" class="btn-flat btn-close"><i class="material-icons">close</i></button>
+            <div ref="tourText" v-html="text" class="card-content">
+            </div>
+            <div class="card-action">
+                <button v-on:click="onPrevious" class="btn">prev</button>
+                <button v-on:click="onNext" class="btn">next</button>
+            </div>
         </div>
     </div>
 </template>
@@ -134,7 +137,7 @@
     }
     .__pcms_tour_overlay {
         position: fixed;
-        opacity: 0.5;
+        opacity: 0.75;
         background: black;
         width: 100%;
         height: 100%;
@@ -145,8 +148,6 @@
     }
     .__pcms_tour_highlite {
         position: fixed;
-        border: solid 2px blue;
-        box-shadow: 0px 0px 10px rgba(0,0,255,1) inset;
         width: 100%;
         height: 100%;
         top: 0;
@@ -157,13 +158,25 @@
 
     .__pcms_tour_info {
         min-width: 400px;
-        min-height: 200px;
-        padding: 4px;
         position: fixed;
-        border: solid 2px black;
-        background: white;
         top: 0;
         left: 0;
         max-width: 400px;
+        transition: top 0.25s, left 0.25s;
     }
+
+    .__pcms_tour_info .btn-close{
+        float: right;
+    }
+
+    .__pcms_tour_info .card-action{
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .tour-left  { transition: top 0.25s, width 0.25s, height 0.25s }
+    .tour-right { transition: top 0.25s, left 0.25s, width 0.25s, height 0.25s }
+    .tour-top   { transition: height 0.25s }
+    .tour-bot   { transition: top 0.25s, height 0.25s }
+
 </style>
