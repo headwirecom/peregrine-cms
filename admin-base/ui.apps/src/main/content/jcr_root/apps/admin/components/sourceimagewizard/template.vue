@@ -103,7 +103,6 @@
             return {
                 state: $perAdminApp.getNodeFromViewOrNull('/state/imageSearch'),
                 viewing: null,
-                containerWidth: null,
                 uploading: null,
                 containerWidth: null,
                 columns: null,
