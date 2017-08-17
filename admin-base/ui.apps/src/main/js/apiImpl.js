@@ -217,13 +217,13 @@ class PerAdminImpl {
         })
     }
 
-    // populateComponentDefinition(component) {
-    //     return new Promise( (resolve, reject) => {
-    //         fetch('/admin/components/'+component)
-    //             .then( (data) => populateView('/admin/componentDefinitions', component, data) )
-    //             .then( () => resolve() )
-    //     })
-    // }
+    populateComponentDefinitionFor(component) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/components/'+component)
+                .then( (data) => populateView('/admin/componentDefinitions', component, data) )
+                .then( () => resolve() )
+        })
+    }
 
     populateComponentDefinitionFromNode(path) {
         return new Promise( (resolve, reject) => {

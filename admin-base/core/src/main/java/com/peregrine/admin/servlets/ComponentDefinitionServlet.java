@@ -67,7 +67,13 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             page = true;
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
-        String componentPath = "/apps/" + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+        String componentPath = "";
+        if(path.startsWith("/apps/")) {
+            componentPath = path;
+        } else {
+            componentPath = "/apps/" + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+        }
+
         Resource component = request.getResourceByPath(componentPath);
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
         Resource dialog = component.getChild(page ? "explorer_dialog.json" : "dialog.json");
