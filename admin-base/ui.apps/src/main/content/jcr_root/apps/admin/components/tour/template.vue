@@ -45,7 +45,10 @@
     export default {
         props: ['model'],
         data() {
-            return { enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0, info: null }
+            return { 
+                enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0, 
+                info: {width: 0, height: 0}
+            }
         },
         computed: {
             bottom() { return this.top + this.height },
@@ -83,16 +86,31 @@
                 const spaceAbove = this.top;
                 const spaceBelow = window.innerHeight - this.bottom;
 
+                if ( spaceBelow > this.info.height + 40 ) {
+                    return Object.assign( placeBelow, {left: `${this.left}px`});
+                }
+                if ( spaceAbove > this.info.height + 40 ) {
+                    return Object.assign( placeAbove, {left: `${this.left}px`});
+                }
+                if ( spaceLeft > this.info.width + 40 ) {
+                    return Object.assign( placeLeft, {top: `${this.top}px`});
+                }
+                if ( spaceRight > this.info.width + 40 ) {
+                    return Object.assign( placeRight, {top: `${this.top}px`});
+                }
+                return {
+                    top: `${this.bottom - this.info.height}px`,
+                    left:`${this.right - this.info.width}px`
+                }
+
+
                 //Where to put box????
                 let horizontalStyle = spaceLeft > spaceRight ? 
                     placeLeft : placeRight;
                 let verticalStyle = spaceAbove > spaceBelow ? 
                     placeAbove : placeBelow;
 
-                return Object.assign({}, horizontalStyle, verticalStyle )
             }
-
-
 
         },
         methods: {
@@ -139,9 +157,9 @@
         },
         mounted() {
             this.index = 0
-            this.info = {
-                width: this.$refs.innerWidth,
-                height: this.$refs.innerHeight
+            if(this.$refs.info){
+                this.info.width = this.$refs.info.offsetWidth
+                this.info.height = this.$refs.info.offsetHeight
             }
         }
     }
