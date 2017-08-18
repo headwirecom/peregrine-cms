@@ -23,30 +23,61 @@
   #L%
   -->
 <template>
-    <div class="asset-preview">
+    <div class="explorer-preview-content preview-page">
         <template v-if="currentObject">
-            <p/>
-            <template v-if="allowOperations">
-                <button class="btn" title="rename" v-on:click.stop.prevent="renamePage()">rename</button>
-                <button class="btn" title="move"   v-on:click.stop.prevent="movePage()">move</button>
-                <button class="btn" title="delete"   v-on:click.stop.prevent="deletePage()">delete</button>
-            </template>
+            <ul class="explorer-preview-nav">
+                <template v-if="allowOperations">
+                    <li>
+                        <a  href="#!" 
+                            title="rename page" 
+                            class="waves-effect waves-light" 
+                            v-on:click.stop.prevent="renamePage">
+                            <i class="material-icons">edit</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a 
+                            href="#!" 
+                            title="move page" 
+                            class="waves-effect waves-light" 
+                            v-on:click.stop.prevent="movePage">
+                            <i class="material-icons">compare_arrows</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a 
+                            href="#!" 
+                            title="delete page" 
+                            class="waves-effect waves-light" 
+                            v-on:click.stop.prevent="deletePage">
+                            <i class="material-icons">delete</i>
+                        </a>
+                    </li>
+                </template>
+                <!--<li>
+                    <a href="#!" title="cancel" class="waves-effect waves-light" v-on:click.stop.prevent="onCancel">
+                        <i class="material-icons">close</i>
+                    </a>
+                </li>-->
+                <li>
+                    <a 
+                        href="#!" 
+                        title="save page"   
+                        class="waves-effect waves-light" 
+                        v-on:click.stop.prevent="onOk">
+                        <i class="material-icons">check</i>
+                    </a>
+                </li>
+            </ul>
             <vue-form-generator v-bind:schema="schema"
                                 v-bind:model="page"
                                 v-bind:options="options">
-
             </vue-form-generator>
-            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
-                <i class="material-icons">close</button>
-            <button class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
-                <i class="material-icons">check</i></button>
         </template>
-        <template v-else>
-            <div class="no-asset-selected">
-                <span>no page selected</span>
-                <i class="material-icons">info</i>
-            </div>
-        </template>
+        <div v-else class="explorer-preview-empty">
+            <span>no page selected</span>
+            <i class="material-icons">info</i>
+        </div>
     </div>
 
 </template>
