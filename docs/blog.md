@@ -89,14 +89,14 @@ percli create component text
 We now have a folder for each component in the `fragements` subfolder
 
 ```text
-└───fragments
-    ├───footer
-    ├───header
-    ├───main
-    ├───masthead
-    ├───pagination
-    ├───post
-    └───sidebar
+â””â”€â”€â”€fragments
+    â”œâ”€â”€â”€footer
+    â”œâ”€â”€â”€header
+    â”œâ”€â”€â”€main
+    â”œâ”€â”€â”€masthead
+    â”œâ”€â”€â”€pagination
+    â”œâ”€â”€â”€post
+    â””â”€â”€â”€sidebar
 ```
 
 each of those folders contains a set of files: 
