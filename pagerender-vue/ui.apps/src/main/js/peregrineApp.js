@@ -28,6 +28,7 @@ let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 import state from './state.js'
 import merge from './merge.js'
 import { pagePathToDataPath, componentNameToVarName } from './util.js'
+import {Logger} from "./logger";
 
 
 let view
@@ -225,7 +226,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
             initPeregrineApp();
         }
 
-        if(document.location !== path && !fromPopState && !firstTime) {
+        if(document.location !== path && !fromPopState) {
             log.fine("PUSHSTATE : " + path);
             document.title = getPerView().page.title
             var url = document.location.href
@@ -239,7 +240,11 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
                     }
                 }
             }
-            history.pushState({peregrinevue: true, path: path}, path, newLocation)
+            if(firstTime) {
+                history.replaceState({peregrinevue: true, path: path}, path, newLocation)
+            } else {
+                history.pushState({peregrinevue: true, path: path}, path, newLocation)
+            }
             scroll(0, 0)
 
             // Create the event.
@@ -308,7 +313,7 @@ var peregrineApp = {
     },
 
     logger: function(name) {
-        return logger.logger(name)
+        return LoggerFactory.logger(name)
     },
 
     loadComponent: function(name) {
