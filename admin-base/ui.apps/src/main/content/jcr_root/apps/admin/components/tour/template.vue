@@ -72,7 +72,19 @@
                 return { top: `${this.top}px`, left: `${this.left}px`, width: `${this.width}px`, height: `${this.height}px`}
             },
             infoStyle() {
-                return { top: `${this.bottom + 10}px`, left: `${this.left}px` }
+                //TODO: Handle space above/below cases and target too large case. Need to use refs to get info size
+                const placeLeft = {left: `${this.left - 400 - 10}px`}
+                const placeRight = {left: `${this.right + 10}px`}
+
+                let spaceLeft = this.left;
+                let spaceRight = window.innerWidth - this.right;
+                // const spaceAbove = this.top;
+                // const spaceBelow = window.innerHeight - this.bottom;
+
+                let horizontalStyle = spaceLeft > spaceRight ? 
+                    placeLeft : placeRight;
+
+                return Object.assign({top: `${this.top}px`}, horizontalStyle )
             }
 
 
@@ -161,10 +173,8 @@
     .__pcms_tour_info {
         min-width: 400px;
         position: fixed;
-        top: 0;
-        left: 0;
         max-width: 400px;
-        transition: top 0.25s, left 0.25s;
+        transition: bottom 0.25s, top 0.25s, left 0.25s, right 0.25s;
     }
 
     .__pcms_tour_info .btn-close{
