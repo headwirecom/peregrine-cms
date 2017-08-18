@@ -40,9 +40,11 @@
 <script>
     const VueFormGenerator = window.VueFormGenerator;
     const VueMultiselect = window.VueMultiselect
+    const VueImagesLoaded = window.VueImagesLoaded
     Vue.component('vue-form-generator', VueFormGenerator.component)
-    Vue.component('vue-multiselect' , VueMultiselect)
-    Vue.component('multiselect' , VueMultiselect.Multiselect)
+    Vue.component('vue-multiselect', VueMultiselect)
+    Vue.component('multiselect', VueMultiselect.Multiselect)
+    Vue.directive('images-loaded', VueImagesLoaded)
     Vue.use(VueFormWizard)
 </script>
 
