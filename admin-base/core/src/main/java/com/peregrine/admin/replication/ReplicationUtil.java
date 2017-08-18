@@ -1,5 +1,6 @@
 package com.peregrine.admin.replication;
 
+import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +12,15 @@ import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 
 public class ReplicationUtil {
 
@@ -84,5 +91,42 @@ public class ReplicationUtil {
             }
         }
         return answer;
+    }
+
+    /**
+     * Set the replications properties if the source supports Replication Mixin
+     * @param source Source Resource to be updated. If null this call does nothing
+     * @param targetPath Replication Ref target path. Is ignored if target is not null. If target and this is null the replication ref is set to 'VOID'
+     * @param target Target Resource to be updated with same date and reference back to the source in the replication ref. If null will be ignored
+     */
+    public static void updateReplicationProperties(Resource source, String targetPath, Resource target) {
+        if(source != null) {
+            boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
+            LOGGER.trace("Is Replication Mixin: : {}, Source: '{}'", replicationMixin, source.getPath());
+            if(replicationMixin) {
+                ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
+                Calendar replicated = Calendar.getInstance();
+                sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+                sourceProperties.put(PER_REPLICATED, replicated);
+                LOGGER.trace("Updated Source Replication Properties");
+                if(target == null) {
+                    if(targetPath != null && !targetPath.isEmpty()) {
+                        sourceProperties.put(PER_REPLICATION_REF, targetPath);
+                    }
+                } else {
+                    ModifiableValueMap targetProperties = getModifiableProperties(target, false);
+                    targetProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+                    targetProperties.put(PER_REPLICATED, replicated);
+                    if(JCR_CONTENT.equals(source.getName())) {
+                        sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
+                        targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+                    } else {
+                        sourceProperties.put(PER_REPLICATION_REF, target.getPath());
+                        targetProperties.put(PER_REPLICATION_REF, source.getPath());
+                    }
+                    LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
+                }
+            }
+        }
     }
 }

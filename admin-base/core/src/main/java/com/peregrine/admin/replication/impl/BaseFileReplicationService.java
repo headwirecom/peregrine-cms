@@ -64,7 +64,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
@@ -92,14 +94,6 @@ public abstract class BaseFileReplicationService
         throws ReplicationException
     {
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
-//        Resource source = resourceResolver.getResource(localSource);
-//        if(source == null) {
-//            throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
-//        }
-//        Resource target = resourceResolver.getResource(localTarget);
-//        if(target == null) {
-//            throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
-//        }
         List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         replicationList.add(startingResource);
@@ -124,7 +118,6 @@ public abstract class BaseFileReplicationService
         for(Resource reference: new ArrayList<Resource>(replicationList)) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
-//        PerUtil.listMissingParents(startingResource, replicationList, resourceResolver.getResource("/"), resourceChecker);
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
         return replicate(replicationList);
     }
@@ -167,6 +160,7 @@ public abstract class BaseFileReplicationService
                 if(item != null) {
                     handleParents(item.getParent(), resourceResolver);
                     replicateResource(item);
+                    answer.add(item);
                 }
             }
             try {
@@ -227,14 +221,18 @@ public abstract class BaseFileReplicationService
 
     }
 
-    abstract void storeRendering(Resource resource, String extension, String content) throws ReplicationException;
+    abstract String storeRendering(Resource resource, String extension, String content) throws ReplicationException;
 
     private void replicatePerResource(Resource resource) throws ReplicationException {
         // Render the resource as .data.json and then write the content to the
         String extension = ".data.json";
         String renderingContent = renderResource(resource, extension);
         log.trace("Rendered Resource: {}", renderingContent);
-        storeRendering(resource, extension, renderingContent);
+        String path = storeRendering(resource, extension, renderingContent);
+        Resource contentResource = resource.getChild(JCR_CONTENT);
+        if(contentResource != null) {
+            updateReplicationProperties(contentResource, path, null);
+        }
     }
 
     private String renderResource(Resource resource, String extension) throws ReplicationException {

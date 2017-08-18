@@ -28,4 +28,5 @@
           jcr:primaryType="sling:OsgiConfig"
           name="localFS"
           targetFolder="${sling.home}/staticreplication"
+          creationStrategy="1"
 />

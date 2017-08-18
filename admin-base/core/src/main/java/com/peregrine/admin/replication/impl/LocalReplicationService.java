@@ -37,6 +37,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -57,10 +58,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 
 /**
@@ -385,30 +388,44 @@ public class LocalReplicationService
             }
             newProperties.put(key, value);
         }
-        boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
-        if(replicationMixin) {
-            Calendar replicated = Calendar.getInstance();
-            properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-            properties.put(PER_REPLICATED, replicated);
-            properties.put(PER_REPLICATION_REF, targetParent.getPath());
-            newProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-            newProperties.put(PER_REPLICATED, replicated);
-            newProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
-        }
-        Resource newTarget = targetParent.getChild(source.getName());
-        if(newTarget != null) {
-            ModifiableValueMap newTargetProperties = PerUtil.getModifiableProperties(newTarget, false);
-            for(String key: newProperties.keySet()) {
+        answer = targetParent.getChild(source.getName());
+        if(answer == null) {
+            ValueMap sourceProperties = getProperties(source, false);
+            Map<String, Object> targetProperties = new HashMap<>();
+            for(String key: sourceProperties.keySet()) {
                 try {
-                    newTargetProperties.put(key, newProperties.get(key));
+                    targetProperties.put(key, newProperties.get(key));
                 } catch(Exception e) {
                     // Ignore
                 }
             }
-            answer = newTarget;
-        } else {
-            answer = source.getResourceResolver().create(targetParent, source.getName(), newProperties);
+            answer = source.getResourceResolver().create(targetParent, source.getName(), targetProperties);
         }
+        updateReplicationProperties(source, null, answer);
+//        boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
+//        if(replicationMixin) {
+//            Calendar replicated = Calendar.getInstance();
+//            properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+//            properties.put(PER_REPLICATED, replicated);
+//            properties.put(PER_REPLICATION_REF, targetParent.getPath());
+//            newProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+//            newProperties.put(PER_REPLICATED, replicated);
+//            newProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+//        }
+//        Resource newTarget = targetParent.getChild(source.getName());
+//        if(newTarget != null) {
+//            ModifiableValueMap newTargetProperties = PerUtil.getModifiableProperties(newTarget, false);
+//            for(String key: newProperties.keySet()) {
+//                try {
+//                    newTargetProperties.put(key, newProperties.get(key));
+//                } catch(Exception e) {
+//                    // Ignore
+//                }
+//            }
+//            answer = newTarget;
+//        } else {
+//            answer = source.getResourceResolver().create(targetParent, source.getName(), newProperties);
+//        }
         return answer;
     }
 }

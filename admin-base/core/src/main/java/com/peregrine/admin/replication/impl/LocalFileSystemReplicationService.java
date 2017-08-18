@@ -82,6 +82,10 @@ import static com.peregrine.commons.util.PerUtil.getResource;
 public class LocalFileSystemReplicationService
     extends BaseFileReplicationService
 {
+    public static final int CREATE_NONE_STRATEGY = 0;
+    public static final int CREATE_LEAF_STRATEGY = 1;
+    public static final int CREATE_ALL_STRATEGY = 2;
+
     @ObjectClassDefinition(
         name = "Peregrine: Local FS Replication Service",
         description = "Each instance provides the configuration for a Local File System Replication"
@@ -100,6 +104,15 @@ public class LocalFileSystemReplicationService
             required = true
         )
         String targetFolder();
+        @AttributeDefinition(
+            name = "creationStrategy",
+            description = "Indicates what to create for the Target Folder. 0 (or any other not mentioned number) means no creation, 1 means creating only the leaf folder, 2 means creating all missing folders",
+            defaultValue = CREATE_NONE_STRATEGY + "",
+            min = CREATE_NONE_STRATEGY + "",
+            max = CREATE_ALL_STRATEGY + "",
+            required = true
+        )
+        int creationStrategy();
     }
 
     @Activate
@@ -113,12 +126,14 @@ public class LocalFileSystemReplicationService
 
     private String name;
     private File targetFolder;
+    private int creationStrategy = CREATE_NONE_STRATEGY;
 
     private void setup(BundleContext context, Configuration configuration) {
         name = configuration.name();
         if(name.isEmpty()) {
             throw new IllegalArgumentException("Replication Name cannot be empty");
         }
+        creationStrategy = configuration.creationStrategy();
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException("Replication Target Folder cannot be empty");
@@ -126,7 +141,20 @@ public class LocalFileSystemReplicationService
             targetFolderPath = handlePlaceholders(context, targetFolderPath);
             File temp = new File(targetFolderPath);
             if(!temp.exists()) {
-                throw new IllegalArgumentException("Replication Target Folder: '" + targetFolderPath + "' does not exist");
+                switch(creationStrategy) {
+                    case CREATE_LEAF_STRATEGY:
+                        if(!temp.mkdir()) {
+                            throw new IllegalArgumentException("Could not create leaf folder: " + temp.getAbsolutePath());
+                        }
+                        break;
+                    case CREATE_ALL_STRATEGY:
+                        if(!temp.mkdirs()) {
+                            throw new IllegalArgumentException("Could not create all folders: " + temp.getAbsolutePath());
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Replication Target Folder: '" + targetFolderPath + "' does not exist and will not be created");
+                }
             } else if(!temp.isDirectory()) {
                 throw new IllegalArgumentException("Replication Target Folder: '" + targetFolderPath + "' is not a directory");
             } else if(!temp.canRead() || !temp.canWrite()) {
@@ -186,7 +214,7 @@ public class LocalFileSystemReplicationService
     }
 
     @Override
-    void storeRendering(Resource resource, String extension, String content) throws ReplicationException {
+    String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
         File directory = new File(targetFolder, resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
             throw new ReplicationException("Failed to Store Rending as Parent Folder does not exist or is not a directory: " + directory.getAbsolutePath());
@@ -208,6 +236,7 @@ public class LocalFileSystemReplicationService
         } catch(IOException e) {
             throw new ReplicationException("Failed to write rending content to file: " + renderingFile.getAbsolutePath(), e);
         }
+        return "local-file-system://" + renderingFile.getAbsolutePath();
     }
 
     public static final String PLACEHOLDER_START_TOKEN = "${";
@@ -245,7 +274,7 @@ public class LocalFileSystemReplicationService
                 break;
             }
         }
-        log.trace("Place Holder hanlded: '{}'", answer);
+        log.trace("Place Holder handled, return: '{}'", answer);
         return answer;
     }
 }
