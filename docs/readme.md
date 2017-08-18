@@ -7,6 +7,8 @@ Peregrine CMS (PER:CMS) is a Head Optional, API First Content Management System 
  for the administration interface and can use any type of rendering (server side, react, vuejs, etc) for client facing
  websites. 
 
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/67uMASzplLw/0.jpg)](http://www.youtube.com/watch?v=67uMASzplLw)
+
 ### Getting Started
 
 To get started with Peregrine CMS you can use our command line tool: 
