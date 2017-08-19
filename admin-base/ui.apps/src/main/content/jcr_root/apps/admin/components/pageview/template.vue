@@ -183,7 +183,7 @@
                 )
             },
             onCancel: function() {
-                $perAdminApp.stateAction('selectPage', { selected: this.currentObject.show })
+                $perAdminApp.stateAction('showPageInfo', { selected: this.page.path  })
                 $perAdminApp.getNodeFromView('/state/tools').edit = false
             },
             onOk() {

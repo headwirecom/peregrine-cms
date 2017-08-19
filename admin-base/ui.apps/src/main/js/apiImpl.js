@@ -41,10 +41,14 @@ function fetch(path) {
     logger.fine('Fetch ', path)
     return axios.get(API_BASE+path).then( (response) => {
         return new Promise( (resolve, reject) => {
-            resolve(response.data)
+            if(response.request.responseURL.indexOf('/system/sling/form/login') >= 0) {
+                reject('need to authenticate')
+            } else {
+                resolve(response.data)
+            }
         })
     }).catch( (error) => { logger.error('Fetch request to',
-            error.response.request.path, 'failed')
+            path, 'failed')
             throw error
         })
 
