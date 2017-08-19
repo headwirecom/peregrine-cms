@@ -54,22 +54,43 @@
                         </a>
                     </li>
                 </template>
-                <!--<li>
-                    <a href="#!" title="cancel" class="waves-effect waves-light" v-on:click.stop.prevent="onCancel">
-                        <i class="material-icons">close</i>
-                    </a>
-                </li>-->
-                <li>
-                    <a 
-                        href="#!" 
-                        title="save page"   
-                        class="waves-effect waves-light" 
-                        v-on:click.stop.prevent="onOk">
-                        <i class="material-icons">check</i>
+
+                <template v-if="edit">
+                    <li>
+                        <a  title="cancel edit"
+                            class="waves-effect waves-light"
+                            v-on:click.stop.prevent="onCancel">
+                            <i class="material-icons">close</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a  title="save page properties"
+                            v-bind:disabled="!valid"
+                            class="waves-effect waves-light"
+                            v-on:click.stop.prevent="onOk">
+                            <i class="material-icons">check</i>
+                        </a>
+                    </li>
+                </template>
+                <li v-else>
+                    <a  title="edit page properties"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="onEdit">
+                        <i class="material-icons">edit</i>
                     </a>
                 </li>
+
             </ul>
-            <vue-form-generator v-bind:schema="schema"
+            <vue-form-generator v-if="!edit"
+                    class="vfg-preview"
+                    v-on:validated = "onValidated"
+                    v-bind:schema  = "readOnlySchema"
+                    v-bind:model   = "page"
+                    v-bind:options = "options">
+            </vue-form-generator>
+
+            <vue-form-generator v-else
+                                v-bind:schema="schema"
                                 v-bind:model="page"
                                 v-bind:options="options">
             </vue-form-generator>
@@ -86,6 +107,23 @@
     export default {
         props: ['model'],
         computed: {
+            edit() {
+                return $perAdminApp.getNodeFromView('/state/tools').edit
+            },
+            readOnlySchema() {
+                if(!this.schema) return {}
+                const roSchema = JSON.parse(JSON.stringify(this.schema))
+                roSchema.fields.forEach( (field) => {
+                    field.preview = true
+                    if(field.fields) {
+                        field.fields.forEach( (field) => {
+                            field.preview = true
+                        })
+                    }
+                })
+                return roSchema
+
+            },
             currentObject() {
                 return $perAdminApp.getNodeFromViewOrNull("/state/tools/page")
             },
@@ -113,6 +151,12 @@
             }
         },
         methods: {
+            onEdit: function() {
+                Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
+            },
+            onValidated(isValid, errors) {
+                this.valid = isValid
+            },
             renamePage() {
                 let newName = prompt('new name for '+this.page.name)
                 if(newName) {
@@ -138,11 +182,13 @@
                     }
                 )
             },
-            onCancel() {
-
+            onCancel: function() {
+                $perAdminApp.stateAction('selectPage', { selected: this.currentObject.show })
+                $perAdminApp.getNodeFromView('/state/tools').edit = false
             },
             onOk() {
                 $perAdminApp.stateAction('savePageProperties', this.page )
+                $perAdminApp.getNodeFromView('/state/tools').edit = false
             }
         }
     }
