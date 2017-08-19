@@ -1,0 +1,10 @@
+{
+    "definitions": {
+        "Docslayout": {
+            "type": "object",
+            "x-type": "container",
+            "properties": {
+            }
+        }
+    }
+}
