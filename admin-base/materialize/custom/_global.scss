@@ -62,7 +62,7 @@ dl {
   opacity: 0
 }
 
-.svg-icon {
+.svg-icons {
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
@@ -70,13 +70,16 @@ dl {
   height: 24px;
   line-height: 1;
   display: inline-block;
-  background-size: 75%;
+  background-size: 100%;
   background-position: center center;
   background-repeat: no-repeat;
 	&.svg-icon-copy {
-		background-image: url(/etc/felibs/admin/images/icon-copy.svg)
+		background-image: url('/etc/felibs/admin/images/icon-copy.svg')
 	}
 	&.svg-icon-paste {
-		background-image: url(/etc/felibs/admin/images/icon-paste.svg)
+		background-image: url('/etc/felibs/admin/images/icon-paste.svg')
+	}
+	&.svg-icon-rename {
+		background-image: url('/etc/felibs/admin/images/icon-rename.svg')
 	}
 }

@@ -27,46 +27,76 @@
         <template v-if="currentObject">
             <ul class="explorer-preview-nav">
                 <li>
-                    <a  href="#!" 
-                        title="rename asset" 
-                        class="waves-effect waves-light" 
+                    <a  href="#!"
+                        title="rename asset"
+                        class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameAsset">
-                        <i class="material-icons">edit</i>
+                        <i class="svg-icons svg-icon-rename"></i>
                     </a>
                 </li>
                 <li>
-                    <a  href="#!" 
-                        title="move asset" 
-                        class="waves-effect waves-light" 
+                    <a  href="#!"
+                        title="move asset"
+                        class="waves-effect waves-light"
                         v-on:click.stop.prevent="moveAsset">
                         <i class="material-icons">compare_arrows</i>
                     </a>
                 </li>
                 <li>
-                    <a  href="#!" 
-                        title="delete asset" 
-                        class="waves-effect waves-light" 
+                    <a  href="#!"
+                        title="delete asset"
+                        class="waves-effect waves-light"
                         v-on:click.stop.prevent="deleteAsset">
                         <i class="material-icons">delete</i>
                     </a>
                 </li>
+                <template v-if="edit">
+                    <li>
+                        <a  title="cancel edit"
+                            class="waves-effect waves-light"
+                            v-on:click.stop.prevent="onCancel">
+                            <i class="material-icons">close</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a  title="save page properties"
+                            v-bind:disabled="!valid"
+                            class="waves-effect waves-light"
+                            v-on:click.stop.prevent="onOk">
+                            <i class="material-icons">check</i>
+                        </a>
+                    </li>
+                </template>
+                <li v-else>
+                    <a  href="#!"
+                        title="edit"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="onEdit">
+                        <i class="material-icons">edit</i>
+                    </a>
+                </li>
             </ul>
-            <ul class="asset-info">
-                <li>
-                    <span class="asset-name">created:</span>
-                    <span class="asset-value">April 1st, 2017</span>
-                </li>
-                <li>
-                    <span class="asset-name">modified:</span>
-                    <span class="asset-value">April 1st, 2017</span>
-                </li>
-                <li>
-                    <span class="asset-name">source:</span>
-                    <span class="asset-value">{{ currentObject.show }}</span>
-                </li>
-            </ul>
-            <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show"/>
-            <iframe v-else v-bind:src="currentObject.show"></iframe>
+            <template v-if="!edit">
+                <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show" style="margin-top: 1em;"/>
+                <iframe v-else v-bind:src="currentObject.show" style="width: 100%; height: 60%; margin-top: 1em;"></iframe>
+
+                <vue-form-generator
+                        class="vfg-preview"
+                        v-on:validated = "onValidated"
+                        v-bind:schema  = "readOnlySchema"
+                        v-bind:model   = "asset"
+                        v-bind:options = "options">
+                </vue-form-generator>
+            </template>
+
+            <vue-form-generator v-if="edit"
+                                class="vfg-preview"
+                                v-on:validated = "onValidated"
+                                v-bind:schema  = "schema"
+                                v-bind:model   = "asset"
+                                v-bind:options = "options">
+            </vue-form-generator>
+
         </template>
         <div v-else class="explorer-preview-empty">
             <span>no asset selected</span>
@@ -78,7 +108,103 @@
 <script>
     export default {
         props: ['model'],
+        data: function() {
+            return {
+                edit: false,
+                valid: true,
+                options: {
+                    validateAfterLoad: true,
+                    validateAfterChanged: true,
+                    focusFirstField: true
+                }
+            }
+        },
         computed: {
+            schema() {
+                const view = $perAdminApp.getView()
+                if(this.asset) {
+                    return { "fields":[
+                        {
+                            "type": "input",
+                            "inputType": "text",
+                            "model": "name",
+                            "label": "Name",
+                            "readonly": true,
+                            "placeholder": "page name"
+                        },
+                        {
+                            "type": "input",
+                            "inputType": "text",
+                            "model": "title",
+                            "x-model": "jcr:title",
+                            "label": "Title",
+                            "placeholder": "asset title"
+                        },
+                        {
+                            "type": "input",
+                            "inputType": "text",
+                            "model": "created",
+                            "label": "Created",
+                            "readonly": true,
+                            "placeholder": "created"
+                        },
+                        {
+                            "type": "input",
+                            "inputType": "text",
+                            "model": "createdBy",
+                            "label": "Created By",
+                            "readonly": true,
+                            "placeholder": "created by"
+                        },
+                        {
+                            "type": "input",
+                            "inputType": "text",
+                            "model": "lastModified",
+                            "label": "Last Modified",
+                            "readonly": true,
+                            "placeholder": "lastModified"
+                        },
+                        {
+                            "type": "input",
+                            "inputType": "text",
+                            "model": "lastModifiedBy",
+                            "label": "Last Modified By",
+                            "readonly": true,
+                            "placeholder": "lastModifiedBy"
+                        },
+                        {
+                            "type": "input",
+                            "inputType": "text",
+                            "model": "tags",
+                            "label": "Tags",
+                            "placeholder": "tags"
+                        },
+                        {
+                            "type": "material-textarea",
+                            "inputType": "text",
+                            "model": "description",
+                            "label": "Description",
+                            "rows": 10,
+                            "placeholder": "enter a description for this asset"
+                        }
+                    ]}
+
+                }
+            },
+            readOnlySchema() {
+                if(!this.schema) return {}
+                const roSchema = JSON.parse(JSON.stringify(this.schema))
+                roSchema.fields.forEach( (field) => {
+                    field.preview = true
+                    if(field.fields) {
+                        field.fields.forEach( (field) => {
+                            field.preview = true
+                        })
+                    }
+                })
+                return roSchema
+
+            },
             currentObject: function () {
                 return $perAdminApp.getNodeFromView("/state/tools/asset")
             },
@@ -114,7 +240,22 @@
                         $perAdminApp.getNodeFromView('/state/tools').asset = null
                     }
                 )
+            },
+            onEdit() {
+                this.edit = true
+            },
+            onCancel() {
+                this.edit = false
+                $perAdminApp.stateAction('selectAsset', { selected: this.asset.path  })
+            },
+            onValidated(isValid, errors) {
+                this.valid = isValid
+            },
+            onOk() {
+                $perAdminApp.stateAction('saveAssetProperties', this.asset )
+                this.edit = false
             }
+
         }
     }
 </script>
