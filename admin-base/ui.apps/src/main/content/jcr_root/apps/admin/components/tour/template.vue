@@ -127,7 +127,9 @@
                 me.showTourItem()
             },
             showTourItem() {
-                const el = this.findElement(this.$root, this.model.children[this.index].locator)
+                const root = this.findElement(this.$root, this.model.children[this.index].locator)
+                const el = this.model.children[this.index].selector ? 
+                    root.querySelector(this.model.children[this.index].selector) : root;
                 this.enabled = false
                 this.text = ''
                 if(el !== null) {
