@@ -310,7 +310,7 @@ public class LocalReplicationService
             try {
                 session.save();
             } catch(RepositoryException e) {
-                log.warn("Failed to save changes repliate parents", e);
+                log.warn("Failed to save changes replicate parents", e);
             }
         }
         return answer;

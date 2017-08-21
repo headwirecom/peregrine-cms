@@ -112,4 +112,9 @@ public class ImageTransformationConfiguration {
     private String getConfigurationFormat() {
         return "Expected Configuration Format: transformation=<transformation name>|<a | separated list of <parameter>=<value>>";
     }
+
+    @Override
+    public String toString() {
+        return "ImageTransformationConfiguration[name: " + name + ", transformation name: " + transformationName + ", parameters: " + parameters + "]";
+    }
 }

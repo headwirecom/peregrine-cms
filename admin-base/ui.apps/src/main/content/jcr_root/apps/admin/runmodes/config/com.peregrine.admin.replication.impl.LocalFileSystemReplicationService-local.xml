@@ -29,4 +29,5 @@
           name="localFS"
           targetFolder="${sling.home}/staticreplication"
           creationStrategy="1"
+          mandatoryRenditions="thumbnail.png"
 />

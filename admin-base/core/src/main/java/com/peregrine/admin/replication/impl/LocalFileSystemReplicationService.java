@@ -27,15 +27,7 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
-import com.peregrine.admin.replication.ReplicationUtil;
-import com.peregrine.commons.util.PerUtil;
-import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
-import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
-import com.peregrine.commons.util.PerUtil.ResourceChecker;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.engine.SlingRequestProcessor;
 import org.osgi.framework.BundleContext;
@@ -50,24 +42,15 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
+import java.util.regex.Pattern;
 
 /**
  * This class replicates resources to a local file system folder
@@ -113,6 +96,12 @@ public class LocalFileSystemReplicationService
             required = true
         )
         int creationStrategy();
+        @AttributeDefinition(
+            name = "mandatoryRenditions",
+            description = "List of all the required renditions that are replicated (if missing they are created)",
+            required = true
+        )
+        String[] mandatoryRenditions();
     }
 
     @Activate
@@ -127,6 +116,7 @@ public class LocalFileSystemReplicationService
     private String name;
     private File targetFolder;
     private int creationStrategy = CREATE_NONE_STRATEGY;
+    private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
         name = configuration.name();
@@ -134,6 +124,11 @@ public class LocalFileSystemReplicationService
             throw new IllegalArgumentException("Replication Name cannot be empty");
         }
         creationStrategy = configuration.creationStrategy();
+        mandatoryRenditions.clear();
+        String[] renditions = configuration.mandatoryRenditions();
+        if(renditions != null) {
+            mandatoryRenditions.addAll(Arrays.asList(renditions));
+        }
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException("Replication Target Folder cannot be empty");
@@ -214,7 +209,91 @@ public class LocalFileSystemReplicationService
     }
 
     @Override
+    List<String> getMandatoryRenditions() {
+        return mandatoryRenditions;
+    }
+
+    @Override
     String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
+        File renderingFile = createRenderingFile(resource, extension);
+        try {
+            FileWriter fileWriter = new FileWriter(renderingFile);
+            fileWriter.append(content);
+            fileWriter.close();
+        } catch(IOException e) {
+            throw new ReplicationException("Failed to write rending content to file: " + renderingFile.getAbsolutePath(), e);
+        }
+        return "local-file-system://" + renderingFile.getAbsolutePath();
+    }
+
+    @Override
+    String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException {
+        File renderingFile = createRenderingFile(resource, extension);
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(renderingFile);
+            fileOutputStream.write(content);
+            fileOutputStream.close();
+        } catch(IOException e) {
+            throw new ReplicationException("Failed to write raw rending content to file: " + renderingFile.getAbsolutePath(), e);
+        }
+        return "local-file-system://" + renderingFile.getAbsolutePath();
+    }
+
+    @Override
+    void removeReplica(Resource resource, final List<Pattern> namePattern, final boolean isFolder) throws ReplicationException {
+        final String resourceName = resource.getName();
+        File directory = new File(targetFolder, resource.getParent().getPath());
+        if(!directory.exists() || !directory.isDirectory()) {
+            throw new ReplicationException("Failed to Store Rending as Parent Folder does not exist or is not a directory: " + directory.getAbsolutePath());
+        }
+        final List<Pattern> patterns = new ArrayList<>();
+        File[] filesToBeDeletedFiles = directory.listFiles(
+            new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    if(isFolder) {
+                        if(file.isDirectory() && file.getName().equals(resourceName)) {
+                            return true;
+                        }
+                    }
+                    if(namePattern == null) {
+                        return file.getName().startsWith(resourceName);
+                    } else {
+                        for(Pattern pattern : namePattern) {
+                            if(pattern.matcher(file.getName()).matches()) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        );
+        if(filesToBeDeletedFiles != null) {
+            for(File toBeDeleted : filesToBeDeletedFiles) {
+                log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
+                if(!deleteFile(toBeDeleted)) {
+                    throw new ReplicationException("Failed to delete file: " + toBeDeleted.getAbsolutePath());
+                }
+
+            }
+        }
+    }
+
+    private boolean deleteFile(File file) {
+        if(file.isDirectory()) {
+            for(File child: file.listFiles()) {
+                boolean answer = deleteFile(child);
+                if(!answer) {
+                    log.warn("Failed to delete file: '{}'", file.getAbsolutePath());
+                    return answer;
+                }
+            }
+        }
+        return file.delete();
+    }
+
+    private File createRenderingFile(Resource resource, String extension) throws ReplicationException {
         File directory = new File(targetFolder, resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
             throw new ReplicationException("Failed to Store Rending as Parent Folder does not exist or is not a directory: " + directory.getAbsolutePath());
@@ -229,14 +308,7 @@ public class LocalFileSystemReplicationService
                 renderingFile.delete();
             }
         }
-        try {
-            FileWriter fileWriter = new FileWriter(renderingFile);
-            fileWriter.append(content);
-            fileWriter.close();
-        } catch(IOException e) {
-            throw new ReplicationException("Failed to write rending content to file: " + renderingFile.getAbsolutePath(), e);
-        }
-        return "local-file-system://" + renderingFile.getAbsolutePath();
+        return renderingFile;
     }
 
     public static final String PLACEHOLDER_START_TOKEN = "${";

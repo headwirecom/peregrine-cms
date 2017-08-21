@@ -27,52 +27,36 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
-import com.peregrine.admin.replication.ReplicationUtil;
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
-import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
-import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.engine.SlingRequestProcessor;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.Designate;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.apache.sling.servlethelpers.MockRequestPathInfo;
+import org.apache.sling.servlethelpers.MockSlingHttpServletRequest;
+import org.apache.sling.servlethelpers.MockSlingHttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.IIOException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.servlet.ServletException;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerConstants.NT_FILE;
+import static com.peregrine.commons.util.PerConstants.NT_FOLDER;
+import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
+import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
+import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
-import static com.peregrine.commons.util.PerUtil.getResource;
 
 /**
  * Created by schaefa on 5/25/17.
@@ -80,6 +64,13 @@ import static com.peregrine.commons.util.PerUtil.getResource;
 public abstract class BaseFileReplicationService
     implements Replication
 {
+    public static final String DATA_JSON = ".data.json";
+    private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
+
+    static {
+        NAME_PATTERNS.add(Pattern.compile(".*\\.data\\.json"));
+    }
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String name;
@@ -96,16 +87,17 @@ public abstract class BaseFileReplicationService
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
         List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
-        replicationList.add(startingResource);
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
             public boolean doAdd(Resource resource) {
-                return !resource.getName().equals(PerConstants.JCR_CONTENT);
+                return !resource.getName().equals(JCR_CONTENT)
+                    && !resource.getName().equals(RENDITIONS);
             }
 
             @Override
             public boolean doAddChildren(Resource resource) {
-                return !resource.getName().equals(PerConstants.JCR_CONTENT);
+                return !resource.getName().equals(JCR_CONTENT)
+                    && !resource.getName().equals(RENDITIONS);
             }
         };
         // Need to check this list of they need to be replicated first
@@ -126,21 +118,8 @@ public abstract class BaseFileReplicationService
     public List<Resource> deactivate(Resource startingResource)
         throws ReplicationException
     {
-//        ResourceResolver resourceResolver = startingResource.getResourceResolver();
-//        Resource source = resourceResolver.getResource(localSource);
-//        if(source == null) {
-//            throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
-//        }
-//        Resource target = resourceResolver.getResource(localTarget);
-//        if(target == null) {
-//            throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
-//        }
-//
-//        List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
-//        ResourceChecker resourceChecker = new MatchingResourceChecker(source, target);
-//        PerUtil.listMatchingResources(startingResource, replicationList, resourceChecker, true);
-//        return deactivate(startingResource, replicationList);
-        return null;
+        List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
+        return deactivate(startingResource, replicationList);
     }
 
     @Override
@@ -158,7 +137,7 @@ public abstract class BaseFileReplicationService
             Session session = resourceResolver.adaptTo(Session.class);
             for(Resource item: resourceList) {
                 if(item != null) {
-                    handleParents(item.getParent(), resourceResolver);
+                    handleParents(item.getParent());
                     replicateResource(item);
                     answer.add(item);
                 }
@@ -183,6 +162,17 @@ public abstract class BaseFileReplicationService
      */
     public List<Resource> deactivate(Resource toBeDeleted, List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
+        String primaryType = getPrimaryType(toBeDeleted);
+        if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
+            removeReplica(toBeDeleted, null, false);
+            answer.add(toBeDeleted);
+        } else if(primaryType.startsWith("per:")) {
+            removeReplica(toBeDeleted, NAME_PATTERNS, false);
+            answer.add(toBeDeleted);
+        } else if(primaryType.equals(NT_FOLDER) || primaryType.equals(SLING_FOLDER) || primaryType.equals(SLING_ORDERED_FOLDER)) {
+            removeReplica(toBeDeleted, null, true);
+            answer.add(toBeDeleted);
+        }
         return answer;
     }
 
@@ -193,12 +183,12 @@ public abstract class BaseFileReplicationService
 
     abstract void createTargetFolder(String path) throws ReplicationException;
 
-    private void handleParents(Resource resource, ResourceResolver resourceResolver) throws ReplicationException {
+    private void handleParents(Resource resource) throws ReplicationException {
         // Go through all its parents and make sure the folder does exist
         if(!isFolderOnTarget(resource.getPath())) {
             Resource parent = resource.getParent();
             if(parent != null) {
-                handleParents(parent, resourceResolver);
+                handleParents(parent);
             }
             createTargetFolder(resource.getPath());
         }
@@ -210,39 +200,100 @@ public abstract class BaseFileReplicationService
         if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
             replicateAsset(resource);
         } else if(primaryType.startsWith("per:")) {
-            replicatePerResource(resource);
+            replicatePerResource(resource, false);
         } else {
             // Ignore
-            log.warn("Unsupported Primary Type: '{}' for Resource: '{}'", primaryType, resource.getPath());
+            log.debug("Unsupported Primary Type: '{}' for Resource: '{}'", primaryType, resource.getPath());
         }
     }
 
-    private void replicateAsset(Resource resource) {
+    abstract List<String> getMandatoryRenditions();
 
+    private void replicateAsset(Resource resource) throws ReplicationException {
+        // Get the image data of the resource and write to the target
+        byte[] imageContent = renderRawResource(resource, "", false);
+        storeRendering(resource, "", imageContent);
+        // Loop over all existing renditions and write the image data to the target
+        List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
+        Resource renditions = resource.getChild(RENDITIONS);
+        if(renditions != null) {
+            for(Resource rendition: renditions.getChildren()) {
+                if(NT_FILE.equals(getPrimaryType(rendition))) {
+                    try {
+                        imageContent = renderRawResource(resource, ".rendition.json/" + rendition.getName(), true);
+                        storeRendering(resource, "." + rendition.getName(), imageContent);
+                        checkRenditions.remove(rendition.getName());
+                    } catch(ReplicationException e) {
+                        log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
+                        log.warn("Rendition Failure", e);
+                    }
+                }
+            }
+        }
+        // Loop over all remaining mandatory renditions and write the image data to the target
+        for(String renditionName: checkRenditions) {
+            try {
+                imageContent = renderRawResource(resource, ".rendition.json/" + renditionName, true);
+                // Get rendition
+                if(renditions == null) { renditions = resource.getChild(RENDITIONS); }
+                if(renditions != null) {
+                    Resource rendition = renditions.getChild(renditionName);
+                    if(rendition != null) {
+                        storeRendering(resource, "." + rendition.getName(), imageContent);
+                    }
+                }
+            } catch(ReplicationException e) {
+                log.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
+                log.warn("Rendition Failure", e);
+            }
+        }
     }
 
     abstract String storeRendering(Resource resource, String extension, String content) throws ReplicationException;
+    abstract String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException;
+    abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
-    private void replicatePerResource(Resource resource) throws ReplicationException {
+    private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
         // Render the resource as .data.json and then write the content to the
-        String extension = ".data.json";
-        String renderingContent = renderResource(resource, extension);
+        String renderingContent = renderResource(resource, DATA_JSON, post);
         log.trace("Rendered Resource: {}", renderingContent);
-        String path = storeRendering(resource, extension, renderingContent);
+        String path = storeRendering(resource, DATA_JSON, renderingContent);
         Resource contentResource = resource.getChild(JCR_CONTENT);
         if(contentResource != null) {
             updateReplicationProperties(contentResource, path, null);
         }
     }
 
-    private String renderResource(Resource resource, String extension) throws ReplicationException {
+    private byte[] renderRawResource(Resource resource, String extension, boolean post) throws ReplicationException {
+        return renderResource0(resource, extension, post).getOutput();
+    }
+
+    private String renderResource(Resource resource, String extension, boolean post) throws ReplicationException {
+        return renderResource0(resource, extension, post).getOutputAsString();
+    }
+
+    private MockSlingHttpServletResponse renderResource0(Resource resource, String extension, boolean post) throws ReplicationException {
         try {
-            final HttpRequest req = new HttpRequest(resource.getPath() + extension);
-            final HttpResponse resp = new HttpResponse();
+            MockSlingHttpServletRequest req = new MockSlingHttpServletRequest(resource.getResourceResolver());
+            MockRequestPathInfo mrpi = (MockRequestPathInfo) req.getRequestPathInfo();
+            mrpi.setResourcePath(resource.getPath());
+            mrpi.setExtension(extension);
+            req.setMethod("POST");
+            String requestPath = resource.getPath() + extension;
+            log.trace("Render Resource Request Path: '{}'", mrpi);
+            MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
             getRequestProcessor().processRequest(req, resp, resource.getResourceResolver());
-            return resp.getContent();
+            log.trace("Response Status: '{}'", resp.getStatus());
+            //AS TODO: do we need to support redirects (301 / 302)
+            if(resp.getStatus() != 200) {
+                String content = resp.getOutputAsString();
+                log.error("Request of: '{}' failed (status: {}). Output : '{}'", requestPath, resp.getStatus(), content);
+                throw new ReplicationException("Request: '" + requestPath + "' failed with status: '" + resp.getStatus() + "'");
+            } else {
+                return resp;
+            }
         } catch(UnsupportedEncodingException e) {
-            throw new ReplicationException("Unsuported Encoding while creating the Render Response", e);
+            throw new ReplicationException("Unsupported Encoding while creating the Render Response", e);
         } catch(ServletException | IOException e) {
             throw new ReplicationException("Failed to render resource: " + resource.getPath(), e);
         }

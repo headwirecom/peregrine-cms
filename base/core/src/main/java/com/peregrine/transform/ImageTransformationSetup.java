@@ -32,8 +32,11 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,6 +48,8 @@ import java.util.List;
 )
 @Designate(ocd = ImageTransformationSetup.Configuration.class, factory = true)
 public class ImageTransformationSetup {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ObjectClassDefinition(
         name = "Peregrine: Image Transformation Setup",
@@ -90,8 +95,17 @@ public class ImageTransformationSetup {
 
     private void setup(Configuration configuration) {
         name = configuration.setupName();
+        logger.trace("Image Configuration Name: '{}', Image Transformation Configurations: '{}'", name,
+            configuration.imageTransformationConfigurations() == null ?
+                null : Arrays.asList(configuration.imageTransformationConfigurations())
+            );
         for(String imageTransformationConfiguration: configuration.imageTransformationConfigurations()) {
             imageTransformationConfigurations.add(new ImageTransformationConfiguration(name, imageTransformationConfiguration));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ImageTransformationSetup{" + "name:'" + name + '\'' + ", imageTransformationConfigurations:" + imageTransformationConfigurations + '}';
     }
 }

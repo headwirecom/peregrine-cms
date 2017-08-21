@@ -26,6 +26,8 @@ public class HttpServletOutputStream extends ServletOutputStream {
 
     private final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
+    public byte[] toBytes() { return bos.toByteArray(); }
+
     @Override
     public String toString() {
         return bos.toString();
