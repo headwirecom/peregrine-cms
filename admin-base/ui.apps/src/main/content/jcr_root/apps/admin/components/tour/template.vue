@@ -23,19 +23,22 @@
   #L%
   -->
 <template>
-    <div v-if="enabled" v-bind:class="tourClass">
-        <div class="__pcms_tour_overlay tour-left" ref="left" v-bind:style="leftStyle"></div>
-        <div class="__pcms_tour_overlay tour-right" ref="right" v-bind:style="rightStyle"></div>
-        <div class="__pcms_tour_overlay tour-top" ref="top" v-bind:style="topStyle"></div>
-        <div class="__pcms_tour_overlay tour-bot" ref="bottom" v-bind:style="bottomStyle"></div>
-        <div class="__pcms_tour_highlite" ref="highlite" v-bind:style="highliteStyle"></div>
-        <div class="__pcms_tour_info card" ref="info" v-bind:style="infoStyle">
-            <button v-on:click="enabled = false" class="btn-flat btn-close"><i class="material-icons">close</i></button>
-            <div ref="tourText" v-html="text" class="card-content">
-            </div>
-            <div class="card-action">
-                <button v-on:click="onPrevious" class="btn">prev</button>
-                <button v-on:click="onNext" class="btn">next</button>
+    <div v-bind:data-per-path="model.path">
+        <div v-if="edit">edit tour</div>
+        <div v-if="enabled" v-bind:class="tourClass" v-bind:data-per-path="model.path">
+            <div class="__pcms_tour_overlay tour-left" ref="left" v-bind:style="leftStyle"></div>
+            <div class="__pcms_tour_overlay tour-right" ref="right" v-bind:style="rightStyle"></div>
+            <div class="__pcms_tour_overlay tour-top" ref="top" v-bind:style="topStyle"></div>
+            <div class="__pcms_tour_overlay tour-bot" ref="bottom" v-bind:style="bottomStyle"></div>
+            <div class="__pcms_tour_highlite" ref="highlite" v-bind:style="highliteStyle"></div>
+            <div class="__pcms_tour_info card" ref="info" v-bind:style="infoStyle">
+                <button v-on:click="enabled = false" class="btn-flat btn-close"><i class="material-icons">close</i></button>
+                <div ref="tourText" v-html="text" class="card-content">
+                </div>
+                <div class="card-action">
+                    <button v-on:click="onPrevious" class="btn">prev</button>
+                    <button v-on:click="onNext" class="btn">next</button>
+                </div>
             </div>
         </div>
     </div>
@@ -48,6 +51,9 @@
             return { enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0 }
         },
         computed: {
+            edit() {
+                return window.parent !== window && window.parent.$perAdminApp !== undefined
+            },
             bottom() { return this.top + this.height },
             right() { return this.left + this.width },
             tourClass() {

@@ -1,0 +1,34 @@
+{
+  "fields": [
+    {
+      "type": "collection",
+      "title": "Tour Items",
+      "model": "children",
+      "multifield": true,
+      "fieldLabel": ["locator"],
+      "fields" : [
+        {
+          "type": "input",
+          "label": "locator",
+          "model": "locator"
+        },
+        {
+          "type": "material-textarea",
+          "label": "Text",
+          "model": "text",
+          "rows": 5
+        }
+      ]
+    },
+    {
+      "type": "input",
+      "label": "Selector",
+      "model": "selector"
+    },
+    {
+      "type": "input",
+      "label": "anchor",
+      "model": "anchor"
+    }
+  ]
+}
