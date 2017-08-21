@@ -135,9 +135,11 @@
             },
             schema() {
                 const view = $perAdminApp.getView()
-                const component = this.page.component
-                const schema = view.admin.componentDefinitions[component]
-                return schema
+                if(this.page) {
+                    const component = this.page.component
+                    const schema = view.admin.componentDefinitions[component]
+                    return schema
+                }
             },
 
         },
@@ -169,7 +171,7 @@
             },
             deletePage() {
                 $perAdminApp.stateAction('deletePage', this.page.path)
-                $perAdminApp.stateAction('showPageInfo', { selected: null })
+//                $perAdminApp.stateAction('showPageInfo', { selected: null })
             },
             movePage() {
                 let path = this.page.path
