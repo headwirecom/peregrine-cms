@@ -68,8 +68,25 @@
 
             <tour jcr:primaryType="nt:unstructured"
                 sling:resourceType="admin/components/tour">
-                <item1 jcr:primaryType="nt:unstructured" locator="/jcr:content/explorer/edit" text="manage pages for your websites"/>
-                <item2 jcr:primaryType="nt:unstructured" locator="/jcr:content/explorer" text="yeh, that's us"/>
+                <item1 jcr:primaryType="nt:unstructured" locator="/jcr:content/explorer" text="Welcome to the page explorer, where you can manage pages within your site."/>
+                <item2 
+                    jcr:primaryType="nt:unstructured" 
+                    locator="/jcr:content/explorer" 
+                    text="Select a site here"
+                    selector=".explorer-main"
+                />
+                <item3 
+                    jcr:primaryType="nt:unstructured" 
+                    locator="/jcr:content/explorer/edit" 
+                    text="This box displays relevant information for a site"
+                    selector=".explorer-main"
+                />
+                <item4 
+                    jcr:primaryType="nt:unstructured" 
+                    locator="/jcr:content/explorer" 
+                    text="Access that information by clicking here"
+                    selector=".explorer-main"
+                />
             </tour>
     </jcr:content>
 </jcr:root>
