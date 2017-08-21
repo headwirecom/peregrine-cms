@@ -72,6 +72,7 @@
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
                     text="Welcome to the page explorer, where you can manage pages within your site."
+                    anchor="top right"
                 />
                 <item2 
                     jcr:primaryType="nt:unstructured" 
@@ -90,6 +91,12 @@
                     locator="/jcr:content/explorer" 
                     text="Access that information by clicking here"
                     selector=".explorer-main > ul > li:nth-child(1) > div > span:nth-child(3)"
+                />
+                <item5 
+                    jcr:primaryType="nt:unstructured" 
+                    locator="/jcr:content/explorer" 
+                    text="Have fun!"
+                    anchor="bottom left"
                 />
             </tour>
     </jcr:content>

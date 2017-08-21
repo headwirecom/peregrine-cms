@@ -86,6 +86,17 @@
                 const placeAbove = {top : `${this.top - this.info.height - 20}px`}
                 const placeBelow = {top : `${this.bottom + 10}px`}
 
+                //Use anchor if supplied
+                const anchor = this.model.children[this.index].anchor;
+                if (anchor) {
+                    let vertical, horizontal = {}
+                    if(anchor.indexOf('top') > -1) vertical     = {top : 0}
+                    if(anchor.indexOf('bottom') > -1) vertical  = {top : `${window.innerHeight - this.info.height}px`}
+                    if(anchor.indexOf('left') > -1) horizontal  = {left: 0}
+                    if(anchor.indexOf('right') > -1) horizontal = {left: `${window.innerWidth - this.info.width}px`}
+                    return Object.assign( vertical, horizontal);
+                }
+
                 const spaceLeft  = this.left;
                 const spaceRight = window.innerWidth - this.right;
                 const spaceAbove = this.top;
@@ -196,6 +207,7 @@
     }
 
     .__pcms_tour_info {
+        margin: 0;
         min-width: 400px;
         position: fixed;
         max-width: 400px;
