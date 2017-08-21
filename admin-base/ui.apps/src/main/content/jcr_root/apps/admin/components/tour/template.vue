@@ -48,7 +48,10 @@
     export default {
         props: ['model'],
         data() {
-            return { enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0 }
+            return { 
+                enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0,
+                info: {width: null, height: null}
+            }
         },
         computed: {
             edit() {
@@ -78,24 +81,34 @@
                 return { top: `${this.top}px`, left: `${this.left}px`, width: `${this.width}px`, height: `${this.height}px`}
             },
             infoStyle() {
-                //TODO: Handle space above/below cases and target too large case. Need to use refs to get info size
-                const placeLeft = {left: `${this.left - 400 - 10}px`}
+                const placeLeft  = {left: `${this.left - this.info.width - 20}px`}
                 const placeRight = {left: `${this.right + 10}px`}
+                const placeAbove = {top : `${this.top - this.info.height - 20}px`}
+                const placeBelow = {top : `${this.bottom + 10}px`}
 
-                let spaceLeft = this.left;
-                let spaceRight = window.innerWidth - this.right;
-                // const spaceAbove = this.top;
-                // const spaceBelow = window.innerHeight - this.bottom;
+                const spaceLeft  = this.left;
+                const spaceRight = window.innerWidth - this.right;
+                const spaceAbove = this.top;
+                const spaceBelow = window.innerHeight - this.bottom;
 
-                let horizontalStyle = spaceLeft > spaceRight ? 
+                const horizontalStyle = spaceLeft > spaceRight ? 
                     placeLeft : placeRight;
+                const verticalStyle = spaceAbove > spaceBelow ? 
+                    placeAbove : placeBelow;
 
-                return Object.assign({top: `${this.top}px`}, horizontalStyle )
+                if ( spaceBelow > (this.info.height + 40) || spaceAbove > (this.info.height + 40)) {
+                    return Object.assign( verticalStyle, {left: `${this.left}px`});
+                }
+                if ( spaceLeft > (this.info.width + 40) || spaceRight > (this.info.width + 40)) {
+                    return Object.assign( horizontalStyle, {top: `${this.top}px`});
+                }
+                return {
+                    top: `${this.bottom - this.info.height}px`,
+                    left:`${this.right - this.info.width}px`
+                }
             }
-
-
-
         },
+
         methods: {
             findElement(node, path) {
                 if(node) {
@@ -140,6 +153,10 @@
         },
         mounted() {
             this.index = 0
+        },
+        updated() {
+            this.info.width = this.$refs.info ? this.$refs.info.offsetWidth : 0;
+            this.info.height = this.$refs.info ?this.$refs.info.offsetHeight : 0;
         }
     }
 </script>
