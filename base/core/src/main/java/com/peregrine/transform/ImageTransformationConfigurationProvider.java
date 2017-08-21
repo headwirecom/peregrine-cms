@@ -50,12 +50,17 @@ import java.util.Map;
 )
 public class ImageTransformationConfigurationProvider {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<String, List<ImageTransformationConfiguration>> imageTransformationSetups = new HashMap<String, List<ImageTransformationConfiguration>>();
 
     public List<ImageTransformationConfiguration> getImageTransformationConfigurations(String name) {
-        return imageTransformationSetups.get(name);
+        logger.trace("Obtain Image Transformation Configuration with Name: '{}', found in Map: '{}'", name, imageTransformationSetups.containsKey(name));
+        logger.trace("Image Transformation Setup Keys: '{}'", imageTransformationSetups.keySet());
+        List<ImageTransformationConfiguration> answer = imageTransformationSetups.get(name);
+        logger.trace("Image Transformation Setup returned: '{}'", answer);
+//        log.trace("Current List of Image Transformation Configurations: '{}'", imageTransformationSetups);
+        return answer;
     }
 
     @Reference(
@@ -66,12 +71,12 @@ public class ImageTransformationConfigurationProvider {
     @SuppressWarnings("unused")
     void bindImageTransformationConfiguration(ImageTransformationSetup imageTransformationSetup) {
         imageTransformationSetups.put(imageTransformationSetup.getName(), imageTransformationSetup.getImageTransformationConfigurations());
-        log.info("Image Transformation Setup added '{}'", imageTransformationSetup);
+        logger.info("Image Transformation Setup added '{}', Image Transformation Configurations: '{}'", imageTransformationSetup.getName(), imageTransformationSetup.getImageTransformationConfigurations());
     }
 
     @SuppressWarnings("unused")
     void unbindImageTransformationConfiguration(ImageTransformationSetup imageTransformationSetup) {
         imageTransformationSetups.remove(imageTransformationSetup);
-        log.info("Image Transformation Setup removed '{}'", imageTransformationSetup);
+        logger.info("Image Transformation Setup removed '{}'", imageTransformationSetup.getName());
     }
 }

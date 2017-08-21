@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.admin.replication.impl;
 
 /*-
  * #%L
@@ -25,6 +25,8 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
+import com.peregrine.admin.replication.Reference;
+import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import org.apache.sling.api.resource.Resource;

@@ -348,7 +348,7 @@ public class AdminResourceHandlerService
                         String name = tag.getTagName();
                         String tagName = selector != null ? selector.acceptTag(name) : name;
                         if(tagName != null) {
-                            logger.debug("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
+                            logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
                             if(asJson) {
                                 json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
                             } else {

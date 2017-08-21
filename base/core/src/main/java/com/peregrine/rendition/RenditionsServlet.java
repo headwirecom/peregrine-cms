@@ -67,7 +67,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * and creates them if they are not available yet
  *
  * Drag an image to the asset page: http://localhost:8080/content/admin/assets.html/path///content/assets
- * Create a thumbnail image with: curl -u admin:admin -X POST http://localhost:8080/content/assets/test.png.rendition.json/thunbnail
+ * Create a thumbnail image with: curl -u admin:admin -X POST http://localhost:8080/content/assets/test.png.rendition.json/thumbnail.png
  */
 public class RenditionsServlet extends AbstractBaseServlet {
 
@@ -116,7 +116,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
                 // Got a output stream -> send it back
                 answer = new StreamResponse(imageContext.getTargetMimeType(), imageContext.getImageStream());
             } else {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to load or transform the broken image");
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create a rendition of image: " + asset.getName() + ", rendition: " + renditionName);
             }
         } else {
             // This was not a request for a rendition but just the original asset -> load and send it back
