@@ -32,7 +32,7 @@
                             title="rename page" 
                             class="waves-effect waves-light" 
                             v-on:click.stop.prevent="renamePage">
-                            <i class="material-icons">edit</i>
+                            <i class="svg-icons svg-icon-rename"></i>
                         </a>
                     </li>
                     <li>
