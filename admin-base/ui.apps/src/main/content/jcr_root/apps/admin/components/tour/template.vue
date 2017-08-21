@@ -46,8 +46,8 @@
         props: ['model'],
         data() {
             return { 
-                enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0, 
-                info: {width: 0, height: 0}
+                enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0,
+                info: {width: null, height: null}
             }
         },
         computed: {
@@ -75,10 +75,9 @@
                 return { top: `${this.top}px`, left: `${this.left}px`, width: `${this.width}px`, height: `${this.height}px`}
             },
             infoStyle() {
-                //TODO: Handle space above/below cases and target too large case. Need to use refs to get info size
-                const placeLeft  = {left: `${this.left - this.info.width - 10}px`}
+                const placeLeft  = {left: `${this.left - this.info.width - 20}px`}
                 const placeRight = {left: `${this.right + 10}px`}
-                const placeAbove = {top : `${this.top - this.info.height - 10}px`}
+                const placeAbove = {top : `${this.top - this.info.height - 20}px`}
                 const placeBelow = {top : `${this.bottom + 10}px`}
 
                 const spaceLeft  = this.left;
@@ -86,33 +85,24 @@
                 const spaceAbove = this.top;
                 const spaceBelow = window.innerHeight - this.bottom;
 
-                if ( spaceBelow > this.info.height + 40 ) {
-                    return Object.assign( placeBelow, {left: `${this.left}px`});
+                const horizontalStyle = spaceLeft > spaceRight ? 
+                    placeLeft : placeRight;
+                const verticalStyle = spaceAbove > spaceBelow ? 
+                    placeAbove : placeBelow;
+
+                if ( spaceBelow > (this.info.height + 40) || spaceAbove > (this.info.height + 40)) {
+                    return Object.assign( verticalStyle, {left: `${this.left}px`});
                 }
-                if ( spaceAbove > this.info.height + 40 ) {
-                    return Object.assign( placeAbove, {left: `${this.left}px`});
-                }
-                if ( spaceLeft > this.info.width + 40 ) {
-                    return Object.assign( placeLeft, {top: `${this.top}px`});
-                }
-                if ( spaceRight > this.info.width + 40 ) {
-                    return Object.assign( placeRight, {top: `${this.top}px`});
+                if ( spaceLeft > (this.info.width + 40) || spaceRight > (this.info.width + 40)) {
+                    return Object.assign( horizontalStyle, {top: `${this.top}px`});
                 }
                 return {
                     top: `${this.bottom - this.info.height}px`,
                     left:`${this.right - this.info.width}px`
                 }
-
-
-                //Where to put box????
-                let horizontalStyle = spaceLeft > spaceRight ? 
-                    placeLeft : placeRight;
-                let verticalStyle = spaceAbove > spaceBelow ? 
-                    placeAbove : placeBelow;
-
             }
-
         },
+
         methods: {
             findElement(node, path) {
                 if(node) {
@@ -157,10 +147,10 @@
         },
         mounted() {
             this.index = 0
-            if(this.$refs.info){
-                this.info.width = this.$refs.info.offsetWidth
-                this.info.height = this.$refs.info.offsetHeight
-            }
+        },
+        updated() {
+            this.info.width = this.$refs.info ? this.$refs.info.offsetWidth : 0;
+            this.info.height = this.$refs.info ?this.$refs.info.offsetHeight : 0;
         }
     }
 </script>
