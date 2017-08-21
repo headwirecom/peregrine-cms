@@ -50,5 +50,13 @@ public class TourModel extends Container {
 
     public TourModel(Resource r) { super(r); }
 
+    @Inject
+    private String selector;
+
+    @Inject
+    private String anchor;
+
+    public String getAnchor() { return anchor; }
+    public String getSelector() { return selector; }
 
 }

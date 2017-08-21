@@ -246,11 +246,13 @@ public class PerUtil {
                     childResourceChecker = new AddAllResourceChecker();
                 }
             }
-            for(Resource child : startingResource.getChildren()) {
-                if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-                    listMissingResources(child, response, childResourceChecker, true);
-                } else if(deep) {
-                    listMissingResources(child, response, childResourceChecker, true);
+            if(resourceChecker.doAddChildren(startingResource)) {
+                for(Resource child : startingResource.getChildren()) {
+                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
+                        listMissingResources(child, response, childResourceChecker, true);
+                    } else if(deep) {
+                        listMissingResources(child, response, childResourceChecker, true);
+                    }
                 }
             }
         }
@@ -266,11 +268,13 @@ public class PerUtil {
                     childResourceChecker = new AddAllResourceChecker();
                 }
             }
-            for(Resource child : startingResource.getChildren()) {
-                if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-                    listMatchingResources(child, response, childResourceChecker, true);
-                } else if(deep) {
-                    listMatchingResources(child, response, childResourceChecker, true);
+            if(resourceChecker.doAddChildren(startingResource)) {
+                for(Resource child : startingResource.getChildren()) {
+                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
+                        listMatchingResources(child, response, childResourceChecker, true);
+                    } else if(deep) {
+                        listMatchingResources(child, response, childResourceChecker, true);
+                    }
                 }
             }
         }
@@ -352,6 +356,7 @@ public class PerUtil {
 
     public static interface ResourceChecker {
         public boolean doAdd(Resource resource);
+        public boolean doAddChildren(Resource resource);
     }
 
     public static class MissingOrOutdatedResourceChecker
@@ -383,6 +388,9 @@ public class PerUtil {
             }
             return answer;
         }
+
+        @Override
+        public boolean doAddChildren(Resource resource) { return true; }
     }
 
     public static class MatchingResourceChecker
@@ -402,6 +410,9 @@ public class PerUtil {
             Resource targetResource = target.getChild(relativePath);
             return targetResource != null;
         }
+
+        @Override
+        public boolean doAddChildren(Resource resource) { return true; }
     }
 
     public static class AddAllResourceChecker
@@ -411,6 +422,8 @@ public class PerUtil {
         public boolean doAdd(Resource resource) {
             return true;
         }
+        @Override
+        public boolean doAddChildren(Resource resource) { return true; }
     }
 
     public static String getComponentNameFromResource(Resource resource) {

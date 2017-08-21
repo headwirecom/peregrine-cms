@@ -67,6 +67,7 @@
             <item2 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/pages" text="manage pages for your websites"/>
             <item3 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/assets" text="create and manage assets for your websites"/>
             <item4 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/objects" text="create and manage objects for your site"/>
+            <item5 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/templates" text="create and manage templates for your site"/>
         </tour>
 
     </jcr:content>

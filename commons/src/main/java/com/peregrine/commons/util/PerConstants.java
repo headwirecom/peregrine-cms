@@ -8,6 +8,7 @@ import java.util.Locale;
 public class PerConstants {
     public static final String JCR_CONTENT = "jcr:content";
     public static final String JCR_DATA = "jcr:data";
+    public static final String NT_FOLDER = "nt:folder";
     public static final String NT_FILE = "nt:file";
     public static final String NT_RESOURCE = "nt:resource";
     public static final String NT_UNSTRUCTURED = "nt:unstructured";

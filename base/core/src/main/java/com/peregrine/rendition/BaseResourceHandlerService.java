@@ -60,6 +60,7 @@ public class BaseResourceHandlerService
         if(resource == null) {
             throw new HandlerException("No Asset Resource provided");
         }
+        logger.trace("Create Rendition for resource: '{}', rendition name: '{}', source mime type: '{}'", resource.getPath(), renditionName, sourceMimeType);
         PerAsset asset = resource.adaptTo(PerAsset.class);
         if(asset == null) {
             throw new HandlerException("Resource: " + resource.getPath() + " could not be adapted to an Asset");
@@ -85,12 +86,13 @@ public class BaseResourceHandlerService
             if(assetRenditionStream != null) {
                 answer = new ImageContext(sourceMimeType, targetMimeType, assetRenditionStream);
             }
+            logger.trace("Existing Image Rendition Context: '{}'", answer);
             if(answer == null) {
                 try {
                     InputStream sourceStream = asset.getRenditionStream((Resource) null);
                     if(sourceStream != null) {
-                        ImageContext imageContext = transform(renditionName, sourceMimeType, sourceStream, targetMimeType, imageTransformationConfigurationList, false);
-                        asset.addRendition(renditionName, imageContext.getImageStream(), targetMimeType);
+                        answer = transform(renditionName, sourceMimeType, sourceStream, targetMimeType, imageTransformationConfigurationList, false);
+                        asset.addRendition(renditionName, answer.getImageStream(), targetMimeType);
                         updateModification(asset.getResource());
                         answer.resetImageStream(asset.getRenditionStream(renditionName));
                     } else {
@@ -103,6 +105,7 @@ public class BaseResourceHandlerService
                 } catch(PersistenceException e) {
                     logger.error("Failed to save Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
                 }
+                logger.trace("Newly Created Image Rendition Context: '{}'", answer);
             }
             if(answer == null) {
                 // Rendition was not found and could not be created therefore load and thumbnail the broken image
@@ -117,7 +120,10 @@ public class BaseResourceHandlerService
                         logger.error("Transformation failed, image ignore", e);
                     }
                 }
+                logger.trace("Broken Image Rendition Context: '{}'", answer);
             }
+        } else {
+            logger.trace("Image Transformation List is null");
         }
         return answer;
     }

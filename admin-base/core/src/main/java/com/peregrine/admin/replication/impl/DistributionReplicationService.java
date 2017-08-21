@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.admin.replication.impl;
 
 /*-
  * #%L
@@ -25,6 +25,8 @@ package com.peregrine.admin.replication;
  * #L%
  */
 
+import com.peregrine.admin.replication.ReferenceLister;
+import com.peregrine.admin.replication.Replication;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -134,9 +136,10 @@ public class DistributionReplicationService
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
-            public boolean doAdd(Resource resource) {
-                return true;
-            }
+            public boolean doAdd(Resource resource) { return true; }
+
+            @Override
+            public boolean doAddChildren(Resource resource) { return true; }
         };
         // Need to check this list of they need to be replicated first
         for(Resource resource: referenceList) {
@@ -161,9 +164,9 @@ public class DistributionReplicationService
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
-            public boolean doAdd(Resource resource) {
-                return true;
-            }
+            public boolean doAdd(Resource resource) { return true; }
+            @Override
+            public boolean doAddChildren(Resource resource) { return true; }
         };
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, true);
         log.trace("List for Replication: '{}'", replicationList);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  example site - UI Apps
+  admin base - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -24,18 +24,10 @@
   #L%
   -->
 
-<jcr:root xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
-          xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Object"
-          jcr:title="sample"
-          sling:resourceType="example/objects/collection"
-          singleList="[hello,world]"
-          >
-          <list jcr:primaryType="nt:unstructured">
-                <item1 jcr:primaryType="nt:unstructured"
-                       key="hello"
-                       value="world"
-                />
-
-          </list>
-</jcr:root>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="sling:OsgiConfig"
+          name="localFS"
+          targetFolder="${sling.home}/staticreplication"
+          creationStrategy="1"
+          mandatoryRenditions="thumbnail.png"
+/>
