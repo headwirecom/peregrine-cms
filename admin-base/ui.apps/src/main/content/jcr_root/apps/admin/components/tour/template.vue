@@ -162,14 +162,18 @@
                 this.index--
                 if(this.index === -1) this.index = this.model.children.length -1
                 this.showTourItem()
-            }
+            },
         },
         mounted() {
             this.index = 0
+            window.addEventListener('resize', this.showTourItem)
         },
         updated() {
             this.info.width = this.$refs.info ? this.$refs.info.offsetWidth : 0;
             this.info.height = this.$refs.info ?this.$refs.info.offsetHeight : 0;
+        },
+        beforeDestroy() {
+        window.removeEventListener('resize', this.showTourItem)
         }
     }
 </script>
