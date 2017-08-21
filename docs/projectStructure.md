@@ -4,28 +4,30 @@
 
 JS build scipts to transpile components from vuejs or react
 
-## commons
+## core
+
+### core / commons
 
 A bundle providing common code to all modules
 
-## base
+## core / base
 
 per:cms base - provides all peregrine specific node types and models as well as the 
 basic authentication configuration for the apache sling repository
 
-## login
+## core / login
 
 fragment providing a customized login for apache sling
 
-## felib
+## core / felib
 
 felib provides the ability to bundle multiple js and css files into single files
 
-## node-js
+## core / node-js
 
 addition of node-js into apache sling
 
-## distribution
+## core / distribution
 
 configuration and implementation of default multi instance distribution for sling instances
 
@@ -45,9 +47,16 @@ implementation of react based site rendering
 
 implementation of server side based site rendering using HTL
 
-## admin-base
+## admin
 
-administration conosole for per:cms
+### admin / base
+administration console for per:cms
+
+### admin / sites
+
+### admin / assets
+
+### admin / objects
 
 ## samples
 
