@@ -370,7 +370,18 @@ function actionImpl(component, command, target) {
  */
 function stateActionImpl(name, target) {
 
-    StateActions(name)($perAdminApp, target)
+    try {
+        const stateAction = StateActions(name)
+        Promise.resolve(stateAction($perAdminApp, target)).then(result => {
+            if(result && result.startsWith('Uncaught (in promise')) {
+                notifyUserImpl('error', result)
+            }
+        }).catch(error => {
+            notifyUserImpl('error', error)
+        })
+    } catch(error) {
+        console.log('error', error)
+    }
 
 }
 

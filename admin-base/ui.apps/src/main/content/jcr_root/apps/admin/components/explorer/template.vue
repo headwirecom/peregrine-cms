@@ -120,9 +120,9 @@
             </ul>
 
         </div>
-        <div v-if="hasEdit" class="col s12 m4 explorer-preview">
+        <admin-components-explorerpreview v-if="hasEdit">
             <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
-        </div>
+        </admin-components-explorerpreview>
     </div>
     </div>
 

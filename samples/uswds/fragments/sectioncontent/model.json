@@ -1,0 +1,10 @@
+{
+    "definitions": {
+        "Sectioncontent": {
+            "type": "object",
+            "x-type": "container",
+            "properties": {
+            }
+        }
+    }
+}

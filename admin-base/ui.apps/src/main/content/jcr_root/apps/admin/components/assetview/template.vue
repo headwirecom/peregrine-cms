@@ -23,8 +23,34 @@
   #L%
   -->
 <template>
-    <div class="asset-preview">
+    <div class="explorer-preview-content preview-asset">
         <template v-if="currentObject">
+            <ul class="explorer-preview-nav">
+                <li>
+                    <a  href="#!" 
+                        title="rename asset" 
+                        class="waves-effect waves-light" 
+                        v-on:click.stop.prevent="renameAsset">
+                        <i class="material-icons">edit</i>
+                    </a>
+                </li>
+                <li>
+                    <a  href="#!" 
+                        title="move asset" 
+                        class="waves-effect waves-light" 
+                        v-on:click.stop.prevent="moveAsset">
+                        <i class="material-icons">compare_arrows</i>
+                    </a>
+                </li>
+                <li>
+                    <a  href="#!" 
+                        title="delete asset" 
+                        class="waves-effect waves-light" 
+                        v-on:click.stop.prevent="deleteAsset">
+                        <i class="material-icons">delete</i>
+                    </a>
+                </li>
+            </ul>
             <ul class="asset-info">
                 <li>
                     <span class="asset-name">created:</span>
@@ -41,22 +67,12 @@
             </ul>
             <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show"/>
             <iframe v-else v-bind:src="currentObject.show"></iframe>
-
-            <div>
-                <button class="btn" v-on:click.stop.prevent="renameAsset()">rename</button>
-                <button class="btn" v-on:click.stop.prevent="moveAsset()">move</button>
-                <button class="btn" v-on:click.stop.prevent="deleteAsset()">delete</button>
-            </div>
-
         </template>
-        <template v-else>
-            <div class="no-asset-selected">
-                <span>no asset selected</span>
-                <i class="material-icons">info</i>
-            </div>
-        </template>
+        <div v-else class="explorer-preview-empty">
+            <span>no asset selected</span>
+            <i class="material-icons">info</i>
+        </div>
     </div>
-
 </template>
 
 <script>

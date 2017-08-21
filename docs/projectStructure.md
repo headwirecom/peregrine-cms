@@ -1,49 +1,87 @@
-# Project Structure
+# Structure of this Project
 
-We use a single git repo at the moment for all of PER:CMS. Each subfolder off the root
-of the git repo is a project by itself and could be potentially moved into their own
-git repository. 
+## buildscripts
 
-### resources
-Just a copy of the current version of Apache Sling-9 we are using as a reference to 
-develop PER:CMS before Apache Sling-9.
+JS build scipts to transpile components from vuejs or react
 
-### nodetypes
-Definitions of nodetypes necessary for PER:CMS. This should be as light as possible. 
-We are currently defining the following node types: 
+## core
 
-- per:Page
-- per:PageContent
-- per:Component
-- per:FeLib
+### core / commons
 
-### base
-The base module pulls in a couple of outside dependencies that are not part of Apache
-Sling-9 but are required for PER:CMS to work. 
+A bundle providing common code to all modules
 
-- sling-node (support for nodejs within sling using J2V8)
-- sling-swagger-ui (the openapi web ui to test our api endpoints)
-- PER:CMS > nodetypes
+## core / base
 
-### felib
-A simple frontend library handler. A node of type per:FeLib with a child js.txt and 
-css.txt is used to assemble a single css and js file for the library. The syntax of
-the .txt files is straight forward: 
+per:cms base - provides all peregrine specific node types and models as well as the 
+basic authentication configuration for the apache sling repository
 
-Each line in the file represents a path to a file to be included in the library. Any
-path starting with / is considered from the content root, otherwise it's considered 
-a relative path. A special keyword `base=` is used to set a new current path relative
-to the current path.
+## core / login
 
-### pagerender-vue
-VueJS based rendering infrastructure. 
+fragment providing a customized login for apache sling
 
-### admin-base
-Administrator interface - VueJS based implementation
+## core / felib
 
-### example-vue-site
-An example VueJS based site. 
+felib provides the ability to bundle multiple js and css files into single files
 
-### docs
-that's where you can find the current documentatijon, hopefully this will be served from 
-a PER:CMS instance soon.  
+## core / node-js
+
+addition of node-js into apache sling
+
+## core / distribution
+
+configuration and implementation of default multi instance distribution for sling instances
+
+## pagerenderers
+
+base page renderes for different site rendering approaches
+
+### pagerenderers / vue
+
+implementation of vuejs based site rendering
+
+### pagerenderers / react
+
+implementation of react based site rendering
+
+### pagerenderers / static
+
+implementation of server side based site rendering using HTL
+
+## admin
+
+### admin / base
+administration console for per:cms
+
+### admin / sites
+
+### admin / assets
+
+### admin / objects
+
+## samples
+
+sample projects to help explore per:cms
+
+### samples / example-vue-site
+
+sample site implemented with the vuejs page rendering mechanism
+
+### samples / blog
+
+sample blog site implemented based on vuejs page rendering
+
+## testing
+
+server side testing suite
+
+## tooling
+
+tooling for per:cms
+
+### tooling / maven / archetypes / projects
+
+project archetype for per:cms to easily create new projects
+
+##resources
+
+the currently supported apache sling version with all the dependencies needed for per:cms

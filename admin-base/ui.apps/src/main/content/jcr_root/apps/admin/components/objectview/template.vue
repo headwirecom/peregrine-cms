@@ -23,85 +23,78 @@
   #L%
   -->
 <template>
-    <div>
+    <div class="explorer-preview-content preview-object">
+        <template v-if="currentObject">
+            <ul class="explorer-preview-nav">
+                <template v-if="edit">
+                    <li>
+                        <a  title="cancel object" 
+                            class="waves-effect waves-light" 
+                            v-on:click.stop.prevent="onCancel">
+                            <i class="material-icons">close</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a  title="save object" 
+                            v-bind:disabled="!valid" 
+                            class="waves-effect waves-light" 
+                            v-on:click.stop.prevent="onOk">
+                            <i class="material-icons">check</i>
+                        </a>
+                    </li>
+                </template>
+                <li v-else>
+                    <a  title="edit object" 
+                        class="waves-effect waves-light" 
+                        v-on:click.stop.prevent="onEdit">
+                        <i class="material-icons">edit</i>
+                    </a>
+                </li>
+            </ul>
+            <span class="panel-title">Object</span>
+            <div v-if="(edit === false || edit === undefined) && schema !== undefined" class="display-json">
 
-    <div v-if="currentObject" :class="`object-editor ${isFullscreen ? 'fullscreen' : 'narrow'}`">
-      <div class="object-editor-content">
-        <button 
-          v-if="isFullscreen"
-          type="button" 
-          class="toggle-fullscreen" 
-          title="exit fullscreen"
-          v-on:click.prevent="onPreviewExitFullscreen">
-          <i class="material-icons">fullscreen_exit</i>
-        </button>
-        <button 
-          v-if="!isFullscreen"
-          type="button" 
-          class="toggle-fullscreen" 
-          title="enter fullscreen"
-          v-on:click.prevent="onPreviewFullscreen">
-          <i class="material-icons">fullscreen</i>
-        </button>
+                <form v-if="currentObject.data && schema">
+                    <vue-form-generator 
+                            class="vfg-preview"
+                            v-on:validated = "onValidated"
+                            v-bind:schema  = "readOnlySchema"
+                            v-bind:model   = "currentObject.data"
+                            v-bind:options = "formOptions">
+                    </vue-form-generator>
+                </form>
+    <!--
+                <div class="row" v-for="field in schema.fields">
+                    <template v-if="!field.fields">
+                        <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{get(currentObject.data,field.model)}}</div>
+                    </template>
+                    <template v-else>
+                        <div class="col s12"><b>{{field.title}}</b></div>
+                        <div class="row" v-for="item in currentObject.data[field.model]">
+                            <div v-for="child in field.fields">
+                                <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{get(item,child.model)}}</div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+    -->
+            </div>
 
-        <span class="panel-title">Object</span>
-        <div v-if="(edit === false || edit === undefined) && schema !== undefined" class="display-json">
-
-            <form v-if="currentObject.data && schema">
-                <vue-form-generator 
-                        class="vfg-preview"
-                        v-on:validated = "onValidated"
-                        v-bind:schema  = "readOnlySchema"
-                        v-bind:model   = "currentObject.data"
-                        v-bind:options = "formOptions">
+            <form v-if="edit && currentObject.data && schema">
+                <vue-form-generator
+                  v-on:validated = "onValidated"
+                  v-bind:schema  = "schema"
+                  v-bind:model   = "currentObject.data"
+                  v-bind:options = "formOptions">
                 </vue-form-generator>
             </form>
-<!--
-            <div class="row" v-for="field in schema.fields">
-                <template v-if="!field.fields">
-                    <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{get(currentObject.data,field.model)}}</div>
-                </template>
-                <template v-else>
-                    <div class="col s12"><b>{{field.title}}</b></div>
-                    <div class="row" v-for="item in currentObject.data[field.model]">
-                        <div v-for="child in field.fields">
-                            <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{get(item,child.model)}}</div>
-                        </div>
-                    </div>
-                </template>
-            </div>
--->
-        </div>
+        </template>
 
-        <form v-if="edit && currentObject.data && schema">
-            <vue-form-generator
-              v-on:validated = "onValidated"
-              v-bind:schema  = "schema"
-              v-bind:model   = "currentObject.data"
-              v-bind:options = "formOptions">
-            </vue-form-generator>
-        </form>
-        <div class="right-align">
-          <button v-if="!edit" title="edit" class="btn btn-raised" v-on:click.stop.prevent="onEdit">
-            <i class="material-icons">edit</i>
-          </button>
-          <button v-if="edit" title="cancel" class="btn btn-raised" v-on:click.stop.prevent="onCancel">
-            <i class="material-icons">close</i>
-          </button>
-            <button v-if="edit" title="save" v-bind:disabled="!valid" class="btn btn-raised" v-on:click.stop.prevent="onOk">
-                <i class="material-icons">check</i>
-            </button>
-        </div>
+        <div v-if="currentObject === undefined" class="explorer-preview-empty">
+            <span>no object selected</span>
+            <i class="material-icons">info</i>
         </div>
     </div>
-        <div v-if="currentObject === undefined" class="asset-preview">
-            <div class="no-asset-selected">
-              <span>no object selected</span>
-              <i class="material-icons">info</i>
-            </div>
-        </div>
-    </div>
-
 </template>
 
 <script>
@@ -136,13 +129,12 @@
         },
         data: function() {
           return {
+            valid: false,
             formOptions: {
               validateAfterLoad: true,
               validateAfterChanged: true,
               focusFirstField: true
-            },
-            isFullscreen: false,
-              valid: false
+            }
           }
         },
         methods: {
@@ -171,12 +163,6 @@
           onCancel: function() {
             $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
               $perAdminApp.getNodeFromView('/state/tools').edit = false
-          },
-          onPreviewExitFullscreen(){
-            this.isFullscreen = false
-          },
-          onPreviewFullscreen(){
-            this.isFullscreen = true
           }
         }
     }

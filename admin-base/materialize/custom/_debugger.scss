@@ -47,55 +47,67 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
+		overflow: hidden;
 		background-color: color("blue-grey", "darken-3");
-		.collection {
-			border-color: color("blue-grey", "lighten-4");
-			.collection-item {
-				background: none;
+		.row {
+			height: 100%;
+		}
+		.debugger-levels {
+			height: 100%;
+			overflow: auto;
+			.collection {
 				border-color: color("blue-grey", "lighten-4");
-				.logger-level {
-					cursor: pointer;
-					color: #ffb300;
-					padding-left: 0.75rem;
-					text-decoration: none;
-					&:hover,
-					&:focus,
-					&:active {
-						text-decoration: underline;
+				.collection-item {
+					background: none;
+					border-color: color("blue-grey", "lighten-4");
+					.logger-level {
+						cursor: pointer;
+						color: #ffb300;
+						padding-left: 0.75rem;
+						text-decoration: none;
+						&:hover,
+						&:focus,
+						&:active {
+							text-decoration: underline;
+						}
 					}
 				}
 			}
 		}
-		ul.list-inline {
-			padding-bottom: 0.75rem;
-			border-bottom: 1px solid color("blue-grey", "lighten-4");
-			> li {
-				padding-right: 0.75rem;
-				> a {
-					display: inline-block;
-					cursor: pointer;
-					padding: 0.25rem 0.75rem;
-					border: 1px solid color("blue-grey", "lighten-4");
-					color: color("blue-grey", "lighten-4");
-					border-radius: 20px;
-					&.active {
-						border-color: #fff;
-						color: #fff;
+		.debugger-object-view {
+			height: 100%;
+			overflow: auto;
+			code pre {
+				font-family: "Inconsolata-g", Consolas, "Source Code Pro", Monaco, Menlo, monospace;
+			}
+			ul.list-inline {
+				padding-bottom: 0.75rem;
+				border-bottom: 1px solid color("blue-grey", "lighten-4");
+				> li {
+					padding-right: 0.75rem;
+					> a {
+						display: inline-block;
+						cursor: pointer;
+						padding: 0.25rem 0.75rem;
+						border: 1px solid color("blue-grey", "lighten-4");
+						color: color("blue-grey", "lighten-4");
+						border-radius: 20px;
+						&.active {
+							border-color: #fff;
+							color: #fff;
+						}
+						&:hover,
+						&:focus,
+						&:active {
+							border-color: #fff;
+						}
 					}
-					&:hover,
-					&:focus,
-					&:active {
-						border-color: #fff;
+					&:last-child {
+						padding-right: 0;
 					}
-				}
-				&:last-child {
-					padding-right: 0;
 				}
 			}
 		}
-	}
-	code pre {
-		font-family: "Inconsolata-g", Consolas, "Source Code Pro", Monaco, Menlo, monospace;
 	}
 	&.visible {
 		bottom: 0; 
