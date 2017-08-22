@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!--
+  #%L
+  admin base - UI Apps
+  %%
+  Copyright (C) 2017 headwire inc.
+  %%
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  #L%
+  -->
+<sly data-sly-use.helper="apps.pagerender.vue.structure.page.Helper"/>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>${resource.jcr:title}</title>
+
+    <sly data-sly-include="styles.html"></sly>
+
+    <sly data-sly-list="${helper.model.siteCSS}">
+        <link rel="stylesheet" href="${item}" type="text/css">
+    </sly>
+
+    <link rel="stylesheet" href="/etc/felibs/admin.css" type="text/css">
+    <link rel="stylesheet" href="/etc/felibs/admin/dependencies.css" type="text/css">
+
+    <script type="text/javascript">
+        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+            document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
+    </script>
+
+</head>
+<body>
+
+<div id="peregrine-adminapp">
+    <span v-cloak>
+        <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
+    </span>
+</div>
+
+<sly data-sly-list="${helper.model.siteJS}">
+    <script type="text/javascript" src="${item}"></script>
+</sly>
+
+<sly data-sly-include="renderer.html"></sly>
+<script>
+    // switch between old and new implementation
+    var newImpl = true
+    var $perAdminView = { state: {}, adminPage: {}, adminPageStaged: {}, admin: {}, pageView: { view: 'desktop'}, nodes: {} }
+
+    if(newImpl) {
+        // define a couple of extra vue components that are used by components
+        // but not in the tree of auto loaded components
+        $perAdminApp.loadComponent('admin-components-iconaction')
+        $perAdminApp.loadComponent('admin-components-action')
+        $perAdminApp.loadComponent('admin-components-notifyuser')
+        $perAdminApp.loadComponent('admin-components-pathbrowser')
+        $perAdminApp.loadComponent('admin-components-assetbrowser')
+        $perAdminApp.loadComponent('admin-components-pagebrowser')
+        $perAdminApp.loadComponent('admin-components-logo')
+        $perAdminApp.loadComponent('admin-components-extensions')
+        $perAdminApp.loadComponent('admin-components-spinner')
+        $perAdminApp.loadComponent('admin-components-tour')
+        $perAdminApp.loadComponent('admin-components-explorerpreview')
+        $perAdminApp.loadComponent('admin-components-editor')
+
+        $perAdminApp.loadComponent('experiences-components-reference')
+        $perAdminApp.loadComponent('experiences-components-text')
+
+        $perAdminApp.loadComponent('field-pathbrowser')
+        $perAdminApp.loadComponent('field-texteditor')
+        $perAdminApp.loadComponent('field-list')
+        $perAdminApp.loadComponent('field-collection')
+        $perAdminApp.loadComponent('field-materialswitch')
+        $perAdminApp.loadComponent('field-material-checkbox')
+        $perAdminApp.loadComponent('field-material-radios')
+        $perAdminApp.loadComponent('field-material-select')
+        $perAdminApp.loadComponent('field-material-checklist')
+        $perAdminApp.loadComponent('field-material-datepicker')
+        $perAdminApp.loadComponent('field-material-timepicker')
+        $perAdminApp.loadComponent('field-material-datetime')
+        $perAdminApp.loadComponent('field-material-textarea')
+        $perAdminApp.loadComponent('field-listselection')
+
+        $perAdminApp.loadComponent('pagerender-vue-components-placeholder')
+
+        // init peregrine admin app
+        $perAdminApp.init($perAdminView)
+        $perAdminApp.loadContent(document.location.pathname, true)
+    } else {
+        loadContent(document.location, true);
+    }
+</script>
+</body>
+</html>

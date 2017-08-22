@@ -1,0 +1,20 @@
+{
+  "fields": [
+    {
+      "type": "collection",
+      "multifield": false,
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "key",
+          "label": "key",
+          "model": "key"
+        }
+      ],
+      "placeholder": "experiences",
+      "label": "experiences",
+      "model": "experiences"
+    }
+  ]
+}

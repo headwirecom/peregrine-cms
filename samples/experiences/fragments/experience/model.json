@@ -1,0 +1,20 @@
+{
+    "definitions": {
+        "Experience": {
+            "type": "object",
+            "x-type": "container",
+            "properties": {
+                "experiences": {
+                    "type": "object",
+                    "x-source": "inject",
+                    "x-form-type": "collection",
+                    "properties": {
+                        "key": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
