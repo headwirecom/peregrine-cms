@@ -28,6 +28,9 @@
             <input type="text" v-model="state.input" placeholder="Search for an image asset" tabindex="1" autofocus/>
             <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
         </form>
+        <div v-if="!state.results">
+            <span>Search for an image from pixabay and add it directly to your project!</span>
+        </div>
 
         <div v-if="state.results" class="search-content">
             <span v-if="state.results.length < 1" class="no-results">No images found for '{{ state.input }}'</span>
@@ -61,31 +64,28 @@
             </div>
 
             <!-- Image Results Grid --> 
-            <div v-else class="image-results">
+            <div v-else v-on:scroll="handleScroll" class="image-results">
                 <div
                     v-for="(item,i) in state.results"
                     v-on:click.stop="select(i)"
                     v-bind:style="{backgroundImage: `url('${item.previewURL}')`}" 
                     class="image-item hoverable">
                 </div>
-                <!-- Bottom Pagination -->
-                <div v-if="state.numPages > 0" class="image-pagination">
-                    <span></span>
-                    <ul class="pagination">
-                        <li class="waves-effect">
-                            <a href="#!" v-on:click.stop="selectPage(currentPage - 1)">
-                                <i class="material-icons">chevron_left</i>
-                            </a>
-                        </li>
-                        <li v-for="(page,i) in state.numPages" :class="[{ 'active': state.currentPage == i+1 }]">
-                            <a href="#!" v-on:click.stop="selectPage(i + 1)">{{ i + 1}}</a>
-                        </li>
-                        <li class="waves-effect">
-                            <a href="#!" v-on:click.stop="selectPage(currentPage + 1)">
-                                <i class="material-icons">chevron_right</i>
-                            </a>
-                        </li>
-                    </ul>
+                <div class="image-results-status">
+                    <div v-if="endOfResults" class="col s12">
+                        <span>end of results</span>
+                    </div>
+                    <div v-else class="preloader-wrapper small active">
+                        <div class="spinner-layer spinner-green-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div><div class="gap-patch">
+                            <div class="circle"></div>
+                        </div><div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -103,6 +103,7 @@
             perState.imageSearch = perState.imageSearch || {
                 results: null,
                 totalHits: null,
+                scrollPos: null,
                 currentPage: null,
                 input: null,
                 numPages: null
@@ -116,7 +117,9 @@
                 uploading: null,
                 containerWidth: null,
                 columns: null,
-                itemsPerPage: null
+                itemsPerPage: null,
+                endOfResults: false,
+                loading: false
             }
         },
 
@@ -128,19 +131,51 @@
 
         methods: {
 
-            search() {
-                if (this.state.currentPage == null) this.state.currentPage = 1;
+            requestImages() {
                 const API_KEY = '5575459-c51347c999199b9273f4544d4';
                 const URL = `https://pixabay.com/api/?key=${API_KEY}`+
                             `&page=${ this.state.currentPage }`+
                             `&per_page=${ this.itemsPerPage }`+
                             `&q=${ encodeURIComponent(this.state.input) }`
                 $.getJSON( URL, data => {
-                    this.state.results = data.hits;
+                    this.state.results = this.state.results.concat(data.hits);
                     this.state.totalHits = data.totalHits;
                     this.state.numPages = Math.ceil(data.totalHits/this.itemsPerPage);
                     this.viewing = null;
+                    this.loading = false;
                 })
+            },
+
+            search() {
+                this.endOfResults = false;
+                this.state.currentPage = 1;
+                this.state.results = [];
+                this.loading = true;
+                this.requestImages();
+            },
+
+            handleScroll(e) {
+                if (!this.loading) { 
+                    const scrollPos = e.target.scrollTop + e.target.offsetHeight;
+                    const fullHeight    = e.target.scrollHeight;
+                    const distanceLeft = fullHeight - scrollPos;
+                    //Load the next page when we near the bottom of the last
+                    if( distanceLeft < e.target.offsetHeight * 0.25   ) {
+                        this.loadNextPage();
+                    }
+                }
+            },
+
+            loadNextPage() {
+                if (this.state.currentPage < this.state.numPages) {
+                    this.state.currentPage++;
+                    this.loading = true;
+                    this.requestImages();
+                }
+                else {
+                    this.endOfResults = true;
+                }
+
             },
 
             select(index) {
@@ -151,10 +186,6 @@
             },
             deSelect() {
                 this.viewing = null
-            },
-            selectPage(index) {
-                this.state.currentPage = index;
-                this.search();
             },
 
             uploadProgress(percent) {

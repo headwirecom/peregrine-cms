@@ -18,9 +18,11 @@
         flex-direction: column;
         flex-grow: 1;
     }
+
     .image-search {
         width: 100%;
         display: flex;
+        z-index: 1;
 
         button {
             background: none;
@@ -40,19 +42,24 @@
         flex-grow: 1;
         display: flex;
         flex-wrap: wrap;
+        flex-basis: 1px;
         justify-content: space-between;
         width: 100%;
+        overflow-y: scroll;
 
         .image-item {
             width: 150px;
             height: 150px;
             overflow: hidden;
             background-size: cover;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
-        &:after {
-            content: "";
-            flex: auto;
+
+        .image-results-status {
+            padding: 20px;
+            min-width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
     }
@@ -82,13 +89,6 @@
                 margin-bottom: -1px;
             }
         }
-    }
-
-    .image-pagination {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
 
 }
