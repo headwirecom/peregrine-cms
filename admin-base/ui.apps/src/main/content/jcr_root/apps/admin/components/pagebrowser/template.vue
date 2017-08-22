@@ -23,164 +23,53 @@
   #L%
   -->
 <template>
-    <transition name="fade">
-        <div v-if="isVisible" class="pathbrowser pagebrowser modal-container">
-            <div id="pageBrowserModal" class="modal default modal-fixed-footer">
-                <ul ref="pbtabs" class="pathbrowser-tabs">
-                    <li class="tab">
-                        <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
-                            <i class="material-icons">list</i>
-                        </a>
-                    </li>
-                    <li class="tab">
-                        <a href="#" :class="tab === 'cards' ? 'active' : ''" v-on:click="select('cards')">
-                            <i class="material-icons">view_module</i>
-                        </a>
-                    </li>
-                    <li class="tab" v-if="withLinkTab">
-                        <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')">
-                            <i class="material-icons">link</i>
-                        </a>
-                    </li>
-                    <li 
-                        class="indicator" 
-                        :style="`transform: translateX(${tabIndicatorPosition}px)`">
-                    </li>
-                </ul>
-                <div class="pathbrowser-filter" :style="`width: calc(100% - ${searchTabOffset}px)`">
-                    <input placeholder="search" 
-                           type="search" 
-                           v-model="search" />
-                </div>
-                <div class="modal-content">
-                    <div class="col-browse"> 
-                        <div v-if="search">
-                            <table >
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Path</th>
-                                </tr>
-                                </thead>
+    <div id="pageBrowserModal" class="pathbrowser pagebrowser modal default modal-fixed-footer">
+        <ul ref="pbtabs" class="pathbrowser-tabs">
+            <li class="tab">
+                <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
+                    <i class="material-icons">list</i>
+                </a>
+            </li>
+            <li class="tab">
+                <a href="#" :class="tab === 'cards' ? 'active' : ''" v-on:click="select('cards')">
+                    <i class="material-icons">view_module</i>
+                </a>
+            </li>
+            <li class="tab" v-if="withLinkTab">
+                <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')">
+                    <i class="material-icons">link</i>
+                </a>
+            </li>
+            <li 
+                class="indicator" 
+                :style="`transform: translateX(${tabIndicatorPosition}px)`">
+            </li>
+        </ul>
+        <div class="pathbrowser-filter" :style="`width: calc(100% - ${searchTabOffset}px)`">
+            <input placeholder="search" 
+                    type="search" 
+                    v-model="search" />
+        </div>
+        <div class="modal-content">
+            <div class="col-browse"> 
+                <div v-if="search">
+                    <table >
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Path</th>
+                        </tr>
+                        </thead>
 
-                                <tbody>
-                                <tr v-for="item in nodes.children" v-if="searchFilter(item)">
-                                    <td>{{item.name}}</td>
-                                    <td>{{item.path}}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <template v-if="tab === 'browse' && !search"">
-                            <ul v-if="!search" class="browse-list">
-                                <li v-on:click.stop.prevent="selectParent">
-                                    <i class="material-icons">folder</i> <label>..</label>
-                                </li>
-                                <li v-if="isFolder(item)" 
-                                    v-for="item in nodes.children" 
-                                    v-on:click.stop.prevent="selectFolder(item)">
-                                    <i class="material-icons">folder</i>
-                                    <label>{{item.name}}</label>
-                                </li>
-                            </ul>
-                        </template>
-                        <template v-if="tab === 'cards' && !search">
-                            <template v-if="list.length > 0">
-                                <ul class="cards-toolbar sort-nav">
-                                    <li>
-                                        <span class="cards-toolbar-title">Sort</span>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="pagebrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="pagebrowser_sort_cards_name" 
-                                            :checked="sortBy === 'name'"/>
-                                        <label v-on:click="onSort('name')" for="pagebrowser_sort_cards_name">name</label>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="pagebrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="pagebrowser_sort_cards_date" 
-                                            :checked="sortBy === 'created'"/>
-                                        <label v-on:click="onSort('created')" for="pagebrowser_sort_cards_date">date</label>
-                                    </li>
-                                </ul>
-                            
-                                <p class="range-field">
-                                    <input 
-                                        type="range" 
-                                        min="120" 
-                                        max="400" 
-                                        v-model="cardSize"/>
-                                </p>
-                                <!--<admin-components-spinner 
-                                    v-if="isotopeLoading"
-                                    width="60" 
-                                    position="center">
-                                </admin-components-spinner> -->
-                                
-                                <isotope 
-                                    ref="isotope" 
-                                    class="isotopes" 
-                                    v-bind:options="getIsotopeOptions()"
-                                    v-images-loaded:on="getImagesLoadedCbs()" 
-                                    v-bind:list="list">
-                                    <div 
-                                        v-for="(item, index) in list" 
-                                        :key="item.path">
-                                        <div 
-                                            v-if="isFolder(item)" 
-                                            class="item-folder"
-                                            v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
-                                            v-on:click.stop.prevent="selectFolder(item)">
-                                                <div class="item-content">
-                                                    <i 
-                                                        class="material-icons"
-                                                        :style="`font-size: ${cardIconSize(cardSize)}px`">folder_open</i>
-                                                    <br/>{{item.name}}
-                                                </div>
-                                        </div>
-                                    </div>
-                                </isotope>
-                            </template>
-                            <p v-else class="flow-text">This folder is empty.</p>
-                        </template>
-                        <template v-if="withLinkTab && tab === 'link' && !search"">
-                            <vue-form-generator
-                                v-bind:schema  = "linkSchema"
-                                v-bind:model   = "linkModel"
-                                v-bind:options = "linkFormOptions">
-                            </vue-form-generator>
-                        </template>
-                    </div>
-                    <div class="col-preview">
-                        <template v-if="preview">
-                            <div v-if="isFolder(preview)" class="preview-folder">
-                                <i class="material-icons">folder_open</i>
-                            </div>
-                            <img v-else class="preview-image" v-bind:src="preview.path">
-                            <dl class="preview-data">
-                                <dt>Name</dt>
-                                <dd>{{preview.name}}</dd>
-                                <dt>Type</dt>
-                                <dd>{{preview.resourceType}}</dd>
-                                <dt>Path</dt>
-                                <dd>{{preview.path}}</dd>
-                                <dt>Created</dt>
-                                <dd>{{preview.created}}</dd>
-                            </dl>
-                        </template>
-                        <div v-else class="no-asset-selected">
-                            <span>no asset selected</span>
-                            <i class="material-icons">info</i>
-                        </div>
-                    </div>
+                        <tbody>
+                        <tr v-for="item in nodes.children" v-if="searchFilter(item)">
+                            <td>{{item.name}}</td>
+                            <td>{{item.path}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="modal-footer">
+                <template v-if="tab === 'browse' && !search">
                     <span class="current-folder">
                         <button 
                             :disabled="path === '/content'" 
@@ -191,21 +80,126 @@
                         </button>
                         {{path}} ({{list.length}})
                     </span>
-                    <button 
-                        v-if="withLinkTab"
-                        v-on:click="onUnlink"
-                        class="modal-action modal-close waves-effect waves-light btn-flat">unlink</button>
-                    <button 
-                        v-on:click="onHide" 
-                        class="modal-action modal-close waves-effect waves-light btn-flat">cancel</button>
-                    <button 
-                        v-on:click="onOk" 
-                        class="modal-action modal-close waves-effect waves-light btn-flat">select</button>
+                    <ul class="browse-list">
+                        <li v-if="isFolder(item)" 
+                            v-for="(item, index) in nodes.children" 
+                            :class="isSelected(item.path) ? 'selected' : ''"
+                            v-on:click.stop.prevent="selectFolder(item)">
+                            <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
+                            <label v-on:click.stop.prevent="selectItem(item.path)"></label>
+                            <i class="material-icons">folder</i>
+                            <span>{{item.name}}</span>
+                        </li>
+                    </ul>
+                </template>
+                <template v-if="tab === 'cards' && !search">
+                    <template v-if="list.length > 0">
+                        <ul class="cards-toolbar sort-nav">
+                            <li>
+                                <span class="cards-toolbar-title">Sort</span>
+                            </li>
+                            <li>
+                                <input 
+                                    name="pagebrowser_sort_cards" 
+                                    type="radio" 
+                                    class="with-gap" 
+                                    id="pagebrowser_sort_cards_name" 
+                                    :checked="sortBy === 'name'"/>
+                                <label v-on:click="onSort('name')" for="pagebrowser_sort_cards_name">name</label>
+                            </li>
+                            <li>
+                                <input 
+                                    name="pagebrowser_sort_cards" 
+                                    type="radio" 
+                                    class="with-gap" 
+                                    id="pagebrowser_sort_cards_date" 
+                                    :checked="sortBy === 'created'"/>
+                                <label v-on:click="onSort('created')" for="pagebrowser_sort_cards_date">date</label>
+                            </li>
+                        </ul>
+                    
+                        <p class="range-field">
+                            <input 
+                                type="range" 
+                                min="120" 
+                                max="400" 
+                                v-model="cardSize"/>
+                        </p>
+                        <!--<admin-components-spinner 
+                            v-if="isotopeLoading"
+                            width="60" 
+                            position="center">
+                        </admin-components-spinner> -->
+                        
+                        <isotope 
+                            ref="isotope" 
+                            class="isotopes" 
+                            v-bind:options="getIsotopeOptions()"
+                            v-images-loaded:on="getImagesLoadedCbs()" 
+                            v-bind:list="list">
+                            <div 
+                                v-for="(item, index) in list" 
+                                :key="item.path">
+                                <div 
+                                    v-if="isFolder(item)" 
+                                    class="item-folder"
+                                    v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
+                                    v-on:click.stop.prevent="selectFolder(item)">
+                                        <div class="item-content">
+                                            <i 
+                                                class="material-icons"
+                                                :style="`font-size: ${cardIconSize(cardSize)}px`">folder_open</i>
+                                            <br/>{{item.name}}
+                                        </div>
+                                </div>
+                            </div>
+                        </isotope>
+                    </template>
+                    <p v-else class="flow-text">This folder is empty.</p>
+                </template>
+                <template v-if="withLinkTab && tab === 'link' && !search">
+                    <vue-form-generator
+                        v-bind:schema  = "linkSchema"
+                        v-bind:model   = "linkModel"
+                        v-bind:options = "linkFormOptions">
+                    </vue-form-generator>
+                </template>
+            </div>
+            <div class="col-preview">
+                <template v-if="preview">
+                    <div v-if="isFolder(preview)" class="preview-folder">
+                        <i class="material-icons">folder_open</i>
+                    </div>
+                    <img v-else class="preview-image" v-bind:src="preview.path">
+                    <dl class="preview-data">
+                        <dt>Name</dt>
+                        <dd>{{preview.name}}</dd>
+                        <dt>Type</dt>
+                        <dd>{{preview.resourceType}}</dd>
+                        <dt>Path</dt>
+                        <dd>{{preview.path}}</dd>
+                        <dt>Created</dt>
+                        <dd>{{preview.created}}</dd>
+                    </dl>
+                </template>
+                <div v-else class="no-asset-selected">
+                    <span>no asset selected</span>
+                    <i class="material-icons">info</i>
                 </div>
             </div>
-            <div v-on:click="onHide" class="modal-overlay"></div>
         </div>
-    </transition>
+        <div class="modal-footer">
+            <span class="selected-path">{{selectedPath}}</span>
+            <button 
+                v-if="withLinkTab"
+                v-on:click="onUnlink"
+                class="modal-action modal-close waves-effect waves-light btn-flat">unlink</button>
+            <button 
+                class="modal-action modal-close waves-effect waves-light btn-flat">cancel</button>
+            <button 
+                class="modal-action modal-close waves-effect waves-light btn-flat">select</button>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -216,7 +210,7 @@
                 tab: 'browse',
                 cardSize: 120,
                 search: '',
-                preview: '',
+                preview: '', 
                 linkModel: {
                     url: '',
                     newWindow: false
@@ -252,6 +246,9 @@
             }
         },
         computed: {
+            selectedPath(){
+                return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/selectedPath')
+            },
             withLinkTab(){
                 return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/withLinkTab')
             },
@@ -288,15 +285,14 @@
                 let view = $perAdminApp.getView()
                 let nodes = view.admin.pathBrowser
                 if(nodes && this.path) {
-                    return $perAdminApp.findNodeFromPath(nodes, this.path)
+                    let nodesFromPath = $perAdminApp.findNodeFromPath(nodes, this.path)
+                    console.log('nodesFromPath: ', nodesFromPath)
+                    return nodesFromPath
                 }
                 return {}
             },
             list(){
                 return this.nodes.children || []
-            },
-            isVisible() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/isVisible')
             }
         },
         methods: {
@@ -371,8 +367,8 @@
                 ]
                 return FOLDERS.indexOf(item.resourceType) >= 0
             },
-            isSelected(name) {
-                return name === this.selected
+            isSelected(path) {
+                return this.selectedPath === path 
             },
             selectFolder(item) {
                 $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser').then( () => {
@@ -384,23 +380,15 @@
                     this.preview = item
                 })
             },
-            selectItem(item) {
-                this.preview = item
-            },
-            setItemPath(path){
-                return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/methods').setItemPath(path)
+            selectItem(path) {
+                return $perAdminApp.getNodeFromView('/state/pagebrowser').selectedPath = path
             },
             onUnlink() {
                 this.setItemPath('')
                 this.onHide()
             },
             onHide() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/pagebrowser/methods').onHide()
-            },
-            onOk() {
-                this.setItemPath(this.tab === 'link' ? this.linkModel.url : this.preview.path)
-                // TODO: set additional props such as newWindow? true/false
-                this.onHide()
+                return $('#pageBrowserModal').modal('close')
             }
         }
     }

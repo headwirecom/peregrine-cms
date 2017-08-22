@@ -1,5 +1,5 @@
 .pathbrowser {
-	.modal {
+	&.modal {
 		width: 80%;
 		max-width: 1200px;
 		padding-top: 48px;
@@ -189,20 +189,43 @@
 					}
 				}
 			}
+			.current-folder {
+				display: inline-block;
+				color: color("blue-grey", "darken-2");
+				.btn-flat {
+					padding: 0 0.75rem;
+					margin: 0;
+					margin-right: 0.75rem;
+					background-color: color("blue-grey", "lighten-5");
+					color: color("blue-grey", "darken-2");
+				}
+			}
 			.browse-list {
 				margin: 0 -0.75rem;
 				> li {
 					position: relative;
-					padding: 0.75rem;
+					padding: 0.75rem 0.75rem 0.75rem 3rem;
 					cursor: pointer;
-					label {
-						color: color("blue-grey", "darken-2");
+					input[type="radio"] {
+						+ label {
+							position: absolute;
+							top: 0;
+							left: 0;
+							bottom: 0; 
+							width: 3rem;
+							height: auto;
+							color: color("blue-grey", "darken-2");
+							&:before, 
+							&:after {
+								top: 0.75rem;
+								left: 0.75rem;
+							}
+						}
 					}
 					.material-icons {
-					  position: absolute;
-					  left: 0.75rem;
-					  top: 0.75rem;
 						color: color("blue-grey", "darken-2");
+						vertical-align: bottom;
+						margin-right: 0.375rem;
 						+ label {
 						  position: relative;
 						  padding-left: 35px;
@@ -227,18 +250,11 @@
 			}
 		}
 		.modal-footer {
-			.current-folder {
+			.selected-path {
 				float: left;
-				margin: 6px 0;
+				margin: 6px 0 6px 6px;
 				line-height: 36px;
 				color: color("blue-grey", "darken-2");
-				.btn-flat {
-					padding: 0 0.75rem;
-					margin: 0;
-					margin-right: 0.75rem;
-					background-color: color("blue-grey", "lighten-5");
-					color: color("blue-grey", "darken-2");
-				}
 			}
 		}
 	}
@@ -257,32 +273,30 @@
 
 	/* tablet styles */
 	@media #{$medium-and-up} {
-		&.pathbrowser {
-			.modal {
-				.modal-content {
-					.col-browse {
-						position: absolute;
-						top: 0;
-						left: 0;
-						bottom: 0;
-						right: auto;
-						width: 66.66667%;
-						overflow: auto;
-						z-index: 1;
-					}
-					.col-preview {
-						position: absolute;
-						top: 0;
-						right: 0;
-						bottom: 0;
-						left: auto;
-						width: 33.33333%;
-						overflow: auto;
-					}
+		&.modal {
+			.modal-content {
+				.col-browse {
+					position: absolute;
+					top: 0;
+					left: 0;
+					bottom: 0;
+					right: auto;
+					width: 66.66667%;
+					overflow: auto;
+					z-index: 1;
 				}
-				.modal-footer {
-					z-index: 2;
+				.col-preview {
+					position: absolute;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					left: auto;
+					width: 33.33333%;
+					overflow: auto;
 				}
+			}
+			.modal-footer {
+				z-index: 2;
 			}
 		}
 	}
