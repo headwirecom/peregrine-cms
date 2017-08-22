@@ -480,16 +480,10 @@ function notifyUserImpl(title, message, cb) {
  * @param root
  * @param cb
  */
-function pathBrowserImpl(root, cb) {
+function pathBrowserImpl(root, selectedPath) {
     api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
         set(view, '/state/pathbrowser/root', root)
-        set(view, '/state/pathbrowser/isVisible', false)
-        set(view, '/state/pathbrowser/methods', {
-            onShow: function(){ set(view, '/state/pathbrowser/isVisible', true) },
-            onHide: function(){ set(view, '/state/pathbrowser/isVisible', false) },
-            setItemPath: cb
-        })
-        view.state.pathbrowser.methods.onShow()
+        set(view, '/state/pathbrowser/selectedPath', selectedPath)
     })
 }
 
@@ -500,16 +494,10 @@ function pathBrowserImpl(root, cb) {
  * @param root
  * @param cb
  */
-function assetBrowserImpl(root, cb) {
+function assetBrowserImpl(root, selectedPath) {
     api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
         set(view, '/state/assetbrowser/root', root)
-        set(view, '/state/assetbrowser/isVisible', false)
-        set(view, '/state/assetbrowser/methods', {
-            onShow: function(){ set(view, '/state/assetbrowser/isVisible', true) },
-            onHide: function(){ set(view, '/state/assetbrowser/isVisible', false) },
-            setItemPath: cb
-        })
-        view.state.assetbrowser.methods.onShow()
+        set(view, '/state/assetbrowser/selectedPath', selectedPath)
     })
 }
 
@@ -519,19 +507,12 @@ function assetBrowserImpl(root, cb) {
  * @private
  * @param root
  * @param withLinkTab
- * @param cb
  */
-function pageBrowserImpl(root, withLinkTab, cb) {
+function pageBrowserImpl(root, selectedPath, withLinkTab) {
     api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
         set(view, '/state/pagebrowser/root', root)
-        set(view, '/state/pagebrowser/isVisible', false)
+        set(view, '/state/pagebrowser/selectedPath', selectedPath)
         set(view, '/state/pagebrowser/withLinkTab', withLinkTab)
-        set(view, '/state/pagebrowser/methods', {
-            onShow: function(){ set(view, '/state/pagebrowser/isVisible', true) },
-            onHide: function(){ set(view, '/state/pagebrowser/isVisible', false) },
-            setItemPath: cb
-        })
-        view.state.pagebrowser.methods.onShow()
     })
 }
 
