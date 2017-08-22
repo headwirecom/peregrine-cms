@@ -17,7 +17,7 @@
   },
   {
     "type": "materialswitch",
-    "title": "Hide Page in Navigation",
+    "label": "Hide Page in Navigation",
     "model": "hideInNav"
   },
   {
@@ -60,7 +60,7 @@
     "placeholder": "tags"
   },
   {
-    "type": "textArea",
+    "type": "material-textarea",
     "inputType": "text",
     "model": "description",
     "label": "Description",
