@@ -73,9 +73,10 @@
 		}
 		.modal-content {
 			padding: 0;
+			height: calc(100% - 48px - 56px);
 			.col-browse {
 				width: 100%;
-				padding: 0.75rem 0.75rem 60px;
+				padding: 0.75rem 0.75rem 0;
 				.cards-toolbar {
 					display: inline-block;
 					margin: 0;
