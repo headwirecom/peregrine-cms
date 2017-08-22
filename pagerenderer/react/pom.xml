@@ -24,13 +24,13 @@
         <groupId>com.peregrine.cms</groupId>
         <artifactId>parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>base.parent</artifactId>
+    <artifactId>pagerender-react.parent</artifactId>
     <packaging>pom</packaging>
 
-    <description>peregrine default node types Parent POM</description>
+    <description>peregrine react page renderer Parent POM</description>
 
     <!--
         ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'
@@ -56,6 +56,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
+
+    <inceptionYear>2017</inceptionYear>
+    <organization>
+        <name>headwire inc.</name>
+    </organization>
 
     <build>
         <plugins>

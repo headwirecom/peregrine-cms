@@ -539,18 +539,18 @@
     </profiles>
 
     <modules>
-        <module>commons</module>
-        <module>base</module>
-        <module>distribution</module>
-        <module>felib</module>
-        <module>pagerender-vue</module>
+        <module>platform/commons</module>
+        <module>platform/base</module>
+        <module>platform/distribution</module>
+        <module>platform/felib</module>
+        <module>platform/node-js</module>
+        <module>pagerenderer/vue</module>
         <module>admin-base</module>
-        <module>node-js</module>
-        <module>example-vue-site</module>
+        <module>samples/example-vue-site</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
         <module>tooling/maven/archetypes/project</module>
-        <module>login</module>
+        <module>platform/login</module>
     </modules>
 
 </project>
