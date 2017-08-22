@@ -1,0 +1,11 @@
+{
+  "fields": [
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "ref",
+      "label": "ref",
+      "model": "ref"
+    }
+  ]
+}

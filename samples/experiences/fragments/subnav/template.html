@@ -1,0 +1,11 @@
+<div>
+    <button class="btn" v-on:click="onLayout">layout</button>
+    <select v-model="experiences.currentComponent" style="display: inline; width: 200px; color: black;">
+        <option value="" disabled>Choose a component</option>
+        <option v-for="component in components" v-bind:value="component.path">{{component.name}}</option>
+    </select>
+    <select v-model="experiences.currentExperience" style="display: inline; width: 200px; color: black;">
+        <option value="">none</option>
+        <option v-for="item in experienceList" v-bind:value="item">{{item}}</option>
+    </select>
+</div>

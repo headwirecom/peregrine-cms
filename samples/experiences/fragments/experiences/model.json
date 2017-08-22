@@ -1,0 +1,10 @@
+{
+    "definitions": {
+        "Experiences": {
+            "type": "object",
+            "x-type": "container",
+            "properties": {
+            }
+        }
+    }
+}

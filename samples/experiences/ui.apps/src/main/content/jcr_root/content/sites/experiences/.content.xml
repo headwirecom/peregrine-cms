@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="per:Page"
+          jcr:title="experiences"
+          jcr:description="experiences Site Root"
+>
+    <jcr:content
+        jcr:primaryType="per:PageContent"
+        sling:resourceType="experiences/components/page"
+        jcr:title="experiences"
+        brand="experiences"
+        template="/content/templates/experiences"
+    >
+        <components jcr:primaryType="nt:unstructured">
+            <text jcr:primaryType="nt:unstructured">
+                <text1 jcr:primaryType="nt:unstructured" text="hello world"
+                       sling:resourceType="experiences/components/text"
+                >
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <experience jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hallo Welt">
+
+                        </experience>
+                    </experiences>
+
+                </text1>
+
+                <text2 jcr:primaryType="nt:unstructured" text="this is a text"
+                       sling:resourceType="experiences/components/text"
+                >
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <experience jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="dies ist ein text">
+
+                        </experience>
+                    </experiences>
+
+                </text2>
+
+            </text>
+        </components>
+
+        <layout jcr:primaryType="nt:unstructured">
+
+            <experiences jcr:primaryType="nt:unstructured"
+                         sling:resourceType="experiences/components/experiences"
+            >
+                <mobile jcr:primaryType="nt:unstructured" experiences="[device:mobile]"
+                        sling:resourceType="experiences/components/experience"
+                >
+                    <reference ref="/jcr:content/components/text/text1" jcr:primaryType="nt:unstructured"
+                               sling:resourceType="experiences/components/reference"
+                    />
+                </mobile>
+
+                <desktop jcr:primaryType="nt:unstructured" experiences="[device:*]"
+                         sling:resourceType="experiences/components/experience"
+                >
+                    <reference ref="/jcr:content/components/text/text1" jcr:primaryType="nt:unstructured"
+                               sling:resourceType="experiences/components/reference"
+                    />
+                </desktop>
+            </experiences>
+
+        </layout>
+    </jcr:content>
+</jcr:root>

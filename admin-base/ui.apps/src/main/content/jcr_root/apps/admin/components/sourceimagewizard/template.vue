@@ -25,10 +25,13 @@
 <template>
     <div ref="wrapper" v-bind:class="['sourceimagewizard', 'container', {'initial-search':  !state.results}]">
         <form v-on:submit.prevent="search()" class="image-search">
+            <button v-if="viewing" v-on:click.prevent.stop="deSelect()" class="back-to-grid btn-flat">
+                <i class="material-icons">grid_on</i><span>back to results</span>
+            </button>
             <input type="text" v-model="state.input" placeholder="Search for an image asset" tabindex="1" autofocus/>
-            <button class="" type="submit" title="search"><i class="material-icons">search</i></button>
+            <button class="" type="submit" title="search" class="image-search-submit"><i class="material-icons">search</i></button>
         </form>
-        <div v-if="!state.results">
+        <div v-if="!state.results && !loading" class="center">
             <span>Search for an image from pixabay and add it directly to your project!</span>
         </div>
 
@@ -37,9 +40,10 @@
 
             <!-- Image Preview --> 
             <div v-else-if="viewing" class="image-preview">
-                <button v-on:click.prevent.stop="deSelect()" class="back-to-grid btn-flat btn-large">
-                    <i class="material-icons">grid_on</i> back to image results
-                </button>
+                <div class="image-preview-details">
+                    <span><div v-for="tag in tags" class="chip">{{tag}}</div></span>
+                    <span>{{viewing.webformatWidth}} x {{viewing.webformatHeight}}</span>
+                </div>
                 <div class="image-row">
                     <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="['btn-flat','btn-large',{'disabled': viewing.index == 0}]">
                         <i class="material-icons">keyboard_arrow_left</i>
@@ -123,6 +127,10 @@
             }
         },
 
+        computed: {
+            tags() { return this.viewing.tags.split(', ') }
+        },
+
         mounted() {
             this.containerWidth = this.$refs.wrapper.offsetWidth
             this.columns = Math.floor(this.containerWidth / 160)
@@ -141,12 +149,12 @@
                     this.state.results = this.state.results.concat(data.hits);
                     this.state.totalHits = data.totalHits;
                     this.state.numPages = Math.ceil(data.totalHits/this.itemsPerPage);
-                    this.viewing = null;
                     this.loading = false;
                 })
             },
 
             search() {
+                this.viewing = null;
                 this.endOfResults = false;
                 this.state.currentPage = 1;
                 this.state.results = [];
@@ -183,6 +191,7 @@
                 this.viewing = this.state.results[index]
                 this.viewing.index = index
                 this.viewing.name = this.viewing.previewURL.split('/').pop()
+                if (index >= this.state.results.length - 1) this.loadNextPage();
             },
             deSelect() {
                 this.viewing = null

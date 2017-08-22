@@ -889,7 +889,17 @@ var PerAdminApp = {
      */
     getExtension(id) {
         return getExtensionImpl(id)
+    },
+
+    getExperiences() {
+        const experiences = this.getNodeFromView('/state/currentExperiences')
+        if(!experiences) {
+            Vue.set(this.getView().state, 'currentExperiences', [])
+            return this.getNodeFromView('/state/currentExperiences')
+        }
+        return experiences
     }
+
 }
 
 export default PerAdminApp
