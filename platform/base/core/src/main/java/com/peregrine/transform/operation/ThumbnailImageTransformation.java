@@ -157,7 +157,7 @@ public class ThumbnailImageTransformation
                     operationContext.getParameter("width", defaultWidth + ""),
                     // Optional Parameters, double dashes without equals
                     "--height", operationContext.getParameter("height", getDefaultHeight + ""),
-                    // We crop it a= the center to make it fit within the given width and height
+                    // We crop it at the center to make it fit within the given width and height
                     "--crop", "centre"
                 );
             }
