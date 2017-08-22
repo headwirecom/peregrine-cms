@@ -543,7 +543,7 @@
         <module>base</module>
         <module>distribution</module>
         <module>felib</module>
-        <module>pagerender-vue</module>
+        <module>pagerenderer/vue</module>
         <module>admin-base</module>
         <module>node-js</module>
         <module>samples/example-vue-site</module>

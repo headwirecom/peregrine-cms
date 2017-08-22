@@ -26,7 +26,7 @@ const fs = require('fs-extra')
 const marked = require('marked')
 const xmlescape = require('xml-escape');
 
-var path = '../../docs/public'
+var path = '../../../docs/public'
 
 function content(title, html, order) {
 html = xmlescape(html)
