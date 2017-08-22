@@ -27,19 +27,19 @@ which should yield something like this:
 # Image Transformation Structure
 
 The basic image handling is done by the **Image Transformation** which are referenced by their
-name. They should start with a prefix like **vips** to keep them apart from other image transformation
-service added in the future. These classes are what is either executing or calling the image
+name. That should start with a prefix like **vips** to keep them apart from other image transformation
+services added in the future. These classes are what is either executing or calling the image
 handling programs. They **must be enabled** for VIPS in order to be used otherwise the rendition
 will fail.
 
-On the other hand we have the **Image Transformation Setup** which are the configuration of the
+On the other hand we have the **Image Transformation Setup**s which are the configuration of the
 image handling for a particular purpose like creating a Greyscale Thumbnail in PNG format. Each
 of them are referenced by its name and the extension of the name indicate the target image type
 like **.png** or **.jpeg**. Each Setup must provide a least one **Configuration** which contains
 the name of the **Image Transformation** and optional parameters.
 
 Under the hood the **Image Transformation Setup** provides a list of **Image Transformation Configuration**s
-which is then used to obtain the **Image Transformation** from the **Image Transformation Provide**.
+which is then used to obtain the **Image Transformation** from the **Image Transformation Provider**.
 Both together (Image Transformation and Image Transformation Configuration) are then used to
 configure and execute the image handling.
 
@@ -96,7 +96,7 @@ to generated the desired image.
 
 # Renditions
 
-Renditions are created and stored under the asset's node **renditions** node which the name of the
+Renditions are created and stored under the asset node's **renditions** node which the name of the
 image transformation setup. The API call to obtain (and create a rendition if not already there) is
 
     &Lt;URL to the Asset without extension>.rendition.json/&lt;image transformation name>
@@ -105,6 +105,4 @@ So to create an thumbnail on the asset **/content/assets/test.png** you use the 
 
     /content/assets/test.png.rendition.json/thumbnail.png
 
-**Attention**:
-
-Make sure that this call is a **POST** as a GET will fail.
+**GET** and **POST** HTTP Methods are supported for this call and work the same way.

@@ -57,6 +57,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Rendition Provider Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + "GET",
         SLING_SERVLET_METHODS + EQUALS + "POST",
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "per/Asset"
     }
@@ -67,7 +68,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * and creates them if they are not available yet
  *
  * Drag an image to the asset page: http://localhost:8080/content/admin/assets.html/path///content/assets
- * Create a thumbnail image with: curl -u admin:admin -X POST http://localhost:8080/content/assets/test.png.rendition.json/thumbnail.png
+ * Create a thumbnail image with: curl -u admin:admin http://localhost:8080/content/assets/test.png.rendition.json/thumbnail.png
  */
 public class RenditionsServlet extends AbstractBaseServlet {
 
