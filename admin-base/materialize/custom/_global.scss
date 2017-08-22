@@ -17,28 +17,6 @@ dl {
 		padding: 0;
 	}
 }
-.modal-container {
-	position: relative;
-	z-index: 2;
-}
-.modal.default {
-	z-index: 1003;
-	display: block;
-	opacity: 1;
-	transform: scaleX(1);
-	top: 10%;
-}
-.modal.bottom-sheet {
-	z-index: 1003;
-	display: block;
-	opacity: 1;
-	bottom: 0;
-}
-.modal-overlay {
-	display: block;
-	z-index: 1002;
-	opacity: 0.32;
-}
 
 .btn-link {
 	border: 0;
