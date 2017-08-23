@@ -109,7 +109,7 @@ export default {
         $perAdminApp.notifyUser(
           'Success',
           'File uploaded successfully.',
-          () => { this.uploadProgress = 0 }
+          { complete: () => { this.uploadProgress = 0 } }
         )
       }
     }

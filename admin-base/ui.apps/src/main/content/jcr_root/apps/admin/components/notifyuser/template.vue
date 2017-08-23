@@ -23,62 +23,31 @@
   #L%
   -->
 <template>
-  <transition name="fade">
-    <div v-if="isVisible" class="modal-container">
-      <div class="modal bottom-sheet">
-          <div class="modal-content">
-              <h4>{{title}}</h4>
-              <p>{{message}}</p>
-          </div>
-          <div class="modal-footer">
-              <button 
-                  type="button"
-                  v-on:click="onOk"
-                  class="modal-action modal-close waves-effect waves-light btn-flat"
-                  title="ok">
-                  ok
-              </button>
-          </div>
-      </div>
-      <div v-on:click="onOk" class="modal-overlay"></div>
+    <div id="notifyUserModal" class="modal bottom-sheet">
+        <div class="modal-content">
+            <h4>{{title}}</h4>
+            <p>{{message}}</p>
+        </div>
+        <div class="modal-footer">
+            <button 
+                type="button"
+                class="modal-action modal-close waves-effect waves-light btn-flat"
+                title="ok">
+                ok
+            </button>
+        </div>
     </div>
-  </transition>
 </template>
 
 <script>
     export default {
         props: ['model'],
         computed: {
-            notify() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/notification')
-            },
             title() {
-                let notification = this.notify
-                if(notification) {
-                    return notification.title
-                }
-                return ''
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/title')
             },
             message() {
-                let notification = this.notify
-                if(notification) {
-                    return notification.message
-                }
-                return ''
-            },
-            isVisible() {
-                let notification = this.notify
-                if(notification) {
-                    return notification.isVisible
-                }
-                return false
-            },
-            onOk() {
-                let notification = this.notify
-                if(notification) {
-                    return notification.onOk
-                }
-                return false
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/message')
             }
         }
     }
