@@ -172,7 +172,7 @@
                 if(this.index === -1) this.index = this.model.children.length -1
                 this.showTourItem()
             },
-            windowResize() {
+            windowChange() {
                 if(this.enabled) {
                     this.showTourItem()
                 }
@@ -180,14 +180,16 @@
         },
         mounted() {
             this.index = 0
-            window.addEventListener('resize', this.windowResize)
+            window.addEventListener('resize', this.windowChange)
+            window.addEventListener('scroll', this.windowChange)
         },
         updated() {
             this.info.width = this.$refs.info ? this.$refs.info.offsetWidth : 0;
             this.info.height = this.$refs.info ?this.$refs.info.offsetHeight : 0;
         },
         beforeDestroy() {
-            window.removeEventListener('resize', this.windowResize)
+            window.removeEventListener('resize', this.windowChange)
+            window.removeEventListener('scroll', this.windowChange)
         }
     }
 </script>
