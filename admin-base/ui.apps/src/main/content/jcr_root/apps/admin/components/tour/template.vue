@@ -26,12 +26,12 @@
     <div v-bind:data-per-path="model.path">
         <div v-if="edit">edit tour</div>
         <div v-if="enabled" v-bind:class="tourClass" v-bind:data-per-path="model.path">
-            <div class="__pcms_tour_overlay tour-left" ref="left" v-bind:style="leftStyle"></div>
-            <div class="__pcms_tour_overlay tour-right" ref="right" v-bind:style="rightStyle"></div>
-            <div class="__pcms_tour_overlay tour-top" ref="top" v-bind:style="topStyle"></div>
-            <div class="__pcms_tour_overlay tour-bot" ref="bottom" v-bind:style="bottomStyle"></div>
+            <div :class="[{'no-transition': noTransition}, '__pcms_tour_overlay', 'tour-left']" ref="left" v-bind:style="leftStyle"></div>
+            <div :class="[{'no-transition': noTransition}, '__pcms_tour_overlay', 'tour-right']" ref="right" v-bind:style="rightStyle"></div>
+            <div :class="[{'no-transition': noTransition}, '__pcms_tour_overlay', 'tour-top']" ref="top" v-bind:style="topStyle"></div>
+            <div :class="[{'no-transition': noTransition}, '__pcms_tour_overlay', 'tour-bot']" ref="bottom" v-bind:style="bottomStyle"></div>
             <div class="__pcms_tour_highlite" ref="highlite" v-bind:style="highliteStyle"></div>
-            <div class="__pcms_tour_info card" ref="info" v-bind:style="infoStyle">
+            <div :class="[{'no-transition': noTransition}, '__pcms_tour_info card']" ref="info" v-bind:style="infoStyle">
                 <button v-on:click="enabled = false" class="btn-flat btn-close"><i class="material-icons">close</i></button>
                 <div ref="tourText" v-html="text" class="card-content">
                 </div>
@@ -50,7 +50,8 @@
         data() {
             return { 
                 enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0,
-                info: {width: null, height: null}
+                info: {width: null, height: null},
+                noTransition: false
             }
         },
         computed: {
@@ -163,17 +164,20 @@
                 }
             },
             onNext() {
+                this.noTransition = false;
                 this.index++
                 if(this.index === this.model.children.length) this.index = 0
                 this.showTourItem()
             },
             onPrevious() {
+                this.noTransition = false;
                 this.index--
                 if(this.index === -1) this.index = this.model.children.length -1
                 this.showTourItem()
             },
             windowChange() {
                 if(this.enabled) {
+                    this.noTransition = true;
                     this.showTourItem()
                 }
             }
@@ -231,7 +235,10 @@
         min-width: 400px;
         position: fixed;
         max-width: 400px;
-        transition: bottom 0.25s, top 0.25s, left 0.25s, right 0.25s;
+        transition: top 0.25s, left 0.25s, height 0.25s;
+    }
+    .no-transition {
+        transition: none !important;
     }
 
     .__pcms_tour_info .btn-close{
