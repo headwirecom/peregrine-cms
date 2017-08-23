@@ -29,8 +29,6 @@
         </template>
         <admin-components-notifyuser>general notification</admin-components-notifyuser>
         <admin-components-pathbrowser>path browser</admin-components-pathbrowser>
-        <admin-components-assetbrowser>asset browser</admin-components-assetbrowser>
-        <admin-components-pagebrowser>page browser</admin-components-pagebrowser>
     </div>
 </template>
 
