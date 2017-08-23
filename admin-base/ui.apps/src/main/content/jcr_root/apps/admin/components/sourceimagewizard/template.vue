@@ -24,19 +24,21 @@
   -->
 <template>
     <div ref="wrapper" v-bind:class="['sourceimagewizard', 'container', {'initial-search':  !state.results}]">
-        <form v-on:submit.prevent="search()" class="image-search">
+        <div class="search-bar">
             <button v-if="viewing" v-on:click.prevent.stop="deSelect()" class="back-to-grid btn-flat">
                 <i class="material-icons">grid_on</i><span>back to results</span>
             </button>
-            <input type="text" v-model="state.input" placeholder="Search for an image asset" tabindex="1" autofocus/>
-            <button class="" type="submit" title="search" class="image-search-submit"><i class="material-icons">search</i></button>
-        </form>
-        <div v-if="!state.results && !loading" class="center">
+            <form v-on:submit.prevent="search()" :class="['image-search', {'previewing': viewing}]">
+                <input type="text" v-model="state.input" placeholder="Search for an image asset" tabindex="1" autofocus/>
+                <button class="" type="submit" title="search" class="image-search-submit"><i class="material-icons">search</i></button>
+            </form>
+        </div>
+        <div v-if="!state.results" class="center">
             <span>Search for an image from pixabay and add it directly to your project!</span>
         </div>
 
         <div v-if="state.results" class="search-content">
-            <span v-if="state.results.length < 1" class="no-results">No images found for '{{ state.input }}'</span>
+            <span v-if="state.results.length < 1 && !loading" class="no-results">No images found for '{{ state.input }}'</span>
 
             <!-- Image Preview --> 
             <div v-else-if="viewing" class="image-preview">
