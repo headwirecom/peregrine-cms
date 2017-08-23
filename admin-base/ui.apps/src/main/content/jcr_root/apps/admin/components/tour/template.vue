@@ -89,7 +89,11 @@
                 //Use anchor if supplied
                 const anchor = this.model.children[this.index].anchor;
                 if (anchor) {
-                    let vertical, horizontal = {}
+                    let horizontal = {left: this.left + this.info.width > window.innerWidth ? 
+                        `${window.innerWidth - this.info.width}px` : `${this.left}px`}
+                    let vertical = {top: this.top + this.info.height > window.innerHeight ? 
+                        `${window.innerHeight - this.info.height}px` : `${this.top}px`}
+                    // let vertical, horizontal = {}
                     if(anchor.indexOf('top') > -1) vertical     = {top : 0}
                     if(anchor.indexOf('bottom') > -1) vertical  = {top : `${window.innerHeight - this.info.height}px`}
                     if(anchor.indexOf('left') > -1) horizontal  = {left: 0}
