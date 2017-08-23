@@ -461,58 +461,33 @@ function findNodeFromPathImpl(node, path) {
  * @private
  * @param title
  * @param message
- * @param cb
+ * @param options
  */
-function notifyUserImpl(title, message, cb) {
+function notifyUserImpl(title, message, options) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
-    set(view, '/state/notification/onOk', function(){
-        set(view, '/state/notification/isVisible', false)
-        if(cb && cb !== null) cb()
-    })
-    set(view, '/state/notification/isVisible', true)
+    $('#notifyUserModal').modal('open', options)
 }
 
 /**
  * implemenation of $perAdminApp.pathBrowser()
  *
  * @private
- * @param root
- * @param cb
+ * @param state
+ * @param options
  */
-function pathBrowserImpl(root, selectedPath) {
-    api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
+function pathBrowserImpl(state, options) {
+    let { root, type, current, selected, withLinkTab } = state
+    api.populateNodesForBrowser(state.current, 'pathBrowser')
+    .then( () => {
         set(view, '/state/pathbrowser/root', root)
-        set(view, '/state/pathbrowser/selectedPath', selectedPath)
-    })
-}
-
-/**
- * implementation of $perAdminApp.assetBrowser()
- *
- * @private
- * @param root
- * @param cb
- */
-function assetBrowserImpl(root, selectedPath) {
-    api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
-        set(view, '/state/assetbrowser/root', root)
-        set(view, '/state/assetbrowser/selectedPath', selectedPath)
-    })
-}
-
-/**
- * implementation of $perAdminApp.pageBrowser()
- *
- * @private
- * @param root
- * @param withLinkTab
- */
-function pageBrowserImpl(root, selectedPath, withLinkTab) {
-    api.populateNodesForBrowser(root, 'pathBrowser').then( () => {
-        set(view, '/state/pagebrowser/root', root)
-        set(view, '/state/pagebrowser/selectedPath', selectedPath)
-        set(view, '/state/pagebrowser/withLinkTab', withLinkTab)
+        set(view, '/state/pathbrowser/type', type)
+        set(view, '/state/pathbrowser/current', current)
+        set(view, '/state/pathbrowser/selected', selected)
+        set(view, '/state/pathbrowser/original', selected)
+        set(view, '/state/pathbrowser/linktab', withLinkTab)
+    }).then( () => {
+        $('#pathBrowserModal').modal('open', options)
     })
 }
 
@@ -805,10 +780,10 @@ var PerAdminApp = {
      * @method
      * @param title
      * @param message
-     * @param cb
+     * @param options
      */
-    notifyUser(title, message, cb) {
-        notifyUserImpl(title, message, cb)
+    notifyUser(title, message, options) {
+        notifyUserImpl(title, message, options)
     },
 
     /**
@@ -816,35 +791,11 @@ var PerAdminApp = {
      *
      * @memberOf PerAdminApp
      * @method
-     * @param rootPath
-     * @param cb
+     * @param state
+     * @param options
      */
-    pathBrowser(rootPath, cb) {
-        pathBrowserImpl(rootPath, cb)
-    },
-
-    /**
-     * open an asset browser for the provided root, notify the callback on selection
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param rootPath
-     * @param cb
-     */
-    assetBrowser(rootPath, cb) {
-        assetBrowserImpl(rootPath, cb)
-    },
-
-    /**
-     * open a page browser for the provided root, notify the callback on selection
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param rootPath
-     * @param cb
-     */
-    pageBrowser(rootPath, withLinkTab, cb) {
-        pageBrowserImpl(rootPath, withLinkTab, cb)
+    pathBrowser(state, options) {
+        pathBrowserImpl(state, options)
     },
 
     /**
