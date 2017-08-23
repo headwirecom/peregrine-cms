@@ -84,7 +84,6 @@ public abstract class BaseFileReplicationService
     public List<Resource> replicate(Resource startingResource, boolean deep)
         throws ReplicationException
     {
-        ResourceResolver resourceResolver = startingResource.getResourceResolver();
         List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {

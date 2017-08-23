@@ -65,7 +65,7 @@ public class ImageTransformationSetup {
 
         @AttributeDefinition(
             name = "Configuration",
-            description = "A list of image transformation configuration executed in the given order. Format: <image transformation name>=[<property key>=<property value>]*"
+            description = "A list of image transformation configuration executed in the given order. Format: transformation=<image transformation name>[|<property key>=<property value>]*"
         )
         String[] imageTransformationConfigurations();
     }

@@ -12,9 +12,9 @@
             <div class="col m6 s12">
               <experiences-components-reference v-bind:model="{ ref: item.path }"></experiences-components-reference>
             </div>
-            <div class="col m6 s12">
-              <vue-form-generator v-bind:model="modelFor(item)" v-bind:schema="schemaFor(item)"
-              v-bind:options="{
+            <div class="col m6 s12">{{modelFor(item).path}}
+              <vue-form-generator v-bind:model="modelFor(item)"
+              v-bind:schema="schemaFor(item)" v-bind:options="{
                                                                 validateAfterLoad: true,
                                                                 validateAfterChanged: true,
                                                                 focusFirstField: true

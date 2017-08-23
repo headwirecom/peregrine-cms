@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.peregrine.cms</groupId>
+        <groupId>com.peregrine-cms</groupId>
         <artifactId>admin.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>

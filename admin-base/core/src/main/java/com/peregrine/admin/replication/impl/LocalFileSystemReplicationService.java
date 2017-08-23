@@ -88,7 +88,7 @@ public class LocalFileSystemReplicationService
         )
         String targetFolder();
         @AttributeDefinition(
-            name = "creationStrategy",
+            name = "Creation Strategy",
             description = "Indicates what to create for the Target Folder. 0 (or any other not mentioned number) means no creation, 1 means creating only the leaf folder, 2 means creating all missing folders",
             defaultValue = CREATE_NONE_STRATEGY + "",
             min = CREATE_NONE_STRATEGY + "",
@@ -97,7 +97,7 @@ public class LocalFileSystemReplicationService
         )
         int creationStrategy();
         @AttributeDefinition(
-            name = "mandatoryRenditions",
+            name = "Mandatory Renditions",
             description = "List of all the required renditions that are replicated (if missing they are created)",
             required = true
         )

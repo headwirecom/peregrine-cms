@@ -104,6 +104,19 @@ function makeContent(root, path) {
     fs.writeFileSync(relPath, res)
 }
 
+function copyImage(root, path) {
+
+    var image = fs.readFileSync(path)
+    var title = path.slice(0, path.lastIndexOf('/'))
+//    title = title.slice(title.lastIndexOf('/')+1)
+    var name = path.slice(path.lastIndexOf('/'))
+
+//    var relPath = 'target/classes/content/sites/docs'+title.slice(root.length) + '/../'
+    var relPath = 'target/classes/content/sites/docs'+title.slice(root.length)
+    fs.mkdirsSync(relPath)
+    fs.writeFileSync(relPath +'/'+name, image)
+}
+
 function processDir(root, path) {
     var files = fs.readdirSync(path)
     files.forEach( file => {
@@ -112,6 +125,8 @@ function processDir(root, path) {
             processDir(root, fullpath)
         } else if(fullpath.endsWith('.md')) {
             makeContent(root, fullpath)
+        } else if(fullpath.endsWith('.png')) {
+            copyImage(root, fullpath)
         }
     })
 }

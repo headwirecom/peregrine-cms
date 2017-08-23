@@ -96,7 +96,7 @@
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
                     text="Have fun!"
-                    anchor="bottom left"
+                    anchor="left"
                 />
             </tour>
     </jcr:content>

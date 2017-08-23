@@ -91,7 +91,7 @@ public class BaseResourceHandlerService
                 try {
                     InputStream sourceStream = asset.getRenditionStream((Resource) null);
                     if(sourceStream != null) {
-                        answer = transform(renditionName, sourceMimeType, sourceStream, targetMimeType, imageTransformationConfigurationList, false);
+                        answer = transform(renditionName, sourceMimeType, sourceStream, targetMimeType, imageTransformationConfigurationList);
                         asset.addRendition(renditionName, answer.getImageStream(), targetMimeType);
                         updateModification(asset.getResource());
                         answer.resetImageStream(asset.getRenditionStream(renditionName));
@@ -114,8 +114,8 @@ public class BaseResourceHandlerService
                 if(brokenImageResource != null) {
                     try {
                         InputStream brokenImageStream = getDataStream(brokenImageResource);
-                        imageTransformationConfigurationList = imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.png");
-                        answer = transform(renditionName, "image/svg+xml", brokenImageStream, "image/png", imageTransformationConfigurationList, true);
+                        imageTransformationConfigurationList = imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.no.crop.png");
+                        answer = transform(renditionName, "image/svg+xml", brokenImageStream, "image/png", imageTransformationConfigurationList);
                     } catch(TransformationException e) {
                         logger.error("Transformation failed, image ignore", e);
                     }
@@ -135,13 +135,12 @@ public class BaseResourceHandlerService
      * @param sourceStream Data Stream of the Source
      * @param targetMimeType Desired Target Mime Type
      * @param imageTransformationConfigurationList List of Image Transformation Configuration
-     * @param noCrop If true then a thumbnail will not crop the image and hence the image might be smaller or shorter
      * @return Image Context that contains the final Data Stream
      * @throws TransformationException If the Transformation failed
      */
     private ImageContext transform(
         String renditionName, String sourceMimeType, InputStream sourceStream, String targetMimeType,
-        List<ImageTransformationConfiguration> imageTransformationConfigurationList, boolean noCrop
+        List<ImageTransformationConfiguration> imageTransformationConfigurationList
     )
         throws TransformationException
     {
@@ -150,13 +149,7 @@ public class BaseResourceHandlerService
         for(ImageTransformationConfiguration imageTransformationConfiguration : imageTransformationConfigurationList) {
             ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(imageTransformationConfiguration.getTransformationName());
             if(imageTransformation != null) {
-                Map<String, String> parameters = null;
-                if(noCrop) {
-                    parameters = new HashMap<>(imageTransformationConfiguration.getParameters());
-                    parameters.put("noCrop", "true");
-                } else {
-                    parameters = imageTransformationConfiguration.getParameters();
-                }
+                Map<String, String> parameters = imageTransformationConfiguration.getParameters();
                 OperationContext operationContext = new OperationContext(renditionName, parameters);
                 // Disabled Transformations will stop the rendition creation as it does create incomplete or non-renditioned images
                 imageTransformation.transform(imageContext, operationContext);
