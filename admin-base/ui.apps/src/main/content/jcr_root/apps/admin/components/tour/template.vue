@@ -50,6 +50,8 @@
         data() {
             return { 
                 enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0,
+                windowHeight: window.innerHight,
+                windowWidth: window.innerWidth,
                 info: {width: null, height: null},
                 noTransition: false
             }
@@ -70,10 +72,10 @@
                 return { top: `${ this.top }px`, left: '0px', height: `${ this.height }px`, width: `${ this.left }px`}
             },
             rightStyle() {
-                return { top: `${ this.top }px`, left: `${ this.right }px`, height: `${ this.height }px`, width: `${window.innerWidth - this.right}px`}
+                return { top: `${ this.top }px`, left: `${ this.right }px`, height: `${ this.height }px`, width: `${this.windowWidth - this.right}px`}
             },
             bottomStyle() {
-                return { top: `${ this.bottom }px`, left: '0px', width: '100%', height: `${window.innerHeight - this.bottom}px`}
+                return { top: `${ this.bottom }px`, left: '0px', width: '100%', height: `${this.windowHeight - this.bottom}px`}
             },
             topStyle() {
                 return { top: '0px', left: '0px', width: '100%', height: `${ this.top }px`}
@@ -151,8 +153,6 @@
                 const root = this.findElement(this.$root, this.model.children[this.index].locator)
                 const el = this.model.children[this.index].selector ? 
                     root.querySelector(this.model.children[this.index].selector) : root;
-                this.enabled = false
-                this.text = ''
                 if(el !== null) {
                     const rect = el.getBoundingClientRect()
                     this.left = rect.left
@@ -160,7 +160,6 @@
                     this.width = rect.width
                     this.height = rect.height
                     this.text = this.model.children[this.index].text
-                    this.enabled = true
                 }
             },
             onNext() {
@@ -177,6 +176,8 @@
             },
             windowChange() {
                 if(this.enabled) {
+                    this.windowHeight = window.innerHeight;
+                    this.windowWidth = window.innerWidth;
                     this.noTransition = true;
                     this.showTourItem()
                 }
