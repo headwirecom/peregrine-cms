@@ -23,35 +23,273 @@
   #L%
   -->
 <template>
-    <div id="pathBrowserModal" class="pathbrowser modal default">
-        <div class="modal-content">
-            <div class="row">
-                <div class="col s12">
-                    <ul class="tabs">
-                        <li class="tab col s2"><a href="#" v-bind:class="isSelected('browse') ? 'active' : ''" v-on:click.stop.prevent="selectBrowse">Browse</a></li>
-                        <li class="tab col s2"><a href="#" v-bind:class="isSelected('search') ? 'active' : ''" v-on:click.stop.prevent="selectSearch">Search</a></li>
-                    </ul>
+    <div id="pathBrowserModal" class="pathbrowser modal default modal-fixed-footer">
+        <ul class="pathbrowser-tabs">
+            <li class="tab">
+                <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
+                    <i class="material-icons">list</i>
+                </a>
+            </li>
+            <li class="tab">
+                <a href="#" :class="tab === 'cards' ? 'active' : ''" v-on:click="select('cards')">
+                    <i class="material-icons">view_module</i>
+                </a>
+            </li>
+            <li class="tab" v-if="withLinkTab">
+                <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')">
+                    <i class="material-icons">link</i>
+                </a>
+            </li>
+            <li 
+                class="indicator" 
+                :style="`transform: translateX(${tabIndicatorPosition}px)`">
+            </li>
+        </ul>
+        <div class="pathbrowser-filter" :style="`width: calc(100% - ${searchTabOffset}px)`">
+            <input placeholder="search"  type="text" v-model="search">
+        </div>
+        <div class="modal-content">                    
+            <div class="col-browse"> 
+                <div v-if="search">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Path</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr v-for="item in nodes.children" v-if="searchFilter(item)">
+                            <td>{{item.mimeType || 'folder'}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.path}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div v-if="isSelected('browse')" class="col s12" v-on:click.stop.prevent="selectParent">
-                    <ul class="collection with-header">
-                        <li class="collection-header">{{path}}</li>
-                        <li class="collection-item" v-for="item in nodes.children" v-if="display(item)">
-                            <a href="" v-if="isFile(item)" v-on:click.stop.prevent="selectItem(item)">{{item.name}}</a>
-                            <a href="" v-if="isFolder(item)" v-on:click.stop.prevent="selectFolder(item)">{{item.name}}</a>
-                        </li>
+                <template v-if="tab === 'browse' && !search">
+                    <nav class="modal-content-nav clearfix">
+                        <div class="modal-content-section">
+                            <div class="current-folder">
+                                <a 
+                                    :disabled="isRoot" 
+                                    href="#!" 
+                                    v-on:click.stop.prevent="selectParent">
+                                    <i class="material-icons">keyboard_arrow_left</i> 
+                                </a>
+                                {{currentPath}} ({{list.length}})
+                            </div>
+                        </div>
+                    </nav>
+                    <ul class="browse-list">
+                        <template v-for="item in nodes.children">
+                            <li v-if="isFolder(item)" 
+                                v-on:click.stop.prevent="navigateFolder(item)"
+                                :class="isSelected(item.path) ? 'selected' : ''">
+                                <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
+                                <label v-on:click.stop.prevent="selectItem(item)"></label>
+                                <i class="material-icons">folder</i>
+                                <span>{{item.name}}</span>
+                            </li>
+                            <li v-if="isFile(item)" 
+                                v-on:click.stop.prevent="selectItem(item)" 
+                                :class="isSelected(item.path) ? 'selected' : ''">
+                                <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
+                                <label></label>
+                                <i class="material-icons">image</i>
+                                <span>{{item.name}}</span>
+                            </li>
+                        </template>
                     </ul>
-                </div>
-                <div v-if="isSelected('search')" class="col s12">
-                    searchui
+                </template>
+                <template v-if="tab === 'cards' && !search">
+                    <template v-if="list.length > 0">
+                        <nav class="modal-content-nav clearfix">
+                            <div class="modal-content-section">
+                                <div class="current-folder">
+                                    <a 
+                                        :disabled="isRoot" 
+                                        href="#!" 
+                                        v-on:click.stop.prevent="selectParent">
+                                        <i class="material-icons">keyboard_arrow_left</i> 
+                                    </a>
+                                    {{currentPath}} ({{list.length}})
+                                </div>
+                            </div>
+                            <div class="modal-content-section">
+                                <ul class="cards-toolbar sort-nav">
+                                    <li>
+                                        <span class="cards-toolbar-title">Sort</span>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="assetbrowser_sort_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="assetbrowser_sort_cards_name" 
+                                            :checked="sortBy === 'name'"/>
+                                        <label v-on:click="onSort('name')" for="assetbrowser_sort_cards_name">name</label>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="assetbrowser_sort_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="assetbrowser_sort_cards_type" 
+                                            :checked="sortBy === 'resourceType'"/>
+                                        <label v-on:click="onSort('resourceType')" for="assetbrowser_sort_cards_type">type</label>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="assetbrowser_sort_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="assetbrowser_sort_cards_date" 
+                                            :checked="sortBy === 'created'"/>
+                                        <label v-on:click="onSort('created')" for="assetbrowser_sort_cards_date">date</label>
+                                    </li>
+                                </ul>
+                                <ul class="cards-toolbar filter-nav">
+                                    <li>
+                                        <span class="cards-toolbar-title">filter</span>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="assetbrowser_filter_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="assetbrowser_filter_cards_all" 
+                                            :checked="filterBy === '*'"/>
+                                        <label v-on:click="onFilter('*')" for="assetbrowser_filter_cards_all">all</label>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="assetbrowser_filter_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="assetbrowser_filter_cards_files" 
+                                            :checked="filterBy === 'files'"/>
+                                        <label v-on:click="onFilter('files')" for="assetbrowser_filter_cards_files">files</label>
+                                    </li>
+                                    <li>
+                                        <input 
+                                            name="assetbrowser_filter_cards" 
+                                            type="radio" 
+                                            class="with-gap" 
+                                            id="assetbrowser_filter_cards_folders" 
+                                            :checked="filterBy === 'folders'"/>
+                                        <label v-on:click="onFilter('folders')" for="assetbrowser_filter_cards_folders">folders</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        <p class="range-field">
+                            <input 
+                                type="range" 
+                                min="120" 
+                                max="400" 
+                                v-model="cardSize"/>
+                        </p>
+                        <isotope 
+                            ref="isotope" 
+                            class="isotopes" 
+                            v-bind:options="getIsotopeOptions()"
+                            v-images-loaded:on="getImagesLoadedCbs()" 
+                            v-bind:list="list">
+                            <div 
+                                v-for="(item, index) in list" 
+                                :key="item.path">
+                                <div 
+                                    v-if="isFolder(item)" 
+                                    class="item-folder"
+                                    v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
+                                    v-on:click.stop.prevent="navigateFolder(item)">
+                                        <div class="item-select">
+                                            <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
+                                            <label v-on:click.stop.prevent="selectItem(item)"></label>
+                                        </div>
+                                        <div class="item-content">
+                                            <i 
+                                                class="material-icons"
+                                                :style="`font-size: ${cardIconSize(cardSize)}px`">folder_open</i>
+                                            <br/>
+                                            <span class="truncate">{{item.name}}</span>
+                                        </div>
+                                </div>
+                                <template v-if="isFile(item)">
+                                    <img 
+                                        v-if="isImage(item)" 
+                                        :class="isSelected(item.path) ? 'item-image selected' : 'item-image'"
+                                        v-bind:style="`width: ${cardSize}px`" 
+                                        v-bind:src="item.path" 
+                                        v-on:click.stop.prevent="selectItem(item)"/>
+                                    <div 
+                                        v-else
+                                        :class="isSelected(item.path) ? 'item-file selected' : 'item-file'"
+                                        :title="item.name"
+                                        v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
+                                        v-on:click.stop.prevent="selectItem(item)">
+                                        <div class="item-content">
+                                            <i 
+                                                class="material-icons"
+                                                :style="`font-size: ${cardIconSize(cardSize)}px`">{{getFileIcon(item)}}</i>
+                                            <br/>
+                                            <span class="truncate">{{item.name}}</span>
+                                        </div>
+                                    </div>
+                                
+                                </template>
+                            </div>
+                        </isotope>
+                    </template>
+                    <p v-else class="flow-text">This folder is empty.</p>
+                </template>
+                <template v-if="withLinkTab && tab === 'link' && !search">
+                    <vue-form-generator
+                        v-bind:schema  = "linkSchema"
+                        v-bind:model   = "linkModel"
+                        v-bind:options = "linkFormOptions">
+                    </vue-form-generator>
+                </template>
+            </div>
+            <div class="col-preview">
+                <template v-if="preview">
+                    <div v-if="isFolder(preview)" class="preview-folder">
+                        <i class="svg-icons svg-icon-open-folder"></i>
+                    </div>
+                    <template v-if="isFile(preview)">
+                        <img v-if="true" class="preview-image" v-bind:src="preview.path" />
+                        <i v-else class="material-icons preview-file">insert_file_drive</i>
+                    </template>
+                    <dl class="preview-data">
+                        <dt>Name</dt>
+                        <dd>{{preview.name}}</dd>
+                        <dt>Type</dt>
+                        <dd>{{preview.resourceType}}</dd>
+                        <dt>Path</dt>
+                        <dd>{{preview.path}}</dd>
+                        <dt>Created</dt>
+                        <dd>{{preview.created}}</dd>
+                    </dl>
+                </template>
+                <div v-else class="no-asset-selected">
+                    <span>no asset selected</span>
+                    <i class="material-icons">info</i>
                 </div>
             </div>
         </div>
+
         <div class="modal-footer">
-            <button 
-                type="button"
-                v-on:click="onOk"
-                class="modal-action modal-close waves-effect waves-light btn-flat">
-                ok
+            <span class="selected-path">{{selectedPath}}</span>
+            <button v-on:click="onModalCancel"
+                    class="modal-action waves-effect waves-light btn-flat">
+                    cancel
+            </button>
+            <button v-on:click="onModalSelect" 
+                    class="modal-action waves-effect waves-light btn-flat">
+                    select
             </button>
         </div>
     </div>
@@ -62,71 +300,216 @@
         props: ['model'],
         data: function() {
             return {
-                selected: 'browse'
+                tab: 'browse',
+                cardSize: 120,
+                search: '',
+                previewType: this.selectedPath ? 'selected' : 'current',
+                sortBy: '',
+                filterBy: '*',
+                linkModel: {
+                    url: '',
+                    newWindow: false
+                },
+                linkSchema: {
+                    fields: [
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Url",
+                            model: "url",
+                            placeholder: 'https://',
+                            min: 6,
+                            required: true
+                        },
+                        {
+                            type: "checkbox",
+                            label: "Open in new window?",
+                            model: "newWindow",
+                            default: true
+                        }
+                    ]
+                },
+                linkFormOptions: {
+                    validateAfterLoad: true,
+                    validateAfterChanged: true
+                }
+            }
+        },
+        watch: {
+            cardSize: function (newCardSize) {
+                this.updateIsotopeLayout('masonry')
             }
         },
         computed: {
-            path() {
+            browserRoot(){
                 return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/root')
+            }, 
+            browserType(){
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/type')
+            }, 
+            currentPath() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/current')
             },
-            selectedPath() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/selectedPath')
+            selectedPath(){
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/selected')
+            },
+            withLinkTab(){
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/linktab')
+            },
+            isRoot(){
+                return this.currentPath === this.browserRoot
+            },
+            preview(){
+                if(this.previewType === 'selected'){
+                    const view = $perAdminApp.getView()
+                    return $perAdminApp.findNodeFromPath(view.admin.pathBrowser, this.selectedPath)
+                } else {
+                    return this.nodes
+                }
             },
             nodes() {
                 let view = $perAdminApp.getView()
                 let nodes = view.admin.pathBrowser
-                if(nodes && this.path) {
-                    return $perAdminApp.findNodeFromPath(nodes, this.path)
+                if(nodes && this.currentPath) {
+                    let nodesFromPath = $perAdminApp.findNodeFromPath(nodes, this.currentPath)
+                    return nodesFromPath
                 }
                 return {}
+            },
+            list(){
+                return this.nodes.children || []
+            },
+            tabIndicatorPosition(){
+                let position
+                switch(this.tab) {
+                    case ('browse'):
+                        position = 0
+                        break
+                    case ('cards'):
+                        position = 72
+                        break
+                    case ('link'):
+                        position = 144
+                        break
+                    default:
+                        position = 0
+                        break
+                }
+                return position
+            },
+            searchTabOffset(){
+                if(this.withLinkTab){
+                    return 216
+                } else {
+                    return 144
+                }
             }
         },
         methods: {
+            isImage(item){
+                return item.path.match(/.(jpg|jpeg|png|gif)$/i)
+            }, 
+            getFileIcon(item){
+                return 'insert_drive_file'
+            },
+            cardIconSize: function(cardSize){
+                return Math.floor(cardSize/3)
+            },
+            getImagesLoadedCbs: function() {
+              return {
+                progress: (instance, img ) => {
+                  this.updateIsotopeLayout('masonry')
+                },
+                done: (instance) => {
+                  this.updateIsotopeLayout('masonry')
+                }
+              }
+            },
+            updateIsotopeLayout: function(layout){
+                this.$nextTick(function () {
+                    this.$refs.isotope.layout(layout)
+                })
+            },
+            getIsotopeOptions: function() {
+                return {
+                    layoutMode: 'masonry',
+                    itemSelector: '.card',
+                    stamp: '.stamp',
+                    masonry: {
+                        gutter: 15
+                    },
+                    getSortData: {
+                        name: function(itemElem){
+                            return itemElem.name.toLowerCase()    
+                        },
+                        created: function(itemElem){
+                            return Date.parse(itemElem.created)
+                        },
+                        resourceType: function(itemElem){
+                            return itemElem.resourceType.toLowerCase()    
+                        }
+                    },
+                    getFilterData:{
+                        folders: itemElem => this.isFolder(itemElem),
+                        files: itemElem => this.isFile(itemElem)
+                    }
+                }
+            },
+
+            onSort(sortType){
+                this.sortBy = sortType
+                this.$refs.isotope.sort(sortType)
+            },
+            onFilter(filterType){
+                this.filterBy = filterType
+                this.$refs.isotope.filter(filterType)
+            },
+
+            select(name) {
+                this.tab = name
+            },
+            searchFilter(item) {
+                if(this.search.length === 0) return true
+                return (item.name.indexOf(this.search) >= 0)
+            },
             selectParent() {
-                let parentFolder = this.path.split('/')
+                let parentFolder = this.currentPath.split('/')
                 parentFolder.pop()
                 let newPath = parentFolder.join('/')
-                this.selectFolder({ path: newPath} )
+                /* TODO: pass in obj with name and type, not just path */
+                this.navigateFolder({ path: newPath} )
             },
             display(item) {
                 return item.name !== 'jcr:content'
             },
             isFile(item) {
-                const FILE_TYPES = [
-                    'per:Asset',
-                    'nt:file'
-                ]
-                return FILE_TYPES.indexOf(item.resourceType) >= 0
+                return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
             },
             isFolder(item) {
-                const FOLDER_TYPES = [
-                    'per:Page',
-                    'nt:folder',
-                    'sling:Folder',
-                    'sling:OrderedFolder'
-                ]
-                return FOLDER_TYPES.indexOf(item.resourceType) >= 0
+                return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
             },
-            isSelected(name) {
-                return name === this.selected
+            isSelected(path) {
+                return this.selectedPath === path 
             },
-            selectBrowse(ev) {
-                this.selected = 'browse'
-            },
-            selectSearch(ev) {
-                this.selected = 'search'
-            },
-            selectFolder(item) {
-                $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser').then( () => {
-                    let pb = $perAdminApp.getNodeFromView('/state/pathbrowser')
-                    pb.root = item.path
-                })
+            navigateFolder(item) {
+                $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser')
+                    .then( () => {
+                        this.previewType = 'current'
+                        $perAdminApp.getNodeFromView('/state/pathbrowser').current = item.path
+                        if(this.tab === 'cards') this.updateIsotopeLayout('masonry')
+                    })
             },
             selectItem(item) {
-                $perAdminApp.getNodeFromView('/state/pathbrowser').selectedPath = item.path
+                this.previewType = 'selected'
+                $perAdminApp.getNodeFromView('/state/pathbrowser').selected = item.path
             },
-            onHide() {
-                return $('#pathBrowserModal').modal('close')
+            onModalSelect(){
+                $('#pathBrowserModal').modal('close')
+            },
+            onModalCancel(){
+                // set selected path to original path
+                $perAdminApp.getNodeFromView('/state/pathbrowser').selected = $perAdminApp.getNodeFromView('/state/pathbrowser/original')
+                $('#pathBrowserModal').modal('close')
             }
         }
     }
