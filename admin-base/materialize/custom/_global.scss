@@ -60,4 +60,17 @@ dl {
 	&.svg-icon-rename {
 		background-image: url('/etc/felibs/admin/images/icon-rename.svg')
 	}
+	&.svg-icon-open-folder {
+		background-image: url('/etc/felibs/admin/images/icon-open-folder.svg')
+	}
+}
+
+.clearfix:before,
+.clearfix:after {
+        display: table;
+        content: " ";
+}
+
+.clearfix:after {
+    clear: both;
 }
