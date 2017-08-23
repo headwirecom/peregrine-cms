@@ -102,16 +102,21 @@
                 const spaceAbove = this.top;
                 const spaceBelow = window.innerHeight - this.bottom;
 
+                //Favor side with more room
                 const horizontalStyle = spaceLeft > spaceRight ? 
                     placeLeft : placeRight;
                 const verticalStyle = spaceAbove > spaceBelow ? 
                     placeAbove : placeBelow;
 
                 if ( spaceBelow > (this.info.height + 40) || spaceAbove > (this.info.height + 40)) {
-                    return Object.assign( verticalStyle, {left: `${this.left}px`});
+                    const secondaryStyle = {left: this.left + this.info.width > window.innerWidth ? 
+                        `${window.innerWidth - this.info.width}px` : `${this.left}px`}
+                    return Object.assign( verticalStyle, secondaryStyle);
                 }
                 if ( spaceLeft > (this.info.width + 40) || spaceRight > (this.info.width + 40)) {
-                    return Object.assign( horizontalStyle, {top: `${this.top}px`});
+                    const secondaryStyle = {top: this.top + this.info.height > window.innerHeight ? 
+                        `${window.innerHeight - this.info.height}px` : `${this.top}px`}
+                    return Object.assign( horizontalStyle, secondaryStyle);
                 }
                 return {
                     top: `${this.bottom - this.info.height}px`,
