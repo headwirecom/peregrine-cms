@@ -111,7 +111,8 @@ function copyImage(root, path) {
 //    title = title.slice(title.lastIndexOf('/')+1)
     var name = path.slice(path.lastIndexOf('/'))
 
-    var relPath = 'target/classes/content/sites/docs'+title.slice(root.length) + '/../'
+//    var relPath = 'target/classes/content/sites/docs'+title.slice(root.length) + '/../'
+    var relPath = 'target/classes/content/sites/docs'+title.slice(root.length)
     fs.mkdirsSync(relPath)
     fs.writeFileSync(relPath +'/'+name, image)
 }
