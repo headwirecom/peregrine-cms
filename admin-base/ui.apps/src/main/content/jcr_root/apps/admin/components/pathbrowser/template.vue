@@ -93,7 +93,7 @@
                                 <i class="material-icons">folder</i>
                                 <span>{{item.name}}</span>
                             </li>
-                            <li v-if="isFile(item)" 
+                            <li v-if="isFile(item) && isFileAllowed()" 
                                 v-on:click.stop.prevent="selectItem(item)" 
                                 :class="isSelected(item.path) ? 'selected' : ''">
                                 <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
@@ -105,86 +105,86 @@
                     </ul>
                 </template>
                 <template v-if="tab === 'cards' && !search">
+                    <nav class="modal-content-nav clearfix">
+                        <div class="modal-content-section">
+                            <div class="current-folder">
+                                <a 
+                                    :disabled="isRoot" 
+                                    href="#!" 
+                                    v-on:click.stop.prevent="selectParent">
+                                    <i class="material-icons">keyboard_arrow_left</i> 
+                                </a>
+                                {{currentPath}} ({{list.length}})
+                            </div>
+                        </div>
+                        <div class="modal-content-section">
+                            <ul class="cards-toolbar sort-nav">
+                                <li>
+                                    <span class="cards-toolbar-title">Sort</span>
+                                </li>
+                                <li>
+                                    <input 
+                                        name="assetbrowser_sort_cards" 
+                                        type="radio" 
+                                        class="with-gap" 
+                                        id="assetbrowser_sort_cards_name" 
+                                        :checked="sortBy === 'name'"/>
+                                    <label v-on:click="onSort('name')" for="assetbrowser_sort_cards_name">name</label>
+                                </li>
+                                <li>
+                                    <input 
+                                        name="assetbrowser_sort_cards" 
+                                        type="radio" 
+                                        class="with-gap" 
+                                        id="assetbrowser_sort_cards_type" 
+                                        :checked="sortBy === 'resourceType'"/>
+                                    <label v-on:click="onSort('resourceType')" for="assetbrowser_sort_cards_type">type</label>
+                                </li>
+                                <li>
+                                    <input 
+                                        name="assetbrowser_sort_cards" 
+                                        type="radio" 
+                                        class="with-gap" 
+                                        id="assetbrowser_sort_cards_date" 
+                                        :checked="sortBy === 'created'"/>
+                                    <label v-on:click="onSort('created')" for="assetbrowser_sort_cards_date">date</label>
+                                </li>
+                            </ul>
+                            <ul class="cards-toolbar filter-nav">
+                                <li>
+                                    <span class="cards-toolbar-title">filter</span>
+                                </li>
+                                <li>
+                                    <input 
+                                        name="assetbrowser_filter_cards" 
+                                        type="radio" 
+                                        class="with-gap" 
+                                        id="assetbrowser_filter_cards_all" 
+                                        :checked="filterBy === '*'"/>
+                                    <label v-on:click="onFilter('*')" for="assetbrowser_filter_cards_all">all</label>
+                                </li>
+                                <li>
+                                    <input 
+                                        name="assetbrowser_filter_cards" 
+                                        type="radio" 
+                                        class="with-gap" 
+                                        id="assetbrowser_filter_cards_files" 
+                                        :checked="filterBy === 'files'"/>
+                                    <label v-on:click="onFilter('files')" for="assetbrowser_filter_cards_files">files</label>
+                                </li>
+                                <li>
+                                    <input 
+                                        name="assetbrowser_filter_cards" 
+                                        type="radio" 
+                                        class="with-gap" 
+                                        id="assetbrowser_filter_cards_folders" 
+                                        :checked="filterBy === 'folders'"/>
+                                    <label v-on:click="onFilter('folders')" for="assetbrowser_filter_cards_folders">folders</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
                     <template v-if="list.length > 0">
-                        <nav class="modal-content-nav clearfix">
-                            <div class="modal-content-section">
-                                <div class="current-folder">
-                                    <a 
-                                        :disabled="isRoot" 
-                                        href="#!" 
-                                        v-on:click.stop.prevent="selectParent">
-                                        <i class="material-icons">keyboard_arrow_left</i> 
-                                    </a>
-                                    {{currentPath}} ({{list.length}})
-                                </div>
-                            </div>
-                            <div class="modal-content-section">
-                                <ul class="cards-toolbar sort-nav">
-                                    <li>
-                                        <span class="cards-toolbar-title">Sort</span>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_name" 
-                                            :checked="sortBy === 'name'"/>
-                                        <label v-on:click="onSort('name')" for="assetbrowser_sort_cards_name">name</label>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_type" 
-                                            :checked="sortBy === 'resourceType'"/>
-                                        <label v-on:click="onSort('resourceType')" for="assetbrowser_sort_cards_type">type</label>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_date" 
-                                            :checked="sortBy === 'created'"/>
-                                        <label v-on:click="onSort('created')" for="assetbrowser_sort_cards_date">date</label>
-                                    </li>
-                                </ul>
-                                <ul class="cards-toolbar filter-nav">
-                                    <li>
-                                        <span class="cards-toolbar-title">filter</span>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="assetbrowser_filter_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_filter_cards_all" 
-                                            :checked="filterBy === '*'"/>
-                                        <label v-on:click="onFilter('*')" for="assetbrowser_filter_cards_all">all</label>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="assetbrowser_filter_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_filter_cards_files" 
-                                            :checked="filterBy === 'files'"/>
-                                        <label v-on:click="onFilter('files')" for="assetbrowser_filter_cards_files">files</label>
-                                    </li>
-                                    <li>
-                                        <input 
-                                            name="assetbrowser_filter_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_filter_cards_folders" 
-                                            :checked="filterBy === 'folders'"/>
-                                        <label v-on:click="onFilter('folders')" for="assetbrowser_filter_cards_folders">folders</label>
-                                    </li>
-                                </ul>
-                            </div>
-                        </nav>
                         <p class="range-field">
                             <input 
                                 type="range" 
@@ -218,7 +218,7 @@
                                             <span class="truncate">{{item.name}}</span>
                                         </div>
                                 </div>
-                                <template v-if="isFile(item)">
+                                <template v-if="isFile(item) && isFileAllowed()">
                                     <img 
                                         v-if="isImage(item)" 
                                         :class="isSelected(item.path) ? 'item-image selected' : 'item-image'"
@@ -484,6 +484,9 @@
             },
             isFile(item) {
                 return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
+            },
+            isFileAllowed(){
+                return this.browserType !== 'pages'
             },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
