@@ -184,6 +184,21 @@ function initPeregrineApp() {
         el: '#peregrine-adminapp',
         data: view
     });
+
+    const state = sessionStorage.getItem('perAdminApp.state')
+    const admin = sessionStorage.getItem('perAdminApp.admin')
+
+    if(state && admin) {
+        view.state = JSON.parse(state)
+        view.admin = JSON.parse(admin)
+    }
+
+    app.$watch('state', function(newVal, oldVal) {
+        sessionStorage.setItem('perAdminApp.state', JSON.stringify(newVal))
+    }, { deep: true })
+    app.$watch('admin', function(newVal, oldVal) {
+        sessionStorage.setItem('perAdminApp.admin', JSON.stringify(newVal))
+    }, { deep: true })
 }
 
 /**
