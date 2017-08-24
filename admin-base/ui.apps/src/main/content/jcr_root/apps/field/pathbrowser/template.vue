@@ -51,25 +51,35 @@
                 this.value = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
             }, 
             browse() {
+                // root path is used to limit top lever directory of path browser
+                let root = this.schema.browserRoot
+                if(!root) {
+                    console.warn('browserRoot not defined in schema. All paths are available.')
+                    root = '/'
+                }
+                // browser type is used to limit action and file types
                 let type = this.schema.browserType
-                if(!type) console.warn('pathbrowser type was not defined in schema. Root is set to "/content".')
-                let root
-                switch(type) {
-                    case ('assets'):
-                        root = '/content/assets'
-                        break
-                    case ('sites'):
-                        root = '/content/sites'
-                        break;
-                    default:
-                        root = '/content'
+                if(!type) {
+                    console.warn('browserType not defined in schema. Infering type from root path.')
+                    switch(root) {
+                        case ('/content/assets'):
+                            type = 'assets'
+                            break
+                        case ('/content/sites'):
+                            type = 'pages'
+                            break;
+                        default:
+                            type = 'default'
+                    }
                 }
-                let currentPath = root
                 let selectedPath = this.value
-                if(selectedPath) {
-                    // change currentPath to slected items parent
-                    currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
-                }
+                // current path is the active directory in the path browser
+                // if a path is selected, currentPath becomes the selected path's parent
+                // if no path is selected, currentPath becomes the root path
+                let currentPath
+                selectedPath
+                    ? currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                    : currentPath = root
                 const initModalState = {
                     root: root,
                     type: type,
