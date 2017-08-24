@@ -124,13 +124,13 @@ public class PerAssetImpl
     public void addTag(String category, String tag, Object value)
         throws PersistenceException, RepositoryException
     {
-        Session session = adaptTo(Session.class);
-        Resource categoryResource = getCategoryResource(category, true);
-        ModifiableValueMap properties = categoryResource.adaptTo(ModifiableValueMap.class);
-        if(properties != null) {
-            properties.put(PerUtil.adjustMetadataName(tag), value);
+        if(value != null) {
+            Resource categoryResource = getCategoryResource(category, true);
+            ModifiableValueMap properties = categoryResource.adaptTo(ModifiableValueMap.class);
+            if(properties != null) {
+                properties.put(PerUtil.adjustMetadataName(tag), value);
+            }
         }
-//        session.save();
     }
 
     @Override
