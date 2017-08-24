@@ -274,19 +274,39 @@ public abstract class BaseFileReplicationService
         String primaryType = getPrimaryType(resource);
         for(Entry<String, List<String>> entry: getExportExtensions().entrySet()) {
             String extension = entry.getKey();
+            boolean raw = extension.endsWith("~raw");
+            if(raw) { extension = extension.substring(0, extension.length() - "~raw".length()); }
+            if("*".equals(extension)) { extension = ""; }
             if(entry.getValue().contains(primaryType)) {
-                String renderingContent = null;
-                try {
-                    renderingContent = renderResource(resource, extension, post);
-                } catch(ReplicationException e) {
-                    log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
-                }
-                if(renderingContent != null) {
-                    log.trace("Rendered Resource: {}", renderingContent);
-                    String path = storeRendering(resource, extension, renderingContent);
-                    Resource contentResource = resource.getChild(JCR_CONTENT);
-                    if(contentResource != null) {
-                        updateReplicationProperties(contentResource, path, null);
+                if(raw) {
+                    byte[] renderingContent = null;
+                    try {
+                        renderingContent = renderRawResource(resource, extension, post);
+                    } catch(ReplicationException e) {
+                        log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                    }
+                    if(renderingContent != null) {
+                        log.trace("Rendered Resource: {}", renderingContent);
+                        String path = storeRendering(resource, extension, renderingContent);
+                        Resource contentResource = resource.getChild(JCR_CONTENT);
+                        if(contentResource != null) {
+                            updateReplicationProperties(contentResource, path, null);
+                        }
+                    }
+                } else {
+                    String renderingContent = null;
+                    try {
+                        renderingContent = renderResource(resource, extension, post);
+                    } catch(ReplicationException e) {
+                        log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                    }
+                    if(renderingContent != null) {
+                        log.trace("Rendered Resource: {}", renderingContent);
+                        String path = storeRendering(resource, extension, renderingContent);
+                        Resource contentResource = resource.getChild(JCR_CONTENT);
+                        if(contentResource != null) {
+                            updateReplicationProperties(contentResource, path, null);
+                        }
                     }
                 }
             }
