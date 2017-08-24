@@ -80,20 +80,57 @@
                 })
                 const toolbar = this.quill.getModule('toolbar')
                 toolbar.addHandler('link', (value) => { 
-                  this.showPageBrowser()
+                    console.log('showPathBrowser: ', value)
+                  this.showPathBrowser(this.getSelectedPath())
                 })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
                     this.value = this.$refs.quilleditor.children[0].innerHTML
                 } )
             },
-            showPageBrowser() {
-              $perAdminApp.pageBrowser(
-                '/content/sites',
-                true, // with Link tab?
-                (newValue) => { 
-                  newValue ? this.quill.format('link', newValue) : this.quill.format('link', false)
+            getSelectedPath(){
+                var range = this.quill.getSelection()
+                if (range && !range.length == 0) {
+                    var selectedText = this.quill.getText(range.index, range.length)
+                    console.log('User has highlighted: ', selectedText)
+                    // find link with text as value
+                    var linkNodes = document.querySelectorAll('.ql-editor > p > a')
+                    console.log('linkNodes: ', linkNodes)
+                    // find link with selected text (selectedText)
+                    let len = linkNodes.length
+                    for(let i=0; i<len; i++){
+                        let node = linkNodes[i]
+                        if(node.textContent === selectedText) {
+                            // return link pathname so we can set as selectedText
+                            return node.pathname
+                        }
+                    }
                 }
-              )
+                return false
+            }, 
+            showPathBrowser(selectedPath) {
+                let root = '/content/sites'
+                let currentPath
+                selectedPath
+                    ? currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                    : currentPath = root
+                const initModalState = {
+                    root: root,
+                    type: 'default',
+                    current: currentPath,
+                    selected: selectedPath,
+                    withLinkTab: true
+                }
+                console.log('initialModalState: ', initModalState)
+                const options = {
+                    complete: this.setLinkValue
+                }
+                $perAdminApp.pathBrowser(initModalState, options)
+            },
+            setLinkValue(){
+                const newValue = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
+                newValue 
+                    ? this.quill.format('link', newValue) 
+                    : this.quill.format('link', false)
             }
         }
     }
