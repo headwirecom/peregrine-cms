@@ -128,8 +128,14 @@ To configure this distribution service: **com.peregrine.admin.replication.impl.L
 |:---|:--------|:-------|:---|:------|:----------|
 |Name|name|yes|String|none|Name of the Replication Service|
 |Target Folder|targetFolder|yes|String|none|Absolute Path to the Output Folder. Can use place holders inside ${} which supports Java / Sling properties|
+|Export Extensions|exportExtensions|yes|String|none|List of Extensions to be exported. The format is &lt;extension[~raw]>=&lt;&vert;-split list of primary types that are exported>|
 |Creation Strategy|creationStrategy|yes|int|1|If target folder(s) is missing what is created (0: none, 1: leaf folder, 2: all folders (mkdirs)|
 |Mandatory Renditions|mandatoryRenditions|String|no|Name of the Renditions that are created (if not already done) during the distribution|
+
+**Note**: For the **Export Extensions** the extension (key) can be either a regular extension without a leading dot
+or it can be a ** * ** if the file is exported with the name of the node (for example NT Files). The extension can also
+have the **~raw** suffix which indicates that the content is exported as byte array rather than as text which should
+be done for files.
 
 **Attention**: to learn more about the **Renditions** please go to the Renditions Documentation.
 
