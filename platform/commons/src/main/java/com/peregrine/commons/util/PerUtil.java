@@ -38,8 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,12 +63,71 @@ public class PerUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
+    /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
         return text == null || text.isEmpty();
     }
 
+    /** @return True if the given text is both not null and not empty **/
     public static boolean isNotEmpty(String text) {
         return text != null && !text.isEmpty();
+    }
+
+    public static List<String> intoList(String[] entries) {
+        List<String> answer = new ArrayList<>();
+        if(entries != null) {
+            for(String entry: entries) {
+                if(isNotEmpty(entry)) {
+                    answer.add(entry);
+                }
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * Splits the given text into parts and add them to a list
+     * @param text Text to be split. If null there is no splitting
+     * @param separator Separator to be used to split the text. If null then text is just added if not null.
+     * @return List of the split values which is never null but maybe empty
+     */
+    public static List<String> split(String text, String separator) {
+        List<String> answer = new ArrayList<>();
+        if(isNotEmpty(text)) {
+            if(isNotEmpty(separator)) {
+                String[] tokens = text.split(separator);
+                answer.addAll(Arrays.asList(tokens));
+            } else {
+                answer.add(text);
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * Splits the given array of texts into a map
+     * @param entries Array of entries to be split. If the entries is null then there is no splitting, any null or empty item is ignored
+     * @param keySeparator The separator between the key and value. If null then there is splitting
+     * @param valueSeparator The separator between the parts of the values. If null then the value is added as single value
+     * @return Map of the split entries
+     */
+    public static Map<String, List<String>> splitIntoMap(String[] entries, String keySeparator, String valueSeparator) {
+        Map<String, List<String>> answer = new LinkedHashMap<>();
+        if(entries != null && isNotEmpty(keySeparator)) {
+            for(String entry: entries) {
+                if(isNotEmpty(entry)) {
+                    List<String> keyValue = split(entry, keySeparator);
+                    if(keyValue.size() != 2) {
+                        throw new IllegalArgumentException("Entry: '{}' could not be split into a key value pair");
+                    }
+                    String key = keyValue.get(0);
+                    String value = keyValue.get(1);
+                    List<String> values = split(value, valueSeparator);
+                    answer.put(key, values);
+                }
+            }
+        }
+        return answer;
     }
 
     /**
