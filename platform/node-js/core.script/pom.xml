@@ -51,7 +51,7 @@
                         -->
                         <Bundle-SymbolicName>com.peregrine.nodejs.scripts</Bundle-SymbolicName>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Sling-Model-Packages>com.peregrine.nodejs.models</Sling-Model-Packages>
+                        <Sling-Model-Packages>com.peregrine-cms.nodejs.models</Sling-Model-Packages>
                         <_dsannotations>*</_dsannotations>
                         <_metatypeannotations>*</_metatypeannotations>
                         <_removeheaders>

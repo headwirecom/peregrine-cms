@@ -50,7 +50,7 @@
                             the bundle symbolic name is set here to ensure that the Service User Mapping will work
                             even if the group or artifact id is changed.
                         -->
-                        <Bundle-SymbolicName>com.peregrine.nodejs.j2v8</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>com.peregrine-cms.nodejs.j2v8</Bundle-SymbolicName>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <_dsannotations>*</_dsannotations>
                         <_metatypeannotations>*</_metatypeannotations>
