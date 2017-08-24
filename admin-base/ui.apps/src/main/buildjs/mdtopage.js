@@ -85,6 +85,9 @@ function makeContent(root, path) {
     var md = fs.readFileSync(path).toString()
     var title = path.slice(0, path.lastIndexOf('/'))
     title = title.slice(title.lastIndexOf('/')+1)
+    md = md.replace(/!\[(.*)\]\((.*)\)/g, function(math, p1, p2, string) {
+        return '!['+p1+']('+title+'/'+p2+')'
+    })
 
     var order = ''
     // trim commands
