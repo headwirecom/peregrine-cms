@@ -46,6 +46,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
@@ -57,6 +59,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
  * Created by schaefa on 5/25/17.
@@ -64,7 +67,7 @@ import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 public abstract class BaseFileReplicationService
     implements Replication
 {
-    public static final String DATA_JSON = ".data.json";
+    public static final String DATA_JSON = "data.json";
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
 
     static {
@@ -198,14 +201,12 @@ public abstract class BaseFileReplicationService
         String primaryType = getPrimaryType(resource);
         if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
             replicateAsset(resource);
-        } else if(primaryType.startsWith("per:")) {
-            replicatePerResource(resource, false);
         } else {
-            // Ignore
-            log.debug("Unsupported Primary Type: '{}' for Resource: '{}'", primaryType, resource.getPath());
+            replicatePerResource(resource, false);
         }
     }
 
+    abstract Map<String, List<String>> getExportExtensions();
     abstract List<String> getMandatoryRenditions();
 
     private void replicateAsset(Resource resource) throws ReplicationException {
@@ -248,18 +249,67 @@ public abstract class BaseFileReplicationService
         }
     }
 
+    /**
+     * Store the given Content Rendering on the target
+     * @param resource Resource that is exported
+     * @param extension File Extension (without a leading dot)
+     * @param content String content of the rendering
+     * @return Path to the Stored Rendition used for the Rendition Ref property
+     * @throws ReplicationException if the writing of the content failed
+     */
     abstract String storeRendering(Resource resource, String extension, String content) throws ReplicationException;
+    /**
+     * Store the given Asset Rendering on the target
+     * @param resource Resource that is exported
+     * @param extension File Extension (without a leading dot)
+     * @param content Asset content of the rendering
+     * @return Path to the Stored Rendition used for the Rendition Ref property
+     * @throws ReplicationException if the writing of the content failed
+     */
     abstract String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException;
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
     private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
         // Render the resource as .data.json and then write the content to the
-        String renderingContent = renderResource(resource, DATA_JSON, post);
-        log.trace("Rendered Resource: {}", renderingContent);
-        String path = storeRendering(resource, DATA_JSON, renderingContent);
-        Resource contentResource = resource.getChild(JCR_CONTENT);
-        if(contentResource != null) {
-            updateReplicationProperties(contentResource, path, null);
+        String primaryType = getPrimaryType(resource);
+        for(Entry<String, List<String>> entry: getExportExtensions().entrySet()) {
+            String extension = entry.getKey();
+            boolean raw = extension.endsWith("~raw");
+            if(raw) { extension = extension.substring(0, extension.length() - "~raw".length()); }
+            if("*".equals(extension)) { extension = ""; }
+            if(entry.getValue().contains(primaryType)) {
+                if(raw) {
+                    byte[] renderingContent = null;
+                    try {
+                        renderingContent = renderRawResource(resource, extension, post);
+                    } catch(ReplicationException e) {
+                        log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                    }
+                    if(renderingContent != null) {
+                        log.trace("Rendered Resource: {}", renderingContent);
+                        String path = storeRendering(resource, extension, renderingContent);
+                        Resource contentResource = resource.getChild(JCR_CONTENT);
+                        if(contentResource != null) {
+                            updateReplicationProperties(contentResource, path, null);
+                        }
+                    }
+                } else {
+                    String renderingContent = null;
+                    try {
+                        renderingContent = renderResource(resource, extension, post);
+                    } catch(ReplicationException e) {
+                        log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                    }
+                    if(renderingContent != null) {
+                        log.trace("Rendered Resource: {}", renderingContent);
+                        String path = storeRendering(resource, extension, renderingContent);
+                        Resource contentResource = resource.getChild(JCR_CONTENT);
+                        if(contentResource != null) {
+                            updateReplicationProperties(contentResource, path, null);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -276,9 +326,8 @@ public abstract class BaseFileReplicationService
             MockSlingHttpServletRequest req = new MockSlingHttpServletRequest(resource.getResourceResolver());
             MockRequestPathInfo mrpi = (MockRequestPathInfo) req.getRequestPathInfo();
             mrpi.setResourcePath(resource.getPath());
-            mrpi.setExtension(extension);
-            req.setMethod("POST");
-            String requestPath = resource.getPath() + extension;
+            mrpi.setExtension((isNotEmpty(extension) ? "." + extension : ""));
+            String requestPath = resource.getPath() + (isNotEmpty(extension) ? "." + extension : "");
             log.trace("Render Resource Request Path: '{}'", mrpi);
             MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
             getRequestProcessor().processRequest(req, resp, resource.getResourceResolver());

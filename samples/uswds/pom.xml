@@ -171,7 +171,7 @@
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
                     <force>true</force>
-                    <group>uswds</group>
+                    <group>com.peregrine-cms.uswds</group>
                 </configuration>
             </plugin>
         </plugins>

@@ -98,7 +98,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.peregrine.cms</group>
+                    <group>com.peregrine-cms</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -132,37 +132,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
-            <!--<plugin>-->
-                <!--<groupId>com.day.jcr.vault</groupId>-->
-                <!--<artifactId>content-package-maven-plugin</artifactId>-->
-                <!--<extensions>true</extensions>-->
-                <!--<configuration>-->
-                    <!--<targetURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</targetURL>-->
-                    <!--<userId>${sling.user}</userId>-->
-                    <!--<password>${sling.password}</password>-->
-                    <!--<useProxy>false</useProxy>-->
-                    <!--<failOnMissingEmbed>true</failOnMissingEmbed>-->
-                    <!--<failOnError>true</failOnError>-->
-                    <!--<group>com.headwire.sling</group>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>com.day.jcr.vault</groupId>-->
-                <!--<artifactId>maven-vault-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<properties>-->
-                        <!--<acHandling>merge</acHandling>-->
-                    <!--</properties>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>package</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
         </plugins>
     </build>
     <profiles>
@@ -175,7 +144,7 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <configuration>
-                            <group>com.peregrine.cms</group>
+                            <group>com.peregrine-cms</group>
                         </configuration>
                         <executions>
                             <execution>

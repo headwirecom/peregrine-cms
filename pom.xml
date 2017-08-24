@@ -76,7 +76,7 @@
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
-                    <group>com.peregrine.cms</group>
+                    <group>com.peregrine-cms</group>
                 </configuration>
                 <executions>
                     <execution>
@@ -179,7 +179,7 @@
                         <userId>${sling.user}</userId>
                         <password>${sling.password}</password>
                         <failOnMissingEmbed>true</failOnMissingEmbed>
-                        <group>com.peregrine.cms</group>
+                        <group>com.peregrine-cms</group>
                     </configuration>
                 </plugin>
                 <plugin>

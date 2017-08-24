@@ -171,7 +171,7 @@
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
                     <force>true</force>
-                    <group>experiences</group>
+                    <group>com.peregrine-cms.experiences</group>
                 </configuration>
             </plugin>
         </plugins>

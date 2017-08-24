@@ -48,9 +48,14 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+
+import static com.peregrine.commons.util.PerUtil.intoList;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.splitIntoMap;
 
 /**
  * This class replicates resources to a local file system folder
@@ -97,6 +102,12 @@ public class LocalFileSystemReplicationService
         )
         int creationStrategy();
         @AttributeDefinition(
+            name = "Export Extensions",
+            description = "List of Export Extension in the format of <extension>=<comma separated list of primary types>",
+            required = true
+        )
+        String[] exportExtensions();
+        @AttributeDefinition(
             name = "Mandatory Renditions",
             description = "List of all the required renditions that are replicated (if missing they are created)",
             required = true
@@ -116,6 +127,7 @@ public class LocalFileSystemReplicationService
     private String name;
     private File targetFolder;
     private int creationStrategy = CREATE_NONE_STRATEGY;
+    private Map<String, List<String>> exportExtensions = new HashMap<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
@@ -124,11 +136,8 @@ public class LocalFileSystemReplicationService
             throw new IllegalArgumentException("Replication Name cannot be empty");
         }
         creationStrategy = configuration.creationStrategy();
-        mandatoryRenditions.clear();
-        String[] renditions = configuration.mandatoryRenditions();
-        if(renditions != null) {
-            mandatoryRenditions.addAll(Arrays.asList(renditions));
-        }
+        exportExtensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
+        mandatoryRenditions = intoList(configuration.mandatoryRenditions());
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException("Replication Target Folder cannot be empty");
@@ -207,6 +216,9 @@ public class LocalFileSystemReplicationService
             }
         }
     }
+
+    @Override
+    Map<String, List<String>> getExportExtensions() { return exportExtensions; }
 
     @Override
     List<String> getMandatoryRenditions() {
@@ -298,7 +310,7 @@ public class LocalFileSystemReplicationService
         if(!directory.exists() || !directory.isDirectory()) {
             throw new ReplicationException("Failed to Store Rending as Parent Folder does not exist or is not a directory: " + directory.getAbsolutePath());
         }
-        String fileName = resource.getName() + extension;
+        String fileName = resource.getName() + (isNotEmpty(extension) ? "." + extension : "");
         File renderingFile = new File(directory, fileName);
         if(renderingFile.exists()) {
             if(renderingFile.isDirectory()) {

@@ -29,5 +29,18 @@
           name="localFS"
           targetFolder="${sling.home}/staticreplication"
           creationStrategy="1"
+          exportExtensions="[data.json=per:Page|per:Template,infinity.json=per:Object,html=per:Page|per:Template,*~raw=nt:file]"
           mandatoryRenditions="thumbnail.png"
-/>
+>
+    <!-- The Export Extensions defines what and how they are exported. The key is the extension of rendering as well as
+         the file name. The value is a list of all JCR Primary Types that will be considered to be exported.
+         This is an example (for clarity is split the parts into lines):
+
+         data.json=per:Page|per:Template,
+         infinity.json=per:Object,
+         *~raw=nt:file
+
+         This will export per:Page and per:Template nodes using the .data.json extension, export per:Objects
+         using infinity.json and nt:file as themselves (meaning no additional extension) as raw content (~raw).
+         -->
+</jcr:root>
