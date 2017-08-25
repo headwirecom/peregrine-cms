@@ -247,15 +247,24 @@
                 $perAdminApp.stateAction('deleteAsset', this.asset.path)
             },
             moveAsset() {
-                let path = this.asset.path
-                $perAdminApp.pathBrowser(
-                    '/content/assets',
-                    (newValue) => {
-                        $perAdminApp.stateAction('moveAsset', { path: path, to: newValue, type: 'child'})
+                let root = '/content/assets'
+                let selectedPath = this.asset.path
+                let currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                const initModalState = {
+                    root: root,
+                    current: currentPath,
+                    selected: selectedPath,
+                    withLinkTab: false
+                }
+                const options = {
+                    complete: () => {
+                        const newValue = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
+                        $perAdminApp.stateAction('moveAsset', { path: selectedPath, to: newValue, type: 'child'})
                         $perAdminApp.getNodeFromView('/state/tools').assets = newValue
                         $perAdminApp.getNodeFromView('/state/tools').asset = null
                     }
-                )
+                }
+                $perAdminApp.pathBrowser(initModalState, options)
             },
             onEdit() {
                 this.edit = true
