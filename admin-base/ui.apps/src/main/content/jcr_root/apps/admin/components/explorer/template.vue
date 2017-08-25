@@ -426,7 +426,7 @@
                 }
             },
             addFolder: function(me, target) {
-                if(me.pt.path.startsWith('/content/assets/')) {
+                if(me.pt.path.startsWith('/content/assets')) {
                     $perAdminApp.stateAction('createAssetFolderWizard', me.pt.path)
                 } else if(me.pt.path.startsWith('/content/objects')) {
                     $perAdminApp.stateAction('createObjectFolderWizard', me.pt.path)
