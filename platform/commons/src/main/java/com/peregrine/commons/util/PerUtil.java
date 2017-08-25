@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 
@@ -411,6 +412,17 @@ public class PerUtil {
         if(resource != null) {
             ValueMap properties = getProperties(resource, false);
             answer = properties.get(JCR_PRIMARY_TYPE, String.class);
+        }
+        return answer;
+    }
+
+    public static String getMimeType(Resource resource) {
+        String answer = null;
+        if(resource != null) {
+            ValueMap properties = getProperties(resource, true);
+            if(properties != null) {
+                answer = properties.get(JCR_MIME_TYPE, String.class);
+            }
         }
         return answer;
     }
