@@ -186,11 +186,21 @@
                             "placeholder": "lastModifiedBy"
                         },
                         {
-                            "type": "input",
-                            "inputType": "text",
+                            "type": "vueMultiSelect",
                             "model": "tags",
                             "label": "Tags",
-                            "placeholder": "tags"
+                            "placeholder": "tags",
+                            "selectOptions": {
+                                "multiple": true,
+                                "trackBy": "name",
+                                "label": "name",
+                                "searchable": true,
+                                "clearOnSelect": true,
+                                "closeOnSelect": false,
+                                "taggable": true
+                            },
+                            "valuesFrom": "/content/objects/tags.infinity.json",
+                            "values": []
                         },
                         {
                             "type": "material-textarea",
