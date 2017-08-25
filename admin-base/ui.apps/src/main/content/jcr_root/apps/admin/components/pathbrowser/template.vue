@@ -247,11 +247,17 @@
                     <p v-else class="flow-text">This folder is empty.</p>
                 </template>
                 <template v-if="withLinkTab && tab === 'link' && !search">
-                    <vue-form-generator
-                        v-bind:schema  = "linkSchema"
-                        v-bind:model   = "linkModel"
-                        v-bind:options = "linkFormOptions">
-                    </vue-form-generator>
+                    <p>
+                        <label for="pathBrowserLink">URL</label>
+                        <input 
+                            id="pathBrowserLink" 
+                            type="url" 
+                            placeholder="https://" 
+                            :value="selectedPath"
+                            @input="selectLink" />
+                        <input type="checkbox" id="newWindow" />
+                        <label for="newWindow">Open in new window?</label>
+                    </p>
                 </template>
             </div>
             <div class="col-preview">
@@ -305,34 +311,7 @@
                 search: '',
                 previewType: this.selectedPath ? 'selected' : 'current',
                 sortBy: '',
-                filterBy: '*',
-                linkModel: {
-                    url: '',
-                    newWindow: false
-                },
-                linkSchema: {
-                    fields: [
-                        {
-                            type: "input",
-                            inputType: "text",
-                            label: "Url",
-                            model: "url",
-                            placeholder: 'https://',
-                            min: 6,
-                            required: true
-                        },
-                        {
-                            type: "checkbox",
-                            label: "Open in new window?",
-                            model: "newWindow",
-                            default: true
-                        }
-                    ]
-                },
-                linkFormOptions: {
-                    validateAfterLoad: true,
-                    validateAfterChanged: true
-                }
+                filterBy: '*'
             }
         },
         watch: {
@@ -354,7 +333,7 @@
                 return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/selected')
             },
             withLinkTab(){
-                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/linktab')
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/type') === 'link'
             },
             isRoot(){
                 return this.currentPath === this.browserRoot
@@ -455,7 +434,6 @@
                     }
                 }
             },
-
             onSort(sortType){
                 this.sortBy = sortType
                 this.$refs.isotope.sort(sortType)
@@ -464,7 +442,6 @@
                 this.filterBy = filterType
                 this.$refs.isotope.filter(filterType)
             },
-
             select(name) {
                 this.tab = name
             },
@@ -486,7 +463,7 @@
                 return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
             },
             isFileAllowed(){
-                return this.browserType !== 'pages'
+                return this.browserType !== 'page'
             },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
@@ -505,6 +482,12 @@
             selectItem(item) {
                 this.previewType = 'selected'
                 $perAdminApp.getNodeFromView('/state/pathbrowser').selected = item.path
+            },
+            selectLink(ev){
+                // TODO: add link preview
+                this.previewType = 'link'
+                // TODO: allow target="_blank" or target="_self"
+                $perAdminApp.getNodeFromView('/state/pathbrowser').selected = ev.target.value
             },
             onModalSelect(){
                 $('#pathBrowserModal').modal('close')
