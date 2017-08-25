@@ -80,28 +80,28 @@
                 })
                 const toolbar = this.quill.getModule('toolbar')
                 toolbar.addHandler('link', (value) => { 
-                    console.log('showPathBrowser: ', value)
                   this.showPathBrowser(this.getSelectedPath())
                 })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
                     this.value = this.$refs.quilleditor.children[0].innerHTML
-                } )
+                })
             },
             getSelectedPath(){
                 var range = this.quill.getSelection()
                 if (range && !range.length == 0) {
                     var selectedText = this.quill.getText(range.index, range.length)
-                    console.log('User has highlighted: ', selectedText)
                     // find link with text as value
                     var linkNodes = document.querySelectorAll('.ql-editor > p > a')
-                    console.log('linkNodes: ', linkNodes)
                     // find link with selected text (selectedText)
                     let len = linkNodes.length
                     for(let i=0; i<len; i++){
                         let node = linkNodes[i]
                         if(node.textContent === selectedText) {
-                            // return link pathname so we can set as selectedText
-                            return node.pathname
+                            // is this an external link?
+                            // TODO: better way to determin internal vs external links
+                            return ['localhost', 'headwire'].indexOf(node.hostname) >= 0
+                                ? node.pathname
+                                : node.href
                         }
                     }
                 }
@@ -110,20 +110,24 @@
             showPathBrowser(selectedPath) {
                 let root = '/content/sites'
                 let currentPath
-                selectedPath
-                    ? currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
-                    : currentPath = root
+                // is selectedPath an internal or external link?
+                if(selectedPath && selectedPath.startsWith('/content/')){
+                    // selectedPath is internal link
+                    currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                } else {
+                    // selectedPath is external link
+                    currentPath = root
+                }
                 const initModalState = {
                     root: root,
-                    type: 'default',
+                    type: 'link',
                     current: currentPath,
-                    selected: selectedPath,
-                    withLinkTab: true
+                    selected: selectedPath
                 }
-                console.log('initialModalState: ', initModalState)
                 const options = {
                     complete: this.setLinkValue
                 }
+                console.log('initModalState: ', initModalState)
                 $perAdminApp.pathBrowser(initModalState, options)
             },
             setLinkValue(){
