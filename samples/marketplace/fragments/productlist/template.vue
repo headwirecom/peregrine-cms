@@ -6,7 +6,8 @@
       <p>{{product.description}}</p>
       <button v-on:click="onInstall(product)">install</button>
     </div>
-    <div v-if="filteredProducts.length === 0">no results for {{filter}}</div>
+    <div v-if="filteredProducts.length === 0">
+      <hr>no results for {{filter}}</div>
   </div>
 </template>
 
@@ -33,7 +34,20 @@
         },
         methods: {
             onInstall(product) {
-                alert(product.link)
+                axios.get(product.link, {responseType: "blob"}).then( (response) => {
+                    //alert(response.data)
+                    var data = new FormData()
+                    let name = product['jcr:title']
+                    data.append('file', response.data, name)
+                    data.append('force','')
+                    axios.post('/bin/cpm/package.upload.json', data, {})
+                        .then( (response) => {
+                            axios.post('/bin/cpm/package.install.json'+response.data.path, null, {}).then( (response) => {
+                                alert('installation complete')
+                            })
+                        } )
+                        .catch( err => alert(err) )
+                })
             },
             applyFilter(product, filter) {
                 if(filter) {
