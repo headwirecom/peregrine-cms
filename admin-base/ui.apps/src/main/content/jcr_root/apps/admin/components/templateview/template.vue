@@ -123,15 +123,24 @@
                 $perAdminApp.stateAction('showPageInfo', { selected: null })
             },
             movePage() {
-                let path = this.page.path
-                $perAdminApp.pathBrowser(
-                    '/content/sites',
-                    (newValue) => {
-                        $perAdminApp.stateAction('movePage', { path: path, to: newValue, type: 'child'})
-                        $perAdminApp.getNodeFromView('/state/tools').templates = newValue
-                        $perAdminApp.getNodeFromView('/state/tools').template = null
+                let root = '/content/sites'
+                let selectedPath = this.page.path
+                let currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                const initModalState = {
+                    root: root,
+                    type: 'page',
+                    current: currentPath,
+                    selected: selectedPath
+                }
+                const options = {
+                    complete: () => {
+                        const newValue = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
+                        $perAdminApp.stateAction('movePage', { path: selectedPath, to: newValue, type: 'child'})
+                        $perAdminApp.getNodeFromView('/state/tools').pages = newValue
+                        $perAdminApp.getNodeFromView('/state/tools').page = null
                     }
-                )
+                }
+                $perAdminApp.pathBrowser(initModalState, options)
             },
             onCancel() {
 
