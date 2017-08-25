@@ -455,14 +455,13 @@ function getNodeFromWithDefaultImpl(node, path, value) {
  * @return {*}
  */
 function findNodeFromPathImpl(node, path) {
-
     if(node.path === path) return node
     if(node.children) {
         for(var i = 0; i < node.children.length; i++) {
             if(node.children[i].path === path) {
                 // found match
                 return node.children[i]
-            } else if(path.indexOf(node.children[i].path) === 0) {
+            } else if(path && path.indexOf(node.children[i].path) === 0) {
                 var res = findNodeFromPathImpl(node.children[i], path)
                 if(res) return res
             }
