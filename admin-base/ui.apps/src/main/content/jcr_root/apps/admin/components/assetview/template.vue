@@ -262,9 +262,9 @@
                 let currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
                 const initModalState = {
                     root: root,
+                    type: 'asset',
                     current: currentPath,
-                    selected: selectedPath,
-                    withLinkTab: false
+                    selected: selectedPath
                 }
                 const options = {
                     complete: () => {

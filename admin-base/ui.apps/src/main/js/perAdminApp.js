@@ -491,7 +491,7 @@ function notifyUserImpl(title, message, options) {
  * @param options
  */
 function pathBrowserImpl(state, options) {
-    let { root, type, current, selected, withLinkTab } = state
+    let { root, type, current, selected } = state
     api.populateNodesForBrowser(state.current, 'pathBrowser')
     .then( () => {
         set(view, '/state/pathbrowser/root', root)
@@ -499,7 +499,6 @@ function pathBrowserImpl(state, options) {
         set(view, '/state/pathbrowser/current', current)
         set(view, '/state/pathbrowser/selected', selected)
         set(view, '/state/pathbrowser/original', selected)
-        set(view, '/state/pathbrowser/linktab', withLinkTab)
     }).then( () => {
         $('#pathBrowserModal').modal('open', options)
     })

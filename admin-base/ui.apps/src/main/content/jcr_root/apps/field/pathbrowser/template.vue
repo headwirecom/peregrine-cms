@@ -63,10 +63,10 @@
                     console.warn('browserType not defined in schema. Infering type from root path.')
                     switch(root) {
                         case ('/content/assets'):
-                            type = 'assets'
+                            type = 'asset'
                             break
                         case ('/content/sites'):
-                            type = 'pages'
+                            type = 'page'
                             break;
                         default:
                             type = 'default'
@@ -84,8 +84,7 @@
                     root: root,
                     type: type,
                     current: currentPath,
-                    selected: selectedPath,
-                    withLinkTab: false
+                    selected: selectedPath
                 }
                 let options = this.schema.browserOptions
                 if(!options) {
