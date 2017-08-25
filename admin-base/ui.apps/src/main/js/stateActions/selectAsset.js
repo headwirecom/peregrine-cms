@@ -32,5 +32,7 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    set(view, '/state/tools/asset/show', target.selected)
+    me.getApi().populateReferencedBy(target.selected).then( () => {
+        set(view, '/state/tools/asset/show', target.selected)
+    })
 }

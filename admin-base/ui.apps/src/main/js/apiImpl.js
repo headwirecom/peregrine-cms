@@ -304,6 +304,13 @@ class PerAdminImpl {
         })
     }
 
+    populateReferencedBy(path) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/refBy.json'+path)
+                .then( (data) => populateView('/state', 'referencedBy', data) )
+                .then( () => resolve() )
+        })
+    }
 
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {

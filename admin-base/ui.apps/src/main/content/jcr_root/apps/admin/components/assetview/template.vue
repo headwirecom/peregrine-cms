@@ -75,8 +75,15 @@
                         <i class="material-icons">edit</i>
                     </a>
                 </li>
+                <li>
+                    <a  href="#!"
+                        title="references"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="onReferences">
+                        <i class="material-icons">list</i>
+                </li>
             </ul>
-            <template v-if="!edit">
+            <template v-if="!edit && !references">
                 <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show" style="margin-top: 1em;"/>
                 <iframe v-else v-bind:src="currentObject.show" style="width: 100%; height: 60%; margin-top: 1em;"></iframe>
 
@@ -97,6 +104,11 @@
                                 v-bind:options = "options">
             </vue-form-generator>
 
+            <ul v-if="references && !edit" class="collection with-header">
+                <li class="collection-header"><h5>Referenced By</h5></li>
+                <li class="collection-item" v-for="item in referencedBy">{{item.path}}</li>
+            </ul>
+
         </template>
         <div v-else class="explorer-preview-empty">
             <span>no asset selected</span>
@@ -111,6 +123,7 @@
         data: function() {
             return {
                 edit: false,
+                references: false,
                 valid: true,
                 options: {
                     validateAfterLoad: true,
@@ -191,6 +204,9 @@
 
                 }
             },
+            referencedBy() {
+                return $perAdminApp.getView().state.referencedBy.referencedBy
+            },
             readOnlySchema() {
                 if(!this.schema) return {}
                 const roSchema = JSON.parse(JSON.stringify(this.schema))
@@ -243,9 +259,11 @@
             },
             onEdit() {
                 this.edit = true
+                this.references = false
             },
             onCancel() {
                 this.edit = false
+                this.references = false
                 $perAdminApp.stateAction('selectAsset', { selected: this.asset.path  })
             },
             onValidated(isValid, errors) {
@@ -254,6 +272,11 @@
             onOk() {
                 $perAdminApp.stateAction('saveAssetProperties', this.asset )
                 this.edit = false
+                this.references = false
+            },
+            onReferences() {
+                this.edit = false
+                this.references = true
             }
 
         }
