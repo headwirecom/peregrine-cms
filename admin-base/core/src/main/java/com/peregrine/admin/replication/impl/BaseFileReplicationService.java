@@ -220,8 +220,8 @@ public abstract class BaseFileReplicationService
             for(Resource rendition: renditions.getChildren()) {
                 if(NT_FILE.equals(getPrimaryType(rendition))) {
                     try {
-                        imageContent = renderRawResource(resource, ".rendition.json/" + rendition.getName(), true);
-                        storeRendering(resource, "." + rendition.getName(), imageContent);
+                        imageContent = renderRawResource(resource, "rendition.json/" + rendition.getName(), true);
+                        storeRendering(resource, rendition.getName(), imageContent);
                         checkRenditions.remove(rendition.getName());
                     } catch(ReplicationException e) {
                         log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
@@ -233,13 +233,13 @@ public abstract class BaseFileReplicationService
         // Loop over all remaining mandatory renditions and write the image data to the target
         for(String renditionName: checkRenditions) {
             try {
-                imageContent = renderRawResource(resource, ".rendition.json/" + renditionName, true);
+                imageContent = renderRawResource(resource, "rendition.json/" + renditionName, true);
                 // Get rendition
                 if(renditions == null) { renditions = resource.getChild(RENDITIONS); }
                 if(renditions != null) {
                     Resource rendition = renditions.getChild(renditionName);
                     if(rendition != null) {
-                        storeRendering(resource, "." + rendition.getName(), imageContent);
+                        storeRendering(resource, rendition.getName(), imageContent);
                     }
                 }
             } catch(ReplicationException e) {
@@ -278,35 +278,27 @@ public abstract class BaseFileReplicationService
             if(raw) { extension = extension.substring(0, extension.length() - "~raw".length()); }
             if("*".equals(extension)) { extension = ""; }
             if(entry.getValue().contains(primaryType)) {
-                if(raw) {
-                    byte[] renderingContent = null;
-                    try {
+                Object renderingContent = null;
+                try {
+                    if(raw) {
                         renderingContent = renderRawResource(resource, extension, post);
-                    } catch(ReplicationException e) {
-                        log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
-                    }
-                    if(renderingContent != null) {
-                        log.trace("Rendered Resource: {}", renderingContent);
-                        String path = storeRendering(resource, extension, renderingContent);
-                        Resource contentResource = resource.getChild(JCR_CONTENT);
-                        if(contentResource != null) {
-                            updateReplicationProperties(contentResource, path, null);
-                        }
-                    }
-                } else {
-                    String renderingContent = null;
-                    try {
+                    } else {
                         renderingContent = renderResource(resource, extension, post);
-                    } catch(ReplicationException e) {
-                        log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
                     }
-                    if(renderingContent != null) {
-                        log.trace("Rendered Resource: {}", renderingContent);
-                        String path = storeRendering(resource, extension, renderingContent);
-                        Resource contentResource = resource.getChild(JCR_CONTENT);
-                        if(contentResource != null) {
-                            updateReplicationProperties(contentResource, path, null);
-                        }
+                } catch(ReplicationException e) {
+                    log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                }
+                if(renderingContent != null) {
+                    log.trace("Rendered Resource: {}", renderingContent);
+                    String path;
+                    if(raw) {
+                        path = storeRendering(resource, extension, (byte[]) renderingContent);
+                    } else {
+                        path = storeRendering(resource, extension, (String) renderingContent);
+                    }
+                    Resource contentResource = resource.getChild(JCR_CONTENT);
+                    if(contentResource != null) {
+                        updateReplicationProperties(contentResource, path, null);
                     }
                 }
             }
