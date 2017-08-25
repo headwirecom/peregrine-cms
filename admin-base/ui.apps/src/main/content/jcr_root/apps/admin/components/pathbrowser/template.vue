@@ -407,7 +407,7 @@
         },
         methods: {
             isImage(item){
-                return item.path.match(/.(jpg|jpeg|png|gif)$/i)
+                return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(item.mimeType) >= 0
             }, 
             getFileIcon(item){
                 return 'insert_drive_file'
