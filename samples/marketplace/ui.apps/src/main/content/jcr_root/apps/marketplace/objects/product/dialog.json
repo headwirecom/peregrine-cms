@@ -16,7 +16,7 @@
     {
       "type": "input",
       "label": "Location",
-      "model": "location",
+      "model": "link",
       "placeholder": "url to download location"
     }
   ]
