@@ -80,6 +80,21 @@
             </resource>
 
             <resource>
+                <directory>${basedir}/node_modules/jquery/dist</directory>
+                <targetPath>etc/felibs/pagerender-vue/jquery</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/popper/dist</directory>
+                <targetPath>etc/felibs/pagerender-vue/popper</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/bootstrap/dist</directory>
+                <targetPath>etc/felibs/pagerender-vue/bootstrap</targetPath>
+            </resource>
+
+            <resource>
                 <directory>${basedir}/node_modules/axios/dist</directory>
                 <targetPath>etc/felibs/pagerender-vue/axios</targetPath>
             </resource>
