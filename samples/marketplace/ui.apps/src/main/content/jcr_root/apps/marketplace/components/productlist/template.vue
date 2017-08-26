@@ -8,13 +8,15 @@
         <div class="col s10">
           <h4>{{product['jcr:title']}} - 1.0.0-SNAPSHOT</h4>
           <p>{{product.description}}</p>
-          <button class="btn" v-on:click="onInstall(product)">install</button>
-          <button class="btn" v-on:click="onInstall(product)">update</button>
-          <button class="btn" v-on:click="onInstall(product)">up to date</button>
+          <button v-if="status(product, 'NOT_PRESENT')" class="btn" v-on:click="onInstall(product)">install</button>
+          <button v-if="status(product, 'PRESENT_NEW_VERSION')" class="btn" v-on:click="onInstall(product)">update</button>
+          <button v-if="status(product, 'PRESENT_CURRENT_VERSION')" class="btn">up to date</button>
         </div>
+      </div>
+      <div v-if="filteredProducts.length === 0">
+        <hr>no results for {{filter}}
+      </div>
     </div>
-    <div v-if="filteredProducts.length === 0">
-      <hr>no results for {{filter}}</div>
   </div>
 </template>
 
@@ -40,6 +42,9 @@
             }
         },
         methods: {
+            status(product, status) {
+                return status === 'NOT_PRESENT'
+            },
             onInstall(product) {
                 axios.get(product.link, {responseType: "blob"}).then( (response) => {
                     //alert(response.data)
