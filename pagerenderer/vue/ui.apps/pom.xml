@@ -78,6 +78,16 @@
                 <directory>${basedir}/src/main/content/META-INF</directory>
                 <targetPath>../vault-work/META-INF</targetPath>
             </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/axios/dist</directory>
+                <targetPath>etc/felibs/pagerender-vue/axios</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/vue/dist</directory>
+                <targetPath>etc/felibs/pagerender-vue/vue</targetPath>
+            </resource>
             <resource>
                 <directory>${basedir}/src/main/content/jcr_root</directory>
                 <excludes>

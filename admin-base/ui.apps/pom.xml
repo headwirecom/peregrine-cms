@@ -79,7 +79,40 @@
                 -->
                 <directory>${basedir}/../../docs</directory>
                 <targetPath>apps/admin/docs</targetPath>
+
+
             </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/quill/dist</directory>
+                <targetPath>etc/felibs/admin/dependencies/quill</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/jquery/dist</directory>
+                <targetPath>etc/felibs/admin/dependencies/jquery</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/materialize-css/dist</directory>
+                <targetPath>etc/felibs/admin/dependencies/materialize-css</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/axios/dist</directory>
+                <targetPath>etc/felibs/admin/dependencies/axios</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/vue/dist</directory>
+                <targetPath>etc/felibs/admin/dependencies/vue</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/material-design-icons/iconfont</directory>
+                <targetPath>etc/felibs/admin/dependencies/material-design-icons</targetPath>
+            </resource>
+
             <resource>
                 <directory>${basedir}/src/main/content/jcr_root</directory>
                 <excludes>

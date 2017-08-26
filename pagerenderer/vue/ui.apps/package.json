@@ -11,6 +11,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "axios": "^0.16.2",
     "fs-extra": "^3.0.0",
     "jsdoc": "^3.5.3",
     "jsdoc-vue": "^1.0.0",
