@@ -1,8 +1,8 @@
 <template>
   <div v-bind:data-per-path="model.path">
+    <p>Search the Peregrine CMS marketplace for extensions and samples to install</p>
     <form>
       <input type="text" v-model="app.filter">
-      <button type="submit">search</button>
     </form>
   </div>
 </template>

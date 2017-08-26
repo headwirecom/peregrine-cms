@@ -36,17 +36,19 @@
             }">
             <admin-components-logo></admin-components-logo>
           </admin-components-action>
-          <template v-for="item in vueRoot.adminPage.breadcrumbs">
-            <admin-components-action
-              v-bind:model="{
+            <template v-if="vueRoot.adminPage">
+                <template v-for="item in vueRoot.adminPage.breadcrumbs">
+                    <admin-components-action
+                            v-bind:model="{
                 command: 'selectPath',
                 title: item.title,
                 target: item.path
               }"></admin-components-action>
-          </template>
+                </template>
+            </template>
         </div>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a title="logout" href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>
+            <li v-if="this.$root.$data.state"><a title="logout" href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>
             <li v-if="help"><a title="help" href="#" v-on:click="onShowHelp">help</a></li>
         </ul>
       </div>
@@ -69,7 +71,9 @@ export default {
             return this.model.children && this.model.children.length > 0
         },
         help() {
-            return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
+            if($perAdminApp.getView()) {
+                return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
+            }
         }
 
     },

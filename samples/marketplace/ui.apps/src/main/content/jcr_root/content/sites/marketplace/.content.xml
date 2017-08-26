@@ -12,7 +12,13 @@
         template="/content/templates/marketplace"
         loaders="[fetchProducts:/app/state/products]"
     >
-        <search jcr:primaryType="nt:unstructured" sling:resourceType="marketplace/components/search"></search>
-        <productlist jcr:primaryType="nt:unstructured" sling:resourceType="marketplace/components/productlist"></productlist>
+        <content jcr:primaryType="nt:unstructured">
+            <row jcr:primaryType="nt:unstructured">
+                <col1 jcr:primaryType="nt:unstructured">
+                    <search jcr:primaryType="nt:unstructured" sling:resourceType="marketplace/components/search"></search>
+                    <productlist jcr:primaryType="nt:unstructured" sling:resourceType="marketplace/components/productlist"></productlist>
+                </col1>
+            </row>
+        </content>
     </jcr:content>
 </jcr:root>

@@ -23,11 +23,11 @@
   #L%
   -->
 <template>
-<div  class="container">
-    <div v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
+    <div class="tooling-page">
+        <template v-for="child in model.children">
+            <component v-bind:is="child.component" v-bind:model="child"></component>
+        </template>
     </div>
-</div>
 </template>
 
 <script>

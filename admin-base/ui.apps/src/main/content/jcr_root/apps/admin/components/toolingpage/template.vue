@@ -27,8 +27,8 @@
         <template v-for="child in model.children">
             <component v-bind:is="child.component" v-bind:model="child"></component>
         </template>
-        <admin-components-notifyuser>general notification</admin-components-notifyuser>
-        <admin-components-pathbrowser>path browser</admin-components-pathbrowser>
+        <admin-components-notifyuser></admin-components-notifyuser>
+        <admin-components-pathbrowser></admin-components-pathbrowser>
     </div>
 </template>
 

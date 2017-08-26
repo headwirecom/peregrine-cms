@@ -9,6 +9,26 @@
             sling:resourceType="marketplace/components/page"
             jcr:title="marketplace template"
             brand="marketplace"
+            siteCSS="[/etc/felibs/admin/dependencies/material-design-icons/material-icons.css,/etc/felibs/materialize/materialize.css,/etc/felibs/admin/dependencies/quill/quill.snow.css]"
+            siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js,/etc/felibs/admin/dependencies/quill/quill.js]"
             loaders="[]"
-    />
+    >
+    <nav jcr:primaryType="nt:unstructured"
+         sling:resourceType="admin/components/nav"/>
+
+        <content jcr:primaryType="nt:unstructured"
+                 sling:resourceType="pagerender/vue/structure/container">
+        <row jcr:primaryType="nt:unstructured"
+             sling:resourceType="admin/components/row">
+
+        <col1 jcr:primaryType="nt:unstructured"
+              sling:resourceType="admin/components/col"
+              classes="col s12"
+        >
+        </col1>
+        </row>
+        </content>
+
+    </jcr:content>
+
 </jcr:root>
