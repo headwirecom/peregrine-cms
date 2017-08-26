@@ -25,6 +25,9 @@
             document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
     </script>
 
+    <script>
+        var $perView = { view: 'preview' };
+    </script>
 
 </head>
 <body>
@@ -42,8 +45,8 @@
 <sly data-sly-include="renderer.html"></sly>
 
 <script>
-    var $perView = { view: 'preview', app: {} };
     $peregrineApp.registerView($perView)
+    $peregrineApp.getView().app = {}
     $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
 </script>
 <sly data-sly-include=serviceworker.html"></sly>
