@@ -42,20 +42,20 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>testing.basic</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>base.core</artifactId>
-            <version>${project.version}</version>
-            <!--<scope>test</scope>-->
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>admin.core</artifactId>
             <version>${project.version}</version>
-            <!--<scope>test</scope>-->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -176,8 +176,7 @@
                         </goals>
                         <configuration>
                             <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
-                            <shouldBlockUntilKeyIsPressed>true</shouldBlockUntilKeyIsPressed>
-                            <!--<shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>-->
+                            <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
                         </configuration>
                     </execution>
 
