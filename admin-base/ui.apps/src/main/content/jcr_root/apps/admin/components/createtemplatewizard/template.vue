@@ -133,7 +133,8 @@
             onComplete: function() {
                 const path = this.formmodel.path
                 const siteName = path.split('/')[3]
-                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: this.formmodel.component })
+                const component = this.formmodel.component.substring(this.formmodel.component.indexOf('/',1)+1)
+                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component })
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
