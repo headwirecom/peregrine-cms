@@ -96,7 +96,7 @@
             </vue-form-generator>
         </template>
         <div v-else class="explorer-preview-empty">
-            <span>no page selected</span>
+            <span>{{$i18n('no page selected')}}</span>
             <i class="material-icons">info</i>
         </div>
     </div>

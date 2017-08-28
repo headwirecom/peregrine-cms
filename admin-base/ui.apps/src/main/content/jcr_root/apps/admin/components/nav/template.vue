@@ -48,7 +48,7 @@
             </template>
         </div>
         <ul id="languages" class="dropdown-content">
-            <li v-for="item in $i18nGetLanguages()"><a href="#!">{{item.name}}</a></li>
+            <li v-for="item in $i18nGetLanguages()"><a href="#!" v-on:click="onSelectLang(item.name)">{{item.name}}</a></li>
         </ul>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li v-if="this.$root.$data.state">
@@ -63,7 +63,7 @@
                 <a  href="#!"  
                     ref="languageButton" 
                     data-activates="languages">
-                    {{$i18nGetLanguage()}}
+                    {{language}}
                     <i class="material-icons right">arrow_drop_down</i>
                 </a>
             </li>
@@ -84,6 +84,9 @@ export default {
         $(this.$refs.languageButton).dropdown()
     },
     computed: {
+        language() {
+            return $perAdminApp.getView().state.language
+        },
         vueRoot: function() {
             return this.$root
         },
@@ -97,6 +100,10 @@ export default {
         }
     },
     methods: {
+        onSelectLang(name) {
+            this.$i18nSetLanguage(name)
+            $perAdminApp.forceFullRedraw()
+        },
         onShowHelp() {
             $perAdminApp.action(this, 'showTour', '')
         }

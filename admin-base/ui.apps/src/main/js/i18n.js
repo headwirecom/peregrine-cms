@@ -1,4 +1,4 @@
-let lang = 'de'
+let lang = 'en'
 
 function keyToLang(key) {
     try {
@@ -16,6 +16,8 @@ function keyToLang(key) {
 
 function setLang(language) {
     lang = language
+    $perAdminApp.getView().state.language = language
+    $perAdminApp.loadi18n()
 }
 
 function getLang() {

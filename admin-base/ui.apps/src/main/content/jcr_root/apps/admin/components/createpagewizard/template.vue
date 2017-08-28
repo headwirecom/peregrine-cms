@@ -107,7 +107,8 @@
                 if(this.formmodel.templatePath !== '') {
                     const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
                     if(definitions) {
-                        const comp = 'example-components-page'
+                        // todo: component should be resolved through the template
+                        const comp = 'pagerender-vue-structure-page'
                         const def = $perAdminApp.getNodeFromView('/admin/componentDefinitions')[comp]
                         console.log(def)
                         return def
