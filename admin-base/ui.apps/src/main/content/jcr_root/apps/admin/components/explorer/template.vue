@@ -41,7 +41,7 @@
                             v-bind:model="{
                             target: ndivl,
                             command: 'selectParent',
-                            tooltipTitle: 'select parent'
+                            tooltipTitle: $i18n('select parent')
                         }"><i class="material-icons">folder</i> ..
                     </admin-components-action>
                 </li>

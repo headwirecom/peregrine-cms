@@ -312,6 +312,16 @@ class PerAdminImpl {
         })
     }
 
+    populateI18N(language) {
+        return new Promise( (resolve, reject) => {
+            axios.get('/i18n/admin/'+language+'.infinity.json').then( (response) => {
+                populateView('/admin/i18n', language, response.data).then( () => {
+                    resolve()
+                })
+            })
+        })
+    }
+
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()

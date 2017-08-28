@@ -41,6 +41,7 @@
         Also any sub pckage of this module needs to exclude /apps/admin/install
         folder otherwise they wipe all installed bundles.
     -->
+    <filter root="/i18n/admin"/>
     <filter root="/api/admin"/>
     <filter root="/api/swaggereditor"/>
     <filter root="/api/definitions"/>

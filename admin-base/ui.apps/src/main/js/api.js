@@ -102,6 +102,10 @@ class PerApi {
         return Promise.reject('populateByName for '+name+' is not defined')
     }
 
+    populateI18N(language) {
+        return impl.populateI18N(language)
+    }
+
     createPage(parentPath, name, templatePath) {
         return impl.createPage(parentPath, name, templatePath)
     }

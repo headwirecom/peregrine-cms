@@ -23,6 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from './logger'
+import i18n from './i18n'
 let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
 
 import PeregrineApi from './api'
@@ -180,6 +181,12 @@ function walkTreeAndLoad(node) {
 function initPeregrineApp() {
     logger.fine('initPeregrineApp')
     logger.fine(JSON.stringify(view, true, 2))
+
+    Vue.use(i18n)
+
+    const lang = view.state.language
+    const i18nData = view.admin.i18n
+
     app = new Vue({
         el: '#peregrine-adminapp',
         data: view
@@ -191,6 +198,10 @@ function initPeregrineApp() {
     if(state && admin) {
         view.state = JSON.parse(state)
         view.admin = JSON.parse(admin)
+
+        // make i18n and language selection survive session storage
+        view.state.language = lang
+        view.admin.i18n = i18nData
     }
 
     app.$watch('state', function(newVal, oldVal) {
@@ -568,6 +579,13 @@ function getExtensionImpl(id) {
     return extensions[id]
 }
 
+function loadi18nImpl() {
+    if(!view.state.language) {
+        Vue.set(view.state, 'language', 'de')
+    }
+    api.populateI18N(view.state.language)
+}
+
 /**
  * @exports PerAdminApp
  * @namespace PerAdminApp
@@ -862,6 +880,10 @@ var PerAdminApp = {
             return this.getNodeFromView('/state/currentExperiences')
         }
         return experiences
+    },
+
+    loadi18n() {
+        loadi18nImpl()
     }
 
 }
