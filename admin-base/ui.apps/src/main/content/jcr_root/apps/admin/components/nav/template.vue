@@ -47,13 +47,26 @@
                 </template>
             </template>
         </div>
-          <ul id="languages" class="dropdown-content">
-              <li v-for="item in $i18nGetLanguages()"><a href="#!">{{item.name}}</a></li>
-          </ul>
+        <ul id="languages" class="dropdown-content">
+            <li v-for="item in $i18nGetLanguages()"><a href="#!">{{item.name}}</a></li>
+        </ul>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li v-if="this.$root.$data.state"><a title="logout" href="/system/sling/logout?resource=/index.html">{{this.$root.$data.state.user}}</a></li>
-            <li v-if="help"><a title="help" href="#" v-on:click="onShowHelp">help</a></li>
-            <li><a class="dropdown-button" href="#!" data-activates="languages">{{$i18nGetLanguage()}}<i class="material-icons right">arrow_drop_down</i></a></li>
+            <li v-if="this.$root.$data.state">
+                <a title="logout" href="/system/sling/logout?resource=/index.html">
+                    {{this.$root.$data.state.user}}
+                </a>
+            </li>
+            <li v-if="help">
+                <a title="help" href="#" v-on:click="onShowHelp">help</a>
+            </li>
+            <li>
+                <a  href="#!"  
+                    ref="languageButton" 
+                    data-activates="languages">
+                    {{$i18nGetLanguage()}}
+                    <i class="material-icons right">arrow_drop_down</i>
+                </a>
+            </li>
         </ul>
       </div>
     </div>
@@ -67,6 +80,9 @@
 <script>
 export default {
     props: ['model'],
+    mounted(){
+        $(this.$refs.languageButton).dropdown()
+    },
     computed: {
         vueRoot: function() {
             return this.$root
@@ -79,12 +95,8 @@ export default {
                 return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
             }
         }
-
     },
     methods: {
-        openLang() {
-            $(".dropdown-button").dropdown()
-        },
         onShowHelp() {
             $perAdminApp.action(this, 'showTour', '')
         }
