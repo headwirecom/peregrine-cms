@@ -416,6 +416,18 @@ public class PerUtil {
         return answer;
     }
 
+    /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
+    public static String getResourceType(Resource resource) {
+        String answer = null;
+        if(resource != null) {
+            ValueMap properties = getProperties(resource, true);
+            if(properties != null) {
+                answer = properties.get(SLING_RESOURCE_TYPE, String.class);
+            }
+        }
+        return answer;
+    }
+
     public static String getMimeType(Resource resource) {
         String answer = null;
         if(resource != null) {
