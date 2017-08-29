@@ -1,0 +1,20 @@
+{
+  "name": "testing.frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "devDependencies": {
+    "webdriverio": "^4.8.0",
+    "chai": "^4.1.1",
+    "selenium-standalone": "^6.8.0",
+    "wdio-mocha-framework": "^0.5.11",
+    "wdio-spec-reporter": "^0.1.2"
+  },
+  "scripts": {
+    "test": "wdio wdio.conf.js",
+    "selenium-start": "selenium-standalone start",
+    "selenium-install": "selenium-standalone install"
+  },
+  "author": "",
+  "license": "ISC"
+}
