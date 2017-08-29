@@ -12,17 +12,19 @@ class Component {
     constructor(item) {
         this.container = item;
     }
+
     dragTo(target) {
-        this.container.moveToObject();
-        browser.buttonDown( 0 );
-        // browser.moveToObject( '#editview') 
-        browser.moveTo( 100, 100);
-        browser.pause(5000);
-        browser.buttonUp( 0 );
+        const drag = this.container;
+        const dragTarget = target;
+        browser.execute(function(drag,dragTarget) {
+            jQuery( drag ).simulate("drag-n-drop", { dropTarget: dragTarget })
+        }, drag, dragTarget)
     }
+
     get text() {
         return this.container.getText();
     }
+
 }
 
 module.exports = ComponentExplorer;

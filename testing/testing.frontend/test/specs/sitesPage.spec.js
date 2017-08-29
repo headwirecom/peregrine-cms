@@ -51,11 +51,11 @@ describe('Peregrine sites page', function () {
             expect( ComponentExplorer.components.length ).to.equal(9)
         })
 
-        // describe('drag n drop', function(){
-        //     it('should add a new component to the content view', function() {
-        //         ComponentExplorer.components[5].dragTo('#editview');
-        //     })
-        // })
+        describe('drag n drop', function(){
+            it('should add a new component to the content view', function() {
+                ComponentExplorer.components[5].dragTo('#editview');
+            })
+        })
 
     })
 
