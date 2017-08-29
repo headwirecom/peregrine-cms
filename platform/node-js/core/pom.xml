@@ -64,6 +64,7 @@
                         <Export-Package>
                             com.peregrine.nodejs.*
                         </Export-Package>
+                        <Include-Resource>/src/main/resources/npm-4.5.0.zip</Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
