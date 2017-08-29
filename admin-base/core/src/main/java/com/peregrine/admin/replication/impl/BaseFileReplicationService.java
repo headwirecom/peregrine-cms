@@ -59,6 +59,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
+import static com.peregrine.commons.util.PerUtil.getResourceType;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
@@ -272,12 +273,13 @@ public abstract class BaseFileReplicationService
     private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
         // Render the resource as .data.json and then write the content to the
         String primaryType = getPrimaryType(resource);
+        String slingResourceType = getResourceType(resource);
         for(Entry<String, List<String>> entry: getExportExtensions().entrySet()) {
             String extension = entry.getKey();
             boolean raw = extension.endsWith("~raw");
             if(raw) { extension = extension.substring(0, extension.length() - "~raw".length()); }
             if("*".equals(extension)) { extension = ""; }
-            if(entry.getValue().contains(primaryType)) {
+            if(entry.getValue().contains(primaryType) || entry.getValue().contains(slingResourceType)) {
                 Object renderingContent = null;
                 try {
                     if(raw) {

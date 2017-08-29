@@ -56,7 +56,12 @@
             </vue-form-generator>
         </tab-content>
         <tab-content title="verify">
-            <pre v-html="JSON.stringify(formmodel, true, 2)"></pre>
+            <vue-form-generator :model="formmodel"
+                                :schema="pageSchema"
+                                :options="formOptions"
+                                ref="nameTab">
+
+            </vue-form-generator>
         </tab-content>
     </form-wizard>
 </div>
@@ -97,6 +102,19 @@
         }
         ,
         computed: {
+            pageSchema: function() {
+                console.log('getting schema')
+                if(this.formmodel.templatePath !== '') {
+                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
+                    if(definitions) {
+                        // todo: component should be resolved through the template
+                        const comp = 'pagerender-vue-structure-page'
+                        const def = $perAdminApp.getNodeFromView('/admin/componentDefinitions')[comp]
+                        console.log(def)
+                        return def
+                    }
+                }
+            },
             templates: function() {
                 const templates = $perAdminApp.getNodeFromViewOrNull('/admin/templates/data')
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
@@ -116,9 +134,13 @@
                 return this.formmodel.templatePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath })
+                $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
             },
             leaveTabOne: function() {
+                if('' !== ''+this.formmodel.templatePath) {
+                    $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
+                }
+
                 return ! ('' === ''+this.formmodel.templatePath)
             },
             nameAvailable(value) {

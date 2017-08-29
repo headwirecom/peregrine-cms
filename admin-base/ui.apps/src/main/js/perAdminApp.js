@@ -581,7 +581,7 @@ function getExtensionImpl(id) {
 
 function loadi18nImpl() {
     if(!view.state.language) {
-        Vue.set(view.state, 'language', 'de')
+        Vue.set(view.state, 'language', 'en')
     }
     api.populateI18N(view.state.language)
 }
@@ -884,6 +884,10 @@ var PerAdminApp = {
 
     loadi18n() {
         loadi18nImpl()
+    },
+
+    forceFullRedraw() {
+        this.getView().adminPage = JSON.parse(JSON.stringify(this.getView().adminPage))
     }
 
 }

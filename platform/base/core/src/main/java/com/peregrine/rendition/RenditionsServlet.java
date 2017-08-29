@@ -36,8 +36,12 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -81,9 +85,27 @@ public class RenditionsServlet extends AbstractBaseServlet {
     @Reference
     BaseResourceHandler renditionHandler;
 
+    private Servlet redirectServlet;
+
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC,
+        policyOption = ReferencePolicyOption.GREEDY
+    )
+    void bindServlet(Servlet servlet) {
+        logger.trace("Bind Servlet: '{}', Name: '{}'", servlet, servlet.getClass().getName());
+        if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) {
+            redirectServlet = servlet;
+            logger.trace("Redirect Servlet: '{}'", redirectServlet);
+        }
+    }
+    void unbindServlet(Servlet servlet) {
+        logger.trace("Unbind Servlet: '{}'", servlet);
+        if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) { redirectServlet = null; }
+    }
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) throws IOException, ServletException {
         Response answer = null;
         Resource resource = request.getResource();
         PerAsset asset = resource.adaptTo(PerAsset.class);
@@ -93,8 +115,15 @@ public class RenditionsServlet extends AbstractBaseServlet {
         if(!asset.isValid()) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Resource: '" + resource.getPath() + "' is not an valid Asset");
         }
+        String selector = request.getSelector();
+        if(!"rendition".equals(selector)) {
+            redirectServlet.service(request.getRequest(), request.getResponse());
+            return new ResponseHandledResponse();
+        }
+        String extension = request.getExtension();
         // Check if there is a suffix
         String suffix = request.getSuffix();
+        logger.trace("Rendition Call, Selector: '{}', Extension: '{}', Suffix: '{}'", selector, extension, suffix);
         String sourceMimeType = asset.getContentProperty(JCR_MIME_TYPE, String.class);
         if(sourceMimeType == null || sourceMimeType.isEmpty()) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Resource has no Mime Type");
@@ -130,6 +159,20 @@ public class RenditionsServlet extends AbstractBaseServlet {
         }
         return answer;
     }
+
+
+//    private Servlet getJsonRendererServlet() {
+//        if (jsonRendererServlet == null) {
+//            Servlet jrs = new JsonRendererServlet(jsonMaximumResults);
+//            try {
+//                jrs.init(getServletConfig());
+//            } catch (Exception e) {
+//                // don't care too much here
+//            }
+//            jsonRendererServlet = jrs;
+//        }
+//        return jsonRendererServlet;
+//    }
 
     public static class StreamResponse extends Response {
 

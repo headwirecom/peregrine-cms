@@ -505,15 +505,19 @@ class PerAdminImpl {
             let formData = new FormData()
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
-            let component = callbacks.getComponentByName(nodeData.component)
-            if(component && component.methods && component.methods.beforeSave) {
-                nodeData = component.methods.beforeSave(nodeData)
+            if(nodeData.component) {
+                let component = callbacks.getComponentByName(nodeData.component)
+                if(component && component.methods && component.methods.beforeSave) {
+                    nodeData = component.methods.beforeSave(nodeData)
+                }
             }
             delete nodeData['children']
             delete nodeData['path']
             delete nodeData['component']
             nodeData['jcr:primaryType'] = 'nt:unstructured'
-            nodeData['sling:resourceType'] = node.component.split('-').join('/')
+            if(node.component) {
+                nodeData['sling:resourceType'] = node.component.split('-').join('/')
+            }
             stripNulls(nodeData)
             formData.append('content', JSON.stringify(nodeData))
 

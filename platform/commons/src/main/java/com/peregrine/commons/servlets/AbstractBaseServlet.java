@@ -70,26 +70,28 @@ public abstract class AbstractBaseServlet
             logger.debug("Servlet Request failed with Error", e);
             throw e;
         }
-        response.setContentType(out.getMimeType());
-        String output = out.getContent();
-        if("direct".equals(out.getType())) {
-            out.handleDirect(request, response);
-        } else {
-            if("error".equals(out.getType())) {
-                ErrorResponse error = (ErrorResponse) out;
-                response.setStatus(error.getHttpErrorCode());
-            }
-            if(output == null) {
-                out.writeTo(response.getOutputStream());
+        if(!"alreadyHandled".equals(out.getType())) {
+            response.setContentType(out.getMimeType());
+            String output = out.getContent();
+            if("direct".equals(out.getType())) {
+                out.handleDirect(request, response);
             } else {
-                logger.trace("Servlet Response: '{}'", output);
-                response.getWriter().write(output);
+                if("error".equals(out.getType())) {
+                    ErrorResponse error = (ErrorResponse) out;
+                    response.setStatus(error.getHttpErrorCode());
+                }
+                if(output == null) {
+                    out.writeTo(response.getOutputStream());
+                } else {
+                    logger.trace("Servlet Response: '{}'", output);
+                    response.getWriter().write(output);
+                }
+                response.flushBuffer();
             }
-            response.flushBuffer();
         }
     }
 
-    protected abstract Response handleRequest(Request request) throws IOException;
+    protected abstract Response handleRequest(Request request) throws IOException, ServletException;
 
     public static class Request {
         private SlingHttpServletRequest request;
@@ -104,6 +106,10 @@ public abstract class AbstractBaseServlet
 
         public SlingHttpServletRequest getRequest() {
             return request;
+        }
+
+        public SlingHttpServletResponse getResponse() {
+            return response;
         }
 
         public Map<String, String> getParameters() {
@@ -138,6 +144,10 @@ public abstract class AbstractBaseServlet
 
         public Resource getResourceByPath(String path) { return request.getResourceResolver().getResource(path); }
 
+        public String getSelector() { return request.getRequestPathInfo().getSelectorString(); }
+
+        public String getExtension() { return request.getRequestPathInfo().getExtension(); }
+
         public String getSuffix() { return request.getRequestPathInfo().getSuffix(); }
 
         public Collection<Part> getParts() throws IOException, ServletException { return request.getParts(); }
@@ -165,6 +175,19 @@ public abstract class AbstractBaseServlet
         }
 
         public abstract String getMimeType();
+    }
+
+    public static class ResponseHandledResponse
+        extends Response {
+
+        public ResponseHandledResponse() {
+            super("alreadyHandled");
+        }
+
+        @Override
+        public String getMimeType() {
+            return null;
+        }
     }
 
     public static class JsonResponse
