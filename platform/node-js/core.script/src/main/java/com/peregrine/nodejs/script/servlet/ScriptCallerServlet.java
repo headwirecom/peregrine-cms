@@ -1,6 +1,7 @@
 package com.peregrine.nodejs.script.servlet;
 
 import com.peregrine.nodejs.j2v8.J2V8ProcessExecution;
+import com.peregrine.nodejs.j2v8.J2V8WebExecution;
 import com.peregrine.nodejs.process.ExternalProcessException;
 import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.process.ProcessRunner;
@@ -54,18 +55,18 @@ public class ScriptCallerServlet
 
     private ProcessRunner processRunner = new ProcessRunner();
 
-    private J2V8ProcessExecution executor;
+    private J2V8WebExecution executor;
 
     @Reference(
         cardinality = ReferenceCardinality.OPTIONAL,
         policy = ReferencePolicy.DYNAMIC,
         policyOption = ReferencePolicyOption.GREEDY
     )
-    void bindJ2V8ProcessExecution(J2V8ProcessExecution executor) {
+    void bindJ2V8ProcessExecution(J2V8WebExecution executor) {
         log.trace("Bind J2V8 Process Execution: '{}'", executor);
         this.executor = executor;
     }
-    void unbindJ2V8ProcessExecution(J2V8ProcessExecution executor) {
+    void unbindJ2V8ProcessExecution(J2V8WebExecution executor) {
         log.trace("Unbind J2V8 Process Execution: '{}'", executor);
         this.executor = null;
     }
@@ -92,7 +93,7 @@ public class ScriptCallerServlet
         if(EXECUTE_SCRIPT_WITH_J2V8.equals(request.getPathInfo())) {
             if(executor != null) {
                 try {
-                    processRunner.executeWithJ2V8(executor, path, argumentList);
+                    processRunner.executeWithJ2V8(executor, path, request, response);
                 } catch(ExternalProcessException e) {
                     log.error("Execution of JCR Script with j2v8 failed. Path: '{}'", path, e);
                 }

@@ -42,3 +42,5 @@ Module._resolveFilename = function(request, parent, isMain) {
     slingnode$javalog('(slingnode.js) Resolve File Name: ' + request + ', Resolved to: ' + ret)
     return ret;
 }
+
+var $sling = 'hello world'

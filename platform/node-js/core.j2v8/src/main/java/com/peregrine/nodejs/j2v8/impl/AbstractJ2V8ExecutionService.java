@@ -57,6 +57,13 @@ public abstract class AbstractJ2V8ExecutionService {
             .setNode(node)
             .setRuntime(runtime);
 
+        JavaCallback slingNodeRequest = new JavaCallback() {
+            public Object invoke(V8Object receiver, V8Array parameters) {
+                return "{ \"test\": \"test\" }";
+            }
+        };
+        node.getRuntime().registerJavaMethod(slingNodeRequest, "slingnode$request");
+
         JavaCallback logCallback = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
                 log.info(parameters.getString(0));
