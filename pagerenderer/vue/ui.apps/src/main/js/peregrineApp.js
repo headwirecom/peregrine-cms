@@ -23,8 +23,8 @@
  * #L%
  */
 import { LoggerFactory } from './logger.js'
+import experiences from './experiences.js'
 let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
-
 import state from './state.js'
 import merge from './merge.js'
 import { pagePathToDataPath, componentNameToVarName } from './util.js'
@@ -115,6 +115,8 @@ function set(node, path, value) {
 }
 
 function initPeregrineApp() {
+
+    Vue.use(experiences)
 
     perVueApp = new Vue({
         el: '#peregrine-app',

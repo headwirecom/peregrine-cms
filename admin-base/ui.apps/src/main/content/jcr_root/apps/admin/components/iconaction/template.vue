@@ -26,8 +26,8 @@
 <div class="col s12 m6 l4 icon-action">
     <div class="card blue-grey darken-3">
         <div class="card-content white-text">
-            <span class="card-title">{{model.title}}</span>
-            <p>{{model.description}}</p>
+            <span class="card-title">{{$exp(model, 'title')}}</span>
+            <p>{{$exp(model,'description')}}</p>
         </div>
         <div class="card-action">
             <admin-components-action v-if="internal(model.action)"

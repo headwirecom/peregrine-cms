@@ -31,8 +31,9 @@ export default {
     props: [ 'model'],
     computed: {
         text: function() {
-            if(this.model.text !== '') {
-                return this.model.text
+            const text = this.$exp(this.model, 'text')
+            if(text !== '') {
+                return text
             }
             if(window.parent && window.parent.$perAdminApp) {
                 return 'empty'

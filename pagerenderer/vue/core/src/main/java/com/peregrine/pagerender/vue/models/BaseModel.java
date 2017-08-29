@@ -35,6 +35,7 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by rr on 4/18/2017.
@@ -46,6 +47,9 @@ public class BaseModel extends AbstractComponent {
     @Inject @Default(values = "")
     private String text;
 
+    @Inject
+    private List<IComponent> experiences;
+
     public BaseModel(Resource resource) {
         super(resource);
     }
@@ -55,4 +59,7 @@ public class BaseModel extends AbstractComponent {
         return text == null ? "" : text;
     }
 
+    public List<IComponent> getExperiences() {
+        return experiences;
+    }
 }

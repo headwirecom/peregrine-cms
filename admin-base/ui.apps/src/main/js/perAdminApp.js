@@ -24,6 +24,7 @@
  */
 import { LoggerFactory } from './logger'
 import i18n from './i18n'
+import experiences from './experiences'
 let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
 
 import PeregrineApi from './api'
@@ -183,7 +184,7 @@ function initPeregrineApp() {
     logger.fine(JSON.stringify(view, true, 2))
 
     Vue.use(i18n)
-
+    Vue.use(experiences)
     const lang = view.state.language
     const i18nData = view.admin.i18n
 

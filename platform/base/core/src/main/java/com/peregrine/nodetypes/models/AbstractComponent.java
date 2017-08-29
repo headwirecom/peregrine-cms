@@ -28,7 +28,9 @@ package com.peregrine.nodetypes.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Optional;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +40,9 @@ import java.util.List;
 public class AbstractComponent implements IComponent {
 
     private final Resource resource;
+
+    @Inject @Optional
+    private List<IComponent> experiences;
 
     public AbstractComponent(Resource resource) {
         this.resource = resource;
@@ -65,6 +70,10 @@ public class AbstractComponent implements IComponent {
     @JsonIgnore
     public List<IComponent> getChildren() {
         return Collections.emptyList();
+    }
+
+    public List<IComponent> getExperiences() {
+        return experiences;
     }
 
 }
