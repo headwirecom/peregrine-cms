@@ -34,10 +34,10 @@
                 v-bind:model="{ 
                     target: model.action, 
                     command: 'selectPath', 
-                    title: 'explore' 
+                    title: this.$i18n('explore')
                 }">
             </admin-components-action>
-            <a v-else v-bind:href="model.action" target="docs">explore</a>
+            <a v-else v-bind:href="model.action" target="docs">$i18n('explore')</a>
 
         </div>
     </div>

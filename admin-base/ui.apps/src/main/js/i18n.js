@@ -8,7 +8,7 @@ function keyToLang(key) {
             return translation.text
         }
         if(lang === 'en') return key
-        return lang+' - '+key
+        return 'T['+key+']'
     } catch(error) {
         return key
     }

@@ -6,7 +6,7 @@ function experience(model, name, defaultValue) {
             const exp = model.experiences[i]
             if(exp.experiences.indexOf(experience) >= 0) {
                 const ret = exp[name]
-                return ret ? ret : defaultValue
+                return ret ? ret : ( model[name] ? model[name] : defaultValue)
             }
         }
     }

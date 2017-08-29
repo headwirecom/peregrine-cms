@@ -57,7 +57,7 @@
                 </a>
             </li>
             <li v-if="help">
-                <a title="help" href="#" v-on:click="onShowHelp">help</a>
+                <a title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
             </li>
             <li>
                 <a  href="#!"  
