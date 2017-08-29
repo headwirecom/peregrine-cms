@@ -7,7 +7,7 @@
 
 slingnode$javalog('(camel-case-test.js) Start -> load camel case')
 
-const cc = require('camelcase')
+const cc = require(process.cwd() + '/node_modules/camelcase/index.js')
 
 slingnode$processOutput('hello world to '+cc('hello world'));
 
