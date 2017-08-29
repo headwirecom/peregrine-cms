@@ -53,7 +53,7 @@ describe('Peregrine sites page', function () {
 
         describe('drag n drop', function(){
             it('should add a new component to the content view', function() {
-                ComponentExplorer.components[5].dragTo('#editview');
+                ComponentExplorer.components[5].dragTo(ContentView.container);
             })
         })
 

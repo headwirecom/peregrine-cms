@@ -1,3 +1,4 @@
+var dragAndDrop = require('html-dnd').code;
 class ComponentExplorer {
     get container() { return $('.component-explorer') }
     get components() {
@@ -14,11 +15,11 @@ class Component {
     }
 
     dragTo(target) {
-        const drag = this.container;
-        const dragTarget = target;
-        browser.execute(function(drag,dragTarget) {
-            jQuery( drag ).simulate("drag-n-drop", { dropTarget: dragTarget })
-        }, drag, dragTarget)
+        browser.execute(function( dragTarget, dropTarget) {
+            //In browser context
+            var dropTheBass = document.getElementById('editable');
+            dragMock.dragStart(dragTarget).drop(document, {clientX: 10, clientY: 400})
+        }, this.container, target)
     }
 
     get text() {
