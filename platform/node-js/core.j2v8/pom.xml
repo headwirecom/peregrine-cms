@@ -59,6 +59,8 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
+                        <!--<Privat-Package>com.peregrine.nodejs.j2v8,com.peregrine.nodejs.j2v8.impl</Privat-Package>-->
+                        <Export-Package>!com.peregrine.nodejs.j2v8</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

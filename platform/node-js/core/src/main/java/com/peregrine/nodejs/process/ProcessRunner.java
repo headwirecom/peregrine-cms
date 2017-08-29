@@ -87,7 +87,7 @@ public class ProcessRunner {
                     command
                 );
             } catch(ScriptException e) {
-                throw new ExternalProcessException("Failed to List Packages").setCommand(command).setProcessContext(answer);
+                throw new ExternalProcessException("Failed to List Packages", e).setCommand(command).setProcessContext(answer);
             }
         }
 

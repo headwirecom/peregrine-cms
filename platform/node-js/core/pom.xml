@@ -61,6 +61,9 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
+                        <Export-Package>
+                            com.peregrine.nodejs.*
+                        </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -1,14 +1,19 @@
-package com.peregrine.nodejs.j2v8;
+package com.peregrine.nodejs.j2v8.impl;
 
 import com.eclipsesource.v8.JavaCallback;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
+import com.peregrine.nodejs.j2v8.J2V8ProcessExecution;
+import com.peregrine.nodejs.j2v8.ScriptException;
 import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.process.ProcessContextTracker;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -26,11 +31,18 @@ public class J2V8ProcessExecutionService
     extends AbstractJ2V8ExecutionService
     implements J2V8ProcessExecution
 {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
     protected ResourceResolverFactory getResourceResolverFactory() {
         return resourceResolverFactory;
+    }
+
+    @Activate
+    public void activate() {
+        logger.trace("Activate J2V8ProcessExecutionService");
     }
 
     public NodeWrapper createAndInitialize(final ProcessContext processContext) {
@@ -45,6 +57,7 @@ public class J2V8ProcessExecutionService
             }
         };
         answer.getRuntime().registerJavaMethod(outCallback, "slingnode$processOutput");
+        log.trace("Registered 'slingnode$processOutput' with Method: '{}'", outCallback);
 
         JavaCallback errorCallback = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
@@ -54,6 +67,7 @@ public class J2V8ProcessExecutionService
             }
         };
         answer.getRuntime().registerJavaMethod(errorCallback, "slingnode$processError");
+        log.trace("Registered 'slingnode$processError' with Method: '{}'", errorCallback);
 
         return answer;
     }

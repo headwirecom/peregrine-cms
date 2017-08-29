@@ -1,10 +1,11 @@
-package com.peregrine.nodejs.j2v8;
+package com.peregrine.nodejs.j2v8.impl;
 
 import com.eclipsesource.v8.JavaCallback;
 import com.eclipsesource.v8.NodeJS;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
+import com.peregrine.nodejs.j2v8.ScriptException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;

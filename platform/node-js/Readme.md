@@ -37,11 +37,11 @@ call.
 
 1. NPM Package Manager
 
-Open the Swagger UI on this URL: http://localhost:8080/content/nodejs/api/npm/index.html
+Open the Swagger UI on this URL: http://localhost:8080/api/nodejs/swaggereditor/
 
 1. Scrip Caller
 
-Open the Swagger UI on this URL: http://localhost:8080/content/nodejs/api/script/index.html
+Open the Swagger UI on this URL: http://localhost:8080/api/nodejs/execute/swaggereditor/
 
 ### Permissions
 
@@ -72,4 +72,4 @@ and for that please look into the **j2v8** module.
 The log for this app is redirected to **sling/logs/sling-node.log** and set to
 trace by default.
 
-Have fun - Sling Node Team
+Have fun - Peregrine CMS Team
