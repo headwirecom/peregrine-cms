@@ -4,12 +4,7 @@ import com.peregrine.nodejs.j2v8.J2V8ProcessExecution;
 import com.peregrine.nodejs.process.ExternalProcessException;
 import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.process.ProcessRunner;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +38,7 @@ public class NpmExternalProcessService
 
     private ProcessRunner processRunner = new ProcessRunner();
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policyOption = ReferencePolicyOption.GREEDY)
     private J2V8ProcessExecution executor;
 
     /**
