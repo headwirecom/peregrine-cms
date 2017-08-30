@@ -78,7 +78,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 try {
                     String jcrPath = parameters.getString(0);
                     check = !ResourceUtil.isNonExistingResource(getScriptResource(jcrPath, cache));
-                    log.trace("Check for JCR, path: '{}', answer: '{}'", jcrPath, check);
+//                    log.trace("Check for JCR, path: '{}', answer: '{}'", jcrPath, check);
                 } catch(ScriptException e) {
                     log.error("Failed to obtain script at: '{}'", parameters, e);
                 }
@@ -144,14 +144,14 @@ public abstract class AbstractJ2V8ExecutionService {
                 }
             }
             argumentsLine += " ]\n";
-            log.trace("Argument Line: '{}'", argumentsLine);
+//            log.trace("Argument Line: '{}'", argumentsLine);
             String script = String.format(
                 ROOT_SCRIPT,
                 preScript,
                 jcrPath,
                 argumentsLine
             );
-            log.trace("Script loaded: '\n{}\n'", script);
+//            log.trace("Script loaded: '\n{}\n'", script);
             nodeScript = createTemporaryScriptFile(script, "runner");
             wrapper.getNode().exec(nodeScript);
             while(wrapper.getNode().isRunning()) {
