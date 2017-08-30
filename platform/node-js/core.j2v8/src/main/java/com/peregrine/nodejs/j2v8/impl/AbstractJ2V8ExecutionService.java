@@ -57,6 +57,13 @@ public abstract class AbstractJ2V8ExecutionService {
             .setNode(node)
             .setRuntime(runtime);
 
+        JavaCallback slingNodeRequest = new JavaCallback() {
+            public Object invoke(V8Object receiver, V8Array parameters) {
+                return "{ \"test\": \"test\" }";
+            }
+        };
+        node.getRuntime().registerJavaMethod(slingNodeRequest, "slingnode$request");
+
         JavaCallback logCallback = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
                 log.info(parameters.getString(0));
@@ -71,7 +78,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 try {
                     String jcrPath = parameters.getString(0);
                     check = !ResourceUtil.isNonExistingResource(getScriptResource(jcrPath, cache));
-                    log.trace("Check for JCR, path: '{}', answer: '{}'", jcrPath, check);
+//                    log.trace("Check for JCR, path: '{}', answer: '{}'", jcrPath, check);
                 } catch(ScriptException e) {
                     log.error("Failed to obtain script at: '{}'", parameters, e);
                 }
@@ -137,14 +144,14 @@ public abstract class AbstractJ2V8ExecutionService {
                 }
             }
             argumentsLine += " ]\n";
-            log.trace("Argument Line: '{}'", argumentsLine);
+//            log.trace("Argument Line: '{}'", argumentsLine);
             String script = String.format(
                 ROOT_SCRIPT,
                 preScript,
                 jcrPath,
                 argumentsLine
             );
-            log.trace("Script loaded: '\n{}\n'", script);
+//            log.trace("Script loaded: '\n{}\n'", script);
             nodeScript = createTemporaryScriptFile(script, "runner");
             wrapper.getNode().exec(nodeScript);
             while(wrapper.getNode().isRunning()) {
