@@ -257,10 +257,10 @@
                 $perAdminApp.stateAction('deleteAsset', this.asset.path)
             },
             moveAsset() {
-                let root = '/content/assets'
-                let type = 'folder'
-                let assetPath = this.asset.path
-                let selectedPath = assetPath.substr(0, assetPath.lastIndexOf('/'))
+                const root = '/content/assets'
+                const type = 'folder'
+                const assetPath = this.asset.path
+                const selectedPath = assetPath.substr(0, assetPath.lastIndexOf('/'))
                 let currentPath
                 // is selectedPath the root dir?
                 selectedPath === root 
