@@ -46,7 +46,7 @@ Module._resolveFilename = function(request, parent, isMain) {
         }
         var ret = original_resolveFilename(request, parent, isMain)
     } catch(error) {
-        // slingnode$javalog('(slingnode.js) Resolve File Name failed with error: ' + error)
+        slingnode$javalog('(slingnode.js) Resolve File Name failed with error: ' + error)
     }
     // slingnode$javalog('(slingnode.js) Resolve File Name: ' + request + ', Resolved to: ' + ret)
     return ret;

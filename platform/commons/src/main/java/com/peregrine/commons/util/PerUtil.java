@@ -132,6 +132,51 @@ public class PerUtil {
     }
 
     /**
+     * Splits the given array of texts into a parameter map
+     * @param entries Array of entries to be split. If the entries is null then there is no splitting, any null or empty item is ignored
+     * @param keySeparator The separator between the key and value. If null then there is no splitting
+     * @param valueSeparator The separator between the parts of the values. If null then the value is added as single value
+     * @param parameterSeparator The separator between the parts of the parameter value. If null then there is no splitting
+     * @return Map of the split entries
+     */
+    public static Map<String, Map<String, String>> splitIntoParameterMap(String[] entries, String keySeparator, String valueSeparator, String parameterSeparator) {
+        Map<String, Map<String, String>> answer = new LinkedHashMap<>();
+        if(entries != null && isNotEmpty(keySeparator)) {
+            for(String entry: entries) {
+                if(isNotEmpty(entry)) {
+                    List<String> keyValue = split(entry, keySeparator);
+                    switch(keyValue.size()) {
+                        case 0:
+                            continue;
+                        case 1:
+                            String key = keyValue.get(0);
+                            Map<String, String> parameters = new LinkedHashMap<>();
+                            answer.put(key, parameters);
+                            break;
+                        case 2:
+                            key = keyValue.get(0);
+                            String value = keyValue.get(1);
+                            List<String> values = split(value, valueSeparator);
+                            parameters = new LinkedHashMap<>();
+                            answer.put(key, parameters);
+                            for(String aValue: values) {
+                                List<String> parameterList = split(aValue, parameterSeparator);
+                                if(parameterList.size() != 2) {
+                                    throw new IllegalArgumentException("Parameter Entry: '" + aValue + "' could not be split into a key value pair");
+                                }
+                                parameters.put(parameterList.get(0), parameterList.get(1));
+                            }
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Entry: '" + entry + "' could not be split into a key value pair");
+                    }
+                }
+            }
+        }
+        return answer;
+    }
+
+    /**
      * Provides the relative path of a resource to a given root
      * @param root Root Resource
      * @param child Child Resource
