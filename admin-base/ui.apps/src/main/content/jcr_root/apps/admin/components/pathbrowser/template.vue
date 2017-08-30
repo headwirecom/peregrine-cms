@@ -73,13 +73,21 @@
                     <nav class="modal-content-nav clearfix">
                         <div class="modal-content-section">
                             <div class="current-folder">
-                                <a 
-                                    :disabled="isRoot" 
-                                    href="#!" 
-                                    v-on:click.stop.prevent="selectParent">
-                                    <i class="material-icons">keyboard_arrow_left</i> 
-                                </a>
-                                {{currentPath}} ({{list.length}})
+                                <template v-if="!isRoot">
+                                    <a  
+                                        href="#!" 
+                                        v-on:click.stop.prevent="selectParent">
+                                        <i class="material-icons">keyboard_arrow_left</i> 
+                                    </a>
+                                    {{currentPath}} ({{list.length}})
+                                </template>
+                                <template v-else>
+                                    <input 
+                                        type="radio" 
+                                        class="with-gap"
+                                        :checked="isSelected(currentPath)"/>
+                                    <label v-on:click.stop.prevent="selectItem(nodes)">{{currentPath}} ({{list.length}})</label>
+                                </template>
                             </div>
                         </div>
                     </nav>
@@ -108,13 +116,21 @@
                     <nav class="modal-content-nav clearfix">
                         <div class="modal-content-section">
                             <div class="current-folder">
-                                <a 
-                                    :disabled="isRoot" 
-                                    href="#!" 
-                                    v-on:click.stop.prevent="selectParent">
-                                    <i class="material-icons">keyboard_arrow_left</i> 
-                                </a>
-                                {{currentPath}} ({{list.length}})
+                                <template v-if="!isRoot">
+                                    <a  
+                                        href="#!" 
+                                        v-on:click.stop.prevent="selectParent">
+                                        <i class="material-icons">keyboard_arrow_left</i> 
+                                    </a>
+                                    {{currentPath}} ({{list.length}})
+                                </template>
+                                <template v-else>
+                                    <input 
+                                        type="radio" 
+                                        class="with-gap" 
+                                        :checked="isSelected(currentPath)" />
+                                    <label v-on:click.stop.prevent="selectItem(nodes)">{{currentPath}} ({{list.length}})</label>
+                                </template>
                             </div>
                         </div>
                         <div class="modal-content-section">
@@ -463,7 +479,7 @@
                 return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
             },
             isFileAllowed(){
-                return this.browserType !== 'page'
+                return this.browserType !== 'folder'
             },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
