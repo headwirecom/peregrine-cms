@@ -31,22 +31,19 @@
           type="text" 
           class="form-control select-dropdown" 
           :value="dropdownValue"
-          v-on:click="showDropdown" />
+          v-on:click.stop.prevent="showDropdown" />
         <ul 
           :class="dropDownClasses">
-          <li  
-            v-if="!selectOptions.hideNoneSelectedText"
-            v-on:click="onClick('', '')">
+          <li v-if="!selectOptions.hideNoneSelectedText" class="disabled">
             <span>{{ selectOptions.noneSelectedText || "&lt;Nothing selected&gt;" }}</span>
           </li>
           <li 
             v-for="val in schema.values" 
-            class="" 
+            :class="value === val.value ? 'active' : ''" 
             v-on:click="onClick(val.name, val.value)">
             <span>{{ val.name }}</span>
           </li>
         </ul>
-        <div class="dropdown-bg" :style="dropDownBgStyle" v-on:click="hideDropdown"></div>
     </div>
     <p v-else>{{ dropdownValue }}</p>
   </div>
@@ -68,7 +65,7 @@
         }, 
         data() {
           return {
-            dropdownValue: '< Nothing selected >',
+            dropdownValue: '<Nothing selected>',
             dropdownActive: false
           }
         }, 
@@ -82,14 +79,6 @@
             }
           },
 
-          dropDownBgStyle(){
-            if(this.dropdownActive){
-              return 'display: block;'
-            } else {
-              return ''
-            }
-          },
-
           selectOptions() {
             return this.schema.selectOptions || {} 
           }     
@@ -97,7 +86,7 @@
         methods: {
           onClick(name, value){
               if(name === '') {
-                  name = '< Nothing selected >'
+                  name = '<Nothing selected>'
               }
             this.value = value
             this.dropdownValue = name
@@ -105,9 +94,11 @@
           },
           showDropdown(){
             this.dropdownActive = true
+            document.body.addEventListener('click', this.hideDropdown)
           },
           hideDropdown(){
             this.dropdownActive = false
+            document.body.removeEventListener('click', this.hideDropdown)
           }
         }
     }
