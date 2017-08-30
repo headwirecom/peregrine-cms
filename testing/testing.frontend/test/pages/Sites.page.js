@@ -1,6 +1,7 @@
 const LoginPage = require('./Login.page');
 const Explorer = require('./components/Explorer');
 const Workspace = require('./components/Workspace');
+const EditorPanel = require('./components/EditorPanel');
 
 
 class SitesPage extends LoginPage {
@@ -9,6 +10,7 @@ class SitesPage extends LoginPage {
         super();
         this.Explorer = new Explorer();
         this.Workspace = new Workspace();
+        this.EditorPanel = new EditorPanel();
     }
 
     open() {

@@ -14,12 +14,15 @@ class Component {
         this.container = item;
     }
 
-    dragTo(target) {
-        browser.execute(function( dragTarget, dropTarget) {
+    dragToEditView(position) {
+        browser.execute(function( dragTarget, pos) {
             //In browser context
-            var dropTheBass = document.getElementById('editable');
-            dragMock.dragStart(dragTarget).drop(document, {clientX: 10, clientY: 400})
-        }, this.container, target)
+            var editviewoverlay = document.getElementById('editviewoverlay')
+            dragMock
+                .dragStart(dragTarget)
+                .dragOver(editviewoverlay, {clientX: pos.x, clientY: pos.y})
+                .drop(editviewoverlay, {clientX: pos.x, clientY: pos.y})
+        }, this.container, position)
     }
 
     get text() {
