@@ -1,10 +1,11 @@
-package com.peregrine.nodejs.j2v8;
+package com.peregrine.nodejs.j2v8.impl;
 
 import com.eclipsesource.v8.JavaCallback;
 import com.eclipsesource.v8.NodeJS;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
+import com.peregrine.nodejs.j2v8.ScriptException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -56,6 +57,13 @@ public abstract class AbstractJ2V8ExecutionService {
             .setNode(node)
             .setRuntime(runtime);
 
+        JavaCallback slingNodeRequest = new JavaCallback() {
+            public Object invoke(V8Object receiver, V8Array parameters) {
+                return "{ \"test\": \"test\" }";
+            }
+        };
+        node.getRuntime().registerJavaMethod(slingNodeRequest, "slingnode$request");
+
         JavaCallback logCallback = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
                 log.info(parameters.getString(0));
@@ -81,7 +89,7 @@ public abstract class AbstractJ2V8ExecutionService {
 
         JavaCallback slingNodeReadFromJCR = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
-//            log.trace("Execute JCR Script called. Receiver: '{}', parameters: '{}'", receiver, parameters);
+                log.trace("Execute JCR Script called. Receiver: '{}', parameters: '{}'", receiver, parameters);
                 String script = null;
                 try {
                     String jcrPath = parameters.getString(0);

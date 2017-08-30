@@ -61,6 +61,10 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
+                        <Export-Package>
+                            com.peregrine.nodejs.*
+                        </Export-Package>
+                        <Include-Resource>${basedir}/src/main/resources/npm-4.5.0.zip</Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>

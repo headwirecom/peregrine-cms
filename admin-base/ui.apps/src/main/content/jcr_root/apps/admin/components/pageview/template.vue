@@ -174,20 +174,26 @@
 //                $perAdminApp.stateAction('showPageInfo', { selected: null })
             },
             movePage() {
-                let root = '/content/sites'
-                let selectedPath = this.page.path
-                let currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                const root = '/content/sites'
+                const type = 'folder'
+                const pagePath = this.page.path
+                const selectedPath = pagePath.substr(0, pagePath.lastIndexOf('/'))
+                let currentPath
+                // is selectedPath the root dir?
+                selectedPath === root 
+                    ? currentPath = selectedPath
+                    : currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
                 const initModalState = {
                     root: root,
-                    type: 'page',
+                    type: type,
                     current: currentPath,
                     selected: selectedPath
                 }
                 const options = {
                     complete: () => {
-                        const newValue = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
-                        $perAdminApp.stateAction('movePage', { path: selectedPath, to: newValue, type: 'child'})
-                        $perAdminApp.getNodeFromView('/state/tools').pages = newValue
+                        const newPath = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
+                        $perAdminApp.stateAction('movePage', { path: pagePath, to: newPath, type: 'child'})
+                        $perAdminApp.getNodeFromView('/state/tools').pages = newPath
                         $perAdminApp.getNodeFromView('/state/tools').page = null
                     }
                 }

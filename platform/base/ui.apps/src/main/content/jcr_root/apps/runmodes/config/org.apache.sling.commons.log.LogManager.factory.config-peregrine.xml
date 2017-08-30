@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  peregrine vuejs page renderer - UI Apps
+  admin base - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -22,23 +23,12 @@
   under the License.
   #L%
   -->
-<template>
-<p v-html="text" v-bind:data-per-path="model.path"></p>
-</template>
 
-<script>
-export default {
-    props: [ 'model'],
-    computed: {
-        text: function() {
-            const text = this.$exp(this.model, 'text')
-            if(text !== '') {
-                return text
-            }
-            if(window.parent && window.parent.$perAdminApp) {
-                return 'empty'
-            }
-        }
-    }
-}
-</script>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:OsgiConfig"
+    org.apache.sling.commons.log.file="logs/peregrine.cms.log"
+    org.apache.sling.commons.log.level="debug"
+    org.apache.sling.commons.log.names="[com.peregrine]"
+    org.apache.sling.commons.log.pattern="\{0,date,yyyy-MM-dd HH:mm:ss.SSS} {4} [{3}] {5}"
+>
+</jcr:root>

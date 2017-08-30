@@ -160,20 +160,6 @@ public class RenditionsServlet extends AbstractBaseServlet {
         return answer;
     }
 
-
-//    private Servlet getJsonRendererServlet() {
-//        if (jsonRendererServlet == null) {
-//            Servlet jrs = new JsonRendererServlet(jsonMaximumResults);
-//            try {
-//                jrs.init(getServletConfig());
-//            } catch (Exception e) {
-//                // don't care too much here
-//            }
-//            jsonRendererServlet = jrs;
-//        }
-//        return jsonRendererServlet;
-//    }
-
     public static class StreamResponse extends Response {
 
         private String mimeType;

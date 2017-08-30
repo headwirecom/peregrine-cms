@@ -32,7 +32,7 @@
             sling:resourceType="pagerender/vue/structure/page"
             jcr:title="peregrine cms"
             siteCSS="[/etc/felibs/pagerender-vue/bootstrap/css/bootstrap.min.css]"
-            siteJS="[/etc/felibs/pagerender-vue/jquery/jquery.slim.min.js,/etc/felibs/pagerender-vue/popper/index.js,/etc/felibs/pagerender-vue/bootstrap/js/bootstrap.min.js]">
+            siteJS="[/etc/felibs/pagerender-vue/jquery/jquery.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js,/etc/felibs/pagerender-vue/bootstrap/js/bootstrap.min.js]">
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">
 

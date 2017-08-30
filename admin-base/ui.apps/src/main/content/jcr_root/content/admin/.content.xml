@@ -51,7 +51,12 @@
 
                     <text jcr:primaryType="nt:unstructured"
                            sling:resourceType="pagerender/vue/components/base"
-                           text="peregrine-cms is a head optional, api first cms built on top of apache sling and apache jackrabbit"/>
+                           text="peregrine-cms is a head optional, api first cms built on top of vuejs, apache sling and apache jackrabbit">
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+                                text="peregrine-cms ist ein 'head optional', 'api first' cms basierend auf VueJS, Apache Sling und Apache Jackrabbit"/>
+                        </experiences>
+                    </text>
                 </col1>
             </row>
             <iconlist jcr:primaryType="nt:unstructured"

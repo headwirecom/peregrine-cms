@@ -1,10 +1,15 @@
 package com.peregrine.nodejs.process;
 
 import com.peregrine.nodejs.j2v8.J2V8ProcessExecution;
+import com.peregrine.nodejs.j2v8.J2V8WebExecution;
 import com.peregrine.nodejs.j2v8.ScriptException;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
@@ -87,7 +92,26 @@ public class ProcessRunner {
                     command
                 );
             } catch(ScriptException e) {
-                throw new ExternalProcessException("Failed to List Packages").setCommand(command).setProcessContext(answer);
+                throw new ExternalProcessException("Failed to List Packages", e).setCommand(command).setProcessContext(answer);
+            }
+        }
+
+        return answer;
+    }
+
+    public ProcessContext executeWithJ2V8(J2V8WebExecution executor, String scriptJcrPath, SlingHttpServletRequest request, SlingHttpServletResponse response)
+            throws ExternalProcessException
+    {
+        ProcessContextTracker answer = new ProcessContextTracker();
+        if(executor != null) {
+            try {
+                executor.executeScript(
+                        scriptJcrPath,
+                        request,
+                        response
+                );
+            } catch(ScriptException e) {
+                throw new ExternalProcessException("Failed to List Packages", e).setProcessContext(answer);
             }
         }
 

@@ -7,5 +7,5 @@ const camelCase = require('camelcase')
 
 var first = 'first test'
 
-console.log('Camel Case: '+camelCase(first))
-slingnode$httpout('From Sub-Script: Camel Case: '+camelCase(first) + '\n');
+// console.log('Camel Case: '+camelCase(first))
+console.log('From Sub-Script: Camel Case: '+camelCase(first) + '\n');

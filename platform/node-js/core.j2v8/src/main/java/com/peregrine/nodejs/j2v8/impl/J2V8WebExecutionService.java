@@ -1,8 +1,10 @@
-package com.peregrine.nodejs.j2v8;
+package com.peregrine.nodejs.j2v8.impl;
 
 import com.eclipsesource.v8.JavaCallback;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
+import com.peregrine.nodejs.j2v8.J2V8WebExecution;
+import com.peregrine.nodejs.j2v8.ScriptException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolverFactory;

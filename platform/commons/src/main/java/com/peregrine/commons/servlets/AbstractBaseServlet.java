@@ -30,9 +30,6 @@ import java.util.Stack;
 public abstract class AbstractBaseServlet
     extends SlingAllMethodsServlet
 {
-
-//    public static enum ResponseType { JSON, TEXT, ERROR };
-
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private boolean allowAll = false;

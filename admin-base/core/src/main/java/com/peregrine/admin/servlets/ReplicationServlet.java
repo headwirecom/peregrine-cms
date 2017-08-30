@@ -80,8 +80,9 @@ public class ReplicationServlet extends AbstractBaseServlet {
         policyOption = ReferencePolicyOption.GREEDY
     )
     @SuppressWarnings("unused")
-    public void bindImageTransformation(Replication replication) {
+    public void bindReplication(Replication replication) {
         String replicationName = replication.getName();
+        logger.error("Register replication with name: '{}': {}", replicationName, replication);
         if(replicationName != null && !replicationName.isEmpty()) {
             replications.put(replicationName, replication);
         } else {
@@ -90,7 +91,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
     }
 
     @SuppressWarnings("unused")
-    public void unbindImageTransformation(Replication replication) {
+    public void unbindReplication(Replication replication) {
         String replicationName = replication.getName();
         if(replications.containsKey(replicationName)) {
             replications.remove(replicationName);

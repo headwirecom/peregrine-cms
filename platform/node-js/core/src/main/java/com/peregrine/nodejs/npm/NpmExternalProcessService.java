@@ -10,6 +10,8 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +45,21 @@ public class NpmExternalProcessService
 
     private ProcessRunner processRunner = new ProcessRunner();
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     private J2V8ProcessExecution executor;
+
+    @Reference(
+        cardinality = ReferenceCardinality.OPTIONAL,
+        policy = ReferencePolicy.DYNAMIC,
+        policyOption = ReferencePolicyOption.GREEDY
+    )
+    void bindJ2V8ProcessExecution(J2V8ProcessExecution executor) {
+        log.trace("Bind J2V8 Process Execution: '{}'", executor);
+        this.executor = executor;
+    }
+    void unbindJ2V8ProcessExecution(J2V8ProcessExecution executor) {
+        log.trace("Unbind J2V8 Process Execution: '{}'", executor);
+        this.executor = null;
+    }
 
     /**
      * Activate this component.
