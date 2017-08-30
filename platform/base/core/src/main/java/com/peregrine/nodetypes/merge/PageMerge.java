@@ -68,7 +68,12 @@ public class PageMerge implements Use {
     }
 
     public String getMerged() {
-        return toJSON(getMerged(request.getResource()));
+        log.debug("merge on {}", request.getResource().getPath());
+        Resource res = request.getResource();
+        if(res.getName().equals("jcr:content")) {
+            res = res.getParent();
+        }
+        return toJSON(getMerged(res));
     }
 
     public Map getMerged(Resource resource) {
