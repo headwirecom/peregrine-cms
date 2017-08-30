@@ -63,10 +63,10 @@
                     console.warn('browserType not defined in schema. Infering type from root path.')
                     switch(root) {
                         case ('/content/assets'):
-                            type = 'asset'
+                            type = 'file'
                             break
                         case ('/content/sites'):
-                            type = 'page'
+                            type = 'folder'
                             break;
                         default:
                             type = 'default'
