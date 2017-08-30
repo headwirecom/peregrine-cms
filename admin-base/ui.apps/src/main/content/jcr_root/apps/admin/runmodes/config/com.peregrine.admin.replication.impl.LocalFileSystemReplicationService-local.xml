@@ -27,6 +27,7 @@
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="sling:OsgiConfig"
           name="localFS"
+          description="Replication Service that is replicatiog the resources to a File / Folder on the local machine vy rendering it using Sling"
           targetFolder="${sling.home}/staticreplication"
           creationStrategy="1"
           exportExtensions="[data.json=per:Page|per:Template,infinity.json=per:Object,html=per:Page|per:Template,*~raw=nt:file]"

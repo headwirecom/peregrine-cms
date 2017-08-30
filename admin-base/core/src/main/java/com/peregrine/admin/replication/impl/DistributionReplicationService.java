@@ -25,6 +25,7 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
+import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.commons.util.PerUtil;
@@ -70,7 +71,7 @@ import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED
 )
 @Designate(ocd = DistributionReplicationService.Configuration.class, factory = true)
 public class DistributionReplicationService
-    implements Replication
+    extends AbstractionReplicationService
 {
     @ObjectClassDefinition(
         name = "Peregrine: Remote Replication Service",
@@ -83,6 +84,12 @@ public class DistributionReplicationService
             required = true
         )
         String name();
+        @AttributeDefinition(
+            name = "Description",
+            description = "Description of this Replication Service",
+            required = true
+        )
+        String description();
         @AttributeDefinition(
             name = "Forward Agent",
             description = "Name of the Forward Agent to use for the Replication.",
@@ -102,14 +109,10 @@ public class DistributionReplicationService
     @Reference
     Distributor distributor;
 
-    private String name;
     private String agentName;
 
     private void setup(Configuration configuration) {
-        name = configuration.name();
-        if(name.isEmpty()) {
-            throw new IllegalArgumentException("Replication Name cannot be empty");
-        }
+        init(configuration.name(), configuration.description());
         log.trace("Distributor: '{}'", distributor);
         agentName = configuration.agentName();
         if(agentName == null || agentName.isEmpty()) {
@@ -120,11 +123,6 @@ public class DistributionReplicationService
     @Reference
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     @Override
     public List<Resource> replicate(Resource startingResource, boolean deep)

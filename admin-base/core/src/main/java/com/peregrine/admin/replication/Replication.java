@@ -34,7 +34,11 @@ import java.util.List;
  */
 public interface Replication {
 
+    /** @return Name of the Service which is used to discover the Replication Service by the User **/
     String getName();
+
+    /** @return Description of the Service which is given to the Users when they list the Replication Services **/
+    String getDescription();
 
     /**
      * Replicates the given resource with its JCR Content and references

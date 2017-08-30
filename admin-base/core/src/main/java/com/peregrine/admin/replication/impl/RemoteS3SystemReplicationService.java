@@ -107,6 +107,12 @@ public class RemoteS3SystemReplicationService
         )
         String name();
         @AttributeDefinition(
+            name = "Description",
+            description = "Description of this Replication Service",
+            required = true
+        )
+        String description();
+        @AttributeDefinition(
             name = "AWS Access Key",
             description = "Access Key to the AWS S3 Bucket",
             required = true
@@ -151,9 +157,6 @@ public class RemoteS3SystemReplicationService
     @SuppressWarnings("unused")
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private String name;
     private Map<String, List<String>> exportExtensions = new HashMap<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
     private AmazonS3 s3;
@@ -163,10 +166,7 @@ public class RemoteS3SystemReplicationService
     private String awsRegionName;
 
     private void setup(BundleContext context, final Configuration configuration) {
-        name = configuration.name();
-        if(name.isEmpty()) {
-            throw new IllegalArgumentException("Replication Name cannot be empty");
-        }
+        init(configuration.name(), configuration.description());
         exportExtensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
 
@@ -222,11 +222,6 @@ public class RemoteS3SystemReplicationService
     @Reference
     @SuppressWarnings("unused")
     ResourceResolverFactory resourceResolverFactory;
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     @Override
     SlingRequestProcessor getRequestProcessor() {

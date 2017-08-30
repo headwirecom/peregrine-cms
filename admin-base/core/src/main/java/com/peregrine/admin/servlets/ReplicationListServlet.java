@@ -56,10 +56,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Replication Servlet",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Replication Lister Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "POST",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + EXECUTE_REPLICATION
+        SLING_SERVLET_METHODS + EQUALS + "GET",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + LIST_REPLICATION
     }
 )
 @SuppressWarnings("serial")
@@ -69,7 +69,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *
  * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/api/admin/repl.json/path///content/sites/example//name//local
  */
-public class ReplicationServlet extends AbstractBaseServlet {
+public class ReplicationListServlet extends AbstractBaseServlet {
 
     @Reference
     private ReferenceLister referenceLister;
@@ -105,51 +105,15 @@ public class ReplicationServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         JsonResponse answer;
-        logger.trace("Request Path: '{}'", request.getRequestPath());
-        logger.trace("Request URI: '{}'", request.getRequest().getRequestURI());
-        logger.trace("Request URL: '{}'", request.getRequest().getRequestURL());
-        String sourcePath = request.getParameter("path");
-        String replicationName = request.getParameter("name");
-        if(replicationName == null || replicationName.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parameter 'name' for the replication name is not provided");
-        }
-        String deepParameter = request.getParameter("deep");
-        boolean deep = deepParameter != null && "true".equals(deepParameter.toLowerCase());
-        String deactivateParameter = request.getParameter("deactivate");
-        boolean deactivate = deactivateParameter != null && "true".equals(deactivateParameter.toLowerCase());
-        Replication replication = replications.get(replicationName);
-        if(replication == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication not found for name: " + replicationName);
-        }
-        Resource source = request.getResourceResolver().getResource(sourcePath);
-        if(source != null) {
-            List<Resource> replicates;
-            try {
-                if(!deactivate) {
-                    // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-                    replicates = replication.replicate(source, deep);
-                } else {
-                    replicates = replication.deactivate(source);
-                }
-            } catch(ReplicationException e) {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication Failed").setException(e);
-            }
-            answer = new JsonResponse();
-            answer.writeAttribute("sourceName", source.getName());
-            answer.writeAttribute("sourcePath", source.getPath());
-            answer.writeArray("replicates");
-            if(replicates != null) {
-                for(Resource child : replicates) {
-                    answer.writeObject();
-                    answer.writeAttribute("name", child.getName());
-                    answer.writeAttribute("path", child.getPath());
-                    answer.writeClose();
-                }
-            }
+        answer = new JsonResponse();
+        answer.writeArray("replicationServices");
+        for(Replication replication: replications.values()) {
+            answer.writeObject();
+            answer.writeAttribute("name", replication.getName());
+            answer.writeAttribute("description", replication.getDescription());
             answer.writeClose();
-        } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Suffix: " + sourcePath + " is not a resource");
         }
+        answer.writeClose();
         return answer;
     }
 }

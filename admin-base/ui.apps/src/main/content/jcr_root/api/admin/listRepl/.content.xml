@@ -24,9 +24,8 @@
   #L%
   -->
 
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="sling:OsgiConfig"
-          name="remote"
-          description="Replication Service that is replication to another Peregrine CMS Server using Sling's Forward Distribution"
-          agentName="publish"
-/>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="sling:Folder"
+          sling:resourceType="api/admin/listRepl"
+>
+</jcr:root>
