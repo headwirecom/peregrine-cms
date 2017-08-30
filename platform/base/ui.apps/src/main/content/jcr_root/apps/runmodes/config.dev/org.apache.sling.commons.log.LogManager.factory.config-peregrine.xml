@@ -24,14 +24,11 @@
   #L%
   -->
 
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="sling:OsgiConfig"
-          defaultMapping="localFS"
-          pathMapping="[local:path=/content/assets]"
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:OsgiConfig"
+    org.apache.sling.commons.log.file="logs/peregrine.cms.log"
+    org.apache.sling.commons.log.level="trace"
+    org.apache.sling.commons.log.names="[com.peregrine]"
+    org.apache.sling.commons.log.pattern="\{0,date,yyyy-MM-dd HH:mm:ss.SSS} {4} [{3}] {5}"
 >
-    <!--
-        The Mappings are in this format:
-            <replication service name>:path=<path to the root>[|<parameter name>=<parameter value>]*
-        The Default Mapping is disregarding the path as it is the fallback mapping if there is none defined for a given path
-    -->
 </jcr:root>
