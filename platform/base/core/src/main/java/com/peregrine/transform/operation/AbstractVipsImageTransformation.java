@@ -58,6 +58,19 @@ public abstract class AbstractVipsImageTransformation
 
     abstract MimeTypeService getMimeTypeService();
 
+    protected boolean checkVips() {
+        boolean answer = false;
+        ProcessRunner runner = new ProcessRunner();
+        List<String> commands = new ArrayList<>(Arrays.asList("vips", "--version"));
+        try {
+            ProcessContext processContext = runner.execute(commands);
+            answer = processContext.getExitCode() == 0;
+        } catch(ExternalProcessException e) {
+            log.error("Failed to execute VIPS", e);
+        }
+        return answer;
+    }
+
     protected void transform0(ImageContext imageContext, String operationName, String...parameters)
         throws TransformationException
     {

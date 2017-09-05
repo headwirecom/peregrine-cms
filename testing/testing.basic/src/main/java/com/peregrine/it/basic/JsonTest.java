@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
@@ -185,7 +188,9 @@ public class JsonTest {
     public static class BasicContentObject extends BasicObject {
         public BasicContentObject(String primaryType, String slingResourceType) {
             super(JCR_CONTENT, primaryType);
-            addSlingResourceType(slingResourceType);
+            if(slingResourceType != null) {
+                addSlingResourceType(slingResourceType);
+            }
         }
     }
 
@@ -196,15 +201,29 @@ public class JsonTest {
         }
 
         public BasicContentObject getContent() { return (BasicContentObject) getChildren().get(JCR_CONTENT); }
+
+        public BasicWithContent addContentProperty(Prop prop) { getContent().addProperty(prop); return this; }
     }
 
     public static class TestPage extends BasicWithContent {
         public TestPage(String name, String slingResourceType, String templatePath) {
             super(name, PAGE_PRIMARY_TYPE, PAGE_CONTENT_TYPE, slingResourceType);
-            getContent().addProperties(
-                new Prop(JCR_TITLE, name),
-                new Prop(TEMPLATE, templatePath)
-            );
+            addContentProperty(new Prop(JCR_TITLE, name));
+            if(templatePath != null) {
+                addContentProperty(new Prop(TEMPLATE, templatePath));
+            }
+        }
+    }
+
+    public static class TestAsset extends BasicWithContent {
+        public TestAsset(String mimeType) {
+            super(null, ASSET_PRIMARY_TYPE, ASSET_CONTENT_TYPE, null);
+            addContentProperty(new Prop(JCR_MIME_TYPE, mimeType));
+        }
+
+        // This is overridden to avoid a NPE because of the missing name
+        @Override
+        public void setName(String name) {
         }
     }
 

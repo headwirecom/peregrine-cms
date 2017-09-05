@@ -124,6 +124,9 @@ public class ThumbnailImageTransformation
             if(transformationName.isEmpty()) {
                 throw new IllegalArgumentException("Transformation Name cannot be empty");
             }
+            if(!checkVips()) {
+                throw new IllegalArgumentException("VIPS is not installed or accessible");
+            }
             defaultWidth = configuration.defaultWidth();
             getDefaultHeight = configuration.defaultHeight();
         }
