@@ -624,18 +624,19 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+                    <!--AS TODO: Do we need that here? -->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.maven.plugins</groupId>-->
+                        <!--<artifactId>maven-javadoc-plugin</artifactId>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>attach-javadocs</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>jar</goal>-->
+                                <!--</goals>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
                     <!-- We want to sign the artifact, the POM, and all attached artifacts -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -661,9 +662,10 @@
     </profiles>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/tags/apache-10</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/tags/apache-10</developerConnection>
-        <url>http://svn.apache.org/viewvc/maven/pom/tags/apache-10</url>
+        <url>https://github.com/headwirecom/peregrine-cms</url>
+        <connection>scm:git:git://github.com/headwirecom/peregrine-cms.git</connection>
+        <developerConnection>scm:git:git@github.com:headwirecom/peregrine-cms.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
