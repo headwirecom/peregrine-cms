@@ -64,7 +64,7 @@ public class NpmExternalProcessService
     /**
      * Activate this component.
      * Start the scheduler.
-     * @throws Exception
+     * @throws ExternalProcessException
      */
     @Activate
     protected void activate(NpmExternalProcessConfiguration configuration)
