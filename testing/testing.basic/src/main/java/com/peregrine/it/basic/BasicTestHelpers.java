@@ -1,6 +1,7 @@
 package com.peregrine.it.basic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
@@ -9,6 +10,7 @@ import org.apache.sling.testing.clients.util.FormEntityBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -52,6 +54,58 @@ public class BasicTestHelpers {
         SlingHttpResponse response = client.doGet(path + "." + level + ".json", 200);
         assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
         return convertToMap(response);
+    }
+
+    public static Map listComponentsAsJson(SlingClient client) throws ClientException, IOException {
+        SlingHttpResponse response = client.doGet("/system/console/components.json", 200);
+        assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
+        return convertToMap(response);
+    }
+
+    public static Map listServicesAsJson(SlingClient client) throws ClientException, IOException {
+        SlingHttpResponse response = client.doGet("/system/console/services.json", 200);
+        assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
+        return convertToMap(response);
+    }
+
+    public static String createOSGiServiceConfiguration(SlingClient client, String factoryPid, Map<String, Object> properties) throws ClientException, IOException {
+//        curl -u admin:admin -X POST -d "apply=true" -d "propertylist=name" -d "name=mycfg" -d "factoryPid=com.acme.MyFactoryPid" http://localhost:8080/system/console/configMgr/%5BTemporary%20PID%20replaced%20by%20real%20PID%20upon%20save%5D
+        String url = "/system/console/configMgr/%5BTemporary%20PID%20replaced%20by%20real%20PID%20upon%20save%5D";
+//        logger.info("Create Folder with URL: '{}' and Name: '{}'", url, name);
+        FormEntityBuilder formEntityBuilder = FormEntityBuilder.create()
+            .addParameter("apply", "true")
+            .addParameter("factoryPid", factoryPid);
+        String propertyList = "";
+        for(Entry<String, Object> property: properties.entrySet()) {
+            String propertyName = property.getKey();
+            propertyList += (propertyList.isEmpty() ? "" : ",") + propertyName;
+            Object temp = property.getValue();
+            if(temp instanceof Object[]) {
+                Object[] array = (Object[]) temp;
+                for(Object item: array) {
+                    logger.info("Add Property (1), Name; '{}', Value: '{}'", propertyName, item + "");
+                    formEntityBuilder.addParameter(propertyName, item + "");
+                }
+            } else {
+                logger.info("Add Property (1), Name; '{}', Value: '{}'", propertyName, property.getValue() + "");
+                formEntityBuilder.addParameter(propertyName, property.getValue() + "");
+            }
+        }
+        logger.info("Add Property List: '{]'", propertyList);
+        HttpEntity formEntry = formEntityBuilder
+            .addParameter("propertylist", propertyList)
+            .build();
+        SlingHttpResponse response = client.doPost(url, formEntry, 302);
+        Header locationHeader = response.getFirstHeader("Location");
+        String answer = null;
+        if(locationHeader != null) {
+            String location = locationHeader.getValue();
+            int index = location.lastIndexOf('/');
+            if(index > 0) {
+                answer = location.substring(index + 1);
+            }
+        }
+        return answer;
     }
 
     public static SlingHttpResponse listResource(SlingClient client, String path,int level) throws ClientException {
@@ -459,5 +513,55 @@ public class BasicTestHelpers {
             // Ignore
         }
         return answer;
+    }
+
+    public static void checkFolderAndCreate(File folder, boolean checkForWrite) {
+        checkFolder(folder, checkForWrite, true);
+    }
+
+    public static void checkFolder(File folder, boolean checkForWrite) {
+        checkFolder(folder, checkForWrite, false);
+    }
+
+    private static void checkFolder(File folder, boolean checkForWrite, boolean create) {
+        if(folder == null) {
+            fail("Folder to check is null");
+        }
+        if(!folder.exists()) {
+            if(create) {
+                if(!folder.mkdirs()) {
+                    fail("Folder: '" + folder.getAbsolutePath() + "' could not be created");
+                }
+            } else {
+                fail("Folder: '" + folder.getAbsolutePath() + "' does not exist");
+            }
+        }
+        if(!folder.isDirectory()) {
+            fail("Folder: '" + folder.getAbsolutePath() + "' is not a directory");
+        }
+        if(!folder.canRead()) {
+            fail("Folder: '" + folder.getAbsolutePath() + "' cannot be read");
+        }
+        if(checkForWrite && !folder.canWrite()) {
+            fail("Folder: '" + folder.getAbsolutePath() + "' cannot be written to");
+        }
+    }
+
+    public static void checkFile(File file, String type, boolean checkForWrite) {
+        if(file == null) {
+            fail("File (" + type + ") to check is null");
+        }
+        if(!file.exists()) {
+            fail("File (" + type + "): '" + file.getAbsolutePath() + "' does not exist");
+        }
+        if(!file.isFile()) {
+            fail("File (" + type + "): '" + file.getAbsolutePath() + "' is not a file");
+        }
+        if(!file.canRead()) {
+            fail("File (" + type + "): '" + file.getAbsolutePath() + "' cannot be read");
+        }
+        if(checkForWrite && !file.canWrite()) {
+            fail("File (" + type + "): '" + file.getAbsolutePath() + "' cannot be written to");
+        }
     }
 }

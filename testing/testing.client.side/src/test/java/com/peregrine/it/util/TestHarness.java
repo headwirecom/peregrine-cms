@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+
 /**
  * Created by schaefa on 6/28/17.
  */
@@ -29,10 +31,6 @@ public class TestHarness {
     }
 
     public static SlingHttpResponse deleteNode(SlingClient client, String path, int expectedStatus) throws ClientException, IOException {
-//        String url = ADMIN_PREFIX_URL + "deleteNode.json" + path;
-//        logger.info("Delete Node with URL: '{}' and Name: '{}'", url);
-//        HttpEntity formEntry = FormEntityBuilder.create().build();
-//        return client.doPost(url, formEntry, expectedStatus);
         return deleteNode(client, path, null, expectedStatus);
     }
 
@@ -110,13 +108,29 @@ public class TestHarness {
     }
 
     public static SlingHttpResponse uploadFile(SlingClient client, String path, String name, byte[] content, int expectedStatus) throws ClientException, IOException {
+        return uploadFile(client, path, name, content, "application/octet-stream", expectedStatus);
+    }
+
+    public static SlingHttpResponse uploadFile(SlingClient client, String path, String name, byte[] content, String contentType, int expectedStatus) throws ClientException, IOException {
         String url = ADMIN_PREFIX_URL + "uploadFiles.json" + path;
-//        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).build();
         HttpEntity entity = MultipartEntityBuilder.create()
-            .addBinaryBody(name, content, ContentType.create("application/octet-stream"), name)
+            .addBinaryBody(name, content, ContentType.create(contentType), name)
             .build();
-        // return the sling response
         return client.doPost(url, entity, expectedStatus);
+    }
+
+    public static SlingHttpResponse renderAsset(SlingClient client, String path, boolean doPost, String renditionName, int expectedStatus) throws ClientException, IOException {
+        String url = path;
+        if(isNotEmpty(renditionName)) {
+            url = path + ".rendition.json/" + renditionName;
+        }
+        HttpEntity formEntry = FormEntityBuilder.create().build();
+        // return the sling response
+        if(doPost) {
+            return client.doPost(url, formEntry, expectedStatus);
+        } else {
+            return client.doGet(url, expectedStatus);
+        }
     }
 
     public static SlingHttpResponse updateResource(SlingClient client, String path, String content, int expectedStatus) throws ClientException, IOException {

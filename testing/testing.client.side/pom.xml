@@ -177,6 +177,7 @@
                         <configuration>
                             <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
                             <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
+                            <!--<shouldBlockUntilKeyIsPressed>true</shouldBlockUntilKeyIsPressed>-->
                         </configuration>
                     </execution>
 
@@ -187,6 +188,8 @@
                             <id>singleinstance</id>
                             <port>${http.port}</port>
                             <vmOpts>${sling.vm.options}</vmOpts>
+                            <!-- This makes sure that configurations for IT are used -->
+                            <runmode>it</runmode>
                         </server>
                     </servers>
                 </configuration>
