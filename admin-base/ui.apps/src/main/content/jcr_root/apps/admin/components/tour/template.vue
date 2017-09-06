@@ -201,6 +201,7 @@
 
 <style>
     .__pcms_tour {
+        pointer-events: none;
         position: fixed;
         z-index: 1003;
         width: 100%;
@@ -222,6 +223,7 @@
         right: 0;
     }
     .__pcms_tour_highlite {
+        pointer-events: none;
         position: fixed;
         width: 100%;
         height: 100%;
@@ -232,6 +234,7 @@
     }
 
     .__pcms_tour_info {
+        pointer-events: auto;
         margin: 0;
         min-width: 400px;
         position: fixed;
