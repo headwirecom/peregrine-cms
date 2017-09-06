@@ -25,8 +25,8 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
+import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.admin.replication.Replication;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.Resource;
@@ -35,8 +35,6 @@ import org.apache.sling.engine.SlingRequestProcessor;
 import org.apache.sling.servlethelpers.MockRequestPathInfo;
 import org.apache.sling.servlethelpers.MockSlingHttpServletRequest;
 import org.apache.sling.servlethelpers.MockSlingHttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -66,22 +64,13 @@ import static com.peregrine.commons.util.PerUtil.isNotEmpty;
  * Created by schaefa on 5/25/17.
  */
 public abstract class BaseFileReplicationService
-    implements Replication
+    extends AbstractionReplicationService
 {
     public static final String DATA_JSON = "data.json";
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
 
     static {
         NAME_PATTERNS.add(Pattern.compile(".*\\.data\\.json"));
-    }
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private String name;
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override

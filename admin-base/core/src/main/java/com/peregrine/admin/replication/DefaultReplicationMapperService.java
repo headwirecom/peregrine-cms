@@ -35,15 +35,31 @@ import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
 )
 @Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = false)
 public class DefaultReplicationMapperService
+    extends AbstractionReplicationService
     implements DefaultReplicationMapper
 {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ObjectClassDefinition(name = "Peregrine: Default Replication Mapper Service", description = "Provides a mapping between the Path and the Default Replication Service(s)")
     @interface Configuration {
-        @AttributeDefinition(name = "Default", description = "Default Mapping Configuration (used if none path covers it). Format: <replication name>[:(<parameter name>=<parameter value>|)*]", required = true) String defaultMapping();
-
-        @AttributeDefinition(name = "Path Mapping", description = "Path Based Mapping Configurations. Format: <replication name>:path=<starting path>[(|<parameter name>=<parameter value>)*]", required = false) String[] pathMapping();
+        @AttributeDefinition(
+            name = "Default",
+            description = "Default Mapping Configuration (used if none path covers it). Format: <replication name>[:(<parameter name>=<parameter value>|)*]",
+            required = true
+        )
+        String defaultMapping();
+        @AttributeDefinition(
+            name = "Description",
+            description = "Description of this Replication Service",
+            required = true
+        )
+        String description();
+        @AttributeDefinition(
+            name = "Path Mapping",
+            description = "Path Based Mapping Configurations. Format: <replication name>:path=<starting path>[(|<parameter name>=<parameter value>)*]",
+            required = false
+        )
+        String[] pathMapping();
     }
 
     @Reference
@@ -93,6 +109,7 @@ public class DefaultReplicationMapperService
     private List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
 
     private void setup(BundleContext context, final Configuration configuration) {
+        init("defaultMapper", configuration.description());
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);

@@ -382,7 +382,6 @@
                 if(target.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', false)
-                    me.selectedObject = target
                     $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
@@ -397,17 +396,16 @@
 //                        return
 //                    }
                     if(resourceType === 'per:Asset') {
-                        me.selectedAsset = target.path
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
                         return
                     } else if(resourceType === 'nt:file') {
                         return
                     }
                 }
-                if(me.selectedObject) {
+                if($perAdminApp.getNodeFromView('/state/tools/object/show')) {
                     $perAdminApp.stateAction('unselectObject', { })
                 }
-                if(me.selectedAsset) {
+                if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
                 $perAdminApp.stateAction('selectToolsNodesPath', { selected: target.path, path: me.model.dataFrom })

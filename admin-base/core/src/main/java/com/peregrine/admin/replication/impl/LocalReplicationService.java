@@ -25,6 +25,7 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
+import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.admin.replication.ReplicationUtil;
@@ -46,8 +47,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -76,7 +75,7 @@ import static com.peregrine.commons.util.PerUtil.getResource;
 )
 @Designate(ocd = LocalReplicationService.Configuration.class, factory = true)
 public class LocalReplicationService
-    implements Replication
+    extends AbstractionReplicationService
 {
     @ObjectClassDefinition(
         name = "Peregrine: Local Replication Service",
@@ -89,6 +88,12 @@ public class LocalReplicationService
             required = true
         )
         String name();
+        @AttributeDefinition(
+            name = "Description",
+            description = "Description of this Replication Service",
+            required = true
+        )
+        String description();
         @AttributeDefinition(
             name = "Local Mapping",
             description = "JCR Root Path Mapping: <source path>=<target path> (only used if this is local). Anything outside will not be copied.",
@@ -103,18 +108,12 @@ public class LocalReplicationService
     @SuppressWarnings("unused")
     void modified(Configuration configuration) { setup(configuration); }
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private String name;
     private String localSource;
     private String localTarget;
     private String destinationUrl;
 
     private void setup(Configuration configuration) {
-        name = configuration.name();
-        if(name.isEmpty()) {
-            throw new IllegalArgumentException("Replication Name cannot be empty");
-        }
+        init(configuration.name(), configuration.description());
         localSource = localTarget = null;
         String mapping = configuration.localMapping();
         String[] tokens = mapping.split("=");
@@ -137,7 +136,7 @@ public class LocalReplicationService
         if(localTarget.endsWith("/")) {
             localTarget = localTarget.substring(0, localTarget.length() - 1);
         }
-        log.trace("Local Replication Service Name: '{}' created", name);
+        log.trace("Local Replication Service Name: '{}' created", getName());
         log.trace("Local Source: '{}', Target: '{}'", localSource, localTarget);
     }
 
@@ -147,11 +146,6 @@ public class LocalReplicationService
     @Reference
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     @Override
     public List<Resource> replicate(Resource startingResource, boolean deep)

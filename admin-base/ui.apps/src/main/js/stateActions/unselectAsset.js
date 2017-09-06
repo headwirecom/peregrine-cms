@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('unselectObject').setLevelDebug()
+let log = LoggerFactory.logger('unselectAsset').setLevelDebug()
 
 import { set } from '../utils'
 

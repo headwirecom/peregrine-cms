@@ -469,6 +469,24 @@ paths:
           description: If the path or if the asset creation failed
           schema:
             $ref: "#/definitions/Error"
+  '/listRepl.json':
+    get:
+      description: Lists all available and active Replication Services
+      responses:
+        200:
+          description: returns the list of
+          schema:
+            type: object
+            properties:
+              replicationServices:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
   '/repl.json{path}':
     post:
       description: Replicates the given node(s) using the named replication service

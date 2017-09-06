@@ -116,7 +116,9 @@ public class RenditionsServlet extends AbstractBaseServlet {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Resource: '" + resource.getPath() + "' is not an valid Asset");
         }
         String selector = request.getSelector();
-        if(!"rendition".equals(selector)) {
+        // if we have a selector called 'rendition' or the request path is the same as the resource path then we handle them as images
+        // otherwise we delegate to Sling
+        if(!"rendition".equals(selector) && !resource.getPath().equals(request.getRequestPath())) {
             redirectServlet.service(request.getRequest(), request.getResponse());
             return new ResponseHandledResponse();
         }

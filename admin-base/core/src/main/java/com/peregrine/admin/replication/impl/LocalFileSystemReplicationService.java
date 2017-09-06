@@ -87,6 +87,12 @@ public class LocalFileSystemReplicationService
         )
         String name();
         @AttributeDefinition(
+            name = "Description",
+            description = "Description of this Replication Service",
+            required = true
+        )
+        String description();
+        @AttributeDefinition(
             name = "TargetFolder",
             description = "Path to the local folder where the content is exported to",
             required = true
@@ -122,19 +128,13 @@ public class LocalFileSystemReplicationService
     @SuppressWarnings("unused")
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private String name;
     private File targetFolder;
     private int creationStrategy = CREATE_NONE_STRATEGY;
     private Map<String, List<String>> exportExtensions = new HashMap<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
-        name = configuration.name();
-        if(name.isEmpty()) {
-            throw new IllegalArgumentException("Replication Name cannot be empty");
-        }
+        init(configuration.name(), configuration.description());
         creationStrategy = configuration.creationStrategy();
         exportExtensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
@@ -166,7 +166,7 @@ public class LocalFileSystemReplicationService
             }
             targetFolder = temp;
         }
-        log.trace("Local Replication Service Name: '{}' created with target folder: '{}'", name, targetFolder);
+        log.trace("Local Replication Service Name: '{}' created with target folder: '{}'", getName(), targetFolder);
     }
 
     @Reference
@@ -178,11 +178,6 @@ public class LocalFileSystemReplicationService
     @Reference
     @SuppressWarnings("unused")
     ResourceResolverFactory resourceResolverFactory;
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     @Override
     SlingRequestProcessor getRequestProcessor() {

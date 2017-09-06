@@ -133,6 +133,7 @@ public abstract class AbstractBaseServlet
             return answer;
         }
 
+        public String getRequestPath() { return request.getRequestURI(); }
         public ResourceResolver getResourceResolver() {
             return request.getResourceResolver();
         }
