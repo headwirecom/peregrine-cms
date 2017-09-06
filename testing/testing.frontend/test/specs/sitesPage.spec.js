@@ -101,7 +101,6 @@ describe('Peregrine sites page', function () {
 
         it('should set the <h1> of the jumbotron', function() {
             inputs = EditorPanel.inputs
-            console.log(inputs);
             inputs[0].setValue('Peregrine test Jumbotron')
             expect( jumbotronComponent.selectorText('h1') ).to.equal('Peregrine test Jumbotron')
         })

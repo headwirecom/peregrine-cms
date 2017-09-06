@@ -9,6 +9,7 @@
     "html-dnd": "^1.2.0",
     "selenium-standalone": "^6.8.0",
     "wdio-mocha-framework": "^0.5.11",
+    "wdio-selenium-standalone-service": "0.0.9",
     "wdio-spec-reporter": "^0.1.2",
     "webdriverio": "^4.8.0"
   },
