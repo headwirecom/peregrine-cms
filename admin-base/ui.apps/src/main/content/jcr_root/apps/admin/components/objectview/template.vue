@@ -77,16 +77,16 @@
                   v-bind:model   = "currentObject.data"
                   v-bind:options = "formOptions">
                 </vue-form-generator>
+                <button  
+                    v-if="edit"
+                    type="button"
+                    title="save object" 
+                    v-bind:disabled="!valid" 
+                    class="btn btn-raised waves-effect waves-light right" 
+                    v-on:click.stop.prevent="onOk">
+                    <i class="material-icons">check</i>
+                </button>
             </form>
-            <button  
-                v-if="edit"
-                type="button"
-                title="save object" 
-                v-bind:disabled="!valid" 
-                class="btn btn-raised waves-effect waves-light right" 
-                v-on:click.stop.prevent="onOk">
-                <i class="material-icons">check</i>
-            </button>
         </template>
 
         <div v-if="currentObject === undefined" class="explorer-preview-empty">
