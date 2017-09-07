@@ -68,14 +68,30 @@
                   sling:resourceType="admin/components/debugger" dataFrom="/"/>
         <tour jcr:primaryType="nt:unstructured"
               sling:resourceType="admin/components/tour">
-            <item1 jcr:primaryType="nt:unstructured" locator="/jcr:content/content/iconlist" text="select one of the main pillars of peregrine cms to start exploring"/>
-            <item2 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/pages" text="create and manage pages for your site"/>
-            <item3 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/assets" text="create and manage assets for your site"/>
-            <item4 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/objects" text="create and manage objects for your site"/>
-            <item5 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/templates" text="create and manage templates for your site"/>
-            <item6 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav" text="primary navigation to navigate between screens, access to help and logout"/>
-            <item7 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav" text="return to this screen" selector=".peregrine-logo"/>
-            <item8 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav" text="logout" selector="li:nth-child(1)"/>
+
+            <item1  jcr:primaryType="nt:unstructured" locator="/jcr:content" 
+                    text="Welcome to the Peregrine Administrator dashboard!"/>
+            <item2  jcr:primaryType="nt:unstructured" locator="/jcr:content/content/iconlist" 
+                    text="From this page you can access all of the core tools provided by Peregrine to manage your sites"/>
+            <item3 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/pages" 
+                text="The Sites explorer gives you an overview of your sites, and allows you to edit the structure of your pages"/>
+            <item4 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/assets" 
+                text="From the Asset explorer, you can add and manage assets such as images that are available throughout your sites"/>
+            <item5 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/objects" 
+                text="Use the Object explorer to create and manage common content data for your sites"/>
+            <item6 jcr:primaryType="nt:unstructured" locator="/content/admin/tools/templates" 
+                text="Create and edit page Templates for use throughout your sites pages"/>
+            <item7 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav" 
+                text="Use the navigation bar to quickly move throughout the dashboard"/>
+            <item8 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav"     
+                text="Return to the Admin dashboard home page (this page)" selector=".peregrine-logo"/>
+            <item9 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav" 
+                text="Logout of the admin dashboard" selector="li:nth-child(1)"/>
+            <item10 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav" 
+                text="Try the help button on other pages!" selector="li:nth-child(2)"/>
+            <item11  jcr:primaryType="nt:unstructured" locator="/jcr:content" 
+                    text="Thanks for choosing Peregrine CMS!"/>
+
         </tour>
 
     </jcr:content>
