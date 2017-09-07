@@ -50,29 +50,20 @@
                         <i class="material-icons">delete</i>
                     </a>
                 </li>
-                <template v-if="edit">
-                    <li>
-                        <a  title="cancel edit"
-                            class="waves-effect waves-light"
-                            v-on:click.stop.prevent="onCancel">
-                            <i class="material-icons">close</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a  title="save page properties"
-                            v-bind:disabled="!valid"
-                            class="waves-effect waves-light"
-                            v-on:click.stop.prevent="onOk">
-                            <i class="material-icons">check</i>
-                        </a>
-                    </li>
-                </template>
-                <li v-else>
-                    <a  href="#!"
+                <li>
+                    <a  v-if="!edit"
+                        href="#!"
                         title="edit"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
+                    </a>
+                    <a  v-else
+                        href="#!"
+                        title="edit"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="onCancel">
+                        <i class="material-icons">info</i>
                     </a>
                 </li>
                 <li>
@@ -96,13 +87,23 @@
                 </vue-form-generator>
             </template>
 
-            <vue-form-generator v-if="edit"
-                                class="vfg-preview"
-                                v-on:validated = "onValidated"
-                                v-bind:schema  = "schema"
-                                v-bind:model   = "asset"
-                                v-bind:options = "options">
-            </vue-form-generator>
+            <template v-if="edit">
+                <vue-form-generator 
+                    class="vfg-preview"
+                    v-on:validated = "onValidated"
+                    v-bind:schema  = "schema"
+                    v-bind:model   = "asset"
+                    v-bind:options = "options">
+                </vue-form-generator>
+                <button 
+                    type="button"
+                    title="save page properties"
+                    v-bind:disabled="!valid"
+                    class="btn btn-raised waves-effect waves-light right"
+                    v-on:click.stop.prevent="onOk">
+                    <i class="material-icons">check</i>
+                </button>
+            </template>
 
             <ul v-if="references && !edit" class="collection with-header">
                 <li class="collection-header"><h5>Referenced By</h5></li>
