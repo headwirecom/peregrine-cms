@@ -27,6 +27,18 @@
 				    .material-icons {
 							vertical-align: middle;
 						}
+						.svg-icon {
+							width: 22px;
+							.svg-content {
+								fill: color("blue-grey", "darken-2");
+							}
+							&:hover,
+							&:active {
+								.svg-content {
+									fill: color("orange", "base");
+								}
+							}
+						}
 						&:hover,
 						&:focus,
 						&:active {
