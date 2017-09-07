@@ -26,28 +26,18 @@
     <div class="explorer-preview-content preview-object">
         <template v-if="currentObject">
             <ul class="explorer-preview-nav">
-                <template v-if="edit">
-                    <li>
-                        <a  title="cancel object" 
-                            class="waves-effect waves-light" 
-                            v-on:click.stop.prevent="onCancel">
-                            <i class="material-icons">close</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a  title="save object" 
-                            v-bind:disabled="!valid" 
-                            class="waves-effect waves-light" 
-                            v-on:click.stop.prevent="onOk">
-                            <i class="material-icons">check</i>
-                        </a>
-                    </li>
-                </template>
-                <li v-else>
-                    <a  title="edit object" 
+                <li>
+                    <a  v-if="!edit"
+                        title="edit object" 
                         class="waves-effect waves-light" 
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
+                    </a>
+                    <a  v-else
+                        title="preview object" 
+                        class="waves-effect waves-light" 
+                        v-on:click.stop.prevent="onCancel">
+                        <i class="material-icons">info</i>
                     </a>
                 </li>
             </ul>
@@ -88,6 +78,15 @@
                   v-bind:options = "formOptions">
                 </vue-form-generator>
             </form>
+            <button  
+                v-if="edit"
+                type="button"
+                title="save object" 
+                v-bind:disabled="!valid" 
+                class="btn btn-raised waves-effect waves-light right" 
+                v-on:click.stop.prevent="onOk">
+                <i class="material-icons">check</i>
+            </button>
         </template>
 
         <div v-if="currentObject === undefined" class="explorer-preview-empty">
