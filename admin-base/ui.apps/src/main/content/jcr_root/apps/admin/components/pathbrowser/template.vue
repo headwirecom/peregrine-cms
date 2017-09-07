@@ -279,7 +279,7 @@
             <div class="col-preview">
                 <template v-if="preview">
                     <div v-if="isFolder(preview)" class="preview-folder">
-                        <i class="svg-icons svg-icon-open-folder"></i>
+                        <admin-components-iconopenfolder></admin-components-iconopenfolder>
                     </div>
                     <template v-if="isFile(preview)">
                         <img v-if="true" class="preview-image" v-bind:src="preview.path" />
