@@ -10,3 +10,4 @@ node_modules
 !sling/auth
 sling/!auth
 out
+package-lock.json
