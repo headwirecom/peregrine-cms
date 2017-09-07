@@ -47,6 +47,12 @@
 <script>
     export default {
         props: ['model'],
+        watch: {
+            model: function(val) {
+                this.index = 0;
+                this.enabled = false;
+            }
+        },
         data() {
             return { 
                 enabled: false , left: 10, width: 100, height: 10, top: 10, text: '', index: 0,
@@ -187,6 +193,11 @@
             this.index = 0
             window.addEventListener('resize', this.windowChange)
             window.addEventListener('scroll', this.windowChange)
+        },
+        beforeUpdate() {
+            if ( this.model.children[0] != this.model.children[0] ) {
+                this.index = 0;
+            }
         },
         updated() {
             this.info.width = this.$refs.info ? this.$refs.info.offsetWidth : 0;
