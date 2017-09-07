@@ -31,7 +31,7 @@
                         title="rename asset"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameAsset">
-                        <i class="svg-icons svg-icon-rename"></i>
+                        <admin-components-iconrename></admin-components-iconrename>
                     </a>
                 </li>
                 <li>
