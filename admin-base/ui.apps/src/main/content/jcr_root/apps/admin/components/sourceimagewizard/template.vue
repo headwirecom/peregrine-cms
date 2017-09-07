@@ -43,17 +43,17 @@
             <!-- Image Preview --> 
             <div v-else-if="viewing" class="image-preview">
                 <div class="image-preview-details">
-                    <span><div v-for="tag in tags" class="chip">{{tag}}</div></span>
                     <span>{{viewing.webformatWidth}} x {{viewing.webformatHeight}}</span>
+                    <span><div v-for="tag in tags" class="chip">{{tag}}</div></span>
                 </div>
                 <div class="image-row">
                     <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="['btn-flat','btn-large',{'disabled': viewing.index == 0}]">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </button>
-                    <div class="image-container" :style="{width: `${viewing.width}px`}">
+                    <div class="image-container" >
                         <img v-bind:src="viewing.webformatURL">
                         <!-- Image rename form -->
-                        <div v-if="uploading" class="progress">
+                        <!-- <div v-if="uploading" class="progress">
                             <div class="determinate" :style="{width: `${uploading}%`}"></div>
                         </div>                   
                         <form v-else v-on:submit.prevent="addImage(state.results[viewing.index], viewing.name)" class="image-rename-form">
@@ -61,7 +61,7 @@
                             <button type="submit"  class="btn waves-effect waves-light">
                                 <i class="material-icons">save</i>
                             </button>
-                        </form>
+                        </form> -->
                     </div>
                     <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="['btn-flat','btn-large',{'disabled': viewing.index == state.results.length - 1}]">
                         <i class="material-icons">keyboard_arrow_right</i>

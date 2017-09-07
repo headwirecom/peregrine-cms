@@ -85,12 +85,10 @@
         width: 100%;
 
         .image-preview-details  {
-            float: right;
             width: 100%;
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            justify-content: flex-start;
+            align-items: baseline;;
+            justify-content: flex-end;
 
             .chip {
                 margin-right: 0;
