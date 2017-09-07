@@ -39,6 +39,21 @@ dl {
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0
 }
+.svg-icon { 
+	display: inline-block;
+	position: relative;
+	width: 100%;
+	padding-bottom: 100%; 
+	vertical-align: middle; 
+	overflow: hidden; 
+	.svg-content { 
+		display: inline-block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		pointer-events: none;
+	}
+}
 
 .svg-icons {
   font-weight: normal;
@@ -62,6 +77,9 @@ dl {
 	}
 	&.svg-icon-open-folder {
 		background-image: url('/etc/felibs/admin/images/icon-open-folder.svg')
+	}
+	&.svg-icon-edit-page {
+		background-image: url('/etc/felibs/admin/images/icon-edit-page.svg')
 	}
 }
 
