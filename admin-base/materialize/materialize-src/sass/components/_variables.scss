@@ -271,8 +271,8 @@ $tabs-bg-color: #fff !default;
 // 18. Tables
 // ==========================================================================
 
-$table-border-color: #d0d0d0 !default;
-$table-striped-color: #f2f2f2 !default;
+$table-border-color: color("blue-grey", "lighten-4") !default;
+$table-striped-color: color("blue-grey", "lighten-5") !default;
 
 
 // 19. Toasts
