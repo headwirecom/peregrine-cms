@@ -75,7 +75,8 @@
                                 command: 'editPage',
                                 tooltipTitle: `edit '${child.title || child.name}'`
                             }">
-                            <admin-components-iconeditpage></admin-components-iconeditpage>
+                            <admin-components-iconeditpage v-if="isSites"></admin-components-iconeditpage>
+                            <i v-else class="material-icons">edit</i>
                         </admin-components-action>
 
                         <admin-components-action v-if="replicatable(child)"
@@ -173,7 +174,10 @@
                 return node
             },
             isAssets(){
-                return this.path.includes('assets')
+                return this.path.includes('/content/assets')
+            },
+            isSites(){
+                return this.path.includes('/content/sites')
             },
             pt: function() {
                 var node = this.path
