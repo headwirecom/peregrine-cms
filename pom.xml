@@ -30,9 +30,10 @@
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
         <organization.logo>http://www.peregrine-cms.com/etc/felibs/admin/images/peregrine-logo.png</organization.logo>
-        <distMgmtSnapshotsName>Peregrine CMS Development Snapshot Repository</distMgmtSnapshotsName>
-        <!--<distMgmtSnapshotsUrl>https://repository.apache.org/content/repositories/snapshots</distMgmtSnapshotsUrl>-->
-        <distMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots</distMgmtSnapshotsUrl>
+        <repositoryName>Peregrine Release Distribution Repository</repositoryName>
+        <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</repositoryUrl>
+        <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
+        <snapshotRepositoryUrl>https://oss.sonatype.org/content/repositories/snapshots</snapshotRepositoryUrl>
         <gpg.useagent>true</gpg.useagent>
     </properties>
 
@@ -516,6 +517,32 @@
 
     <profiles>
         <profile>
+            <id>sign</id>
+            <!--<activation>-->
+                <!--<activeByDefault>true</activeByDefault>-->
+            <!--</activation>-->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpg.useagent>true</gpg.useagent>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>installDocs</id>
             <build>
                 <plugins>
@@ -671,18 +698,13 @@
     <distributionManagement>
         <repository>
             <id>peregrine.releases.https</id>
-            <name>Peregrine Release Distribution Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <name>${repositoryName}</name>
+            <url>${repositoryUrl}</url>
         </repository>
-        <!--<repository>-->
-            <!--<id>apache.releases.https</id>-->
-            <!--<name>Apache Release Distribution Repository</name>-->
-            <!--<url>https://repository.apache.org/service/local/staging/deploy/maven2</url>-->
-        <!--</repository>-->
         <snapshotRepository>
             <id>peregrine.snapshots.https</id>
-            <name>${distMgmtSnapshotsName}</name>
-            <url>${distMgmtSnapshotsUrl}</url>
+            <name>${snapshotRepositoryName}</name>
+            <url>${snapshotRepositoryUrl}</url>
         </snapshotRepository>
     </distributionManagement>
 

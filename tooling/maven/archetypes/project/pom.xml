@@ -20,9 +20,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!--<parent>-->
+        <!--<groupId>com.peregrine-cms</groupId>-->
+        <!--<artifactId>parent</artifactId>-->
+        <!--<version>1.0-SNAPSHOT</version>-->
+        <!--<relativePath>../../../../pom.xml</relativePath>-->
+    <!--</parent>-->
+
     <groupId>com.peregrine-cms</groupId>
     <artifactId>peregrine-project-archetype</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>maven-archetype</packaging>
 
     <name>Peregrine Project Archetype</name>
@@ -31,6 +38,14 @@
     <organization>
         <name>headwire inc.</name>
     </organization>
+
+    <properties>
+        <repositoryId>peregrine.distro</repositoryId>
+        <repositoryName>Peregrine Release Distribution Repository</repositoryName>
+        <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</repositoryUrl>
+        <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
+        <snapshotRepositoryUrl>https://oss.sonatype.org/content/repositories/snapshots</snapshotRepositoryUrl>
+    </properties>
 
     <build>
         <extensions>
@@ -60,9 +75,77 @@
                         </excludes>
                     </configuration>
                 </plugin>
+                <!-- Maven Release Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <scmCommentPrefix>[maven-scm] :</scmCommentPrefix>
+                        <preparationGoals>clean install</preparationGoals>
+                        <releaseProfiles>release</releaseProfiles>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <useReleaseProfile>false</useReleaseProfile>
+                        <goals>deploy</goals>c
+                    </configuration>
+                </plugin>
+                <!-- Nexus Staging Plugin -->
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>${repositoryId}</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
+                <!-- Maven GPG Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.5</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
+    <repositories>
+        <repository>
+            <id>archetype</id>
+            <url>${snapshotRepositoryUrl}</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>${repositoryId}</id>
+            <name>${repositoryName}</name>
+            <url>${repositoryUrl}</url>
+        </repository>
+        <snapshotRepository>
+            <id>${repositoryId}</id>
+            <name>${snapshotRepositoryName}</name>
+            <url>${snapshotRepositoryUrl}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/headwirecom/peregrine-cms</url>
+        <connection>scm:git:git://github.com/headwirecom/peregrine-cms.git</connection>
+        <developerConnection>scm:git:git@github.com:headwirecom/peregrine-cms.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <description>
         This archetype is creating a full Sling Project composed of
