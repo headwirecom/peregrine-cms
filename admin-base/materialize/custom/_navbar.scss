@@ -33,6 +33,7 @@ nav {
           }
           &.peregrine-logo {
             svg {
+              pointer-events: none;
               width: 44px;
               height: 44px;
               position: relative;

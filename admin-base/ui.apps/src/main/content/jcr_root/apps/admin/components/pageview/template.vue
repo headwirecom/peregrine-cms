@@ -32,7 +32,7 @@
                             title="rename page" 
                             class="waves-effect waves-light" 
                             v-on:click.stop.prevent="renamePage">
-                            <i class="svg-icons svg-icon-rename"></i>
+                            <admin-components-iconrename></admin-components-iconrename>
                         </a>
                     </li>
                     <li>
@@ -54,26 +54,15 @@
                         </a>
                     </li>
                 </template>
-
-                <template v-if="edit">
-                    <li>
-                        <a  title="cancel edit"
-                            class="waves-effect waves-light"
-                            v-on:click.stop.prevent="onCancel">
-                            <i class="material-icons">close</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a  title="save page properties"
-                            v-bind:disabled="!valid"
-                            class="waves-effect waves-light"
-                            v-on:click.stop.prevent="onOk">
-                            <i class="material-icons">check</i>
-                        </a>
-                    </li>
-                </template>
-                <li v-else>
-                    <a  title="edit page properties"
+                <li>
+                    <a  v-if="edit"
+                        title="cancel edit"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="onCancel">
+                        <i class="material-icons">info</i>
+                    </a>
+                    <a  v-else
+                        title="edit page properties"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
@@ -81,26 +70,35 @@
                 </li>
 
             </ul>
-            <vue-form-generator v-if="!edit"
-                    class="vfg-preview"
-                    v-on:validated = "onValidated"
-                    v-bind:schema  = "readOnlySchema"
-                    v-bind:model   = "page"
-                    v-bind:options = "options">
+            <vue-form-generator 
+                v-if="!edit"
+                class="vfg-preview"
+                v-on:validated = "onValidated"
+                v-bind:schema  = "readOnlySchema"
+                v-bind:model   = "page"
+                v-bind:options = "options">
             </vue-form-generator>
-
-            <vue-form-generator v-else
-                                v-bind:schema="schema"
-                                v-bind:model="page"
-                                v-bind:options="options">
-            </vue-form-generator>
+            <template v-else>
+                <vue-form-generator 
+                    v-bind:schema="schema"
+                    v-bind:model="page"
+                    v-bind:options="options">
+                </vue-form-generator>
+                <button 
+                    type="button"
+                    title="save page properties"
+                    v-bind:disabled="!valid"
+                    class="btn btn-raised waves-effect waves-light right"
+                    v-on:click.stop.prevent="onOk">
+                    <i class="material-icons">check</i>
+                </button>
+            </template>
         </template>
         <div v-else class="explorer-preview-empty">
             <span>{{$i18n('no page selected')}}</span>
             <i class="material-icons">info</i>
         </div>
     </div>
-
 </template>
 
 <script>
