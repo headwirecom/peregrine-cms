@@ -7,7 +7,8 @@
     left: 0;
     right: 0;
 
-    padding-top: 20px;
+    margin-bottom:5px;
+    padding-top: 15px;
     display: flex;
     flex-direction: column;
     transition: top 150ms;
@@ -85,15 +86,25 @@
         width: 100%;
 
         .image-preview-details  {
-            width: 100%;
             display: flex;
-            align-items: baseline;;
-            justify-content: flex-end;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-start;
+            position: absolute;
+            float:right;
+            right: 0;
+            bottom: 0;
 
-            .chip {
-                margin-right: 0;
-                margin-left: 5px;
+            .resolution {
+                padding: 12px;
             }
+            .chipcontainer {
+                display: flex;
+                width: 200px;
+                flex-wrap: wrap-reverse;
+                justify-content: flex-end;
+            }
+
         }
 
         .image-row {
@@ -102,10 +113,24 @@
             align-items: center;
             width: 100%;
             flex-grow: 1;
+
+            .image-container{
+                align-self: stretch;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items:center;
+                img {
+                    max-height: calc(100% - 3rem - 20px);
+                }
+            }
+
         }
 
         .image-rename-form {
+            padding-top: 5px;
             display: flex;
+            align-self: stretch;
             button {
                 height: 3rem;
                 margin-bottom: -1px;
