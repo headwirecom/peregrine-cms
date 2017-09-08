@@ -188,6 +188,22 @@
 						}
 					}
 				}
+				.pathbrowser-search-results {
+					.search-radio {
+						width: 35px;
+						padding: 0 0 0 5px;
+						[type="radio"]:not(:checked) + label, 
+						[type="radio"]:checked + label {
+							vertical-align: middle;
+						}
+					}
+					td {
+						color: color("blue-grey", "darken-2");
+					}
+					tr.selected {
+						background-color: color("blue-grey", "lighten-5");
+					}
+				}
 				.item-file,
 				.item-folder {
 					cursor: pointer;

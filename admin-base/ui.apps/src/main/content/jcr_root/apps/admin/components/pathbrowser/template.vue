@@ -50,25 +50,29 @@
         </div>
         <div class="modal-content">                    
             <div class="col-browse"> 
-                <div v-if="search">
-                    <table>
-                        <thead>
+                <table v-if="search" class="highlight pathbrowser-search-results">
+                    <thead>
                         <tr>
+                            <th></th>
                             <th>Type</th>
                             <th>Name</th>
                             <th>Path</th>
                         </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr v-for="item in nodes.children" v-if="searchFilter(item)">
+                    </thead>
+                    <tbody>
+                        <tr v-if="searchFilter(item)" 
+                            v-for="item in nodes.children" 
+                            :class="isSelected(item.path) ? 'selected' : ''">
+                            <td class="search-radio">
+                                <input type="radio" class="with-gap" :checked="isSelected(item.path)" />
+                                <label v-on:click.stop.prevent="selectItem(item)"></label>
+                            </td>
                             <td>{{item.mimeType || 'folder'}}</td>
                             <td>{{item.name}}</td>
                             <td>{{item.path}}</td>
                         </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
                 <template v-if="tab === 'browse' && !search">
                     <nav class="modal-content-nav clearfix">
                         <div class="modal-content-section">
