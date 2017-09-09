@@ -21,6 +21,9 @@ percli server install
 After the installation is complete a browser window opens (you may have to refresh the window). You can log in to 
 Peregrine CMS with `admin/admin` as credentials. 
 
+To set up your own site in Peregrine CMS have a look at our [quickstart](http://www.peregrine-cms.com/docs/sitedev/quickstart.html)
+guide. 
+
 Please visit [peregrine-cms.com](http://peregrine-cms.com) for more information
 
 ### Sponsors
