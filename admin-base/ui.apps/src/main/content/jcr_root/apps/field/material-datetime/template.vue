@@ -1,6 +1,7 @@
 <template>
   <div class="wrapper">
-  	<template v-if="!schema.preview">
+	<p v-if="schema.readonly">{{prettyTimeDate(value)}}</p>
+  	<template v-else-if="!schema.preview">
 	  	<div class="date-wrapper">
 				<input 
 					ref="datepicker"
@@ -19,7 +20,7 @@
 					:placeholder="schema.timePlaceholder"/>
 			</div>
 		</template>
-		<p v-else>{{value}}</p>
+	<p v-else>{{prettyTimeDate(value)}}</p>
 	</div>
 </template>
 
@@ -155,7 +156,7 @@
 				let firstPart = timeString.substring(0, timeString.indexOf('.'))
 				let lastPart = timeString.substring(timeString.indexOf('.') + 1)
 				// check timeString ends with '0000Z' and is format hh:mm:ss
-				if(lastPart === '000Z' && firstPart.match(regEx) != null){
+				if(firstPart.match(regEx) != null){
 					return true
 				} else {
 					return false
@@ -183,10 +184,16 @@
 				this.dateTime.setMilliseconds(0)
 				return this.dateTime.toJSON()
 			},
+			prettyTimeDate(value) {
+				let formatted = value.replace(/\-\d+$/, 'Z')
+				let date = new Date(formatted)
+				return date.toUTCString();
+			},
 			timeFromModel(){
 				if(this.isValideDateTime(this.value)) {
 					let indexT = this.value.lastIndexOf('T')
 					let timeString = this.value.substring(indexT + 1)
+					timeString = timeString.split('-')[1]
 					let today = new Date().toJSON()
 					let fauxDate = today.substring(0, today.indexOf('T'))
 					// create date object so localization is handled natively
