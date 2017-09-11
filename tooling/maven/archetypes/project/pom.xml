@@ -42,9 +42,9 @@
     <properties>
         <repositoryId>peregrine.distro</repositoryId>
         <repositoryName>Peregrine Release Distribution Repository</repositoryName>
-        <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</repositoryUrl>
+        <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2/</repositoryUrl>
         <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
-        <snapshotRepositoryUrl>https://oss.sonatype.org/content/repositories/snapshots</snapshotRepositoryUrl>
+        <snapshotRepositoryUrl>https://oss.sonatype.org/content/repositories/snapshots/</snapshotRepositoryUrl>
     </properties>
 
     <build>
@@ -86,7 +86,7 @@
                         <releaseProfiles>release</releaseProfiles>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <useReleaseProfile>false</useReleaseProfile>
-                        <goals>deploy</goals>c
+                        <goals>deploy</goals>
                     </configuration>
                 </plugin>
                 <!-- Nexus Staging Plugin -->
@@ -120,12 +120,29 @@
         </pluginManagement>
     </build>
 
-    <repositories>
-        <repository>
-            <id>archetype</id>
-            <url>${snapshotRepositoryUrl}</url>
-        </repository>
-    </repositories>
+    <!--AS Nothing seems to work in order to get the SonaType snapshots to show up in the list of Artifacts -->
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>archetype</id>-->
+            <!--<url>${snapshotRepositoryUrl}</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
+
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>archetype</id>-->
+            <!--&lt;!&ndash; <url>https://oss.sonatype.org/content/repositories/snapshots/</url> &ndash;&gt;-->
+            <!--<url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+            <!--<releases>-->
+                <!--<enabled>false</enabled>-->
+                <!--<checksumPolicy>warn</checksumPolicy>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+                <!--<checksumPolicy>warn</checksumPolicy>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 
     <distributionManagement>
         <repository>
