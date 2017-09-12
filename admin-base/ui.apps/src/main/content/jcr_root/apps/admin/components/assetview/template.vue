@@ -155,7 +155,7 @@
                             "placeholder": "asset title"
                         },
                         {
-                            "type": "input",
+                            "type": "material-datetime",
                             "inputType": "text",
                             "model": "created",
                             "label": "Created",
@@ -171,7 +171,7 @@
                             "placeholder": "created by"
                         },
                         {
-                            "type": "input",
+                            "type": "material-datetime",
                             "inputType": "text",
                             "model": "lastModified",
                             "label": "Last Modified",
