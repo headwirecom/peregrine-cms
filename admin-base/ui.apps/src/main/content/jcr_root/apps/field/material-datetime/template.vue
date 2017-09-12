@@ -47,20 +47,10 @@
 					let input = $(this.$refs.datepicker).pickadate(dateOptions)
 					this.picker = input.pickadate('picker')
 					this.picker.on({
-					  // open: () => {
-					  //   console.log('open')
-					  // },
 					  close: () => {
-					  	// console.log('close')
 					  	// adding focus to diff element prevents auto-opening of picker
 					  	this.$refs.showPickerBtn.focus()
 					  },
-					  // render: () => {
-					  //   console.log('render')
-					  // },
-					  // stop: () => {
-					  //   console.log('stop')
-					  // },
 					  set: context => {
 					  	if(context.select){
 					    	this.dateTime = new Date(context.select)
@@ -88,30 +78,8 @@
 					const timeOptions = {
 						twelvehour: true,
 						init: () => { 
-	              // console.log("init timepicker")
 	              this.$refs.timepicker.value = this.timeFromModel()
 	          },
-	          // beforeShow: () => {
-	          //     console.log("before show")
-	          // },
-	          // afterShow: () => {
-	          //     console.log("after show")
-	          // },
-	          // beforeHide: () => {
-	          //     console.log("before hide")
-	          // },
-	          // afterHide: () => {
-	          //     console.log("after hide")
-	          // },
-	          // beforeHourSelect: () => {
-	          //     console.log("before hour selected")
-	          // },
-	          // afterHourSelect: () => {
-	          //     console.log("after hour selected")
-	          // },
-	          // beforeDone: () => {
-	          //     console.log("before done")
-	          // },
 	          afterDone: () => { 
 	          	this.value = this.modelFromTime()
 	          }
