@@ -188,6 +188,22 @@
 						}
 					}
 				}
+				.pathbrowser-search-results {
+					.search-radio {
+						width: 35px;
+						padding: 0 0 0 5px;
+						[type="radio"]:not(:checked) + label, 
+						[type="radio"]:checked + label {
+							vertical-align: middle;
+						}
+					}
+					td {
+						color: color("blue-grey", "darken-2");
+					}
+					tr.selected {
+						background-color: color("blue-grey", "lighten-5");
+					}
+				}
 				.item-file,
 				.item-folder {
 					cursor: pointer;
@@ -198,6 +214,7 @@
 						position: absolute;
 						top: 0;
 						left: 0;
+						z-index: 1;
 					}
 				}
 				.item-folder {
@@ -260,9 +277,12 @@
 				padding: 0.75rem 0.75rem 60px;
 				background-color: color("blue-grey", "lighten-5");
 				.preview-folder {
-					.svg-icons {
+					.svg-icon {
 						width: 5rem;
-						height: 5rem;
+						padding-bottom: 5rem;
+						.svg-content {
+							fill: color("blue-grey", "lighten-3");
+						}
 					}
 					.material-icons {
 						font-size: 100px;

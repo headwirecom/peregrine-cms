@@ -27,6 +27,19 @@
 				    .material-icons {
 							vertical-align: middle;
 						}
+						.svg-icon {
+							width: 22px;
+							padding-bottom: 22px;
+							.svg-content {
+								fill: color("blue-grey", "darken-2");
+							}
+							&:hover,
+							&:active {
+								.svg-content {
+									fill: color("orange", "base");
+								}
+							}
+						}
 						&:hover,
 						&:focus,
 						&:active {
@@ -197,11 +210,14 @@
 							padding: 0 0.75rem;
 							height: 100%;
 			  			display: inline-block;
-			  			.material-icons {
+							.material-icons,
+							.svg-icon {
 			  				line-height: 45px;
 							}
-							.svg-icons {
-								height: 44px;
+							.svg-icon {
+								.svg-content {
+									stroke: color("blue-grey", "darken-3");
+								}
 							}
 							&:hover, 
 							&:focus, 

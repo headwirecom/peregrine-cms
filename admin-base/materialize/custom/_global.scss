@@ -40,28 +40,20 @@ dl {
   opacity: 0
 }
 
-.svg-icons {
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  width: 24px;
-  height: 24px;
-  line-height: 1;
-  display: inline-block;
-  background-size: 100%;
-  background-position: center center;
-  background-repeat: no-repeat;
-	&.svg-icon-copy {
-		background-image: url('/etc/felibs/admin/images/icon-copy.svg')
-	}
-	&.svg-icon-paste {
-		background-image: url('/etc/felibs/admin/images/icon-paste.svg')
-	}
-	&.svg-icon-rename {
-		background-image: url('/etc/felibs/admin/images/icon-rename.svg')
-	}
-	&.svg-icon-open-folder {
-		background-image: url('/etc/felibs/admin/images/icon-open-folder.svg')
+.svg-icon { 
+	display: inline-block;
+	position: relative;
+	width: 24px;
+	padding-bottom: 24px; 
+	line-height: 1em;
+	vertical-align: middle; 
+	overflow: hidden; 
+	.svg-content { 
+		display: inline-block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		pointer-events: none;
 	}
 }
 

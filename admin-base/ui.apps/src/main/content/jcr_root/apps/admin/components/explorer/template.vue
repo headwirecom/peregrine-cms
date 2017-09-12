@@ -75,7 +75,8 @@
                                 command: 'editPage',
                                 tooltipTitle: `edit '${child.title || child.name}'`
                             }">
-                            <i class="material-icons">edit</i>
+                            <admin-components-iconeditpage v-if="isSites(path)"></admin-components-iconeditpage>
+                            <i v-else class="material-icons">edit</i>
                         </admin-components-action>
 
                         <admin-components-action v-if="replicatable(child)"
@@ -169,11 +170,7 @@
             path: function() {
                 var dataFrom = this.model.dataFrom
                 var node = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
-                console.log('node: ', node)
                 return node
-            },
-            isAssets(){
-                return this.path.includes('assets')
             },
             pt: function() {
                 var node = this.path
@@ -197,6 +194,18 @@
             }
         },
         methods: {
+            isAssets(path){
+                return path.startsWith('/content/assets')
+            },
+            isSites(path){
+                return path.startsWith('/content/sites')
+            },
+            isObjects(path){
+                return path.startsWith('/content/objects')
+            },
+            isTemplates(path){
+                return path.startsWith('/content/templates')
+            },
             selectParent(me, target) {
                 var dataFrom = !me ? this.model.dataFrom : me.model.dataFrom
                 var path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
@@ -263,21 +272,28 @@
             },
 
             onDropRow(item, ev, type) {
+                console.log('this.isSites: ', this.isSites)
                 if(this.isDraggingUiEl){
                     ev.target.classList.remove('drop-after','drop-before')
                     /* reorder row logic */
                     const dataFrom = this.model.dataFrom
                     const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
-
-                    let action = 'movePage'
-                    if(path.startsWith('/content/sites/')) {
-                        // keep default
-                    } else if(path.startsWith('/content/templates/')) {
-                        action = 'moveTemplate'
-                    } else if(path.startsWith('/content/objects/')) {
-                        action = 'moveObject'
-                    } else if(path.startsWith('/content/assets/')) {
-                        action = 'moveAsset'
+                    let action
+                    switch(true) {
+                        case (this.isSites(path)):
+                            action = 'movePage'
+                            break
+                        case (this.isTemplates(path)):
+                            action = 'moveTemplate'
+                            break
+                        case (this.isObjects(path)):
+                            action = 'moveObject'
+                            break
+                        case (this.isAssets(path)):
+                            action = 'moveAsset'
+                            break
+                        default:
+                            console.warn('path is not a site, asset, template or object.')
                     }
 
                     $perAdminApp.stateAction(action, {
@@ -294,7 +310,7 @@
             },
 
             onDragEnterExplorer(ev){
-                if(!this.isAssets) return
+                if(!this.isAssets(this.path)) return
                 if(this.isDraggingUiEl) return
                 this.isDraggingFile = true
                 this.isFileUploadVisible = true
@@ -310,7 +326,7 @@
             },
 
             onDropExplorer(ev){
-                if(!this.isAssets) return
+                if(!this.isAssets(this.path)) return
                 if(this.isDraggingUiEl) return
                 if(this.isDraggingFile){
                     /* file uploade logic */

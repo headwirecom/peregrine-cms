@@ -42,15 +42,11 @@
 
             <!-- Image Preview --> 
             <div v-else-if="viewing" class="image-preview">
-                <div class="image-preview-details">
-                    <span><div v-for="tag in tags" class="chip">{{tag}}</div></span>
-                    <span>{{viewing.webformatWidth}} x {{viewing.webformatHeight}}</span>
-                </div>
                 <div class="image-row">
                     <button v-on:click.prevent.stop="select(viewing.index - 1)" :class="['btn-flat','btn-large',{'disabled': viewing.index == 0}]">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </button>
-                    <div class="image-container" :style="{width: `${viewing.width}px`}">
+                    <div class="image-container">
                         <img v-bind:src="viewing.webformatURL">
                         <!-- Image rename form -->
                         <div v-if="uploading" class="progress">
@@ -66,6 +62,10 @@
                     <button v-on:click.prevent.stop="select(viewing.index + 1)" :class="['btn-flat','btn-large',{'disabled': viewing.index == state.results.length - 1}]">
                         <i class="material-icons">keyboard_arrow_right</i>
                     </button>
+                </div>
+                <div class="image-preview-details">
+                    <span class="resolution">{{viewing.webformatWidth}} x {{viewing.webformatHeight}}</span>
+                    <div class="chipcontainer"><div v-for="tag in tags" class="chip">{{tag}}</div></div>
                 </div>
             </div>
 

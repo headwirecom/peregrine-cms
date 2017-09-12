@@ -50,7 +50,7 @@
         <ul id="languages" class="dropdown-content">
             <li v-for="item in $i18nGetLanguages()"><a href="#!" v-on:click="onSelectLang(item.name)">{{item.name}}</a></li>
         </ul>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <ul id="nav-mobile" class="right hide-on-small-and-down">
             <li v-if="this.$root.$data.state">
                 <a title="logout" href="/system/sling/logout?resource=/index.html">
                     {{this.$root.$data.state.user}}
