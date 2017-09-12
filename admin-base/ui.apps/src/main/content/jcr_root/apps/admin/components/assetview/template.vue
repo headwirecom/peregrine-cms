@@ -24,7 +24,7 @@
   -->
 <template>
     <div class="explorer-preview-content preview-asset">
-        <template v-if="currentObject">
+        <template v-if="currentObject && currentObject.hasOwnProperty('show')">
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
