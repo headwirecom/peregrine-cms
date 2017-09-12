@@ -1,6 +1,6 @@
 <template>
 	<div class="wrapper">
-		<p v-if="schema.readonly">{{prettyTimeDate(value)}}</p>
+		<p v-if="schema.readonly">{{value ? prettyTimeDate(value) : ''}}</p>
 		<template v-else-if="!schema.preview">
 			<div class="date-wrapper">
 				<input ref="datepicker" class="form-control datepicker" type="date" :placeholder="schema.datePlaceholder" />
@@ -12,7 +12,7 @@
 				<input ref="timepicker" class="timepicker" type="text" :placeholder="schema.timePlaceholder" />
 			</div>
 		</template>
-		<p v-else>{{prettyTimeDate(value)}}</p>
+		<p v-else>{{value ? prettyTimeDate(value) : ''}}</p>
 	</div>
 </template>
 
