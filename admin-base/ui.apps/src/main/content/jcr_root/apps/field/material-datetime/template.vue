@@ -144,11 +144,6 @@
 				this.dateTime.setMilliseconds(0)
 				return this.dateTime.toJSON()
 			},
-			prettyTimeDate(value) {
-				let formatted = value.replace(/\-\d+$/, 'Z')
-				let date = new Date(formatted)
-				return date.toUTCString();
-			},
 			timeFromModel(){
 				if(this.isValidDateTime(this.value)) {
 					let indexT = this.value.lastIndexOf('T')
@@ -168,7 +163,17 @@
 				} else {
 					console.warn('model must be a date string with format  YYYY-MM-DDTHH:MM:SS.000Z')
 				}
-			}
+			},
+
+			prettyTimeDate(value) {
+				const timezone = value.match(/-\d+$/)[0]
+				const formatted = value.replace(/\-\d+$/, 'Z')
+				const initial = new Date(formatted)
+				const d = new Date(initial.getTime() - 3600000*(timezone))
+				const time = d.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })
+				const date = `${d.getUTCMonth()+1}/${d.getDate()}/${d.getFullYear()}`
+				return `${date} ${time}`;
+			},
 
 		}
 	}
