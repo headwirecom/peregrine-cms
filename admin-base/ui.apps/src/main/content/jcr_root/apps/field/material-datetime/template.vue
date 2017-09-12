@@ -1,26 +1,18 @@
 <template>
-  <div class="wrapper">
-	<p v-if="schema.readonly">{{prettyTimeDate(value)}}</p>
-  	<template v-else-if="!schema.preview">
-	  	<div class="date-wrapper">
-				<input 
-					ref="datepicker"
-					class="form-control datepicker" 
-					type="date" 
-					:placeholder="schema.datePlaceholder" />
+	<div class="wrapper">
+		<p v-if="schema.readonly">{{prettyTimeDate(value)}}</p>
+		<template v-else-if="!schema.preview">
+			<div class="date-wrapper">
+				<input ref="datepicker" class="form-control datepicker" type="date" :placeholder="schema.datePlaceholder" />
 				<button ref="showPickerBtn" class="btn-flat" v-on:click="showPicker">
-			  	<i class="material-icons">date_range</i>
-			  </button>
+					<i class="material-icons">date_range</i>
+				</button>
 			</div>
 			<div class="time-wrapper">
-			  <input 
-			  	ref="timepicker" 
-					class="timepicker" 
-					type="text" 
-					:placeholder="schema.timePlaceholder"/>
+				<input ref="timepicker" class="timepicker" type="text" :placeholder="schema.timePlaceholder" />
 			</div>
 		</template>
-	<p v-else>{{prettyTimeDate(value)}}</p>
+		<p v-else>{{prettyTimeDate(value)}}</p>
 	</div>
 </template>
 
@@ -61,7 +53,7 @@
 					  }
 					})
 					/* set inital dateTime from model */
-					if(this.isValideDateTime(this.value)){
+					if(this.isValidDateTime(this.value)){
 						this.dateTime = Date.parse(this.value)
 						this.$nextTick(function () {
 							this.picker.set('select', this.dateTime)
@@ -101,7 +93,7 @@
 				ev.preventDefault()
 				this.picker.open(false)
 			},
-			isValideDateTime(dateString){
+			isValidDateTime(dateString){
 				if(!dateString){
 					console.warn('Value is undefined. Are you sure the model property exists?')
 					return false
@@ -158,7 +150,7 @@
 				return date.toUTCString();
 			},
 			timeFromModel(){
-				if(this.isValideDateTime(this.value)) {
+				if(this.isValidDateTime(this.value)) {
 					let indexT = this.value.lastIndexOf('T')
 					let timeString = this.value.substring(indexT + 1)
 					timeString = timeString.split('-')[1]
@@ -177,6 +169,7 @@
 					console.warn('model must be a date string with format  YYYY-MM-DDTHH:MM:SS.000Z')
 				}
 			}
+
 		}
 	}
 </script>
