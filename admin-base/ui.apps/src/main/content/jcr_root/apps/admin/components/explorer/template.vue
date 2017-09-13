@@ -119,6 +119,9 @@
                     </div>
                 </li>
             </ul>
+            <div v-if="pt.children.length === 0" class="empty-explorer">
+                This folder is empty, try adding some content...
+            </div>
 
         </div>
         <admin-components-explorerpreview v-if="hasEdit">
