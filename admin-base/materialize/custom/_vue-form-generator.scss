@@ -290,17 +290,17 @@
                 .switch {
                     label {
                         .lever {
-                            background-color: color("blue-grey", "lighten-3");
+                            // background-color: color("blue-grey", "lighten-3");
                             &:after {
-                                background-color: color("blue-grey", "lighten-3");
+                                // background-color: color("blue-grey", "lighten-3");
                                 //box-shadow: none;
                             }
                         }
                         input[type=checkbox]:checked {
                             + .lever {
-                                background-color: color("blue-grey", "base");
+                                background-color: color("blue-grey", "lighten-1");
                                 &:after {
-                                    background-color: color("orange", "lighten-2");
+                                    background-color: color("blue-grey", "base");
                                 }
                             }
                         }
