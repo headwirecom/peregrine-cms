@@ -46,8 +46,7 @@
                     </admin-components-action>
                 </li>
                 <li 
-                    v-if  ="checkIfAllowed(child.resourceType)"
-                    v-for ="child in pt.children" 
+                    v-for ="child in children" 
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"                    
                     draggable ="true" 
                     v-on:dragstart ="onDragRowStart(child,$event)"
@@ -119,7 +118,7 @@
                     </div>
                 </li>
             </ul>
-            <div v-if="pt.children && pt.children.length === 0" class="empty-explorer">
+            <div v-if="children.length == 0" class="empty-explorer">
                 This folder is empty, use the navigation bar to add content...
             </div>
 
@@ -178,6 +177,11 @@
             pt: function() {
                 var node = this.path
                 return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, node)
+            },
+            children: function() {
+                if ( this.pt.children ) {
+                    return this.pt.children.filter( child => this.checkIfAllowed(child.resourceType) )
+                }
             },
             parentPath: function() {
                 var segments = this.$data.path.value.toString().split('/')
