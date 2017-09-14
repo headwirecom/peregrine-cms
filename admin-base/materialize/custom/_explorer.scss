@@ -41,8 +41,7 @@
 							.svg-content {
 								fill: color("blue-grey", "darken-2");
 							}
-							&:hover,
-							&:active {
+							&:hover {
 								.svg-content {
 									fill: color("orange", "base");
 								}
@@ -84,9 +83,7 @@
 									padding: 0 0.75rem;
 									border-left: 1px solid color("blue-grey", "lighten-4");
 									transition: color .3s ease;
-									&:hover,
-									&:focus,
-									&:active {
+									&:hover {
 										color: color("orange", "base");
 									}
 								}

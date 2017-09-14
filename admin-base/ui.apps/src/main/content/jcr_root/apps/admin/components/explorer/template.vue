@@ -46,7 +46,8 @@
                     </admin-components-action>
                 </li>
                 <li 
-                    v-for ="child in children" 
+                    v-for ="(child,i) in children" 
+                    v-bind:key="i"
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"                    
                     draggable ="true" 
                     v-on:dragstart ="onDragRowStart(child,$event)"
