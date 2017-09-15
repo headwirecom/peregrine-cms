@@ -24,7 +24,7 @@
   -->
 <template>
     <div class="explorer-preview-content preview-asset">
-        <template v-if="currentObject">
+        <template v-if="currentObject && currentObject.hasOwnProperty('show')">
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
@@ -155,7 +155,7 @@
                             "placeholder": "asset title"
                         },
                         {
-                            "type": "input",
+                            "type": "material-datetime",
                             "inputType": "text",
                             "model": "created",
                             "label": "Created",
@@ -171,7 +171,7 @@
                             "placeholder": "created by"
                         },
                         {
-                            "type": "input",
+                            "type": "material-datetime",
                             "inputType": "text",
                             "model": "lastModified",
                             "label": "Last Modified",

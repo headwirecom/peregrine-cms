@@ -1,26 +1,18 @@
 <template>
-  <div class="wrapper">
-	<p v-if="schema.readonly">{{prettyTimeDate(value)}}</p>
-  	<template v-else-if="!schema.preview">
-	  	<div class="date-wrapper">
-				<input 
-					ref="datepicker"
-					class="form-control datepicker" 
-					type="date" 
-					:placeholder="schema.datePlaceholder" />
+	<div class="wrapper">
+		<p v-if="schema.readonly">{{value ? prettyTimeDate(value) : ''}}</p>
+		<template v-else-if="!schema.preview">
+			<div class="date-wrapper">
+				<input ref="datepicker" class="form-control datepicker" type="date" :placeholder="schema.datePlaceholder" />
 				<button ref="showPickerBtn" class="btn-flat" v-on:click="showPicker">
-			  	<i class="material-icons">date_range</i>
-			  </button>
+					<i class="material-icons">date_range</i>
+				</button>
 			</div>
 			<div class="time-wrapper">
-			  <input 
-			  	ref="timepicker" 
-					class="timepicker" 
-					type="text" 
-					:placeholder="schema.timePlaceholder"/>
+				<input ref="timepicker" class="timepicker" type="text" :placeholder="schema.timePlaceholder" />
 			</div>
 		</template>
-	<p v-else>{{prettyTimeDate(value)}}</p>
+		<p v-else>{{value ? prettyTimeDate(value) : ''}}</p>
 	</div>
 </template>
 
@@ -47,20 +39,10 @@
 					let input = $(this.$refs.datepicker).pickadate(dateOptions)
 					this.picker = input.pickadate('picker')
 					this.picker.on({
-					  // open: () => {
-					  //   console.log('open')
-					  // },
 					  close: () => {
-					  	// console.log('close')
 					  	// adding focus to diff element prevents auto-opening of picker
 					  	this.$refs.showPickerBtn.focus()
 					  },
-					  // render: () => {
-					  //   console.log('render')
-					  // },
-					  // stop: () => {
-					  //   console.log('stop')
-					  // },
 					  set: context => {
 					  	if(context.select){
 					    	this.dateTime = new Date(context.select)
@@ -71,7 +53,7 @@
 					  }
 					})
 					/* set inital dateTime from model */
-					if(this.isValideDateTime(this.value)){
+					if(this.isValidDateTime(this.value)){
 						this.dateTime = Date.parse(this.value)
 						this.$nextTick(function () {
 							this.picker.set('select', this.dateTime)
@@ -88,30 +70,8 @@
 					const timeOptions = {
 						twelvehour: true,
 						init: () => { 
-	              // console.log("init timepicker")
 	              this.$refs.timepicker.value = this.timeFromModel()
 	          },
-	          // beforeShow: () => {
-	          //     console.log("before show")
-	          // },
-	          // afterShow: () => {
-	          //     console.log("after show")
-	          // },
-	          // beforeHide: () => {
-	          //     console.log("before hide")
-	          // },
-	          // afterHide: () => {
-	          //     console.log("after hide")
-	          // },
-	          // beforeHourSelect: () => {
-	          //     console.log("before hour selected")
-	          // },
-	          // afterHourSelect: () => {
-	          //     console.log("after hour selected")
-	          // },
-	          // beforeDone: () => {
-	          //     console.log("before done")
-	          // },
 	          afterDone: () => { 
 	          	this.value = this.modelFromTime()
 	          }
@@ -133,7 +93,7 @@
 				ev.preventDefault()
 				this.picker.open(false)
 			},
-			isValideDateTime(dateString){
+			isValidDateTime(dateString){
 				if(!dateString){
 					console.warn('Value is undefined. Are you sure the model property exists?')
 					return false
@@ -184,13 +144,8 @@
 				this.dateTime.setMilliseconds(0)
 				return this.dateTime.toJSON()
 			},
-			prettyTimeDate(value) {
-				let formatted = value.replace(/\-\d+$/, 'Z')
-				let date = new Date(formatted)
-				return date.toUTCString();
-			},
 			timeFromModel(){
-				if(this.isValideDateTime(this.value)) {
+				if(this.isValidDateTime(this.value)) {
 					let indexT = this.value.lastIndexOf('T')
 					let timeString = this.value.substring(indexT + 1)
 					timeString = timeString.split('-')[1]
@@ -208,7 +163,18 @@
 				} else {
 					console.warn('model must be a date string with format  YYYY-MM-DDTHH:MM:SS.000Z')
 				}
-			}
+			},
+
+			prettyTimeDate(value) {
+				const timezone = value.match(/-\d+$/)[0]
+				const formatted = value.replace(/\-\d+$/, 'Z')
+				const initial = new Date(formatted)
+				const d = new Date(initial.getTime() - 3600000*(timezone))
+				const time = d.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })
+				const date = `${d.getUTCMonth()+1}/${d.getDate()}/${d.getFullYear()}`
+				return `${date} ${time}`;
+			},
+
 		}
 	}
 </script>

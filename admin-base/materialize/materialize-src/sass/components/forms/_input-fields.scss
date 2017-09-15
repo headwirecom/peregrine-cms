@@ -54,7 +54,8 @@ textarea.materialize-textarea {
   &:disabled,
   &[readonly="readonly"] {
     color: $input-disabled-color;
-    border-bottom: $input-disabled-border;
+    border: 1px solid $input-border-color;
+    background: none;
   }
 
   // Disabled label style
