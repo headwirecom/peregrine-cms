@@ -32,6 +32,8 @@ public interface ImageTransformation {
 
     public String getTransformationName();
 
+    public boolean isValid();
+
     public void transform(ImageContext imageContext, OperationContext operationContext)
         throws TransformationException;
 

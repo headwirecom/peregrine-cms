@@ -58,6 +58,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.getResourceType;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
@@ -309,8 +310,14 @@ public abstract class BaseFileReplicationService
             MockSlingHttpServletRequest req = new MockSlingHttpServletRequest(resource.getResourceResolver());
             MockRequestPathInfo mrpi = (MockRequestPathInfo) req.getRequestPathInfo();
             mrpi.setResourcePath(resource.getPath());
-            mrpi.setExtension((isNotEmpty(extension) ? "." + extension : ""));
-            String requestPath = resource.getPath() + (isNotEmpty(extension) ? "." + extension : "");
+            if(isEmpty(extension)) {
+                extension = "";
+//            } else if(!extension.startsWith(".")) {
+//                extension = "." + extension;
+            }
+            log.trace("Render Resource Request Extension: '{}'", extension);
+            mrpi.setExtension(extension);
+            String requestPath = resource.getPath() + extension;
             log.trace("Render Resource Request Path: '{}'", mrpi);
             MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
             getRequestProcessor().processRequest(req, resp, resource.getResourceResolver());

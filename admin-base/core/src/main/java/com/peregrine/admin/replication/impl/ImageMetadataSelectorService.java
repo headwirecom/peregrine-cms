@@ -140,23 +140,29 @@ public class ImageMetadataSelectorService
 
     @Override
     public String acceptCategory(String category) {
-        return this.category.accept(category) ?
+        String answer = this.category.accept(category) ?
             this.category.getDestination() :
             null;
+        log.trace("Accept Category: '{}', answer: '{}'", category, answer);
+        return answer;
     }
 
     @Override
     public String acceptTag(String tag) {
+        log.trace("Check for Tag: '{}'", tag);
         for(Transformation transformation: mappings) {
             if(transformation.accept(tag)) {
+                log.trace("Tag accepted: '{}', destination: '{}'", tag, transformation.getDestination());
                 return transformation.getDestination();
             }
         }
         boolean accept = false;
         String test = PerUtil.adjustMetadataName(tag);
+        log.trace("Adjusted Tag Name: '{}'", test);
         if(included) {
             for(String item: selection) {
                 if(item.equals(test)) {
+                    log.trace("Adjusted Tag Name Accepted: '{}'", test);
                     accept = true;
                     break;
                 }
@@ -165,15 +171,19 @@ public class ImageMetadataSelectorService
             accept = true;
             for(String item: selection) {
                 if(item.equals(test)) {
+                    log.trace("Adjusted Tag Name Declined: '{}'", test);
                     accept = false;
                     break;
                 }
             }
         }
+        log.trace("Check Tag returned: '{}'", accept ? test : null);
         return accept ? test : null;
     }
 
     private static class Transformation {
+        private final Logger log = LoggerFactory.getLogger(getClass());
+
         private String source;
         private String destination;
 
@@ -186,10 +196,13 @@ public class ImageMetadataSelectorService
             this.destination = destination == null ?
                 this.source :
                 PerUtil.adjustMetadataName(destination);
+            log.trace("Created Transformation, source: '{}', destination: '{}'", this.source, this.destination);
         }
 
         public boolean accept(String name) {
-            return source.equals(PerUtil.adjustMetadataName(name));
+            boolean answer = source.equals(PerUtil.adjustMetadataName(name));
+            log.trace("Transformation: '{}' accepted: '{}' (source: '{}')", name, answer, source);
+            return answer;
         }
 
         public String getDestination() {

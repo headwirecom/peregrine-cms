@@ -50,16 +50,40 @@ import java.util.Map;
 )
 public class ImageTransformationConfigurationProvider {
 
+    @Reference
+    private ImageTransformationProvider imageTransformationProvider;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<String, List<ImageTransformationConfiguration>> imageTransformationSetups = new HashMap<String, List<ImageTransformationConfiguration>>();
+
+    public boolean isImageTransformationConfigurationEnabled(String name) {
+        boolean answer = false;
+        List<ImageTransformationConfiguration> imageTransformationConfigurationList = getImageTransformationConfigurations(name);
+        if(!imageTransformationConfigurationList.isEmpty()) {
+            boolean ok = true;
+            for(ImageTransformationConfiguration configuration: imageTransformationConfigurationList) {
+                ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(configuration.getTransformationName());
+                if(imageTransformation == null) {
+                    ok = false;
+                    break;
+                } else {
+                    if(!imageTransformation.isValid()) {
+                        ok = false;
+                        break;
+                    }
+                }
+            }
+            answer = ok;
+        }
+        return answer;
+    }
 
     public List<ImageTransformationConfiguration> getImageTransformationConfigurations(String name) {
         logger.trace("Obtain Image Transformation Configuration with Name: '{}', found in Map: '{}'", name, imageTransformationSetups.containsKey(name));
         logger.trace("Image Transformation Setup Keys: '{}'", imageTransformationSetups.keySet());
         List<ImageTransformationConfiguration> answer = imageTransformationSetups.get(name);
         logger.trace("Image Transformation Setup returned: '{}'", answer);
-//        log.trace("Current List of Image Transformation Configurations: '{}'", imageTransformationSetups);
         return answer;
     }
 

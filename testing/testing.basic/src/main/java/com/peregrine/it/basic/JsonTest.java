@@ -217,13 +217,19 @@ public class JsonTest {
 
     public static class TestAsset extends BasicWithContent {
         public TestAsset(String mimeType) {
-            super(null, ASSET_PRIMARY_TYPE, ASSET_CONTENT_TYPE, null);
+            this(null, mimeType);
+        }
+        public TestAsset(String name, String mimeType) {
+            super(name, ASSET_PRIMARY_TYPE, ASSET_CONTENT_TYPE, null);
             addContentProperty(new Prop(JCR_MIME_TYPE, mimeType));
         }
 
         // This is overridden to avoid a NPE because of the missing name
         @Override
         public void setName(String name) {
+            if(name != null) {
+                super.setName(name);
+            }
         }
     }
 

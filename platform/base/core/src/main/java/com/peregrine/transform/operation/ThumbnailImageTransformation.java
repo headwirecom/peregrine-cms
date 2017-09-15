@@ -91,7 +91,6 @@ public class ThumbnailImageTransformation
         int defaultHeight() default THUMBNAIL_DEFAULT_HEIGHT;
     }
 
-    private boolean enabled = false;
     private String transformationName = THUMBNAIL_TRANSFORMATION_NAME;
     private int defaultWidth = THUMBNAIL_DEFAULT_WIDTH;
     private int getDefaultHeight = THUMBNAIL_DEFAULT_HEIGHT;

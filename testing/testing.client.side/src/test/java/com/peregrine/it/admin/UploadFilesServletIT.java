@@ -20,10 +20,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
 
+import static com.peregrine.it.basic.BasicTestHelpers.checkFile;
+import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
+import static com.peregrine.it.basic.BasicTestHelpers.loadFile;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.uploadFile;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
@@ -68,24 +71,9 @@ public class UploadFilesServletIT
         String imageName = "test.png";
         createFolderStructure(client, rootFolderPath);
 
-        File localFolder = new File(".");
-        logger.info("Local Folder: '{}'", localFolder.getAbsolutePath());
-        assertTrue("Local Folder does not exist", localFolder.exists());
-        assertTrue("Local Folder is not a folder", localFolder.isDirectory());
-        File imagesFolder = new File(localFolder, IMAGE_RESOURCES_PATH);
-        logger.info("Images Folder: '{}'", imagesFolder.getAbsolutePath());
-        assertTrue("Local Folder does not exist", imagesFolder.exists());
-        assertTrue("Local Folder is not a folder", imagesFolder .isDirectory());
-        File image = new File(imagesFolder, imageName);
-        logger.info("Image File: '{}'", image.getAbsolutePath());
-        assertTrue("Image File does not exist", image.exists());
-        assertTrue("Image File is not a file", image.isFile());
-        assertTrue("Image File cannot be read", image.canRead());
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        IOUtils.copy(new FileInputStream(image), baos);
-        byte[] imageContent = baos.toByteArray();
+        byte[] imageContent = loadFile(IMAGE_RESOURCES_PATH, imageName, "Test - PNG");
         Calendar before = createTimestampAndWait();
-        uploadFile(client, rootFolderPath, image.getName(), imageContent, 200);
+        uploadFile(client, rootFolderPath, imageName, imageContent, 200);
 
         StringWriter writer = new StringWriter();
         JsonFactory jf = new JsonFactory();
@@ -97,16 +85,25 @@ public class UploadFilesServletIT
         json.writeStringField(JCR_MIME_TYPE, "application/octet-stream");
         // This is a very limited check on the Image Meta Data
         json.writeObjectFieldStart(METADATA);
-        json.writeObjectFieldStart("icc-profile");
-        json.writeStringField("class", "Display Device");
-        json.writeStringField("color_space", "RGB ");
-        // More Properties
+
+//        json.writeObjectFieldStart("icc-profile");
+//        json.writeStringField("class", "Display Device");
+//        json.writeStringField("color_space", "RGB ");
+//        // More Properties
+//        json.writeEndObject();
+//        json.writeObjectFieldStart("png-iccp");
+//        json.writeStringField("icc_profile_name", "ICC Profile");
+//        // More Properties
+//        json.writeEndObject();
+
+        json.writeObjectFieldStart("png-srgb");
+        json.writeStringField("srgb_rendering_intent", "Perceptual");
         json.writeEndObject();
-        json.writeObjectFieldStart("png-iccp");
-        json.writeStringField("icc_profile_name", "ICC Profile");
-        // More Properties
+
+        json.writeObjectFieldStart("xmp");
+        json.writeStringField("xmp_value_count", "11");
         json.writeEndObject();
-        // More Metadata Folders
+
         json.writeEndObject();
         json.writeEndObject();
         json.writeEndObject();

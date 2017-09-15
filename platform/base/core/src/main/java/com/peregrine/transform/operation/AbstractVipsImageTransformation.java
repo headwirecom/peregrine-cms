@@ -56,7 +56,13 @@ public abstract class AbstractVipsImageTransformation
 {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    boolean enabled = false;
+
     abstract MimeTypeService getMimeTypeService();
+
+    public boolean isValid() {
+        return enabled && checkVips();
+    }
 
     protected boolean checkVips() {
         boolean answer = false;

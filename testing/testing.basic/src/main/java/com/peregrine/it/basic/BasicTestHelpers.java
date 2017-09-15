@@ -1,6 +1,7 @@
 package com.peregrine.it.basic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.sling.testing.clients.ClientException;
@@ -10,7 +11,10 @@ import org.apache.sling.testing.clients.util.FormEntityBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -34,6 +38,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -45,6 +50,9 @@ import static org.junit.Assert.fail;
 public class BasicTestHelpers {
 
     public static final String ADMIN_PREFIX_URL = "/api/admin/";
+    public static final String IMAGE_PNG_MIME_TYPE = "image/png";
+    public static final String IMAGE_JPEG_MIME_TYPE = "image/jpeg";
+    public static final String IMAGE_JPG_MIME_TYPE = "image/jpg";
 
     private static final Logger logger = LoggerFactory.getLogger(BasicTestHelpers.class.getName());
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
@@ -547,6 +555,12 @@ public class BasicTestHelpers {
         }
     }
 
+    /**
+     *
+     * @param file
+     * @param type
+     * @param checkForWrite
+     */
     public static void checkFile(File file, String type, boolean checkForWrite) {
         if(file == null) {
             fail("File (" + type + ") to check is null");
@@ -563,5 +577,70 @@ public class BasicTestHelpers {
         if(checkForWrite && !file.canWrite()) {
             fail("File (" + type + "): '" + file.getAbsolutePath() + "' cannot be written to");
         }
+    }
+
+    /**
+     * Loads a file and places it into an Byte Array
+     * @param folderPath Parent Folder Path (relative to the current folder (./)
+     * @param fileName Name of the file to load
+     * @param failureMessage Message to be added to the file check if file was not found
+     * @return Content of the File
+     * @throws IOException If files could not be handled
+     * @throws AssertionError If folder or file did not exist
+     */
+    public static byte[] loadFile(String folderPath, String fileName, String failureMessage) throws IOException {
+        File localFolder = new File(".");
+        checkFolder(localFolder, false);
+        File imagesFolder = new File(localFolder, folderPath);
+        checkFolder(imagesFolder, false);
+        File image = new File(imagesFolder, fileName);
+        checkFile(image, failureMessage, false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        IOUtils.copy(new FileInputStream(image), baos);
+        return baos.toByteArray();
+    }
+
+    /**
+     * Stsarts at the root folder and parses through the given path, one folder at a time
+     * @param root Local folder to start
+     * @param path Path to the destination (empty parts like from starting (/a/b) or double slash (a//b/c)
+     * @return Destination Folder if found
+     * @throws AssertionError If an intermediate folder was not found
+     */
+    public static File findFolderByPath(File root, String path) {
+        String[] folderNames = path.split("/");
+        logger.info("Folder Paths: '{}'", Arrays.asList(folderNames));
+        File folder = root;
+        logger.info("Root Folder: '{}'", folder.getAbsolutePath());
+        for(String folderName: folderNames) {
+            if(isNotEmpty(folderName)) {
+                File[] children = folder.listFiles();
+                logger.info("Children Files: '{}'", Arrays.asList(children));
+                boolean found = false;
+                for(File child : children) {
+                    logger.info("Check Child Folder: '{}'", folder.getAbsolutePath());
+                    if(child.getName().equals(folderName)) {
+                        folder = child.getAbsoluteFile();
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) {
+                    fail("Child Folder: '" + folderName + "' of Parent: '" + folder.getAbsolutePath() + "' not found");
+                }
+            }
+        }
+        return folder;
+    }
+
+    public static String getStringOrNull(Map source, String key) {
+        String answer = null;
+        if(source != null && source.containsKey(key)) {
+            Object temp = source.get(key);
+            if(temp != null) {
+                answer = temp.toString();
+            }
+        }
+        return answer;
     }
 }

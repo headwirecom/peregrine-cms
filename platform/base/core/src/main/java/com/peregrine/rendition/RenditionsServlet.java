@@ -28,12 +28,9 @@ package com.peregrine.rendition;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.rendition.BaseResourceHandler.HandlerException;
 import com.peregrine.transform.ImageContext;
-import com.peregrine.transform.ImageTransformationConfigurationProvider;
-import com.peregrine.transform.ImageTransformationProvider;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.commons.mime.MimeTypeService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -76,12 +73,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 public class RenditionsServlet extends AbstractBaseServlet {
 
-    @Reference
-    private ImageTransformationConfigurationProvider imageTransformationConfigurationProvider;
-    @Reference
-    private ImageTransformationProvider imageTransformationProvider;
-    @Reference
-    MimeTypeService mimeTypeService;
     @Reference
     BaseResourceHandler renditionHandler;
 
