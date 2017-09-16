@@ -226,6 +226,7 @@
 
     <modules>
         <module>testing.basic</module>
+        <module>testing.config.client</module>
         <module>testing.client.side</module>
         <module>testing.server.side</module>
         <!--<module>testing.node-js</module>-->

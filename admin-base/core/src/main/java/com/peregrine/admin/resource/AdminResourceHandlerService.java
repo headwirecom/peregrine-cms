@@ -334,6 +334,7 @@ public class AdminResourceHandlerService
                 Metadata metadata = ImageMetadataReader.readMetadata(perAsset.getRenditionStream((Resource) null));
                 for(Directory directory : metadata.getDirectories()) {
                     String directoryName = directory.getName();
+                    logger.trace("Image Metadata Directory: '{}'", directoryName);
                     ImageMetadataSelector selector = null;
                     for(ImageMetadataSelector item : imageMetadataSelectors) {
                         String temp = item.acceptCategory(directoryName);
@@ -346,6 +347,7 @@ public class AdminResourceHandlerService
                     String json = "{";
                     for(Tag tag : directory.getTags()) {
                         String name = tag.getTagName();
+                        logger.trace("Image Metadata Tag Name: '{}'", name);
                         String tagName = selector != null ? selector.acceptTag(name) : name;
                         if(tagName != null) {
                             logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});

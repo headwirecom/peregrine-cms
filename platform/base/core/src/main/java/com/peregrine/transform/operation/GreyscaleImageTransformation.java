@@ -75,7 +75,6 @@ public class GreyscaleImageTransformation
         String transformationName() default THUMBNAIL_TRANSFORMATION_NAME;
     }
 
-    private boolean enabled = false;
     private String transformationName = THUMBNAIL_TRANSFORMATION_NAME;
 
     @Reference

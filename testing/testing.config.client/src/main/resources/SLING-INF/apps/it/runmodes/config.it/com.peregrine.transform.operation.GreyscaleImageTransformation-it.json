@@ -1,0 +1,5 @@
+{
+  "jcr:primaryType": "sling:OsgiConfig",
+  "enabled":true,
+  "transformationName":"vips:greyscale"
+}
