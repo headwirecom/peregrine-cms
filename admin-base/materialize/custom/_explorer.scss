@@ -39,6 +39,7 @@
 							width: 22px;
 							padding-bottom: 22px;
 							.svg-content {
+								transition: fill 0.3s ease;
 								fill: color("blue-grey", "darken-2");
 							}
 							&:hover {
@@ -148,6 +149,20 @@
 						.material-icons {
 							color: color("blue-grey", "lighten-2");
 							font-size: 80px;
+						}
+					}
+					.explorer-asset-referenced-by {
+						color: $primary-color-dark;
+						.svg-icon {
+							.svg-content {
+								fill: color("blue-grey", "darken-2");
+								transition: fill .3s ease;
+							}
+							&:hover {
+								.svg-content {
+									fill: color("orange", "base");
+								}
+							}
 						}
 					}
 					&.preview-asset {

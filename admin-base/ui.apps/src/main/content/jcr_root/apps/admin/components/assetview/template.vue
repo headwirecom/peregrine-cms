@@ -105,10 +105,25 @@
                 </button>
             </template>
 
-            <ul v-if="references && !edit" class="collection with-header">
-                <li class="collection-header"><h5>Referenced By</h5></li>
-                <li class="collection-item" v-for="item in referencedBy">{{item.path}}</li>
-            </ul>
+            <template v-if="references && !edit">
+                <ul class="collection with-header explorer-asset-referenced-by">
+                    <li class="collection-header">referenced in {{referencedBy.length}} locations</li>
+                    <li class="collection-item" v-for="item in referencedBy">
+                        <span>
+                            <admin-components-action
+                                v-bind:model="{ 
+                                    target: item.path, 
+                                    command: 'editPage',
+                                    tooltipTitle: `edit '${item.name}'`
+                                }">
+                                <admin-components-iconeditpage></admin-components-iconeditpage>
+                                <!-- <i v-else class="material-icons">edit</i> -->
+                            </admin-components-action>
+                        </span>
+                        <span class="right">{{item.path}}</span>
+                    </li>
+                </ul>
+            </template>
 
         </template>
         <div v-else class="explorer-preview-empty">
