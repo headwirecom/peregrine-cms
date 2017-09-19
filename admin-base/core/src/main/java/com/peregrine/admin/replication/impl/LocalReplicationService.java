@@ -225,7 +225,18 @@ public class LocalReplicationService
                     String relativePath = PerUtil.relativePath(source, item);
                     if(relativePath != null) {
                         String targetPath = localTarget + '/' + relativePath;
+                        log.trace("Add to Path mappings Source Path: '{}', Target Path: '{}'", item.getPath(), targetPath);
                         pathMapping.put(item.getPath(), targetPath);
+                        // References need to be updated through the Path Mappings therefore we revisit them here
+                        List<Resource> referenceList = referenceLister.getReferenceList(item, true, source, target);
+                        for(Resource reference: referenceList) {
+                            relativePath = PerUtil.relativePath(source, reference);
+                            if(relativePath != null) {
+                                targetPath = localTarget + '/' + relativePath;
+                                log.trace("Add to Path mappings Reference Source Path: '{}', Target Path: '{}'", reference.getPath(), targetPath);
+                                pathMapping.put(reference.getPath(), targetPath);
+                            }
+                        }
                     } else {
                         log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
                     }
@@ -240,7 +251,7 @@ public class LocalReplicationService
             try {
                 session.save();
             } catch(RepositoryException e) {
-                log.warn("Failed to save changes repliate parents", e);
+                log.warn("Failed to save changes replicate parents", e);
             }
         }
         return answer;
@@ -312,35 +323,42 @@ public class LocalReplicationService
 
     private boolean handleParents(Resource resource, List<Resource> resourceList, Map<String, String> pathMapping, ResourceResolver resourceResolver) {
         String targetPath = pathMapping.get(resource.getPath());
+        log.trace("Handle Parents, Resource: '{}', Target Path: '{}'", resource.getPath(), targetPath);
         if(targetPath != null) {
             try {
                 //AS TODO: If the parent is not found because the are intermediate missing parents
                 //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
                 //AS TODO: or we fail and ignore it
                 String targetParent = PerUtil.getParent(targetPath);
+                log.trace("Target Parent: '{}'", targetParent);
                 if(targetParent == null) {
                     // No more parent -> handling parents failed
                     return false;
                 }
                 Resource targetParentResource = resourceResolver.getResource(targetParent);
+                log.trace("Target Parent Resource: '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
                 if(targetParentResource == null) {
                     // Parent does not exist so try with its parent
                     Resource parent = resource.getParent();
+                    log.trace("Source Parent: '{}'", parent == null ? "null" : parent.getPath());
                     if(parent == null) {
                         // No more parent -> handling parents failed
                         return false;
                     }
+                    log.trace("Recursive Handle Parents: '{}'", resource.getParent().getPath());
                     boolean ok = handleParents(resource.getParent(), resourceList, pathMapping, resourceResolver);
                     if(!ok) {
                         // Handling of parent failed -> leaving as failure
                         return false;
                     } else {
                         targetParentResource = resourceResolver.getResource(targetParent);
+                        log.trace("Target Parent Resource(2): '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
                         if(targetParentResource == null) {
                             log.error("Target Parent:'" + targetParent + "' is still not found even after all parents were handled");
                         }
                     }
                 }
+                log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource.getPath());
                 Resource copy = copy(resource, targetParentResource, pathMapping);
                 resourceList.add(copy);
             } catch(PersistenceException e) {
@@ -363,6 +381,7 @@ public class LocalReplicationService
     private Resource copy(Resource source, Resource targetParent, Map<String, String> pathMapping)
         throws PersistenceException
     {
+        log.trace("Copy Resource: '{}', Target Parent Resource: '{}', Path Mappings: '{}'", source.getPath(), targetParent, pathMapping);
         Resource answer = null;
         Map<String, Object> newProperties = new HashMap<>();
         ModifiableValueMap properties = PerUtil.getModifiableProperties(source, false);
@@ -375,6 +394,7 @@ public class LocalReplicationService
             if(value instanceof String) {
                 String stringValue = (String) value;
                 String targetValue = pathMapping.get(value);
+                log.trace("Is Property to be adjusted, name: '{}', value: '{}', mapped: '{}'", key, stringValue, targetValue);
                 if(targetValue != null) {
                     log.trace("Adjusted Property. Key: '{}', Old Value: '{}', New Value: '{}'", new String[]{key, stringValue, targetValue});
                     value = targetValue;
@@ -393,6 +413,7 @@ public class LocalReplicationService
                     // Ignore
                 }
             }
+            log.trace("Create Resource: '{}' on Parent: '{}', Properties: '{}'", source.getName(), targetParent.getPath(), targetProperties);
             answer = source.getResourceResolver().create(targetParent, source.getName(), targetProperties);
         }
         updateReplicationProperties(source, null, answer);

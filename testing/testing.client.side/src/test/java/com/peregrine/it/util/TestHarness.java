@@ -107,6 +107,12 @@ public class TestHarness {
         return client.doPost(url, formEntry, expectedStatus);
     }
 
+    public static SlingHttpResponse executeDeepReplication(SlingClient client, String path, String name, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "repl.json" + path;
+        HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).addParameter("deep", "true").build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
     public static SlingHttpResponse uploadFile(SlingClient client, String path, String name, byte[] content, int expectedStatus) throws ClientException, IOException {
         return uploadFile(client, path, name, content, "application/octet-stream", expectedStatus);
     }

@@ -130,9 +130,13 @@ public abstract class BaseFileReplicationService
             Session session = resourceResolver.adaptTo(Session.class);
             for(Resource item: resourceList) {
                 if(item != null) {
-                    handleParents(item.getParent());
-                    replicateResource(item);
-                    answer.add(item);
+                    // Ignore jcr:content as they cannot be rendered to the FS (if needed then we need to map the file names)
+                    //AS TODO: Check if the resource name can be mapped to a file name and if not ignore it. Also make sure we ignore nodes like jcr:content
+                    if(!item.getPath().contains(JCR_CONTENT)) {
+                        handleParents(item.getParent());
+                        replicateResource(item);
+                        answer.add(item);
+                    }
                 }
             }
             try {
@@ -264,11 +268,15 @@ public abstract class BaseFileReplicationService
         // Render the resource as .data.json and then write the content to the
         String primaryType = getPrimaryType(resource);
         String slingResourceType = getResourceType(resource);
-        for(Entry<String, List<String>> entry: getExportExtensions().entrySet()) {
+        for(Entry<String, List<String>> entry : getExportExtensions().entrySet()) {
             String extension = entry.getKey();
             boolean raw = extension.endsWith("~raw");
-            if(raw) { extension = extension.substring(0, extension.length() - "~raw".length()); }
-            if("*".equals(extension)) { extension = ""; }
+            if(raw) {
+                extension = extension.substring(0, extension.length() - "~raw".length());
+            }
+            if("*".equals(extension)) {
+                extension = "";
+            }
             if(entry.getValue().contains(primaryType) || entry.getValue().contains(slingResourceType)) {
                 Object renderingContent = null;
                 try {

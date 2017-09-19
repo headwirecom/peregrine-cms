@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "sling:OsgiConfig",
+  "name":"localIT",
+  "description":"In Sling Replication for IT tests",
+  "localMapping":"/content=/live"
+}

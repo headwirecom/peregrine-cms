@@ -609,13 +609,13 @@ public class BasicTestHelpers {
      */
     public static File findFolderByPath(File root, String path) {
         String[] folderNames = path.split("/");
-        logger.info("Folder Paths: '{}'", Arrays.asList(folderNames));
+        logger.info("Folder Paths: '{}'", folderNames == null ? "null" : Arrays.asList(folderNames));
         File folder = root;
         logger.info("Root Folder: '{}'", folder.getAbsolutePath());
         for(String folderName: folderNames) {
             if(isNotEmpty(folderName)) {
                 File[] children = folder.listFiles();
-                logger.info("Children Files: '{}'", Arrays.asList(children));
+                logger.info("Children Files: '{}'", children == null ? "null" : Arrays.asList(children));
                 boolean found = false;
                 for(File child : children) {
                     logger.info("Check Child Folder: '{}'", folder.getAbsolutePath());

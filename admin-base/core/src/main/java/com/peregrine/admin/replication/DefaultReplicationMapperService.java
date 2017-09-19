@@ -1,6 +1,7 @@
 package com.peregrine.admin.replication;
 
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
@@ -33,7 +34,7 @@ import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
     service = { DefaultReplicationMapper.class, Replication.class },
     immediate = true
 )
-@Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = false)
+@Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = true)
 public class DefaultReplicationMapperService
     extends AbstractionReplicationService
     implements DefaultReplicationMapper
@@ -42,6 +43,13 @@ public class DefaultReplicationMapperService
 
     @ObjectClassDefinition(name = "Peregrine: Default Replication Mapper Service", description = "Provides a mapping between the Path and the Default Replication Service(s)")
     @interface Configuration {
+        @AttributeDefinition(
+            name = "Name",
+            description = "Name of the Default Replication Service",
+            defaultValue = "defaultMapper",
+            required = true
+        )
+        String name();
         @AttributeDefinition(
             name = "Default",
             description = "Default Mapping Configuration (used if none path covers it). Format: <replication name>[:(<parameter name>=<parameter value>|)*]",
@@ -75,6 +83,7 @@ public class DefaultReplicationMapperService
     )
     @SuppressWarnings("unused")
     public void bindReplication(Replication replication) {
+        logger.trace("Bind DRMS Replication: '{}'", replication.getName());
         String replicationName = replication.getName();
         if(replicationName != null && !replicationName.isEmpty()) {
             replications.put(replicationName, replication);
@@ -109,7 +118,7 @@ public class DefaultReplicationMapperService
     private List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
 
     private void setup(BundleContext context, final Configuration configuration) {
-        init("defaultMapper", configuration.description());
+        init(configuration.name(), configuration.description());
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);
@@ -135,10 +144,10 @@ public class DefaultReplicationMapperService
         }
     }
 
-    @Override
-    public String getName() {
-        return "defaultMapper";
-    }
+//    @Override
+//    public String getName() {
+//        return "defaultMapper";
+//    }
 
     @Override
     public List<Resource> replicate(Resource source, boolean deep) throws ReplicationException {
@@ -146,24 +155,25 @@ public class DefaultReplicationMapperService
         List<Resource> referenceList = referenceLister.getReferenceList(source, true);
         logger.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
-        ResourceChecker resourceChecker = new ResourceChecker() {
-            @Override
-            public boolean doAdd(Resource resource) { return true; }
-
-            @Override
-            public boolean doAddChildren(Resource resource) { return true; }
-        };
-        // Need to check this list of they need to be replicated first
-        for(Resource resource: referenceList) {
-            if(resourceChecker.doAdd(resource)) {
-                replicationList.add(resource);
-            }
-        }
-        // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-        for(Resource reference: new ArrayList<Resource>(replicationList)) {
-            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
-        }
-        PerUtil.listMissingResources(source, replicationList, resourceChecker, deep);
+//        ResourceChecker resourceChecker = new ResourceChecker() {
+//            @Override
+//            public boolean doAdd(Resource resource) { return true; }
+//
+//            @Override
+//            public boolean doAddChildren(Resource resource) { return true; }
+//        };
+//        // Need to check this list of they need to be replicated first
+//        for(Resource resource: referenceList) {
+//            if(resourceChecker.doAdd(resource)) {
+//                replicationList.add(resource);
+//            }
+//        }
+//        // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
+//        for(Resource reference: new ArrayList<Resource>(replicationList)) {
+//            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
+//        }
+        replicationList.add(source);
+        PerUtil.listMissingResources(source, replicationList, new AddAllResourceChecker(), deep);
         return replicate(replicationList);
     }
 
@@ -185,20 +195,27 @@ public class DefaultReplicationMapperService
             boolean found = false;
             for(DefaultReplicationConfig config: pathMapping) {
                 if(config.isHandled(resource)) {
+                    logger.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
                     resourceByReplication.get(config).add(resource);
                     found = true;
                     break;
                 }
             }
             if(!found) {
+                logger.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
                 resourceByReplication.get(defaultMapping).add(resource);
             }
         }
         for(Entry<DefaultReplicationConfig, List<Resource>> pot: resourceByReplication.entrySet()) {
             Replication replication = replications.get(pot.getKey().getServiceName());
             if(replication == null) { throw new ReplicationException("Could not find replication with name: " + pot.getKey().getServiceName()); }
-            List<Resource> replicatedResources = replication.replicate(pot.getValue());
-            if(!replicatedResources.isEmpty()) { answer.addAll(replicatedResources); }
+            logger.trace("Replicate with Replication: '{}' these resources: '{}'", replication.getName(), pot.getValue());
+            for(Resource resource: pot.getValue()) {
+                logger.trace("DRH Replicate: '{}'", resource.getPath());
+                List<Resource> replicatedResources = replication.replicate(resource, false);
+                if(!replicatedResources.isEmpty()) { answer.addAll(replicatedResources); }
+            }
+//            List<Resource> replicatedResources = replication.replicate(pot.getValue());
         }
         return answer;
     }

@@ -1,0 +1,9 @@
+{
+  "jcr:primaryType": "sling:OsgiConfig",
+  "name":"localFSIT2",
+  "description":"Local File System Replication for IT tests",
+  "targetFolder":"${sling.home}/staticreplication",
+  "creationStrategy":"1",
+  "exportExtensions":["data.json=per:Page|per:Template","infinity.json=per:Object","html=per:Page|per:Template","*~raw=nt:file"],
+  "mandatoryRenditions":"thumbnail.png"
+}

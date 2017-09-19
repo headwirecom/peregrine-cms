@@ -1,5 +1,6 @@
 package com.peregrine.it.admin;
 
+import com.peregrine.admin.replication.DefaultReplicationMapperService;
 import com.peregrine.admin.replication.impl.LocalFileSystemReplicationService;
 import com.peregrine.admin.replication.impl.RemoteS3SystemReplicationService;
 import com.peregrine.it.basic.AbstractTest;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.admin.replication.impl.LocalFileSystemReplicationService.CREATE_ALL_STRATEGY;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.it.basic.BasicTestHelpers.IMAGE_PNG_MIME_TYPE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFile;
@@ -40,6 +42,7 @@ import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
+import static com.peregrine.it.util.TestHarness.executeDeepReplication;
 import static com.peregrine.it.util.TestHarness.executeReplication;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.it.util.TestHarness.uploadFile;
@@ -217,7 +220,6 @@ public class ReplicationServletIT
         }
     }
 
-
     @Test
     public void testRemoteS3PageReplication() throws Exception {
         checkFolderAndCreate(LOCAL_FOLDER, true);
@@ -259,7 +261,70 @@ public class ReplicationServletIT
         }
     }
 
-        //AS TODO: Keep this method around we might night them later to investigate OSGi bundles, configurations and services
+    @Test
+    public void testDefaultReplication() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        String testFolderName = "test-drh";
+        String rootFolderPath = ROOT_PATH + "/" + testFolderName;
+        String pageFolderPath = rootFolderPath + "/pages";
+        String livePageFolderPath = LIVE_ROOT_PATH + "/" + testFolderName + "/pages";
+        createFolderStructure(client, pageFolderPath);
+        String assetFolderPath = rootFolderPath + "/assets";
+        createFolderStructure(client, assetFolderPath);
+//        String liveAssetFolderPath = LIVE_ROOT_PATH + "/" + testFolderName + "/assets";
+        File localOutputFolder = new File(LOCAL_FOLDER, testFolderName);
+
+        createLocalReplicationConfiguration(client, "localFSIT", localOutputFolder);
+        createDefaultReplicationConfiguration(client, "defaultIT", assetFolderPath);
+
+        //AS TODO: This does not work as the configuration can be set but the service might now work.
+        OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
+        Map<String, Object> tnProperties = new HashMap<>();
+        tnProperties.put("enabled", "true");
+        String tnPid = ThumbnailImageTransformation.class.getName();
+        osgiConsoleClient.editConfiguration(tnPid, null, tnProperties,302);
+        Map<String, Object> updatedServiceConfiguration = osgiConsoleClient.getConfiguration(tnPid, 200);
+        boolean checkRenditions = true;
+        if(!"true".equalsIgnoreCase(updatedServiceConfiguration.get("enabled") + "")) {
+            logger.warn("Thumbnail Image Transformation is not enabled and hence it will not be tested");
+            checkRenditions = false;
+        }
+
+        // Create Template and Page
+        String templateName = "replication-template";
+        createTemplate(client, pageFolderPath, templateName, EXAMPLE_PAGE_TYPE_PATH, 200);
+        TestPage testTemplate = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, null);
+        checkResourceByJson(client, pageFolderPath + "/" + templateName, 2, testTemplate.toJSon(), true);
+        String pageName = "replication-page";
+        createPage(client, pageFolderPath, pageName, pageFolderPath + "/" + templateName, 200);
+        TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, pageFolderPath + "/" + templateName);
+        checkResourceByJson(client, pageFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
+        // Upload Asset
+        String imageName = "test.png";
+        // Get Image Content and upload it. Then check if Asset exists
+        byte[] imageContent = loadFile(IMAGE_RESOURCES_PATH, imageName, "Test Image - PNG");
+        uploadFile(client, assetFolderPath, imageName, imageContent, IMAGE_PNG_MIME_TYPE,200);
+        TestAsset testAsset = new TestAsset(imageName, IMAGE_PNG_MIME_TYPE);
+        checkResourceByJson(client, assetFolderPath + "/" + imageName, 2, testAsset.toJSon(), true);
+
+        // Replicate through the Default Asset Handler
+        executeDeepReplication(client, rootFolderPath, "defaultIT", 200);
+
+        // Check if the Page made it to the /live folder and the Asset to the file system
+        TestPage testLivePage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, livePageFolderPath + "/" + templateName);
+        checkResourceByJson(client, livePageFolderPath + "/" + pageName, 2, testLivePage.toJSon(), true);
+        TestPage testLiveTemplate = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, null);
+        checkResourceByJson(client, livePageFolderPath + "/" + templateName, 2, testLiveTemplate.toJSon(), true);
+        // Check page and template on the File System
+        File folder = findFolderByPath(localOutputFolder, assetFolderPath);
+        // Check the Page File
+        checkFile(new File(folder, imageName), "Asset - PNG", false);
+        if(checkRenditions) {
+            checkFile(new File(folder, imageName + ".thumbnail.png"), "Asset - Thumbnail PNG", false);
+        }
+    }
+
+    //AS TODO: Keep this method around we might night them later to investigate OSGi bundles, configurations and services
     private List<Map> getComponentByName(SlingClient client, String name) throws IOException, ClientException {
         List<Map> answer = new ArrayList<>();
         Map componentsMap = listComponentsAsJson(client);
@@ -295,11 +360,26 @@ public class ReplicationServletIT
         return answer;
     }
 
+    private void createDefaultReplicationConfiguration(SlingClient client, String name, String assetPath) throws IOException, ClientException {
+        // Create Local FS Replication Configuration
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("name", name);
+        properties.put("description", name + " - creation test");
+        properties.put("defaultMapping", "localIT");
+        properties.put("pathMapping", new String[] {"localFSIT:path=" + assetPath});
+        String fPid = DefaultReplicationMapperService.class.getName();
+        String pid = createOSGiServiceConfiguration(client, fPid, properties);
+        logger.info("Newly Create DRMS Configuration, PID: '{}'", pid);
+        assertNotNull("No PID for the DRMS: '" + name + "' was returned",pid);
+        assertTrue("Given PID: '" + pid + "' does not start with: '" + fPid, pid.startsWith(fPid));
+    }
+
     private void createLocalReplicationConfiguration(SlingClient client, String name, File folder) throws IOException, ClientException {
         // Create Local FS Replication Configuration
         Map<String, Object> properties = new HashMap<>();
         properties.put("name", name);
         properties.put("description", name + " - creation test");
+        properties.put("creationStrategy", CREATE_ALL_STRATEGY);
         properties.put("targetFolder", folder.getAbsolutePath());
         properties.put("exportExtensions", new String[] {"data.json=per:Page|per:Template", "infinity.json=per:Object", "html=per:Page|per:Template", "*~raw=nt:file"});
         properties.put("mandatoryRenditions", "thumbnail.png");

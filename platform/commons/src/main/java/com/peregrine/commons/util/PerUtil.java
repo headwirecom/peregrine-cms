@@ -505,6 +505,7 @@ public class PerUtil {
             boolean answer = false;
             String relativePath = relativePath(source, resource);
             Resource targetResource = target.getChild(relativePath);
+            LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
             if(targetResource == null) {
                 answer = true;
             } else {

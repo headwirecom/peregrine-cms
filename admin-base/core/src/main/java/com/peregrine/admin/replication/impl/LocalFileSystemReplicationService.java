@@ -134,6 +134,7 @@ public class LocalFileSystemReplicationService
     private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
+        log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
         creationStrategy = configuration.creationStrategy();
         exportExtensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
@@ -166,7 +167,7 @@ public class LocalFileSystemReplicationService
             }
             targetFolder = temp;
         }
-        log.trace("Local Replication Service Name: '{}' created with target folder: '{}'", getName(), targetFolder);
+        log.trace("Local FS Replication Service Name: '{}' created with target folder: '{}'", getName(), targetFolder);
     }
 
     @Reference
