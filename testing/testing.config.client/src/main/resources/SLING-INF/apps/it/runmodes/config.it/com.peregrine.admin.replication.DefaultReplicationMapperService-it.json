@@ -1,7 +1,0 @@
-{
-  "jcr:primaryType": "sling:OsgiConfig",
-  "name":"defaultIT2",
-  "description":"Default Replication for IT tests",
-  "defaultMapping":"localIT",
-  "pathMapping":["localFSIT:path=/content/assets"]
-}
