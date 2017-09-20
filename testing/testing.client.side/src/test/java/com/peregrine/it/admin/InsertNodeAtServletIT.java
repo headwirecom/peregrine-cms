@@ -29,6 +29,7 @@ import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
+import static com.peregrine.it.util.TestHarness.createTemplate;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
 import static com.peregrine.it.util.TestHarness.deleteLeafFolder;
@@ -194,6 +195,26 @@ public class InsertNodeAtServletIT
 
         // Create Component Node with the Test Component
         String componentPath = rootFolderPath + "/" + pageName + "/" + JCR_CONTENT;
+        SlingHttpResponse response = insertNodeAtAsContent(client, componentPath,
+            "{\"component\":\"it/components/test\", \"test\": \"test-one\"}", "into", 302);
+    }
+
+//    @Test
+    public void testCreateTemplateWithDefaults() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+
+        // Create Page
+        String rootFolderPath = ROOT_PATH + "/test-ctwd";
+        String templateName = "testTemplate";
+        // Create the folder structure
+        createFolderStructure(client, rootFolderPath);
+        createTemplate(client, rootFolderPath, templateName, "it/components/test",200);
+//        TestTemplate testTemplate = new TestTemplate();
+        TestPage testPage = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, testPage.toJSon(), true);
+
+        // Create Component Node with the Test Component
+        String componentPath = rootFolderPath + "/" + templateName + "/" + JCR_CONTENT;
         SlingHttpResponse response = insertNodeAtAsContent(client, componentPath,
             "{\"component\":\"it/components/test\", \"test\": \"test-one\"}", "into", 302);
     }

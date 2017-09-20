@@ -38,7 +38,7 @@ public interface AdminResourceHandler {
 
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException;
 
-    public Node copyNode(Node source, Node targetParent, boolean deep) throws ManagementException;
+    public Node copyNode(Node source, boolean onlyChildren, Node targetParent, boolean deep) throws ManagementException;
 
     public class ManagementException
         extends Exception

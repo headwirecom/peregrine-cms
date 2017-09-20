@@ -435,7 +435,7 @@ public class AdminResourceHandlerService
                         Node componentNode = parent.getSession().getNode("/apps/" + component);
                         if(componentNode.hasNode(JCR_CONTENT)) {
                             Node source = componentNode.getNode(JCR_CONTENT);
-                            copyNode(source, newNode, true);
+                            copyNode(source, true, newNode, true);
                         }
                     }
                 }
@@ -446,27 +446,30 @@ public class AdminResourceHandlerService
         return newNode;
     }
 
-    public Node copyNode(Node source, Node targetParent, boolean deep) throws ManagementException {
+    public Node copyNode(Node source, boolean onlyChildren, Node targetParent, boolean deep) throws ManagementException {
         try {
-            Node target = targetParent.addNode(source.getName(), source.getPrimaryNodeType().getName());
-            // Copy all properties
-            PropertyIterator pi = source.getProperties();
-            while(pi.hasNext()) {
-                Property property = pi.nextProperty();
-                if(!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
-                    if(property.isMultiple()) {
-                        target.setProperty(property.getName(), property.getValues(), property.getType());
-                    } else {
-                        target.setProperty(property.getName(), property.getValue(), property.getType());
+            Node target = targetParent;
+            if(!onlyChildren) {
+                target = targetParent.addNode(source.getName(), source.getPrimaryNodeType().getName());
+                // Copy all properties
+                PropertyIterator pi = source.getProperties();
+                while(pi.hasNext()) {
+                    Property property = pi.nextProperty();
+                    if(!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
+                        if(property.isMultiple()) {
+                            target.setProperty(property.getName(), property.getValues(), property.getType());
+                        } else {
+                            target.setProperty(property.getName(), property.getValue(), property.getType());
+                        }
                     }
                 }
             }
             // Do it now for all children if deep
-            if(deep) {
+            if(onlyChildren || deep) {
                 NodeIterator ni = source.getNodes();
                 while(ni.hasNext()) {
                     Node sourceChild = ni.nextNode();
-                    copyNode(sourceChild, target, deep);
+                    copyNode(sourceChild, false, target, true);
                 }
             }
             return target;
