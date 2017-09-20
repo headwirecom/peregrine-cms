@@ -51,7 +51,7 @@
                     <obrRepository>NONE</obrRepository>
                     <instructions>
                         <Sling-Initial-Content>
-                            SLING-INF/apps/it;path:=/apps/it;overwrite=true;uninstall=true,
+                            SLING-INF/apps/it;path:=/apps/it;overwrite=true;uninstall=false,
                         </Sling-Initial-Content>
                         <!--&lt;!&ndash;The Bundle Category is a tag to group bundles separated by a dot. This might not be necessary &ndash;&gt;-->
                         <!--<Bundle-Category>sling</Bundle-Category>-->

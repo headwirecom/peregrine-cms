@@ -1,6 +1,7 @@
 package com.peregrine.it.admin;
 
 import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.it.basic.JsonTest.TestPage;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -17,11 +18,20 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
+import static com.peregrine.it.basic.BasicTestHelpers.checkFolders;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
+import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
+import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
+import static com.peregrine.it.util.TestHarness.deleteLeafFolder;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsComponent;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsContent;
 import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
@@ -29,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by schaefa on 6/22/17.
@@ -47,13 +58,8 @@ public class InsertNodeAtServletIT
     @BeforeClass
     public static void setUpAll() {
         SlingClient client = slingInstanceRule.getAdminClient();
-        SlingHttpResponse response = null;
-        try {
-            deleteFolder(client, ROOT_PATH, 200);
-        } catch(ClientException e) {
-            logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
-        } catch(IOException e) {
-            logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
+        if(!deleteLeafFolder(client, ROOT_PATH)) {
+            fail("Could not delete Leaf Folder: " + ROOT_PATH);
         }
     }
 
@@ -66,7 +72,7 @@ public class InsertNodeAtServletIT
         createFolderStructure(client, targetPath);
         // Insert a new Page to that folder
         Calendar before = createTimestampAndWait();
-        SlingHttpResponse response = insertNodeAtAsComponent(client, targetPath, "/apps/components/admin/col", "into", 302);
+        SlingHttpResponse response = insertNodeAtAsComponent(client, targetPath, "admin/components/col", "into", 302);
         // List the children and check if there is a folder
         Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No nodes were created", children.isEmpty());
@@ -83,7 +89,7 @@ public class InsertNodeAtServletIT
         createFolderStructure(client, targetPath);
         // Insert a new Page to that folder
         Calendar before = createTimestampAndWait();;
-        SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-one\"}", "into", 302);
+        SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"admin/components/col\", \"test\": \"test-one\"}", "into", 302);
         // List the children and check if there is a folder
         Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No nodes were created", children.isEmpty());
@@ -104,13 +110,13 @@ public class InsertNodeAtServletIT
         createFolderStructure(client, targetPath);
         // Insert a new Page to that folder
         Calendar before = createTimestampAndWait();;
-        SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-one\"}", "into", 302);
+        SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"admin/components/col\", \"test\": \"test-one\"}", "into", 302);
         // List the children and check if there is a folder
         Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No initial node were created", children.isEmpty());
         assertEquals("There are more than one node", 1, children.size());
         String firstNodeName = children.keySet().iterator().next() + "";
-        response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-two\"}", "into-before", 302);
+        response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"admin/components/col\", \"test\": \"test-two\"}", "into-before", 302);
         children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         assertFalse("No nodes found", children.isEmpty());
         assertEquals("Unexpected number of nodes found", 2, children.size());
@@ -140,7 +146,7 @@ public class InsertNodeAtServletIT
         createFolderStructure(client, targetPath);
         // Insert a new Page to that folder
         Calendar before = createTimestampAndWait();
-        SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-one\"}", "into", 302);
+        SlingHttpResponse response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"admin/components/col\", \"test\": \"test-one\"}", "into", 302);
         // List the children and check if there is a folder
         Map children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         logger.info("Insert first node into folder: '{}', Map: '{}'", targetPath, children);
@@ -150,7 +156,7 @@ public class InsertNodeAtServletIT
         checkLastModified(client, targetPath + "/" + firstNodeName, before);
 
         before = createTimestampAndWait();
-        response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"/apps/components/admin/col\", \"test\": \"test-two\"}", "into-after", 302);
+        response = insertNodeAtAsContent(client, targetPath, "{\"component\":\"admin/components/col\", \"test\": \"test-two\"}", "into-after", 302);
         children = extractChildNodes(listResourceAsJson(client, targetPath, 1));
         logger.info("Insert second node into folder: '{}', Map: '{}'", targetPath, children);
         assertFalse("No nodes found", children.isEmpty());
@@ -171,6 +177,25 @@ public class InsertNodeAtServletIT
         assertFalse("2nd Node does not contain properties", secondChild.isEmpty());
         assertTrue("2nd Node does not contain test properties", secondChild.containsKey("test"));
         assertEquals("2nd Node test property does not contain the correct value", "test-two", secondChild.get("test"));
+    }
+
+    @Test
+    public void testCreateComponentWithDefaults() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+
+        // Create Page
+        String rootFolderPath = ROOT_PATH + "/test-ccwd";
+        String pageName = "testPage";
+        // Create the folder structure
+        createFolderStructure(client, rootFolderPath);
+        createPage(client, rootFolderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
+        TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
+
+        // Create Component Node with the Test Component
+        String componentPath = rootFolderPath + "/" + pageName + "/" + JCR_CONTENT;
+        SlingHttpResponse response = insertNodeAtAsContent(client, componentPath,
+            "{\"component\":\"it/components/test\", \"test\": \"test-one\"}", "into", 302);
     }
 
     @Override

@@ -38,6 +38,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -232,6 +233,25 @@ public class BasicTestHelpers {
                 }
             }
         }
+    }
+
+    public static boolean checkFolder(SlingClient client, String parentPath, String folderName) throws IOException, ClientException {
+        if(isEmpty(parentPath)) { parentPath = "/"; }
+        if(isEmpty(folderName)) { return false; }
+        Map folderMap = listResourceAsJson(client, parentPath, 1);
+        Set<Entry> entries = folderMap.entrySet();
+        for(Entry entry: entries) {
+            String fieldName = entry.getKey() + "";
+            logger.info("Field Name: '{}'", fieldName);
+            Object value = entry.getValue();
+            logger.info("Item Value: '{}'", value);
+            if(value instanceof Map) {
+                if(folderName.equals(fieldName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static void checkFolders(SlingClient client, String parentPath, String ... expectedFolderNames) throws IOException, ClientException {

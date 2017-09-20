@@ -5,6 +5,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -36,6 +37,8 @@ public interface AdminResourceHandler {
     public Resource rename(Resource fromResource, String newName) throws ManagementException;
 
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException;
+
+    public Node copyNode(Node source, Node targetParent, boolean deep) throws ManagementException;
 
     public class ManagementException
         extends Exception

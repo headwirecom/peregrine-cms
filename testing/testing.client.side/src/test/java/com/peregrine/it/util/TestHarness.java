@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
 
 /**
  * Created by schaefa on 6/28/17.
@@ -22,6 +24,69 @@ public class TestHarness {
     public static final String ADMIN_PREFIX_URL = "/api/admin/";
 
     private static final Logger logger = LoggerFactory.getLogger(TestHarness.class.getName());
+
+    public static boolean deleteLeafFolder(SlingClient client, String folderPath) {
+        if(isEmpty(folderPath)) {
+            logger.warn("Given Folder Path is empty");
+            return false;
+        }
+        if(!folderPath.startsWith("/")) {
+            logger.warn("Given Folder Path: '{}' is not absolute", folderPath);
+            return false;
+        }
+        try {
+            String[] folders = folderPath.split("/");
+            String parentPath = "";
+            boolean found = true;
+            for(String folder: folders) {
+                if(isNotEmpty(folder)) {
+                    found = checkFolder(client, parentPath, folder);
+                    if(!found) {
+                        break;
+                    }
+                    parentPath += "/" + folder;
+                }
+            }
+            if(found) {
+                deleteFolder(client, folderPath, 200);
+            }
+        } catch(ClientException e) {
+            logger.warn("Could not delete leaf folder, path: '{}' -> ignore", folderPath, e);
+            return false;
+        } catch(IOException e) {
+            logger.warn("Could not delete leaf folder, path: '{}' -> ignore", folderPath, e);
+            return false;
+        }
+        return true;
+    }
+
+//    public static SlingHttpResponse nodeExists(SlingClient client, String path) throws ClientException, IOException {
+//        SlingHttpResponse answer = null;
+//        String parent = path;
+//        String name = "";
+//        if(!"/".equals(path)) {
+//            if(path.endsWith("/")) {
+//                path = path.substring(0, path.length() - 1);
+//            }
+//            int index = path.lastIndexOf('/');
+//            if(index < 0) {
+//                logger.error("Given path: '{}' is not absolute -> ignored and return null", path);
+//                return answer;
+//            } else if(index > 0){
+//                parent = path.substring(0, index);
+//                name = path.substring(index + 1);
+//            }
+//        }
+//        if(isEmpty(name)) { return answer; }
+//        String url = parent + ".1.json";
+//        logger.info("List Nodes of Parent: '{}'", url);
+//        try {
+//            return client.doGet(url, 200);
+//        } catch(ClientException e) {
+//            logger.error("Could not list parent -> ignore and return null");
+//            return answer;
+//        }
+//    }
 
     public static SlingHttpResponse deleteFolder(SlingClient client, String path, int expectedStatus) throws ClientException, IOException {
         String url = ADMIN_PREFIX_URL + "deleteNode.json" + path;

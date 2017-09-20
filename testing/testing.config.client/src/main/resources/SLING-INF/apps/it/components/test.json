@@ -1,0 +1,30 @@
+{
+  "jcr:primaryType":"per:Component",
+  "sling:resourceSuperType":"pagerender/vue/structure/container",
+  "jcr:title":"test",
+  "jcr:content": {
+    "jcr:primaryType": "nt:unstructured",
+    "prop1":"value1",
+    "prop2":"value2",
+    "child1": {
+      "jcr:primaryType": "nt:unstructured",
+      "child1Prop1":"child1Value1",
+      "child1Prop2":"child1Value2",
+      "grandchild1": {
+        "jcr:primaryType": "nt:unstructured",
+        "grandchild1Prop1":"grandchild1Value1",
+        "grandchild1Prop2":"grandchild1Value2"
+      }
+    },
+    "child2": {
+      "jcr:primaryType": "nt:unstructured",
+      "child2Prop1":"child2Value1",
+      "child2Prop2":"child2Value2",
+      "grandchild2": {
+        "jcr:primaryType": "nt:unstructured",
+        "grandchild2Prop1":"grandchild2Value1",
+        "grandchild2Prop2":"grandchild2Value2"
+      }
+    }
+  }
+}

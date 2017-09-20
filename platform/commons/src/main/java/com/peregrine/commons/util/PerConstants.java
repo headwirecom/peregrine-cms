@@ -14,6 +14,7 @@ public class PerConstants {
     public static final String NT_UNSTRUCTURED = "nt:unstructured";
     public static final String JCR_MIME_TYPE = "jcr:mimeType";
     public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
+    public static final String JCR_UUID = "jcr:uuid";
     public static final String SLING_RESOURCE_TYPE = "sling:resourceType";
     public static final String SLING_RESOURCE_SUPER_TYPE = "sling:resourceSuperType";
     public static final String SLING_FOLDER = "sling:Folder";

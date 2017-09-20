@@ -10,8 +10,6 @@ import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.replication.ImageMetadataSelector;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.commons.util.PerUtil;
-import com.sun.media.sound.ModelIdentifier;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -25,6 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 
 import java.io.IOException;
@@ -45,6 +47,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
@@ -54,6 +57,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
  * Created by schaefa on 7/6/17.
@@ -66,6 +70,14 @@ public class AdminResourceHandlerService
     implements AdminResourceHandler
 {
     public static final String DELETION_PROPERTY_NAME = "_opDelete";
+
+    private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
+
+    static {
+        IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
+        IGNORED_PROPERTIES_FOR_COPY.add(JCR_UUID);
+    }
+
 
     @Reference
     ResourceRelocation resourceRelocation;
@@ -235,6 +247,7 @@ public class AdminResourceHandlerService
                 baseResourceHandler.updateModification(answer);
             }
         } catch (RepositoryException e) {
+            logger.trace("Failed to insert node at: " + resource.getPath(), e);
             throw new ManagementException("Failed to insert node at: " + resource.getPath(), e);
         }
         return answer;
@@ -397,7 +410,7 @@ public class AdminResourceHandlerService
     }
 
     // todo: needs deep clone
-    private Node createNode(Node parent, Map data) throws RepositoryException {
+    private Node createNode(Node parent, Map data) throws RepositoryException, ManagementException {
         data.remove("path");
         String component = (String) data.remove("component");
 
@@ -409,7 +422,58 @@ public class AdminResourceHandlerService
                 newNode.setProperty(key.toString(), (String) val);
             }
         }
+
+        // If there is a component then we check the component node and see if there is a child jcr:content node
+        // If found we copy this over into our newly created node
+        if(isNotEmpty(component)) {
+            try {
+                if(component.startsWith("/")) {
+                    logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
+                } else {
+                    String componentPath = "/apps/" + component;
+                    if(parent.getSession().itemExists(componentPath)) {
+                        Node componentNode = parent.getSession().getNode("/apps/" + component);
+                        if(componentNode.hasNode(JCR_CONTENT)) {
+                            Node source = componentNode.getNode(JCR_CONTENT);
+                            copyNode(source, newNode, true);
+                        }
+                    }
+                }
+            } catch(PathNotFoundException e) {
+                logger.warn("Component: '{}' not found -> ignored", component);
+            }
+        }
         return newNode;
+    }
+
+    public Node copyNode(Node source, Node targetParent, boolean deep) throws ManagementException {
+        try {
+            Node target = targetParent.addNode(source.getName(), source.getPrimaryNodeType().getName());
+            // Copy all properties
+            PropertyIterator pi = source.getProperties();
+            while(pi.hasNext()) {
+                Property property = pi.nextProperty();
+                if(!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
+                    if(property.isMultiple()) {
+                        target.setProperty(property.getName(), property.getValues(), property.getType());
+                    } else {
+                        target.setProperty(property.getName(), property.getValue(), property.getType());
+                    }
+                }
+            }
+            // Do it now for all children if deep
+            if(deep) {
+                NodeIterator ni = source.getNodes();
+                while(ni.hasNext()) {
+                    Node sourceChild = ni.nextNode();
+                    copyNode(sourceChild, target, deep);
+                }
+            }
+            return target;
+        } catch(RepositoryException e) {
+            logger.trace("Failed to copy components node", e);
+            throw new ManagementException("Failed to copy source: " + source + " on target parent: " + targetParent, e);
+        }
     }
 
     @Override

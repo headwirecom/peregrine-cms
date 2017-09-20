@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
@@ -386,7 +387,7 @@ public class LocalReplicationService
         Map<String, Object> newProperties = new HashMap<>();
         ModifiableValueMap properties = PerUtil.getModifiableProperties(source, false);
         for(String key : properties.keySet()) {
-            if("jcr:uuid".equals(key)) {
+            if(JCR_UUID.equals(key)) {
                 // UUIDs cannot be copied over -> ignore them
                 continue;
             }
