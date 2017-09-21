@@ -60,7 +60,7 @@ import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
- * Created by schaefa on 7/6/17.
+ * Created by Andreas Schaefer on 7/6/17.
  */
 @Component(
     service = AdminResourceHandler.class,
@@ -446,26 +446,21 @@ public class AdminResourceHandlerService
         return newNode;
     }
 
-    public Node copyNode(Node source, boolean onlyChildren, Node targetParent, boolean deep) throws ManagementException {
+    public Node copyNode(Node source, boolean onlyChildren, Node target, boolean deep) throws ManagementException {
         try {
-            Node target = targetParent;
-            if(!onlyChildren) {
-                target = targetParent.addNode(source.getName(), source.getPrimaryNodeType().getName());
-                // Copy all properties
-                PropertyIterator pi = source.getProperties();
-                while(pi.hasNext()) {
-                    Property property = pi.nextProperty();
-                    if(!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
-                        if(property.isMultiple()) {
-                            target.setProperty(property.getName(), property.getValues(), property.getType());
-                        } else {
-                            target.setProperty(property.getName(), property.getValue(), property.getType());
-                        }
+            // Copy all properties
+            PropertyIterator pi = source.getProperties();
+            while(pi.hasNext()) {
+                Property property = pi.nextProperty();
+                if(!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
+                    if(property.isMultiple()) {
+                        target.setProperty(property.getName(), property.getValues(), property.getType());
+                    } else {
+                        target.setProperty(property.getName(), property.getValue(), property.getType());
                     }
                 }
             }
-            // Do it now for all children if deep
-            if(onlyChildren || deep) {
+            if(deep) {
                 NodeIterator ni = source.getNodes();
                 while(ni.hasNext()) {
                     Node sourceChild = ni.nextNode();
@@ -475,7 +470,7 @@ public class AdminResourceHandlerService
             return target;
         } catch(RepositoryException e) {
             logger.trace("Failed to copy components node", e);
-            throw new ManagementException("Failed to copy source: " + source + " on target parent: " + targetParent, e);
+            throw new ManagementException("Failed to copy source: " + source + " on target parent: " + target, e);
         }
     }
 
