@@ -464,7 +464,9 @@ public class AdminResourceHandlerService
                 NodeIterator ni = source.getNodes();
                 while(ni.hasNext()) {
                     Node sourceChild = ni.nextNode();
-                    copyNode(sourceChild, false, target, true);
+                    // Create Target first
+                    Node targetChild = target.addNode(sourceChild.getName(), sourceChild.getPrimaryNodeType().getName());
+                    copyNode(sourceChild, false, targetChild, true);
                 }
             }
             return target;
