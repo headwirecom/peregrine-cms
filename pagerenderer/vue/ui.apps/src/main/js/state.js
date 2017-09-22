@@ -44,6 +44,8 @@ window.onclick = function(ev) {
         var toUrl = node.href
         log.fine("onClick() - "+ toUrl);
         log.fine(toUrl, currentServer)
+        //Dont' load new content for an href on the same page
+        if(toUrl.startsWith( window.location.href ) && toUrl.match(/\#\w+$/)) return true;
         if(toUrl.startsWith(currentServer)) {
             ev.preventDefault()
             var gotoPath = '/'+toUrl.slice(currentServer.length)
