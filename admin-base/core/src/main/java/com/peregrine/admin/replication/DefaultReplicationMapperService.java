@@ -29,6 +29,12 @@ import java.util.Map.Entry;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
 
+/**
+ * This class provides the implementation of the Default Replication Mapper
+ * serivce for path based mapping. It has two settings:
+ * - Default Replication: any non-matching replication will be replicated with that Replication Service
+ * - Path Mapping: A Replication Service is mapped to a path and its sub folders.
+ */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,
     service = { DefaultReplicationMapper.class, Replication.class },
@@ -144,34 +150,12 @@ public class DefaultReplicationMapperService
         }
     }
 
-//    @Override
-//    public String getName() {
-//        return "defaultMapper";
-//    }
-
     @Override
     public List<Resource> replicate(Resource source, boolean deep) throws ReplicationException {
         logger.trace("Starting Resource: '{}'", source.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(source, true);
         logger.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
-//        ResourceChecker resourceChecker = new ResourceChecker() {
-//            @Override
-//            public boolean doAdd(Resource resource) { return true; }
-//
-//            @Override
-//            public boolean doAddChildren(Resource resource) { return true; }
-//        };
-//        // Need to check this list of they need to be replicated first
-//        for(Resource resource: referenceList) {
-//            if(resourceChecker.doAdd(resource)) {
-//                replicationList.add(resource);
-//            }
-//        }
-//        // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-//        for(Resource reference: new ArrayList<Resource>(replicationList)) {
-//            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
-//        }
         replicationList.add(source);
         PerUtil.listMissingResources(source, replicationList, new AddAllResourceChecker(), deep);
         return replicate(replicationList);
@@ -220,31 +204,43 @@ public class DefaultReplicationMapperService
         return answer;
     }
 
+    /**
+     * This class contains the configuration properties parsed from the Service Configurations
+     */
     private static class DefaultReplicationConfig {
         private String serviceName;
         private String path;
         private Map<String, String> parameters = new HashMap<>();
 
+        /** Configuration for the Default Replication **/
         public DefaultReplicationConfig(String serviceName, Map<String, String> parameters) {
             if(isEmpty(serviceName)) { throw new IllegalArgumentException("Replication Service Name cannot be null for mapping"); }
             this.serviceName = serviceName;
             if(parameters != null) { this.parameters.putAll(parameters); }
         }
 
+        /** Configuration for a single Path Mapping **/
         public DefaultReplicationConfig(String serviceName, String path, Map<String, String> parameters) {
             this(serviceName, parameters);
             if(isEmpty(path)) { throw new IllegalArgumentException("Replication Path (for non default) Name cannot be null for mapping"); }
             this.path = path;
         }
 
+        /**
+         * Checks if this configuration applies to the given Resource
+         * @param resource Resource to be checked if it applies
+         * @return True if this resource should be handled with the given replication
+         */
         public boolean isHandled(Resource resource) {
             return path == null || resource.getPath().startsWith(path);
         }
 
+        /** @return the Replication Service Name **/
         public String getServiceName() {
             return serviceName;
         }
 
+        /** @return The Service Parameters **/
         public Map<String, String> getParameters() {
             return parameters;
         }

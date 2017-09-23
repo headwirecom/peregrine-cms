@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  * end of the traversing is defined by the first resource found that is not
  * a Page. The IntermediatePageTraversing are illustrating / testing that point.
  *
- * Created by schaefa on 7/5/17.
+ * Created by Andreas Schaefer on 7/5/17.
  */
 public class PageTraversingIT
 //    extends AbstractTest

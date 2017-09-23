@@ -1,7 +1,7 @@
 package com.peregrine.blog.servlets;
 
 /**
- * Created by schaefa on 7/18/17.
+ * Created by Andreas Schaefer on 7/18/17.
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;

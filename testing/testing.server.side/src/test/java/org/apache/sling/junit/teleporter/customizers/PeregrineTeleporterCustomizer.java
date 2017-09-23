@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by schaefa on 7/5/17.
+ * Created by Andreas Schaefer on 7/5/17.
  */
 public class PeregrineTeleporterCustomizer
     implements TeleporterRule.Customizer

@@ -35,7 +35,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import java.util.Calendar;
 
 /**
- * Created by schaefa on 6/2/17.
+ * Created by Andreas Schaefer on 6/2/17.
  */
 public class PerPageManagerImpl
     implements PerPageManager

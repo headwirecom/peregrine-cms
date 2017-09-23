@@ -17,7 +17,7 @@ import static com.peregrine.it.basic.BasicTestHelpers.createFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 
 /**
- * Created by schaefa on 6/30/17.
+ * Created by Andreas Schaefer on 6/30/17.
  */
 public class CreateFolderIT
     extends AbstractTest

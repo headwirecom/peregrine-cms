@@ -62,16 +62,21 @@ import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
- * Created by schaefa on 5/25/17.
+ * Base Class for External File System / Storage Replications
+ *
+ * Created by Andreas Schaefer on 5/25/17.
  */
 public abstract class BaseFileReplicationService
     extends AbstractionReplicationService
 {
-    public static final String DATA_JSON = "data.json";
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
+    // List of all resources that are excluded from handling
+    private static final List<String> EXCLUDED_RESOURCES = new ArrayList<>();
 
     static {
         NAME_PATTERNS.add(Pattern.compile(".*\\.data\\.json"));
+        EXCLUDED_RESOURCES.add(JCR_CONTENT);
+        EXCLUDED_RESOURCES.add(RENDITIONS);
     }
 
     @Override
@@ -83,14 +88,12 @@ public abstract class BaseFileReplicationService
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
             public boolean doAdd(Resource resource) {
-                return !resource.getName().equals(JCR_CONTENT)
-                    && !resource.getName().equals(RENDITIONS);
+                return !EXCLUDED_RESOURCES.contains(resource.getName());
             }
 
             @Override
             public boolean doAddChildren(Resource resource) {
-                return !resource.getName().equals(JCR_CONTENT)
-                    && !resource.getName().equals(RENDITIONS);
+                return !EXCLUDED_RESOURCES.contains(resource.getName());
             }
         };
         // Need to check this list of they need to be replicated first
@@ -173,11 +176,15 @@ public abstract class BaseFileReplicationService
         return answer;
     }
 
+    /** @return Sling Request Processor to render pages **/
     abstract SlingRequestProcessor getRequestProcessor();
+    /** @return Reference Lister to find referencing nodes **/
     abstract ReferenceLister getReferenceLister();
 
+    /** @return True of the folder is already created on the Target **/
     abstract boolean isFolderOnTarget(String path);
 
+    /** Create a folder on the target based on the given Path **/
     abstract void createTargetFolder(String path) throws ReplicationException;
 
     private void handleParents(Resource resource) throws ReplicationException {
@@ -201,7 +208,9 @@ public abstract class BaseFileReplicationService
         }
     }
 
+    /** @return Map listing all extensions and the primary types of all nodes that are exported with that extension **/
     abstract Map<String, List<String>> getExportExtensions();
+    /** @return A list of all mandatory renditions which are created during the replication if not already there **/
     abstract List<String> getMandatoryRenditions();
 
     private void replicateAsset(Resource resource) throws ReplicationException {
@@ -262,6 +271,14 @@ public abstract class BaseFileReplicationService
      * @throws ReplicationException if the writing of the content failed
      */
     abstract String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException;
+
+    /**
+     * Removes a given resource from the target
+     * @param resource Source Resource which replica is to be removed
+     * @param namePattern List of Regex Pattern that will find the replica
+     * @param isFolder If true this is a folder to be removed
+     * @throws ReplicationException If the removal fails
+     */
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
     private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
@@ -305,10 +322,26 @@ public abstract class BaseFileReplicationService
         }
     }
 
+    /**
+     * Renders the given resource inside this sling instance and returns its byte stream
+     * @param resource Resource to be rendered
+     * @param extension Extension of the rendering request
+     * @param post True if this is a POST request
+     * @return Byte Array of the rendered resource
+     * @throws ReplicationException If the rendering failed
+     */
     private byte[] renderRawResource(Resource resource, String extension, boolean post) throws ReplicationException {
         return renderResource0(resource, extension, post).getOutput();
     }
 
+    /**
+     * Renders the given resource inside this sling instance and returns its byte stream
+     * @param resource Resource to be rendered
+     * @param extension Extension of the rendering request
+     * @param post True if this is a POST request
+     * @return String content of the rendered resource
+     * @throws ReplicationException If the rendering failed
+     */
     private String renderResource(Resource resource, String extension, boolean post) throws ReplicationException {
         return renderResource0(resource, extension, post).getOutputAsString();
     }

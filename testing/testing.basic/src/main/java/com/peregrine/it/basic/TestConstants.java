@@ -1,7 +1,7 @@
 package com.peregrine.it.basic;
 
 /**
- * Created by schaefa on 7/5/17.
+ * Created by Andreas Schaefer on 7/5/17.
  */
 public class TestConstants {
     public static final String EXAMPLE_TEMPLATE_PATH = "/content/templates/example";

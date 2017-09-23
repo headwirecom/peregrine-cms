@@ -7,7 +7,7 @@ import static com.peregrine.adaption.impl.PerTestUtil.createPage;
 import static org.junit.Assert.*;
 
 /**
- * Created by schaefa on 6/21/17.
+ * Created by Andreas Schaefer on 6/21/17.
  */
 public class PerPageImplTest {
 

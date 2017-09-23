@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by schaefa on 4/4/17.
+ * Created by Andreas Schaefer on 4/4/17.
  */
 @Component(
     service = NpmExternalProcess.class,

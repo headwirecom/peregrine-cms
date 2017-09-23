@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by schaefa on 6/21/17.
+ * Created by Andreas Schaefer on 6/21/17.
  */
 public class PerTestUtil {
 

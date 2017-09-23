@@ -23,7 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by schaefa on 6/30/17.
+ * Created by Andreas Schaefer on 6/30/17.
  */
 public class DeleteFolderIT
     extends AbstractTest

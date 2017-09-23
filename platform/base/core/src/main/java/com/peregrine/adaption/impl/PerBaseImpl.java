@@ -41,7 +41,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 
 /**
- * Created by schaefa on 6/4/17.
+ * Created by Andreas Schaefer on 6/4/17.
  */
 public abstract class PerBaseImpl
     implements PerBase

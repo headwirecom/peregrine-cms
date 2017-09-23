@@ -2,6 +2,7 @@
 aemdc-files/
 target/
 *.iml
+*DoNotIncludeInGit.*
 .classpath
 .project
 .settings/

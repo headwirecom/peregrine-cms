@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by schaefa on 5/25/17.
+ * Created by Andreas Schaefer on 5/25/17.
  */
 public class Reference {
     private Resource resource;

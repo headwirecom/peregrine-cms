@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Created by schaefa on 6/20/17.
+ * Created by Andreas Schaefer on 6/20/17.
  */
 public abstract class AbstractBaseServlet
     extends SlingAllMethodsServlet

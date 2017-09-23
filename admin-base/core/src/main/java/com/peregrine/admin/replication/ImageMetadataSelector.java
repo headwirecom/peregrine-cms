@@ -26,7 +26,7 @@ package com.peregrine.admin.replication;
  */
 
 /**
- * Created by schaefa on 6/9/17.
+ * Created by Andreas Schaefer on 6/9/17.
  */
 public interface ImageMetadataSelector {
 

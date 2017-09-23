@@ -10,35 +10,160 @@ import java.io.InputStream;
 import java.util.Map;
 
 /**
- * Created by schaefa on 7/6/17.
+ * Defines the Interface for the Admin Resource
+ * Handler which is the central service to deal with
+ * Admin data and nodes.
+ *
+ * Created by Andreas Schaefer on 7/6/17.
  */
 public interface AdminResourceHandler {
 
+    /**
+     * Create a new JCR Resource Node
+     *
+     * @param parent Parent JCR Resource in which the node is created in. It must be provided and exist
+     * @param name Name of the Resource which cannot be null or empty
+     * @param primaryType Primary Type (jcr:primaryType) of the Resource
+     * @param resourceType Optional Sling Resource Type of the Resource. Is ignored if null or empty
+     * @return Newly created JCR Resource
+     * @throws ManagementException If the creation failed
+     */
     public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException;
 
+    /**
+     * Creates a Sling Order Folder Resource Node
+     *
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param parentPath Path to the Parent Resource which cannot be null or empty
+     * @param name Name of the Folder which cannot be null or empty
+     * @return Newly created JCR Resource Folder
+     * @throws ManagementException If the creation failed
+     */
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException;
 
+    /**
+     * Creates an Peregrine Object Resource
+     *
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param parentPath Path to the Parent Resource which cannot be null or empty
+     * @param name Name of the Folder which cannot be null or empty
+     * @param resourceType Sling Resource Type of the Object which cannot be null or empty
+     * @return Newly created Peregrine Object Resource
+     * @throws ManagementException If the creation failed
+     */
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException;
 
+    /**
+     * Creates an Peregrine Object Resource
+     *
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param parentPath Path to the Parent Resource which cannot be null or empty
+     * @param name Name of the Folder which cannot be null or empty
+     * @param templatePath Path to the page template resource (absolute path) which must exist
+     * @return Newly created Peregrine Page Resource
+     * @throws ManagementException If the creation failed
+     */
     public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException;
 
+    /**
+     * Creates an Peregrine Object Resource
+     *
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param parentPath Path to the Parent Resource which cannot be null or empty
+     * @param name Name of the Folder which cannot be null or empty
+     * @param component Path to the component this template is based on (relative to /apps) used as Template Sling Resource Type
+     *                  The component must exist
+     * @return Newly created Peregrine Template Resource
+     * @throws ManagementException If the creation failed
+     */
     public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException;
 
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
 
+    /**
+     * Deletes a resource
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute Path to the resource to be deleted and this resource must exist
+     * @param primaryType Optional Sling Primary Type to check if they match before deletion and fail if they don't match
+     * @return A Response for Deletion
+     * @throws ManagementException If the deletion failed
+     */
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException;
 
+    /**
+     * Updates a given resource based on the given JSon Content
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute Path to the resource to be updated and this resource must exist
+     * @param jsonContent The new resource content in JSon representation. Missing properties
+     *                    are untouched. To remove a node use '_opDelete' as key and then
+     *                    'null' or 'true' to delete the entire (sub) resource or the name
+     *                    of the property to be removed.
+     * @return Resource that was updated
+     * @throws ManagementException If the update failed
+     */
     public Resource updateResource(ResourceResolver resourceResolver, String path, String jsonContent) throws ManagementException;
 
+    /**
+     * Inserts another resource to the given resource
+     * @param resource The resource the insert is done relative to. This resource must exist. This resource
+     *                 is either the parent (addAsChild = true) or a sibling (addAsChild = false)
+     * @param properties Resource Properties
+     * @param addAsChild If true added as child of the given resource otherwise as a sibling
+     * @param orderBefore - If true and added as a child then as first child
+     *                    - If false and added as a child then as last child
+     *                    - If true and added as sibling then before the given resource
+     *                    - If false and added as sibling then after the given resource
+     * @return Newly created Resource
+     * @throws ManagementException If the creation / reorder failed
+     */
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore) throws ManagementException;
 
+    /**
+     * Moves an existing resource to a new place
+     * @param fromResource The resource to be moved. If must exist
+     * @param toResource The resource the insert is done relative to. This resource must exist. This resource
+     *                   is either the parent (addAsChild = true) or a sibling (addAsChild = false)
+     * @param addAsChild If true added as child of the given toResource otherwise as its sibling
+     * @param orderBefore - If true and added as a child then as first child
+     *                    - If false and added as a child then as last child
+     *                    - If true and added as sibling then before the given toResource
+     *                    - If false and added as sibling then after the given toResource
+     * @return Moved Resource
+     * @throws ManagementException If the move / reorder failed
+     */
     public Resource moveNode(Resource fromResource, Resource toResource, boolean addAsChild, boolean orderBefore) throws ManagementException;
 
+    /**
+     * Renames a given resource node name
+     * @param fromResource Resource to be renamed. It must exist
+     * @param newName New Name of the Resource which cannot be null or empty and there may not a resource
+     *                already exist with than name under the parent of the fromResource
+     * @return Renamed Resource
+     * @throws ManagementException If the rename failed
+     */
     public Resource rename(Resource fromResource, String newName) throws ManagementException;
 
+    /**
+     * Create an Asset Resource which the given Byte Input Stream
+     * @param parent Parent Source under which the asset is created. It must exist
+     * @param assetName Name of the Asset. There must not be an asset with that name already exist
+     *                  in the given parent
+     * @param contentType Mime Type of the Asset which must be provided
+     * @param inputStream Input Stream of the Asset's Content
+     * @return New created Asset Resource
+     * @throws ManagementException If the creation failed
+     */
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException;
 
-    public Node copyNode(Node source, boolean onlyChildren, Node targetParent, boolean deep) throws ManagementException;
+    /**
+     * Copies the Content of a given Node to another Node
+     * @param source Source Node which must exist
+     * @param target Target Node which must exit
+     * @param deep If true child resources are created and copied over, too
+     * @return Target Node
+     * @throws ManagementException
+     */
+    public Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
 
     public class ManagementException
         extends Exception

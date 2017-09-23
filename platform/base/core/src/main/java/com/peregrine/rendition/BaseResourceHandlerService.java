@@ -36,7 +36,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 
 /**
- * Created by schaefa on 7/6/17.
+ * Created by Andreas Schaefer on 7/6/17.
  */
 @Component(
     service = BaseResourceHandler.class,

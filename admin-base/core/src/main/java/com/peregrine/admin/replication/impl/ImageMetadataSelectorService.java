@@ -41,7 +41,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by schaefa on 5/25/17.
+ * This service defines which Image Metadata is stored into the
+ * Assets as metadata.
+ *
+ * Created by Andreas Schaefer on 5/25/17.
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,

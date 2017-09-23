@@ -1,9 +1,9 @@
 package com.peregrine.admin.replication.impl;
 
-import com.peregrine.commons.util.PerConstants;
+//import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ModifiableValueMap;
+//import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -20,14 +20,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.Calendar;
+//import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
+//import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
+import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.DISTRIBUTION_SUB_SERVICE;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+//import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
 
@@ -104,21 +105,21 @@ public class DistributionEventHandlerService
             log.trace("Resource Resolver: '{}'", resourceResolver);
             Resource resource = getResource(resourceResolver, path);
             log.trace("Resource for Path: '{}': '{}'", path, resource);
-            if(resource != null && supportsReplicationProperties(resource)) {
-                ModifiableValueMap properties = getModifiableProperties(resource, false);
-                if(properties != null) {
-                    Calendar replicated = Calendar.getInstance();
-                    if(!properties.containsKey(PER_REPLICATED_BY)) {
-                        log.trace("Replicated By is not set in: '{}', set to: '{}'", properties, resourceResolver.getUserID());
-                        properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
-                    }
-                    properties.put(PerConstants.PER_REPLICATED, replicated);
-                    properties.put(PerConstants.PER_REPLICATION_REF, kind + "://" + path);
-                } else {
-                    log.error("Could not obtain modifiable properties from resource: '{}'", resource);
-                }
-                resourceResolver.commit();
-            }
+            updateReplicationProperties(resource, kind + "://" + path, null);
+//            if(resource != null && supportsReplicationProperties(resource)) {
+//                ModifiableValueMap properties = getModifiableProperties(resource, false);
+//                if(properties != null) {
+//                    Calendar replicated = Calendar.getInstance();
+//                    if(!properties.containsKey(PER_REPLICATED_BY)) {
+//                        log.trace("Replicated By is not set in: '{}', set to: '{}'", properties, resourceResolver.getUserID());
+//                        properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
+//                    }
+//                    properties.put(PerConstants.PER_REPLICATED, replicated);
+//                    properties.put(PerConstants.PER_REPLICATION_REF, kind + "://" + path);
+//                } else {
+//                    log.error("Could not obtain modifiable properties from resource: '{}'", resource);
+//                }
+            resourceResolver.commit();
         } catch(LoginException e) {
             log.warn("Failed to set Replication Properties on Resource: " + path + " due to login issue", e);
         } catch(PersistenceException e) {

@@ -30,7 +30,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
 
 /**
- * Created by schaefa on 5/19/17.
+ * Created by Andreas Schaefer on 5/19/17.
  */
 public class ImageContext {
 

@@ -48,7 +48,7 @@ import java.util.Map;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 
 /**
- * Created by schaefa on 5/25/17.
+ * Created by Andreas Schaefer on 5/25/17.
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.OPTIONAL,

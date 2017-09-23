@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by schaefa on 5/22/17.
+ * Created by Andreas Schaefer on 5/22/17.
  */
 public class ImageTransformationConfiguration {
     private String name;

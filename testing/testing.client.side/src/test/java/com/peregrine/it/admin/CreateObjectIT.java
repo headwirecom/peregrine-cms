@@ -26,7 +26,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static org.junit.Assert.assertFalse;
 
 /**
- * Created by schaefa on 6/30/17.
+ * Created by Andreas Schaefer on 6/30/17.
  */
 public class CreateObjectIT
     extends AbstractTest

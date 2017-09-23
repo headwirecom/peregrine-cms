@@ -49,7 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by schaefa on 5/19/17.
+ * Created by Andreas Schaefer on 5/19/17.
  */
 public abstract class AbstractVipsImageTransformation
     implements ImageTransformation

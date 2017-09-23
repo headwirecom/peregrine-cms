@@ -59,15 +59,18 @@ import java.util.Map;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+//import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+//import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 
 /**
- * Created by schaefa on 5/25/17.
+ * This service replicates resources within the same Peregrine
+ * instance but a different folder node.
+ *
+ * Created by Andreas Schaefer on 5/25/17.
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,
@@ -288,14 +291,15 @@ public class LocalReplicationService
             }
             // Update all replication targets by setting the new Replication Date, User and remove the Ref to indicate the deactivation
             for(Resource item: resourceList) {
-                boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(item);
-                if(replicationMixin) {
-                    ModifiableValueMap properties = getModifiableProperties(item, false);
-                    Calendar replicated = Calendar.getInstance();
-                    properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-                    properties.put(PER_REPLICATED, replicated);
-                    properties.put(PER_REPLICATION_REF, "");
-                }
+                updateReplicationProperties(item, "", null);
+//                boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(item);
+//                if(replicationMixin) {
+//                    ModifiableValueMap properties = getModifiableProperties(item, false);
+//                    Calendar replicated = Calendar.getInstance();
+//                    properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+//                    properties.put(PER_REPLICATED, replicated);
+//                    properties.put(PER_REPLICATION_REF, "");
+//                }
             }
             // Delete the replicated target resource
             String relativePath = PerUtil.relativePath(source, toBeDeleted);

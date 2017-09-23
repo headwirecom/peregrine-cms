@@ -46,7 +46,7 @@ import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 
 /**
- * Created by schaefa on 6/4/17.
+ * Created by Andreas Schaefer on 6/4/17.
  */
 public class PerPageImpl
     extends PerBaseImpl

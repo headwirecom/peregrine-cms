@@ -28,7 +28,7 @@ package com.peregrine.adaption;
 import java.util.Calendar;
 
 /**
- * Created by schaefa on 6/2/17.
+ * Created by Andreas Schaefer on 6/2/17.
  */
 public interface PerPageManager {
 

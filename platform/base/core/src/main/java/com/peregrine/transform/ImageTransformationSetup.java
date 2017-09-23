@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by schaefa on 5/22/17.
+ * Created by Andreas Schaefer on 5/22/17.
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,

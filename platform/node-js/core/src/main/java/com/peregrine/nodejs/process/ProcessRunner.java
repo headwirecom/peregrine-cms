@@ -21,7 +21,7 @@ import java.util.Locale;
 import static com.peregrine.nodejs.process.ProcessContextReader.NO_EXIT_CODE;
 
 /**
- * Created by schaefa on 4/6/17.
+ * Created by Andreas Schaefer on 4/6/17.
  */
 public class ProcessRunner {
 

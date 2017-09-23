@@ -39,6 +39,7 @@ import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.osgi.service.component.annotations.Component;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -47,12 +48,15 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * Raw Query Based Search. This is not part of the '/api/admin' but rather '/bin'.
+ */
 @Component(
     service = Servlet.class,
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Search Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "GET",
+        SLING_SERVLET_METHODS + EQUALS + GET,
         SLING_SERVLET_PATHS + EQUALS + "/bin/search"
     }
 )

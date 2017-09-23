@@ -3,7 +3,7 @@ package com.peregrine.commons.util;
 import java.util.Locale;
 
 /**
- * Created by schaefa on 6/19/17.
+ * Created by Andreas Schaefer on 6/19/17.
  */
 public class PerConstants {
     public static final String JCR_CONTENT = "jcr:content";

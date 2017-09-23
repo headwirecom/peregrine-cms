@@ -6,12 +6,14 @@ import org.apache.sling.api.resource.Resource;
 import javax.jcr.RepositoryException;
 
 /**
- * Created by schaefa on 6/22/17.
+ * Created by Andreas Schaefer on 6/22/17.
  */
 public interface ResourceRelocation {
 
+    /** @return True if the given child resource is a child of the given Parent **/
     public boolean isChildOfParent(Resource child, Resource parent);
 
+    /** @return True if the first and second resource have the same parent **/
     public boolean hasSameParent(Resource first, Resource second);
 
     /**

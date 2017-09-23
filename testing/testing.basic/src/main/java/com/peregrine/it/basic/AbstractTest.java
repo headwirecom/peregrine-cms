@@ -8,7 +8,7 @@ import org.junit.rules.TestName;
 import org.slf4j.Logger;
 
 /**
- * Created by schaefa on 6/2/16.
+ * Created by Andreas Schaefer on 6/2/16.
  */
 public abstract class AbstractTest {
 

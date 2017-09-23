@@ -38,7 +38,7 @@ import static com.peregrine.commons.util.PerUtil.METADATA;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by schaefa on 7/6/17.
+ * Created by Andreas Schaefer on 7/6/17.
  */
 public class UploadFilesServletIT
     extends AbstractTest

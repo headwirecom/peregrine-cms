@@ -14,7 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Created by schaefa on 4/20/17.
+ * Created by Andreas Schaefer on 4/20/17.
  */
 public class Activator
     implements BundleActivator

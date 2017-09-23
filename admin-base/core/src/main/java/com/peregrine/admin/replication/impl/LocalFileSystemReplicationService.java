@@ -59,7 +59,6 @@ import static com.peregrine.commons.util.PerUtil.splitIntoMap;
 
 /**
  * This class replicates resources to a local file system folder
- * by exporting its content
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,

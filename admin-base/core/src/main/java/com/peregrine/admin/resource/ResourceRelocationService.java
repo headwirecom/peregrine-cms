@@ -18,7 +18,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 
 /**
- * Created by schaefa on 6/22/17.
+ * Created by Andreas Schaefer on 6/22/17.
  */
 @Component(
     service = ResourceRelocation.class,

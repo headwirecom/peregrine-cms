@@ -53,7 +53,7 @@ import static com.peregrine.commons.util.PerUtil.METADATA;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 
 /**
- * Created by schaefa on 6/4/17.
+ * Created by Andreas Schaefer on 6/4/17.
  */
 public class PerAssetImpl
     extends PerBaseImpl

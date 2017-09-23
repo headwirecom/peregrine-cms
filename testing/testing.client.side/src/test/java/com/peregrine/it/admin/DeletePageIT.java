@@ -34,7 +34,7 @@ import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static org.junit.Assert.assertFalse;
 
 /**
- * Created by schaefa on 6/30/17.
+ * Created by Andreas Schaefer on 6/30/17.
  */
 public class DeletePageIT
     extends AbstractTest

@@ -46,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * Created by schaefa on 6/28/17.
+ * Created by Andreas Schaefer on 6/28/17.
  */
 public class BasicTestHelpers {
 

@@ -4,7 +4,7 @@ import com.peregrine.nodejs.process.ExternalProcessException;
 import com.peregrine.nodejs.process.ProcessContext;
 
 /**
- * Created by schaefa on 4/4/17.
+ * Created by Andreas Schaefer on 4/4/17.
  */
 public interface NpmExternalProcess {
     public static final String PROCESS_NAME_UNIX = "npm";

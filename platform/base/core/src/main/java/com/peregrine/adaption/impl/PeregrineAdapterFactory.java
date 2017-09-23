@@ -44,7 +44,7 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 /**
- * Created by schaefa on 6/4/17.
+ * Created by Andreas Schaefer on 6/4/17.
  */
 @Component(
     service = AdapterFactory.class,

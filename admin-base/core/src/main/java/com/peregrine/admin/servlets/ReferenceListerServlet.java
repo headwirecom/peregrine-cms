@@ -35,7 +35,10 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.List;
 
+import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -50,14 +53,18 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Reference Lister Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "GET",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/ref",
-        SLING_SERVLET_SELECTORS + EQUALS + "json"
+        SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_REF,
+        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
     }
 )
 @SuppressWarnings("serial")
 /**
- * This servlet provides a list of references of a given page
+ * This servlet provides a list of that are referenced by the given
+ * resource (to which resources does the given resources points to)
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
  */
 public class ReferenceListerServlet extends AbstractBaseServlet {
 

@@ -11,7 +11,7 @@ import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static org.junit.Assert.*;
 
 /**
- * Created by schaefa on 6/20/17.
+ * Created by Andreas Schaefer on 6/20/17.
  */
 public class PeregrineAdapterFactoryTest {
 

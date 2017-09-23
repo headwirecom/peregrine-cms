@@ -21,6 +21,7 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
 
 public class ReplicationUtil {
 
@@ -95,8 +96,10 @@ public class ReplicationUtil {
 
     /**
      * Set the replications properties if the source supports Replication Mixin
-     * @param source Source Resource to be updated. If null this call does nothing
-     * @param targetPath Replication Ref target path. Is ignored if target is not null. If target and this is null the replication ref is set to 'VOID'
+     *
+     * @param source Source Resource to be updated. If null or the resource does not support Replication Mixin this call does nothing.
+     * @param targetPath Replication Ref target path. If the TARGET is NULL this will set the source's Replication Ref property
+     *                   or removes it if empty or null
      * @param target Target Resource to be updated with same date and reference back to the source in the replication ref. If null will be ignored
      */
     public static void updateReplicationProperties(Resource source, String targetPath, Resource target) {
@@ -110,7 +113,10 @@ public class ReplicationUtil {
                 sourceProperties.put(PER_REPLICATED, replicated);
                 LOGGER.trace("Updated Source Replication Properties");
                 if(target == null) {
-                    if(targetPath != null && !targetPath.isEmpty()) {
+                    // Target Path can be empty to remove the replication ref property
+                    if(isEmpty(targetPath)) {
+                        sourceProperties.remove(PER_REPLICATION_REF);
+                    } else {
                         sourceProperties.put(PER_REPLICATION_REF, targetPath);
                     }
                 } else {

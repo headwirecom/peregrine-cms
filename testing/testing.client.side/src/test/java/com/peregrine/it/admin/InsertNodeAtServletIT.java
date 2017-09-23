@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * Created by schaefa on 6/22/17.
+ * Created by Andreas Schaefer on 6/22/17.
  */
 public class InsertNodeAtServletIT
     extends AbstractTest

@@ -30,7 +30,7 @@ import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
-import org.apache.sling.api.resource.ModifiableValueMap;
+//import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -52,10 +52,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+//import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
+import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+//import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+//import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
 import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
 
@@ -196,16 +197,17 @@ public class DistributionReplicationService
                 for(Resource resource : resourceList) {
                     paths[i++] = resource.getPath();
                     // In order to make it possible to have the correct user set and Replicated By we need to set it here and now
-                    if(supportsReplicationProperties(resource)) {
-                        ModifiableValueMap properties = getModifiableProperties(resource, false);
-                        if(properties != null) {
-                            log.trace("Set Replication User to: '{}' on properties: '{}'", resourceResolver.getUserID(), properties);
-                            properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
-                            if(!activate) {
-                                properties.remove(PER_REPLICATION_REF);
-                            }
-                        }
-                    }
+                    updateReplicationProperties(resource, "distribution pending", null);
+//                    if(supportsReplicationProperties(resource)) {
+//                        ModifiableValueMap properties = getModifiableProperties(resource, false);
+//                        if(properties != null) {
+//                            log.trace("Set Replication User to: '{}' on properties: '{}'", resourceResolver.getUserID(), properties);
+//                            properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
+//                            if(!activate) {
+//                                properties.remove(PER_REPLICATION_REF);
+//                            }
+//                        }
+//                    }
                 }
                 try {
                     resourceResolver.commit();

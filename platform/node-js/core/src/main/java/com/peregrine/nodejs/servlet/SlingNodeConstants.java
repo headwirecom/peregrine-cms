@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by schaefa on 4/3/17.
+ * Created by Andreas Schaefer on 4/3/17.
  */
 public class SlingNodeConstants {
     public static final String LIST_PACKAGES = "/api/nodejs/list";

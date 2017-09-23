@@ -50,7 +50,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 
 /**
- * Created by schaefa on 5/26/17.
+ * Created by Andreas Schaefer on 5/26/17.
  */
 public class PerUtil {
 
@@ -61,6 +61,8 @@ public class PerUtil {
     public static final String PER_VENDOR = "headwire.com, Inc";
     public static final String PER_PREFIX = "Peregrine: ";
     public static final String EQUALS = "=";
+    public static final String GET = "GET";
+    public static final String POST = "POST";
 
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 

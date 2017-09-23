@@ -36,7 +36,7 @@ import java.util.Map;
  * Peregrine Asset with access to their data and renditions.
  * It is adaptable to a Resource and Page Manager.
  *
- * Created by schaefa on 6/4/17.
+ * Created by Andreas Schaefer on 6/4/17.
  */
 public interface PerAsset
     extends PerBase

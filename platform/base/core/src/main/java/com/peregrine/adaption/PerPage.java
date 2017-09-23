@@ -29,7 +29,7 @@ package com.peregrine.adaption;
  * Peregrine Page with access to their data and parent / child pages.
  * It is adaptable to a Resource and Page Manager.
  *
- * Created by schaefa on 6/2/17.
+ * Created by Andreas Schaefer on 6/2/17.
  */
 public interface PerPage
     extends PerBase

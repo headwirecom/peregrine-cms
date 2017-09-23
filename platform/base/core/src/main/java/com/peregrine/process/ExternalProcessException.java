@@ -28,7 +28,7 @@ package com.peregrine.process;
 import java.util.List;
 
 /**
- * Created by schaefa on 4/4/17.
+ * Created by Andreas Schaefer on 4/4/17.
  */
 public class ExternalProcessException
     extends Exception

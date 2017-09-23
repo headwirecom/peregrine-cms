@@ -36,22 +36,30 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_PAGE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * Creates a Peregrine Page
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ */
 @Component(
     service = Servlet.class,
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Create Page servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "POST",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/createPage"
+        SLING_SERVLET_METHODS + EQUALS + POST,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CREATION_PAGE
     }
 )
 @SuppressWarnings("serial")

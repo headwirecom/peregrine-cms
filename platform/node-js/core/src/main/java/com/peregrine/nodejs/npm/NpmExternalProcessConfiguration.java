@@ -4,7 +4,7 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * Created by schaefa on 4/4/17.
+ * Created by Andreas Schaefer on 4/4/17.
  */
 @ObjectClassDefinition(
     name = "NPM Process",

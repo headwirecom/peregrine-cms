@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Created by schaefa on 4/6/17.
+ * Created by Andreas Schaefer on 4/6/17.
  */
 @Component(
     service = J2V8ProcessExecution.class,

@@ -30,7 +30,10 @@ import org.apache.sling.api.resource.Resource;
 import java.util.List;
 
 /**
- * Created by schaefa on 5/25/17.
+ * Defines the Reference Lister Service which provides a list
+ * of resources that references the given resource.
+ *
+ * Created by Andreas Schaefer on 5/25/17.
  */
 public interface ReferenceLister {
 

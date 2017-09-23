@@ -42,7 +42,9 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Map;
 
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_OBJECT;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -51,13 +53,19 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * Provides the Object in a JSon representation
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ */
 @Component(
     service = Servlet.class,
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Object Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "GET",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/getObject"
+        SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_GET_OBJECT
     }
 )
 @SuppressWarnings("serial")

@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_INSERT_NODE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
@@ -49,6 +50,7 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -57,13 +59,19 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * Creates a New Node in a given Parent Node either as child or sibling
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ */
 @Component(
     service = Servlet.class,
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "insert node at servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "POST",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/insertNodeAt"
+        SLING_SERVLET_METHODS + EQUALS + POST,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_INSERT_NODE
     }
 )
 @SuppressWarnings("serial")

@@ -39,12 +39,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_MOVE;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_RENAME;
 import static com.peregrine.commons.util.PerConstants.ORDER_AFTER_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -57,17 +61,18 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Move Resource Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "POST",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/move",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/rename",
-        SLING_SERVLET_SELECTORS + EQUALS + "json"
+        SLING_SERVLET_METHODS + EQUALS + POST,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_MOVE,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_RENAME,
+        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
     }
 )
 @SuppressWarnings("serial")
 /**
  * This servlet provides the ability to move a resource
  *
- *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
  */
 public class MoveServlet extends AbstractBaseServlet {
 

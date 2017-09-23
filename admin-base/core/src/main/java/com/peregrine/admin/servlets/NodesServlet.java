@@ -41,8 +41,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getProperties;
@@ -53,13 +55,19 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * List all the resources part of the given Path
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ */
 @Component(
     service = Servlet.class,
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Nodes servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "GET",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/nodes"
+        SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_NODES
     }
 )
 @SuppressWarnings("serial")

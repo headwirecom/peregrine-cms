@@ -26,7 +26,7 @@ package com.peregrine.adaption;
  */
 
 /**
- * Created by schaefa on 6/2/17.
+ * Created by Andreas Schaefer on 6/2/17.
  */
 public interface Filter<T> {
     /**

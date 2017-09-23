@@ -26,7 +26,7 @@ package com.peregrine.transform;
  */
 
 /**
- * Created by schaefa on 5/19/17.
+ * Created by Andreas Schaefer on 5/19/17.
  */
 public interface ImageTransformation {
 

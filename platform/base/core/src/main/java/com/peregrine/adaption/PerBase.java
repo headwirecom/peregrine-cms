@@ -33,7 +33,7 @@ import org.apache.sling.api.resource.ValueMap;
 import java.util.Calendar;
 
 /**
- * Created by schaefa on 6/4/17.
+ * Created by Andreas Schaefer on 6/4/17.
  */
 public interface PerBase
     extends Adaptable

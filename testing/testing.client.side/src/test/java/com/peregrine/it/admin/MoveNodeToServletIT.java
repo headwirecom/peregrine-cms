@@ -28,7 +28,7 @@ import static com.peregrine.it.basic.BasicTestHelpers.listResource;
 import static com.peregrine.it.util.TestHarness.moveNodeToResource;
 
 /**
- * Created by schaefa on 6/22/17.
+ * Created by Andreas Schaefer on 6/22/17.
  */
 public class MoveNodeToServletIT
     extends AbstractTest

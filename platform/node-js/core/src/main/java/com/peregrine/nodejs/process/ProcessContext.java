@@ -3,7 +3,7 @@ package com.peregrine.nodejs.process;
 import java.io.Reader;
 
 /**
- * Created by schaefa on 4/5/17.
+ * Created by Andreas Schaefer on 4/5/17.
  */
 public interface ProcessContext {
 

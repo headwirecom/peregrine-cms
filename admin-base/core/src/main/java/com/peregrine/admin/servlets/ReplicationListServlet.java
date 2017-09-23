@@ -27,9 +27,7 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
-import com.peregrine.admin.replication.Replication.ReplicationException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -39,15 +37,13 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.servlets.AdminPaths.EXECUTE_REPLICATION;
-import static com.peregrine.admin.servlets.AdminPaths.LIST_REPLICATION;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_REPLICATION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -58,14 +54,17 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Replication Lister Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "GET",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + LIST_REPLICATION
+        SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_LIST_REPLICATION
     }
 )
 @SuppressWarnings("serial")
 /**
  * This servlet replicates the given resource with its JCR Content
  * ane any references
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
  *
  * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/api/admin/repl.json/path///content/sites/example//name//local
  */

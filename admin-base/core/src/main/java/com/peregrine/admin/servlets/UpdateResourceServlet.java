@@ -36,9 +36,11 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPDATE_RESOURCE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -57,14 +59,17 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *       and either be null or 'true'
  *    b) providing a property on the parent called 'delete' and providing the name of the child
  *       node. If found it will be deleted
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
  */
 @Component(
     service = Servlet.class,
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Update Resource servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "POST",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/admin/updateResource"
+        SLING_SERVLET_METHODS + EQUALS + POST,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_UPDATE_RESOURCE
     }
 )
 @SuppressWarnings("serial")

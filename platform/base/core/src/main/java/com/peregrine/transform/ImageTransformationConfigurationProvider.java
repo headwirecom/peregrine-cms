@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by schaefa on 5/22/17.
+ * Created by Andreas Schaefer on 5/22/17.
  */
 @Component(
     service = ImageTransformationConfigurationProvider.class,

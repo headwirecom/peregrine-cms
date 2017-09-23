@@ -82,8 +82,7 @@ import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
 
 /**
- * This class replicates resources to a local file system folder
- * by exporting its content
+ * This class replicates resources to a S3 Bucket
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,

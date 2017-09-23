@@ -29,7 +29,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 
 /**
- * Created by schaefa on 6/30/17.
+ * Created by Andreas Schaefer on 6/30/17.
  */
 public class CreateTemplateIT
     extends AbstractTest

@@ -30,7 +30,7 @@ import org.apache.sling.api.resource.Resource;
 import java.util.List;
 
 /**
- * Created by schaefa on 5/25/17.
+ * Created by Andreas Schaefer on 5/25/17.
  */
 public interface Replication {
 
@@ -42,32 +42,42 @@ public interface Replication {
 
     /**
      * Replicates the given resource with its JCR Content and references
-     * and if deep also with its children
+     * and if deep also with its children as well as referenced and missing
+     * parent resources.
      *
      * @param source Resource to be replicated
      * @param deep If true the entire sub tree of the resource is replicated
      * @return List of replicated resources (the copy)
+     *
      * @throws ReplicationException If the replication failed
      */
     List<Resource> replicate(Resource source, boolean deep)
         throws ReplicationException;
 
+    /**
+     * Removes the replicated resources (and with it all child resources)
+     *
+     * @param source Starting Resource to be removed from the Replication Target
+     * @return List of removed resources (most likely just the given resource)
+     *
+     * @throws ReplicationException If there was an error preveting the deactivation
+     */
     List<Resource> deactivate(Resource source)
         throws ReplicationException;
 
     /**
-     * Replicates all the given resources and only them. This means JCR Content
-     * nodes must be part of the given list
+     * Replicates all the given resources and only them. This means
+     * that missing parents as well as child resources must be provided
+     * as well and they must be listed in order so that the parent resources
+     * are created ahead of their children.
      *
      * @param resourceList List of resources to be replicated
      * @return List of replicated resources (the copy)
+     *
      * @throws ReplicationException If the replication failed
      */
     List<Resource> replicate(List<Resource> resourceList)
         throws ReplicationException;
-
-//    List<Resource> deactivate(List<Resource> resourceList)
-//        throws ReplicationException;
 
     class ReplicationException
         extends Exception

@@ -435,7 +435,7 @@ public class AdminResourceHandlerService
                         Node componentNode = parent.getSession().getNode("/apps/" + component);
                         if(componentNode.hasNode(JCR_CONTENT)) {
                             Node source = componentNode.getNode(JCR_CONTENT);
-                            copyNode(source, true, newNode, true);
+                            copyNode(source, newNode, true);
                         }
                     }
                 }
@@ -446,7 +446,7 @@ public class AdminResourceHandlerService
         return newNode;
     }
 
-    public Node copyNode(Node source, boolean onlyChildren, Node target, boolean deep) throws ManagementException {
+    public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
         try {
             // Copy all properties
             PropertyIterator pi = source.getProperties();
@@ -466,7 +466,7 @@ public class AdminResourceHandlerService
                     Node sourceChild = ni.nextNode();
                     // Create Target first
                     Node targetChild = target.addNode(sourceChild.getName(), sourceChild.getPrimaryNodeType().getName());
-                    copyNode(sourceChild, false, targetChild, true);
+                    copyNode(sourceChild, targetChild, true);
                 }
             }
             return target;

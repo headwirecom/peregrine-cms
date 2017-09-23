@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by schaefa on 4/6/17.
+ * Created by Andreas Schaefer on 4/6/17.
  */
 
 public abstract class AbstractJ2V8ExecutionService {

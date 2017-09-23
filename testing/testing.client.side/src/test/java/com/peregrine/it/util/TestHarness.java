@@ -17,7 +17,7 @@ import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
 
 /**
- * Created by schaefa on 6/28/17.
+ * Created by Andreas Schaefer on 6/28/17.
  */
 public class TestHarness {
 
