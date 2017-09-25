@@ -166,7 +166,7 @@
             this.activeItem = index
             // focus first field of expanded item
             let firstField = this.$refs.collapsible.querySelector('li.active input')
-            firstField.focus()
+            if(firstField) firstField.focus()
           })
         }
       },
