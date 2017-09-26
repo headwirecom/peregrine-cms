@@ -28,21 +28,28 @@ package com.peregrine.process;
 import java.io.Reader;
 
 /**
+ * Context of an External Process Execution
  * Created by Andreas Schaefer on 4/5/17.
  */
 public interface ProcessContext {
 
     public static final int NO_EXIT_CODE = -99999;
 
+    /** @return Exit code of the process execution **/
     public int getExitCode();
 
+    /** @return Output of the process **/
     public String getOutput();
 
+    /** @return Output of the process as Reader **/
     public Reader getOutputReader();
 
+    /** @return Error Message if the process errored out **/
     public String getError();
 
+    /** @return Error Message as reader **/
     public Reader getErrorReader();
 
+    /** Tear the process down (free all resources) **/
     public void tearDown();
 }

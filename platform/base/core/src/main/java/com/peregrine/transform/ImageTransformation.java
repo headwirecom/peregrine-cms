@@ -26,17 +26,29 @@ package com.peregrine.transform;
  */
 
 /**
+ * Defines the API for Image Transformations
+ *
  * Created by Andreas Schaefer on 5/19/17.
  */
 public interface ImageTransformation {
 
+    /** @erturn The Name of the Transformations to look it up by **/
     public String getTransformationName();
 
+    /** @return True if the Transformation is up and running **/
     public boolean isValid();
 
+    /**
+     * Transforms a given Image with the given Operation
+     *
+     * @param imageContext Context of the Image to be transformed
+     * @param operationContext Context of the Operation used to transform the Image
+     * @throws TransformationException If the transformation fails
+     */
     public void transform(ImageContext imageContext, OperationContext operationContext)
         throws TransformationException;
 
+    /** Common Transformation Exeption **/
     public class TransformationException
         extends Exception
     {
@@ -49,6 +61,7 @@ public interface ImageTransformation {
         }
     }
 
+    /** Transformation Exception if the Operation was disabled **/
     public class DisabledTransformationException
         extends TransformationException
     {
@@ -57,6 +70,7 @@ public interface ImageTransformation {
         }
     }
 
+    /** Transformation Exception if the desired output is unsupported **/
     public class UnsupportedFormatException
         extends TransformationException
     {

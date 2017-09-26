@@ -53,6 +53,8 @@ import static com.peregrine.commons.util.PerUtil.METADATA;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 
 /**
+ * Peregrine Asset Wrapper Object
+ *
  * Created by Andreas Schaefer on 6/4/17.
  */
 public class PerAssetImpl
@@ -117,7 +119,6 @@ public class PerAssetImpl
         Binary data = session.getValueFactory().createBinary(dataStream);
         jcrContent.setProperty(JCR_DATA, data);
         jcrContent.setProperty(JCR_MIME_TYPE, mimeType);
-//        session.save();
     }
 
     @Override

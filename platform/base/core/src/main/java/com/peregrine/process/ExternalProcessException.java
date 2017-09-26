@@ -28,12 +28,16 @@ package com.peregrine.process;
 import java.util.List;
 
 /**
+ * Exception from executing an External Process
+ *
  * Created by Andreas Schaefer on 4/4/17.
  */
 public class ExternalProcessException
     extends Exception
 {
+    /** List of all commands provided to the process **/
     private List<String> command = null;
+    /** Process Context **/
     private ProcessContext processContext;
 
     public ExternalProcessException(String message) {
@@ -44,19 +48,23 @@ public class ExternalProcessException
         super(message, cause);
     }
 
+    /** @eturn List of commands provided to the process **/
     public List<String> getCommand() {
         return command;
     }
 
+    /** Sets the list of commands **/
     public ExternalProcessException setCommand(List<String> command) {
         this.command = command;
         return this;
     }
 
+    /** @return External Process Context **/
     public ProcessContext getProcessContext() {
         return processContext;
     }
 
+    /** Sets the External Process Context **/
     public ExternalProcessException setProcessContext(ProcessContext processContext) {
         this.processContext = processContext;
         return this;

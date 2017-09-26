@@ -28,11 +28,22 @@ package com.peregrine.adaption;
 import java.util.Calendar;
 
 /**
+ * Peregrine Page Manager to obtain pages by path and to
+ * update the modification date
+ *
  * Created by Andreas Schaefer on 6/2/17.
  */
 public interface PerPageManager {
 
+    /** @return Per Page instance if page was found under the given path otherwise null **/
     public PerPage getPage(String pagePath);
 
+    /**
+     * Touches the given page and updating their modification / replication properties
+     * @param page Page to be updated
+     * @param shallow If only the given page is updated
+     * @param now Date of the change
+     * @param clearReplication If true the replication properties are removed
+     */
     public void touch(PerPage page, boolean shallow, Calendar now, boolean clearReplication);
 }

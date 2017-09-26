@@ -46,6 +46,8 @@ import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 
 /**
+ * Peregrine Wrapper Object for Pages
+ *
  * Created by Andreas Schaefer on 6/4/17.
  */
 public class PerPageImpl
@@ -54,6 +56,7 @@ public class PerPageImpl
 {
     private static final AllFilter allFilter = new AllFilter();
 
+    /** Reference to the Page Manager **/
     private PerPageManager pageManager;
 
     public PerPageImpl(Resource resource) {
@@ -86,6 +89,12 @@ public class PerPageImpl
         return getChildren(filter, deep);
     }
 
+    /**
+     * Obtains a List of Page that matches the given Filter
+     * @param filter Filter instance to select the desired pages
+     * @param deep If true the search goes deep
+     * @return List of pages which can be empty but never null
+     */
     private List<PerPage> getChildren(Filter<PerPage> filter, boolean deep) {
         List<PerPage> children = new ArrayList<PerPage>();
         for(Resource child: getResource().getChildren()) {
@@ -172,6 +181,14 @@ public class PerPageImpl
         return answer;
     }
 
+    /**
+     * Looks for a child page of the given resource
+     * @param resource Parent Resource to search for a page
+     * @param after If not null the returned page is the one that comes after that resource
+     *              There is not test that this is a child resource of the given resource
+     *              but if not it might lead to undesired effects
+     * @return The next child page if found otherwise null
+     */
     private PerPage findNextChildPage(Resource resource, Resource after) {
         PerPage answer = null;
         boolean found = (after == null);
@@ -196,9 +213,10 @@ public class PerPageImpl
     @Override
     public PerPage getPrevious() {
         Resource resource = getResource();
-        return findPrevious(resource, true);
+        return findPrevious(resource);
     }
 
+    @Override
     public void markAsModified() {
         Resource resource = getResource();
         String user = resource.getResourceResolver().getUserID();
@@ -213,7 +231,16 @@ public class PerPageImpl
         properties.put(JCR_LAST_MODIFIED, now);
     }
 
-    private PerPage findPrevious(Resource resource, boolean preOrder) {
+    /**
+     * Finds the previous page in the page tree of the given page resource.
+     * This will traverse the tree from right to left and bottom to top. Going
+     * from one resource to the a previous one means we go to the bottom most
+     * node and traverse back up.
+     *
+     * @param resource Starting Page Resource
+     * @return Previous Page Wrapper Object if found
+     */
+    private PerPage findPrevious(Resource resource) {
         PerPage answer = findPreviousChildPage(resource, null);
         if(answer == null) {
             Resource parent = resource.getParent();
@@ -236,6 +263,12 @@ public class PerPageImpl
         return answer;
     }
 
+    /**
+     * Look for a previous child page of the given resource before the given before sibiling
+     * @param resource Parent Resource
+     * @param before Sibling that is the next in the tree
+     * @return Page Wrapper Object that comes before the given sibling
+     */
     private PerPage findPreviousChildPage(Resource resource, Resource before) {
         Resource last = null;
         for(Resource child: resource.getChildren()) {
@@ -252,6 +285,9 @@ public class PerPageImpl
         return last != null ? new PerPageImpl(last) : null;
     }
 
+    /**
+     * Filter that includes all Pages
+     */
     private static class AllFilter
         implements Filter<PerPage>
     {

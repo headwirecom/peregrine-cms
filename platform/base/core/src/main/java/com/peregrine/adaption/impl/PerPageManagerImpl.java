@@ -40,9 +40,10 @@ import java.util.Calendar;
 public class PerPageManagerImpl
     implements PerPageManager
 {
-
+    /** Resource Resolver that backs that Page Manager **/
     private ResourceResolver resourceResolver;
 
+    /** Creates a Page Manager from a Resource Resolver which cannot be null **/
     public PerPageManagerImpl(ResourceResolver resourceResolver) {
         if(resourceResolver == null) {
             throw new IllegalArgumentException("Resource Resolver must be provided");
@@ -50,6 +51,7 @@ public class PerPageManagerImpl
         this.resourceResolver = resourceResolver;
     }
 
+    /** Creates a Page Manager from a Resource which cannot be null **/
     public PerPageManagerImpl(Resource resource) {
         if(resource == null) {
             throw new IllegalArgumentException("Resource must be provided");

@@ -26,7 +26,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +55,7 @@ public class BaseResourceHandlerService
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
     public ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws HandlerException {
         if(resource == null) {
             throw new HandlerException("No Asset Resource provided");

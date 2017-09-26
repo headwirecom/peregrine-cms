@@ -45,8 +45,10 @@ import java.io.OutputStream;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -58,8 +60,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Rendition Provider Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + "GET",
-        SLING_SERVLET_METHODS + EQUALS + "POST",
+        SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "per/Asset"
     }
 )
@@ -153,6 +155,10 @@ public class RenditionsServlet extends AbstractBaseServlet {
         return answer;
     }
 
+    /**
+     * Class that provides an AbstractBaseServlet Response
+     * for an Output Stream
+     */
     public static class StreamResponse extends Response {
 
         private String mimeType;

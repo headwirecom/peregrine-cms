@@ -33,6 +33,8 @@ import org.apache.sling.api.resource.ValueMap;
 import java.util.Calendar;
 
 /**
+ * Base Class for the Peregrine Wrapper Objects
+ *
  * Created by Andreas Schaefer on 6/4/17.
  */
 public interface PerBase
