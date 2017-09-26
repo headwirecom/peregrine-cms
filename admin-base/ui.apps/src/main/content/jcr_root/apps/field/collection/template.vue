@@ -140,6 +140,7 @@
             this.value.push({ name: 'n' +Date.now()})
             this.onSetActiveItem(this.value.length - 1)
         }
+        this.$forceUpdate()
       },
       onRemoveItem(item, index){
         if(!this.schema.multifield){
