@@ -216,7 +216,7 @@
                                 "taggable": true
                             },
                             "valuesFrom": "/content/objects/tags.infinity.json",
-                            "values": []
+                            "values": ['dog','cat','bear','wolf']
                         },
                         {
                             "type": "material-textarea",

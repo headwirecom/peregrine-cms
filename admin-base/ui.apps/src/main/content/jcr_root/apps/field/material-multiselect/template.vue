@@ -1,7 +1,12 @@
 <template>
 
-	<div v-if="!schema.preview" class="input-field">
-		<multiselect v-model="value" :options="options">
+	<div v-if="!schema.preview">
+		<multiselect 
+			v-model="value" 
+			:options="schema.values" 
+			:multiple="true"
+			:taggable="schema.taggable" 
+			@tag="addItem">
 		</multiselect>
 	</div>
 
@@ -13,16 +18,14 @@
 	export default {
 		mixins: [ VueFormGenerator.abstractField ], 
 
-		data() {
-			return {
-				options: ['list', 'of', 'options']
-			}
-		},
-
 		computed: {
 		},
 
 		methods: {
+			addItem(item) {
+				this.value.push(item);
+				this.schema.values.push(item);
+			}
 		}
 	};
 </script>
