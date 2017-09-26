@@ -202,7 +202,7 @@
                             "placeholder": "lastModifiedBy"
                         },
                         {
-                            "type": "vueMultiSelect",
+                            "type": "material-multiselect",
                             "model": "tags",
                             "label": "Tags",
                             "placeholder": "tags",
