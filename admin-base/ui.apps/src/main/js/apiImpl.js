@@ -510,6 +510,18 @@ class PerAdminImpl {
                 if(component && component.methods && component.methods.beforeSave) {
                     nodeData = component.methods.beforeSave(nodeData)
                 }
+                else if ( component && nodeData.children ) {
+                    while(nodeData.children.length > 0) {
+                    let name = nodeData.children[0].name
+                    if(nodeData.children[0].path) {
+                        name = nodeData.children[0].path.split('/').pop()
+                    }
+                    delete nodeData.children[0].path
+                    delete nodeData.children[0].component
+                    nodeData[name] = nodeData.children[0]
+                    nodeData.children = nodeData.children.slice(1)
+                    }
+                }
             }
             delete nodeData['children']
             delete nodeData['path']
