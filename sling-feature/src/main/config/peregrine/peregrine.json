@@ -1,0 +1,42 @@
+{
+  "id": "generated/peregrine/1.0.0",
+  "bundles": {"10":[
+               "org.apache.sling/org.apache.sling.distribution.api/0.3.0",
+               "com.peregrine-cms/base.core/1.0-SNAPSHOT",
+               "com.peregrine-cms/distribution/1.0-SNAPSHOT",
+               "com.peregrine-cms/felib.core/1.0-SNAPSHOT",
+               "com.peregrine-cms/pagerender-vue.core/1.0-SNAPSHOT",
+               "com.fasterxml.jackson.dataformat/jackson-dataformat-cbor/2.6.7",
+               "joda-time/joda-time/2.8.1",
+               "org.joda/joda-convert/1.1",
+               "software.amazon.ion/ion-java/1.0.2",
+               "com.amazonaws/aws-java-sdk-osgi/1.11.181",
+               "com.peregrine-cms/admin.core/1.0-SNAPSHOT"
+              ]},
+  "content-packages:ARTIFACTS|false": [
+    {
+      "id": "com.peregrine-cms/base.ui.apps/1.0-SNAPSHOT/zip",
+      "runmodes": ":standalone"
+    },
+    {
+      "id": "com.peregrine-cms/felib.ui.apps/1.0-SNAPSHOT/zip",
+      "runmodes": ":standalone"
+    },
+    {
+      "id": "com.peregrine-cms/pagerender-vue.ui.apps/1.0-SNAPSHOT/zip",
+      "runmodes": ":standalone"
+    },
+    {
+      "id": "com.peregrine-cms/admin.ui.materialize/1.0-SNAPSHOT/zip",
+      "runmodes": ":standalone"
+    },
+    {
+      "id": "com.peregrine-cms/admin.ui.apps/1.0-SNAPSHOT/zip",
+      "runmodes": ":standalone"
+    },
+    {
+      "id": "com.peregrine-cms/example-vue.ui.apps/1.0-SNAPSHOT/zip",
+      "runmodes": ":standalone"
+    }
+  ]
+}

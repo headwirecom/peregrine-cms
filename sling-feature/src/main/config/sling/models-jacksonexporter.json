@@ -1,0 +1,1 @@
+{"id":"generated/models-jacksonexporter/1.0.0","bundles":{"20":["com.fasterxml.jackson.core/jackson-annotations/2.8.7","com.fasterxml.jackson.core/jackson-core/2.8.7","com.fasterxml.jackson.core/jackson-databind/2.8.7","org.apache.sling/org.apache.sling.models.jacksonexporter/1.0.6"]}}
