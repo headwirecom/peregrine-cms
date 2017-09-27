@@ -5,12 +5,15 @@
 			v-model="value" 
 			:options="schema.values" 
 			:multiple="true"
-			:taggable="schema.taggable" 
+			:taggable="schema.selectOptions.taggable" 
+			:custom-label="customLabel"
 			@tag="addItem">
 		</multiselect>
 	</div>
 
-	<p v-else>{{value}}</p>
+	<div v-else>
+		<div v-for="item in value" class="chip">{{item.name || item}}</div>
+	</div>
 
 </template>
 
@@ -25,6 +28,9 @@
 			addItem(item) {
 				this.value.push(item);
 				this.schema.values.push(item);
+			},
+			customLabel(label) {
+				return typeof label === 'object' ? label.name: label
 			}
 		}
 	};
