@@ -69,5 +69,6 @@ public interface PerPage
      **/
     public PerPage getPrevious();
 
+    /** Marks the given Page as modified **/
     public void markAsModified();
 }

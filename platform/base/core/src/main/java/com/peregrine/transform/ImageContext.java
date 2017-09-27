@@ -30,18 +30,35 @@ import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
 
 /**
+ * Context of an Image to be Transformed
+ *
  * Created by Andreas Schaefer on 5/19/17.
  */
 public class ImageContext {
 
+    /** Mime Type of the Source. PNG is the default **/
     private String sourceMimeType = "image/png";
+    /** Mime Type of the Target (the same as source by default) **/
     private String targetMimeType = sourceMimeType;
+    /** Image Input Stream **/
     private InputStream imageStream;
 
+    /**
+     * Image Context where source and target mime type of the same
+     * @param sourceMimeType Source and Target Mime Type
+     * @param imageStream Image Input Stream
+     */
     public ImageContext(String sourceMimeType, InputStream imageStream) {
         this(sourceMimeType, sourceMimeType, imageStream);
     }
 
+    /**
+     * Image Context
+     * @param sourceMimeType Source Mime Type which must be defined
+     * @param targetMimeType Target Mime Type which must be defined
+     * @param imageStream  Image Input Stream which cannot be null
+     * @throws IllegalArgumentException If source or target mime type or the Input Stream is not defined
+     */
     public ImageContext(String sourceMimeType, String targetMimeType, InputStream imageStream)
     {
         if(sourceMimeType == null || sourceMimeType.isEmpty()) {
@@ -56,23 +73,37 @@ public class ImageContext {
         this.targetMimeType = targetMimeType;
     }
 
+    /** @return Source Mime Type which is not null and not empty **/
     public String getSourceMimeType() {
         return sourceMimeType;
     }
 
+    /** @return Target Mime Type which is not null and not empty **/
     public String getTargetMimeType() {
         return targetMimeType;
     }
 
+    /** Updates the Target Mime Type **/
     public ImageContext setTargetMimeType(String targetMimeType) {
         this.targetMimeType = targetMimeType;
         return this;
     }
 
+    /** @returns the Image Input Stream which is not null **/
     public InputStream getImageStream() {
         return imageStream;
     }
 
+    /**
+     * Resets the Image Stream with a new one. This is only indeted to
+     * be used when chaining Image Transformations.
+     *
+     * This is intended to be used to chain the Image transformation
+     * and so this will set the source mime type to the target
+     * mime type as it is now in the correct format
+     *
+     * @param newImageStream New Input Stream to be used
+     */
     public void resetImageStream(InputStream newImageStream) {
         if(newImageStream == null) {
             throw new IllegalArgumentException("Image Input Stream cannot be null");

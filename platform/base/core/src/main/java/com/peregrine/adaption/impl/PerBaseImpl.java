@@ -41,6 +41,8 @@ import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 
 /**
+ * Common Base Class for Peregrine Object Wrappers
+ *
  * Created by Andreas Schaefer on 6/4/17.
  */
 public abstract class PerBaseImpl
@@ -48,7 +50,9 @@ public abstract class PerBaseImpl
 {
     Logger logger = LoggerFactory.getLogger(getClass());
 
+    /** The Resource this instance wraps **/
     private Resource resource;
+    /** Reference to its JCR Content resource if the resource have on otherwise it is null **/
     private Resource jcrContent;
 
     public PerBaseImpl(Resource resource) {
@@ -118,6 +122,7 @@ public abstract class PerBaseImpl
             null;
     }
 
+    @Override
     public <T> T getContentProperty(String propertyName, Class<T> type) {
         T answer = null;
         ValueMap properties = getProperties();
@@ -127,6 +132,7 @@ public abstract class PerBaseImpl
         return answer;
     }
 
+    @Override
     public <T> T getContentProperty(String propertyName, T defaultValue) {
         T answer = null;
         if(defaultValue != null) {

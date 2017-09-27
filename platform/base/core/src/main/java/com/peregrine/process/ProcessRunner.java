@@ -37,12 +37,15 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * Executes an External Process defined by a list of commands (command followed by 0+ arguments)
+ *
  * Created by Andreas Schaefer on 4/6/17.
  */
 public class ProcessRunner {
 
     private final Logger log = LoggerFactory.getLogger(ProcessRunner.class);
 
+    /** Working Directory in my to place the output and error files. Current user folder is default. **/
     private File workingDirectory = new File(".");
 
     public ProcessRunner() {}
@@ -51,11 +54,20 @@ public class ProcessRunner {
         this.workingDirectory = workingDirectory;
     }
 
+    /** @return True if this is executed on Windows OS **/
     public boolean isWindows() {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         return OS.startsWith("win");
     }
 
+    /**
+     * Executes an External Process and waits for it to conclude
+     * @param command List of strings where the first is the command followed by none or more arguments
+     * @return Process Context of the Execution
+     * @throws ExternalProcessException If the Execution failed because the output / error files could not be created
+     *                                  or the External Process threw an IO Exception. This is not thrown when
+     *                                  the External Process exists with an error
+     */
     public ProcessContext execute(List<String> command)
         throws ExternalProcessException
     {

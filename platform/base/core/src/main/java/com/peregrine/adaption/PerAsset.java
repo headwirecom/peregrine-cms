@@ -50,8 +50,10 @@ public interface PerAsset
     public InputStream getRenditionStream(String name);
 
     /**
+     * Obtain the Input Stream of the Rendition Resource
      *
-     * @param resource
+     * @param resource Resource of the desired rendition. If null then it will use
+     *                 the original Asset otherwise it assumes it is a rendition resource
      * @return The rendition of the resource and if null the original image
      */
     public InputStream getRenditionStream(Resource resource);

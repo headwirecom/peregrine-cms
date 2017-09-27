@@ -37,6 +37,9 @@ import java.io.Reader;
 import java.io.StringWriter;
 
 /**
+ * Process Context Implementation that is able to handle
+ * the Output and Error of an External Process
+ *
  * Created by Andreas Schaefer on 4/5/17.
  */
 public class ProcessContextReader
@@ -45,7 +48,9 @@ public class ProcessContextReader
     private final Logger log = LoggerFactory.getLogger(ProcessContextReader.class);
 
     private int exitCode;
+    /** Output File of the External Process **/
     private File outputFile;
+    /** Error File of the External Process **/
     private File errorFile;
 
     @Override
@@ -62,11 +67,13 @@ public class ProcessContextReader
         return outputFile;
     }
 
+    /** Set the Output File of the External Process. If not set then there is not way to obtain the output **/
     public ProcessContextReader setOutputFile(File outputFile) {
         this.outputFile = outputFile;
         return this;
     }
 
+    /** Set the Error File of the External Process. If not set then there is not way to obtain the error output **/
     public File getErrorFile() {
         return errorFile;
     }
@@ -79,6 +86,7 @@ public class ProcessContextReader
     /**
      * Deletes the given files and its parent if there is a file
      */
+    @Override
     public void tearDown() {
         File parent = null;
         if(outputFile != null) {
@@ -127,6 +135,11 @@ public class ProcessContextReader
         }
     }
 
+    /**
+     * Obtains the Content of the given file
+     * @param file File to read the content from
+     * @return The file content if the file is not null, exists, is a file and can be read from otherwise it is an empty string
+     */
     private String getFileContent(File file) {
         String answer = "";
         if(file != null) {

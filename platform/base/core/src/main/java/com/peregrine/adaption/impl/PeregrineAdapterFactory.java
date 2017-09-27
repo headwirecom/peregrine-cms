@@ -44,6 +44,9 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 /**
+ * This Adapter Factory allows to adapt a resource to a Wrapped Peregrine Object
+ * or a Resource Resolver to a Page Manager
+ *
  * Created by Andreas Schaefer on 6/4/17.
  */
 @Component(
@@ -82,6 +85,16 @@ public class PeregrineAdapterFactory
         }
     }
 
+    /**
+     * Adapts the given resource to the desired type if supported here (page or asset)
+     * @param resource Resource to be adapted. If the desired type is a Peregrine Page
+     *                 then it will go up the resource tree until it finds a JCR Content
+     *                 node or the root. This way a page can be found by starting from any
+     *                 of its components
+     * @param type Desired type which can only be one of the Peregrine Wrapped Objects
+     * @param <AdapterType> Desired type to be adapted to
+     * @return The requested Peregrine Wrapped Object if the resource matches the type and if the requested type is supported
+     */
     @SuppressWarnings("unchecked")
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
@@ -113,6 +126,13 @@ public class PeregrineAdapterFactory
         return null;
     }
 
+    /**
+     * Adapts a Resource Resolver to the Peregrine Page Manager
+     * @param resolver Resource resolver
+     * @param type Desired type which must be the Peregrine Page Manager
+     * @param <AdapterType> Desired typ
+     * @return Page Manager if the resource resolver is not null and the type is the Peregrine Page Manager
+     */
     @SuppressWarnings("unchecked")
     private <AdapterType> AdapterType getAdapter(ResourceResolver resolver,
                                                  Class<AdapterType> type) {
@@ -125,6 +145,14 @@ public class PeregrineAdapterFactory
         }
     }
 
+    /**
+     * Tries to find a page of the given resource. This is either that resource
+     * or one of its parent until we find a JCR Content Node.
+     * This method does return a page from one of its child nodes (components).
+     * The method will end as soon as we hit a JCR Content node or the root node
+     * @param resource Starting resource
+     * @return A Wrapped Page Object if found otherwise null
+     */
     private PerPage findPage(Resource resource) {
         log.trace("path: {}", resource.getPath());
         String primaryType = PerUtil.getPrimaryType(resource);

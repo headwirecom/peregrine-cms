@@ -40,6 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * TODO: There is something wrong with the Configuration Name -> check if needed and if not remove it (transformation seems wrong).
+ * 
  * Created by Andreas Schaefer on 5/22/17.
  */
 @Component(
