@@ -165,8 +165,11 @@ public class RemoteS3SystemReplicationService
     private String awsRegionName;
 
     private void setup(BundleContext context, final Configuration configuration) {
+        log.debug("Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
+        log.debug("Extension: '{}'", configuration.exportExtensions());
         exportExtensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
+        log.debug("Mandatory Renditions: '{}'", configuration.mandatoryRenditions());
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
 
         awsBucketName = configuration.awsBucketName();
@@ -286,6 +289,7 @@ public class RemoteS3SystemReplicationService
             request.setMetadata(objectMetadata);
         }
         s3.putObject(request);
+        log.trace("Send String Request to S3. Resource: '{}', Extension: '{}', Content: '{}'", resource.getPath(), extension, content);
         return "aws-s3-system://" + resource.getPath();
     }
 
@@ -323,6 +327,7 @@ public class RemoteS3SystemReplicationService
             objectMetadata.setContentType(mimeType);
             request.setMetadata(objectMetadata);
         }
+        log.trace("Send Byte Request to S3. Resource: '{}', Extension: '{}', Content Length: '{}'", resource.getPath(), extension, content.length);
         s3.putObject(request);
         return "aws-s3-system://" + resource.getPath();
     }

@@ -121,7 +121,7 @@ public class PerUtil {
                 if(isNotEmpty(entry)) {
                     List<String> keyValue = split(entry, keySeparator);
                     if(keyValue.size() != 2) {
-                        throw new IllegalArgumentException("Entry: '{}' could not be split into a key value pair");
+                        throw new IllegalArgumentException("Entry: '" + entry + "' could not be split into a key value pair, entries: '" + Arrays.asList(entries));
                     }
                     String key = keyValue.get(0);
                     String value = keyValue.get(1);

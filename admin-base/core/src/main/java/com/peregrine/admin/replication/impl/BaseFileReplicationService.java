@@ -27,14 +27,14 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.admin.replication.ReferenceLister;
+import com.peregrine.admin.replication.impl.mock.MockRequestPathInfo;
+import com.peregrine.admin.replication.impl.mock.MockSlingHttpServletRequest;
+import com.peregrine.admin.replication.impl.mock.MockSlingHttpServletResponse;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.engine.SlingRequestProcessor;
-import org.apache.sling.servlethelpers.MockRequestPathInfo;
-import org.apache.sling.servlethelpers.MockSlingHttpServletRequest;
-import org.apache.sling.servlethelpers.MockSlingHttpServletResponse;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -83,6 +83,7 @@ public abstract class BaseFileReplicationService
     public List<Resource> replicate(Resource startingResource, boolean deep)
         throws ReplicationException
     {
+        log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
         List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
@@ -121,6 +122,7 @@ public abstract class BaseFileReplicationService
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
+        log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
         ResourceResolver resourceResolver = null;
         for(Resource item: resourceList) {
@@ -282,11 +284,13 @@ public abstract class BaseFileReplicationService
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
     private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
+        log.trace("Replicate Resource: '{}', Post: '{}'", resource.getPath(), post);
         // Render the resource as .data.json and then write the content to the
         String primaryType = getPrimaryType(resource);
         String slingResourceType = getResourceType(resource);
         for(Entry<String, List<String>> entry : getExportExtensions().entrySet()) {
             String extension = entry.getKey();
+            log.trace("Handle Extension: '{}'", extension);
             boolean raw = extension.endsWith("~raw");
             if(raw) {
                 extension = extension.substring(0, extension.length() - "~raw".length());
@@ -298,8 +302,10 @@ public abstract class BaseFileReplicationService
                 Object renderingContent = null;
                 try {
                     if(raw) {
+                        log.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
                         renderingContent = renderRawResource(resource, extension, post);
                     } else {
+                        log.trace("Before Rendering String Resource With Extension: '{}'", extension);
                         renderingContent = renderResource(resource, extension, post);
                     }
                 } catch(ReplicationException e) {
