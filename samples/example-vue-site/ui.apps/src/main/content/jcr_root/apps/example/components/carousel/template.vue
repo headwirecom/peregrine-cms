@@ -70,20 +70,20 @@
       }
     },
     methods: {
-      // beforeSave(data) {
-      //   while(data.children.length > 0) {
-      //     let name = data.children[0].name
-      //     if(data.children[0].path) {
-      //       name = data.children[0].path.split('/').pop()
-      //     }
-      //     delete data.children[0].path
-      //     delete data.children[0].component
-      //     data.children[0]['sling:resourceType'] = 'example/components/carouselItem'
-      //     data[name] = data.children[0]
-      //     data.children = data.children.slice(1)
-      //   }
-      //   return data
-      // }
+      beforeSave(data) {
+        while(data.children.length > 0) {
+          let name = data.children[0].name
+          if(data.children[0].path) {
+            name = data.children[0].path.split('/').pop()
+          }
+          delete data.children[0].path
+          delete data.children[0].component
+          data.children[0]['sling:resourceType'] = 'example/components/carouselItem'
+          data[name] = data.children[0]
+          data.children = data.children.slice(1)
+        }
+        return data
+      }
     }
   }
 </script>

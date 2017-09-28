@@ -39,7 +39,6 @@
       "type": "collection",
       "title": "slides",
       "model": "children",
-      "resourceType": "example/components/carouselItem",
       "multifield": true,
       "fields" : [
         {
