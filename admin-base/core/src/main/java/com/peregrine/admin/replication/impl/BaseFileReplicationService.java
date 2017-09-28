@@ -211,7 +211,7 @@ public abstract class BaseFileReplicationService
     }
 
     /** @return Map listing all extensions and the primary types of all nodes that are exported with that extension **/
-    abstract Map<String, List<String>> getExportExtensions();
+    abstract List<ExportExtension> getExportExtensions();
     /** @return A list of all mandatory renditions which are created during the replication if not already there **/
     abstract List<String> getMandatoryRenditions();
 
@@ -285,11 +285,8 @@ public abstract class BaseFileReplicationService
 
     private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
         log.trace("Replicate Resource: '{}', Post: '{}'", resource.getPath(), post);
-        // Render the resource as .data.json and then write the content to the
-        String primaryType = getPrimaryType(resource);
-        String slingResourceType = getResourceType(resource);
-        for(Entry<String, List<String>> entry : getExportExtensions().entrySet()) {
-            String extension = entry.getKey();
+        for(ExportExtension exportExtension: getExportExtensions()) {
+            String extension = exportExtension.getName();
             log.trace("Handle Extension: '{}'", extension);
             boolean raw = extension.endsWith("~raw");
             if(raw) {
@@ -298,7 +295,7 @@ public abstract class BaseFileReplicationService
             if("*".equals(extension)) {
                 extension = "";
             }
-            if(entry.getValue().contains(primaryType) || entry.getValue().contains(slingResourceType)) {
+            if(exportExtension.supportsResource(resource)) {
                 Object renderingContent = null;
                 try {
                     if(raw) {
@@ -381,6 +378,44 @@ public abstract class BaseFileReplicationService
             throw new ReplicationException("Unsupported Encoding while creating the Render Response", e);
         } catch(ServletException | IOException e) {
             throw new ReplicationException("Failed to render resource: " + resource.getPath(), e);
+        }
+    }
+
+    public static class ExportExtension {
+        private String name;
+        private List<String> types = new ArrayList<>();
+        private boolean exportFolders = false;
+
+        public ExportExtension(String name, List<String> types) {
+            if(isEmpty(name)) {
+                throw new IllegalArgumentException("Extension Name must be provided");
+            }
+            if(types == null || types.isEmpty()) {
+                throw new IllegalArgumentException("Extension Types must be provided");
+            }
+            this.name = name;
+            this.types = types;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean supportsResource(Resource resource) {
+            String primaryType = getPrimaryType(resource);
+            if(types.contains(primaryType)) { return true; }
+            String slingResourceType = getResourceType(resource);
+            if(types.contains(slingResourceType)) { return true; }
+            return false;
+        }
+
+        public boolean isExportFolders() {
+            return exportFolders;
+        }
+
+        public ExportExtension setExportFolders(boolean exportFolders) {
+            this.exportFolders = exportFolders;
+            return this;
         }
     }
 }

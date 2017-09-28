@@ -51,11 +51,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static com.peregrine.commons.util.PerUtil.intoList;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
+import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 
 /**
  * This class replicates resources to a local file system folder
@@ -113,6 +115,12 @@ public class LocalFileSystemReplicationService
         )
         String[] exportExtensions();
         @AttributeDefinition(
+            name = "Extensions Parameters",
+            description = "List of Extension Parameters in the format of <extension>=[<parameter name>:<parameter value>|]*. For now 'exportFolder' takes a boolean (false is default)",
+            required = false
+        )
+        String[] extensionParameters();
+        @AttributeDefinition(
             name = "Mandatory Renditions",
             description = "List of all the required renditions that are replicated (if missing they are created)",
             required = true
@@ -129,14 +137,37 @@ public class LocalFileSystemReplicationService
 
     private File targetFolder;
     private int creationStrategy = CREATE_NONE_STRATEGY;
-    private Map<String, List<String>> exportExtensions = new HashMap<>();
+    private List<ExportExtension> exportExtensions = new ArrayList<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
         log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
         creationStrategy = configuration.creationStrategy();
-        exportExtensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
+        exportExtensions.clear();
+        Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
+        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
+        for(Entry<String, List<String>> extension: extensions.entrySet()) {
+            String name = extension.getKey();
+            if(!isNotEmpty(name)) {
+                List<String> types = extension.getValue();
+                if(!types.isEmpty()) {
+                    List<String> parameters = extensionParameters.get(name);
+                    boolean exportFolder = false;
+                    if(parameters != null) {
+                        String param = splitIntoProperties(parameters, ":").get("exportFolder") + "";
+                        exportFolder = "true".equalsIgnoreCase(param);
+                    }
+                    exportExtensions.add(
+                        new ExportExtension(name, types).setExportFolders(exportFolder)
+                    );
+                } else {
+                    throw new IllegalArgumentException("Supported Types is empty for Extension: " + extension);
+                }
+            } else {
+                log.warn("Configuration contained an empty extension");
+            }
+        }
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
@@ -213,7 +244,7 @@ public class LocalFileSystemReplicationService
     }
 
     @Override
-    Map<String, List<String>> getExportExtensions() { return exportExtensions; }
+    List<ExportExtension> getExportExtensions() { return exportExtensions; }
 
     @Override
     List<String> getMandatoryRenditions() {

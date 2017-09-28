@@ -107,6 +107,21 @@ public class PerUtil {
         return answer;
     }
 
+    public static Map<String, Object> splitIntoProperties(List<String> entries, String separator) {
+        Map<String, Object> answer = new HashMap<>();
+        if(entries != null) {
+            for(String entry: entries) {
+                List<String> props = split(entry, separator);
+                if(props.size() == 2) {
+                    answer.put(props.get(0), props.get(1));
+                } else {
+                    LOG.warn("Property Entry: '{}' does not contain two entry separated: '{}'", entry, separator);
+                }
+            }
+        }
+        return answer;
+    }
+
     /**
      * Splits the given array of texts into a map
      * @param entries Array of entries to be split. If the entries is null then there is no splitting, any null or empty item is ignored
@@ -468,6 +483,9 @@ public class PerUtil {
         String answer = null;
         if(resource != null) {
             ValueMap properties = getProperties(resource, true);
+            if(properties == null) {
+                properties = getProperties(resource, false);
+            }
             if(properties != null) {
                 answer = properties.get(SLING_RESOURCE_TYPE, String.class);
             }
