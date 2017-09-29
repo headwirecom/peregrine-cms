@@ -27,14 +27,14 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.admin.replication.ReferenceLister;
+import com.peregrine.admin.replication.impl.mock.MockRequestPathInfo;
+import com.peregrine.admin.replication.impl.mock.MockSlingHttpServletRequest;
+import com.peregrine.admin.replication.impl.mock.MockSlingHttpServletResponse;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.engine.SlingRequestProcessor;
-import org.apache.sling.servlethelpers.MockRequestPathInfo;
-import org.apache.sling.servlethelpers.MockSlingHttpServletRequest;
-import org.apache.sling.servlethelpers.MockSlingHttpServletResponse;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -83,6 +83,7 @@ public abstract class BaseFileReplicationService
     public List<Resource> replicate(Resource startingResource, boolean deep)
         throws ReplicationException
     {
+        log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
         List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
@@ -121,6 +122,7 @@ public abstract class BaseFileReplicationService
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
+        log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
         ResourceResolver resourceResolver = null;
         for(Resource item: resourceList) {
@@ -209,7 +211,7 @@ public abstract class BaseFileReplicationService
     }
 
     /** @return Map listing all extensions and the primary types of all nodes that are exported with that extension **/
-    abstract Map<String, List<String>> getExportExtensions();
+    abstract List<ExportExtension> getExportExtensions();
     /** @return A list of all mandatory renditions which are created during the replication if not already there **/
     abstract List<String> getMandatoryRenditions();
 
@@ -282,11 +284,10 @@ public abstract class BaseFileReplicationService
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
     private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
-        // Render the resource as .data.json and then write the content to the
-        String primaryType = getPrimaryType(resource);
-        String slingResourceType = getResourceType(resource);
-        for(Entry<String, List<String>> entry : getExportExtensions().entrySet()) {
-            String extension = entry.getKey();
+        log.trace("Replicate Resource: '{}', Post: '{}'", resource.getPath(), post);
+        for(ExportExtension exportExtension: getExportExtensions()) {
+            String extension = exportExtension.getName();
+            log.trace("Handle Extension: '{}'", extension);
             boolean raw = extension.endsWith("~raw");
             if(raw) {
                 extension = extension.substring(0, extension.length() - "~raw".length());
@@ -294,12 +295,14 @@ public abstract class BaseFileReplicationService
             if("*".equals(extension)) {
                 extension = "";
             }
-            if(entry.getValue().contains(primaryType) || entry.getValue().contains(slingResourceType)) {
+            if(exportExtension.supportsResource(resource)) {
                 Object renderingContent = null;
                 try {
                     if(raw) {
+                        log.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
                         renderingContent = renderRawResource(resource, extension, post);
                     } else {
+                        log.trace("Before Rendering String Resource With Extension: '{}'", extension);
                         renderingContent = renderResource(resource, extension, post);
                     }
                 } catch(ReplicationException e) {
@@ -375,6 +378,44 @@ public abstract class BaseFileReplicationService
             throw new ReplicationException("Unsupported Encoding while creating the Render Response", e);
         } catch(ServletException | IOException e) {
             throw new ReplicationException("Failed to render resource: " + resource.getPath(), e);
+        }
+    }
+
+    public static class ExportExtension {
+        private String name;
+        private List<String> types = new ArrayList<>();
+        private boolean exportFolders = false;
+
+        public ExportExtension(String name, List<String> types) {
+            if(isEmpty(name)) {
+                throw new IllegalArgumentException("Extension Name must be provided");
+            }
+            if(types == null || types.isEmpty()) {
+                throw new IllegalArgumentException("Extension Types must be provided");
+            }
+            this.name = name;
+            this.types = types;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean supportsResource(Resource resource) {
+            String primaryType = getPrimaryType(resource);
+            if(types.contains(primaryType)) { return true; }
+            String slingResourceType = getResourceType(resource);
+            if(types.contains(slingResourceType)) { return true; }
+            return false;
+        }
+
+        public boolean isExportFolders() {
+            return exportFolders;
+        }
+
+        public ExportExtension setExportFolders(boolean exportFolders) {
+            this.exportFolders = exportFolders;
+            return this;
         }
     }
 }

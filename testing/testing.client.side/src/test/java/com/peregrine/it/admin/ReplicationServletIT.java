@@ -42,6 +42,7 @@ import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
+import static com.peregrine.it.util.TestHarness.deleteLeafFolder;
 import static com.peregrine.it.util.TestHarness.executeDeepReplication;
 import static com.peregrine.it.util.TestHarness.executeReplication;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
@@ -50,6 +51,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by Andreas Schaefer on 6/22/17.
@@ -71,13 +73,11 @@ public class ReplicationServletIT
     @BeforeClass
     public static void setUpAll() {
         SlingClient client = slingInstanceRule.getAdminClient();
-        try {
-            deleteFolder(client, ROOT_PATH, 200);
-            deleteFolder(client, LIVE_ROOT_PATH, 200);
-        } catch(ClientException e) {
-            logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
-        } catch(IOException e) {
-            logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
+        if(!deleteLeafFolder(client, ROOT_PATH)) {
+            fail("Could not delete Leaf Root Folder: " + ROOT_PATH);
+        }
+        if(!deleteLeafFolder(client, LIVE_ROOT_PATH)) {
+            fail("Could not delete Leaf Live Root Folder: " + LIVE_ROOT_PATH);
         }
     }
 
@@ -221,23 +221,25 @@ public class ReplicationServletIT
     }
 
     @Test
-    public void testRemoteS3PageReplication() throws Exception {
+    public void testRemoteS3AssetReplication() throws Exception {
         checkFolderAndCreate(LOCAL_FOLDER, true);
         SlingClient client = slingInstanceRule.getAdminClient();
-        List<Map> remoteS3Components = getComponentByName(client, RemoteS3SystemReplicationService.class.getName());
-        logger.info("List of Remote S3 Components: '{}'", remoteS3Components);
         String replicationName = "remoteS3IT";
         boolean isFound = false;
-        for(Map componentMap: remoteS3Components) {
-            if(componentMap.containsKey("stat")) {
-                String state = getStringOrNull(componentMap, "state");
-                String checkId = getStringOrNull(componentMap, "id");
-                if("active".equals(state) && replicationName.equals(checkId)) {
-                    isFound = true;
-                    break;
-                }
+        String pid = RemoteS3SystemReplicationService.class.getName();
+        OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
+        List<Map> services = getServicesByID(client, pid);
+        logger.info("Remote S3 Configurations: '{}'", services);
+        for(Map service: services) {
+            String servicePid = service.get("pid") + "";
+            Map<String, Object> serviceConfiguration = osgiConsoleClient.getConfiguration(servicePid, 200);
+            logger.info("Remote S3 Service Configuration: '{}'", serviceConfiguration);
+            String name = serviceConfiguration.get("name") + "";
+            if(replicationName.equals(name)) {
+                isFound = true;
             }
         }
+
         if(isFound) {
             // Remote S3 Replication found and active -> start testing
             // First obtain the replication name to make sure
@@ -258,6 +260,52 @@ public class ReplicationServletIT
             // Replicate the Page
             executeReplication(client, rootFolderPath + "/" + imageName, replicationName, 200);
             //AS TODO: Open an S3 Connection and test if the content made it there
+        } else {
+            logger.warn("\n\n\nNo S3 Remote Replication Servce Found -> Ignore \n\n\n");
+        }
+    }
+
+    @Test
+    public void testRemoteS3PageExportReplication() throws Exception {
+        checkFolderAndCreate(LOCAL_FOLDER, true);
+        SlingClient client = slingInstanceRule.getAdminClient();
+        String replicationName = "remoteS3ITExport";
+        boolean isFound = false;
+        String pid = RemoteS3SystemReplicationService.class.getName();
+        OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
+        List<Map> services = getServicesByID(client, pid);
+        for(Map service: services) {
+            String servicePid = service.get("pid") + "";
+            Map<String, Object> serviceConfiguration = osgiConsoleClient.getConfiguration(servicePid, 200);
+            logger.info("Remote S3 Service Configuration (pid: '{}'): '{}'", servicePid, serviceConfiguration);
+            String name = serviceConfiguration.get("name") + "";
+            if(replicationName.equals(name)) {
+                isFound = true;
+            }
+        }
+
+        if(isFound) {
+            // Remote S3 Replication found and active -> start testing
+            String rootFolderPath = ROOT_PATH + "/test-rs3per";
+            createFolderStructure(client, rootFolderPath);
+
+            createFolderStructure(client, rootFolderPath);
+            // First Create a Template, then a Page using it
+            String templateName = "replication-template";
+            createTemplate(client, rootFolderPath, templateName, EXAMPLE_PAGE_TYPE_PATH, 200);
+            TestPage testTemplate = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, null);
+            checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, testTemplate.toJSon(), true);
+
+            String pageName = "replication-page";
+            createPage(client, rootFolderPath, pageName, rootFolderPath + "/" + templateName, 200);
+            TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, rootFolderPath + "/" + templateName);
+            checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
+
+            // Replicate the Page
+            executeReplication(client, rootFolderPath + "/" + pageName, replicationName, 200);
+            //AS TODO: Open an S3 Connection and test if the content made it there
+        } else {
+            logger.warn("\n\n\nNo S3 Remote Export Replication Service Found -> Ignore \n\n\n");
         }
     }
 
@@ -328,6 +376,7 @@ public class ReplicationServletIT
     private List<Map> getComponentByName(SlingClient client, String name) throws IOException, ClientException {
         List<Map> answer = new ArrayList<>();
         Map componentsMap = listComponentsAsJson(client);
+        logger.info("Components Map: '{}'", componentsMap);
         List data = (List) componentsMap.get("data");
         for(Object temp: data) {
             if(temp instanceof Map) {
@@ -342,18 +391,20 @@ public class ReplicationServletIT
         return answer;
     }
 
-    private List getServicesByID(SlingClient client, String id) throws IOException, ClientException {
-        List answer = new ArrayList();
-        Map componentsMap = listServicesAsJson(client);
-        List data = (List) componentsMap.get("data");
+    private List<Map> getServicesByID(SlingClient client, String id) throws IOException, ClientException {
+        List<Map> answer = new ArrayList<>();
+        Map servicesMaps = listServicesAsJson(client);
+//        logger.info("Services: '{}'", servicesMaps);
+        List data = (List) servicesMaps.get("data");
+//        logger.info("Data: '{}'", data);
         for(Object temp: data) {
             if(temp instanceof Map) {
                 Map serviceMap = (Map) temp;
                 String pid = serviceMap.get("pid") + "";
                 if(pid.startsWith(id)) {
-                    logger.info("Found Local FS Replication Service: '{}'", serviceMap);
+                    logger.info("Found Service with Pid: '{}': '{}'", pid, serviceMap);
                     answer.add(serviceMap);
-                    break;
+//                    break;
                 }
             }
         }
