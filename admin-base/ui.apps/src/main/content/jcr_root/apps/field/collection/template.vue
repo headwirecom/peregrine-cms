@@ -135,11 +135,13 @@
       },
       onAddItem(e){
         if(!this.schema.multifield){
-          this.value.push('')
+          var newChild = '';
         } else {
-            this.value.push({ name: 'n' +Date.now()})
-            this.onSetActiveItem(this.value.length - 1)
+            var newChild = { name: 'n' + Date.now()}
         }
+        newChild['sling:resourceType'] = this.schema.resourceType
+        this.value.push(newChild)
+        this.onSetActiveItem(this.value.length - 1)
         this.$forceUpdate()
       },
       onRemoveItem(item, index){
