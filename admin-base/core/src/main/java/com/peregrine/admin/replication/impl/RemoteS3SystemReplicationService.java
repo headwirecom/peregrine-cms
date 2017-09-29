@@ -70,6 +70,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
@@ -78,8 +79,11 @@ import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getMimeType;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.intoList;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
+import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
+import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 
 /**
  * This class replicates resources to a S3 Bucket
@@ -142,9 +146,15 @@ public class RemoteS3SystemReplicationService
         )
         String[] exportExtensions();
         @AttributeDefinition(
+            name = "Extensions Parameters",
+            description = "List of Extension Parameters in the format of <extension>=[<parameter name>:<parameter value>|]*. For now 'exportFolder' takes a boolean (false is default)",
+            required = false
+        )
+        String[] extensionParameters();
+        @AttributeDefinition(
             name = "Mandatory Renditions",
             description = "List of all the required renditions that are replicated (if missing they are created)",
-            required = true
+            required = false
         )
         String[] mandatoryRenditions();
     }
@@ -156,7 +166,8 @@ public class RemoteS3SystemReplicationService
     @SuppressWarnings("unused")
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
-    private Map<String, List<String>> exportExtensions = new HashMap<>();
+    private List<ExportExtension> exportExtensions = new ArrayList<>();
+//    private Map<String, List<String>> exportExtensions = new HashMap<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
     private AmazonS3 s3;
     private String awsBucketName;
@@ -165,8 +176,34 @@ public class RemoteS3SystemReplicationService
     private String awsRegionName;
 
     private void setup(BundleContext context, final Configuration configuration) {
+        log.debug("Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
-        exportExtensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
+        log.debug("Extension: '{}'", configuration.exportExtensions());
+        exportExtensions.clear();
+        Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
+        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
+        for(Entry<String, List<String>> extension: extensions.entrySet()) {
+            String name = extension.getKey();
+            if(isNotEmpty(name)) {
+                List<String> types = extension.getValue();
+                if(!types.isEmpty()) {
+                    List<String> parameters = extensionParameters.get(name);
+                    boolean exportFolder = false;
+                    if(parameters != null) {
+                        String param = splitIntoProperties(parameters, ":").get("exportFolder") + "";
+                        exportFolder = "true".equalsIgnoreCase(param);
+                    }
+                    exportExtensions.add(
+                        new ExportExtension(name, types).setExportFolders(exportFolder)
+                    );
+                } else {
+                    throw new IllegalArgumentException("Supported Types is empty for Extension: " + extension);
+                }
+            } else {
+                log.warn("Configuration contained an empty extension");
+            }
+        }
+        log.debug("Mandatory Renditions: '{}'", configuration.mandatoryRenditions());
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
 
         awsBucketName = configuration.awsBucketName();
@@ -264,7 +301,7 @@ public class RemoteS3SystemReplicationService
     }
 
     @Override
-    Map<String, List<String>> getExportExtensions() { return exportExtensions; }
+    List<ExportExtension> getExportExtensions() { return exportExtensions; }
 
     @Override
     List<String> getMandatoryRenditions() {
@@ -286,6 +323,7 @@ public class RemoteS3SystemReplicationService
             request.setMetadata(objectMetadata);
         }
         s3.putObject(request);
+        log.trace("Send String Request to S3. Resource: '{}', Extension: '{}', Content: '{}'", resource.getPath(), extension, content);
         return "aws-s3-system://" + resource.getPath();
     }
 
@@ -323,6 +361,7 @@ public class RemoteS3SystemReplicationService
             objectMetadata.setContentType(mimeType);
             request.setMetadata(objectMetadata);
         }
+        log.trace("Send Byte Request to S3. Resource: '{}', Extension: '{}', Content Length: '{}'", resource.getPath(), extension, content.length);
         s3.putObject(request);
         return "aws-s3-system://" + resource.getPath();
     }
