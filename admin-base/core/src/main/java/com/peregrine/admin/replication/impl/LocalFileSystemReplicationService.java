@@ -143,13 +143,14 @@ public class LocalFileSystemReplicationService
     private void setup(BundleContext context, Configuration configuration) {
         log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
+        log.debug("Extension: '{}'", configuration.exportExtensions());
         creationStrategy = configuration.creationStrategy();
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
         Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
-            if(!isNotEmpty(name)) {
+            if(isNotEmpty(name)) {
                 List<String> types = extension.getValue();
                 if(!types.isEmpty()) {
                     List<String> parameters = extensionParameters.get(name);
@@ -168,12 +169,14 @@ public class LocalFileSystemReplicationService
                 log.warn("Configuration contained an empty extension");
             }
         }
+        log.debug("Mandatory Renditions: '{}'", configuration.mandatoryRenditions());
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException("Replication Target Folder cannot be empty");
         } else {
             targetFolderPath = handlePlaceholders(context, targetFolderPath);
+            log.trace("Target Folder Path: '{}', creation strategy: '{}'", targetFolderPath, creationStrategy);
             File temp = new File(targetFolderPath);
             if(!temp.exists()) {
                 switch(creationStrategy) {

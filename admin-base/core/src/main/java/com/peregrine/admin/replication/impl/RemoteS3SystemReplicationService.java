@@ -175,8 +175,8 @@ public class RemoteS3SystemReplicationService
     private String awsSecretKey;
     private String awsRegionName;
 
-    private void setup(BundleContext context, final Configuration configuration) {
-        log.debug("Name: '{}'", configuration.name());
+    private void setup(BundleContext context, Configuration configuration) {
+        log.trace("Create Remote S3 Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
         log.debug("Extension: '{}'", configuration.exportExtensions());
         exportExtensions.clear();

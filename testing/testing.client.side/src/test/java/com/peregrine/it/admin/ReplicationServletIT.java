@@ -84,8 +84,8 @@ public class ReplicationServletIT
     @Test
     public void testInSlingPageReplication() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
-        String rootFolderPath = ROOT_PATH + "/test-spr";
-        String liveRootFolderPath = LIVE_ROOT_PATH + "/test-spr";
+        String rootFolderPath = ROOT_PATH + "/test-ispr";
+        String liveRootFolderPath = LIVE_ROOT_PATH + "/test-ispr";
         createFolderStructure(client, rootFolderPath);
         // First Create a Template, then a Page using it
         String templateName = "replication-template";
@@ -114,8 +114,8 @@ public class ReplicationServletIT
     @Test
     public void testInSlingAssetReplication() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
-        String rootFolderPath = ROOT_PATH + "/test-sar";
-        String liveRootFolderPath = LIVE_ROOT_PATH + "/test-sar";
+        String rootFolderPath = ROOT_PATH + "/test-isar";
+        String liveRootFolderPath = LIVE_ROOT_PATH + "/test-isar";
         String imageName = "test.png";
         createFolderStructure(client, rootFolderPath);
 
@@ -142,12 +142,6 @@ public class ReplicationServletIT
         String replicationName = "localFSPageCreationTest";
 
         createLocalReplicationConfiguration(client, replicationName, LOCAL_FOLDER);
-
-//AS TODO: The search for components by name or id in ComponentsInfo is not working (bug) so we do it manually for now
-//        ComponentsInfo componentsInfo = osgiConsoleClient.getComponentsInfo(200);
-//        logger.info("Components Info: '{}", componentsInfo);
-//        ComponentInfo localFSComponent = componentsInfo.forName(LocalFileSystemReplicationService.class.getName());
-//        logger.info("Local FS Component Info, Id: '{}', Name: '{}', PID: '{}', Status: '{}'", localFSComponent.getId(), localFSComponent.getName(), localFSComponent.getPid(), localFSComponent.getStatus());
 
         String rootFolderPath = ROOT_PATH + "/test-lfspr";
         createFolderStructure(client, rootFolderPath);
@@ -244,7 +238,7 @@ public class ReplicationServletIT
             // Remote S3 Replication found and active -> start testing
             // First obtain the replication name to make sure
             String imageName = "test.png";
-            String rootFolderPath = ROOT_PATH + "/test-lfsar";
+            String rootFolderPath = ROOT_PATH + "/test-res3ar";
             createFolderStructure(client, rootFolderPath);
 
             // Get Image Content and upload it. Then check if Asset exists
@@ -312,21 +306,24 @@ public class ReplicationServletIT
     @Test
     public void testDefaultReplication() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
-        String testFolderName = "test-drh";
+        String testFolderName = "test-dr";
         String rootFolderPath = ROOT_PATH + "/" + testFolderName;
         String pageFolderPath = rootFolderPath + "/pages";
         String livePageFolderPath = LIVE_ROOT_PATH + "/" + testFolderName + "/pages";
         createFolderStructure(client, pageFolderPath);
         String assetFolderPath = rootFolderPath + "/assets";
         createFolderStructure(client, assetFolderPath);
-//        String liveAssetFolderPath = LIVE_ROOT_PATH + "/" + testFolderName + "/assets";
         File localOutputFolder = new File(LOCAL_FOLDER, testFolderName);
 
-        createLocalReplicationConfiguration(client, "localFSIT", localOutputFolder);
+        OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
+
+        String pid = createLocalReplicationConfiguration(client, "localFSIT", localOutputFolder);
+        logger.info("Create localFSIT configuration, PID: '{}'", pid);
+        Map<String, Object> localFSITConfiguration = osgiConsoleClient.getConfiguration(pid, 200);
+        logger.info("Local FS IT Configuration: '{}'", localFSITConfiguration);
+
         createDefaultReplicationConfiguration(client, "defaultIT", assetFolderPath);
 
-        //AS TODO: This does not work as the configuration can be set but the service might now work.
-        OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
         Map<String, Object> tnProperties = new HashMap<>();
         tnProperties.put("enabled", "true");
         String tnPid = ThumbnailImageTransformation.class.getName();
@@ -425,7 +422,7 @@ public class ReplicationServletIT
         assertTrue("Given PID: '" + pid + "' does not start with: '" + fPid, pid.startsWith(fPid));
     }
 
-    private void createLocalReplicationConfiguration(SlingClient client, String name, File folder) throws IOException, ClientException {
+    private String createLocalReplicationConfiguration(SlingClient client, String name, File folder) throws IOException, ClientException {
         // Create Local FS Replication Configuration
         Map<String, Object> properties = new HashMap<>();
         properties.put("name", name);
@@ -436,9 +433,11 @@ public class ReplicationServletIT
         properties.put("mandatoryRenditions", "thumbnail.png");
         String fPid = LocalFileSystemReplicationService.class.getName();
         String pid = createOSGiServiceConfiguration(client, fPid, properties);
-        logger.info("Newly Create Configuration, PID: '{}'", pid);
+        logger.info("Newly Created Local Replication Configuration, PID: '{}'", pid);
         assertNotNull("No PID for the Local Replication Service: '" + name + "' was returned",pid);
         assertTrue("Given PID: '" + pid + "' does not start with: '" + fPid, pid.startsWith(fPid));
+
+        return pid;
     }
 
     @Override
