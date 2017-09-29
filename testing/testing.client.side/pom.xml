@@ -176,8 +176,8 @@
                         </goals>
                         <configuration>
                             <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
-                            <!--<shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>-->
-                            <shouldBlockUntilKeyIsPressed>true</shouldBlockUntilKeyIsPressed>
+                            <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
+                            <!--<shouldBlockUntilKeyIsPressed>true</shouldBlockUntilKeyIsPressed>-->
                         </configuration>
                     </execution>
 
