@@ -28,42 +28,57 @@ package com.peregrine.transform;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+
 /**
+ * Context of an Image Transformation Operation
+ *
  * Created by Andreas Schaefer on 5/19/17.
  */
 public class OperationContext {
 
+    /** Name of the Image Transformation Operation **/
     private String operationName;
-    private Map<String, String> parameters;
+    /** Parameters Map of the Operation **/
+    private Map<String, String> parameters = new HashMap<>();
 
+    /**
+     * Creates an Image Transformation Operation Context
+     * @param operationName Name of the Operation which cannot be empty
+     * @param parameters Optional Map of Parameters. Is ignored if null or empty
+     */
     public OperationContext(String operationName, Map<String, String> parameters) {
-        if(operationName == null || operationName.isEmpty()) {
+        if(isEmpty(operationName)) {
             throw new IllegalArgumentException("Operation Name cannot be null or empty");
         }
         this.operationName = operationName;
-        this.parameters = new HashMap<>();
         if(parameters != null && !parameters.isEmpty()) {
             this.parameters.putAll(parameters);
         }
     }
 
+    /** @return Operation Name which is never empty **/
     public String getOperationName() {
         return operationName;
     }
 
+    /** @return Optional Parameter Map. Which is never null but can be empty **/
     public Map<String, String> getParameters() {
         return parameters;
     }
 
+    /** @return Single Parameter denoted by the given name. If not found is null **/
     public String getParameter(String name) {
         return parameters.get(name);
     }
 
+    /** @return Single Parameter denoted by the given name. If not found or empty then given default value is returned instead **/
     public String getParameter(String name, String defaultValue) {
         String answer = defaultValue;
         if(parameters.containsKey(name)) {
             String temp = parameters.get(name);
-            if(temp != null) {
+            if(isNotEmpty(temp)) {
                 answer = temp;
             }
         }

@@ -38,9 +38,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Image Transformation Provider to manage the available
- * Image Transformation by transformation name which normally
- * is also the operation name
+ * Provider of all available Image Transformations
+ * which can be found by its (transformation) name
+ *
+ * ATTENTION: It is important that Image Transformations
+ * do provide a unique transformation name.
  */
 @Component(
     service = ImageTransformationProvider.class,
@@ -53,8 +55,14 @@ public class ImageTransformationProvider {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    /** Map of all registered Image Transformation by their name **/
     private Map<String, ImageTransformation> imageTransformations = new HashMap<>();
 
+    /**
+     * Provides the Image Transformation
+     * @param transformationName Name of the Image Transformation
+     * @return Image Transformation if found otherwise null
+     */
     public ImageTransformation getImageTransformation(String transformationName) {
         return imageTransformations.get(transformationName);
     }

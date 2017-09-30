@@ -65,6 +65,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 //import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.listMissingResources;
 
 /**
  * This service replicates resources within the same Peregrine
@@ -175,10 +176,10 @@ public class LocalReplicationService
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: new ArrayList<Resource>(replicationList)) {
-            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
+            listMissingResources(reference, replicationList, resourceChecker, false);
         }
         PerUtil.listMissingParents(startingResource, replicationList, source, resourceChecker);
-        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
+        listMissingResources(startingResource, replicationList, resourceChecker, deep);
         return replicate(replicationList);
     }
 
@@ -198,7 +199,7 @@ public class LocalReplicationService
 
         List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
         ResourceChecker resourceChecker = new MatchingResourceChecker(source, target);
-        PerUtil.listMatchingResources(startingResource, replicationList, resourceChecker, true);
+        listMissingResources(startingResource, replicationList, resourceChecker, true);
         return deactivate(startingResource, replicationList);
     }
 

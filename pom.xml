@@ -722,6 +722,8 @@
         <!--<module>autodocs</module>-->
         <module>tooling/maven/archetypes/project</module>
         <module>platform/login</module>
+        <!-- Contains classes that we need for unit testing -->
+        <module>testing/testing.basic</module>
     </modules>
 
 </project>

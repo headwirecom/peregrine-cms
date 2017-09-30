@@ -48,7 +48,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+
 /**
+ * Base Class for VIPS Image Transformation made by
+ * calling VIPS as external process
+ *
  * Created by Andreas Schaefer on 5/19/17.
  */
 public abstract class AbstractVipsImageTransformation
@@ -60,10 +65,12 @@ public abstract class AbstractVipsImageTransformation
 
     abstract MimeTypeService getMimeTypeService();
 
+    @Override
     public boolean isValid() {
         return enabled && checkVips();
     }
 
+    /** @return Returns true if VIPS is installed and can be invoked here **/
     protected boolean checkVips() {
         boolean answer = false;
         ProcessRunner runner = new ProcessRunner();
@@ -77,9 +84,20 @@ public abstract class AbstractVipsImageTransformation
         return answer;
     }
 
+    /**
+     * Transforms an image using the given Operation Name and Parameters
+     *
+     * @param imageContext Context of the Image to be transformed which cannot be null
+     * @param operationName VIPS Operation Name which cannot be empty
+     * @param parameters Optional Parameters for the VIPS Operation
+     * @throws TransformationException If image context is null, operation name is empty, files cannot be created
+     *         or the VIPS process executions fails
+     */
     protected void transform0(ImageContext imageContext, String operationName, String...parameters)
         throws TransformationException
     {
+        if(imageContext == null) { throw new TransformationException("Image Context must be defined for Transformation"); }
+        if(isEmpty(operationName)) { throw new TransformationException("VIPS Operation Name cannot be empty"); }
         String sourceExtension = getMimeTypeService().getExtension(imageContext.getSourceMimeType());
         if(sourceExtension == null) { sourceExtension = imageContext.getSourceMimeType(); }
         String targetExtension = getMimeTypeService().getExtension(imageContext.getTargetMimeType());
@@ -135,6 +153,7 @@ public abstract class AbstractVipsImageTransformation
         }
     }
 
+    /** @return Created Temporary Folder. If it fails it returns null **/
     private Path createTempFolder() {
         Path dir = null;
         try {
@@ -146,6 +165,7 @@ public abstract class AbstractVipsImageTransformation
         return dir;
     }
 
+    /** @return Created Temporary File based on the temporary folder and file name. If it fails it returns null **/
     private File createTempFile(Path tempFolder, String fileName) {
         File file = null;
         try {
@@ -159,6 +179,7 @@ public abstract class AbstractVipsImageTransformation
 
     /**
      * Writes the given input stream into the given file
+     *
      * @param directory Folder where the file is placed into
      * @param fileName File Name of the file to be created including extension
      * @param inputStream Data that is written to the file. This Input Stream is closed at the end
@@ -189,6 +210,7 @@ public abstract class AbstractVipsImageTransformation
         return output;
     }
 
+    /** @return Created File Input Stream or null if it failed **/
     private InputStream openFileInput(Path directory, String fileName) {
         File output = null;
         FileInputStream fis = null;
@@ -202,7 +224,6 @@ public abstract class AbstractVipsImageTransformation
             }
         } catch(FileNotFoundException e) {
             log.error("Failed to write to file", e);
-            e.printStackTrace();
         }
         return fis;
     }

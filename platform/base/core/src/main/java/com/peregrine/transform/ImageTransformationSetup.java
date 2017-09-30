@@ -40,8 +40,25 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * TODO: There is something wrong with the Configuration Name -> check if needed and if not remove it (transformation seems wrong).
- * 
+ * Each instance of this factory provides a single
+ * configuration for a image transformation.
+ *
+ * This way we can group Image Transformations together
+ * and provide Setup specific parameters.
+ *
+ * This service allows the user to create an Image Transformation
+ * that is comprised on one or more Image Transformation through
+ * the Image Transformation Configuration with specific parameters
+ * if needed.
+ *
+ * The Image Transformation Configuration Provider is the central
+ * access point to these configurations so that the user does not
+ * have to deal with all setup services.
+ *
+ * The Image Transformation Provider is then providing access to the
+ * actual Image Transformation Service defined by the transformation
+ * name.
+ *
  * Created by Andreas Schaefer on 5/22/17.
  */
 @Component(

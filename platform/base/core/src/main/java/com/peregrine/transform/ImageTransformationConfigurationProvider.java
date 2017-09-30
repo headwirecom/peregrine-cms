@@ -38,7 +38,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+
 /**
+ * This service is a central access point to the Image Transformation
+ * Configuration provided by all Image Transformation Setups.
+ *
+ * Note: this service is listening to ITS registrations but could also listen
+ * to ITC registrations. For now they are equivalent but if we allow for
+ * other ITC creations then we would need to listen to the later.
+ *
  * Created by Andreas Schaefer on 5/22/17.
  */
 @Component(
@@ -79,11 +89,22 @@ public class ImageTransformationConfigurationProvider {
         return answer;
     }
 
+    /**
+     * Provides the Image Transformation Configurations for a given Setup
+     * @param name Image Transformation Setup name
+     * @return List of Image Transformation Configurations that belong to that Setup Name. If name is empty or no setup
+     *         found the <code>null</code> is returned
+     */
     public List<ImageTransformationConfiguration> getImageTransformationConfigurations(String name) {
-        logger.trace("Obtain Image Transformation Configuration with Name: '{}', found in Map: '{}'", name, imageTransformationSetups.containsKey(name));
-        logger.trace("Image Transformation Setup Keys: '{}'", imageTransformationSetups.keySet());
-        List<ImageTransformationConfiguration> answer = imageTransformationSetups.get(name);
-        logger.trace("Image Transformation Setup returned: '{}'", answer);
+        List<ImageTransformationConfiguration> answer = null;
+        if(isNotEmpty(name)) {
+            logger.trace("Obtain Image Transformation Configuration with Name: '{}', found in Map: '{}'", name, imageTransformationSetups.containsKey(name));
+            logger.trace("Image Transformation Setup Keys: '{}'", imageTransformationSetups.keySet());
+            answer = imageTransformationSetups.get(name);
+            logger.trace("Image Transformation Setup returned: '{}'", answer);
+        } else {
+            logger.warn("Tried to obtain an Image Transformation Setup with an empty name");
+        }
         return answer;
     }
 

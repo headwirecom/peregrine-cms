@@ -76,6 +76,11 @@ public class PerUtil {
         return text != null && !text.isEmpty();
     }
 
+    /**
+     * Taks an array of strings and puts any non-empty string into the returned list
+     * @param entries Array to be placed. If can be a null or empty array
+     * @return List of strings that contains each entry of the given array that was not empty
+     */
     public static List<String> intoList(String[] entries) {
         List<String> answer = new ArrayList<>();
         if(entries != null) {
@@ -107,6 +112,13 @@ public class PerUtil {
         return answer;
     }
 
+    /**
+     * Splits the given List of strings into properties
+     * @param entries List of string to be split. If null or empty the returned map is empty.
+     *                All values that does not contain one and only one separator string are ignored
+     * @param separator The string that separates the property name from its value
+     * @return Properties Map which can be empty but never null
+     */
     public static Map<String, Object> splitIntoProperties(List<String> entries, String separator) {
         Map<String, Object> answer = new HashMap<>();
         if(entries != null) {
@@ -250,6 +262,12 @@ public class PerUtil {
         return checkResource(answer);
     }
 
+    /**
+     * Tries to find the resource of the given path with the resource resolver
+     * @param resourceResolver Used to obtain the resource
+     * @param path Path of the resource to be found
+     * @return A resource if found and if it exists otherwise null
+     */
     public static Resource getResource(ResourceResolver resourceResolver, String path) {
         Resource answer = null;
         if(resourceResolver != null && path != null) {
@@ -264,6 +282,11 @@ public class PerUtil {
         return checkResource(answer);
     }
 
+    /**
+     * Checks if the given resource exists
+     * @param resource Resource to be checked
+     * @return The given resource if it is not null and does exist (is not a Non Existing Resource ref) otherwise null
+     */
     public static Resource checkResource(Resource resource) {
         if(resource != null) {
             return ResourceUtil.isNonExistingResource(resource) ? null : resource;
@@ -360,6 +383,17 @@ public class PerUtil {
         return answer;
     }
 
+    /**
+     * Goes recursively through the resource tree and adds all resources that are selected by the resource checker.
+     * The JCR Content is traversed by default (except when the Resource Checker prevents it) but the other children
+     * only when the deep flag is set true
+     *
+     * @param startingResource Root resource of the search
+     * @param response List of resources where the missing resources are added to
+     * @param resourceChecker Resource Checker instance that decides which resource is deemed missing and defines
+     *                         if children resources are traversed
+     * @param deep If true this goes down recursively any children
+     */
     public static void listMissingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
         ResourceChecker childResourceChecker = resourceChecker;
         if(startingResource != null && resourceChecker != null && response != null) {
@@ -382,36 +416,37 @@ public class PerUtil {
         }
     }
 
-    public static void listMatchingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
-        ResourceChecker childResourceChecker = resourceChecker;
-        if(startingResource != null && resourceChecker != null && response != null) {
-            if(resourceChecker.doAdd(startingResource)) {
-                response.add(startingResource);
-                // If this is JCR Content we need to add all children
-                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
-                    childResourceChecker = new AddAllResourceChecker();
-                }
-            }
-            if(resourceChecker.doAddChildren(startingResource)) {
-                for(Resource child : startingResource.getChildren()) {
-                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-                        listMatchingResources(child, response, childResourceChecker, true);
-                    } else if(deep) {
-                        listMatchingResources(child, response, childResourceChecker, true);
-                    }
-                }
-            }
-        }
-    }
-
-    public static boolean containsResource(List<Resource> resourceList, Resource resource) {
-        for(Resource item: resourceList) {
-            if(item.getPath().equals(resource.getPath())) {
-                return true;
-            }
-        }
-        return false;
-    }
+//AS TODO: This seems to be a duplicate of the method above?
+//    public static void listMatchingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
+//        ResourceChecker childResourceChecker = resourceChecker;
+//        if(startingResource != null && resourceChecker != null && response != null) {
+//            if(resourceChecker.doAdd(startingResource)) {
+//                response.add(startingResource);
+//                // If this is JCR Content we need to add all children
+//                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
+//                    childResourceChecker = new AddAllResourceChecker();
+//                }
+//            }
+//            if(resourceChecker.doAddChildren(startingResource)) {
+//                for(Resource child : startingResource.getChildren()) {
+//                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
+//                        listMatchingResources(child, response, childResourceChecker, true);
+//                    } else if(deep) {
+//                        listMatchingResources(child, response, childResourceChecker, true);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    public static boolean containsResource(List<Resource> resourceList, Resource resource) {
+//        for(Resource item: resourceList) {
+//            if(item.getPath().equals(resource.getPath())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * Lists all the missing parents compared to the parents on the source
@@ -434,7 +469,17 @@ public class PerUtil {
         }
     }
 
+    /**
+     * Tries to obtain the Service Resource Resolver
+     * @param resolverFactory Resource Resolver Factory which cannot be null
+     * @param serviceName Name of the service to find its resource resolver
+     * @return Resource Resolver for that Service
+     * @throws LoginException If the resolver factory could not obtain the Service Resource Resolver
+     * @throws IllegalArgumentException If the resource resolver is null or the service name is empty
+     */
     public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
+        if(resolverFactory == null) { throw new IllegalArgumentException("Resource Resolver Factory cannot be null"); }
+        if(isEmpty(serviceName)) { throw new IllegalArgumentException("Service Name cannot be empty"); }
         Map<String, Object> authInfo = new HashMap<String, Object>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);
@@ -451,6 +496,12 @@ public class PerUtil {
             name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
     }
 
+    /**
+     * Check if the given resource has that Sling Resource Type
+     * @param resource Resource to be checked. It will test this resource and not go down to JCR Content
+     * @param resourceType Sling Resource Type to test. If null or empty this method returns false
+     * @return true if the resource contains a Sling Resource Type that matches the given value
+     */
     public static boolean isResourceType(Resource resource, String resourceType) {
         String answer = null;
         if(resource != null) {
@@ -460,6 +511,12 @@ public class PerUtil {
         return answer != null && answer.equals(resourceType);
     }
 
+    /**
+     * Check if the given resource has that Primary Type
+     * @param resource Resource to be checked. It will test this resource and not go down to JCR Content
+     * @param primaryType Primary Type to test. If null or empty this method returns false
+     * @return true if the resource contains a Primary Type that matches the given value
+     */
     public static boolean isPrimaryType(Resource resource, String primaryType) {
         String answer = null;
         if(resource != null) {
@@ -469,6 +526,10 @@ public class PerUtil {
         return answer != null && answer.equals(primaryType);
     }
 
+    /**
+     * @param resource Given resource
+     * @return Returns the JCR Primary Type property from the resource if that one is not null and if it is found
+     */
     public static String getPrimaryType(Resource resource) {
         String answer = null;
         if(resource != null) {
@@ -493,6 +554,7 @@ public class PerUtil {
         return answer;
     }
 
+    /** @return The Mime Type of this resource (in the JCR Content resource) **/
     public static String getMimeType(Resource resource) {
         String answer = null;
         if(resource != null) {
@@ -504,17 +566,29 @@ public class PerUtil {
         return answer;
     }
 
+    /** Resource Check interface **/
     public static interface ResourceChecker {
+        /** @return True if the resource checks out **/
         public boolean doAdd(Resource resource);
+        /** @return False if the resource's children should not be considered **/
         public boolean doAddChildren(Resource resource);
     }
 
+    /** Checks all resources that are either missing or are outdated on the target **/
     public static class MissingOrOutdatedResourceChecker
         implements ResourceChecker
     {
         private Resource source;
         private Resource target;
 
+        /**
+         * This class will map any children of the source resource to a
+         * child on the target (same relative child path). If missing or
+         * outdated then it will be checked
+         *
+         * @param source Source Root Resource
+         * @param target Target Root Resource
+         */
         public MissingOrOutdatedResourceChecker(Resource source, Resource target) {
             this.source = source;
             this.target = target;
@@ -544,6 +618,10 @@ public class PerUtil {
         public boolean doAddChildren(Resource resource) { return true; }
     }
 
+    /**
+     * Checks all resources that exist on the target (same relative path
+     * as on the source)
+     */
     public static class MatchingResourceChecker
         implements ResourceChecker
     {
@@ -566,6 +644,7 @@ public class PerUtil {
         public boolean doAddChildren(Resource resource) { return true; }
     }
 
+    /** Checks all resources **/
     public static class AddAllResourceChecker
         implements ResourceChecker
     {
@@ -577,6 +656,15 @@ public class PerUtil {
         public boolean doAddChildren(Resource resource) { return true; }
     }
 
+    /**
+     * Obtains the Component Name form the Resource
+     * @param resource Given Resource
+     * @return Takes the resource type, takes away leading slash and then makes it lowercase and replaces / with -.
+     *         It also splits words by camel case with a -.
+     *         For example: '/one/twoThree/FourFive'
+     *         Will Yield: 'one-two-three--four-five'
+     *         The double hyphen is due to the / and uppercase F in Four
+     */
     public static String getComponentNameFromResource(Resource resource) {
         String resourceType = resource.getResourceType();
         if (resourceType != null) {

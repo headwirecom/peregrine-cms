@@ -148,6 +148,7 @@ public class BaseResourceHandlerService
 
         for(ImageTransformationConfiguration imageTransformationConfiguration : imageTransformationConfigurationList) {
             ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(imageTransformationConfiguration.getTransformationName());
+            //AS TODO: If Image Transformation is not found then thow a Transformation Exception
             if(imageTransformation != null) {
                 Map<String, String> parameters = imageTransformationConfiguration.getParameters();
                 OperationContext operationContext = new OperationContext(renditionName, parameters);

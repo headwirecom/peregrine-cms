@@ -30,11 +30,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * This configuration contains the name of the transformation
+ * and its parameters of a single image transformation.
+ *
  * Created by Andreas Schaefer on 5/22/17.
  */
 public class ImageTransformationConfiguration {
+    /** Name of the Image Transformation Setup this configuration belongs to **/
     private String name;
+    /** Name of the Image Transformation this configuration configures **/
     private String transformationName;
+    /** Optional parameters for the Image Transformation **/
     private Map<String, String> parameters = new HashMap<>();
 
     public ImageTransformationConfiguration(String format) {
@@ -61,7 +67,7 @@ public class ImageTransformationConfiguration {
             throw new IllegalArgumentException("Image Configuration has no entries, configuration: '" + configuration + "'. " + getConfigurationFormat());
         }
         String temp = tokens[0];
-        this.transformationName = temp;
+//        this.transformationName = temp;
         if(temp == null || temp.isEmpty()) {
             throw new IllegalArgumentException("Rendition Type format's transformation name is not provided, configuration: '" + configuration + "'. " + getConfigurationFormat());
         } else {
@@ -93,22 +99,27 @@ public class ImageTransformationConfiguration {
         }
     }
 
+    /** @return Name of the Image Transformation Setup this Configuration belongs to **/
     public String getName() {
         return name;
     }
 
+    /** @return Name of the Image Transformation this configuration configures **/
     public String getTransformationName() {
         return transformationName;
     }
 
+    /** Parameters of the Image Transformation which can be empt if there are none **/
     public Map<String, String> getParameters() {
         return Collections.unmodifiableMap(parameters);
     }
 
+    /** @return Single Parameter denoted by the given parameter name. Can be null if not found **/
     public String getParameter(String name) {
         return parameters.get(name);
     }
 
+    /** @return Description of the Configuration Format **/
     private String getConfigurationFormat() {
         return "Expected Configuration Format: transformation=<transformation name>|<a | separated list of <parameter>=<value>>";
     }

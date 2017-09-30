@@ -28,11 +28,17 @@ package com.peregrine.transform;
 /**
  * Defines the API for Image Transformations
  *
+ * ATTENTION: It is important that all Image Transformation do provide
+ * their own, unique Transformation Name otherwise they will shadow
+ * each other leading to unexpected and undefined behavior.
+ * It is probably best to prefix Image Transformation with a project
+ * indicator like we used in VIPS where all IT start with 'vips:'.
+ *
  * Created by Andreas Schaefer on 5/19/17.
  */
 public interface ImageTransformation {
 
-    /** @erturn The Name of the Transformations to look it up by **/
+    /** @erturn The Unique Name of the Transformations to look it up by **/
     public String getTransformationName();
 
     /** @return True if the Transformation is up and running **/
@@ -48,7 +54,7 @@ public interface ImageTransformation {
     public void transform(ImageContext imageContext, OperationContext operationContext)
         throws TransformationException;
 
-    /** Common Transformation Exeption **/
+    /** Common Transformation Exception **/
     public class TransformationException
         extends Exception
     {

@@ -39,6 +39,13 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+/**
+ * Grey Scale Image Transformation
+ *
+ * It is will take an image and make it a greyscale (black and white) image
+ *
+ * ATTENTION: for now only JPEG and PNG images are supported
+ */
 @Component(
     service = ImageTransformation.class,
     property = {

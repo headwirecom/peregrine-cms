@@ -1,8 +1,13 @@
 package com.peregrine.commons.util;
 
+import com.peregrine.it.basic.AbstractTest;
+import org.apache.sling.api.resource.Resource;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,18 +15,21 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class PerUtilTest {
-    @Before
-    public void setUp() throws Exception {
-    }
+public class PerUtilTest
+    extends AbstractTest
+{
+    private static final Logger logger = LoggerFactory.getLogger(PerUtilTest.class.getName());
 
-    @After
-    public void tearDown() throws Exception {
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 
     @Test
-    public void splitIntoMap() throws Exception {
+    public void testSplitIntoMap() throws Exception {
         String[] configurations = new String[] { "data.json=example/components/page|per:Template","infinity.json=per:Object","html=per:Page|per:Template","*~raw=nt:file" };
         Map<String, List<String>> answer = PerUtil.splitIntoMap(configurations, "=", "\\|");
         Map<String, List<String>> expected = new HashMap<>();
@@ -34,4 +42,12 @@ public class PerUtilTest {
         assertEquals("Map did not map", expected, answer);
     }
 
+    @Test
+    public void testGetComponentNameFromResource() throws Exception {
+        Resource resource = mock(Resource.class);
+        when(resource.getResourceType()).thenReturn("/one/twoThree/FourFive");
+        String componentName = PerUtil.getComponentNameFromResource(resource);
+        logger.info("Component Name: '{}'", componentName);
+        assertEquals("Component Name Extraction failed", "one-two-three--four-five", componentName);
+    }
 }

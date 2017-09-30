@@ -39,6 +39,13 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+/**
+ * Creates a Thumbnail Image with the define thumbnail size
+ *
+ * By default VIPS crops the image if the ratio of the thumbnail size
+ * does not match the ones from the source. With no-crop that can be
+ * prevented but then the width or height is smaller
+ */
 @Component(
     service = ImageTransformation.class,
     property = {
