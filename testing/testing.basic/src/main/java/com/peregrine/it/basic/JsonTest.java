@@ -27,6 +27,8 @@ import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.loginService;
 
 public class JsonTest {
@@ -51,7 +53,7 @@ public class JsonTest {
         }
 
         public void setName(String name) {
-            if(name == null || name.isEmpty()) { throw new IllegalArgumentException("Object Name must be provided"); }
+            if(isEmpty(name)) { throw new IllegalArgumentException("Object Name must be provided"); }
             this.name = name;
         }
 
@@ -205,10 +207,21 @@ public class JsonTest {
         public BasicWithContent addContentProperty(Prop prop) { getContent().addProperty(prop); return this; }
     }
 
-    public static class TestPage extends BasicWithContent {
-        public TestPage(String name, String slingResourceType, String templatePath) {
+    public static class TestTemplate extends BasicWithContent {
+        public TestTemplate(String name, String slingResourceType) {
             super(name, PAGE_PRIMARY_TYPE, PAGE_CONTENT_TYPE, slingResourceType);
             addContentProperty(new Prop(JCR_TITLE, name));
+        }
+
+        public TestTemplate addContentChildren(Basic...children) {
+            getContent().addChildren(children);
+            return this;
+        }
+    }
+
+    public static class TestPage extends TestTemplate {
+        public TestPage(String name, String slingResourceType, String templatePath) {
+            super(name, slingResourceType);
             if(templatePath != null) {
                 addContentProperty(new Prop(TEMPLATE, templatePath));
             }

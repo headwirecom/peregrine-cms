@@ -176,6 +176,28 @@ public class AdminResourceHandlerService
                 throw new ManagementException("Template Name is not provided. Path: " + parentPath);
             }
             Node newPage = createPageOrTemplate(parent, name, component, null);
+            // If there is a component then we check the component node and see if there is a child jcr:content node
+            // If found we copy this over into our newly created node
+            if(isNotEmpty(component)) {
+                logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node");
+                try {
+                    if(component.startsWith("/")) {
+                        logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
+                    } else {
+                        String componentPath = "/apps/" + component;
+                        if(newPage.getSession().itemExists(componentPath)) {
+                            Node componentNode = newPage.getSession().getNode("/apps/" + component);
+                            if(componentNode.hasNode(JCR_CONTENT)) {
+                                Node source = componentNode.getNode(JCR_CONTENT);
+                                Node target = newPage.getNode(JCR_CONTENT);
+                                copyNode(source, target, true);
+                            }
+                        }
+                    }
+                } catch(PathNotFoundException e) {
+                    logger.warn("Component (for template)t: '{}' not found -> ignored", component);
+                }
+            }
             return resourceResolver.getResource(newPage.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);

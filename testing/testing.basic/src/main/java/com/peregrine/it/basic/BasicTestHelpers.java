@@ -317,7 +317,7 @@ public class BasicTestHelpers {
         SlingHttpResponse response = client.doGet(path + "." + levels + ".json", 200);
         assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
         String jsonResponse = response.getContent();
-        ObjectMapper mapper = new ObjectMapper();
+//        ObjectMapper mapper = new ObjectMapper();
         Map expected = convertToMap(expectedJson);
         Map actual = convertToMap(jsonResponse);
         logger.info("Expected Map: '{}'", expected);
@@ -331,7 +331,7 @@ public class BasicTestHelpers {
     public static void compareJson(Map<Object, Object> expected, Map actual, String path) throws IOException {
         for(Entry<Object, Object> entry: expected.entrySet()) {
             Object key = entry.getKey() + "";
-            assertTrue("Did not find Property with Name: " + key + " (path: " + path + ")", actual.containsKey(key));
+            assertTrue("Did not find Map Entry with Name: " + key + " (path: " + path + ")", actual.containsKey(key));
             String childPath = path + "/" + key;
             Object value = entry.getValue();
             if(value instanceof Boolean) {

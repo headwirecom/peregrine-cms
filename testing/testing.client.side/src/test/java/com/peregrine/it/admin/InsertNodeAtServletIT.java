@@ -1,8 +1,11 @@
 package com.peregrine.it.admin;
 
 import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.it.basic.JsonTest.BasicObject;
+import com.peregrine.it.basic.JsonTest.NoNameObject;
+import com.peregrine.it.basic.JsonTest.Prop;
 import com.peregrine.it.basic.JsonTest.TestPage;
-import org.apache.sling.testing.clients.ClientException;
+import com.peregrine.it.basic.JsonTest.TestTemplate;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
@@ -12,25 +15,23 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
-import static com.peregrine.it.basic.BasicTestHelpers.checkFolders;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
+import static com.peregrine.it.basic.BasicTestHelpers.compareJson;
+import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;
-import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
 import static com.peregrine.it.util.TestHarness.deleteLeafFolder;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsComponent;
@@ -181,11 +182,11 @@ public class InsertNodeAtServletIT
     }
 
     @Test
-    public void testCreateComponentWithDefaults() throws Exception {
+    public void testCreatePageWithComponentDefaults() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
 
         // Create Page
-        String rootFolderPath = ROOT_PATH + "/test-ccwd";
+        String rootFolderPath = ROOT_PATH + "/test-cpwcd";
         String pageName = "testPage";
         // Create the folder structure
         createFolderStructure(client, rootFolderPath);
@@ -197,9 +198,34 @@ public class InsertNodeAtServletIT
         String componentPath = rootFolderPath + "/" + pageName + "/" + JCR_CONTENT;
         SlingHttpResponse response = insertNodeAtAsContent(client, componentPath,
             "{\"component\":\"it/components/test\", \"test\": \"test-one\"}", "into", 302);
+        // Default Nodes to the Test Page and check if the match
+        // List the children and check if there is a folder
+        Map children = extractChildNodes(listResourceAsJson(client, componentPath, 3));
+        logger.info("Page Component Map: '{}'", children);
+        NoNameObject componentObject = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType("it/components/test")
+            .addProperties(new Prop("prop1", "value1"), new Prop("prop2", "value2"))
+            .addChildren(
+                new BasicObject("child1", NT_UNSTRUCTURED)
+                    .addProperties(new Prop("child1Prop1", "child1Value1"), new Prop("child1Prop2", "child1Value2"))
+                    .addChildren(
+                        new BasicObject("grandchild1", NT_UNSTRUCTURED)
+                            .addProperties(new Prop("grandchild1Prop1", "grandchild1Value1"), new Prop("grandchild1Prop2", "grandchild1Value2"))
+                    ),
+                new BasicObject("child2", NT_UNSTRUCTURED)
+                    .addProperties(new Prop("child2Prop1", "child2Value1"), new Prop("child2Prop2", "child2Value2"))
+                    .addChildren(
+                        new BasicObject("grandchild2", NT_UNSTRUCTURED)
+                            .addProperties(new Prop("grandchild2Prop1", "grandchild2Value1"), new Prop("grandchild2Prop2", "grandchild2Value2"))
+                    )
+            );
+        Map expected = convertToMap(componentObject.toJSon());
+        Map actual = (Map) children.values().iterator().next();
+        logger.info("Expected Map: '{}'", expected);
+        logger.info("Actual Map: '{}'", actual);
+        compareJson(expected, actual);
     }
 
-//    @Test
+    @Test
     public void testCreateTemplateWithDefaults() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
 
@@ -208,15 +234,27 @@ public class InsertNodeAtServletIT
         String templateName = "testTemplate";
         // Create the folder structure
         createFolderStructure(client, rootFolderPath);
+        // Create Component
         createTemplate(client, rootFolderPath, templateName, "it/components/test",200);
-//        TestTemplate testTemplate = new TestTemplate();
-        TestPage testPage = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
-        checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, testPage.toJSon(), true);
-
-        // Create Component Node with the Test Component
-        String componentPath = rootFolderPath + "/" + templateName + "/" + JCR_CONTENT;
-        SlingHttpResponse response = insertNodeAtAsContent(client, componentPath,
-            "{\"component\":\"it/components/test\", \"test\": \"test-one\"}", "into", 302);
+        TestTemplate testTemplate = (TestTemplate) new TestTemplate(templateName, "it/components/test")
+            .addContentChildren(
+                new BasicObject("child1", NT_UNSTRUCTURED)
+                    .addProperties(new Prop("child1Prop1", "child1Value1"), new Prop("child1Prop2", "child1Value2"))
+                    .addChildren(
+                        new BasicObject("grandchild1", NT_UNSTRUCTURED)
+                            .addProperties(new Prop("grandchild1Prop1", "grandchild1Value1"), new Prop("grandchild1Prop2", "grandchild1Value2"))
+                    ),
+                new BasicObject("child2", NT_UNSTRUCTURED)
+                    .addProperties(new Prop("child2Prop1", "child2Value1"), new Prop("child2Prop2", "child2Value2"))
+                    .addChildren(
+                        new BasicObject("grandchild2", NT_UNSTRUCTURED)
+                            .addProperties(new Prop("grandchild2Prop1", "grandchild2Value1"), new Prop("grandchild2Prop2", "grandchild2Value2"))
+                    )
+            )
+            .addContentProperty(new Prop("prop1", "value1"))
+            .addContentProperty(new Prop("prop2", "value2"))
+            ;
+        checkResourceByJson(client, rootFolderPath + "/" + templateName, 4, testTemplate.toJSon(), true);
     }
 
     @Override
