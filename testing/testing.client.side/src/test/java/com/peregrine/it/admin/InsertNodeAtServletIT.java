@@ -1,6 +1,6 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.commons.test.AbstractTest;
 import com.peregrine.it.basic.JsonTest.BasicObject;
 import com.peregrine.it.basic.JsonTest.NoNameObject;
 import com.peregrine.it.basic.JsonTest.Prop;

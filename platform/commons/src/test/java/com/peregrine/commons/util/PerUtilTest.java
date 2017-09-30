@@ -1,10 +1,7 @@
 package com.peregrine.commons.util;
 
-import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.api.resource.Resource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

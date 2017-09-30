@@ -2,7 +2,7 @@ package com.peregrine.it.admin;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;

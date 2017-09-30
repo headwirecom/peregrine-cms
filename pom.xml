@@ -710,6 +710,7 @@
 
     <modules>
         <module>platform/commons</module>
+        <module>platform/commons-test</module>
         <module>platform/base</module>
         <module>platform/external</module>
         <module>platform/distribution</module>
@@ -722,8 +723,6 @@
         <!--<module>autodocs</module>-->
         <module>tooling/maven/archetypes/project</module>
         <module>platform/login</module>
-        <!-- Contains classes that we need for unit testing -->
-        <module>testing/testing.basic</module>
     </modules>
 
 </project>

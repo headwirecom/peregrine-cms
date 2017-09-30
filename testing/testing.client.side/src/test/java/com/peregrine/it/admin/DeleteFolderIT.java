@@ -1,6 +1,6 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
-import static com.peregrine.it.basic.BasicTestHelpers.createFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolders;
 import static com.peregrine.it.util.TestHarness.deleteFolder;

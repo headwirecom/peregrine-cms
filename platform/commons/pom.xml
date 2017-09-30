@@ -155,7 +155,7 @@
 
         <dependency>
             <groupId>com.peregrine-cms</groupId>
-            <artifactId>testing.basic</artifactId>
+            <artifactId>commons-test</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>

@@ -2,8 +2,7 @@ package com.peregrine.it.admin;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.peregrine.it.basic.AbstractTest;
-import org.apache.commons.io.IOUtils;
+import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
@@ -13,14 +12,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
 
-import static com.peregrine.it.basic.BasicTestHelpers.checkFile;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;

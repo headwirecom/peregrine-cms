@@ -1,14 +1,11 @@
 package com.peregrine.it.admin;
 
-import com.peregrine.it.basic.AbstractTest;
+import com.peregrine.commons.test.AbstractTest;
 import com.peregrine.it.basic.JsonTest.BasicImpl;
 import com.peregrine.it.basic.JsonTest.BasicListObject;
 import com.peregrine.it.basic.JsonTest.BasicObject;
-import com.peregrine.it.basic.JsonTest.ChildObject;
-import com.peregrine.it.basic.JsonTest.NoNameObject;
 import com.peregrine.it.basic.JsonTest.ObjectComponent;
 import com.peregrine.it.basic.JsonTest.Prop;
-import com.peregrine.it.basic.JsonTest.TestPage;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
 import org.apache.sling.testing.clients.SlingHttpResponse;
@@ -20,29 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Map;
 
 import static com.peregrine.admin.resource.AdminResourceHandlerService.DELETION_PROPERTY_NAME;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
-import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
-import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
-import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_CAROUSEL_ITEM_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_CAROUSEL_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_JUMBOTRON_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_OBJECT_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createObject;
-import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
-import static com.peregrine.it.util.TestHarness.insertNodeAtAsComponent;
 import static com.peregrine.it.util.TestHarness.updateResource;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
