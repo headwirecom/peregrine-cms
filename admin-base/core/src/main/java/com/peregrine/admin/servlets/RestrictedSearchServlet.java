@@ -145,6 +145,12 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                                     answer.writeAttribute("group", group.getString());
                                 }
                             }
+                            if(node.hasProperty("jcr:title")) {
+                                Property title = node.getProperty("jcr:title");
+                                if(title != null) {
+                                    answer.writeAttribute("title", title.getString());
+                                }
+                            }
                             if(node.hasProperty("templateComponent")) {
                                 Property templateComponent = node.getProperty("templateComponent");
                                 if(templateComponent != null) {

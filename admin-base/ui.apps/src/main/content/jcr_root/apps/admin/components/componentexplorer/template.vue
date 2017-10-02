@@ -31,8 +31,8 @@
             v-on:dragstart = "onDragStart(cmp, $event)" 
             draggable      = "true" 
             class          = "collection-item">
-                <i class="material-icons">drag_handle</i> 
-                {{cmp.path.split('/')[2]}} {{cmp.name}}
+                <i class="material-icons">drag_handle</i>
+                {{displayName(cmp)}}
             </span>
         </div>
     </div>
@@ -65,6 +65,13 @@
             }
         },
         methods: {
+            displayName(cmp) {
+                if(cmp.title) {
+                    return cmp.title
+                } else {
+                    return cmp.path.split('/')[2] + ' ' + cmp.name
+                }
+            },
             onDragStart: function(cmp, ev) {
                 if(ev) {
                     ev.dataTransfer.setData('text', cmp.path)
