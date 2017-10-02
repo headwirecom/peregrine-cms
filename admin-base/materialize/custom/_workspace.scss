@@ -90,7 +90,7 @@
 					&.selected {
 						border: 2px solid color("blue-grey", "base");
 						.editable-actions {
-							display: block;
+							display: flex;
 						}
 					}
 
@@ -103,7 +103,7 @@
 						border-color: color("blue-grey", "base");
 						cursor: move;
 						.editable-actions {
-							display: block;
+							display: flex;
 						}
 					}
 					&.dragging {

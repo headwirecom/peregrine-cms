@@ -42,7 +42,7 @@
                     v-on:dragstart = "onDragStart"
                     v-on:touchstart = "onEditableTouchStart"
                     v-on:touchend  = "onEditableTouchEnd">
-                    <div v-if="enableTools" class="editable-actions" v-bind:style="`width: ${clipboard ? '135' : '90'}px`">
+                    <div v-if="enableTools" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
                                 <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
