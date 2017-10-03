@@ -41,11 +41,12 @@ function fetch(path) {
     logger.fine('Fetch ', path)
     return axios.get(API_BASE+path).then( (response) => {
         return new Promise( (resolve, reject) => {
-            if(response.request.responseURL.indexOf('/system/sling/form/login') >= 0) {
-                reject('need to authenticate')
-            } else {
-                resolve(response.data)
-            }
+            // TODO 
+            // Fix for IE11
+            // if(response.request.responseURL.indexOf('/system/sling/form/login') >= 0) {
+            //     reject('need to authenticate')
+            // }
+            resolve(response.data)
         })
     }).catch( (error) => { logger.error('Fetch request to',
             path, 'failed')
