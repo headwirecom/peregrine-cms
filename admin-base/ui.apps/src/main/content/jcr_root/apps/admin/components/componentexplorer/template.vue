@@ -25,11 +25,11 @@
 <template>
     <div class="component-explorer">
         <span class="panel-title">Components</span>
-        <div v-if="this.$root.$data.admin.components" class="collection">
+        <div v-if="this.$root.$data.admin.components" class="collection with-header">
            <span
-                   class          = "collection-title"
+                   class          = "collection-header"
                    v-for          = "(group, key) in componentList">
-               {{key}}
+               <b>{{key}}</b>
                <span
                    v-for          = "cmp in group"
                 v-on:dragstart = "onDragStart(cmp, $event)"
