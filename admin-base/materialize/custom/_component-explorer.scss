@@ -1,16 +1,18 @@
 .component-explorer {
 	height: 100%;
 	width: 300px;
-	padding: 0 0.75rem;
 	overflow: auto;
+	.collapsible-body{
+		padding: 5px;
 	.collection { 
-		overflow: auto;
+		overflow: hidden;
 		border: 0;
 		.collection-item {
-			display: block;
-			padding-left: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 			background: none;
-			border-color: color("blue-grey", "lighten-4");
+			border: none;
 			color: $link-color;
 			cursor: move;
 			&:hover,
@@ -26,6 +28,13 @@
 				vertical-align: middle;
 				margin-right: 0.5rem;
 			}
+			div {
+				width: 100%;
+			}
+			img {
+				max-width: 100%;
+			}
 		}
 	}
+}
 }

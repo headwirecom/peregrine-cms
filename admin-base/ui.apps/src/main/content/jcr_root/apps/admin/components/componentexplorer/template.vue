@@ -25,28 +25,41 @@
 <template>
     <div class="component-explorer">
         <span class="panel-title">Components</span>
-        <div v-if="this.$root.$data.admin.components" class="collection with-header">
-           <span
-                   class          = "collection-header"
-                   v-for          = "(group, key) in componentList">
-               <b>{{key}}</b>
-               <span
-                   v-for          = "cmp in group"
-                v-on:dragstart = "onDragStart(cmp, $event)"
-                draggable      = "true"
-                class          = "collection-item">
-                    <i class="material-icons">drag_handle</i>
-                    {{displayName(cmp)}}
-                    <img v-if="cmp.thumbnail" v-bind:src="cmp.thumbnail" style="max-width: 260px;">
-                </span>
-            </span>
-        </div>
+            <ul class="collapsible" data-collapsible="expandable" ref="groups">
+                <li v-for="(group, key) in componentList" >
+                    <div class="collapsible-header">
+                        <span>{{key}}</span>
+                        <i class="material-icons">arrow_drop_down</i>
+                    </div>
+                    <div class="collapsible-body">
+                        <ul class="collection">
+                            <li 
+                                class="collection-item"
+                                v-for="component in group"
+                                v-on:dragstart="onDragStart(cmp, $event)" 
+                                draggable="true">
+                                <div>
+                                    <i class="material-icons">drag_handle</i>
+                                    <span>{{displayName(component)}}</span>
+                                </div>
+                                <img v-if="component.thumbnail" v-bind:src="component.thumbnail">
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
     </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
+        mounted() {
+            $(this.$refs.groups).collapsible({ accordion: false })
+        },
+        beforeDestroy() {
+            $(this.$refs.groups).collapsible('destroy')
+        },
         computed: {
             componentList: function () {
                 if(!this.$root.$data.admin.components) return {}
@@ -76,16 +89,16 @@
             }
         },
         methods: {
-            displayName(cmp) {
-                if(cmp.title) {
-                    return cmp.title
+            displayName(component) {
+                if(component.title) {
+                    return component.title
                 } else {
-                    return cmp.path.split('/')[2] + ' ' + cmp.name
+                    return component.path.split('/')[2] + ' ' + component.name
                 }
             },
-            onDragStart: function(cmp, ev) {
+            onDragStart: function(component, ev) {
                 if(ev) {
-                    ev.dataTransfer.setData('text', cmp.path)
+                    ev.dataTransfer.setData('text', component.path)
                 }
             }
         }
