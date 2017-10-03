@@ -26,13 +26,19 @@
     <div class="component-explorer">
         <span class="panel-title">Components</span>
         <div v-if="this.$root.$data.admin.components" class="collection">
-           <span 
-            v-for          = "cmp in componentList"
-            v-on:dragstart = "onDragStart(cmp, $event)" 
-            draggable      = "true" 
-            class          = "collection-item">
-                <i class="material-icons">drag_handle</i>
-                {{displayName(cmp)}}
+           <span
+                   class          = "collection-title"
+                   v-for          = "(group, key) in componentList">
+               {{key}}
+               <span
+                   v-for          = "cmp in group"
+                v-on:dragstart = "onDragStart(cmp, $event)"
+                draggable      = "true"
+                class          = "collection-item">
+                    <i class="material-icons">drag_handle</i>
+                    {{displayName(cmp)}}
+                    <img v-if="cmp.thumbnail" v-bind:src="cmp.thumbnail" style="max-width: 260px;">
+                </span>
             </span>
         </div>
     </div>
@@ -50,13 +56,18 @@
                 var list = this.$root.$data.admin.components.data
                 if(!list || !allowedComponents) return {}
 
-                var ret = []
+                var ret = {}
                 for(var i = 0; i < list.length; i++) {
                     var path = list[i].path
                     if(list[i].group === '.hidden') continue;
                     for(var j = 0; j < allowedComponents.length; j++) {
                         if(path.startsWith(allowedComponents[j])) {
-                            ret.push(list[i])
+                            let groupName = list[i].group
+                            if(!groupName) { groupName = 'General' }
+                            if(!ret[groupName]) {
+                                Vue.set(ret, groupName, [])
+                            }
+                            ret[groupName].push(list[i])
                             break;
                         }
                     }

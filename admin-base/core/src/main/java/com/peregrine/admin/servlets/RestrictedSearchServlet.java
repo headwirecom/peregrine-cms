@@ -157,6 +157,9 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                                     answer.writeAttribute("templateComponent", templateComponent.getBoolean());
                                 }
                             }
+                            if(node.hasNode("thumbnail.png")) {
+                                answer.writeAttribute("thumbnail", node.getPath() + "/thumbnail.png");
+                            }
                         }
                         answer.writeAttribute("nodeType", node.getPrimaryNodeType() + "");
                         answer.writeClose();
