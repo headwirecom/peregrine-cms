@@ -1,4 +1,7 @@
 nav {
+  ul a{
+    display: inline-block;
+  }
   &.nav-extended {
     position: relative;
     z-index: 1;
