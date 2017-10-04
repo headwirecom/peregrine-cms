@@ -21,5 +21,32 @@
 #
 [feature name=peregrine]
 
-[artifacts startLevel=20]
+[artifacts startLevel=30]
     com.peregrine-cms/login/1.0-SNAPSHOT
+
+[:repoinit]
+    create service user distribution-agent-user
+
+    create path (sling:OrderedFolder) /content
+    create path (sling:Folder) /etc
+    create path (sling:Folder) /etc/distribution
+    create path (sling:Folder) /libs
+    create path (sling:Folder) /libs/sling
+    create path (sling:Folder) /libs/sling/distribution
+    create path (sling:Folder) /var
+    create path (sling:Folder) /var/sling
+    create path (sling:Folder) /var/sling/distribution
+    create path (sling:Folder) /var/sling/distribution/packages
+
+# One thing remaining is setting jcr:all to a 'null' path as done in the OSGi Service
+
+    set ACL for distribution-agent-user
+        allow jcr:all on /content
+        allow jcr:all on /etc/distribution
+        allow jcr:all on /libs/sling/distribution
+        allow jcr:all on /var/sling/distribution/packages
+    end
+
+    set repository ACL for distribution-agent-user
+        allow jcr:all
+    end
