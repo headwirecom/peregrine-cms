@@ -261,6 +261,11 @@ class PerAdminImpl {
                             })
                             promises.push(promise)
                         }
+                        let visible = data.model.fields[i].visible
+                        if(visible && visible.startsWith('model.')) {
+                            let name = visible.split('.')[1]
+                            data.model.fields[i].visible = function(model) { return model[name] === 'true' }
+                        }
                     }
                     Promise.all(promises).then( () => {
                             populateView('/admin/componentDefinitions', data.name, data.model)
