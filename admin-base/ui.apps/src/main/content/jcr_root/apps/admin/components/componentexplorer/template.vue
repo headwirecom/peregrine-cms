@@ -26,8 +26,10 @@
     <div class="component-explorer">
         <span class="panel-title">Components</span>
             <ul class="collapsible" data-collapsible="expandable" ref="groups">
-                <li v-for="(group, key) in componentList" >
-                    <div class="collapsible-header">
+                <li 
+                    v-for="(group, key) in componentList" 
+                    v-bind:data-group-index="key" >
+                    <div :class="['collapsible-header', {active: state.accordion[key] }]">
                         <span>{{key}}</span>
                         <i class="material-icons">arrow_drop_down</i>
                     </div>
@@ -54,12 +56,31 @@
 <script>
     export default {
         props: ['model'],
-        mounted() {
-            $(this.$refs.groups).collapsible({ accordion: false })
+        beforeCreate() {
+            let perState = $perAdminApp.getNodeFromViewOrNull('/state'); 
+            perState.componentExplorer = perState.componentExplorer || {
+                accordion: {} 
+            }
         },
+
+        data() {
+            return {
+                state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer')
+            }
+        },
+        
+        mounted() {
+            $(this.$refs.groups).collapsible({ 
+                accordion: false,
+                onOpen: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, true); console.log(this.state); },
+                onClose: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, false); console.log(this.state); }
+            })
+        },
+
         beforeDestroy() {
             $(this.$refs.groups).collapsible('destroy')
         },
+
         computed: {
             componentList: function () {
                 if(!this.$root.$data.admin.components) return {}
