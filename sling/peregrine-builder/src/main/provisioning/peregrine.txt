@@ -25,7 +25,13 @@
     com.peregrine-cms/login/1.0-SNAPSHOT
 
 [:repoinit]
+
+# Create the two System User Peregrine uses for Service Resource Resolvers
+
     create service user distribution-agent-user
+    create service user nodejs-service-user
+
+# Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
     create path (sling:OrderedFolder) /content
     create path (sling:Folder) /etc
@@ -38,7 +44,7 @@
     create path (sling:Folder) /var/sling/distribution
     create path (sling:Folder) /var/sling/distribution/packages
 
-# One thing remaining is setting jcr:all to a 'null' path as done in the OSGi Service
+# Set Permissions for Sling Distribution
 
     set ACL for distribution-agent-user
         allow jcr:all on /content
@@ -46,6 +52,8 @@
         allow jcr:all on /libs/sling/distribution
         allow jcr:all on /var/sling/distribution/packages
     end
+
+# Set Repository ACL for Sling Distribution
 
     set repository ACL for distribution-agent-user
         allow jcr:all
