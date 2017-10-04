@@ -35,7 +35,7 @@ final class DateUtils {
     }
 
     /**
-     * @param date Date value
+     * @param input Date value
      * @return Calendar value or null
      */
     public static Calendar toCalendar(Date input) {
@@ -48,7 +48,7 @@ final class DateUtils {
     }
 
     /**
-     * @param calendar Calendar value
+     * @param input Calendar value
      * @return Date value or null
      */
     public static Date toDate(Calendar input) {

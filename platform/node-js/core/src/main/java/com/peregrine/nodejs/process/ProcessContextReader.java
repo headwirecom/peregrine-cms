@@ -12,6 +12,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 
 /**
+ * Process Tracker Implementation based on local Files
  * Created by Andreas Schaefer on 4/5/17.
  */
 public class ProcessContextReader

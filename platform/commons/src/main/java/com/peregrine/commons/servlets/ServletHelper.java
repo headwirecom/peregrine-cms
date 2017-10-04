@@ -33,10 +33,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Helper Methods for Servlets
+ *
  * Created by rr on 5/2/2017.
  */
 public class ServletHelper {
 
+    /**
+     * Provides the Request Parameters. The parameters are
+     * either retrieved from the Suffix or from the Servlet Parameters
+     * @param request Request containing the parameters
+     * @return A map of parameters
+     */
     public static Map<String,String> obtainParameters(SlingHttpServletRequest request) {
         HashMap<String, String> answer = new HashMap<String, String>();
 
@@ -55,6 +63,15 @@ public class ServletHelper {
 
     }
 
+    /**
+     * Splits the given path into segments (by /) and
+     * then adds each segments (except the first)
+     * separated by a dash.
+     *
+     * For example '/apps/it/components/test' would yield: 'it-components-test'
+     * @param path Path to be handled
+     * @return Dash separated Component Name
+     */
     public static String componentPathToName(String path) {
         String[] segments = path.split("/");
         StringBuilder sb = new StringBuilder();
@@ -67,6 +84,14 @@ public class ServletHelper {
         return sb.toString();
     }
 
+    /**
+     * Creates a Component Path from the given name. If will
+     * be missing the leading '/apps/'.
+     *
+     * For example 'it-components-test' would yield: 'it/components/test'
+     * @param name Name to be converted
+     * @return Component path relative to /apps
+     */
     public static String componentNameToPath(String name) {
         String[] segments = name.split("-");
         StringBuilder sb = new StringBuilder();
@@ -79,6 +104,12 @@ public class ServletHelper {
         return sb.toString();
     }
 
+    /**
+     * Echoes the given Input Stream into a Print Writer
+     * @param input Input Stream which is read out
+     * @param writer Print Writer to which the content of the input stream is sent to
+     * @throws IOException If the handling failed
+     */
     public static void echo(InputStream input, PrintWriter writer) throws IOException {
         char[] buffer = new char[1024];
         InputStreamReader reader = new InputStreamReader(input);
@@ -90,6 +121,12 @@ public class ServletHelper {
         reader.close();
     }
 
+    /**
+     * Returns the content of the Input Stream as String Writer
+     * @param input Input Stream which is read out
+     * @return String Writer instance that contains the Input Stream's content
+     * @throws IOException If the handling failed
+     */
     public static StringWriter asString(InputStream input) throws IOException {
         StringWriter writer = new StringWriter();
         char[] buffer = new char[1024];

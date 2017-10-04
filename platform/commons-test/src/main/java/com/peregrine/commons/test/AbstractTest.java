@@ -8,6 +8,11 @@ import org.junit.rules.TestName;
 import org.slf4j.Logger;
 
 /**
+ * Base Class for Unit and Integration Tests
+ *
+ * It provides a way to log the start and end of a Test Method
+ * as well as logging exceptions that exit a test method
+ *
  * Created by Andreas Schaefer on 6/2/16.
  */
 public abstract class AbstractTest {

@@ -3,6 +3,8 @@ package com.peregrine.commons.util;
 import java.util.Locale;
 
 /**
+ * Commonly used Constants in Peregrine
+ *
  * Created by Andreas Schaefer on 6/19/17.
  */
 public class PerConstants {

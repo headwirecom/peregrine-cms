@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Service that Handles NPM Packages
+ *
  * Created by Andreas Schaefer on 4/4/17.
  */
 @Component(
@@ -112,7 +114,7 @@ public class NpmExternalProcessService
             command.add(PARAMETER_DEPTH + depth);
         }
         if(type != null) {
-            command.add(PARAMETER_TYPE_ONLYT + type);
+            command.add(PARAMETER_TYPE_ONLY + type);
         }
         if(name != null) {
             command.add(name);
@@ -122,6 +124,7 @@ public class NpmExternalProcessService
         return answer;
     }
 
+    @Override
     public ProcessContext installPackage(boolean withJ2V8, String name, String version)
         throws ExternalProcessException
     {
@@ -143,6 +146,7 @@ public class NpmExternalProcessService
         return answer;
     }
 
+    @Override
     public ProcessContext removePackage(boolean withJ2V8, String name, String version)
         throws ExternalProcessException
     {

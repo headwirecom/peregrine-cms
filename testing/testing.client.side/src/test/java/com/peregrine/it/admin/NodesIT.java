@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.List;
@@ -32,6 +33,7 @@ import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;
+import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.executeReplication;
 import static com.peregrine.it.util.TestHarness.getNodes;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -59,13 +61,25 @@ public class NodesIT
     public static SlingInstanceRule slingInstanceRule = new SlingInstanceRule();
 
     @BeforeClass
-    public static void setUpAll() {
+    public static void setUpAll() throws IOException, ClientException {
         SlingClient client = slingInstanceRule.getAdminClient();
         try {
-            client.doDelete(ROOT_PATH, null, null, 200);
+            deleteFolder(client, ROOT_PATH, 200);
         } catch(ClientException e) {
             logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
+        } catch(IOException e) {
+            logger.warn("Could not delete root path: '{}' -> ignore", ROOT_PATH, e);
         }
+        try {
+            deleteFolder(client, LIVE_ROOT_PATH, 200);
+        } catch(ClientException e) {
+            logger.warn("Could not delete live root path: '{}' -> ignore", ROOT_PATH, e);
+        } catch(IOException e) {
+            logger.warn("Could not delete life root path: '{}' -> ignore", ROOT_PATH, e);
+        }
+        // Upload the Test Assets to have something to rendition
+        createFolderStructure(client, ROOT_PATH);
+        createFolderStructure(client, REPLICATION_PATH);
     }
 
 
@@ -73,8 +87,6 @@ public class NodesIT
     public void testListNodes() throws Exception {
         String rootFolderPath = ROOT_PATH + "/folder-ln";
         SlingClient client = slingInstanceRule.getAdminClient();
-        // This test depends on the Create Folder to work
-//        createFolderStructure(client, rootFolderPath);
         // Create a Page, an Object and an Asset and then list it
         String pageFolder = rootFolderPath + "/page";
         createFolderStructure(client, pageFolder);

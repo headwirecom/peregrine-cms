@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Base Class for J2V8 Execution Service
+ *
  * Created by Andreas Schaefer on 4/6/17.
  */
 
@@ -46,8 +48,16 @@ public abstract class AbstractJ2V8ExecutionService {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
+    /** Implement this method to provide a Resource Resolver Factory to this class **/
     protected abstract ResourceResolverFactory getResourceResolverFactory();
 
+    /**
+     * Create and Initialize a Node Wrapper with Java Callback needed to execute a script
+     * - slingnode$request ??
+     * - slingnode$javalog Logs the first parameter to Sl4j Logger
+     * - slingnode$checkJcrPath checks if the first parameter is a path to points to a valid resource
+     * - slingnode$readFromJCR Reads the content of the resource given by the path of the first parameter
+     **/
     public NodeWrapper createAndInitialize() {
         NodeJS node = NodeJS.createNodeJS();
         V8 runtime = node.getRuntime();

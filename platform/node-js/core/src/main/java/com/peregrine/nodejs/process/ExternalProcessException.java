@@ -3,6 +3,8 @@ package com.peregrine.nodejs.process;
 import java.util.List;
 
 /**
+ * Marker Exception for External Process Failures
+ *
  * Created by Andreas Schaefer on 4/4/17.
  */
 public class ExternalProcessException

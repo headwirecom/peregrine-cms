@@ -45,6 +45,16 @@ public class J2V8ProcessExecutionService
         logger.trace("Activate J2V8ProcessExecutionService");
     }
 
+    /**
+     * Creates a Node Wrapper and adds additional methods
+     * Beside the AbstractJ2V8ExecutionService.createAndInitialize() it will also
+     * add:
+     * - slingnode$processOutput Appends the first parameter as output to the process context
+     * - slingnode$processError Append the first parameter as error to the process context
+     *
+     * @param processContext Process Context
+     * @return Node Wrapper
+     */
     public NodeWrapper createAndInitialize(final ProcessContext processContext) {
         NodeWrapper answer = super.createAndInitialize();
         final ProcessContextTracker processContextTracker = (ProcessContextTracker) processContext;

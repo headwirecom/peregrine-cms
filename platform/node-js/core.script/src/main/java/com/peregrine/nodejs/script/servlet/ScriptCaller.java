@@ -1,6 +1,8 @@
 package com.peregrine.nodejs.script.servlet;
 
 /**
+ * Servlet Paths for the Node JS handling
+ *
  * Created by Andreas Schaefer on 4/10/17.
  */
 public interface ScriptCaller {

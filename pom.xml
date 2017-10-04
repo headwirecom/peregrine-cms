@@ -200,8 +200,8 @@
                     <version>2.1.0</version>
                     <configuration>
                         <slingUrl>http://${sling.host}:${sling.port}/system/console</slingUrl>
-                        <user>admin</user>
-                        <password>admin</password>
+                        <user>${sling.user}</user>
+                        <password>${sling.password}</password>
                     </configuration>
                 </plugin>
                 <!-- Apache Felix Bundle Plugin -->
@@ -341,6 +341,11 @@
                 <artifactId>org.apache.sling.api</artifactId>
                 <version>2.16.2</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.jcr.api</artifactId>
+                <version>2.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.sling</groupId>

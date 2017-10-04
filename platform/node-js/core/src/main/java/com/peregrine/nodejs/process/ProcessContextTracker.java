@@ -7,6 +7,8 @@ import java.io.Reader;
 import java.io.StringReader;
 
 /**
+ * Process Context based on Strings
+ *
  * Created by Andreas Schaefer on 4/5/17.
  */
 public class ProcessContextTracker

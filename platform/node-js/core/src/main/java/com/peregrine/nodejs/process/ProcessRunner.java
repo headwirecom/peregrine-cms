@@ -21,6 +21,8 @@ import java.util.Locale;
 import static com.peregrine.nodejs.process.ProcessContextReader.NO_EXIT_CODE;
 
 /**
+ * Executes external processes or J2V8 scripts
+ *
  * Created by Andreas Schaefer on 4/6/17.
  */
 public class ProcessRunner {
@@ -29,17 +31,31 @@ public class ProcessRunner {
 
     private File workingDirectory = new File(".");
 
+    /**
+     * Creates default Process runner with the local folder (.) as working directory
+     */
     public ProcessRunner() {}
 
+    /**
+     * Creates default Process runner with the given folder as working directory
+     */
     public ProcessRunner(File workingDirectory) {
         this.workingDirectory = workingDirectory;
     }
 
+    /** @return True if the OS is windows **/
     public boolean isWindows() {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         return OS.startsWith("win");
     }
 
+    /**
+     * Executes an external script with the given commands
+     *
+     * @param command Command followed by a list of arguments
+     * @return Execution Process Context
+     * @throws ExternalProcessException If the execution failed
+     */
     public ProcessContext execute(List<String> command)
         throws ExternalProcessException
     {
@@ -80,6 +96,14 @@ public class ProcessRunner {
         return answer.setExitCode(exitCode);
     }
 
+    /**
+     * Executes a script inside Sling as J2V8
+     * @param executor J2V8 Process Executor
+     * @param scriptJcrPath JCR Path to the script
+     * @param command Arguments
+     * @return Context of the Process Execution
+     * @throws ExternalProcessException If the Execution failed
+     */
     public ProcessContext executeWithJ2V8(J2V8ProcessExecution executor, String scriptJcrPath, List<String> command)
         throws ExternalProcessException
     {
@@ -99,6 +123,15 @@ public class ProcessRunner {
         return answer;
     }
 
+    /**
+     * Executes a script inside Sling as J2V8
+     * @param executor J2V8 Web Executor
+     * @param scriptJcrPath JCR Path to the script
+     * @param request Servlet Request
+     * @param response Servlet Response
+     * @return Context of the Process Execution
+     * @throws ExternalProcessException If the Execution failed
+     */
     public ProcessContext executeWithJ2V8(J2V8WebExecution executor, String scriptJcrPath, SlingHttpServletRequest request, SlingHttpServletResponse response)
             throws ExternalProcessException
     {

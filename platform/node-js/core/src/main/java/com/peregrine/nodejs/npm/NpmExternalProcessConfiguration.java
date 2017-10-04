@@ -4,6 +4,9 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
+ * Configuration that let's the admin define the NPM
+ * Repository Folder
+ *
  * Created by Andreas Schaefer on 4/4/17.
  */
 @ObjectClassDefinition(

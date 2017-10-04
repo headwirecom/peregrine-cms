@@ -64,6 +64,11 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.junit.core</artifactId>
         </dependency>
@@ -90,6 +95,11 @@
             <artifactId>commons-test</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
         </dependency>
     </dependencies>
 
@@ -152,150 +162,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
-                <groupId>org.apache.sling</groupId>
-                <artifactId>slingstart-maven-plugin</artifactId>
-                <version>1.7.6</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>prepare-launchpad-package</id>
-                        <goals>
-                            <goal>prepare-package</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>build-launchpad-package</id>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>start-container-before-IT</id>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-container-after-IT</id>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
-                            <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
-                            <!--<shouldBlockUntilKeyIsPressed>true</shouldBlockUntilKeyIsPressed>-->
-                        </configuration>
-                    </execution>
-
-                </executions>
-                <configuration>
-                    <servers>
-                        <server>
-                            <id>singleinstance</id>
-                            <port>${http.port}</port>
-                            <vmOpts>${sling.vm.options}</vmOpts>
-                            <!-- This makes sure that configurations for IT are used -->
-                            <runmode>it</runmode>
-                        </server>
-                    </servers>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.19.1</version>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <systemPropertyVariables>
-                        <launchpad.http.port>${http.port}</launchpad.http.port>
-                        <IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>
-
-                        <launchpad.http.server.url>http://${sling.host}:${http.port}</launchpad.http.server.url>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>io.wcm.maven.plugins</groupId>
-                <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <serviceURL>http://${sling.host}:${http.port}/bin/cpm/package.service.html</serviceURL>
-                    <userId>${sling.user}</userId>
-                    <password>${sling.password}</password>
-                    <failOnMissingEmbed>true</failOnMissingEmbed>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>install</goal>
-                        </goals>
-                        <configuration>
-                            <packageFiles>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>base.ui.apps</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>external</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>felib.ui.apps</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>pagerender-vue.ui.apps</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>admin.ui.materialize</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>admin.ui.apps</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>example-vue.ui.apps</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                            </packageFiles>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
@@ -310,4 +176,209 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>standalone</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>slingstart-maven-plugin</artifactId>
+                        <version>1.7.6</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>prepare-launchpad-package</id>
+                                <goals>
+                                    <goal>prepare-package</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>build-launchpad-package</id>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>start-container-before-IT</id>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-container-after-IT</id>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
+                                    <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
+                                    <!--<shouldBlockUntilKeyIsPressed>true</shouldBlockUntilKeyIsPressed>-->
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                        <configuration>
+                            <servers>
+                                <server>
+                                    <id>singleinstance</id>
+                                    <port>${http.port}</port>
+                                    <vmOpts>${sling.vm.options}</vmOpts>
+                                    <!-- This makes sure that configurations for IT are used -->
+                                    <runmode>it</runmode>
+                                </server>
+                            </servers>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <launchpad.http.port>${http.port}</launchpad.http.port>
+                                <IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>
+
+                                <launchpad.http.server.url>http://${sling.host}:${http.port}</launchpad.http.server.url>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>io.wcm.maven.plugins</groupId>
+                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serviceURL>http://${sling.host}:${http.port}/bin/cpm/package.service.html</serviceURL>
+                            <userId>${sling.user}</userId>
+                            <password>${sling.password}</password>
+                            <failOnMissingEmbed>true</failOnMissingEmbed>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install</goal>
+                                </goals>
+                                <configuration>
+                                    <packageFiles>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>base.ui.apps</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>external</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>felib.ui.apps</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>pagerender-vue.ui.apps</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>admin.ui.materialize</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>admin.ui.apps</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>example-vue.ui.apps</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                    </packageFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bundle</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>install</goal>
+                                </goals>
+                                <configuration>
+                                    <bundleFileName>${project.basedir}/../testing.config.client//target/testing.client.config-1.0-SNAPSHOT.jar</bundleFileName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <launchpad.http.port>${sling.port}</launchpad.http.port>
+                                <IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>
+
+                                <launchpad.http.server.url>http://${sling.host}:${sling.port}</launchpad.http.server.url>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

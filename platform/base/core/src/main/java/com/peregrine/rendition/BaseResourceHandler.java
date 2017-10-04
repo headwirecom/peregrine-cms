@@ -7,7 +7,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import javax.jcr.Node;
 
 /**
- *
+ * Interface defining the basic Resource Handling for Renditions
  */
 public interface BaseResourceHandler {
 

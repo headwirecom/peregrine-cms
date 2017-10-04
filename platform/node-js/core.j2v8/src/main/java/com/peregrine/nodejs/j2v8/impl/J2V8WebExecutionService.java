@@ -36,6 +36,18 @@ public class J2V8WebExecutionService
         return resourceResolverFactory;
     }
 
+    /**
+     * Creates a Node Wrapper and adds additional methods
+     * Beside the AbstractJ2V8ExecutionService.createAndInitialize() it will also
+     * add:
+     * - slingnode$httpout Appends the first parameter as output to the Servlet Response
+     * - slingnode$getRequest Returns Servlet Request
+     * - slingnode$getResponse Returns Servlet Response
+     *
+     * @param request Servlet Request
+     * @param response Servlet Response
+     * @return Node Wrapper
+     */
     public NodeWrapper createAndInitialize(final SlingHttpServletRequest request, final SlingHttpServletResponse response) {
         NodeWrapper answer = super.createAndInitialize();
 
