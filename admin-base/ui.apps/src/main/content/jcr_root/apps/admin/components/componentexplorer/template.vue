@@ -36,7 +36,7 @@
                             <li 
                                 class="collection-item"
                                 v-for="component in group"
-                                v-on:dragstart="onDragStart(cmp, $event)" 
+                                v-on:dragstart="onDragStart(component, $event)" 
                                 draggable="true">
                                 <div>
                                     <i class="material-icons">drag_handle</i>
