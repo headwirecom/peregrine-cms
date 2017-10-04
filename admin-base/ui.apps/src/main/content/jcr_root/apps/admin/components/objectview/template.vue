@@ -27,6 +27,30 @@
         <template v-if="currentObject">
             <ul class="explorer-preview-nav">
                 <li>
+                    <a  href="#!"
+                        title="rename asset"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="renameObject">
+                        <admin-components-iconrename></admin-components-iconrename>
+                    </a>
+                </li>
+                <li>
+                    <a  href="#!"
+                        title="move asset"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="moveObject">
+                        <i class="material-icons">compare_arrows</i>
+                    </a>
+                </li>
+                <li>
+                    <a  href="#!"
+                        title="delete asset"
+                        class="waves-effect waves-light"
+                        v-on:click.stop.prevent="deleteObject">
+                        <i class="material-icons">delete</i>
+                    </a>
+                </li>
+                <li>
                     <a  v-if="!edit"
                         title="edit object" 
                         class="waves-effect waves-light" 
@@ -162,7 +186,46 @@
           onCancel: function() {
             $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
               $perAdminApp.getNodeFromView('/state/tools').edit = false
-          }
+          },
+            renameObject() {
+                const name = $perAdminApp.getNodeFromView('/state/tools/object').show.substring($perAdminApp.getNodeFromView('/state/tools/object').show.lastIndexOf('/')+1)
+                let newName = prompt('new name for '+name)
+                if(newName) {
+                    $perAdminApp.stateAction('renameObject', { path: $perAdminApp.getNodeFromView('/state/tools/object').show, name: newName})
+                    $perAdminApp.getNodeFromView('/state/tools').object = null
+                }
+            },
+            deleteObject() {
+                $perAdminApp.stateAction('deleteObject', $perAdminApp.getNodeFromView('/state/tools/object').show)
+            },
+            moveObject() {
+                const root = '/content/objects'
+                const type = 'folder'
+                const assetPath = $perAdminApp.getNodeFromView('/state/tools/object').show
+                const selectedPath = assetPath.substr(0, assetPath.lastIndexOf('/'))
+                console.log(selectedPath)
+                let currentPath
+                // is selectedPath the root dir?
+                selectedPath === root
+                    ? currentPath = selectedPath
+                    : currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                const initModalState = {
+                    root: root,
+                    type: type,
+                    current: currentPath,
+                    selected: selectedPath
+                }
+                console.log(initModalState)
+                const options = {
+                    complete: () => {
+                        const newPath = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
+                        $perAdminApp.stateAction('moveObject', { path: assetPath, to: newPath, type: 'child'})
+                        $perAdminApp.getNodeFromView('/state/tools').objects = newPath
+                        $perAdminApp.getNodeFromView('/state/tools').object = null
+                    }
+                }
+                $perAdminApp.pathBrowser(initModalState, options)
+            },
         }
     }
 </script>
