@@ -25,12 +25,13 @@
 <template>
     <div class="component-explorer">
         <span class="panel-title">Components</span>
+            <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
             <ul class="collapsible" data-collapsible="expandable" ref="groups">
                 <li 
                     v-for="(group, key) in componentList" 
                     v-bind:data-group-index="key" >
-                    <div :class="['collapsible-header', {active: state.accordion[key] }]">
-                        <span>{{key}}</span>
+                    <div :class="['collapsible-header', {active: isActive( key, group.length ) }]">
+                        <span>{{key}}</span><span class="right">({{group.length}})</span>
                         <i class="material-icons">arrow_drop_down</i>
                     </div>
                     <div class="collapsible-body">
@@ -59,21 +60,22 @@
         beforeCreate() {
             let perState = $perAdminApp.getNodeFromViewOrNull('/state'); 
             perState.componentExplorer = perState.componentExplorer || {
-                accordion: {} 
+                accordion: {},
+                filter: "" 
             }
         },
 
         data() {
             return {
-                state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer')
+                state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer'),
             }
         },
         
         mounted() {
             $(this.$refs.groups).collapsible({ 
                 accordion: false,
-                onOpen: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, true); console.log(this.state); },
-                onClose: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, false); console.log(this.state); }
+                onOpen: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, true) },
+                onClose: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, false) }
             })
         },
 
@@ -89,6 +91,11 @@
                 var allowedComponents = ['/apps/'+componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
                 var list = this.$root.$data.admin.components.data
                 if(!list || !allowedComponents) return {}
+                if (this.state.filter) {
+                    list = list.filter( word => {
+                        return word.title.toLowerCase().indexOf( this.state.filter.toLowerCase() ) > -1
+                    })
+                }
 
                 var ret = {}
                 for(var i = 0; i < list.length; i++) {
@@ -110,6 +117,11 @@
             }
         },
         methods: {
+            isActive( key, groupChildren) {
+                return (
+                    this.state.accordion[ key ]
+                )
+            },
             displayName(component) {
                 if(component.title) {
                     return component.title
