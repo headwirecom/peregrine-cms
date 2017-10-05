@@ -82,25 +82,28 @@ public class GetObjectServlet extends AbstractBaseServlet {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found").setRequestPath(path);
         }
 
-        try {
-            Map object = modelFactory.exportModelForResource(resource,
-                    "jackson", Map.class,
-                    Collections.<String, String>emptyMap());
-            try {
-                JsonResponse response = new JsonResponse();
-                response.writeMap(object);
-                return response;
-            } catch (IOException e) {
-            }
-
-        } catch (ExportException e) {
-        } catch (MissingExporterException e) {
-        } catch (ModelClassException e) {
-            // doesnt exist, continue
-        }
+        // changed the approach to forward through the export servlet as exportModelForResource does not
+        // yeld consistent resulrs (takes the first match for the model)
+//        try {
+//            Map object = modelFactory.exportModelForResource(resource,
+//                    "jackson", Map.class,
+//                    Collections.<String, String>emptyMap());
+//            try {
+//                JsonResponse response = new JsonResponse();
+//                response.writeMap(object);
+//                return response;
+//            } catch (IOException e) {
+//            }
+//
+//        } catch (ExportException e) {
+//        } catch (MissingExporterException e) {
+//        } catch (ModelClassException e) {
+//            // doesnt exist, continue
+//        }
 
 
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
+        rdOptions.setReplaceSelectors("model");
         return new ForwardResponse(resource, rdOptions);
     }
 }
