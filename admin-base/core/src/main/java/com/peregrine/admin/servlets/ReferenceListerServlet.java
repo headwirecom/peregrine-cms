@@ -76,7 +76,7 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
         String sourcePath = request.getParameter("path");
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
-            List<Resource> references = referenceLister.getReferenceList(source, true);
+            List<Resource> references = referenceLister.getReferenceList(true, source, true);
             JsonResponse answer = new JsonResponse();
             answer.writeAttribute("sourceName", source.getName());
             answer.writeAttribute("sourcePath", source.getPath());

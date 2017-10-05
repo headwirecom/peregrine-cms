@@ -84,14 +84,14 @@ public class ReferenceListerService
     private List<String> referencedByRootList = new ArrayList<>();
 
     @Override
-    public List<Resource> getReferenceList(Resource resource, boolean deep) {
-        return getReferenceList(resource, deep, null, null);
+    public List<Resource> getReferenceList(boolean traverseDeep, Resource resource, boolean deep) {
+        return getReferenceList(traverseDeep, resource, deep, null, null);
     }
 
     @Override
-    public List<Resource> getReferenceList(Resource resource, boolean deep, Resource source, Resource target) {
+    public List<Resource> getReferenceList(boolean traverseDeep, Resource resource, boolean deep, Resource source, Resource target) {
         List<Resource> answer = new ArrayList<>();
-        traverse(resource, answer, deep, source, target);
+        traverse(traverseDeep, resource, answer, deep, source, target);
         return answer;
     }
 
@@ -106,23 +106,35 @@ public class ReferenceListerService
         return answer;
     }
 
-    private void traverse(Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
-        Resource jcrContent = resource.getChild(JCR_CONTENT);
-        if(jcrContent != null) {
-            parseProperties(jcrContent, response, deep, source, target);
-            // Loop of all its children
-            traverseTree(jcrContent, response, deep, source, target);
+    private void traverse(boolean traverseDeep, Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
+        if(resource != null) {
+            parseProperties(traverseDeep, resource, response, false, source, target);
+            Resource jcrContent = resource.getChild(JCR_CONTENT);
+            if(!deep) {
+                if(jcrContent != null) {
+                    parseProperties(traverseDeep, jcrContent, response, deep, source, target);
+                    // Loop of all its children
+                    traverseTree(traverseDeep, jcrContent, response, deep, source, target);
+                }
+            } else {
+                Iterable<Resource> children = resource.getChildren();
+                for(Resource child : children) {
+                    parseProperties(traverseDeep, child, response, deep, source, target);
+                    // Loop of all its children
+                    traverseTree(traverseDeep, child, response, deep, source, target);
+                }
+            }
         }
     }
 
-    private void traverseTree(Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
+    private void traverseTree(boolean traverseDeep, Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
         for(Resource child: resource.getChildren()) {
-            parseProperties(child, response, deep, source, target);
-            traverseTree(child, response, deep, source, target);
+            parseProperties(traverseDeep, child, response, deep, source, target);
+            traverseTree(traverseDeep, child, response, deep, source, target);
         }
     }
 
-    private void parseProperties(Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
+    private void parseProperties(boolean traverseDeep, Resource resource, List<Resource> response, boolean deep, Resource source, Resource target) {
         ValueMap properties = resource.getValueMap();
         for(Object item: properties.values()) {
             String value = item + "";
@@ -138,7 +150,7 @@ public class ReferenceListerService
                     }
                     if(child != null) {
                         // Check if the resource is not already listed in there
-                        if(response.contains(child)) {
+                        if(containsResource(response, child)) {
                             log.info("Resource is already in the list: '{}'", child);
                         } else {
                             if(source  != null && target != null) {
@@ -146,14 +158,26 @@ public class ReferenceListerService
                             }
                             log.trace("Found Reference Resource: '{}'", child);
                             response.add(child);
-                            if(deep) {
-                                traverse(child, response, deep, source, target);
+                            if(traverseDeep) {
+                                traverse(traverseDeep, child, response, deep, source, target);
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    private boolean containsResource(List<Resource> resources, Resource check) {
+        boolean answer = false;
+        String checkPath = check.getPath();
+        for(Resource item: resources) {
+            if(item.getPath().equals(checkPath)) {
+                answer = true;
+                break;
+            }
+        }
+        return answer;
     }
 
     private void traverseTreeReverse(Resource resource, String referencePath, List<Reference> response) {
