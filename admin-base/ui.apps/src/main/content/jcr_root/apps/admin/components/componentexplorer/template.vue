@@ -28,7 +28,7 @@
             <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
             <ul class="collapsible" data-collapsible="expandable" ref="groups">
                 <li 
-                    v-for="(group, key) in componentList" 
+                    v-for="(group, key) in groups" 
                     v-bind:data-group-index="key" >
                     <div :class="['collapsible-header', {active: isActive( key, group.length ) }]">
                         <span>{{key}}</span><span class="right">({{group.length}})</span>
@@ -84,22 +84,24 @@
         },
 
         computed: {
-            componentList: function () {
-                if(!this.$root.$data.admin.components) return {}
+            filteredList: function() {
+                if (!this.$root.$data.admin.components) return {}
                 // if(!this.$root.$data.admin.currentPageConfig) return {}
                 var componentPath = this.$root.$data.pageView.path.split('/')
-                var allowedComponents = ['/apps/'+componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                var allowedComponents = ['/apps/' + componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
                 var list = this.$root.$data.admin.components.data
-                if(!list || !allowedComponents) return {}
+                if (!list || !allowedComponents) return {}
 
                 // Filter list to local components and with local filter
-                return list.filter( component => {
-                    if ( component.group === '.hidden') return false;
-                    if ( component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1 ) return false;
+                return list.filter(component => {
+                    if (component.group === '.hidden') return false;
+                    if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
                     return component.path.startsWith(allowedComponents);
 
-                // Reduce component list into groups
-                }).reduce( ( obj, current ) => {
+                })
+            },
+            groups: function () {
+                return this.filteredList.reduce( ( obj, current ) => {
                     if ( !current.group ) current.group = 'General';
                     if ( !obj[ current.group ]) Vue.set(obj, current.group, []);
                     obj[ current.group ].push( current ); 
