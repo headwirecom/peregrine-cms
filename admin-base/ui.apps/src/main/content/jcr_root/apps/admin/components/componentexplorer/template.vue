@@ -91,29 +91,20 @@
                 var allowedComponents = ['/apps/'+componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
                 var list = this.$root.$data.admin.components.data
                 if(!list || !allowedComponents) return {}
-                if (this.state.filter) {
-                    list = list.filter( word => {
-                        return word.title.toLowerCase().indexOf( this.state.filter.toLowerCase() ) > -1
-                    })
-                }
 
-                var ret = {}
-                for(var i = 0; i < list.length; i++) {
-                    var path = list[i].path
-                    if(list[i].group === '.hidden') continue;
-                    for(var j = 0; j < allowedComponents.length; j++) {
-                        if(path.startsWith(allowedComponents[j])) {
-                            let groupName = list[i].group
-                            if(!groupName) { groupName = 'General' }
-                            if(!ret[groupName]) {
-                                Vue.set(ret, groupName, [])
-                            }
-                            ret[groupName].push(list[i])
-                            break;
-                        }
-                    }
-                }
-                return ret
+                // Filter list to local components and with local filter
+                return list.filter( component => {
+                    if ( component.group === '.hidden') return false;
+                    if ( component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1 ) return false;
+                    return component.path.startsWith(allowedComponents);
+
+                // Reduce component list into groups
+                }).reduce( ( obj, current ) => {
+                    if ( !current.group ) current.group = 'General';
+                    if ( !obj[ current.group ]) Vue.set(obj, current.group, []);
+                    obj[ current.group ].push( current ); 
+                    return obj;
+                }, {})
             }
         },
         methods: {
