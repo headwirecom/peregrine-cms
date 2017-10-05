@@ -26,6 +26,15 @@
     <div class="component-explorer">
         <span class="panel-title">Components</span>
             <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
+
+            <div class="input-field col s12">
+                <select>
+                    <option value="" disabled selected>Choose a component group</option>
+                    <option v-for="(group,key) in groups" v-bind:value="key">{{group.name}}</option>
+                </select>
+                <label>Materialize Select</label>
+            </div>
+
             <ul class="collapsible" data-collapsible="expandable" ref="groups">
                 <li 
                     v-for="(group, key) in groups" 
