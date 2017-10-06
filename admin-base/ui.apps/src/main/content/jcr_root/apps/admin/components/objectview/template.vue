@@ -28,23 +28,23 @@
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
-                        title="rename asset"
+                        title="rename object"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameObject">
                         <admin-components-iconrename></admin-components-iconrename>
                     </a>
                 </li>
+                <!--<li>-->
+                    <!--<a  href="#!"-->
+                        <!--title="move object"-->
+                        <!--class="waves-effect waves-light"-->
+                        <!--v-on:click.stop.prevent="moveObject">-->
+                        <!--<i class="material-icons">compare_arrows</i>-->
+                    <!--</a>-->
+                <!--</li>-->
                 <li>
                     <a  href="#!"
-                        title="move asset"
-                        class="waves-effect waves-light"
-                        v-on:click.stop.prevent="moveObject">
-                        <i class="material-icons">compare_arrows</i>
-                    </a>
-                </li>
-                <li>
-                    <a  href="#!"
-                        title="delete asset"
+                        title="delete object"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="deleteObject">
                         <i class="material-icons">delete</i>

@@ -68,6 +68,7 @@ import createObjectFolderWizard from './stateActions/createObjectFolderWizard'
 import savePageProperties from './stateActions/savePageProperties'
 import replicate from './stateActions/replicate'
 import moveTemplate from './stateActions/moveTemplate'
+import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
@@ -108,6 +109,7 @@ actions['createAssetFolder'] = createAssetFolder
 actions['createAssetFolderWizard'] = createAssetFolderWizard
 actions['createObjectFolder'] = createObjectFolder
 actions['createObjectFolderWizard'] = createObjectFolderWizard
+actions['renameObject'] = renameObject
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
 actions['moveObject'] = moveObject
