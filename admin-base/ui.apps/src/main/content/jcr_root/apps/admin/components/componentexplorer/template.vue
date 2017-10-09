@@ -25,32 +25,18 @@
 <template>
     <div class="component-explorer">
         <span class="panel-title">Components</span>
-            <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
-            <ul class="collapsible" data-collapsible="expandable" ref="groups">
-                <li 
-                    v-for="(group, key) in groups" 
-                    v-bind:data-group-index="key" >
-                    <div :class="['collapsible-header', {active: isActive( key, group.length ) }]">
-                        <span>{{key}}</span><span class="right">({{group.length}})</span>
-                        <i class="material-icons">arrow_drop_down</i>
-                    </div>
-                    <div class="collapsible-body">
-                        <ul class="collection">
-                            <li 
-                                class="collection-item"
-                                v-for="component in group"
-                                v-on:dragstart="onDragStart(component, $event)" 
-                                draggable="true">
-                                <div>
-                                    <i class="material-icons">drag_handle</i>
-                                    <span>{{displayName(component)}}</span>
-                                </div>
-                                <img v-if="component.thumbnail" v-bind:src="component.thumbnail">
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-            </ul>
+        <div class="input-field">
+            <vue-form-generator v-bind:schema="groupSchema" v-bind:model="state">
+            </vue-form-generator>
+        </div>
+        <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
+        <ul class="collection" data-collapsible="expandable" ref="groups">
+            <li class="collection-item" v-for="(item,i) in filteredList" :key="i" draggable="true" v-on:dragstart="onDragStart(item, $event)">
+                <div><b>{{item.title}}</b></div>
+                <div>{{item.group}}</div>
+                <img v-if="item.thumbnail" v-bind:src="item.thumbnail"></img>
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -60,60 +46,78 @@
         beforeCreate() {
             let perState = $perAdminApp.getNodeFromViewOrNull('/state'); 
             perState.componentExplorer = perState.componentExplorer || {
-                accordion: {},
-                filter: "" 
+                group: "All",
+                filter: "",
+                componentList: []
             }
         },
 
         data() {
             return {
                 state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer'),
+                groups: [],
+                groupSchema: null
             }
         },
         
         mounted() {
-            $(this.$refs.groups).collapsible({ 
-                accordion: false,
-                onOpen: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, true) },
-                onClose: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, false) }
+            //Initialize the component list for this page
+            if ( this.state.componentList.length === 0) {
+                // if (!this.$root.$data.admin.components) return {}
+                // if(!this.$root.$data.admin.currentPageConfig) return {}
+                const componentPath = this.$root.$data.pageView.path.split('/')
+                const allowedComponents = ['/apps/' + componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                const list = this.$root.$data.admin.components.data
+                this.state.componentList = 
+                    list.filter( component => component.path.startsWith(allowedComponents) )
+            }
+            this.state.componentList.forEach((component,i,arr) => {
+                if (!component.group) arr[i].group = 'General'
             })
+
+            this.groups = this.state.componentList.reduce( ( groups, current ) => {
+                if ( groups.indexOf(current.group) == -1 ) groups.push(current.group);
+                return groups;
+            }, ['All'])
+            this.groups = this.groups.filter( group => group != '.hidden')
+
+            this.groupSchema = {
+                "fields": [{
+                    "type": "material-select",
+                    "label": "Select",
+                    "model": "group",
+                    "values": this.groups.map( group => ({ 'name': group, 'value': group }))
+                }]
+            }
+
+            $(this.$refs.select).material_select();
+            $(this.$refs.select).change((e) => {
+                this.updateGroup(e.target.value);
+            });
+            
         },
 
         beforeDestroy() {
-            $(this.$refs.groups).collapsible('destroy')
+            $(this.$refs.select).material_select('destroy');
         },
 
         computed: {
             filteredList: function() {
-                if (!this.$root.$data.admin.components) return {}
-                // if(!this.$root.$data.admin.currentPageConfig) return {}
-                var componentPath = this.$root.$data.pageView.path.split('/')
-                var allowedComponents = ['/apps/' + componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
-                var list = this.$root.$data.admin.components.data
-                if (!list || !allowedComponents) return {}
-
-                // Filter list to local components and with local filter
-                return list.filter(component => {
+                return this.state.componentList.filter( component => {
+                    if (!component.group) component.group = 'General';
                     if (component.group === '.hidden') return false;
+                    if (this.state.group !== 'All') {
+                        if (component.group !== this.state.group ) return false;
+                    }
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
-                    return component.path.startsWith(allowedComponents);
-
+                    return true;
                 })
             },
-            groups: function () {
-                return this.filteredList.reduce( ( obj, current ) => {
-                    if ( !current.group ) current.group = 'General';
-                    if ( !obj[ current.group ]) Vue.set(obj, current.group, []);
-                    obj[ current.group ].push( current ); 
-                    return obj;
-                }, {})
-            }
         },
+
         methods: {
-            isActive( key, groupChildren) {
-                return (
-                    this.state.accordion[ key ]
-                )
+            updateGroup(value) {
+                this.state.group = value;
             },
             displayName(component) {
                 if(component.title) {
