@@ -287,9 +287,11 @@
             }
             &.field-materialswitch {
                 display: inline-block;
+                padding: 10px;
                 .switch {
                     label {
                         .lever {
+                            margin-left: 0px;
                             // background-color: color("blue-grey", "lighten-3");
                             &:after {
                                 // background-color: color("blue-grey", "lighten-3");

@@ -3,7 +3,6 @@
   <div class="wrap">
 	  <div v-if="!schema.preview" class="switch">
 	    <label :for="getFieldID(schema)">
-	      {{schema.textOff ? schema.textOff : ''}}
 	      <input 
 		      type="checkbox" 
 					v-model="value" 
@@ -11,9 +10,8 @@
 					:disabled="disabled" 
 					:name="schema.inputName" 
 					:id="getFieldID(schema)">
-	      <span 
-	      	class="lever"></span>
-	      {{schema.textOn ? schema.textOn : ''}}
+	      <span class="lever"></span>
+	      {{ value ? schema.textOn : schema.textOff}}
 	    </label>
 	  </div>
   	<p v-else>{{value}}</p>
