@@ -71,11 +71,14 @@
                 this.state.componentList = 
                     list.filter( component => component.path.startsWith(allowedComponents) )
             }
+            this.state.componentList.forEach((component,i,arr) => {
+                if (!component.group) arr[i].group = 'General'
+            })
 
             this.groups = this.state.componentList.reduce( ( groups, current ) => {
                 if ( groups.indexOf(current.group) == -1 ) groups.push(current.group);
                 return groups;
-            }, ['All', 'General'])
+            }, ['All'])
             this.groups = this.groups.filter( group => group != '.hidden')
 
             this.groupSchema = {
