@@ -25,27 +25,18 @@
 <template>
     <div class="component-explorer">
         <span class="panel-title">Components</span>
-            <div class="input-field">
-                <vue-form-generator 
-                    v-bind:schema="groupSchema"
-                    v-bind:model="state" >
-                </vue-form-generator>
-                    <!-- <option value="all" selected>All Components</option>
-                    <option v-for="group in groups" v-bind:value="group">{{group}}</option> -->
-            </div>
-            <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
-            <ul class="collection" data-collapsible="expandable" ref="groups">
-                <li 
-                    class="collection-item"
-                    v-for="(item,i) in filteredList"
-                    :key="i"
-                    draggable="true" 
-                    v-on:dragstart = "onDragStart(item, $event)"
-                >
-                    <div>{{item.title}}</div><div>{{item.group}}</div>
-                    <img v-bind:src="item.thumbnail"></img>
-                </li>
-            </ul>
+        <div class="input-field">
+            <vue-form-generator v-bind:schema="groupSchema" v-bind:model="state">
+            </vue-form-generator>
+        </div>
+        <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
+        <ul class="collection" data-collapsible="expandable" ref="groups">
+            <li class="collection-item" v-for="(item,i) in filteredList" :key="i" draggable="true" v-on:dragstart="onDragStart(item, $event)">
+                <div><b>{{item.title}}</b></div>
+                <div>{{item.group}}</div>
+                <img v-if="item.thumbnail" v-bind:src="item.thumbnail"></img>
+            </li>
+        </ul>
     </div>
 </template>
 
