@@ -2,7 +2,9 @@
 	height: 100%;
 	width: 300px;
 	overflow: auto;
-	.collection {
+	.collapsible-body{
+		padding: 5px;
+	.collection { 
 		overflow: hidden;
 		border: 0;
 		.collection-item {
@@ -34,4 +36,5 @@
 			}
 		}
 	}
+}
 }
