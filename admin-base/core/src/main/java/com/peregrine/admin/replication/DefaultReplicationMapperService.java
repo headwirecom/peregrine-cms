@@ -52,7 +52,7 @@ public class DefaultReplicationMapperService
         @AttributeDefinition(
             name = "Name",
             description = "Name of the Default Replication Service",
-            defaultValue = "defaultMapper",
+            defaultValue = "defaultRepl",
             required = true
         )
         String name();

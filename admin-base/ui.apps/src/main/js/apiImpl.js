@@ -626,7 +626,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let formData = new FormData();
             formData.append('deep', 'false')
-            formData.append('name', 'remote')
+            formData.append('name', 'defaultRepl')
             updateWithForm('/admin/repl.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
