@@ -26,17 +26,24 @@
     <div class="component-explorer">
         <span class="panel-title">Components</span>
             <div class="input-field">
-                <select 
-                    v-model="state.group" 
-                    ref="select">
-                    <option value="all" selected>All Components</option>
-                    <option v-for="group in groups" v-bind:value="group">{{group}}</option>
-                </select>
+                <vue-form-generator 
+                    v-bind:schema="groupSchema"
+                    v-bind:model="state" >
+                </vue-form-generator>
+                    <!-- <option value="all" selected>All Components</option>
+                    <option v-for="group in groups" v-bind:value="group">{{group}}</option> -->
             </div>
             <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
             <ul class="collection" data-collapsible="expandable" ref="groups">
-                <li class="collection-item" v-for="item in filteredList">
+                <li 
+                    class="collection-item"
+                    v-for="(item,i) in filteredList"
+                    :key="i"
+                    draggable="true" 
+                    v-on:dragstart = "onDragStart(item, $event)"
+                >
                     <div>{{item.title}}</div><div>{{item.group}}</div>
+                    <img v-bind:src="item.thumbnail"></img>
                 </li>
             </ul>
     </div>
@@ -48,7 +55,7 @@
         beforeCreate() {
             let perState = $perAdminApp.getNodeFromViewOrNull('/state'); 
             perState.componentExplorer = perState.componentExplorer || {
-                group: "all",
+                group: "All",
                 filter: "",
                 componentList: []
             }
@@ -57,12 +64,14 @@
         data() {
             return {
                 state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer'),
+                groups: [],
+                groupSchema: null
             }
         },
         
         mounted() {
             //Initialize the component list for this page
-            if ( !this.state.componentList ) {
+            if ( this.state.componentList.length === 0) {
                 // if (!this.$root.$data.admin.components) return {}
                 // if(!this.$root.$data.admin.currentPageConfig) return {}
                 const componentPath = this.$root.$data.pageView.path.split('/')
@@ -70,6 +79,21 @@
                 const list = this.$root.$data.admin.components.data
                 this.state.componentList = 
                     list.filter( component => component.path.startsWith(allowedComponents) )
+            }
+
+            this.groups = this.state.componentList.reduce( ( groups, current ) => {
+                if ( groups.indexOf(current.group) == -1 ) groups.push(current.group);
+                return groups;
+            }, ['All', 'General'])
+            this.groups = this.groups.filter( group => group != '.hidden')
+
+            this.groupSchema = {
+                "fields": [{
+                    "type": "material-select",
+                    "label": "Select",
+                    "model": "group",
+                    "values": this.groups.map( group => ({ 'name': group, 'value': group }))
+                }]
             }
 
             $(this.$refs.select).material_select();
@@ -85,22 +109,16 @@
 
         computed: {
             filteredList: function() {
-                return list.filter( component => {
+                return this.state.componentList.filter( component => {
                     if (!component.group) component.group = 'General';
                     if (component.group === '.hidden') return false;
-                    if (this.state.group !== 'all') {
+                    if (this.state.group !== 'All') {
                         if (component.group !== this.state.group ) return false;
                     }
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
                     return true;
                 })
             },
-            groups: function () {
-                return this.state.componentList.reduce( ( groups, current ) => {
-                    if ( groups.indexOf(current.group) == -1 ) groups.push(current.group);
-                    return groups;
-                }, ['General'])
-            }
         },
 
         methods: {
