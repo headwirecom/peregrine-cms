@@ -84,7 +84,7 @@ public abstract class BaseFileReplicationService
         throws ReplicationException
     {
         log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
-        List<Resource> referenceList = getReferenceLister().getReferenceList(startingResource, true);
+        List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
@@ -361,7 +361,7 @@ public abstract class BaseFileReplicationService
             }
             log.trace("Render Resource Request Extension: '{}'", extension);
             mrpi.setExtension(extension);
-            String requestPath = resource.getPath() + extension;
+            String requestPath = resource.getPath() + "." + extension;
             log.trace("Render Resource Request Path: '{}'", mrpi);
             MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
             getRequestProcessor().processRequest(req, resp, resource.getResourceResolver());

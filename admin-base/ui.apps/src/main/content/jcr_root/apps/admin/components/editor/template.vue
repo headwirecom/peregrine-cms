@@ -25,7 +25,7 @@
 <template>
     <div class="editor-panel" ref="editorPanel">
       <div class="editor-panel-content">
-        <span class="panel-title">Editor</span>
+        <span class="panel-title">Editor</span><span v-if="title"> - {{title}}</span>
         <div v-if="!hasSchema">this component does not have a dialog defined</div>
         <vue-form-generator
             v-bind:schema  = "schema"
@@ -76,7 +76,18 @@
         hasSchema: function() {
             if(this.schema) return true
             return false
-        }
+        },
+          title: function() {
+              var view = $perAdminApp.getView()
+              var componentName = view.state.editor.component.split('-').join('/')
+              const components = view.admin.components.data
+              for(let i = 0; i < components.length; i++) {
+                  const component = components[i]
+                  if(component.path.endsWith(componentName)) {
+                      return component.title
+                  }
+              }
+          }
       },
       methods: {
         onOk(e) {

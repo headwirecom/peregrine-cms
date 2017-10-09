@@ -165,7 +165,7 @@ public class LocalReplicationService
         if(target == null) {
             throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
         }
-        List<Resource> referenceList = referenceLister.getReferenceList(startingResource, true, source, target);
+        List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true, source, target);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new MissingOrOutdatedResourceChecker(source, target);
         // Need to check this list of they need to be replicated first
@@ -233,7 +233,7 @@ public class LocalReplicationService
                         log.trace("Add to Path mappings Source Path: '{}', Target Path: '{}'", item.getPath(), targetPath);
                         pathMapping.put(item.getPath(), targetPath);
                         // References need to be updated through the Path Mappings therefore we revisit them here
-                        List<Resource> referenceList = referenceLister.getReferenceList(item, true, source, target);
+                        List<Resource> referenceList = referenceLister.getReferenceList(true, item, true, source, target);
                         for(Resource reference: referenceList) {
                             relativePath = PerUtil.relativePath(source, reference);
                             if(relativePath != null) {

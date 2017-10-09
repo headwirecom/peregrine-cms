@@ -130,7 +130,7 @@ public class DistributionReplicationService
         throws ReplicationException
     {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
-        List<Resource> referenceList = referenceLister.getReferenceList(startingResource, true);
+        List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
         log.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {

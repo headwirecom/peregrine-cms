@@ -138,6 +138,10 @@ class PerApi {
         return impl.deleteObject(path)
     }
 
+    renameObject(path, newName) {
+        return impl.renameObject(path, newName)
+    }
+
     deleteAsset(path) {
         return impl.deleteAsset(path)
     }

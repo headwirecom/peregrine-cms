@@ -389,6 +389,27 @@ class PerAdminImpl {
         })
     }
 
+    moveObject(path, to, type) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('to', to)
+            data.append('type', type)
+            updateWithForm('/admin/move.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
+    renameObject(path, newName) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('to', newName)
+            updateWithForm('/admin/rename.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
     deletePage(path) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
