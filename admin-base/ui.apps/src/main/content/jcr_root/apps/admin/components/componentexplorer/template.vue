@@ -49,7 +49,8 @@
             let perState = $perAdminApp.getNodeFromViewOrNull('/state'); 
             perState.componentExplorer = perState.componentExplorer || {
                 group: "all",
-                filter: "" 
+                filter: "",
+                componentList: []
             }
         },
 
@@ -60,39 +61,42 @@
         },
         
         mounted() {
+            //Initialize the component list for this page
+            if ( !this.state.componentList ) {
+                // if (!this.$root.$data.admin.components) return {}
+                // if(!this.$root.$data.admin.currentPageConfig) return {}
+                const componentPath = this.$root.$data.pageView.path.split('/')
+                const allowedComponents = ['/apps/' + componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                const list = this.$root.$data.admin.components.data
+                this.state.componentList = 
+                    list.filter( component => component.path.startsWith(allowedComponents) )
+            }
+
             $(this.$refs.select).material_select();
             $(this.$refs.select).change((e) => {
                 this.updateGroup(e.target.value);
             });
+            
         },
+
         beforeDestroy() {
             $(this.$refs.select).material_select('destroy');
         },
 
         computed: {
             filteredList: function() {
-                if (!this.$root.$data.admin.components) return {}
-                // if(!this.$root.$data.admin.currentPageConfig) return {}
-                var componentPath = this.$root.$data.pageView.path.split('/')
-                var allowedComponents = ['/apps/' + componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
-                var list = this.$root.$data.admin.components.data
-                if (!list || !allowedComponents) return {}
-
-                // Filter list to local components and with local filter
-                return list.filter(component => {
+                return list.filter( component => {
                     if (!component.group) component.group = 'General';
                     if (component.group === '.hidden') return false;
                     if (this.state.group !== 'all') {
-                        console.log(component.group, this.state.group)
                         if (component.group !== this.state.group ) return false;
                     }
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
-                    return component.path.startsWith(allowedComponents);
-
+                    return true;
                 })
             },
             groups: function () {
-                return this.filteredList.reduce( ( groups, current ) => {
+                return this.state.componentList.reduce( ( groups, current ) => {
                     if ( groups.indexOf(current.group) == -1 ) groups.push(current.group);
                     return groups;
                 }, ['General'])
