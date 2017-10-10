@@ -98,6 +98,9 @@
             }
             &.field-pathbrowser {
                 .wrap {
+                    img {
+                        max-width: 100%;
+                    }
                     input {
                         width: calc(100% - 3rem);
                         + .btn-flat {

@@ -37,6 +37,7 @@
         <button v-on:click.stop.prevent="browse" class="btn-flat">
           <i class="material-icons">insert_drive_file</i>
         </button>
+        <img v-if="isImage()" :src="value" />
       </template>
       <p v-else>{{value}}</p>
     </div>
