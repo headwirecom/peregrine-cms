@@ -37,7 +37,7 @@
         <button v-on:click.stop.prevent="browse" class="btn-flat">
           <i class="material-icons">insert_drive_file</i>
         </button>
-        <img v-if="isImage()" :src="value" />
+        <img v-if="isImage(value)" :src="value" />
       </template>
       <p v-else>{{value}}</p>
     </div>
@@ -48,6 +48,9 @@
         props: ['model'],
         mixins: [ VueFormGenerator.abstractField ],
         methods: {
+            isImage(path) {
+                return /\.(jpg|png|gif)$/.test(path);
+            },
             setPathBrowserValue(){
                 this.value = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
             }, 
