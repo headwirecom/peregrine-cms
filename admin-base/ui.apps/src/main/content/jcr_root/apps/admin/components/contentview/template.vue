@@ -200,9 +200,11 @@ export default {
         setIframeScrollState(viewMode) {
              var iframeDoc = this.$refs.editview.contentWindow.document
             if(viewMode === 'preview'){
-                iframeDoc.body.style.overflow = 'auto'
+                iframeDoc.body.style.overflowX = 'hidden'
+                iframeDoc.body.style.overflowY = 'auto'
             } else {
-                iframeDoc.body.style.overflow = 'hidden'
+                iframeDoc.body.style.overflowX = 'hidden'
+                iframeDoc.body.style.overflowY = 'auto'
             }
         },
 
@@ -296,10 +298,10 @@ export default {
             let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
             let marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
             let newRect = {
-                left: rect.left - marginLeft - 2,
-                right: rect.right + marginRight + 2,
-                top: rect.top - marginTop -2,
-                bottom: rect.bottom + marginBottom + 2,
+                left: rect.left - marginLeft,
+                right: rect.right + marginRight,
+                top: rect.top - marginTop,
+                bottom: rect.bottom + marginBottom,
             }
             newRect.width = newRect.right - newRect.left
             newRect.height = newRect.bottom - newRect.top
