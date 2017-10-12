@@ -104,6 +104,7 @@ public class RemoteS3SystemReplicationService
     public static final String JSON = ".json";
     public static final String HTML = "html";
     public static final String AWS_S3_SYSTEM = "aws-s3-system://";
+    public static final String CONNECTION_TO_S3_COULD_NOT_BE_ESTABLISHED = "Connection to S3 could not be established";
 
     @ObjectClassDefinition(
         name = "Peregrine: Remove S3 Replication Service",
@@ -153,12 +154,13 @@ public class RemoteS3SystemReplicationService
             required = true
         )
         String[] exportExtensions();
-        @AttributeDefinition(
-            name = "Extensions Parameters",
-            description = "List of Extension Parameters in the format of <extension>=[<parameter name>:<parameter value>|]*. For now 'exportFolder' takes a boolean (false is default)",
-            required = false
-        )
-        String[] extensionParameters();
+//AS TODO: Not sure if that is needed. Keep it around for now
+//        @AttributeDefinition(
+//            name = "Extensions Parameters",
+//            description = "List of Extension Parameters in the format of <extension>=[<parameter name>:<parameter value>|]*. For now 'exportFolder' takes a boolean (false is default)",
+//            required = false
+//        )
+//        String[] extensionParameters();
         @AttributeDefinition(
             name = "Mandatory Renditions",
             description = "List of all the required renditions that are replicated (if missing they are created)",
@@ -177,6 +179,7 @@ public class RemoteS3SystemReplicationService
     private List<ExportExtension> exportExtensions = new ArrayList<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
     private AmazonS3 s3;
+    private Regions region;
     private String awsBucketName;
     private String awsAccessKey;
     private String awsSecretKey;
@@ -188,7 +191,7 @@ public class RemoteS3SystemReplicationService
         log.debug("Extension: '{}'", configuration.exportExtensions());
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
-        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
+        Map<String, List<String>> extensionParameters = null;
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
             if(isNotEmpty(name)) {
@@ -218,42 +221,14 @@ public class RemoteS3SystemReplicationService
         awsSecretKey = configuration.awsSecretKey();
         awsRegionName = configuration.awsRegionName();
 
-        Regions region = null;
+        region = null;
         try {
             region = Regions.fromName(awsRegionName);
         } catch(IllegalArgumentException e) {
             log.error("Unknown Region Name: '{}'", awsRegionName);
             throw e;
         }
-        try {
-            s3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(
-                    new AWSCredentialsProvider() {
-                        @Override
-                        public AWSCredentials getCredentials() {
-                            return new AWSCredentials() {
-                                @Override
-                                public String getAWSAccessKeyId() {
-                                    return awsAccessKey;
-                                }
-
-                                @Override
-                                public String getAWSSecretKey() {
-                                    return awsSecretKey;
-                                }
-                            };
-                        }
-
-                        @Override
-                        public void refresh() {
-                        }
-                    })
-                .withRegion(region)
-                .build();
-        } catch(SdkClientException e) {
-            log.error("Login to S3 failed", e);
-            throw e;
-        }
+        connectS3();
     }
 
     @Reference
@@ -286,8 +261,42 @@ public class RemoteS3SystemReplicationService
         return createPutRequest(bucketName, key, extension, content.getBytes());
     }
 
+    private boolean connectS3() {
+        boolean answer = false;
+        try {
+            s3 = AmazonS3ClientBuilder.standard()
+                .withCredentials(
+                    new AWSCredentialsProvider() {
+                        @Override
+                        public AWSCredentials getCredentials() {
+                            return new AWSCredentials() {
+                                @Override
+                                public String getAWSAccessKeyId() {
+                                    return awsAccessKey;
+                                }
+
+                                @Override
+                                public String getAWSSecretKey() {
+                                    return awsSecretKey;
+                                }
+                            };
+                        }
+
+                        @Override
+                        public void refresh() {
+                        }
+                    })
+                .withRegion(region)
+                .build();
+            answer = true;
+        } catch(SdkClientException e) {
+            log.error("Login to S3 failed", e);
+        }
+        return answer;
+    }
+
     private PutObjectRequest createPutRequest(String bucketName, String key, String extension, byte[] content) {
-        if("/".equals(key)) {
+        if(SLASH.equals(key)) {
             return null;
         }
         if(key.startsWith(SLASH)) {
@@ -329,7 +338,16 @@ public class RemoteS3SystemReplicationService
             objectMetadata.setContentType(HTML_MIME_TYPE);
             request.setMetadata(objectMetadata);
         }
-        s3.putObject(request);
+        try {
+            s3.putObject(request);
+        } catch(SdkClientException e) {
+            // Try to reconnect and try again
+            if(connectS3()) {
+                s3.putObject(request);
+            } else {
+                throw new ReplicationException(CONNECTION_TO_S3_COULD_NOT_BE_ESTABLISHED, e);
+            }
+        }
         log.trace("Send String Request to S3. Resource: '{}', Extension: '{}', Content: '{}'", resource.getPath(), extension, content);
         return AWS_S3_SYSTEM + resource.getPath();
     }
@@ -369,27 +387,55 @@ public class RemoteS3SystemReplicationService
             request.setMetadata(objectMetadata);
         }
         log.trace("Send Byte Request to S3. Resource: '{}', Extension: '{}', Content Length: '{}'", resource.getPath(), extension, content.length);
-        s3.putObject(request);
+        try {
+            s3.putObject(request);
+        } catch(SdkClientException e) {
+            // Try to reconnect and try again
+            if(connectS3()) {
+                s3.putObject(request);
+            } else {
+                throw new ReplicationException(CONNECTION_TO_S3_COULD_NOT_BE_ESTABLISHED, e);
+            }
+        }
         return AWS_S3_SYSTEM + resource.getPath();
     }
 
     @Override
     void removeReplica(Resource resource, final List<Pattern> namePattern, final boolean isFolder) throws ReplicationException {
         if(isFolder) {
-            s3.deleteObject(new DeleteObjectRequest(awsBucketName, resource.getPath()));
+            try {
+                s3.deleteObject(new DeleteObjectRequest(awsBucketName, resource.getPath()));
+            } catch(SdkClientException e) {
+                // Try to reconnect and try again
+                if(connectS3()) {
+                    s3.deleteObject(new DeleteObjectRequest(awsBucketName, resource.getPath()));
+                } else {
+                    throw new ReplicationException(CONNECTION_TO_S3_COULD_NOT_BE_ESTABLISHED, e);
+                }
+            }
         } else {
             // List all objects of the resource parent paths and then match them with the pattern
-            String resourceName = resource.getName();
+//            String resourceName = resource.getName();
             Resource parent = resource.getParent();
             String parentFolderPath = "";
             if(parent != null) {
                 parentFolderPath = parent.getPath();
             }
-            ObjectListing objectListing = s3.listObjects(new ListObjectsRequest().withBucketName(awsBucketName).withPrefix(parentFolderPath));
+            ObjectListing objectListing;
+            try {
+                objectListing = s3.listObjects(new ListObjectsRequest().withBucketName(awsBucketName).withPrefix(parentFolderPath));
+            } catch(SdkClientException e) {
+                // Try to reconnect and try again
+                if(connectS3()) {
+                    objectListing = s3.listObjects(new ListObjectsRequest().withBucketName(awsBucketName).withPrefix(parentFolderPath));
+                } else {
+                    throw new ReplicationException(CONNECTION_TO_S3_COULD_NOT_BE_ESTABLISHED, e);
+                }
+            }
             for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
                 String key = objectSummary.getKey();
                 String name = key.substring(parentFolderPath.length());
-                if(name.startsWith("/")) {
+                if(name.startsWith(SLASH)) {
                     name = name.length() > 1 ? name.substring(1) : "";
                 }
                 if(namePattern == null) {

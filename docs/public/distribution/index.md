@@ -6,6 +6,10 @@ peregrine cms distribution
 Peregrine supports the content distribution through various means out of the box. This document shows
 you the supported mechanism and how to set the up.
 
+Keep in mind that in Sling Distribution is what Replication is in AEM. The code uses **replication**
+instead of **distribution** to avoid confusion with Sling Distribution. In this documentation we use
+the term Distribution to go along with the Sling parlance.
+
 # Supported Distributions
 
 These are the current supported distributions:
@@ -13,7 +17,8 @@ These are the current supported distributions:
 1. Local, in-Peregrine Copies
 1. Remote Sling Distributions (Peregrine to remote Peregrine)
 1. Local File System
-1. S3 Bucket (not yet)
+1. S3 Bucket
+1. Default Distribution
 
 **Attention**:
 
@@ -22,19 +27,19 @@ the **asset rendition** must be setup to reliably replicate all desired renditio
 
 # General Usage
 
-Replication can be executed using the **repl.json** admin action. It is a POST call
+Distribution can be executed using the **repl.json** admin action. It is a POST call
 having these parameters:
 
 |Name|Required|Type|Default|Description|
 |:---|:-------|:---|:------|:----------|
-|name|yes|String|none|Name of the Replication Service|
+|name|yes|String|none|Name of the Distribution Service|
 |deep|no|boolean|false|Replicate children as well|
 |deactivate|no|boolean|false|Deactivate / Remove replicants|
 
 Please use the [Swagger UI](http://localhost:8080/api/swaggereditor/), look for **repl.json**
 and click on **try it out**, enter the parameter values on the click on **Execute**.
 
-The **name** of the replication service is the name of a service that implements the
+The **name** of the distribution service is the name of a service that implements the
 *com.peregrine.admin.replication.Replication* interface. If the name could not be found
 the call ends with an exception.
 
@@ -47,7 +52,7 @@ to another folder. To make this work you need to configure the service
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
-|Name|name|yes|String|none|Name of the Replication Service|
+|Name|name|yes|String|none|Name of the Distribution Service|
 |Local Mapping|localMapping|yes|String|none|Folder Mapping, format: &lt;absolute folder path>=&lt;absolute target path>|
 
 Out of the box there is a service called **local** that has the this local mapping: **/content=/live**. 
@@ -66,7 +71,7 @@ distribution service: **com.peregrine.admin.replication.impl.DistributionReplica
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
-|Name|name|yes|String|none|Name of the Replication Service|
+|Name|name|yes|String|none|Name of the Distribution Service|
 |Forward Agent|agentName|yes|String|none|Name of the Sling Distribution Forward Agent|
 
 Out of the box there is a service called **remote** that has the this Forward Agent: **publish**. 
@@ -126,7 +131,8 @@ To configure this distribution service: **com.peregrine.admin.replication.impl.L
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
-|Name|name|yes|String|none|Name of the Replication Service|
+|Name|name|yes|String|none|Name of the Distribution Service|
+|Description|description|no|String|none|Description of this Service|
 |Target Folder|targetFolder|yes|String|none|Absolute Path to the Output Folder. Can use place holders inside ${} which supports Java / Sling properties|
 |Export Extensions|exportExtensions|yes|String|none|List of Extensions to be exported. The format is &lt;extension[~raw]>=&lt;&vert;-split list of primary types that are exported>|
 |Creation Strategy|creationStrategy|yes|int|1|If target folder(s) is missing what is created (0: none, 1: leaf folder, 2: all folders (mkdirs)|
@@ -143,6 +149,50 @@ Peregrine comes with a default configuration called **localFS** that will export
 
 ![OSGi System Configuration for Local FS](distribution.local.file.system.configuration.png)
 
-# S3 Bucket Copies
+# S3 Bucket
 
-**Not done yet**
+Peregrine allows the user to setup a distribution of content to an AWS S3 service. In a nutshell
+this service is more or less the same as the **local file system copies** just copying in to an
+S3 rather than writing to a local file.
+
+To configure this distribution service: **com.peregrine.admin.replication.impl.RemoteS3SystemReplicationService**:
+
+|Name|Parameter|Required|Type|Default|Description|
+|:---|:--------|:-------|:---|:------|:----------|
+|Name|name|yes|String|none|Name of the Distribution Service|
+|Description|description|no|String|none|Description of this Service|
+|AWS Access Key|awsAccessKey|yes|String|none|Access Key for the S3 Service|
+|AWS Secret Key|awsSecretKey|yes|String|none|Secret Key for the S3 Service|
+|AWS Region Name|awsRegionName|yes|String|none|Region of your S3 Service|
+|AWS Bucket Name|awsBucketName|yes|String|none|Bucket Name of your S3 Service|
+|Export Extensions|exportExtensions|yes|String|none|List of Extensions to be exported. The format is &lt;extension[~raw]>=&lt;&vert;-split list of primary types that are exported>|
+|Mandatory Renditions|mandatoryRenditions|String|no|Name of the Renditions that are created (if not already done) during the distribution|
+
+Whenever the service tries to push a change to S3 and the connection fails it will retry
+once and if it fails again it will end the distribution.
+
+# Default Distribution
+
+In Peregrine Default Distribution is a way to configure Distribution based
+on the path of a resource. Whenever a resource is distributed by the name
+of a Default Distribution that service will select the appropriate distribution
+(also by its name) and then delegate the distribution to that service.
+
+Default Distribution is used like any other distribution but it does not
+actually do a distribution but rather delegate it to the target one.
+
+To configure this distribution service: **com.peregrine.admin.replication.DefaultReplicationMapperService**:
+
+|Name|Parameter|Required|Type|Default|Description|
+|:---|:--------|:-------|:---|:------|:----------|
+|Name|name|yes|String|none|Name of the Distribution Service|
+|Description|description|no|String|none|Description of this Service|
+|Default|defaultMapping|yes|String|none|Name of the Distribution service that is used by default|
+|Path Mapping|pathMapping|no|String|none|Target Distribution for a sub path. Format &lt;distribution name>:path=&lt;root path>[&lt;pipe>(&lt;parameter key>=&lt;parameter value>)*]|
+
+**Attention**: The Peregrine UI uses the Default Distribution **defaultRepl** as
+the default distribution for its UI. It is important that this service is configured
+appropriately otherwise the UI will not be able to distribute.
+
+That said there can be many more default distribution created and set up as a convenient
+way to manage contribution.
