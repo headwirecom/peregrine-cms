@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_FILES;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -70,6 +71,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class UploadFilesServlet extends AbstractBaseServlet {
 
+    public static final String RESOURCE_NAME = "resourceName";
+    public static final String RESOURCE_PATH = "resourcePath";
+    public static final String ASSET_NAME = "assetName";
+    public static final String ASSET_PATH = "assetPath";
+    public static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
     @Reference
     ModelFactory modelFactory;
     @Reference
@@ -77,7 +83,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
+        String path = request.getParameter(PATH);
         try {
             Resource resource = request.getResourceByPath(path);
             logger.debug("Upload files to resource: '{}'", resource);
@@ -93,13 +99,13 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             resource.getResourceResolver().commit();
             logger.debug("Upload Done successfully and saved");
             JsonResponse answer = new JsonResponse()
-                .writeAttribute("resourceName", resource.getName())
-                .writeAttribute("resourcePath", resource.getPath())
+                .writeAttribute(RESOURCE_NAME, resource.getName())
+                .writeAttribute(RESOURCE_PATH, resource.getPath())
                 .writeArray("assets");
             for(Resource asset: assets) {
                 answer.writeObject();
-                answer.writeAttribute("assetName", asset.getName());
-                answer.writeAttribute("assetPath", asset.getPath());
+                answer.writeAttribute(ASSET_NAME, asset.getName());
+                answer.writeAttribute(ASSET_PATH, asset.getPath());
                 answer.writeClose();
             }
             return answer;
@@ -107,7 +113,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             logger.debug("Upload Failed", e);
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(path).setException(e);
         } catch(ServletException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Upload Failed because of Servlet Parts Problem").setRequestPath(path).setException(e);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM).setRequestPath(path).setException(e);
         }
     }
 

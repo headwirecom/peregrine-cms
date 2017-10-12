@@ -28,13 +28,15 @@ package com.peregrine.admin.models;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+
+import static com.peregrine.admin.util.AdminConstants.DEBUGGER_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
 
 /*
     //GEN[:DATA
@@ -68,37 +70,35 @@ import javax.inject.Named;
 */
 
 //GEN[:DEF
-@Model(
-        adaptables = Resource.class,
-        resourceType = "admin/components/debugger",
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        adapters = IComponent.class
-)
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
+@Model(adaptables = Resource.class,
+       resourceType = DEBUGGER_COMPONENT_PATH,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
 
 //GEN]
-public class DebuggerModel extends AbstractComponent {
+public class DebuggerModel
+    extends AbstractComponent {
 
-    public DebuggerModel(Resource r) { super(r); }
+    public DebuggerModel(Resource r) {
+        super(r);
+    }
 
     //GEN[:INJECT
     /* {"type":"string","source":"inject"} */
-@Inject
-private String dataFrom;
+    @Inject private String dataFrom;
 
 
-//GEN]
+    //GEN]
 
     //GEN[:GETTERS
     /* {"type":"string","source":"inject"} */
-public String getDataFrom() {
-return dataFrom;
-}
+    public String getDataFrom() {
+        return dataFrom;
+    }
 
 
-//GEN]
+    //GEN]
 
 }

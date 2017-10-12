@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -69,6 +70,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/api/admin/repl.json/path///content/sites/example//name//local
  */
 public class ReplicationListServlet extends AbstractBaseServlet {
+
+    public static final String REPLICATION_SERVICES = "replicationServices";
+    public static final String DESCRIPTION = "description";
 
     @Reference
     private ReferenceLister referenceLister;
@@ -105,11 +109,11 @@ public class ReplicationListServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         JsonResponse answer;
         answer = new JsonResponse();
-        answer.writeArray("replicationServices");
+        answer.writeArray(REPLICATION_SERVICES);
         for(Replication replication: replications.values()) {
             answer.writeObject();
-            answer.writeAttribute("name", replication.getName());
-            answer.writeAttribute("description", replication.getDescription());
+            answer.writeAttribute(NAME, replication.getName());
+            answer.writeAttribute(DESCRIPTION, replication.getDescription());
             answer.writeClose();
         }
         answer.writeClose();

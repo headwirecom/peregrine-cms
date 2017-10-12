@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -38,6 +37,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static org.junit.Assert.assertEquals;
@@ -51,9 +51,6 @@ import static org.junit.Assert.fail;
 public class BasicTestHelpers {
 
     public static final String ADMIN_PREFIX_URL = "/api/admin/";
-    public static final String IMAGE_PNG_MIME_TYPE = "image/png";
-    public static final String IMAGE_JPEG_MIME_TYPE = "image/jpeg";
-    public static final String IMAGE_JPG_MIME_TYPE = "image/jpg";
 
     private static final Logger logger = LoggerFactory.getLogger(BasicTestHelpers.class.getName());
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();

@@ -36,11 +36,21 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 
-@Model(adaptables = Resource.class, resourceType = "per/components/content/text", defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL, adapters = IComponent.class)
-@Exporter(name = "jackson", extensions = "json")
-public class TextModel extends AbstractComponent {
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.nodetypes.models.Constants.PEREGRINE_TEXT_TYPE;
 
-    @Inject @Default(values = "")
+@Model(adaptables = Resource.class,
+       resourceType = PEREGRINE_TEXT_TYPE,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
+public class TextModel
+    extends AbstractComponent {
+
+    @Inject
+    @Default(values = "")
     private String text;
 
     public TextModel(Resource resource) {

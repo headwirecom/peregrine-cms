@@ -29,6 +29,7 @@ import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationP
 import static com.peregrine.commons.util.PerConstants.DISTRIBUTION_SUB_SERVICE;
 //import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 //import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
 
@@ -51,6 +52,14 @@ import static com.peregrine.commons.util.PerUtil.loginService;
 public class DistributionEventHandlerService
     implements EventHandler
 {
+    private static final String AGENT = "AGENT";
+    private static final String IMPORTER = "IMPORTER";
+    private static final String DISTRIBUTION_PATHS = "distribution.paths";
+    private static final String DISTRIBUTION_TYPE_ADD = "distribution.type=ADD";
+    private static final String DISTRIBUTION_COMPONENT_KIND_AGENT = "distribution.component.kind=AGENT";
+    private static final String DISTRIBUTION_COMPONENT_KIND_IMPORTER = "distribution.component.kind=IMPORTER";
+    private static final String EVENT_TOPICS = "event.topics";
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Reference
@@ -64,22 +73,23 @@ public class DistributionEventHandlerService
         if(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED.equals(topic)) {
             // Forward Agent Event
             // Check the expected properties
-            if(!checkEventProperties(event, "distribution.type=ADD", "distribution.component.kind=AGENT", "event.topics=" + DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED)) {
+            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_AGENT, EVENT_TOPICS + EQUALS + DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED)) {
                 // Ignore -> Done
                 logEvent("Received unexpected Agent Event", event);
                 return;
             }
-            kind = "AGENT";
+            kind = AGENT;
+
         } else
         if(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED.equals(topic)) {
             // Forward Agent Event
             // Check the expected properties
-            if(!checkEventProperties(event, "distribution.type=ADD", "distribution.component.kind=IMPORTER", "event.topics=" + DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED)) {
+            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_IMPORTER, EVENT_TOPICS + EQUALS + DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED)) {
                 // Ignore -> Done
                 logEvent("Received unexpected Importer Event", event);
                 return;
             }
-            kind = "IMPORTER";
+            kind = IMPORTER;
         } else {
             log.trace("Received unhandled event: '{}'", event);
             return;
@@ -106,19 +116,6 @@ public class DistributionEventHandlerService
             Resource resource = getResource(resourceResolver, path);
             log.trace("Resource for Path: '{}': '{}'", path, resource);
             updateReplicationProperties(resource, kind + "://" + path, null);
-//            if(resource != null && supportsReplicationProperties(resource)) {
-//                ModifiableValueMap properties = getModifiableProperties(resource, false);
-//                if(properties != null) {
-//                    Calendar replicated = Calendar.getInstance();
-//                    if(!properties.containsKey(PER_REPLICATED_BY)) {
-//                        log.trace("Replicated By is not set in: '{}', set to: '{}'", properties, resourceResolver.getUserID());
-//                        properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
-//                    }
-//                    properties.put(PerConstants.PER_REPLICATED, replicated);
-//                    properties.put(PerConstants.PER_REPLICATION_REF, kind + "://" + path);
-//                } else {
-//                    log.error("Could not obtain modifiable properties from resource: '{}'", resource);
-//                }
             resourceResolver.commit();
         } catch(LoginException e) {
             log.warn("Failed to set Replication Properties on Resource: " + path + " due to login issue", e);
@@ -139,7 +136,7 @@ public class DistributionEventHandlerService
         String[] propertyNames = event.getPropertyNames();
         Map<String, String> properties = new HashMap<>();
         for(String name: propertyNames) {
-            if("distribution.paths".equals(name)) {
+            if(DISTRIBUTION_PATHS.equals(name)) {
                 properties.put(name, Arrays.asList((String[])event.getProperty(name)) + "");
             } else {
                 properties.put(name, event.getProperty(name) + "");
@@ -151,7 +148,7 @@ public class DistributionEventHandlerService
     private boolean checkEventProperties(Event event, String ... expectedPairs) {
         boolean answer = true;
         for(String pair: expectedPairs) {
-            String[] tokens = pair.split("=");
+            String[] tokens = pair.split(EQUALS);
             if(tokens.length == 2) {
                 Object value = event.getProperty(tokens[0]);
                 if(value == null) {

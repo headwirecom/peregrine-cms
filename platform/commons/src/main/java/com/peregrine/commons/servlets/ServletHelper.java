@@ -32,12 +32,17 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.peregrine.commons.util.PerConstants.DASH;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+
 /**
  * Helper Methods for Servlets
  *
  * Created by rr on 5/2/2017.
  */
 public class ServletHelper {
+
+    public static final int BUFFER_LENGTH = 1024;
 
     /**
      * Provides the Request Parameters. The parameters are
@@ -73,11 +78,11 @@ public class ServletHelper {
      * @return Dash separated Component Name
      */
     public static String componentPathToName(String path) {
-        String[] segments = path.split("/");
+        String[] segments = path.split(SLASH);
         StringBuilder sb = new StringBuilder();
         for(int i = 2; i < segments.length; i++) {
             if(i != 2) {
-                sb.append("-");
+                sb.append(DASH);
             }
             sb.append(segments[i]);
         }
@@ -93,11 +98,11 @@ public class ServletHelper {
      * @return Component path relative to /apps
      */
     public static String componentNameToPath(String name) {
-        String[] segments = name.split("-");
+        String[] segments = name.split(DASH);
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < segments.length; i++) {
             if(i != 0) {
-                sb.append("/");
+                sb.append(SLASH);
             }
             sb.append(segments[i]);
         }
@@ -111,7 +116,7 @@ public class ServletHelper {
      * @throws IOException If the handling failed
      */
     public static void echo(InputStream input, PrintWriter writer) throws IOException {
-        char[] buffer = new char[1024];
+        char[] buffer = new char[BUFFER_LENGTH];
         InputStreamReader reader = new InputStreamReader(input);
         int chars = reader.read(buffer);
         while(chars > 0) {
@@ -129,7 +134,7 @@ public class ServletHelper {
      */
     public static StringWriter asString(InputStream input) throws IOException {
         StringWriter writer = new StringWriter();
-        char[] buffer = new char[1024];
+        char[] buffer = new char[BUFFER_LENGTH];
         InputStreamReader reader = new InputStreamReader(input);
         int chars = reader.read(buffer);
         while(chars > 0) {

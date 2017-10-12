@@ -25,7 +25,6 @@ package com.peregrine.transform;
  * #L%
  */
 
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -38,8 +37,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * This service is a central access point to the Image Transformation
@@ -54,8 +57,8 @@ import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 @Component(
     service = ImageTransformationConfigurationProvider.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Peregrine Image Transformation Configuration Provider",
-        Constants.SERVICE_VENDOR + "=headwire.com, Inc"
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Image Transformation Configuration Provider",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
 public class ImageTransformationConfigurationProvider {

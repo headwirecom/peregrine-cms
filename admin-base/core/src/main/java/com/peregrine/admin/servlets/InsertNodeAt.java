@@ -42,11 +42,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_INSERT_NODE;
+import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
+import static com.peregrine.admin.util.AdminConstants.INTO;
+import static com.peregrine.admin.util.AdminConstants.MODEL_JSON;
+import static com.peregrine.admin.util.AdminConstants.NOT_PROVIDED;
+import static com.peregrine.commons.util.PerConstants.APPS;
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.CONTENT;
+import static com.peregrine.commons.util.PerConstants.DROP;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -77,6 +87,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class InsertNodeAt extends AbstractBaseServlet {
 
+    public static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
+    public static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
     @Reference
     ModelFactory modelFactory;
 
@@ -88,7 +100,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
+        String path = request.getParameter(PATH);
         Resource resource = getResource(request.getResourceResolver(), path);
         //AS This is a fix for missing intermediary nodes from templates
         if(resource == null) {
@@ -112,7 +124,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
                                     try {
                                         intermediate = resourceManagement.createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
                                     } catch(ManagementException e) {
-                                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create intermediate resources").setRequestPath(path);
+                                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES).setRequestPath(path);
                                     }
                                 } else {
                                     intermediate = temp;
@@ -126,39 +138,39 @@ public class InsertNodeAt extends AbstractBaseServlet {
         }
         //AS End of Patch
         if(resource == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found by Path").setRequestPath(path);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH).setRequestPath(path);
         }
-        String type = request.getParameter("type");
+        String type = request.getParameter(TYPE);
         // Next Block is only here to be backwards compatible
         if(type == null || type.isEmpty()) {
-            type = request.getParameter("drop", "not provided");
+            type = request.getParameter(DROP, NOT_PROVIDED);
         }
-        boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith("into");
-        boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith("-before");
-        String component = request.getParameter("component");
-        if(component != null && component.startsWith("/apps")) {
+        boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
+        boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
+        String component = request.getParameter(COMPONENT);
+        if(component != null && component.startsWith(APPS)) {
             component = component.substring(component.indexOf('/', 1) + 1);
         }
         Map<String, Object> properties = new HashMap<>();
-        String data = request.getParameter("content");
+        String data = request.getParameter(CONTENT);
         if(data != null && !data.isEmpty()) {
             ObjectMapper mapper = new ObjectMapper();
             properties.putAll(mapper.readValue(data, Map.class));
         }
         if(component != null && !component.isEmpty()) {
             // Component overrides the JSon component if provided
-            properties.put("component", component);
+            properties.put(COMPONENT, component);
         } else {
-            component = properties.get("component") + "";
+            component = properties.get(COMPONENT) + "";
             if(component != null) {
-                properties.put("component", ServletHelper.componentNameToPath(component));
+                properties.put(COMPONENT, ServletHelper.componentNameToPath(component));
             }
         }
 
         try {
             Resource newResource = resourceManagement.insertNode(resource, properties, addAsChild, addBefore);
             newResource.getResourceResolver().commit();
-            return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + ".model.json");
+            return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + MODEL_JSON);
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
         }

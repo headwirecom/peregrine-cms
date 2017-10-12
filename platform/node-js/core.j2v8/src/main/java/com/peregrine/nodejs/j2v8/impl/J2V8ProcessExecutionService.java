@@ -8,7 +8,6 @@ import com.peregrine.nodejs.j2v8.ScriptException;
 import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.process.ProcessContextTracker;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -17,20 +16,28 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 /**
  * Created by Andreas Schaefer on 4/6/17.
  */
 @Component(
     service = J2V8ProcessExecution.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Sling Node J2V8 Process Based Execution",
-        Constants.SERVICE_VENDOR + "=headwire.com Inc"
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Sling Node J2V8 Process Based Execution",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
     }
 )
 public class J2V8ProcessExecutionService
     extends AbstractJ2V8ExecutionService
     implements J2V8ProcessExecution
 {
+    public static final String SLINGNODE_PROCESS_OUTPUT = "slingnode$processOutput";
+    public static final String SLINGNODE_PROCESS_ERROR = "slingnode$processError";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
@@ -66,7 +73,7 @@ public class J2V8ProcessExecutionService
                 return null;
             }
         };
-        answer.getRuntime().registerJavaMethod(outCallback, "slingnode$processOutput");
+        answer.getRuntime().registerJavaMethod(outCallback, SLINGNODE_PROCESS_OUTPUT);
         log.trace("Registered 'slingnode$processOutput' with Method: '{}'", outCallback);
 
         JavaCallback errorCallback = new JavaCallback() {
@@ -76,7 +83,7 @@ public class J2V8ProcessExecutionService
                 return null;
             }
         };
-        answer.getRuntime().registerJavaMethod(errorCallback, "slingnode$processError");
+        answer.getRuntime().registerJavaMethod(errorCallback, SLINGNODE_PROCESS_ERROR);
         log.trace("Registered 'slingnode$processError' with Method: '{}'", errorCallback);
 
         return answer;

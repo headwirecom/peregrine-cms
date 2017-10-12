@@ -45,6 +45,14 @@ public abstract class AbstractJ2V8ExecutionService {
         "catch(ex) {\n" +
         "  console.error(ex);\n" +
         "}";
+    public static final String SLINGNODE_REQUEST = "slingnode$request";
+    public static final String SLINGNODE_JAVALOG = "slingnode$javalog";
+    public static final String SLINGNODE_CHECK_JCR_PATH = "slingnode$checkJcrPath";
+    public static final String SLINGNODE_READ_FROM_JCR = "slingnode$readFromJCR";
+    public static final String APPS_NODEJS_SCRIPTS_SLINGNODE_JS = "/apps/nodejs/scripts/slingnode.js";
+    public static final String UNABLED_TO_WRITE_TEMPORARY_FILE_FOR_SCRIPT = "Unabled to write temporary file for script: ";
+    public static final String COULD_OBTAIN_RESOURCE_RESOLVER = "Could obtain Resource Resolver";
+    public static final String COULD_NOT_READ_FILE = "Could not read file: ";
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -72,7 +80,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 return "{ \"test\": \"test\" }";
             }
         };
-        node.getRuntime().registerJavaMethod(slingNodeRequest, "slingnode$request");
+        node.getRuntime().registerJavaMethod(slingNodeRequest, SLINGNODE_REQUEST);
 
         JavaCallback logCallback = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
@@ -80,7 +88,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 return null;
             }
         };
-        runtime.registerJavaMethod(logCallback, "slingnode$javalog");
+        runtime.registerJavaMethod(logCallback, SLINGNODE_JAVALOG);
 
         JavaCallback checkJcrPathCallback = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
@@ -95,7 +103,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 return check;
             }
         };
-        node.getRuntime().registerJavaMethod(checkJcrPathCallback, "slingnode$checkJcrPath");
+        node.getRuntime().registerJavaMethod(checkJcrPathCallback, SLINGNODE_CHECK_JCR_PATH);
 
         JavaCallback slingNodeReadFromJCR = new JavaCallback() {
             public Object invoke(V8Object receiver, V8Array parameters) {
@@ -112,7 +120,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 return script;
             }
         };
-        node.getRuntime().registerJavaMethod(slingNodeReadFromJCR, "slingnode$readFromJCR");
+        node.getRuntime().registerJavaMethod(slingNodeReadFromJCR, SLINGNODE_READ_FROM_JCR);
 
         return answer;
     }
@@ -134,7 +142,7 @@ public abstract class AbstractJ2V8ExecutionService {
     {
         File nodeScript = null;
         try {
-            String preScript = readStringContent("/apps/nodejs/scripts/slingnode.js", wrapper.getCache());
+            String preScript = readStringContent(APPS_NODEJS_SCRIPTS_SLINGNODE_JS, wrapper.getCache());
             // If no argument are provided we need to clear them as the default arguments here are
             // a path to the temporary script file and an empty {}
             String argumentsLine = "process.argv = [ ";
@@ -168,7 +176,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 wrapper.getNode().handleMessage();
             }
         } catch(IOException ioe) {
-            new ScriptException("Unabled to write temporary file for script: " + jcrPath, ioe);
+            new ScriptException(UNABLED_TO_WRITE_TEMPORARY_FILE_FOR_SCRIPT + jcrPath, ioe);
         }
         finally {
             if(wrapper.getNode() != null) { wrapper.getNode().release(); }
@@ -204,7 +212,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 answer = resourceResolver.resolve(jcrPath + "/jcr:content");
                 log.trace("Cache found resource, Path: '{}', returns: '{}', is valid: '{}'", new Object[] {jcrPath, answer.getPath(), !ResourceUtil.isNonExistingResource(answer)});
             } catch(LoginException e) {
-                throw new ScriptException("Could obtain Resource Resolver", e);
+                throw new ScriptException(COULD_OBTAIN_RESOURCE_RESOLVER, e);
             }
         }
         return answer;
@@ -242,7 +250,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 log.error("Resource: '{}' was not found", jcrPath);
             }
         } catch(IOException e) {
-            throw new ScriptException("Could not read file: " + jcrPath, e);
+            throw new ScriptException(COULD_NOT_READ_FILE + jcrPath, e);
         }
         return answer;
     }

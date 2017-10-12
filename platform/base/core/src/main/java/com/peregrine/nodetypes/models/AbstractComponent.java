@@ -34,6 +34,9 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+
 /**
  * Created by rr on 12/2/2016.
  */
@@ -54,7 +57,7 @@ public class AbstractComponent implements IComponent {
 
     public String getPath() {
         String path = resource.getPath();
-        int jcrContentIndex = path.indexOf("/jcr:content");
+        int jcrContentIndex = path.indexOf(SLASH + JCR_CONTENT);
         if(jcrContentIndex >= 0) {
             return path.substring(jcrContentIndex);
         } else {

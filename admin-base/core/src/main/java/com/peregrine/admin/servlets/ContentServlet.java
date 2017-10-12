@@ -36,6 +36,7 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CONTENT;
+import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -64,6 +65,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class ContentServlet extends AbstractBaseServlet {
 
+    private static final String DATA = "=data";
+
     @Reference
     ModelFactory modelFactory;
 
@@ -71,12 +74,12 @@ public class ContentServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
 
         String suffix = request.getSuffix();
-        if(suffix.endsWith(".data.json")) {
-            suffix = suffix.substring(0, suffix.indexOf(".data.json"));
+        if(suffix.endsWith(DATA_JSON_EXTENSION)) {
+            suffix = suffix.substring(0, suffix.indexOf(DATA_JSON_EXTENSION));
         }
         Resource res = request.getResourceByPath(suffix);
         RequestDispatcherOptions rdOtions = new RequestDispatcherOptions(
-            RequestDispatcherOptions.OPT_REPLACE_SELECTORS + "=data"
+            RequestDispatcherOptions.OPT_REPLACE_SELECTORS + DATA
         );
         return new ForwardResponse(res, rdOtions);
     }

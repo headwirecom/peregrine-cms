@@ -38,6 +38,9 @@ package com.peregrine.transform;
  */
 public interface ImageTransformation {
 
+    public static final String SERVICE_DISABLED = "Service: '%s' is disabled";
+    public static final String FILE_FORMAT_NOT_SUPPORTED = "File Format: '%s' is not supported for this operation";
+
     /** @erturn The Unique Name of the Transformations to look it up by **/
     public String getTransformationName();
 
@@ -72,7 +75,7 @@ public interface ImageTransformation {
         extends TransformationException
     {
         public DisabledTransformationException(String transformationName) {
-            super("Service: '" + transformationName + "' is disabled");
+            super(String.format(SERVICE_DISABLED, transformationName));
         }
     }
 
@@ -81,7 +84,7 @@ public interface ImageTransformation {
         extends TransformationException
     {
         public UnsupportedFormatException(String formatName) {
-            super("File Format: '" + formatName + "' is not supported for this operation");
+            super(String.format(FILE_FORMAT_NOT_SUPPORTED, formatName));
         }
     }
 }

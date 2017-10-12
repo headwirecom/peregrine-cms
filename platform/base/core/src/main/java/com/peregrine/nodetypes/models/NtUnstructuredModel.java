@@ -8,11 +8,14 @@ import org.apache.sling.models.annotations.Model;
 
 import java.util.Map;
 
-@Model(adaptables = Resource.class, resourceType = {
-        "nt:unstructured"
-}, adapters = IComponent.class)
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+
+@Model(adaptables = Resource.class,
+       resourceType = {NT_UNSTRUCTURED},
+       adapters = IComponent.class)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
-public class NtUnstructuredModel extends Container {
+public class NtUnstructuredModel
+    extends Container {
 
     public NtUnstructuredModel(Resource r) {
         super(r);

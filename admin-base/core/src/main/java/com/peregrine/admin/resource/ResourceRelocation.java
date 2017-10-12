@@ -6,6 +6,8 @@ import org.apache.sling.api.resource.Resource;
 import javax.jcr.RepositoryException;
 
 /**
+ * Interface for Resource Relocating Service
+ *
  * Created by Andreas Schaefer on 6/22/17.
  */
 public interface ResourceRelocation {

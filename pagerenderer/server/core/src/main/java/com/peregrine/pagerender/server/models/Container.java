@@ -37,14 +37,20 @@ import java.util.List;
 import com.peregrine.nodetypes.models.IComponent;
 import com.peregrine.nodetypes.models.AbstractComponent;
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_CONTAINER_TYPE;
+
 /**
  * Created by rr on 12/2/2016.
  */
-@Model(adaptables = Resource.class, resourceType = {
-        "pagerender/server/structure/container"
-}, adapters = IComponent.class)
-@Exporter(name = "jackson", extensions = "json")
-public class Container extends AbstractComponent {
+@Model(adaptables = Resource.class,
+       resourceType = {PR_SERVER_COMPONENT_CONTAINER_TYPE},
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
+public class Container
+    extends AbstractComponent {
 
     public Container(Resource r) {
         super(r);

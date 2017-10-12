@@ -37,6 +37,13 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_PAGE;
+import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE_PATH;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -65,6 +72,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class CreatePageServlet extends AbstractBaseServlet {
 
+    public static final String FAILED_TO_CREATE_PAGE = "Failed to create page";
     @Reference
     ModelFactory modelFactory;
 
@@ -73,17 +81,17 @@ public class CreatePageServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String parentPath = request.getParameter("path");
-        String name = request.getParameter("name");
-        String templatePath = request.getParameter("templatePath");
+        String parentPath = request.getParameter(PATH);
+        String name = request.getParameter(NAME);
+        String templatePath = request.getParameter(TEMPLATE_PATH);
         try {
             Resource newPage = resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath);
             request.getResourceResolver().commit();
             return new JsonResponse()
-                .writeAttribute("type", "page").writeAttribute("status", "created")
-                .writeAttribute("name", name).writeAttribute("path", newPage.getPath()).writeAttribute("templatePath", templatePath);
+                .writeAttribute(TYPE, PAGE).writeAttribute(STATUS, CREATED)
+                .writeAttribute(NAME, name).writeAttribute(PATH, newPage.getPath()).writeAttribute(TEMPLATE_PATH, templatePath);
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create page").setRequestPath(parentPath).setException(e);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_PAGE).setRequestPath(parentPath).setException(e);
         }
     }
 

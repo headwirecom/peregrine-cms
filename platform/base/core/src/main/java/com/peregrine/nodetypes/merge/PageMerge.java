@@ -48,12 +48,24 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+
 /**
  * Created by rr on 5/8/2017.
  */
 @SuppressWarnings("serial")
 public class PageMerge implements Use {
 
+    public static final String FROM_TEMPLATE = "fromTemplate";
+    public static final String REQUEST = "request";
+    public static final String SLING = "sling";
+    public static final String TEMPLATE = "template";
+    public static final String CONTENT_TEMPLATES = "/content/templates/";
     private final Logger log = LoggerFactory.getLogger(PageMerge.class);
 
     private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
@@ -70,7 +82,7 @@ public class PageMerge implements Use {
     public String getMerged() {
         log.debug("merge on {}", request.getResource().getPath());
         Resource res = request.getResource();
-        if(res.getName().equals("jcr:content")) {
+        if(res.getName().equals(JCR_CONTENT)) {
             res = res.getParent();
         }
         return toJSON(getMerged(res));
@@ -78,22 +90,19 @@ public class PageMerge implements Use {
 
     public Map getMerged(Resource resource) {
         try {
-            Map page = modelFactory.exportModelForResource(resource.getChild("jcr:content"),
-                    "jackson", Map.class,
+            Map page = modelFactory.exportModelForResource(resource.getChild(JCR_CONTENT),
+                    JACKSON, Map.class,
                     Collections.<String, String> emptyMap());
-            String templatePath = (String) page.get("template");
+            String templatePath = (String) page.get(TEMPLATE);
             if(templatePath == null) {
-                if(resource.getParent().getPath().startsWith("/content/templates/")) {
+                if(resource.getParent().getPath().startsWith(CONTENT_TEMPLATES)) {
                     // only use the parent as a template of a template if it is in fact a page
-                    if(resource.getParent().getResourceType().equals("per:Page")) {
+                    if(resource.getParent().getResourceType().equals(PAGE_PRIMARY_TYPE)) {
                         templatePath = resource.getParent().getPath();
                     }
                 }
             }
             if(templatePath != null) {
-//                Map template = modelFactory.exportModelForResource(request.getResourceResolver().getResource(templatePath).getChild("jcr:content"),
-//                        "jackson", Map.class,
-//                        Collections.<String, String> emptyMap());
                 Map template = getMerged(request.getResourceResolver().getResource(templatePath));
                 flagFromTemplate(template);
                 return merge(template, page);
@@ -108,7 +117,7 @@ public class PageMerge implements Use {
     }
 
     private void flagFromTemplate(Map template) {
-        template.put("fromTemplate", Boolean.TRUE);
+        template.put(FROM_TEMPLATE, Boolean.TRUE);
         for(Object key: template.keySet()) {
             Object value = template.get(key);
             if(value instanceof ArrayList) {
@@ -131,7 +140,7 @@ public class PageMerge implements Use {
             Object value = page.get(key);
             log.debug("key is {}", key);
             log.debug("value is {}", value == null ? value : value.getClass());
-            if(key.equals("component") && value.equals("nt:unstructured")) continue;
+            if(key.equals(COMPONENT) && value.equals(NT_UNSTRUCTURED)) continue;
             if(value instanceof Map) {
 
             } else if(value instanceof ArrayList) {
@@ -140,23 +149,22 @@ public class PageMerge implements Use {
                 res.put(key, value);
             }
         }
-//        res.putAll(page);
         return res;
     }
 
     private void mergeArrays(ArrayList target, ArrayList value) {
         for (Iterator it = value.iterator(); it.hasNext(); ) {
             Object val = it.next();
-            log.debug("array megre: {}",val.getClass());
+            log.debug("array merge: {}",val.getClass());
             boolean merged = false;
             if(val instanceof Map) {
                 Map map = (Map) val;
-                String path = (String) map.get("path");
+                String path = (String) map.get(PATH);
                 if(path != null) {
                     log.debug("find entry for {}", path);
                     for (int i = 0; i < target.size(); i++) {
                         Object t = target.get(i);
-                        if(((Map)t).get("path").equals(path)) {
+                        if(((Map)t).get(PATH).equals(path)) {
                             log.debug("found");
                             target.set(i, merge((Map)t, map));
                             log.debug("{}", target.get(i));
@@ -186,8 +194,8 @@ public class PageMerge implements Use {
 
     @Override
     public void init(Bindings bindings) {
-        request = (SlingHttpServletRequest) bindings.get("request");
-        SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
+        request = (SlingHttpServletRequest) bindings.get(REQUEST);
+        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
         modelFactory = sling.getService(ModelFactory.class);
         renderContext.set(new RenderContext(request));
     }

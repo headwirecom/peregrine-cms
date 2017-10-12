@@ -74,7 +74,10 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.HTML_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getMimeType;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
@@ -97,6 +100,11 @@ import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 public class RemoteS3SystemReplicationService
     extends BaseFileReplicationService
 {
+
+    public static final String JSON = ".json";
+    public static final String HTML = "html";
+    public static final String AWS_S3_SYSTEM = "aws-s3-system://";
+
     @ObjectClassDefinition(
         name = "Peregrine: Remove S3 Replication Service",
         description = "Each instance provides the configuration for a Remove S3 System Replication"
@@ -167,7 +175,6 @@ public class RemoteS3SystemReplicationService
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
     private List<ExportExtension> exportExtensions = new ArrayList<>();
-//    private Map<String, List<String>> exportExtensions = new HashMap<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
     private AmazonS3 s3;
     private String awsBucketName;
@@ -283,7 +290,7 @@ public class RemoteS3SystemReplicationService
         if("/".equals(key)) {
             return null;
         }
-        if(key.startsWith("/")) {
+        if(key.startsWith(SLASH)) {
             key = key.substring(1);
         }
         String awsKey = key + (isNotEmpty(extension) ? "." + extension : "");
@@ -310,21 +317,21 @@ public class RemoteS3SystemReplicationService
 
     @Override
     String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
-        PutObjectRequest request = createPutRequest(awsBucketName, resource.getPath(), extension,content);
-        if(extension.endsWith(".json")) {
+        PutObjectRequest request = createPutRequest(awsBucketName, resource.getPath(), extension, content);
+        if(extension.endsWith(JSON)) {
             log.trace("Set JSon Content Type");
             ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType("application/json");
+            objectMetadata.setContentType(JSON_MIME_TYPE);
             request.setMetadata(objectMetadata);
-        } else if(extension.endsWith("html")) {
+        } else if(extension.endsWith(HTML)) {
             log.trace("Set HTML Content Type");
             ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType("text/html");
+            objectMetadata.setContentType(HTML_MIME_TYPE);
             request.setMetadata(objectMetadata);
         }
         s3.putObject(request);
         log.trace("Send String Request to S3. Resource: '{}', Extension: '{}', Content: '{}'", resource.getPath(), extension, content);
-        return "aws-s3-system://" + resource.getPath();
+        return AWS_S3_SYSTEM + resource.getPath();
     }
 
     private static class ContentLengthObjectMetadata
@@ -363,7 +370,7 @@ public class RemoteS3SystemReplicationService
         }
         log.trace("Send Byte Request to S3. Resource: '{}', Extension: '{}', Content Length: '{}'", resource.getPath(), extension, content.length);
         s3.putObject(request);
-        return "aws-s3-system://" + resource.getPath();
+        return AWS_S3_SYSTEM + resource.getPath();
     }
 
     @Override

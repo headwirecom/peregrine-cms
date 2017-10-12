@@ -41,6 +41,8 @@ import java.util.ArrayList;
  */
 public class FELibModel {
 
+    public static final String SLASH = "/";
+
     @Self
     private Resource node;
 
@@ -59,20 +61,20 @@ public class FELibModel {
                     if (!(line.startsWith("#") || line.trim().length() == 0)) {
                         if(line.startsWith("base=")) {
                             String path = line.substring(5);
-                            basePath = node.getPath()+"/"+path;
-                            if(path.startsWith("/")) {
+                            basePath = node.getPath()+SLASH+path;
+                            if(path.startsWith(SLASH)) {
                                 basePath = path;
                             }
                         } else {
-                            String filePath = basePath+"/"+line;
-                            if(line.startsWith("/")) {
+                            String filePath = basePath+SLASH+line;
+                            if(line.startsWith(SLASH)) {
                                 filePath = line;
                             }
                             Resource file = rr.getResource(filePath);
                             if(file != null) {
                                 InputStream is = file.adaptTo(InputStream.class);
                                 String data = IOUtils.toString(is, "UTF-8");
-                                ret.add(new JCRFile(basePath + "/" + line, data));
+                                ret.add(new JCRFile(basePath + SLASH + line, data));
                             }
                         }
                     }

@@ -63,6 +63,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 //import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 //import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 //import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
@@ -82,6 +83,14 @@ import static com.peregrine.commons.util.PerUtil.listMissingResources;
 public class LocalReplicationService
     extends AbstractionReplicationService
 {
+
+    public static final String LOCAL_MAPPING_HAS_THE_WRONG_FORMAT = "Local Mapping has the wrong format: '%s'";
+    public static final String LOCAL_MAPPING_SOURCE_MUST_BE_ABSOLUTE = "For local Replication local mapping needs to provide a local source (before =) that starts with a '/'. Mapping was: '%s'";
+    public static final String LOCAL_MAPPING_TARGET_MUST_BE_ABSOLUTE = "For local Replication local mapping needs to provide a local target (after =) that starts with a '/'. Mapping was: '%s'";
+    public static final String LOCAL_SOURCE_NOT_FOUND = "Local Source: '%s' not found. Please fix the local mapping.";
+    public static final String LOCAL_TARGET_NOT_FOUND = "Local Target: '%s' not found. Please fix the local mapping or create the local target.";
+    public static final String FAILED_TO_DELETE_A_TARGET_RESOURCE = "Failed to delete a target resource: '%s'";
+
     @ObjectClassDefinition(
         name = "Peregrine: Local Replication Service",
         description = "Each instance provides the configuration for a Local Replication"
@@ -121,19 +130,19 @@ public class LocalReplicationService
         init(configuration.name(), configuration.description());
         localSource = localTarget = null;
         String mapping = configuration.localMapping();
-        String[] tokens = mapping.split("=");
+        String[] tokens = mapping.split(EQUALS);
         if(tokens.length == 2) {
             localSource = tokens[0];
             localTarget = tokens[1];
         } else {
-            throw new IllegalArgumentException("Local Mapping has the wrong format: '" + mapping + "'");
+            throw new IllegalArgumentException(String.format(LOCAL_MAPPING_HAS_THE_WRONG_FORMAT, mapping));
         }
         destinationUrl = null;
         if(localSource == null || localSource.isEmpty() || !localSource.startsWith("/")) {
-            throw new IllegalArgumentException("For local Replication local mapping needs to provide a local source (before =) that starts with a '/'. Mapping was: " + mapping);
+            throw new IllegalArgumentException(String.format(LOCAL_MAPPING_SOURCE_MUST_BE_ABSOLUTE, mapping));
         }
         if(localTarget == null || localTarget.isEmpty() || !localTarget.startsWith("/")) {
-            throw new IllegalArgumentException("For local Replication local mapping needs to provide a local target (after =) that starts with a '/'. Mapping was: " + mapping);
+            throw new IllegalArgumentException(String.format(LOCAL_MAPPING_TARGET_MUST_BE_ABSOLUTE, mapping));
         }
         if(localSource.endsWith("/")) {
             localSource = localSource.substring(0, localSource.length() - 1);
@@ -159,11 +168,11 @@ public class LocalReplicationService
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
         Resource source = resourceResolver.getResource(localSource);
         if(source == null) {
-            throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+            throw new ReplicationException(String.format(LOCAL_SOURCE_NOT_FOUND, localSource));
         }
         Resource target = resourceResolver.getResource(localTarget);
         if(target == null) {
-            throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+            throw new ReplicationException(String.format(LOCAL_TARGET_NOT_FOUND, localTarget));
         }
         List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true, source, target);
         List<Resource> replicationList = new ArrayList<>();
@@ -190,11 +199,11 @@ public class LocalReplicationService
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
         Resource source = resourceResolver.getResource(localSource);
         if(source == null) {
-            throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+            throw new ReplicationException(String.format(LOCAL_SOURCE_NOT_FOUND, localSource));
         }
         Resource target = resourceResolver.getResource(localTarget);
         if(target == null) {
-            throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+            throw new ReplicationException(String.format(LOCAL_TARGET_NOT_FOUND, localTarget));
         }
 
         List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
@@ -217,11 +226,11 @@ public class LocalReplicationService
         if(resourceResolver != null) {
             Resource source = resourceResolver.getResource(localSource);
             if(source == null) {
-                throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+                throw new ReplicationException(String.format(LOCAL_SOURCE_NOT_FOUND, localSource));
             }
             Resource target = resourceResolver.getResource(localTarget);
             if(target == null) {
-                throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+                throw new ReplicationException(String.format(LOCAL_TARGET_NOT_FOUND, localTarget));
             }
             // Prepare the Mappings for the Properties mapping
             Map<String, String> pathMapping = new HashMap<>();
@@ -284,23 +293,15 @@ public class LocalReplicationService
         if(resourceResolver != null) {
             Resource source = resourceResolver.getResource(localSource);
             if(source == null) {
-                throw new ReplicationException("Local Source: '" + localSource + "' not found. Please fix the local mapping.");
+                throw new ReplicationException(String.format(LOCAL_SOURCE_NOT_FOUND, localSource));
             }
             Resource target = resourceResolver.getResource(localTarget);
             if(target == null) {
-                throw new ReplicationException("Local Target: '" + localTarget + "' not found. Please fix the local mapping or create the local target.");
+                throw new ReplicationException(String.format(LOCAL_TARGET_NOT_FOUND, localTarget));
             }
             // Update all replication targets by setting the new Replication Date, User and remove the Ref to indicate the deactivation
             for(Resource item: resourceList) {
                 updateReplicationProperties(item, "", null);
-//                boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(item);
-//                if(replicationMixin) {
-//                    ModifiableValueMap properties = getModifiableProperties(item, false);
-//                    Calendar replicated = Calendar.getInstance();
-//                    properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-//                    properties.put(PER_REPLICATED, replicated);
-//                    properties.put(PER_REPLICATION_REF, "");
-//                }
             }
             // Delete the replicated target resource
             String relativePath = PerUtil.relativePath(source, toBeDeleted);
@@ -311,7 +312,7 @@ public class LocalReplicationService
                     try {
                         resourceResolver.delete(targetResource);
                     } catch(PersistenceException e) {
-                        throw new ReplicationException("Failed to delete a target resource: " + targetPath, e);
+                        throw new ReplicationException(String.format(FAILED_TO_DELETE_A_TARGET_RESOURCE, targetPath), e);
                     }
                 }
             } else {
@@ -423,30 +424,6 @@ public class LocalReplicationService
             answer = source.getResourceResolver().create(targetParent, source.getName(), targetProperties);
         }
         updateReplicationProperties(source, null, answer);
-//        boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
-//        if(replicationMixin) {
-//            Calendar replicated = Calendar.getInstance();
-//            properties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-//            properties.put(PER_REPLICATED, replicated);
-//            properties.put(PER_REPLICATION_REF, targetParent.getPath());
-//            newProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-//            newProperties.put(PER_REPLICATED, replicated);
-//            newProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
-//        }
-//        Resource newTarget = targetParent.getChild(source.getName());
-//        if(newTarget != null) {
-//            ModifiableValueMap newTargetProperties = PerUtil.getModifiableProperties(newTarget, false);
-//            for(String key: newProperties.keySet()) {
-//                try {
-//                    newTargetProperties.put(key, newProperties.get(key));
-//                } catch(Exception e) {
-//                    // Ignore
-//                }
-//            }
-//            answer = newTarget;
-//        } else {
-//            answer = source.getResourceResolver().create(targetParent, source.getName(), newProperties);
-//        }
         return answer;
     }
 }

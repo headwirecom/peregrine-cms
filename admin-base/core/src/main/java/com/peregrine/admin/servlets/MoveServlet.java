@@ -42,9 +42,13 @@ import java.util.List;
 import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_MOVE;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_RENAME;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.ORDER_AFTER_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -77,6 +81,12 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class MoveServlet extends AbstractBaseServlet {
 
 
+    public static final String TAGET_NAME = "tagetName";
+    public static final String TARGET_PATH = "targetPath";
+    public static final String RENAME = "rename";
+    public static final String MOVE = "move";
+    public static final String TO = "to";
+
     private List<String> acceptedTypes = Arrays.asList(ORDER_BEFORE_TYPE, ORDER_AFTER_TYPE, ORDER_CHILD_TYPE);
 
     @Reference
@@ -86,12 +96,12 @@ public class MoveServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String fromPath = request.getParameter("path");
+        String fromPath = request.getParameter(PATH);
         Resource from = PerUtil.getResource(request.getResourceResolver(), fromPath);
-        String toPath = request.getParameter("to");
+        String toPath = request.getParameter(TO);
         Resource newResource;
-        if(request.getResource().getName().equals("move")) {
-            String type = request.getParameter("type");
+        if(request.getResource().getName().equals(MOVE)) {
+            String type = request.getParameter(TYPE);
             Resource to = PerUtil.getResource(request.getResourceResolver(), toPath);
             boolean addAsChild = ORDER_CHILD_TYPE.equals(type);
             boolean addBefore = ORDER_BEFORE_TYPE.equals(type);
@@ -100,7 +110,7 @@ public class MoveServlet extends AbstractBaseServlet {
             } catch(ManagementException e) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(fromPath).setException(e);
             }
-        } else if(request.getResource().getName().equals("rename")) {
+        } else if(request.getResource().getName().equals(RENAME)) {
             try {
                 newResource = resourceManagement.rename(from, toPath);
             } catch(ManagementException e) {
@@ -111,10 +121,10 @@ public class MoveServlet extends AbstractBaseServlet {
         }
         request.getResourceResolver().commit();
         JsonResponse answer = new JsonResponse();
-        answer.writeAttribute("sourceName", from.getName());
-        answer.writeAttribute("sourcePath", from.getPath());
-        answer.writeAttribute("tagetName", newResource.getName());
-        answer.writeAttribute("targetPath", newResource.getPath());
+        answer.writeAttribute(SOURCE_NAME, from.getName());
+        answer.writeAttribute(SOURCE_PATH, from.getPath());
+        answer.writeAttribute(TAGET_NAME, newResource.getName());
+        answer.writeAttribute(TARGET_PATH, newResource.getPath());
         return answer;
     }
 }

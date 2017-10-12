@@ -8,6 +8,7 @@ import com.drew.metadata.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.replication.ImageMetadataSelector;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -42,19 +43,21 @@ import java.util.UUID;
 
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
+import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
@@ -70,6 +73,55 @@ public class AdminResourceHandlerService
     implements AdminResourceHandler
 {
     public static final String DELETION_PROPERTY_NAME = "_opDelete";
+
+    private static final String PARENT_NOT_FOUND = "Could not find %s Parent Resource. Path: '%s', name: '%s'";
+    private static final String RESOURCE_TYPE_UNEDEFINED = "Resource Type is not provided. Path: '%s', name: '%s'";
+    private static final String NAME_UNDEFINED = "%s Name is not provided. Parent Path: '%s'";
+    private static final String TEMPLATE_NOT_FOUND = "Could not find template with path: '%s'";
+
+    private static final String FAILED_TO_HANDLE = "Failed to handle %s node. Parent Path: '%s', name: '%s'";
+    private static final String RESOURCE_FOR_DELETION_NOT_FOUND = "Could not find Resource for Deletion. Path: '%s'";
+    private static final String PRIMARY_TYPE_ASKEW_FOR_DELETION = "Failed to Delete Resource: '%s'. Expected Primary Type: '%s', Actual Primary Type: '%s'";
+    private static final String FAILED_TO_DELETE = "Failed to Delete Resource: '%s'";
+
+    private static final String INSERT_RESOURCE_MISSING = "To Insert a New Node the Reference Resource must be provided";
+    private static final String INSERT_RESOURCE_PROPERTIES_MISSING = "To Insert a New Node the Node Properties must be provided";
+    private static final String FAILED_TO_INSERT = "Failed to insert node at: '%s'";
+
+    private static final String MOVE_FROM_RESOURCE_MISSING = "To Move a Node the Source Resource must be provided";
+    private static final String MOVE_TO_RESOURCE_MISSING = "To Move a Node the Reference Resource must be provided";
+    private static final String FAILED_TO_MOVE = "Failed to Move Resource. From: '%s' to: '%s'";
+
+    private static final String RENAME_RESOURCE_MISSING = "To Rename a Node a Resource must be provided";
+    private static final String NAME_TO_BE_RENAMED_TO_MUST_BE_PROVIDED = "Name to be renamed to must be provided";
+    private static final String NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH = "Name to be renamed to cannot contain a slash";
+    private static final String FAILED_TO_RENAME = "Failed to Rename Resource. From: '%s' to: '%s'";
+
+    private static final String PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Parent Resource must be provided to create Asset";
+    private static final String ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Asset Name must be provided to create Asset";
+    private static final String CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Content Type must be provided to create Asset";
+    private static final String INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Input Stream must be provided to create Asset";
+    private static final String FAILED_TO_CREATE = "Failed to Create %s in Parent: '%s', name: '%s'";
+    private static final String FAILED_TO_COPY = "Failed to copy source: '%s' on target parent: '%s'";
+    private static final String RESOURCE_NOT_FOUND = "Resource not found, Path: '%s'";
+    private static final String NO_CONTENT_PROVIDED = "No Content provided, Path: '%s'";
+    private static final String FAILED_TO_PARSE_JSON = "Failed to parse Json Content: '%s'";
+
+    private static final String FAILED_TO_DELETE_CHILD = "Failed to delete child resource: '%s'";
+    private static final String OJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE = "Object List had an unsupported first entry: '%s' (type: '%s')";
+    private static final String OJECT_ITEM_WITH_UNSUPPORTED_TYPE = "Object List was a single list but had an unsupported entry: '%s' (type: '%s')";
+    private static final String ITEM_NAME_MISSING = "Item: '%s' does not have a name (parent: '%s'";
+    private static final String OBJECT_LIST_WITH_UNSUPPORTED_ITEM = "Object List was a full list but had an unsupported entry: '%s' (type: '%s')";
+
+    private static final String RAW_TAGS = "raw_tags";
+
+    private static final String FOLDER = "folder";
+    private static final String OBJECT = "object";
+    private static final String PAGE = "page";
+    private static final String TEMPLATE = "template";
+    private static final String NODE = "node";
+    private static final String ASSET = "asset";
+    private static final String RENDITION = "rendition";
 
     private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
 
@@ -99,10 +151,10 @@ public class AdminResourceHandlerService
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
-                throw new ManagementException("Could not find Folder Parent Resource. Path: " + parentPath + ", name: " + name);
+                throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
             }
             if(name == null || name.isEmpty()) {
-                throw new ManagementException("Folder Name is not provided. Path: " + parentPath);
+                throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
             Node parentNode =  parent.adaptTo(Node.class);
             Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
@@ -112,7 +164,7 @@ public class AdminResourceHandlerService
         } catch(RepositoryException e) {
             logger.debug("Failed to create Folder. Parent Path: '{}', Name: '{}'", parentPath, name);
             logger.error("Failed to create Folder", e);
-            throw new ManagementException("Failed to handle folder node. Parent Path: " + parentPath + ", name: " + name, e);
+            throw new ManagementException(String.format(FAILED_TO_HANDLE, FOLDER, parentPath, name), e);
         }
     }
 
@@ -120,13 +172,13 @@ public class AdminResourceHandlerService
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
-                throw new ManagementException("Could not find Object Parent Resource. Path: " + parentPath + ", name: " + name);
+                throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
             if(name == null || name.isEmpty()) {
-                throw new ManagementException("Object Name is not provided. Path: " + parentPath);
+                throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
             }
             if(resourceType == null || resourceType.isEmpty()) {
-                throw new ManagementException("Resource Type is not provided. Path: " + parentPath + ", name: " + name);
+                throw new ManagementException(String.format(RESOURCE_TYPE_UNEDEFINED, parentPath, name));
             }
             Node parentNode = parent.adaptTo(Node.class);
             Node newObject = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
@@ -137,7 +189,7 @@ public class AdminResourceHandlerService
         } catch(RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
             logger.error("Failed to create Object", e);
-            throw new ManagementException("Failed to handle object node. Parent Path: " + parentPath + ", name: " + name, e);
+            throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
         }
     }
 
@@ -146,14 +198,14 @@ public class AdminResourceHandlerService
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
-                throw new ManagementException("Could not find Page Parent Resource. Path: " + parentPath + ", name: " + name);
+                throw new ManagementException(String.format(PARENT_NOT_FOUND, PAGE, parentPath, name));
             }
             if(name == null || name.isEmpty()) {
-                throw new ManagementException("Page Name is not provided. Path: " + parentPath);
+                throw new ManagementException(String.format(NAME_UNDEFINED, PAGE, parentPath));
             }
             Resource templateResource = PerUtil.getResource(resourceResolver, templatePath + "/" + JCR_CONTENT);
             if(templateResource == null) {
-                throw new ManagementException("Could not find template with path: " + templatePath);
+                throw new ManagementException(String.format(TEMPLATE_NOT_FOUND, templatePath));
             }
             String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
             Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath);
@@ -161,7 +213,7 @@ public class AdminResourceHandlerService
         } catch(RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
             logger.error("Failed to create Page", e);
-            throw new ManagementException("Failed to handle page node. Parent Path: " + parentPath + ", name: " + name, e);
+            throw new ManagementException(String.format(FAILED_TO_HANDLE, PAGE, parentPath, name), e);
         }
     }
 
@@ -170,10 +222,10 @@ public class AdminResourceHandlerService
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
-                throw new ManagementException("Could not find Template Parent Resource. Path: " + parentPath + ", name: " + name);
+                throw new ManagementException(String.format(PARENT_NOT_FOUND, TEMPLATE, parentPath, name));
             }
             if(name == null || name.isEmpty()) {
-                throw new ManagementException("Template Name is not provided. Path: " + parentPath);
+                throw new ManagementException(String.format(NAME_UNDEFINED, TEMPLATE, parentPath));
             }
             Node newPage = createPageOrTemplate(parent, name, component, null);
             // If there is a component then we check the component node and see if there is a child jcr:content node
@@ -184,7 +236,7 @@ public class AdminResourceHandlerService
                     if(component.startsWith("/")) {
                         logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
                     } else {
-                        String componentPath = "/apps/" + component;
+                        String componentPath = PerConstants.APPS + component;
                         if(newPage.getSession().itemExists(componentPath)) {
                             Node componentNode = newPage.getSession().getNode("/apps/" + component);
                             if(componentNode.hasNode(JCR_CONTENT)) {
@@ -202,7 +254,7 @@ public class AdminResourceHandlerService
         } catch(RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
             logger.error("Failed to create Template", e);
-            throw new ManagementException("Failed to handle template node. Parent Path: " + parentPath + ", name: " + name, e);
+            throw new ManagementException(String.format(FAILED_TO_HANDLE, TEMPLATE, parentPath, name), e);
         }
     }
 
@@ -215,12 +267,12 @@ public class AdminResourceHandlerService
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException {
         Resource resource = PerUtil.getResource(resourceResolver, path);
         if(resource == null) {
-            throw new ManagementException("Could not find Resource for Deletion. Path: " + path);
+            throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
         try {
             String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, String.class);
             if(primaryType != null && !primaryType.isEmpty() && !primaryType.equals(primaryTypeValue)) {
-                throw new ManagementException("Failed to Delete Resource: " + path + ". Expected Primary Type: " + primaryType + ", Actual Primary Type: " + primaryTypeValue);
+                throw new ManagementException(String.format(PRIMARY_TYPE_ASKEW_FOR_DELETION, path, primaryType, primaryTypeValue));
             }
             Resource parent = resource.getParent();
             DeletionResponse response = new DeletionResponse()
@@ -231,7 +283,7 @@ public class AdminResourceHandlerService
             resourceResolver.delete(resource);
             return response;
         } catch (PersistenceException e) {
-            throw new ManagementException("Failed to Delete Resource: " + path, e);
+            throw new ManagementException(String.format(FAILED_TO_DELETE, path), e);
         }
     }
 
@@ -239,10 +291,10 @@ public class AdminResourceHandlerService
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore) throws ManagementException {
         Resource answer = null;
         if(resource == null) {
-            throw new ManagementException("To Insert a New Node the Reference Resource must be provided");
+            throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
         if(properties == null || properties.isEmpty()) {
-            throw new ManagementException("To Insert a New Node the Node Properties must be provided");
+            throw new ManagementException(INSERT_RESOURCE_PROPERTIES_MISSING);
         }
         try {
             Node node = resource.adaptTo(Node.class);
@@ -270,7 +322,7 @@ public class AdminResourceHandlerService
             }
         } catch (RepositoryException e) {
             logger.trace("Failed to insert node at: " + resource.getPath(), e);
-            throw new ManagementException("Failed to insert node at: " + resource.getPath(), e);
+            throw new ManagementException(String.format(FAILED_TO_INSERT, resource.getPath()), e);
         }
         return answer;
     }
@@ -279,10 +331,10 @@ public class AdminResourceHandlerService
     public Resource moveNode(Resource fromResource, Resource toResource, boolean addAsChild, boolean orderBefore) throws ManagementException {
         Resource answer = null;
         if(fromResource == null) {
-            throw new ManagementException("To Move a Node the Source Resource must be provided");
+            throw new ManagementException(MOVE_FROM_RESOURCE_MISSING);
         }
         if(toResource == null) {
-            throw new ManagementException("To Move a Node the Reference Resource must be provided");
+            throw new ManagementException(MOVE_TO_RESOURCE_MISSING);
         }
         try {
             answer = fromResource;
@@ -311,7 +363,7 @@ public class AdminResourceHandlerService
             }
         } catch (Exception e) {
             logger.error("problems while moving", e);
-            throw new ManagementException("Failed to Move Resource. From: '" + fromResource.getPath() + "' to: '" + toResource.getPath() + "'", e);
+            throw new ManagementException(String.format(FAILED_TO_MOVE, fromResource.getPath(), toResource.getPath()), e);
         }
         return answer;
     }
@@ -321,20 +373,20 @@ public class AdminResourceHandlerService
     public Resource rename(Resource fromResource, String newName) throws ManagementException {
         Resource answer = null;
         if(fromResource == null) {
-            throw new ManagementException("To Move a Node the Source Resource must be provided");
+            throw new ManagementException(RENAME_RESOURCE_MISSING);
         }
         if(newName == null || newName.isEmpty()) {
-            throw new ManagementException("Name to be renamed to must be provided");
+            throw new ManagementException(NAME_TO_BE_RENAMED_TO_MUST_BE_PROVIDED);
         }
         if(newName.indexOf('/') >= 0) {
-            throw new ManagementException("Name to be renamed to cannot contain a slash");
+            throw new ManagementException(NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH);
         }
         try {
             answer = resourceRelocation.rename(fromResource, newName, true);
             baseResourceHandler.updateModification(answer);
         } catch (Exception e) {
             logger.error("problems while moving", e);
-            throw new ManagementException("Failed to Move Resource. From: '" + fromResource.getPath() + "' to: '" + newName + "'", e);
+            throw new ManagementException(String.format(FAILED_TO_RENAME, fromResource.getPath(), newName), e);
         }
         return answer;
     }
@@ -343,16 +395,16 @@ public class AdminResourceHandlerService
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
         Resource answer = null;
         if(parent == null) {
-            throw new ManagementException("Parent Resource must be provided to create Asset");
+            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         if(assetName == null || assetName.isEmpty()) {
-            throw new ManagementException("Asset Name must be provided to create Asset");
+            throw new ManagementException(ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         if(contentType == null || contentType.isEmpty()) {
-            throw new ManagementException("Content Type must be provided to create Asset");
+            throw new ManagementException(CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         if(inputStream == null) {
-            throw new ManagementException("Input Stream must be provided to create Asset");
+            throw new ManagementException(INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         try {
             Node parentNode = parent.adaptTo(Node.class);
@@ -397,7 +449,7 @@ public class AdminResourceHandlerService
                         if(json.length() > 1) {
                             json = json.substring(0, json.length() - 1);
                             json += "}";
-                            perAsset.addTag(directoryName, "raw_tags", json);
+                            perAsset.addTag(directoryName, RAW_TAGS, json);
                         }
                     }
                 }
@@ -405,9 +457,9 @@ public class AdminResourceHandlerService
                 e.printStackTrace();
             }
         } catch(RepositoryException e) {
-            throw new ManagementException("Failed to Create Asset Node in Parent: " + parent.getPath() + ", name: " + assetName, e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);
         } catch(IOException e) {
-            throw new ManagementException("Failed to Create Rendition in Parent: " + parent.getPath() + ", name: " + assetName, e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, RENDITION, parent.getPath(), assetName), e);
         }
         return answer;
     }
@@ -423,21 +475,21 @@ public class AdminResourceHandlerService
         } catch(PersistenceException e) {
 //            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
 //            logger.trace("Failure Exception", e);
-            throw new ManagementException("Failed to create resource: " + name + " on parent: " + parent.getPath(), e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
         } catch(RuntimeException e) {
             logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
             logger.trace("Failure Exception", e);
-            throw new ManagementException("Failed to create resource: " + name + " on parent: " + parent.getPath(), e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
         }
     }
 
     // todo: needs deep clone
     private Node createNode(Node parent, Map data) throws RepositoryException, ManagementException {
-        data.remove("path");
-        String component = (String) data.remove("component");
+        data.remove(PATH);
+        String component = (String) data.remove(COMPONENT);
 
         Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
-        newNode.setProperty("sling:resourceType", component);
+        newNode.setProperty(SLING_RESOURCE_TYPE, component);
         for (Object key: data.keySet()) {
             Object val = data.get(key);
             if(val instanceof String) {
@@ -452,9 +504,9 @@ public class AdminResourceHandlerService
                 if(component.startsWith("/")) {
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
                 } else {
-                    String componentPath = "/apps/" + component;
+                    String componentPath = PerConstants.APPS + component;
                     if(parent.getSession().itemExists(componentPath)) {
-                        Node componentNode = parent.getSession().getNode("/apps/" + component);
+                        Node componentNode = parent.getSession().getNode(PerConstants.APPS + component);
                         if(componentNode.hasNode(JCR_CONTENT)) {
                             Node source = componentNode.getNode(JCR_CONTENT);
                             copyNode(source, newNode, true);
@@ -494,7 +546,7 @@ public class AdminResourceHandlerService
             return target;
         } catch(RepositoryException e) {
             logger.trace("Failed to copy components node", e);
-            throw new ManagementException("Failed to copy source: " + source + " on target parent: " + target, e);
+            throw new ManagementException(String.format(FAILED_TO_COPY, source, target), e);
         }
     }
 
@@ -504,16 +556,16 @@ public class AdminResourceHandlerService
         try {
             answer = getResource(resourceResolver, path);
             if(answer == null) {
-                throw new ManagementException("Resource not found, Path: " + path);
+                throw new ManagementException(String.format(RESOURCE_NOT_FOUND, path));
             }
             if(jsonContent == null || jsonContent.isEmpty()) {
-                throw new ManagementException("No Content provided, Path: " + path);
+                throw new ManagementException(String.format(NO_CONTENT_PROVIDED, path));
             }
             Map content = convertToMap(jsonContent);
             //AS TODO: Check if we could add some guards here to avoid misplaced updates (JCR Primary Type / Sling Resource Type)
             updateResourceTree(answer, content);
         } catch(IOException e) {
-            throw new ManagementException("Failed to parse Json Content: " + jsonContent);
+            throw new ManagementException(String.format(FAILED_TO_PARSE_JSON, jsonContent));
         }
         return answer;
     }
@@ -526,14 +578,14 @@ public class AdminResourceHandlerService
         //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
         if(properties.containsKey(DELETION_PROPERTY_NAME)) {
             Object value = properties.get(DELETION_PROPERTY_NAME);
-            if(value == null || "true".equalsIgnoreCase(value.toString())) {
+            if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
                 // This indicates that this node shall be removed
                 try {
                     resource.getResourceResolver().delete(resource);
                     // This resource is gone so there is noting left that can be done here
                     return;
                 } catch(PersistenceException e) {
-                    throw new ManagementException("Failed to delete resource: " + resource.getPath(), e);
+                    throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
                 }
             } else {
                 String name = value.toString();
@@ -548,7 +600,7 @@ public class AdminResourceHandlerService
                             }
                         }
                     } catch(PersistenceException e) {
-                        throw new ManagementException("Failed to delete child resource: " + child.getPath(), e);
+                        throw new ManagementException(String.format(FAILED_TO_DELETE_CHILD, child.getPath()), e);
                     }
                 }
             }
@@ -564,7 +616,7 @@ public class AdminResourceHandlerService
                 if(child == null) {
                     Object val = childProperties.get(SLING_RESOURCE_TYPE);
                     String resourceType = val == null ? null : (String) val;
-                    childProperties.remove("name");
+                    childProperties.remove(NAME);
                     childProperties.remove(SLING_RESOURCE_TYPE);
                     childProperties.remove(JCR_PRIMARY_TYPE);
                     child = createNode(resource, name, NT_UNSTRUCTURED, resourceType);
@@ -598,7 +650,7 @@ public class AdminResourceHandlerService
                 } else if(type == 1) {
                     updateObjectSingleList(name, list, resource);
                 } else if(type < 0) {
-                    throw new ManagementException("Object List had an unsupported first entry: '" + first + "' (type: " + (first == null ? "null" : first.getClass().getName()));
+                    throw new ManagementException(String.format(OJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
                 }
             } else {
                 updateProperties.put(name, value);
@@ -617,7 +669,7 @@ public class AdminResourceHandlerService
                 }
                 newSingleList.add(listItem);
             } else {
-                throw new ManagementException("Object List was a single list but had an unsupported entry: '" + item + "' (type: " + (item == null ? "null" : item.getClass().getName()));
+                throw new ManagementException(String.format(OJECT_ITEM_WITH_UNSUPPORTED_TYPE, item, (item == null ? "null" : item.getClass().getName())));
             }
         }
         ModifiableValueMap childProperties = getModifiableProperties(resource, false);
@@ -630,13 +682,13 @@ public class AdminResourceHandlerService
             Object item = incomingList.get(i);
             if(item instanceof Map) {
                 Map incomingItemProperties = (Map) item;
-                Object temp = incomingItemProperties.get("name");
+                Object temp = incomingItemProperties.get(NAME);
                 String incomingItemName = null;
                 if(temp != null) {
                     incomingItemName = temp.toString();
                 }
                 if(incomingItemName == null || incomingItemName.isEmpty()) {
-                    throw new ManagementException("Item: '" + item + "' does not have a name (parent: '" + resource.getPath() + "'");
+                    throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
                 }
                 // Get index of the matching resource child to compare with the index in the list
                 int index = -1;
@@ -652,7 +704,7 @@ public class AdminResourceHandlerService
                 if(resourceListItem == null) {
                     Object val = incomingItemProperties.get(SLING_RESOURCE_TYPE);
                     String resourceType = val == null ? null : (String) val;
-                    incomingItemProperties.remove("name");
+                    incomingItemProperties.remove(NAME);
                     incomingItemProperties.remove(SLING_RESOURCE_TYPE);
                     incomingItemProperties.remove(JCR_PRIMARY_TYPE);
                     resourceListItem = createNode(resource, incomingItemName, NT_UNSTRUCTURED, resourceType);
@@ -684,7 +736,7 @@ public class AdminResourceHandlerService
                             resource.getResourceResolver().delete(resourceListItem);
                             continue;
                         } catch(PersistenceException e) {
-                            throw new ManagementException("Failed to delete resource: " + resourceListItem.getPath(), e);
+                            throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
                         }
                     }
                     updateResourceTree(resourceListItem, incomingItemProperties);
@@ -708,7 +760,7 @@ public class AdminResourceHandlerService
                 }
                 lastResourceItem = resourceListItem;
             } else {
-                throw new ManagementException("Object List was a full list but had an unsupported entry: '" + item + "' (type: " + (item == null ? "null" : item.getClass().getName()));
+                throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
             }
         }
     }

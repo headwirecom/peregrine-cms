@@ -43,6 +43,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_OBJECT;
+import static com.peregrine.commons.util.PerConstants.MODEL;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -71,15 +73,16 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class GetObjectServlet extends AbstractBaseServlet {
 
+    public static final String RESOURCE_NOT_FOUND = "Resource not found";
     @Reference
     ModelFactory modelFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
+        String path = request.getParameter(PATH);
         Resource resource = request.getResourceByPath(path);
         if(resource == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Resource not found").setRequestPath(path);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND).setRequestPath(path);
         }
 
         // changed the approach to forward through the export servlet as exportModelForResource does not
@@ -103,7 +106,7 @@ public class GetObjectServlet extends AbstractBaseServlet {
 
 
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
-        rdOptions.setReplaceSelectors("model");
+        rdOptions.setReplaceSelectors(MODEL);
         return new ForwardResponse(resource, rdOptions);
     }
 }

@@ -36,14 +36,24 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_BASE_TYPE;
+
 /**
  * Created by rr on 4/18/2017.
  */
-@Model(adaptables = Resource.class, resourceType = "pagerender/server/components/base", defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL, adapters = IComponent.class)
-@Exporter(name = "jackson", extensions = "json")
-public class BaseModel extends AbstractComponent {
+@Model(adaptables = Resource.class,
+       resourceType = PR_SERVER_COMPONENT_BASE_TYPE,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
+public class BaseModel
+    extends AbstractComponent {
 
-    @Inject @Default(values = "")
+    @Inject
+    @Default(values = "")
     private String text;
 
     public BaseModel(Resource resource) {

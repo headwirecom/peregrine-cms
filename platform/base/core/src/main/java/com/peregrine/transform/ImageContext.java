@@ -29,6 +29,8 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 
+import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
+
 /**
  * Context of an Image to be Transformed
  *
@@ -37,7 +39,7 @@ import java.io.InputStream;
 public class ImageContext {
 
     /** Mime Type of the Source. PNG is the default **/
-    private String sourceMimeType = "image/png";
+    private String sourceMimeType = PNG_MIME_TYPE;
     /** Mime Type of the Target (the same as source by default) **/
     private String targetMimeType = sourceMimeType;
     /** Image Input Stream **/

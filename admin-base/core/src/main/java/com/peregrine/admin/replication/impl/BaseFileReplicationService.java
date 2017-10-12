@@ -44,22 +44,21 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.admin.util.AdminConstants.RENDITION_ACTION;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.NT_FOLDER;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.getResourceType;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
  * Base Class for External File System / Storage Replications
@@ -72,6 +71,12 @@ public abstract class BaseFileReplicationService
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
     // List of all resources that are excluded from handling
     private static final List<String> EXCLUDED_RESOURCES = new ArrayList<>();
+
+    private static final String EXTENSION_NAME_MUST_BE_PROVIDED = "Extension Name must be provided";
+    private static final String EXTENSION_TYPES_MUST_BE_PROVIDED = "Extension Types must be provided";
+    private static final String UNSUPPORTED_ENCODING_WHILE_CREATING_THE_RENDER_RESPONSE = "Unsupported Encoding while creating the Render Response";
+    private static final String FAILED_TO_RENDER_RESOURCE = "Failed to render resource: ";
+    private static final String RENDERING_REQUEST_FAILED = "Rendering Request: '%s' failed with status: '%s'";
 
     static {
         NAME_PATTERNS.add(Pattern.compile(".*\\.data\\.json"));
@@ -226,7 +231,7 @@ public abstract class BaseFileReplicationService
             for(Resource rendition: renditions.getChildren()) {
                 if(NT_FILE.equals(getPrimaryType(rendition))) {
                     try {
-                        imageContent = renderRawResource(resource, "rendition.json/" + rendition.getName(), true);
+                        imageContent = renderRawResource(resource, RENDITION_ACTION + SLASH + rendition.getName(), true);
                         storeRendering(resource, rendition.getName(), imageContent);
                         checkRenditions.remove(rendition.getName());
                     } catch(ReplicationException e) {
@@ -239,7 +244,7 @@ public abstract class BaseFileReplicationService
         // Loop over all remaining mandatory renditions and write the image data to the target
         for(String renditionName: checkRenditions) {
             try {
-                imageContent = renderRawResource(resource, "rendition.json/" + renditionName, true);
+                imageContent = renderRawResource(resource, RENDITION_ACTION + SLASH + renditionName, true);
                 // Get rendition
                 if(renditions == null) { renditions = resource.getChild(RENDITIONS); }
                 if(renditions != null) {
@@ -356,8 +361,6 @@ public abstract class BaseFileReplicationService
             mrpi.setResourcePath(resource.getPath());
             if(isEmpty(extension)) {
                 extension = "";
-//            } else if(!extension.startsWith(".")) {
-//                extension = "." + extension;
             }
             log.trace("Render Resource Request Extension: '{}'", extension);
             mrpi.setExtension(extension);
@@ -370,14 +373,14 @@ public abstract class BaseFileReplicationService
             if(resp.getStatus() != 200) {
                 String content = resp.getOutputAsString();
                 log.error("Request of: '{}' failed (status: {}). Output : '{}'", requestPath, resp.getStatus(), content);
-                throw new ReplicationException("Request: '" + requestPath + "' failed with status: '" + resp.getStatus() + "'");
+                throw new ReplicationException(String.format(RENDERING_REQUEST_FAILED, requestPath, resp.getStatus()));
             } else {
                 return resp;
             }
         } catch(UnsupportedEncodingException e) {
-            throw new ReplicationException("Unsupported Encoding while creating the Render Response", e);
+            throw new ReplicationException(UNSUPPORTED_ENCODING_WHILE_CREATING_THE_RENDER_RESPONSE, e);
         } catch(ServletException | IOException e) {
-            throw new ReplicationException("Failed to render resource: " + resource.getPath(), e);
+            throw new ReplicationException(FAILED_TO_RENDER_RESOURCE + resource.getPath(), e);
         }
     }
 
@@ -388,10 +391,10 @@ public abstract class BaseFileReplicationService
 
         public ExportExtension(String name, List<String> types) {
             if(isEmpty(name)) {
-                throw new IllegalArgumentException("Extension Name must be provided");
+                throw new IllegalArgumentException(EXTENSION_NAME_MUST_BE_PROVIDED);
             }
             if(types == null || types.isEmpty()) {
-                throw new IllegalArgumentException("Extension Types must be provided");
+                throw new IllegalArgumentException(EXTENSION_TYPES_MUST_BE_PROVIDED);
             }
             this.name = name;
             this.types = types;

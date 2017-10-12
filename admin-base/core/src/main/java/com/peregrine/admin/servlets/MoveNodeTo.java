@@ -38,8 +38,16 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_MOVE_NODE;
+import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
+import static com.peregrine.admin.util.AdminConstants.INTO;
+import static com.peregrine.admin.util.AdminConstants.MODEL_JSON;
+import static com.peregrine.admin.util.AdminConstants.NOT_PROVIDED;
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.DROP;
 import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -79,15 +87,15 @@ public class MoveNodeTo extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         Response answer;
-        String toPath = request.getParameter("path");
-        String fromPath = request.getParameter("component");
-        String type = request.getParameter("type");
+        String toPath = request.getParameter(PATH);
+        String fromPath = request.getParameter(COMPONENT);
+        String type = request.getParameter(TYPE);
         // Next Block is only here to be backwards compatible
         if(type == null || type.isEmpty()) {
-            type = request.getParameter("drop", "not provided");
+            type = request.getParameter(DROP, NOT_PROVIDED);
         }
-        boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith("into");
-        boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith("-before");
+        boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
+        boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
         logger.trace("Add resource: '{}' to {}: '{}' {}",
             fromPath, addAsChild ? "parent" : "sibling", toPath, addBefore ? "before" : "after"
         );
@@ -96,7 +104,7 @@ public class MoveNodeTo extends AbstractBaseServlet {
             Resource fromResource = request.getResourceByPath(fromPath);
             resourceManagement.moveNode(fromResource, toResource, addAsChild, addBefore);
             request.getResourceResolver().commit();
-            answer = new RedirectResponse((addAsChild ? toPath : toResource.getParent().getPath()) + ".model.json");
+            answer = new RedirectResponse((addAsChild ? toPath : toResource.getParent().getPath()) + MODEL_JSON);
         } catch(ManagementException e) {
             logger.error("problems while moving", e);
             answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);

@@ -32,6 +32,7 @@ import java.util.Map;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 
 /**
@@ -45,6 +46,10 @@ public class BaseResourceHandlerService
     implements BaseResourceHandler
 {
     public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
+    public static final String NO_ASSET_RESOURCE_PROVIDED = "No Asset Resource provided";
+    public static final String NO_RENDITION_NAME_PROVIDED = "No Rendition Name provided";
+    public static final String NO_SOURCE_MIME_TYPE_PROVIDED = "No Source Mime Type provided";
+    public static final String RESOURCE_NOT_ADAPTABLE_TO_ASSET = "Resource: '%s' could not be adapted to an Asset";
 
     @Reference
     MimeTypeService mimeTypeService;
@@ -58,18 +63,18 @@ public class BaseResourceHandlerService
     @Override
     public ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws HandlerException {
         if(resource == null) {
-            throw new HandlerException("No Asset Resource provided");
+            throw new HandlerException(NO_ASSET_RESOURCE_PROVIDED);
         }
         logger.trace("Create Rendition for resource: '{}', rendition name: '{}', source mime type: '{}'", resource.getPath(), renditionName, sourceMimeType);
         PerAsset asset = resource.adaptTo(PerAsset.class);
         if(asset == null) {
-            throw new HandlerException("Resource: " + resource.getPath() + " could not be adapted to an Asset");
+            throw new HandlerException(String.format(RESOURCE_NOT_ADAPTABLE_TO_ASSET, resource.getPath()));
         }
         if(renditionName == null || renditionName.isEmpty()) {
-            throw new HandlerException("No Rendition Name provided");
+            throw new HandlerException(NO_RENDITION_NAME_PROVIDED);
         }
         if(sourceMimeType == null || sourceMimeType.isEmpty()) {
-            throw new HandlerException("No Source Mime Type provided");
+            throw new HandlerException(NO_SOURCE_MIME_TYPE_PROVIDED);
         }
         int index = renditionName.indexOf('/');
         if(index >= 0) {
@@ -115,7 +120,7 @@ public class BaseResourceHandlerService
                     try {
                         InputStream brokenImageStream = getDataStream(brokenImageResource);
                         imageTransformationConfigurationList = imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.no.crop.png");
-                        answer = transform(renditionName, "image/svg+xml", brokenImageStream, "image/png", imageTransformationConfigurationList);
+                        answer = transform(renditionName, "image/svg+xml", brokenImageStream, PNG_MIME_TYPE, imageTransformationConfigurationList);
                     } catch(TransformationException e) {
                         logger.error("Transformation failed, image ignore", e);
                     }

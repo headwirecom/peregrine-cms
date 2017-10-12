@@ -8,12 +8,17 @@ import com.peregrine.nodejs.j2v8.ScriptException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import java.io.IOException;
 import java.util.List;
+
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * Created by Andreas Schaefer on 4/6/17.
@@ -21,14 +26,17 @@ import java.util.List;
 @Component(
     service = J2V8WebExecution.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Sling Node J2V8 Configuration",
-        Constants.SERVICE_VENDOR + "=headwire.com Inc"
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Sling Node J2V8 Configuration",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
     }
 )
 public class J2V8WebExecutionService
     extends AbstractJ2V8ExecutionService
     implements J2V8WebExecution
 {
+    public static final String SLINGNODE_HTTPOUT = "slingnode$httpout";
+    public static final String SLINGNODE_GET_REQUEST = "slingnode$getRequest";
+    public static final String SLINGNODE_GET_RESPONSE = "slingnode$getResponse";
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
 
@@ -64,15 +72,14 @@ public class J2V8WebExecutionService
                 return null;
             }
         };
-        answer.getRuntime().registerJavaMethod(outCallback, "slingnode$httpout");
+        answer.getRuntime().registerJavaMethod(outCallback, SLINGNODE_HTTPOUT);
 
         answer.getRuntime().registerJavaMethod(
             new JavaCallback() {
                 public Object invoke(V8Object receiver, V8Array parameters) {
                     return request;
                 }
-            },
-            "slingnode$getRequest"
+            }, SLINGNODE_GET_REQUEST
         );
 
         answer.getRuntime().registerJavaMethod(
@@ -80,8 +87,7 @@ public class J2V8WebExecutionService
                 public Object invoke(V8Object receiver, V8Array parameters) {
                     return response;
                 }
-            },
-            "slingnode$getResponse"
+            }, SLINGNODE_GET_RESPONSE
         );
 
         return answer;

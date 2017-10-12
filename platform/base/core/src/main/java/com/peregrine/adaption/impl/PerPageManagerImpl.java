@@ -34,19 +34,26 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.Calendar;
 
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+
 /**
  * Created by Andreas Schaefer on 6/2/17.
  */
 public class PerPageManagerImpl
     implements PerPageManager
 {
+    public static final String RESOURCE_RESOLVER_MUST_BE_PROVIDED = "Resource Resolver must be provided";
+    public static final String RESOURCE_MUST_BE_PROVIDED = "Resource must be provided";
     /** Resource Resolver that backs that Page Manager **/
     private ResourceResolver resourceResolver;
 
     /** Creates a Page Manager from a Resource Resolver which cannot be null **/
     public PerPageManagerImpl(ResourceResolver resourceResolver) {
         if(resourceResolver == null) {
-            throw new IllegalArgumentException("Resource Resolver must be provided");
+            throw new IllegalArgumentException(RESOURCE_RESOLVER_MUST_BE_PROVIDED);
         }
         this.resourceResolver = resourceResolver;
     }
@@ -54,7 +61,7 @@ public class PerPageManagerImpl
     /** Creates a Page Manager from a Resource which cannot be null **/
     public PerPageManagerImpl(Resource resource) {
         if(resource == null) {
-            throw new IllegalArgumentException("Resource must be provided");
+            throw new IllegalArgumentException(RESOURCE_MUST_BE_PROVIDED);
         }
         this.resourceResolver = resource.getResourceResolver();
     }
@@ -74,12 +81,12 @@ public class PerPageManagerImpl
         if(page != null && page.isValid() && page.hasContent()) {
             ModifiableValueMap properties = page.getModifiableProperties();
             if(now != null) {
-                properties.put("jcr:lastModified", now);
+                properties.put(JCR_LAST_MODIFIED, now);
             }
             if(clearReplication) {
-                properties.remove("per:Replicated");
-                properties.remove("per:ReplicatedBy");
-                properties.remove("per:ReplicationRef");
+                properties.remove(PER_REPLICATED);
+                properties.remove(PER_REPLICATED_BY);
+                properties.remove(PER_REPLICATION_REF);
             }
             try {
                 resourceResolver.commit();

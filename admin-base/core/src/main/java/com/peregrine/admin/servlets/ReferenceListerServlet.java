@@ -37,6 +37,10 @@ import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -68,6 +72,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 public class ReferenceListerServlet extends AbstractBaseServlet {
 
+    public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
+    public static final String REFERENCES = "references";
+
     @Reference
     private ReferenceLister referenceLister;
 
@@ -78,19 +85,19 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
         if(source != null) {
             List<Resource> references = referenceLister.getReferenceList(true, source, true);
             JsonResponse answer = new JsonResponse();
-            answer.writeAttribute("sourceName", source.getName());
-            answer.writeAttribute("sourcePath", source.getPath());
-            answer.writeArray("references");
+            answer.writeAttribute(SOURCE_NAME, source.getName());
+            answer.writeAttribute(SOURCE_PATH, source.getPath());
+            answer.writeArray(REFERENCES);
             for(Resource child : references) {
                 answer.writeObject();
-                answer.writeAttribute("name", child.getName());
-                answer.writeAttribute("path", child.getPath());
+                answer.writeAttribute(NAME, child.getName());
+                answer.writeAttribute(PATH, child.getPath());
                 answer.writeClose();
             }
             answer.writeClose();
             return answer;
         } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Path does not yield a resource").setRequestPath(sourcePath);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE).setRequestPath(sourcePath);
         }
     }
 }

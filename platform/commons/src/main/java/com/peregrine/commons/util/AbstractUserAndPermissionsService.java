@@ -31,6 +31,9 @@ import static com.peregrine.commons.util.PerUtil.loginService;
  * Service name and tests the permissions
  */
 public abstract class AbstractUserAndPermissionsService {
+
+    private static final String DEFAULT_USER_NAME = "admin";
+
     final Logger log = LoggerFactory.getLogger(getClass());
 
     /** @return Sling Repository to login as admin and to create the System User **/
@@ -44,7 +47,7 @@ public abstract class AbstractUserAndPermissionsService {
         ResourceResolver resourceResolver = null;
         try {
             try {
-                session = getSlingRepository().login(new SimpleCredentials("admin", "admin".toCharArray()));
+                session = getSlingRepository().login(new SimpleCredentials(DEFAULT_USER_NAME, DEFAULT_USER_NAME.toCharArray()));
             } catch(LoginException e) {
                 log.debug("Failed to login as default 'admin'");
             }

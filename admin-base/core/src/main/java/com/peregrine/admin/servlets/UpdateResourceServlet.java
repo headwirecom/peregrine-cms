@@ -37,6 +37,13 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPDATE_RESOURCE;
+import static com.peregrine.commons.util.PerConstants.CONTENT;
+import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -75,6 +82,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class UpdateResourceServlet extends AbstractBaseServlet {
 
+    public static final String FAILED_TO_UPDATE_PAGE = "Failed to Update Page";
     @Reference
     ModelFactory modelFactory;
 
@@ -83,18 +91,18 @@ public class UpdateResourceServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
-        String content = request.getParameter("content");
+        String path = request.getParameter(PATH);
+        String content = request.getParameter(CONTENT);
         try {
             Resource updatePage = resourceManagement.updateResource(request.getResourceResolver(), path, content);
             request.getResourceResolver().commit();
             return new JsonResponse()
-                .writeAttribute("type", "page")
-                .writeAttribute("status", "created")
-                .writeAttribute("name", updatePage.getName())
-                .writeAttribute("path", updatePage.getPath());
+                .writeAttribute(TYPE, PAGE)
+                .writeAttribute(STATUS, CREATED)
+                .writeAttribute(NAME, updatePage.getName())
+                .writeAttribute(PATH, updatePage.getPath());
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to Update Page").setRequestPath(path).setException(e);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_UPDATE_PAGE).setRequestPath(path).setException(e);
         }
     }
 

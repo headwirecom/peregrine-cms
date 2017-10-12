@@ -28,13 +28,15 @@ package com.peregrine.admin.models;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+
+import static com.peregrine.admin.util.AdminConstants.ACTION_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
 
 /*
     //GEN[:DATA
@@ -100,89 +102,87 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "admin/components/action",
+        resourceType = ACTION_COMPONENT_PATH,
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
-
+@Exporter(name = JACKSON,
+          extensions = JSON)
 //GEN]
 public class ActionModel extends AbstractComponent {
+
 
     public ActionModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     /* {"type":"string","source":"inject"} */
-@Inject
-private String title;
+    @Inject
+    private String title;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String target;
+    /* {"type":"string","source":"inject"} */
+    @Inject
+    private String target;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String command;
+    /* {"type":"string","source":"inject"} */
+    @Inject
+    private String command;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String type;
+    /* {"type":"string","source":"inject"} */
+    @Inject
+    private String type;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String icon;
+    /* {"type":"string","source":"inject"} */
+    @Inject
+    private String icon;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String stateFrom;
+    /* {"type":"string","source":"inject"} */
+    @Inject
+    private String stateFrom;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String stateFromDefault;
+    /* {"type":"string","source":"inject"} */
+    @Inject
+    private String stateFromDefault;
 
 
-//GEN]
+    //GEN]
 
     //GEN[:GETTERS
     /* {"type":"string","source":"inject"} */
-public String getTitle() {
-return title;
-}
+    public String getTitle() {
+    return title;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getTarget() {
-return target;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getTarget() {
+    return target;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getCommand() {
-return command;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getCommand() {
+    return command;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getType() {
-return type;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getType() {
+    return type;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getIcon() {
-return icon;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getIcon() {
+    return icon;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getStateFrom() {
-return stateFrom;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getStateFrom() {
+    return stateFrom;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getStateFromDefault() {
-return stateFromDefault;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getStateFromDefault() {
+    return stateFromDefault;
+    }
 
 
-//GEN]
+    //GEN]
 
 }

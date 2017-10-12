@@ -34,6 +34,8 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODE;
+import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -66,8 +68,8 @@ public class NodeServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
-        return new RedirectResponse(path + ".data.json");
+        String path = request.getParameter(PATH);
+        return new RedirectResponse(path + DATA_JSON_EXTENSION);
     }
 }
 

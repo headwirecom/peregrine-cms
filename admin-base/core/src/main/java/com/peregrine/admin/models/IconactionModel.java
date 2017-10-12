@@ -28,13 +28,16 @@ package com.peregrine.admin.models;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import static com.peregrine.admin.util.AdminConstants.ICON_ACTION_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
 
 /*
     //GEN[:DATA
@@ -80,57 +83,55 @@ import javax.inject.Named;
 */
 
 //GEN[:DEF
-@Model(
-        adaptables = Resource.class,
-        resourceType = "admin/components/iconaction",
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        adapters = IComponent.class
-)
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
+@Model(adaptables = Resource.class,
+       resourceType = ICON_ACTION_COMPONENT_PATH,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
 
 //GEN]
-public class IconactionModel extends AbstractComponent {
+public class IconactionModel
+    extends AbstractComponent {
 
-    public IconactionModel(Resource r) { super(r); }
+    public IconactionModel(Resource r) {
+        super(r);
+    }
 
     //GEN[:INJECT
     /* {"type":"string","source":"inject","sourceName":"jcr:title"} */
-@Inject
-@Named(value ="jcr:title")
-private String title;
+    @Inject
+    @Named(value = "jcr:title")
+    private String title;
 
-/* {"type":"string","source":"inject","sourceName":"jcr:description"} */
-@Inject
-@Named(value ="jcr:description")
-private String description;
+    /* {"type":"string","source":"inject","sourceName":"jcr:description"} */
+    @Inject
+    @Named(value = "jcr:description")
+    private String description;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String action;
+    /* {"type":"string","source":"inject"} */
+    @Inject private String action;
 
 
-//GEN]
+    //GEN]
 
     //GEN[:GETTERS
     /* {"type":"string","source":"inject","sourceName":"jcr:title"} */
-public String getTitle() {
-return title;
-}
+    public String getTitle() {
+        return title;
+    }
 
-/* {"type":"string","source":"inject","sourceName":"jcr:description"} */
-public String getDescription() {
-return description;
-}
+    /* {"type":"string","source":"inject","sourceName":"jcr:description"} */
+    public String getDescription() {
+        return description;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getAction() {
-return action;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getAction() {
+        return action;
+    }
 
 
-//GEN]
+    //GEN]
 
 }

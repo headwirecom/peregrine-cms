@@ -43,6 +43,10 @@ import java.util.Locale;
  */
 public class ProcessRunner {
 
+    public static final String OS_NAME = "os.name";
+    public static final String GENERIC = "generic";
+    public static final String FAILED_TO_EXECUTE_PROCESS = "Failed to execute process";
+    
     private final Logger log = LoggerFactory.getLogger(ProcessRunner.class);
 
     /** Working Directory in my to place the output and error files. Current user folder is default. **/
@@ -56,7 +60,7 @@ public class ProcessRunner {
 
     /** @return True if this is executed on Windows OS **/
     public boolean isWindows() {
-        String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+        String OS = System.getProperty(OS_NAME, GENERIC).toLowerCase(Locale.ENGLISH);
         return OS.startsWith("win");
     }
 
@@ -102,7 +106,7 @@ public class ProcessRunner {
             }
         } catch(IOException e) {
             log.trace("IO Exception", e);
-            throw new ExternalProcessException("Failed to execute process", e).setCommand(command);
+            throw new ExternalProcessException(FAILED_TO_EXECUTE_PROCESS, e).setCommand(command);
         }
 
         return answer.setExitCode(exitCode);

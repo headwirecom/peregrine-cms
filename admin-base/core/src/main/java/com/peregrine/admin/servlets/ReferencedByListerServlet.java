@@ -37,6 +37,10 @@ import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF_BY;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -71,30 +75,35 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 public class ReferencedByListerServlet extends AbstractBaseServlet {
 
+    public static final String REFERENCED_BY = "referencedBy";
+    public static final String PROPERTY_NAME = "propertyName";
+    public static final String PROPERTY_PATH = "propertyPath";
+    public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
+
     @Reference
     private ReferenceLister referenceLister;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String sourcePath = request.getParameter ("path");
+        String sourcePath = request.getParameter (PATH);
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
             List<com.peregrine.admin.replication.Reference> references = referenceLister.getReferencedByList(source);
             JsonResponse answer = new JsonResponse();
-            answer.writeAttribute("sourceName", source.getName());
-            answer.writeAttribute("sourcePath", source.getPath());
-            answer.writeArray("referencedBy");
+            answer.writeAttribute(SOURCE_NAME, source.getName());
+            answer.writeAttribute(SOURCE_PATH, source.getPath());
+            answer.writeArray(REFERENCED_BY);
             for(com.peregrine.admin.replication.Reference child : references) {
                 answer.writeObject();
-                answer.writeAttribute("name", child.getResource().getName());
-                answer.writeAttribute("path", child.getResource().getPath());
-                answer.writeAttribute("propertyName", child.getPropertyName());
-                answer.writeAttribute("propertyPath", child.getPropertyResource().getPath());
+                answer.writeAttribute(NAME, child.getResource().getName());
+                answer.writeAttribute(PATH, child.getResource().getPath());
+                answer.writeAttribute(PROPERTY_NAME, child.getPropertyName());
+                answer.writeAttribute(PROPERTY_PATH, child.getPropertyResource().getPath());
                 answer.writeClose();
             }
             return answer;
         } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Given Path does not yield a resource").setRequestPath(sourcePath);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE).setRequestPath(sourcePath);
         }
     }
 }
