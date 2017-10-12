@@ -263,8 +263,8 @@ class PerAdminImpl {
                         }
                         let visible = data.model.fields[i].visible
                         if(visible && visible.startsWith('model.')) {
-                            let name = visible.split('.')[1]
-                            data.model.fields[i].visible = function(model) { return model[name] === 'true' }
+                            let [ , name, value = 'true'] = visible.split('.')
+                            data.model.fields[i].visible = function(model) { return model[name] === value }
                         }
                     }
                     Promise.all(promises).then( () => {
