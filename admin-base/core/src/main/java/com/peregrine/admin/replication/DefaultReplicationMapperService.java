@@ -31,7 +31,7 @@ import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
 
 /**
  * This class provides the implementation of the Default Replication Mapper
- * serivce for path based mapping. It has two settings:
+ * service for path based mapping. It has two settings:
  * - Default Replication: any non-matching replication will be replicated with that Replication Service
  * - Path Mapping: A Replication Service is mapped to a path and its sub folders.
  */
@@ -45,13 +45,17 @@ public class DefaultReplicationMapperService
     extends AbstractionReplicationService
     implements DefaultReplicationMapper
 {
+    public static final String NO_DEFAULT_MAPPING = "Default Mapping was not provided but is required";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ObjectClassDefinition(name = "Peregrine: Default Replication Mapper Service", description = "Provides a mapping between the Path and the Default Replication Service(s)")
+    @ObjectClassDefinition(
+        name = "Peregrine: Default Replication Mapper Service",
+        description = "Provides a mapping between the Path and the Default Replication Service(s)"
+    )
     @interface Configuration {
         @AttributeDefinition(
             name = "Name",
-            description = "Name of the Default Replication Service",
+            description = "Name of the Default Replication Service (for the UI at least one service with 'defaultRepl' is required)",
             defaultValue = "defaultRepl",
             required = true
         )
@@ -128,7 +132,7 @@ public class DefaultReplicationMapperService
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);
-        if(temp.keySet().isEmpty()) { throw new IllegalArgumentException("Default Mapping was not provided but is required"); }
+        if(temp.keySet().isEmpty()) { throw new IllegalArgumentException(NO_DEFAULT_MAPPING); }
         Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
         defaultMapping = new DefaultReplicationConfig(entry.getKey(), entry.getValue());
         logger.trace("Final Default Mapping: '{}'", defaultMapping);
@@ -199,7 +203,6 @@ public class DefaultReplicationMapperService
                 List<Resource> replicatedResources = replication.replicate(resource, false);
                 if(!replicatedResources.isEmpty()) { answer.addAll(replicatedResources); }
             }
-//            List<Resource> replicatedResources = replication.replicate(pot.getValue());
         }
         return answer;
     }
@@ -208,13 +211,15 @@ public class DefaultReplicationMapperService
      * This class contains the configuration properties parsed from the Service Configurations
      */
     private static class DefaultReplicationConfig {
+        public static final String REPLICATION_SERVICE_NAME_CANNOT_BE_NULL = "Replication Service Name cannot be null for mapping";
+        public static final String REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL = "Replication Path (for non default) Name cannot be null for mapping";
         private String serviceName;
         private String path;
         private Map<String, String> parameters = new HashMap<>();
 
         /** Configuration for the Default Replication **/
         public DefaultReplicationConfig(String serviceName, Map<String, String> parameters) {
-            if(isEmpty(serviceName)) { throw new IllegalArgumentException("Replication Service Name cannot be null for mapping"); }
+            if(isEmpty(serviceName)) { throw new IllegalArgumentException(REPLICATION_SERVICE_NAME_CANNOT_BE_NULL); }
             this.serviceName = serviceName;
             if(parameters != null) { this.parameters.putAll(parameters); }
         }
@@ -222,7 +227,7 @@ public class DefaultReplicationMapperService
         /** Configuration for a single Path Mapping **/
         public DefaultReplicationConfig(String serviceName, String path, Map<String, String> parameters) {
             this(serviceName, parameters);
-            if(isEmpty(path)) { throw new IllegalArgumentException("Replication Path (for non default) Name cannot be null for mapping"); }
+            if(isEmpty(path)) { throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL); }
             this.path = path;
         }
 

@@ -37,6 +37,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DEFINITION;
+import static com.peregrine.commons.util.PerConstants.APPS;
+import static com.peregrine.commons.util.PerConstants.MODEL;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -66,9 +70,12 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class ComponentDefinitionServlet extends AbstractBaseServlet {
 
+    public static final String EXPLORER_DIALOG_JSON = "explorer_dialog.json";
+    public static final String DIALOG_JSON = "dialog.json";
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
+        String path = request.getParameter(PATH);
         Resource resource = request.getResourceByPath(path);
         boolean page = false;
         if(resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
@@ -76,23 +83,23 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
         String componentPath = "";
-        if(path.startsWith("/apps/")) {
+        if(path.startsWith(APPS)) {
             componentPath = path;
         } else {
-            componentPath = "/apps/" + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+            componentPath = APPS + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
         }
 
         Resource component = request.getResourceByPath(componentPath);
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
-        Resource dialog = component.getChild(page ? "explorer_dialog.json" : "dialog.json");
+        Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
         if(dialog == null) {
             dialog = getDialogFromSuperType(component, page);
         }
         JsonResponse answer = new JsonResponse();
-        answer.writeAttribute("path", componentPath);
-        answer.writeAttribute("name", ServletHelper.componentPathToName(componentPath));
+        answer.writeAttribute(PATH, componentPath);
+        answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentPath));
         if(dialog != null) {
-            answer.writeAttributeRaw("model", ServletHelper.asString(dialog.adaptTo(InputStream.class)).toString());
+            answer.writeAttributeRaw(MODEL, ServletHelper.asString(dialog.adaptTo(InputStream.class)).toString());
         }
         return answer;
     }
@@ -100,12 +107,12 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
     private Resource getDialogFromSuperType(Resource resource, boolean page) {
         String componentPath = resource.getValueMap().get(SLING_RESOURCE_SUPER_TYPE, String.class);
         if(componentPath != null) {
-            if (!componentPath.startsWith("/apps")) {
-                componentPath = "/apps/" + componentPath;
+            if (!componentPath.startsWith(APPS)) {
+                componentPath = APPS + componentPath;
             }
             ResourceResolver resourceResolver = resource.getResourceResolver();
             Resource component = resourceResolver.getResource(componentPath);
-            Resource dialog = component.getChild(page ? "explorer_dialog.json" : "dialog.json");
+            Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
             if (dialog == null) {
                 return getDialogFromSuperType(component, page);
             } else {

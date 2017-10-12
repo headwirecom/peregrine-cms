@@ -40,6 +40,16 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_SEARCH;
+import static com.peregrine.admin.util.AdminConstants.CURRENT;
+import static com.peregrine.admin.util.AdminConstants.DATA;
+import static com.peregrine.admin.util.AdminConstants.MORE;
+import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.NODE_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.TITLE;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -72,22 +82,31 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class RestrictedSearchServlet extends AbstractBaseServlet {
 
     private static final long ROWS_PER_PAGE = 1000;
+    public static final String COMPONENTS = "components";
+    public static final String TEMPLATES = "templates";
+    public static final String OBJECTS = "objects";
+    public static final String UNKNOWN_TYPE = "Unknown Type: ";
+    public static final String UNABLE_TO_GET_QUERY_MANAGER = "Unable to get query manager";
+    public static final String GROUP = "group";
+    public static final String TEMPLATE_COMPONENT = "templateComponent";
+    public static final String THUMBNAIL_PNG = "thumbnail.png";
+    public static final String THUMBNAIL = "thumbnail";
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
         // Path / Suffix is obtained but not used ?
-        String path = request.getParameter("path");
+        String path = request.getParameter(PATH);
         Resource res = request.getResource();
-        String type = res.getValueMap().get("type", String.class);
+        String type = res.getValueMap().get(TYPE, String.class);
         Response answer;
-        if("components".equals(type)) {
+        if(COMPONENTS.equals(type)) {
             answer = findComponents(request);
-        } else if("templates".equals(type)) {
+        } else if(TEMPLATES.equals(type)) {
             answer = findTemplates(request);
-        } else if("objects".equals(type)) {
+        } else if(OBJECTS.equals(type)) {
             answer = findObjects(request);
         } else {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown Type: " + type);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UNKNOWN_TYPE + type);
         }
         return answer;
     }
@@ -113,7 +132,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
     private Response findAndOutputToWriterAsJSON(Request request, String query) throws IOException {
         JsonResponse answer = new JsonResponse();
         if(query.length() == 0) {
-            answer.writeAttribute("current", 1).writeAttribute("more", false).writeArray("data").writeClose();
+            answer.writeAttribute(CURRENT, 1).writeAttribute(MORE, false).writeArray(DATA).writeClose();
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             try {
@@ -130,44 +149,44 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
 
                     QueryResult res = q.execute();
                     NodeIterator nodes = res.getNodes();
-                    answer.writeAttribute("current", 1);
-                    answer.writeAttribute("more", nodes.getSize() > ROWS_PER_PAGE);
-                    answer.writeArray("data");
+                    answer.writeAttribute(CURRENT, 1);
+                    answer.writeAttribute(MORE, nodes.getSize() > ROWS_PER_PAGE);
+                    answer.writeArray(DATA);
                     while(nodes.hasNext()) {
                         Node node = nodes.nextNode();
                         answer.writeObject();
-                        answer.writeAttribute("name", node.getName());
-                        answer.writeAttribute("path", node.getPath());
-                        if(node.getPrimaryNodeType().toString().equals("per:Component")) {
-                            if(node.hasProperty("group")) {
-                                Property group = node.getProperty("group");
+                        answer.writeAttribute(NAME, node.getName());
+                        answer.writeAttribute(PATH, node.getPath());
+                        if(node.getPrimaryNodeType().toString().equals(COMPONENT_PRIMARY_TYPE)) {
+                            if(node.hasProperty(GROUP)) {
+                                Property group = node.getProperty(GROUP);
                                 if(group != null) {
-                                    answer.writeAttribute("group", group.getString());
+                                    answer.writeAttribute(GROUP, group.getString());
                                 }
                             }
-                            if(node.hasProperty("jcr:title")) {
-                                Property title = node.getProperty("jcr:title");
+                            if(node.hasProperty(JCR_TITLE)) {
+                                Property title = node.getProperty(JCR_TITLE);
                                 if(title != null) {
-                                    answer.writeAttribute("title", title.getString());
+                                    answer.writeAttribute(TITLE, title.getString());
                                 }
                             }
-                            if(node.hasProperty("templateComponent")) {
-                                Property templateComponent = node.getProperty("templateComponent");
+                            if(node.hasProperty(TEMPLATE_COMPONENT)) {
+                                Property templateComponent = node.getProperty(TEMPLATE_COMPONENT);
                                 if(templateComponent != null) {
-                                    answer.writeAttribute("templateComponent", templateComponent.getBoolean());
+                                    answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
                                 }
                             }
-                            if(node.hasNode("thumbnail.png")) {
-                                answer.writeAttribute("thumbnail", node.getPath() + "/thumbnail.png");
+                            if(node.hasNode(THUMBNAIL_PNG)) {
+                                answer.writeAttribute(THUMBNAIL, node.getPath() + "/" + THUMBNAIL_PNG);
                             }
                         }
-                        answer.writeAttribute("nodeType", node.getPrimaryNodeType() + "");
+                        answer.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
                         answer.writeClose();
                     }
                     answer.writeClose();
                 }
             } catch(Exception e) {
-                answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unable to get query manager").setException(e);
+                answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UNABLE_TO_GET_QUERY_MANAGER).setException(e);
             }
         }
         return answer;

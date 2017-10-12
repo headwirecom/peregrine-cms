@@ -19,7 +19,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -29,6 +28,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 
+import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_ALLOWED_TYPES;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_TYPE_ALL;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.INSTALL_PACKAGE;
@@ -40,6 +43,9 @@ import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_TYPE;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.PACKAGE_NAME;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.PACKAGE_VERSION;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.REMOVE_PACKAGE;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * Rest API Servlet to serve the Sling Node API
@@ -47,16 +53,33 @@ import static com.peregrine.nodejs.servlet.SlingNodeConstants.REMOVE_PACKAGE;
 @Component(
     service = Servlet.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Sling Node Servlet",
-        Constants.SERVICE_VENDOR + "=headwire.com Inc",
-        "sling.servlet.paths=" + LIST_PACKAGES,
-        "sling.servlet.paths=" + INSTALL_PACKAGE,
-        "sling.servlet.paths=" + REMOVE_PACKAGE
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Sling Node Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_PATHS + EQUALS + LIST_PACKAGES,
+        SLING_SERVLET_PATHS + EQUALS + INSTALL_PACKAGE,
+        SLING_SERVLET_PATHS + EQUALS + REMOVE_PACKAGE
     }
 )
 @SuppressWarnings("serial")
 public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
-    
+
+    public static final String USER_IN_NOT_LOGGED_IN = "User is either not logged in or does not have the necessary permissions to list packages";
+    public static final String APPS_NODEJS_PERMISSION_LIST = "/apps/nodejs/permission/list";
+    public static final String APPS_NODEJS_PERMISSION_MODIFY_OR_CANNOT_LIST = "/apps/nodejs/permission/modify";
+    public static final String USER_IS_EITHER_NOT_LOGGED_IN_OR_CANNOT_MODIFY = "User is either not logged in or does not have the necessary permissions to modify packages";
+    public static final String TYPE_IS_NOT_ACCEPTED = "Type is not accepted: ";
+    public static final String SIZE_IS_NOT_A_NUMBER = "Size is not a number";
+    public static final String FAILED_TO_OPEN_OUTPUT_FILE = "Failed to open output file";
+    public static final String FAILED_TO_LIST_PACKAGES = "Failed to List Packages";
+    public static final String LIST_PACKAGES_FAILED = "List Packages failed";
+    public static final String PACKAGE_NAME_IS_REQUIRED_FOR_INSTALLING_A_PACKAGE = "Package Name is required for installing a Package";
+    public static final String SUCCESSFULLY_INSTALLED_PACKAGE = "Successfully installed package: ";
+    public static final String INSTALLATION_DID_NOT_SUCCEED = "Installation did not succeed";
+    public static final String PACKAGE_NAME_IS_REQUIRED_FOR_REMOVING_A_PACKAGE = "Package Name is required for removing a package";
+    public static final String PACKAGE_VERSION_IS_REQUIRED_FOR_REMOVING_A_PACKAGE = "Package Version is required for removing a package";
+    public static final String SUCCESSFULLY_REMOVED_PACKAGE = "Successfully removed package: ";
+    public static final String REMOVAL_DID_NOT_SUCCEED = "Removal did not succeed";
+
     private final Logger log = LoggerFactory.getLogger(SlingNodeServiceServlet.class);
 
     private static final String SUCCESS_MESSAGE =
@@ -87,10 +110,10 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         IOException
     {
         ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource permission = resourceResolver.resolve(request, "/apps/nodejs/permission/list");
+        Resource permission = resourceResolver.resolve(request, APPS_NODEJS_PERMISSION_LIST);
         log.trace("Permission Resource: '{}'", permission);
         if(ResourceUtil.isNonExistingResource(permission)) {
-            sendErrorMessage(response, LOGIN_EXIT_CODE, "User is either not logged in or does not have the necessary permissions to list packages", HttpServletResponse.SC_UNAUTHORIZED);
+            sendErrorMessage(response, LOGIN_EXIT_CODE, USER_IN_NOT_LOGGED_IN, HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             log.trace("Sling Node Servlet called");
             // Check the path to see what action is required
@@ -108,10 +131,10 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         IOException
     {
         ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource permission = resourceResolver.resolve(request, "/apps/nodejs/permission/modify");
+        Resource permission = resourceResolver.resolve(request, APPS_NODEJS_PERMISSION_MODIFY_OR_CANNOT_LIST);
         log.trace("Permission Resource: '{}'", permission);
         if(ResourceUtil.isNonExistingResource(permission)) {
-            sendErrorMessage(response, LOGIN_EXIT_CODE, "User is either not logged in or does not have the necessary permissions to modify packages", HttpServletResponse.SC_UNAUTHORIZED);
+            sendErrorMessage(response, LOGIN_EXIT_CODE, USER_IS_EITHER_NOT_LOGGED_IN_OR_CANNOT_MODIFY, HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             log.trace("Sling Node Servlet called, POST");
             // Check the path to see what action is required
@@ -146,7 +169,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
                     type = null;
                 }
             } else {
-                createErrorResponse(response, "Type is not accepted: " + type);
+                createErrorResponse(response, TYPE_IS_NOT_ACCEPTED + type);
                 return;
             }
         }
@@ -156,7 +179,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         try {
             size = getParameter(request, LIST_SIZE, -1);
         } catch(NumberFormatException e) {
-            createErrorResponse(response, "Size is not a number", e);
+            createErrorResponse(response, SIZE_IS_NOT_A_NUMBER, e);
             return;
         }
         log.trace("Package Size: '{}'", size);
@@ -169,21 +192,21 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
                 // Send the output back as is
                 Reader reader = null;
                 try {
-                    response.setContentType("application/json");
+                    response.setContentType(JSON_MIME_TYPE);
                     reader = result.getOutputReader();
                     IOUtils.copy(reader, response.getWriter());
                     log.trace("List Response: '{}'", result.getOutput());
                 } catch(FileNotFoundException e) {
-                    createErrorResponse(response, "Failed to open output file", e);
+                    createErrorResponse(response, FAILED_TO_OPEN_OUTPUT_FILE, e);
                 } finally {
                     IOUtils.closeQuietly(reader);
                 }
             } else {
-                createErrorResponse(response, "Failed to List Packages", result);
+                createErrorResponse(response, FAILED_TO_LIST_PACKAGES, result);
             }
             log.trace("Handle List Packages done");
         } catch(ExternalProcessException e) {
-            createErrorResponse(response, "List Packages failed", e);
+            createErrorResponse(response, LIST_PACKAGES_FAILED, e);
         } finally {
             if(result != null) { result.tearDown(); }
         }
@@ -194,7 +217,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
     {
         String name = getParameter(request, PACKAGE_NAME, String.class);
         if(name != null && name.isEmpty()) {
-            createErrorResponse(response, "Package Name is required for installing a Package");
+            createErrorResponse(response, PACKAGE_NAME_IS_REQUIRED_FOR_INSTALLING_A_PACKAGE);
             return;
         }
         log.trace("Package Name: '{}'", name);
@@ -207,9 +230,9 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         try {
             result = npmExternalProcess.installPackage(true, name, version);
             if(result.getExitCode() == 0) {
-                createSuccessResponse(response, "Successfully installed package: " + name + (version != null ? "@" + version + "" : ""), result);
+                createSuccessResponse(response, SUCCESSFULLY_INSTALLED_PACKAGE + name + (version != null ? "@" + version + "" : ""), result);
             } else {
-                createErrorResponse(response, "Installation did not succeed", result);
+                createErrorResponse(response, INSTALLATION_DID_NOT_SUCCEED, result);
             }
         } catch(ExternalProcessException e) {
             createErrorResponse(response, e);
@@ -221,14 +244,14 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
     {
         String name = getParameter(request, PACKAGE_NAME, String.class);
         if(name != null && name.isEmpty()) {
-            createErrorResponse(response, "Package Name is required for removing a package");
+            createErrorResponse(response, PACKAGE_NAME_IS_REQUIRED_FOR_REMOVING_A_PACKAGE);
             return;
         }
         log.trace("Package Name: '{}'", name);
 
         String version = getParameter(request, PACKAGE_VERSION, String.class);
         if(version != null && version.isEmpty()) {
-            createErrorResponse(response, "Package Version is required for removing a package");
+            createErrorResponse(response, PACKAGE_VERSION_IS_REQUIRED_FOR_REMOVING_A_PACKAGE);
             return;
         }
         log.trace("Package Version: '{}'", version);
@@ -237,9 +260,9 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         try {
             result = npmExternalProcess.removePackage(true, name, version);
             if(result.getExitCode() == 0) {
-                createSuccessResponse(response, "Successfully removed package: " + name + (version != null ? "@" + version + "" : ""), result);
+                createSuccessResponse(response, SUCCESSFULLY_REMOVED_PACKAGE + name + (version != null ? "@" + version + "" : ""), result);
             } else {
-                createErrorResponse(response, "Removal did not succeed", result);
+                createErrorResponse(response, REMOVAL_DID_NOT_SUCCEED, result);
             }
         } catch(ExternalProcessException e) {
             createErrorResponse(response, e);
@@ -268,7 +291,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         );
         // Send the output back as is
         try {
-            response.setContentType("application/json");
+            response.setContentType(JSON_MIME_TYPE);
             IOUtils.copy(reader, response.getWriter());
         } finally {
             IOUtils.closeQuietly(reader);
@@ -335,7 +358,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         );
         // Send the output back as is
         try {
-            response.setContentType("application/json");
+            response.setContentType(JSON_MIME_TYPE);
             response.setStatus(FAILURE_CODE);
             IOUtils.copy(reader, response.getWriter());
         } finally {
@@ -355,7 +378,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
         );
         // Send the output back as is
         try {
-            response.setContentType("application/json");
+            response.setContentType(JSON_MIME_TYPE);
             response.setStatus(statusCode);
             IOUtils.copy(reader, response.getWriter());
         } finally {

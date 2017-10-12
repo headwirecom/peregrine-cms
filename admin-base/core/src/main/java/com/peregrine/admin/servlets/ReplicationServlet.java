@@ -43,6 +43,11 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
+import static com.peregrine.admin.util.AdminConstants.DEEP;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -73,6 +78,13 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/api/admin/repl.json/path///content/sites/example//name//local
  */
 public class ReplicationServlet extends AbstractBaseServlet {
+
+    public static final String PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED = "Parameter 'name' for the replication name is not provided";
+    public static final String DEACTIVATE = "deactivate";
+    public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
+    public static final String REPLICATION_FAILED = "Replication Failed";
+    public static final String REPLICATES = "replicates";
+    public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
 
     @Reference
     private ReferenceLister referenceLister;
@@ -111,18 +123,18 @@ public class ReplicationServlet extends AbstractBaseServlet {
         logger.trace("Request Path: '{}'", request.getRequestPath());
         logger.trace("Request URI: '{}'", request.getRequest().getRequestURI());
         logger.trace("Request URL: '{}'", request.getRequest().getRequestURL());
-        String sourcePath = request.getParameter("path");
-        String replicationName = request.getParameter("name");
+        String sourcePath = request.getParameter(PATH);
+        String replicationName = request.getParameter(NAME);
         if(replicationName == null || replicationName.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Parameter 'name' for the replication name is not provided");
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
         }
-        String deepParameter = request.getParameter("deep");
-        boolean deep = deepParameter != null && "true".equals(deepParameter.toLowerCase());
-        String deactivateParameter = request.getParameter("deactivate");
-        boolean deactivate = deactivateParameter != null && "true".equals(deactivateParameter.toLowerCase());
+        String deepParameter = request.getParameter(DEEP);
+        boolean deep = deepParameter != null && Boolean.TRUE.toString().equals(deepParameter.toLowerCase());
+        String deactivateParameter = request.getParameter(DEACTIVATE);
+        boolean deactivate = deactivateParameter != null && Boolean.TRUE.toString().equals(deactivateParameter.toLowerCase());
         Replication replication = replications.get(replicationName);
         if(replication == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication not found for name: " + replicationName);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
         }
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
@@ -135,23 +147,23 @@ public class ReplicationServlet extends AbstractBaseServlet {
                     replicates = replication.deactivate(source);
                 }
             } catch(ReplicationException e) {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Replication Failed").setException(e);
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(REPLICATION_FAILED).setException(e);
             }
             answer = new JsonResponse();
-            answer.writeAttribute("sourceName", source.getName());
-            answer.writeAttribute("sourcePath", source.getPath());
-            answer.writeArray("replicates");
+            answer.writeAttribute(SOURCE_NAME, source.getName());
+            answer.writeAttribute(SOURCE_PATH, source.getPath());
+            answer.writeArray(REPLICATES);
             if(replicates != null) {
                 for(Resource child : replicates) {
                     answer.writeObject();
-                    answer.writeAttribute("name", child.getName());
-                    answer.writeAttribute("path", child.getPath());
+                    answer.writeAttribute(NAME, child.getName());
+                    answer.writeAttribute(PATH, child.getPath());
                     answer.writeClose();
                 }
             }
             answer.writeClose();
         } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Suffix: " + sourcePath + " is not a resource");
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
         }
         return answer;
     }

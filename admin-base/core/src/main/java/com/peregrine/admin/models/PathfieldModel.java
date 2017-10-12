@@ -28,13 +28,15 @@ package com.peregrine.admin.models;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
-import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.admin.util.AdminConstants.PATH_FIELD_COMPONENT_PATH;
+import static org.apache.sling.models.annotations.DefaultInjectionStrategy.*;
 
 /*
     //GEN[:DATA
@@ -73,46 +75,43 @@ import javax.inject.Named;
 */
 
 //GEN[:DEF
-@Model(
-        adaptables = Resource.class,
-        resourceType = "admin/components/pathfield",
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        adapters = IComponent.class
-)
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
+@Model(adaptables = Resource.class,
+       resourceType = PATH_FIELD_COMPONENT_PATH,
+       defaultInjectionStrategy = OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
 
 //GEN]
-public class PathfieldModel extends AbstractComponent {
+public class PathfieldModel
+    extends AbstractComponent {
 
-    public PathfieldModel(Resource r) { super(r); }
+    public PathfieldModel(Resource r) {
+        super(r);
+    }
 
     //GEN[:INJECT
     /* {"type":"string","source":"inject"} */
-@Inject
-private String dataFrom;
+    @Inject private String dataFrom;
 
-/* {"type":"string","source":"inject"} */
-@Inject
-private String dataDefault;
+    /* {"type":"string","source":"inject"} */
+    @Inject private String dataDefault;
 
 
-//GEN]
+    //GEN]
 
     //GEN[:GETTERS
     /* {"type":"string","source":"inject"} */
-public String getDataFrom() {
-return dataFrom;
-}
+    public String getDataFrom() {
+        return dataFrom;
+    }
 
-/* {"type":"string","source":"inject"} */
-public String getDataDefault() {
-return dataDefault;
-}
+    /* {"type":"string","source":"inject"} */
+    public String getDataDefault() {
+        return dataDefault;
+    }
 
 
-//GEN]
+    //GEN]
 
 }

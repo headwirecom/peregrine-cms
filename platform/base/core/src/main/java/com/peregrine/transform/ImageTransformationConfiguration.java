@@ -36,6 +36,18 @@ import java.util.Map;
  * Created by Andreas Schaefer on 5/22/17.
  */
 public class ImageTransformationConfiguration {
+
+    public static final String RENDITION_TYPE_FORMAT_HAS_NO_NAME = "Rendition Type format has no name. Configuration must start with '<name>|'";
+    public static final String IMAGE_CONFIGURATION_NAME_IS_NOT_PROVIDED = "Image Configuration's name is not provided, configuration: '";
+    public static final String IMAGE_CONFIGURATION_HAS_NO_ENTRIES = "Image Configuration has no entries, configuration: '";
+    public static final String RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_IS_NOT_PROVIDED = "Rendition Type format's transformation name is not provided, configuration: '";
+    public static final String RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_IS_NOT_OF_TYPE_TRANSFORMATION = "Rendition Type format's transformation name is not of type transformation=value , configuration: '";
+    public static final String RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_DOES_NOT_START_WITH_TRANSFORMATION = "Rendition Type format's transformation name does not start with 'transformation' , configuration: '";
+    public static final String RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_VALUE_IS_NOT_PROVIDED = "Rendition Type format's transformation name value is not provided , configuration: '";
+    public static final String RENDITION_TYPE_FORMAT_CONTAINS_EMPTY_TOKEN = "Rendition Type format's contains empty token, configuration: '";
+    public static final String RENDITION_TYPE_FORMAT_TOKEN_IS_NOT_OF_TYPE_KEY_VALUE = "Rendition Type format's token is not of type key=value , configuration: '%s' on position: %s: Format: '%s'";
+    public static final String EXPECTED_CONFIGURATION_FORMAT_FAILURE = "Expected Configuration Format: transformation=<transformation name>|<a | separated list of <parameter>=<value>>: '%s' on position: %s. Format; '%s'";
+
     /** Name of the Image Transformation Setup this configuration belongs to **/
     private String name;
     /** Name of the Image Transformation this configuration configures **/
@@ -46,7 +58,7 @@ public class ImageTransformationConfiguration {
     public ImageTransformationConfiguration(String format) {
         int index = format.indexOf('|');
         if(index <= 0 || index == format.length() - 1) {
-            throw new IllegalArgumentException("Rendition Type format has no name. Configuration must start with '<name>|'");
+            throw new IllegalArgumentException(RENDITION_TYPE_FORMAT_HAS_NO_NAME);
         }
         String name = format.substring(0, index);
         String configuration = format.substring(index + 1);
@@ -59,28 +71,28 @@ public class ImageTransformationConfiguration {
 
     private void init(String name, String configuration) {
         if(name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Image Configuration's name is not provided, configuration: '" + configuration);
+            throw new IllegalArgumentException(IMAGE_CONFIGURATION_NAME_IS_NOT_PROVIDED + configuration);
         }
         this.name = name;
         String[] tokens = configuration.split("\\|");
         if(tokens.length == 0) {
-            throw new IllegalArgumentException("Image Configuration has no entries, configuration: '" + configuration + "'. " + getConfigurationFormat());
+            throw new IllegalArgumentException(IMAGE_CONFIGURATION_HAS_NO_ENTRIES + configuration + "'. " + getConfigurationFormat());
         }
         String temp = tokens[0];
 //        this.transformationName = temp;
         if(temp == null || temp.isEmpty()) {
-            throw new IllegalArgumentException("Rendition Type format's transformation name is not provided, configuration: '" + configuration + "'. " + getConfigurationFormat());
+            throw new IllegalArgumentException(RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_IS_NOT_PROVIDED + configuration + "'. " + getConfigurationFormat());
         } else {
             int index = temp.indexOf('=');
             if(index <= 0 || index >= temp.length() - 1) {
-                throw new IllegalArgumentException("Rendition Type format's transformation name is not of type transformation=value , configuration: '" + configuration + "'. " + getConfigurationFormat());
+                throw new IllegalArgumentException(RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_IS_NOT_OF_TYPE_TRANSFORMATION + configuration + "'. " + getConfigurationFormat());
             } else {
                 String propertyKey = temp.substring(0, index);
                 String propertyValue = temp.substring(index + 1);
                 if(!"transformation".equals(propertyKey)) {
-                    throw new IllegalArgumentException("Rendition Type format's transformation name does not start with 'transformation' , configuration: '" + configuration + "'. " + getConfigurationFormat());
+                    throw new IllegalArgumentException(RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_DOES_NOT_START_WITH_TRANSFORMATION + configuration + "'. " + getConfigurationFormat());
                 } else if(propertyValue.isEmpty()) {
-                    throw new IllegalArgumentException("Rendition Type format's transformation name value is not provided , configuration: '" + configuration + "'. " + getConfigurationFormat());
+                    throw new IllegalArgumentException(RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_VALUE_IS_NOT_PROVIDED + configuration + "'. " + getConfigurationFormat());
                 } else {
                     this.transformationName = propertyValue;
                 }
@@ -89,11 +101,11 @@ public class ImageTransformationConfiguration {
         for(int i = 1; i < tokens.length; i++) {
             String value = tokens[i];
             if(value == null || value.isEmpty()) {
-                throw new IllegalArgumentException("Rendition Type format's contains empty token, configuration: '" + configuration + "' on position: " + (i + 1) + "). " + getConfigurationFormat());
+                throw new IllegalArgumentException(String.format(RENDITION_TYPE_FORMAT_CONTAINS_EMPTY_TOKEN, configuration, (i + 1), getConfigurationFormat()));
             }
             int index = value.indexOf('=');
             if(index <= 0 || index >= value.length() - 1) {
-                throw new IllegalArgumentException("Rendition Type format's token is not of type key=value , configuration: '" + configuration + "' on position: " + (i + 1) + "). " + getConfigurationFormat());
+                throw new IllegalArgumentException(String.format(RENDITION_TYPE_FORMAT_TOKEN_IS_NOT_OF_TYPE_KEY_VALUE, configuration, (i + 1), getConfigurationFormat()));
             }
             parameters.put(value.substring(0, index), value.substring(index + 1));
         }
@@ -121,7 +133,7 @@ public class ImageTransformationConfiguration {
 
     /** @return Description of the Configuration Format **/
     private String getConfigurationFormat() {
-        return "Expected Configuration Format: transformation=<transformation name>|<a | separated list of <parameter>=<value>>";
+        return EXPECTED_CONFIGURATION_FORMAT_FAILURE;
     }
 
     @Override

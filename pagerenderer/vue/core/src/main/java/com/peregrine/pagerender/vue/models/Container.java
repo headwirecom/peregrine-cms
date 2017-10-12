@@ -37,13 +37,18 @@ import java.util.List;
 import com.peregrine.nodetypes.models.IComponent;
 import com.peregrine.nodetypes.models.AbstractComponent;
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_CONTAINER_TYPE;
+
 /**
  * Created by rr on 12/2/2016.
  */
 @Model(adaptables = Resource.class, resourceType = {
-        "pagerender/vue/structure/container"
+    PR_VUE_COMPONENT_CONTAINER_TYPE
 }, adapters = IComponent.class)
-@Exporter(name = "jackson", extensions = "json")
+@Exporter(name = JACKSON,
+          extensions = JSON)
 public class Container extends AbstractComponent {
 
     public Container(Resource r) {

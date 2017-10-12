@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -66,6 +67,14 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class ListServlet extends AbstractBaseServlet {
 
+    public static final String TOOLS = "/tools";
+    public static final String TOOLS_CONFIG = "/tools/config";
+    public static final String CONTENT_ADMIN_TOOLS = "/content/admin/tools";
+    public static final String CONTENT_ADMIN_TOOLS_CONFIG = "/content/admin/toolsConfig";
+    public static final String UNKNOWN_SUFFIX = "Unknown suffix: ";
+    public static final String ERROR_WHILE_EXPORTING_MODEL = "Error while exporting model";
+    public static final String NO_EXPORTER_JACKSON_DEFINED = "no exporter 'jackson' defined";
+
     @Reference
     ModelFactory modelFactory;
 
@@ -77,12 +86,12 @@ public class ListServlet extends AbstractBaseServlet {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No suffix provided").setRequestPath(path);
         }
         Response answer;
-        if("/tools".equals(path)) {
-            answer = getJSONFromResource(request.getResource(), "/content/admin/tools");
-        } else if("/tools/config".equals(path)) {
-            answer = getJSONFromResource(request.getResource(), "/content/admin/toolsConfig");
+        if(TOOLS.equals(path)) {
+            answer = getJSONFromResource(request.getResource(), CONTENT_ADMIN_TOOLS);
+        } else if(TOOLS_CONFIG.equals(path)) {
+            answer = getJSONFromResource(request.getResource(), CONTENT_ADMIN_TOOLS_CONFIG);
         } else {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown suffix: " + path);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UNKNOWN_SUFFIX + path);
         }
         return answer;
     }
@@ -91,12 +100,12 @@ public class ListServlet extends AbstractBaseServlet {
         Response answer;
         Resource res = resource.getResourceResolver().getResource(resourcePath);
         try {
-            String out = modelFactory.exportModelForResource(res, "jackson", String.class, Collections.<String, String> emptyMap());
+            String out = modelFactory.exportModelForResource(res, JACKSON, String.class, Collections.<String, String> emptyMap());
             answer = new PlainJsonResponse(out);
         } catch (ExportException e) {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Error while exporting model").setException(e);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(ERROR_WHILE_EXPORTING_MODEL).setException(e);
         } catch (MissingExporterException e) {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("no exporter 'jackson' defined").setException(e);
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_EXPORTER_JACKSON_DEFINED).setException(e);
         }
         return answer;
     }

@@ -34,26 +34,27 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 
-@Model(
-        adaptables = Resource.class,
-        resourceType = "admin/components/createobjectwizard",
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        adapters = IComponent.class
-)
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
+import static com.peregrine.admin.util.AdminConstants.CREATE_OBJECT_WIZARD_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
 
-public class CreateObjectWizardModel extends Container {
+@Model(adaptables = Resource.class,
+       resourceType = CREATE_OBJECT_WIZARD_COMPONENT_PATH,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
 
-    public CreateObjectWizardModel(Resource r) { super(r); }
+public class CreateObjectWizardModel
+    extends Container {
 
-    @Inject
-    private String returnTo;
+    public CreateObjectWizardModel(Resource r) {
+        super(r);
+    }
 
-    @Inject
-    private String dataFrom;
+    @Inject private String returnTo;
+
+    @Inject private String dataFrom;
 
 
     public String getReturnTo() {

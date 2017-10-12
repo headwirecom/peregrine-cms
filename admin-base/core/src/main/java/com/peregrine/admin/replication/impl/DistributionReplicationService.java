@@ -74,6 +74,11 @@ import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED
 public class DistributionReplicationService
     extends AbstractionReplicationService
 {
+
+    public static final String DISTRIBUTION_PENDING = "distribution pending";
+    public static final String NO_DISTRIBUTOR_AVAILABLE = "No Distributor available -> configure Sling Distribution first";
+    public static final String DISTRIBUTION_FAILED = "Distribution failed due to: '%s'";
+
     @ObjectClassDefinition(
         name = "Peregrine: Remote Replication Service",
         description = "Each instance provides the configuration for Remote Replication through Sling Distribution"
@@ -197,17 +202,7 @@ public class DistributionReplicationService
                 for(Resource resource : resourceList) {
                     paths[i++] = resource.getPath();
                     // In order to make it possible to have the correct user set and Replicated By we need to set it here and now
-                    updateReplicationProperties(resource, "distribution pending", null);
-//                    if(supportsReplicationProperties(resource)) {
-//                        ModifiableValueMap properties = getModifiableProperties(resource, false);
-//                        if(properties != null) {
-//                            log.trace("Set Replication User to: '{}' on properties: '{}'", resourceResolver.getUserID(), properties);
-//                            properties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
-//                            if(!activate) {
-//                                properties.remove(PER_REPLICATION_REF);
-//                            }
-//                        }
-//                    }
+                    updateReplicationProperties(resource, DISTRIBUTION_PENDING, null);
                 }
                 try {
                     resourceResolver.commit();
@@ -226,10 +221,10 @@ public class DistributionReplicationService
                     );
                     log.trace("Distributor Response: '{}'", response);
                     if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
-                        throw new ReplicationException("Distribution failed due to: " + response);
+                        throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
                     }
                 } else {
-                    throw new ReplicationException("No Distributor available -> configure Sling Distribution first");
+                    throw new ReplicationException(NO_DISTRIBUTOR_AVAILABLE);
                 }
             }
         }

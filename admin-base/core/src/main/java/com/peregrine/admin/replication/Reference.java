@@ -32,6 +32,24 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * This is a wrapper that contains the resource and property name
+ * of a reference to a given resource but also contains the reference
+ * to the parent of its JCR Content node if found
+ *
+ * Example with Content:
+ * /a
+ *   /b
+ *     /myResource             <- Resource
+ *       /jcr:content
+ *         /myReference        <- Property Resource
+ *           - myPropertyRef   <- Property (which name is provided here)
+ *
+ * Example w/o Content
+ * /a
+ *   /b
+ *     /myResource             <- Resource and Property Resource
+ *        - myPropertyRef      <- Property (which name is provided here)
+ *
  * Created by Andreas Schaefer on 5/25/17.
  */
 public class Reference {
@@ -45,14 +63,20 @@ public class Reference {
         this.propertyResource = propertyResource;
     }
 
+    /**
+     * This is either the same of the property resource or if found the parent of the JCR content
+     * that is parent of the property resource
+     **/
     public Resource getResource() {
         return resource;
     }
 
+    /** Name of the Property that contains the reference **/
     public String getPropertyName() {
         return propertyName;
     }
 
+    /** The resource that contains the property with the reference **/
     public Resource getPropertyResource() {
         return propertyResource;
     }

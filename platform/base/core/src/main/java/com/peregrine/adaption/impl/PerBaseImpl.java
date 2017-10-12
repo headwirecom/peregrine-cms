@@ -48,6 +48,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 public abstract class PerBaseImpl
     implements PerBase
 {
+    public static final String RESOURCE_MUST_BE_PROVIDED = "Resource must be provided";
     Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The Resource this instance wraps **/
@@ -57,7 +58,7 @@ public abstract class PerBaseImpl
 
     public PerBaseImpl(Resource resource) {
         if(resource == null) {
-            throw new IllegalArgumentException("Resource must be provided");
+            throw new IllegalArgumentException(RESOURCE_MUST_BE_PROVIDED);
         }
         this.resource = resource;
         jcrContent = getContentResource();

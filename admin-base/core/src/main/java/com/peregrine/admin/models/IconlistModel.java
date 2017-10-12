@@ -28,12 +28,15 @@ package com.peregrine.admin.models;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
+
+import static com.peregrine.admin.util.AdminConstants.ICON_LIST_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
 
 /*
     //GEN[:DATA
@@ -67,37 +70,35 @@ import javax.inject.Inject;
 */
 
 //GEN[:DEF
-@Model(
-        adaptables = Resource.class,
-        resourceType = "admin/components/iconlist",
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        adapters = IComponent.class
-)
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
+@Model(adaptables = Resource.class,
+       resourceType = ICON_LIST_COMPONENT_PATH,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
 
 //GEN]
-public class IconlistModel extends AbstractComponent {
+public class IconlistModel
+    extends AbstractComponent {
 
-    public IconlistModel(Resource r) { super(r); }
+    public IconlistModel(Resource r) {
+        super(r);
+    }
 
     //GEN[:INJECT
     /* {"type":"string","source":"inject"} */
-@Inject
-private String source;
+    @Inject private String source;
 
 
-//GEN]
+    //GEN]
 
     //GEN[:GETTERS
     /* {"type":"string","source":"inject"} */
-public String getSource() {
-return source;
-}
+    public String getSource() {
+        return source;
+    }
 
 
-//GEN]
+    //GEN]
 
 }

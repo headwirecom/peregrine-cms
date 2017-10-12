@@ -26,7 +26,8 @@ import java.util.Map;
 
 import static com.peregrine.admin.replication.impl.LocalFileSystemReplicationService.CREATE_ALL_STRATEGY;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.it.basic.BasicTestHelpers.IMAGE_PNG_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
+import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFile;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderAndCreate;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
@@ -122,13 +123,13 @@ public class ReplicationServletIT
 
         // Get Image Content and upload it. Then check if Asset exists
         byte[] imageContent = loadFile(IMAGE_RESOURCES_PATH, imageName, "Test Image - PNG");
-        uploadFile(client, rootFolderPath, imageName, imageContent, IMAGE_PNG_MIME_TYPE,200);
+        uploadFile(client, rootFolderPath, imageName, imageContent, PNG_MIME_TYPE,200);
 
         // Replicate the Page and check its new content
         executeReplication(client, rootFolderPath + "/" + imageName, "local", 200);
 
         // Check page and template
-        TestAsset testAsset = new TestAsset(imageName, IMAGE_PNG_MIME_TYPE);
+        TestAsset testAsset = new TestAsset(imageName, PNG_MIME_TYPE);
         checkResourceByJson(client, liveRootFolderPath + "/" + imageName, 2, testAsset.toJSon(), true);
     }
 
@@ -162,7 +163,7 @@ public class ReplicationServletIT
         // Check the Page File
         checkFile(new File(folder, pageName + ".data.json"), "Page - JSon", false);
         checkFile(new File(folder, pageName + ".html"), "Page - HTML", false);
-        checkFile(new File(folder, templateName + ".data.json"), "Template - JSon", false);
+        checkFile(new File(folder, templateName + DATA_JSON_EXTENSION), "Template - JSon", false);
         checkFile(new File(folder, templateName + ".html"), "Template - HTML", false);
     }
 
@@ -346,8 +347,8 @@ public class ReplicationServletIT
         String imageName = "test.png";
         // Get Image Content and upload it. Then check if Asset exists
         byte[] imageContent = loadFile(IMAGE_RESOURCES_PATH, imageName, "Test Image - PNG");
-        uploadFile(client, assetFolderPath, imageName, imageContent, IMAGE_PNG_MIME_TYPE,200);
-        TestAsset testAsset = new TestAsset(imageName, IMAGE_PNG_MIME_TYPE);
+        uploadFile(client, assetFolderPath, imageName, imageContent, PNG_MIME_TYPE,200);
+        TestAsset testAsset = new TestAsset(imageName, PNG_MIME_TYPE);
         checkResourceByJson(client, assetFolderPath + "/" + imageName, 2, testAsset.toJSon(), true);
 
         // Replicate through the Default Asset Handler

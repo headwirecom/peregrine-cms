@@ -94,6 +94,11 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>base.core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

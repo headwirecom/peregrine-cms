@@ -26,6 +26,7 @@ public class PerConstants {
     public static final String JCR_LAST_MODIFIED = "jcr:lastModified";
     public static final String JCR_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     public static final String JCR_TITLE = "jcr:title";
+    public static final String COMPONENT_PRIMARY_TYPE = "per:Component";
     public static final String PAGE_PRIMARY_TYPE = "per:Page";
     public static final String PAGE_CONTENT_TYPE = "per:PageContent";
     public static final String ASSET_PRIMARY_TYPE = "per:Asset";
@@ -47,4 +48,38 @@ public class PerConstants {
     public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     public static final Locale ECMA_DATE_FORMAT_LOCALE = Locale.US;
 
+    public static final String SLASH = "/";
+    public static final String DASH = "-";
+
+    public static final String JSON_MIME_TYPE = "application/json";
+    public static final String HTML_MIME_TYPE = "text/html";
+    public static final String DATA_JSON_EXTENSION = ".data.json";
+
+    public static final String PNG_MIME_TYPE = "image/png";
+    public static final String JPEG_MIME_TYPE = "image/jpeg";
+    //AS Does that exist?
+    public static final String JPG_MIME_TYPE = "image/jpg";
+    public static final String TEXT_MIME_TYPE = "plain/text";
+
+    public static final String APPS = "/apps/";
+
+    public static final String COMPONENT = "component";
+    public static final String PATH = "path";
+    public static final String NAME = "name";
+    public static final String MODEL = "model";
+    public static final String TYPE = "type";
+    public static final String STATUS = "status";
+    public static final String TEMPLATE_PATH = "templatePath";
+    public static final String CREATED = "created";
+    public static final String DELETED = "deleted";
+    public static final String NODE_TYPE = "nodeType";
+    public static final String PARENT_PATH = "parentPath";
+    public static final String CONTENT = "content";
+    public static final String TITLE = "title";
+
+    public static final String PAGE = "page";
+    public static final String DROP = "drop";
+    public static final String JACKSON = "jackson";
+    public static final String JSON = "json";
 }
+

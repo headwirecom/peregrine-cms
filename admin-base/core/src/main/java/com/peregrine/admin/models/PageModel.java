@@ -36,19 +36,24 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.admin.util.AdminConstants.TOOLING_PAGE_COMPONENT_PATH;
 
 /**
  * Created by rr on 12/2/2016.
  */
-@Model(adaptables = Resource.class, resourceType = {
-        "admin/components/toolingpage"
-}, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL, adapters = IComponent.class)
-@Exporter(name = "jackson", extensions = "json")
-public class PageModel extends Container {
+@Model(adaptables = Resource.class,
+       resourceType = {TOOLING_PAGE_COMPONENT_PATH},
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
+public class PageModel
+    extends Container {
 
     public PageModel(Resource r) {
         super(r);
@@ -60,7 +65,7 @@ public class PageModel extends Container {
             Resource parentPage = page.getParent();
             if(parentPage != null) {
                 if("per:Page".equals(parentPage.getResourceType())) {
-                    Resource child =  parentPage.getChild("jcr:content");
+                    Resource child = parentPage.getChild("jcr:content");
                     return child;
                 }
             }
@@ -68,34 +73,30 @@ public class PageModel extends Container {
         return null;
     }
 
-    @Inject
-    private String[] siteCSS;
+    @Inject private String[] siteCSS;
+
+    @Inject private String[] siteJS;
 
     @Inject
-    private String[] siteJS;
-
-    @Inject @Named("jcr:title")
+    @Named("jcr:title")
     private String title;
 
-    @Inject @Named("jcr:description")
+    @Inject
+    @Named("jcr:description")
     private String description;
 
-    @Inject
-    private String dataFrom;
+    @Inject private String dataFrom;
 
-    @Inject
-    private String dataDefault;
+    @Inject private String dataDefault;
 
-    @Inject
-    private String[] loaders;
+    @Inject private String[] loaders;
 
-    @Inject
-    private String[] suffixToParameter;
+    @Inject private String[] suffixToParameter;
 
     public String[] getSiteCSS() {
         if(siteCSS == null) {
             String[] value = getInheritedProperty("siteCSS");
-            if (value != null) return value;
+            if(value != null) return value;
         }
         return siteCSS;
     }
@@ -116,7 +117,7 @@ public class PageModel extends Container {
     public String[] getSiteJS() {
         if(siteJS == null) {
             String[] value = getInheritedProperty("siteJS");
-            if (value != null) return value;
+            if(value != null) return value;
         }
         return siteJS;
     }
@@ -132,9 +133,11 @@ public class PageModel extends Container {
     public String getDataFrom() {
         return dataFrom;
     }
+
     public String getDataDefault() {
         return dataDefault;
     }
+
     public String[] getLoaders() {
         return loaders;
     }
@@ -160,6 +163,7 @@ public class PageModel extends Container {
 
     class TitlePath {
         Resource res;
+
         public TitlePath(Resource res) {
             this.res = res;
         }

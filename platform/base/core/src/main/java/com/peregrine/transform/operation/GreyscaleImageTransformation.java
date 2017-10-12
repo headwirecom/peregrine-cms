@@ -39,6 +39,13 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 /**
  * Grey Scale Image Transformation
  *
@@ -49,8 +56,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
     service = ImageTransformation.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Peregrine: Greyscale Image Transformation (transformation name: vips:greyscale",
-        Constants.SERVICE_VENDOR + "=headwire.com, Inc"
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Greyscale Image Transformation (transformation name: vips:greyscale)",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
 @Designate(
@@ -60,6 +67,10 @@ public class GreyscaleImageTransformation
     extends AbstractVipsImageTransformation
 {
     public static final String THUMBNAIL_TRANSFORMATION_NAME = "vips:greyscale";
+    public static final String PNGSAVE = "pngsave";
+    public static final String GREY_16 = "grey16";
+    public static final String STRIP_TRUE = "--strip=true";
+    public static final String COLOURSPACE = "colourspace";
 
     @ObjectClassDefinition(
         name = "Peregrine: Greyscale Image Transformation Configuration",
@@ -110,10 +121,10 @@ public class GreyscaleImageTransformation
         transformationName = configuration.transformationName();
         if(enabled) {
             if(transformationName.isEmpty()) {
-                throw new IllegalArgumentException("Transformation Name cannot be empty");
+                throw new IllegalArgumentException(TRANSFORMATION_NAME_CANNOT_BE_EMPTY);
             }
             if(!checkVips()) {
-                throw new IllegalArgumentException("VIPS is not installed or accessible");
+                throw new IllegalArgumentException(VIPS_IS_NOT_INSTALLED_OR_ACCESSIBLE);
             }
         }
     }
@@ -129,32 +140,31 @@ public class GreyscaleImageTransformation
     {
         if(enabled) {
             if(
-                !"image/png".equals(imageContext.getSourceMimeType()) &&
+                !PNG_MIME_TYPE.equals(imageContext.getSourceMimeType()) &&
                 !"image/jpeg".equals(imageContext.getSourceMimeType())
             ) {
                 throw new UnsupportedFormatException(imageContext.getSourceMimeType());
             }
             // A PNG image cannot be saved directly as PNG with VIPS
             // For that we need to store it as JPEG and then save it as PNG while stripping color info
-            boolean requiresConversion = "image/png".equals(imageContext.getSourceMimeType());
+            boolean requiresConversion = PNG_MIME_TYPE.equals(imageContext.getSourceMimeType());
             if(requiresConversion) {
                 imageContext.setTargetMimeType("v");
             }
             transform0(
-                imageContext,
-                "colourspace",
+                imageContext, COLOURSPACE,
                 // {in}, {out} mark the placement of the input / output file (path / name)
-                "{in}", "{out}",
+                IN_TOKEN, OUT_TOKEN,
                 // Last Parameter is the color space type: Grey 16
-                "grey16"
+                GREY_16
             );
             if(requiresConversion) {
-                imageContext.setTargetMimeType("image/png");
-                transform0(imageContext, "pngsave",
+                imageContext.setTargetMimeType(PNG_MIME_TYPE);
+                transform0(imageContext, PNGSAVE,
                     // {in}, {out} mark the placement of the input / output file (path / name)
-                    "{in}", "{out}",
+                    IN_TOKEN, OUT_TOKEN,
                     // Last Parameter is to strip the color settings from JPEG to be able to save it as PNG
-                    "--strip=true");
+                    STRIP_TRUE);
             }
         } else {
             throw new DisabledTransformationException(transformationName);

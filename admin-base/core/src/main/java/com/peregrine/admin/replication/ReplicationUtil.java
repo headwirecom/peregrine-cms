@@ -43,7 +43,7 @@ public class ReplicationUtil {
             } else {
                 NodeType[] mixins = sourceNode.getMixinNodeTypes();
                 for(NodeType mixin : mixins) {
-                    if(mixin.getName().equals("per:Replication")) {
+                    if(mixin.getName().equals(PER_REPLICATION)) {
                         answer = true;
                         break;
                     }

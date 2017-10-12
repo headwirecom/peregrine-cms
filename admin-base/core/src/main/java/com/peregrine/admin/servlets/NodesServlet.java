@@ -73,6 +73,18 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class NodesServlet extends AbstractBaseServlet {
 
+    public static final String NO_PATH_PROVIDED = "No Path provided";
+    public static final String CHILDREN = "children";
+    public static final String MIME_TYPE = "mimeType";
+    public static final String ACTIVATED = "activated";
+    public static final String DEACTIVATED = "deactivated";
+    public static final String REPLICATION_STATUS = "ReplicationStatus";
+    public static final String RESOURCE_TYPE = "resourceType";
+    public static final String JCR_PREFIX = "jcr:";
+    public static final String PER_PREFIX = "per:";
+
+    private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
+
     private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Reference
@@ -80,9 +92,9 @@ public class NodesServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
+        String path = request.getParameter(PATH);
         if(path == null || path.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Path provided").setRequestPath(path);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_PATH_PROVIDED).setRequestPath(path);
         }
         String[] segments = path.split("/");
         logger.debug("lookup path {}, {}", path, segments.length);
@@ -98,10 +110,10 @@ public class NodesServlet extends AbstractBaseServlet {
         }
         logger.debug("looking up {}", path);
         Resource res = rs.getResource(path);
-        json.writeAttribute("name",res.getName());
-        json.writeAttribute("path",res.getPath());
+        json.writeAttribute(NAME,res.getName());
+        json.writeAttribute(PATH,res.getPath());
         writeProperties(res, json);
-        json.writeArray("children");
+        json.writeArray(CHILDREN);
         Iterable<Resource> children = res.getChildren();
         for(Resource child : children) {
             if(fullPath.startsWith(child.getPath())) {
@@ -111,12 +123,12 @@ public class NodesServlet extends AbstractBaseServlet {
             } else {
                 if(!JCR_CONTENT.equals(child.getName())) {
                     json.writeObject();
-                    json.writeAttribute("name",child.getName());
-                    json.writeAttribute("path",child.getPath());
+                    json.writeAttribute(NAME,child.getName());
+                    json.writeAttribute(PATH,child.getPath());
                     writeProperties(child, json);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                         String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
-                        json.writeAttribute("mimeType", mimeType);
+                        json.writeAttribute(MIME_TYPE, mimeType);
                     }
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);
@@ -124,7 +136,7 @@ public class NodesServlet extends AbstractBaseServlet {
                             for (String key: content.getValueMap().keySet()) {
                                 if(key.equals(JCR_TITLE)) {
                                     String title = content.getValueMap().get(JCR_TITLE, String.class);
-                                    json.writeAttribute("title", title);
+                                    json.writeAttribute(TITLE, title);
                                 } else {
                                     if(key.indexOf(":") < 0) {
                                         json.writeAttribute(key, content.getValueMap().get(key, String.class));
@@ -132,7 +144,7 @@ public class NodesServlet extends AbstractBaseServlet {
                                 }
                             }
                             String component = PerUtil.getComponentNameFromResource(content);
-                            json.writeAttribute("component", component);
+                            json.writeAttribute(COMPONENT, component);
                         } else {
                             logger.debug("No Content Child found for: '{}'", child.getPath());
                         }
@@ -146,7 +158,7 @@ public class NodesServlet extends AbstractBaseServlet {
 
     private void writeProperties(Resource resource, JsonResponse json) throws IOException {
         ValueMap properties = resource.getValueMap();
-        writeIfFound(json, JCR_PRIMARY_TYPE, properties, "resourceType");
+        writeIfFound(json, JCR_PRIMARY_TYPE, properties, RESOURCE_TYPE);
         writeIfFound(json, JCR_CREATED, properties);
         writeIfFound(json, JCR_CREATED_BY, properties);
         writeIfFound(json, JCR_LAST_MODIFIED, properties);
@@ -162,11 +174,11 @@ public class NodesServlet extends AbstractBaseServlet {
             //        String replicationLocation = writeIfFound(json, PER_REPLICATION, properties);
             String replicationLocationRef = writeIfFound(json, PER_REPLICATION_REF, contentProperties);
             if(replicationDate != null && !replicationDate.isEmpty()) {
-                String status = "activated";
+                String status = ACTIVATED;
                 if(replicationLocationRef == null || replicationLocationRef.isEmpty()) {
-                    status = "deactivated";
+                    status = DEACTIVATED;
                 }
-                json.writeAttribute("ReplicationStatus", status);
+                json.writeAttribute(REPLICATION_STATUS, status);
             }
         }
     }
@@ -174,8 +186,6 @@ public class NodesServlet extends AbstractBaseServlet {
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
         return writeIfFound(json, propertyName, properties, propertyName);
     }
-
-    private static final String[] OMIT_PREFIXES = new String[] { "jcr:", "per:" };
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties, String responseName) throws IOException {
         Object value = properties.get(propertyName);

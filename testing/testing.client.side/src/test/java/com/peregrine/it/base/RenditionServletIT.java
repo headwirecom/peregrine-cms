@@ -27,6 +27,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
+import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
@@ -79,7 +80,7 @@ public class RenditionServletIT
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         IOUtils.copy(new FileInputStream(image), baos);
         byte[] imageContent = baos.toByteArray();
-        uploadFile(client, ROOT_PATH, image.getName(), imageContent, "image/png", 200);
+        uploadFile(client, ROOT_PATH, image.getName(), imageContent, PNG_MIME_TYPE, 200);
         baos = new ByteArrayOutputStream();
         image = new File(imagesFolder, TEST_JPG_IMAGE_NAME);
         IOUtils.copy(new FileInputStream(image), baos);
@@ -112,12 +113,12 @@ public class RenditionServletIT
 
         imageMap = listResourceAsJson(client, TEST_PNG_IMAGE_RESOURCE_PATH, 4);
         logger.info("Rendered Image Map: '{}'", imageMap);
-        TestAsset imageWithRendition = (TestAsset) new TestAsset("image/png")
+        TestAsset imageWithRendition = (TestAsset) new TestAsset(PNG_MIME_TYPE)
             .addChild(
                 new BasicObject(RENDITIONS, SLING_FOLDER)
                     .addChild(
                         new BasicWithContent(THUMBNAIL_RENDITION, NT_FILE, NT_RESOURCE, null)
-                            .addContentProperty(new Prop(JCR_MIME_TYPE, "image/png"))
+                            .addContentProperty(new Prop(JCR_MIME_TYPE, PNG_MIME_TYPE))
                     )
             );
         logger.info("Expected PNG Image With Rendition: '{}'", imageWithRendition.toJSon());
@@ -145,7 +146,7 @@ public class RenditionServletIT
                 new BasicObject(RENDITIONS, SLING_FOLDER)
                     .addChild(
                         new BasicWithContent(THUMBNAIL_RENDITION, NT_FILE, NT_RESOURCE, null)
-                            .addContentProperty(new Prop(JCR_MIME_TYPE, "image/png"))
+                            .addContentProperty(new Prop(JCR_MIME_TYPE, PNG_MIME_TYPE))
                     )
             );
         logger.info("Expected JPEG Image With Rendition: '{}'", imageWithRendition.toJSon());

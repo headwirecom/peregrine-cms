@@ -30,6 +30,9 @@ import org.apache.sling.api.resource.Resource;
 import java.util.List;
 
 /**
+ * Replication Interface to replicate or deactivate
+ * a resource
+ *
  * Created by Andreas Schaefer on 5/25/17.
  */
 public interface Replication {

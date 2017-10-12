@@ -29,7 +29,6 @@ import com.peregrine.transform.ImageContext;
 import com.peregrine.transform.ImageTransformation;
 import com.peregrine.transform.OperationContext;
 import org.apache.sling.commons.mime.MimeTypeService;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -38,6 +37,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * Creates a Thumbnail Image with the define thumbnail size
@@ -49,8 +54,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Component(
     service = ImageTransformation.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + "=Peregrine: Thumbnail Image Transformation (transformation name: vips:thumbnail",
-        Constants.SERVICE_VENDOR + "=headwire.com, Inc"
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Thumbnail Image Transformation (transformation name: vips:thumbnail",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
 @Designate(
@@ -62,6 +67,14 @@ public class ThumbnailImageTransformation
     public static final String THUMBNAIL_TRANSFORMATION_NAME = "vips:thumbnail";
     public static final int THUMBNAIL_DEFAULT_WIDTH = 50;
     public static final int THUMBNAIL_DEFAULT_HEIGHT = 50;
+
+    public static final String NO_CROP = "noCrop";
+    public static final String THUMBNAIL = "thumbnail";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT_PARAMETER = "--height";
+    public static final String HEIGHT = "height";
+    public static final String CROP_PARAMETER = "--crop";
+    public static final String CENTRE = "centre";
 
     @ObjectClassDefinition(
         name = "Peregrine: Thumbnail Image Transformation Configuration",
@@ -128,10 +141,10 @@ public class ThumbnailImageTransformation
         transformationName = configuration.transformationName();
         if(enabled) {
             if(transformationName.isEmpty()) {
-                throw new IllegalArgumentException("Transformation Name cannot be empty");
+                throw new IllegalArgumentException(TRANSFORMATION_NAME_CANNOT_BE_EMPTY);
             }
             if(!checkVips()) {
-                throw new IllegalArgumentException("VIPS is not installed or accessible");
+                throw new IllegalArgumentException(VIPS_IS_NOT_INSTALLED_OR_ACCESSIBLE);
             }
             defaultWidth = configuration.defaultWidth();
             getDefaultHeight = configuration.defaultHeight();
@@ -148,26 +161,26 @@ public class ThumbnailImageTransformation
         throws TransformationException
     {
         if(enabled) {
-            boolean noCrop = !"false".equals(operationContext.getParameter("noCrop", "false"));
+            boolean noCrop = !Boolean.FALSE.toString().equals(operationContext.getParameter(NO_CROP, Boolean.FALSE.toString()));
             if(noCrop) {
-                transform0(imageContext, "thumbnail",
+                transform0(imageContext, THUMBNAIL,
                     // {in}, {out} mark the placement of the input / output file (path / name)
-                    "{in}", "{out}",
+                    IN_TOKEN, OUT_TOKEN,
                     // Third parameter is width with no tag
-                    operationContext.getParameter("width", defaultWidth + ""),
+                    operationContext.getParameter(WIDTH, defaultWidth + ""),
                     // Optional Parameters, double dashes without equals
-                    "--height", operationContext.getParameter("height", getDefaultHeight + "")
+                    HEIGHT_PARAMETER, operationContext.getParameter(HEIGHT, getDefaultHeight + "")
                 );
             } else {
-                transform0(imageContext, "thumbnail",
+                transform0(imageContext, THUMBNAIL,
                     // {in}, {out} mark the placement of the input / output file (path / name)
-                    "{in}", "{out}",
+                    IN_TOKEN, OUT_TOKEN,
                     // Third parameter is width with no tag
-                    operationContext.getParameter("width", defaultWidth + ""),
+                    operationContext.getParameter(WIDTH, defaultWidth + ""),
                     // Optional Parameters, double dashes without equals
-                    "--height", operationContext.getParameter("height", getDefaultHeight + ""),
+                    HEIGHT_PARAMETER, operationContext.getParameter(HEIGHT, getDefaultHeight + ""),
                     // We crop it at the center to make it fit within the given width and height
-                    "--crop", "centre"
+                    CROP_PARAMETER, CENTRE
                 );
             }
         } else {

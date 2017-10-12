@@ -34,29 +34,35 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.admin.util.AdminConstants.TOUR_COMPONENT_PATH;
 
-@Model(
-        adaptables = Resource.class,
-        resourceType = "admin/components/tour",
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        adapters = IComponent.class
-)
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
 
-public class TourModel extends Container {
+@Model(adaptables = Resource.class,
+       resourceType = TOUR_COMPONENT_PATH,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
 
-    public TourModel(Resource r) { super(r); }
+public class TourModel
+    extends Container {
 
-    @Inject
-    private String selector;
+    public TourModel(Resource r) {
+        super(r);
+    }
 
-    @Inject
-    private String anchor;
+    @Inject private String selector;
 
-    public String getAnchor() { return anchor; }
-    public String getSelector() { return selector; }
+    @Inject private String anchor;
+
+    public String getAnchor() {
+        return anchor;
+    }
+
+    public String getSelector() {
+        return selector;
+    }
 
 }

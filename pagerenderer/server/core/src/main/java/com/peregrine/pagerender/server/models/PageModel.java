@@ -41,14 +41,30 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_PAGE_TYPE;
+
 /**
  * Created by rr on 12/2/2016.
  */
-@Model(adaptables = Resource.class, resourceType = {
-        "pagerender/server/structure/page"
-}, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL, adapters = IComponent.class)
-@Exporter(name = "jackson", extensions = "json")
-public class PageModel extends Container {
+@Model(adaptables = Resource.class,
+       resourceType = {PR_SERVER_COMPONENT_PAGE_TYPE},
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
+public class PageModel
+    extends Container {
+
+    public static final String SITE_CSS = "siteCSS";
+    public static final String DOMAINS = "domains";
+    public static final String SITE_JS = "siteJS";
+    public static final String TEMPLATE = "template";
 
     public PageModel(Resource r) {
         super(r);
@@ -59,8 +75,8 @@ public class PageModel extends Container {
         if(page != null) {
             Resource parentPage = page.getParent();
             if(parentPage != null) {
-                if("per:Page".equals(parentPage.getResourceType())) {
-                    Resource child =  parentPage.getChild("jcr:content");
+                if(PAGE_PRIMARY_TYPE.equals(parentPage.getResourceType())) {
+                    Resource child = parentPage.getChild(JCR_CONTENT);
                     return child;
                 }
             }
@@ -68,40 +84,42 @@ public class PageModel extends Container {
         return null;
     }
 
-    @Inject
-    private ModelFactory modelFactory;
+    @Inject private ModelFactory modelFactory;
 
-    @Inject @Optional
+    @Inject
+    @Optional
     private String[] siteCSS;
 
-    @Inject @Optional
+    @Inject
+    @Optional
     private String[] siteJS;
 
-    @Inject @Optional
+    @Inject
+    @Optional
     private String[] domains;
 
-    @Inject @Named("template") @Optional
+    @Inject
+    @Named(TEMPLATE)
+    @Optional
     private String template;
 
-    @Inject @Named("jcr:title") @Optional
+    @Inject
+    @Named(JCR_TITLE)
+    @Optional
     private String title;
 
-    @Inject
-    private String dataFrom;
+    @Inject private String dataFrom;
 
-    @Inject
-    private String dataDefault;
+    @Inject private String dataDefault;
 
-    @Inject
-    private String[] loaders;
+    @Inject private String[] loaders;
 
-    @Inject
-    private String[] suffixToParameter;
+    @Inject private String[] suffixToParameter;
 
     public String getSiteRoot() {
         String path = getPagePath();
-        String[] segments = path.split("/");
-        return String.join("/", segments[0], segments[1], segments[2], segments[3]);
+        String[] segments = path.split(SLASH);
+        return String.join(SLASH, segments[0], segments[1], segments[2], segments[3]);
     }
 
     public String getPagePath() {
@@ -110,9 +128,9 @@ public class PageModel extends Container {
 
     public String[] getSiteCSS() {
         if(siteCSS == null) {
-            String[] value = (String[]) getInheritedProperty("siteCSS");
-            if (value != null && value.length != 0) return value;
-            if (getTemplate() != null) {
+            String[] value = (String[]) getInheritedProperty(SITE_CSS);
+            if(value != null && value.length != 0) return value;
+            if(getTemplate() != null) {
                 PageModel templatePageModel = getTamplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getSiteCSS();
@@ -124,9 +142,9 @@ public class PageModel extends Container {
 
     public String[] getDomains() {
         if(domains == null) {
-            String[] value = (String[]) getInheritedProperty("domains");
-            if (value != null && value.length != 0) return value;
-            if (getTemplate() != null) {
+            String[] value = (String[]) getInheritedProperty(DOMAINS);
+            if(value != null && value.length != 0) return value;
+            if(getTemplate() != null) {
                 PageModel templatePageModel = getTamplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getDomains();
@@ -139,7 +157,7 @@ public class PageModel extends Container {
     private PageModel getTamplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
-        Resource templateResource = getResource().getResourceResolver().getResource(getTemplate()+"/jcr:content");
+        Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
         return (PageModel) modelFactory.getModelFromResource(templateResource);
     }
 
@@ -158,8 +176,8 @@ public class PageModel extends Container {
 
     public String[] getSiteJS() {
         if(siteJS == null) {
-            String[] value = (String[]) getInheritedProperty("siteJS");
-            if (value != null && value.length != 0) return value;
+            String[] value = (String[]) getInheritedProperty(SITE_JS);
+            if(value != null && value.length != 0) return value;
             PageModel templatePageModel = getTamplatePageModel();
             if(templatePageModel != null) {
                 return templatePageModel.getSiteJS();
@@ -170,8 +188,8 @@ public class PageModel extends Container {
 
     public String getTemplate() {
         if(template == null) {
-            String value = (String) getInheritedProperty("template");
-            if (value != null) {
+            String value = (String) getInheritedProperty(TEMPLATE);
+            if(value != null) {
                 this.template = template;
                 return value;
             }
@@ -199,6 +217,8 @@ public class PageModel extends Container {
         return suffixToParameter;
     }
 
-    public boolean getServerSide() { return true; }
+    public boolean getServerSide() {
+        return true;
+    }
 
 }

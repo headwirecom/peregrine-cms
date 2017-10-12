@@ -74,6 +74,23 @@ public class LocalFileSystemReplicationService
     public static final int CREATE_NONE_STRATEGY = 0;
     public static final int CREATE_LEAF_STRATEGY = 1;
     public static final int CREATE_ALL_STRATEGY = 2;
+    public static final String LOCAL_FILE_SYSTEM = "local-file-system://";
+    public static final String FAILED_TO_CREATED_FOLDER = "Failed to create folder: '%s'";
+    public static final String FAILED_TO_DELETE_FILE = "Failed to delete file: '%s'";
+    public static final String FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER = "Failed to Store Rendering as Parent Folder does not exist or is not a directory: '%s'";
+    public static final String FAILED_STORE_RENDERING_FILE_IS_DIRECTORY = "Failed to Store Rendering as target file is a directory:: '%s'";
+    public static final String PLACEHOLDER_NO_VALUE = "Place Holder: '%s' did not yield a value";
+    public static final String PLACEHOLDER_UNMATCHED_SEPARATORS = "Place Holder String opened a Place Holder with '%s' but did not close it with: '%s'";
+    public static final String FAILED_TO_STORE_RENDERING = "Failed to write raw rending content to file: '%s'";
+    public static final String SUPPORTED_TYPES_EMPTY = "Supported Types is empty for Extension: '%s'";
+    public static final String COULD_NOT_CREATE_LEAF_FOLDER = "Could not create leaf folder: '%s'";
+    public static final String EXPORT_FOLDER = "exportFolder";
+    public static final String REPLICATION_TARGET_FOLDER_CANNOT_BE_EMPTY = "Replication Target Folder cannot be empty";
+    public static final String COULD_NOT_CREATE_ALL_FOLDERS = "Could not create all folders: '%s'";
+    public static final String REPLICATION_FOLDER_NOT_CREATED = "Replication Target Folder: '%s' does not exist and will not be created";
+    public static final String REPLICATION_FOLDER_NO_DIRECTORY = "Replication Target Folder: '%s' is not a directory";
+    public static final String REPLICATION_FOLDER_NO_WRITE = "Replication Target Folder: '%s' cannot read or write";
+    public static final String CANNOT_WRITE_RENDERING = "Failed to write raw rending content to file: '%s'";
 
     @ObjectClassDefinition(
         name = "Peregrine: Local FS Replication Service",
@@ -156,14 +173,14 @@ public class LocalFileSystemReplicationService
                     List<String> parameters = extensionParameters.get(name);
                     boolean exportFolder = false;
                     if(parameters != null) {
-                        String param = splitIntoProperties(parameters, ":").get("exportFolder") + "";
-                        exportFolder = "true".equalsIgnoreCase(param);
+                        String param = splitIntoProperties(parameters, ":").get(EXPORT_FOLDER) + "";
+                        exportFolder = Boolean.TRUE.toString().equalsIgnoreCase(param);
                     }
                     exportExtensions.add(
                         new ExportExtension(name, types).setExportFolders(exportFolder)
                     );
                 } else {
-                    throw new IllegalArgumentException("Supported Types is empty for Extension: " + extension);
+                    throw new IllegalArgumentException(String.format(SUPPORTED_TYPES_EMPTY, extension));
                 }
             } else {
                 log.warn("Configuration contained an empty extension");
@@ -173,7 +190,7 @@ public class LocalFileSystemReplicationService
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
-            throw new IllegalArgumentException("Replication Target Folder cannot be empty");
+            throw new IllegalArgumentException(REPLICATION_TARGET_FOLDER_CANNOT_BE_EMPTY);
         } else {
             targetFolderPath = handlePlaceholders(context, targetFolderPath);
             log.trace("Target Folder Path: '{}', creation strategy: '{}'", targetFolderPath, creationStrategy);
@@ -182,21 +199,21 @@ public class LocalFileSystemReplicationService
                 switch(creationStrategy) {
                     case CREATE_LEAF_STRATEGY:
                         if(!temp.mkdir()) {
-                            throw new IllegalArgumentException("Could not create leaf folder: " + temp.getAbsolutePath());
+                            throw new IllegalArgumentException(String.format(COULD_NOT_CREATE_LEAF_FOLDER, temp.getAbsolutePath()));
                         }
                         break;
                     case CREATE_ALL_STRATEGY:
                         if(!temp.mkdirs()) {
-                            throw new IllegalArgumentException("Could not create all folders: " + temp.getAbsolutePath());
+                            throw new IllegalArgumentException(COULD_NOT_CREATE_ALL_FOLDERS + temp.getAbsolutePath());
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException("Replication Target Folder: '" + targetFolderPath + "' does not exist and will not be created");
+                        throw new IllegalArgumentException(String.format(REPLICATION_FOLDER_NOT_CREATED, targetFolderPath));
                 }
             } else if(!temp.isDirectory()) {
-                throw new IllegalArgumentException("Replication Target Folder: '" + targetFolderPath + "' is not a directory");
+                throw new IllegalArgumentException(String.format(REPLICATION_FOLDER_NO_DIRECTORY, targetFolderPath));
             } else if(!temp.canRead() || !temp.canWrite()) {
-                throw new IllegalArgumentException("Replication Target Folder: '" + targetFolderPath + "' cannot read or write");
+                throw new IllegalArgumentException(String.format(REPLICATION_FOLDER_NO_WRITE, targetFolderPath));
             }
             targetFolder = temp;
         }
@@ -238,7 +255,7 @@ public class LocalFileSystemReplicationService
                 File newDirectory = new File(directory, folder);
                 if(!newDirectory.exists()) {
                     if(!newDirectory.mkdir()) {
-                        throw new ReplicationException("Failed to create folder: " + newDirectory.getAbsolutePath());
+                        throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, newDirectory.getAbsolutePath()));
                     }
                 }
                 directory = newDirectory;
@@ -262,9 +279,9 @@ public class LocalFileSystemReplicationService
             fileWriter.append(content);
             fileWriter.close();
         } catch(IOException e) {
-            throw new ReplicationException("Failed to write rending content to file: " + renderingFile.getAbsolutePath(), e);
+            throw new ReplicationException(String.format(FAILED_TO_STORE_RENDERING, renderingFile.getAbsolutePath()), e);
         }
-        return "local-file-system://" + renderingFile.getAbsolutePath();
+        return LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
     }
 
     @Override
@@ -275,9 +292,9 @@ public class LocalFileSystemReplicationService
             fileOutputStream.write(content);
             fileOutputStream.close();
         } catch(IOException e) {
-            throw new ReplicationException("Failed to write raw rending content to file: " + renderingFile.getAbsolutePath(), e);
+            throw new ReplicationException(String.format(CANNOT_WRITE_RENDERING, renderingFile.getAbsolutePath()), e);
         }
-        return "local-file-system://" + renderingFile.getAbsolutePath();
+        return LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
     }
 
     @Override
@@ -285,7 +302,7 @@ public class LocalFileSystemReplicationService
         final String resourceName = resource.getName();
         File directory = new File(targetFolder, resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
-            throw new ReplicationException("Failed to Store Rending as Parent Folder does not exist or is not a directory: " + directory.getAbsolutePath());
+            throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
         }
         final List<Pattern> patterns = new ArrayList<>();
         File[] filesToBeDeletedFiles = directory.listFiles(
@@ -314,7 +331,7 @@ public class LocalFileSystemReplicationService
             for(File toBeDeleted : filesToBeDeletedFiles) {
                 log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
                 if(!deleteFile(toBeDeleted)) {
-                    throw new ReplicationException("Failed to delete file: " + toBeDeleted.getAbsolutePath());
+                    throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
                 }
 
             }
@@ -326,7 +343,7 @@ public class LocalFileSystemReplicationService
             for(File child: file.listFiles()) {
                 boolean answer = deleteFile(child);
                 if(!answer) {
-                    log.warn("Failed to delete file: '{}'", file.getAbsolutePath());
+                    log.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
                     return answer;
                 }
             }
@@ -337,13 +354,13 @@ public class LocalFileSystemReplicationService
     private File createRenderingFile(Resource resource, String extension) throws ReplicationException {
         File directory = new File(targetFolder, resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
-            throw new ReplicationException("Failed to Store Rending as Parent Folder does not exist or is not a directory: " + directory.getAbsolutePath());
+            throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
         }
         String fileName = resource.getName() + (isNotEmpty(extension) ? "." + extension : "");
         File renderingFile = new File(directory, fileName);
         if(renderingFile.exists()) {
             if(renderingFile.isDirectory()) {
-                throw new ReplicationException("Failed to Store Rending as target file is a directory: " + renderingFile.getAbsolutePath());
+                throw new ReplicationException(String.format(FAILED_STORE_RENDERING_FILE_IS_DIRECTORY, renderingFile.getAbsolutePath()));
             } else {
                 log.trace("Delete existing Rendering File: '{}'", renderingFile.getAbsolutePath());
                 renderingFile.delete();
@@ -377,10 +394,10 @@ public class LocalFileSystemReplicationService
                         answer = answer.substring(0, startIndex) + value +
                             (answer.length() - 1 > endIndex ? answer.substring(endIndex + 1) : "");
                     } else {
-                        throw new IllegalArgumentException("Place Holder: '" + placeHolderName + "' did not yield a value");
+                        throw new IllegalArgumentException(String.format(PLACEHOLDER_NO_VALUE, placeHolderName));
                     }
                 } else {
-                    throw new IllegalArgumentException("Place Holder String opened a Place Holder with '" + PLACEHOLDER_START_TOKEN + "' but did not close it with: '" + PLACEHOLDER_END_TOKEN + "'");
+                    throw new IllegalArgumentException(String.format(PLACEHOLDER_UNMATCHED_SEPARATORS, PLACEHOLDER_START_TOKEN, PLACEHOLDER_END_TOKEN));
                 }
             } else {
                 // Done -> exit

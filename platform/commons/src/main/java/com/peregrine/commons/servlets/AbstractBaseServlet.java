@@ -24,6 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
+
 /**
  * Base Class for Peregrine Servlets
  *
@@ -37,16 +42,21 @@ import java.util.Stack;
 public abstract class AbstractBaseServlet
     extends SlingAllMethodsServlet
 {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    public static final String ALREADY_HANDLED = "alreadyHandled";
+    public static final String DIRECT = "direct";
+    public static final String ERROR = "error";
+    public static final String REDIRECT_RESOURCE_MUST_BE_PROVIDED = "Redirect Resource must be provided";
+    public static final String REDIRECT_TO_PATH_MUST_BE_PROVIDED = "Redirect To path must be provided";
+    public static final String WRITE_TO_IS_NOT_SUPPORTED = "Write To is not supported";
+    public static final String HANDLE_DIRECT_IS_NOT_SUPPORTED = "Handle Direct is not supported";
+    public static final String CODE = "code";
+    public static final String MESSAGE = "message";
+    public static final String EXCEPTION = "exception";
 
-//    private boolean allowAll = false;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public AbstractBaseServlet() {
     }
-
-//    public AbstractBaseServlet(boolean allowAll) {
-//        this.allowAll = allowAll;
-//    }
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
@@ -74,13 +84,13 @@ public abstract class AbstractBaseServlet
             logger.debug("Servlet Request failed with Error", e);
             throw e;
         }
-        if(!"alreadyHandled".equals(out.getType())) {
+        if(!ALREADY_HANDLED.equals(out.getType())) {
             response.setContentType(out.getMimeType());
             String output = out.getContent();
-            if("direct".equals(out.getType())) {
+            if(DIRECT.equals(out.getType())) {
                 out.handleDirect(request, response);
             } else {
-                if("error".equals(out.getType())) {
+                if(ERROR.equals(out.getType())) {
                     ErrorResponse error = (ErrorResponse) out;
                     response.setStatus(error.getHttpErrorCode());
                 }
@@ -182,12 +192,12 @@ public abstract class AbstractBaseServlet
 
         /** @return Writes the content to a given Output Stream **/
         public void writeTo(OutputStream outputStream) throws IOException {
-            throw new UnsupportedOperationException("Write To is not supported");
+            throw new UnsupportedOperationException(WRITE_TO_IS_NOT_SUPPORTED);
         }
 
         /** @return The Servlet handles the output by itself **/
         public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
-            throw new UnsupportedOperationException("Handle Direct is not supported");
+            throw new UnsupportedOperationException(HANDLE_DIRECT_IS_NOT_SUPPORTED);
         }
 
         /** @return Mime Type of the Content **/
@@ -201,7 +211,7 @@ public abstract class AbstractBaseServlet
         extends Response {
 
         public ResponseHandledResponse() {
-            super("alreadyHandled");
+            super(ALREADY_HANDLED);
         }
 
         @Override
@@ -228,7 +238,7 @@ public abstract class AbstractBaseServlet
         private Stack<STATE> states = new Stack<>();
 
         public JsonResponse() throws IOException {
-            this("json");
+            this(JSON);
         }
 
         public JsonResponse(String type) throws IOException {
@@ -378,7 +388,7 @@ public abstract class AbstractBaseServlet
 
         @Override
         public String getMimeType() {
-            return "application/json";
+            return JSON_MIME_TYPE;
         }
     }
 
@@ -391,7 +401,7 @@ public abstract class AbstractBaseServlet
         private int httpErrorCode = HttpServletResponse.SC_BAD_REQUEST;
 
         public ErrorResponse() throws IOException {
-            super("error");
+            super(ERROR);
         }
 
         /** @return Http Error Code set (Bad Request is default) **/
@@ -405,15 +415,15 @@ public abstract class AbstractBaseServlet
         }
         /** Sets the Error Code which is returned as 'code' number field **/
         public ErrorResponse setErrorCode(int code) throws IOException {
-            return (ErrorResponse) writeAttribute("code", code);
+            return (ErrorResponse) writeAttribute(CODE, code);
         }
         /** Sets the Error Message which is returned as 'message' text field **/
         public ErrorResponse setErrorMessage(String message) throws IOException {
-            return (ErrorResponse) writeAttribute("message", message);
+            return (ErrorResponse) writeAttribute(MESSAGE, message);
         }
         /** Sets the Request Past which is returned as 'path' text field **/
         public ErrorResponse setRequestPath(String path) throws IOException {
-            return (ErrorResponse) writeAttribute("path", path);
+            return (ErrorResponse) writeAttribute(PATH, path);
         }
         /** Sets the Custom Error Field which is returned as the provide name / value field **/
         public ErrorResponse setCustom(String fieldName, String value) throws IOException {
@@ -423,7 +433,7 @@ public abstract class AbstractBaseServlet
         public ErrorResponse setException(Exception e) throws IOException {
             StringWriter out = new StringWriter();
             e.printStackTrace(new PrintWriter(out));
-            return (ErrorResponse) writeAttribute("exception", out.toString());
+            return (ErrorResponse) writeAttribute(EXCEPTION, out.toString());
         }
     }
     /** Plain Text Response **/
@@ -431,7 +441,7 @@ public abstract class AbstractBaseServlet
         extends Response {
 
         private StringBuffer content;
-        private String mimeType = "plain/text";
+        private String mimeType = TEXT_MIME_TYPE;
 
         public TextResponse(String type) {
             super(type);
@@ -476,9 +486,9 @@ public abstract class AbstractBaseServlet
          * @throws IllegalArgumentException If the redirect path is null or empty
          */
         public RedirectResponse(String redirectTo) {
-            super("direct");
+            super(DIRECT);
             if(redirectTo == null || redirectTo.isEmpty()) {
-                throw new IllegalArgumentException("Redirect To path must be provided");
+                throw new IllegalArgumentException(REDIRECT_TO_PATH_MUST_BE_PROVIDED);
             }
             this.redirectTo = redirectTo;
         }
@@ -507,9 +517,9 @@ public abstract class AbstractBaseServlet
          * @throws IllegalArgumentException If the resource to be forwarded to is null
          */
         public ForwardResponse(Resource resource, RequestDispatcherOptions requestDispatcherOptions) {
-            super("direct");
+            super(DIRECT);
             if(resource == null) {
-                throw new IllegalArgumentException("Redirect Resource must be provided");
+                throw new IllegalArgumentException(REDIRECT_RESOURCE_MUST_BE_PROVIDED);
             }
             this.resource = resource;
             this.requestDispatcherOptions = requestDispatcherOptions;

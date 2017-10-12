@@ -26,10 +26,7 @@ package com.peregrine.nodetypes.models;
  */
 
 public final class Constants {
-
-    private Constants() {}
-
-    public static final String EXPORTER_NAME = "jackson";
-    public static final String EXPORTER_EXTENSION = "json";
-
+    public static final String PEREGRINE_CONTAINER_TYPE = "per/components/structure/container";
+    public static final String PEREGRINE_PAGE_TYPE = "per/components/structure/page";
+    public static final String PEREGRINE_TEXT_TYPE = "per/components/content/text";
 }

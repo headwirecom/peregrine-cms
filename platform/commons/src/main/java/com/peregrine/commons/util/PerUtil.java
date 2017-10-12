@@ -45,8 +45,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.commons.util.PerConstants.DASH;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 
 /**
@@ -64,7 +67,11 @@ public class PerUtil {
     public static final String GET = "GET";
     public static final String POST = "POST";
 
+    public static final String ENTRY_NOT_KEY_VALUE_PAIR = "Entry: '%s' could not be split into a key value pair, entries: '%s'";
+
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
+    public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
+    public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -148,7 +155,7 @@ public class PerUtil {
                 if(isNotEmpty(entry)) {
                     List<String> keyValue = split(entry, keySeparator);
                     if(keyValue.size() != 2) {
-                        throw new IllegalArgumentException("Entry: '" + entry + "' could not be split into a key value pair, entries: '" + Arrays.asList(entries));
+                        throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, entry, Arrays.asList(entries)));
                     }
                     String key = keyValue.get(0);
                     String value = keyValue.get(1);
@@ -191,13 +198,13 @@ public class PerUtil {
                             for(String aValue: values) {
                                 List<String> parameterList = split(aValue, parameterSeparator);
                                 if(parameterList.size() != 2) {
-                                    throw new IllegalArgumentException("Parameter Entry: '" + aValue + "' could not be split into a key value pair");
+                                    throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, aValue, entries));
                                 }
                                 parameters.put(parameterList.get(0), parameterList.get(1));
                             }
                             break;
                         default:
-                            throw new IllegalArgumentException("Entry: '" + entry + "' could not be split into a key value pair");
+                            throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, entry, entries));
                     }
                 }
             }
@@ -478,8 +485,8 @@ public class PerUtil {
      * @throws IllegalArgumentException If the resource resolver is null or the service name is empty
      */
     public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
-        if(resolverFactory == null) { throw new IllegalArgumentException("Resource Resolver Factory cannot be null"); }
-        if(isEmpty(serviceName)) { throw new IllegalArgumentException("Service Name cannot be empty"); }
+        if(resolverFactory == null) { throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL); }
+        if(isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
         Map<String, Object> authInfo = new HashMap<String, Object>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);
@@ -603,10 +610,10 @@ public class PerUtil {
             if(targetResource == null) {
                 answer = true;
             } else {
-                //AS TODO This does not work as is. We need to compare the source's last mddified timestamp against the target's
+                //AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
                 //AS TODO replicated timestamp
-                Calendar sourceLastModified = resource.getValueMap().get("per:Replicated", Calendar.class);
-                Calendar targetLastModified = targetResource.getValueMap().get("per:Replicated", Calendar.class);
+                Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
+                Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
                 if(sourceLastModified != null && targetLastModified != null) {
                     answer = sourceLastModified.after(targetLastModified);
                 }
@@ -669,9 +676,9 @@ public class PerUtil {
         String resourceType = resource.getResourceType();
         if (resourceType != null) {
             if(resourceType.startsWith("/")) {
-                resourceType = StringUtils.substringAfter(resourceType, "/");
+                resourceType = StringUtils.substringAfter(resourceType, SLASH);
             }
-            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll("/", "-"));
+            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll(SLASH, DASH));
         } else {
             return "";
         }

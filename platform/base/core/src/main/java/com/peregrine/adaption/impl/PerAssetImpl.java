@@ -61,6 +61,9 @@ public class PerAssetImpl
     extends PerBaseImpl
     implements PerAsset
 {
+
+    public static final String JCR = "jcr:";
+
     public PerAssetImpl(Resource resource) {
         super(resource);
     }
@@ -178,7 +181,7 @@ public class PerAssetImpl
         if(category != null) {
             ValueMap properties = category.getValueMap();
             for(String key : properties.keySet()) {
-                if(!key.startsWith("jcr:")) {
+                if(!key.startsWith(JCR)) {
                     answer.put(key, properties.get(key));
                 }
             }

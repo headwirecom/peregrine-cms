@@ -26,6 +26,8 @@ package com.peregrine.admin.replication;
  */
 
 /**
+ * Defines what Image Metadata are stored
+ *
  * Created by Andreas Schaefer on 6/9/17.
  */
 public interface ImageMetadataSelector {

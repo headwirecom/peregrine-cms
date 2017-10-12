@@ -49,19 +49,19 @@ public interface ReferenceLister {
      * Provides a list of resources referenced directly or indirectly by
      * the given resource
      *
-     * @param traverseDeep If true then it will also look for references in the references
+     * @param transitive If true then it will also look for references in the references
      * @param resource Resource that starts the references
      * @param deep If true it will also look for references in the children (beside JCR Content)
      * @return List of resources referenced which might be empty
      */
-    List<Resource> getReferenceList(boolean traverseDeep, Resource resource, boolean deep);
+    List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep);
 
     /**
      * Provides a list of resources referenced directly or indirectly by
      * the given resource and also any parents that are not available on
      * the target side
      *
-     * @param traverseDeep If true then it will also look for references in the references
+     * @param transitive If true then it will also look for references in the references
      * @param resource Resource that starts the references
      * @param deep If true it will also look for references in the children (beside JCR Content)
      * @param source The root reference
@@ -69,5 +69,5 @@ public interface ReferenceLister {
      * @return List of resources referenced including all parents of the resource that are not
      *         available on the target side
      */
-    List<Resource> getReferenceList(boolean traverseDeep, Resource resource, boolean deep, Resource source, Resource target);
+    List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target);
 }

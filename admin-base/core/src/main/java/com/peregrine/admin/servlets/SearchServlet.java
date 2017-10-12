@@ -38,6 +38,13 @@ import javax.servlet.Servlet;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.osgi.service.component.annotations.Component;
 
+import static com.peregrine.admin.util.AdminConstants.CURRENT;
+import static com.peregrine.admin.util.AdminConstants.DATA;
+import static com.peregrine.admin.util.AdminConstants.MORE;
+import static com.peregrine.admin.util.AdminConstants.SEARCH_PATH;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGE;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -57,19 +64,20 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Search Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_PATHS + EQUALS + "/bin/search"
+        SLING_SERVLET_PATHS + EQUALS + SEARCH_PATH
     }
 )
 @SuppressWarnings("serial")
 public class SearchServlet extends AbstractBaseServlet {
 
     private static final long ROWS_PER_PAGE = 100;
+    public static final String NO_QUERY_PROVIDED = "No Query Provided";
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String query = request.getParameter("q", "");
         if(query.trim().length() == 0) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No Query Provided");
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_QUERY_PROVIDED);
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             JsonResponse answer = new JsonResponse();
@@ -77,7 +85,7 @@ public class SearchServlet extends AbstractBaseServlet {
                 QueryManager qm = session.getWorkspace().getQueryManager();
                 Query q = qm.createQuery(query, Query.SQL);
                 q.setLimit(ROWS_PER_PAGE+1);
-                String pageParam = request.getParameter("page", "0");
+                String pageParam = request.getParameter(PAGE, "0");
                 int page = 0;
                 try {
                     page = Integer.parseInt(pageParam);
@@ -88,14 +96,14 @@ public class SearchServlet extends AbstractBaseServlet {
 
                 QueryResult res = q.execute();
                 NodeIterator nodes = res.getNodes();
-                answer.writeAttribute("current", 1);
-                answer.writeAttribute("more", nodes.getSize() > ROWS_PER_PAGE);
-                answer.writeArray("data");
+                answer.writeAttribute(CURRENT, 1);
+                answer.writeAttribute(MORE, nodes.getSize() > ROWS_PER_PAGE);
+                answer.writeArray(DATA);
                 while(nodes.hasNext()) {
                     Node node = nodes.nextNode();
                     answer.writeObject();
-                    answer.writeAttribute("name", node.getName());
-                    answer.writeAttribute("path", node.getPath());
+                    answer.writeAttribute(NAME, node.getName());
+                    answer.writeAttribute(PATH, node.getPath());
                     answer.writeClose();
                 }
                 answer.writeClose();

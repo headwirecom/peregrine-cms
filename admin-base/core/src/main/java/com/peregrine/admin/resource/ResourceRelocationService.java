@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 
 /**
  * Created by Andreas Schaefer on 6/22/17.
@@ -27,6 +28,15 @@ import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 public class ResourceRelocationService
     implements ResourceRelocation
 {
+
+    public static final String FROM_RESOURCE_MUST_BE_SPECIFIED = "From Resource must be specified";
+    public static final String NEW_NAME_MUST_BE_SPECIFIED = "New Name must be specified";
+    public static final String PARENT_RESOURCE_MUST_BE_SPECIFIED = "Parent Resource must be specified";
+    public static final String FROM_RESOURCE_MUST_BE_SPECIFIED1 = "From Resource must be specified";
+    public static final String TO_PARENT_RESOURCE_MUST_BE_SPECIFIED = "To-Parent Resource must be specified";
+
+    public static final String SOURCE_NOT_FOUND = "Source Child: '%s' could not be found in Parent: '%s'";
+    public static final String TARGET_NOT_FOUND = "Target Child: '%s' could not be found in Parent: '%s'";
 
     @Reference
     private ReferenceLister referenceLister;
@@ -53,49 +63,36 @@ public class ResourceRelocationService
             references = referenceLister.getReferencedByList(from);
         }
         if(from == null) {
-            throw new IllegalArgumentException("From Resource must be specified");
+            throw new IllegalArgumentException(FROM_RESOURCE_MUST_BE_SPECIFIED1);
         }
         if(toParent == null) {
-            throw new IllegalArgumentException("To-Parent Resource must be specified");
+            throw new IllegalArgumentException(TO_PARENT_RESOURCE_MUST_BE_SPECIFIED);
         }
         ResourceResolver resourceResolver = from.getResourceResolver();
-//AS The catch is removed as a move of the page into a folder that already contains a node with the given name
-//AS This is for sure an erroneous situation and should be be covered up
-//        try {
-            answer = resourceResolver.move(from.getPath(), toParent.getPath());
-            if(references != null) {
-                // Update the references
-                for(com.peregrine.admin.replication.Reference reference : references) {
-                    Resource propertyResource = reference.getPropertyResource();
-                    ModifiableValueMap properties = PerUtil.getModifiableProperties(propertyResource);
-                    if(properties.containsKey(reference.getPropertyName())) {
-                        properties.put(reference.getPropertyName(), answer.getPath());
-                    }
+        answer = resourceResolver.move(from.getPath(), toParent.getPath());
+        if(references != null) {
+            // Update the references
+            for(com.peregrine.admin.replication.Reference reference : references) {
+                Resource propertyResource = reference.getPropertyResource();
+                ModifiableValueMap properties = PerUtil.getModifiableProperties(propertyResource);
+                if(properties.containsKey(reference.getPropertyName())) {
+                    properties.put(reference.getPropertyName(), answer.getPath());
                 }
             }
-//        } catch(PersistenceException e) {
-//            if(e.getCause() instanceof ItemExistsException) {
-//                // Ignore and return the given from resource
-//                answer = from;
-//            } else {
-//                throw e;
-//            }
-//        }
-//AS TODO: Committing here is out of the control of the caller which is not a good idea
-//        answer.getResourceResolver().commit();
+        }
         return answer;
     }
 
     @Override
     public void reorder(Resource parent, String sourceChildName, String targetChildName, boolean before) throws RepositoryException {
         if(parent == null) {
-            throw new IllegalArgumentException("Parent Resource must be specified");
+            throw new IllegalArgumentException(PARENT_RESOURCE_MUST_BE_SPECIFIED);
         }
         if(parent.getChild(sourceChildName) == null) {
-            throw new IllegalArgumentException("Source Child: '" + sourceChildName + "' could not be found in Parent: '" + parent.getPath() + "'");
+            throw new IllegalArgumentException(String.format(SOURCE_NOT_FOUND, sourceChildName, parent.getPath()));
         }
         if(targetChildName != null && parent.getChild(targetChildName) == null) {
-            throw new IllegalArgumentException("Target Child: '" + targetChildName + "' could not be found in Parent: '" + parent.getPath() + "'");
+            throw new IllegalArgumentException(String.format(TARGET_NOT_FOUND, sourceChildName, parent.getPath()));
         }
         Node toNode = parent.adaptTo(Node.class);
         if(before) {
@@ -116,8 +113,6 @@ public class ResourceRelocationService
             }
             toNode.orderBefore(sourceChildName, nextNodeName);
         }
-//AS TODO: Committing here is out of the control of the caller which is not a good idea
-//        toNode.getSession().save();
     }
 
     private Node getNextNode(Node parent, String childName) throws RepositoryException {
@@ -143,10 +138,10 @@ public class ResourceRelocationService
     @Override
     public Resource rename(Resource from, String newName, boolean updateReferences) throws RepositoryException {
         if(from == null) {
-            throw new IllegalArgumentException("From Resource must be specified");
+            throw new IllegalArgumentException(FROM_RESOURCE_MUST_BE_SPECIFIED);
         }
         if(newName == null || newName.isEmpty()) {
-            throw new IllegalArgumentException("New Name must be specified");
+            throw new IllegalArgumentException(NEW_NAME_MUST_BE_SPECIFIED);
         }
         List<com.peregrine.admin.replication.Reference> references = null;
         if(updateReferences) {
@@ -159,7 +154,7 @@ public class ResourceRelocationService
         Node nextNode = getNextNode(fromNodeParent, from.getName());
         String fromPath = from.getPath();
         String fromName = from.getName();
-        String newPath = parent.getPath() + "/" + newName;
+        String newPath = parent.getPath() + SLASH + newName;
         // If the Node has a Content with a JCR Title which matches the original name then change that as well
         ModifiableValueMap properties = PerUtil.getModifiableProperties(from);
         if(properties != null) {
@@ -181,8 +176,6 @@ public class ResourceRelocationService
                 properties.put(reference.getPropertyName(), answer.getPath());
             }
         }
-//AS TODO: Committing here is out of the control of the caller which is not a good idea
-//        fromNode.getSession().save();
         return answer;
     }
 }

@@ -37,6 +37,11 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_FOLDER;
+import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -65,6 +70,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class CreateFolderServlet extends AbstractBaseServlet {
 
+    public static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder";
+    public static final String FOLDER = "folder";
+
     @Reference
     ModelFactory modelFactory;
 
@@ -73,16 +81,16 @@ public class CreateFolderServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String parentPath = request.getParameter("path");
-        String name = request.getParameter("name");
+        String parentPath = request.getParameter(PATH);
+        String name = request.getParameter(NAME);
         try {
             Resource newFolder = resourceManagement.createFolder(request.getResourceResolver(), parentPath, name);
             request.getResourceResolver().commit();
             return new JsonResponse()
-                .writeAttribute("type", "folder").writeAttribute("status", "created")
-                .writeAttribute("name", name).writeAttribute("path", newFolder.getPath());
+                .writeAttribute(TYPE, FOLDER).writeAttribute(STATUS, CREATED)
+                .writeAttribute(NAME, name).writeAttribute(PATH, newFolder.getPath());
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create folder").setRequestPath(parentPath).setException(e);
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_FOLDER).setRequestPath(parentPath).setException(e);
         }
     }
 

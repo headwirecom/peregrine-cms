@@ -34,27 +34,29 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 
+import static com.peregrine.admin.util.AdminConstants.EXTENSION_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
 
-@Model(
-        adaptables = Resource.class,
-        resourceType = "admin/components/extensions",
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-        adapters = IComponent.class
-)
-@Exporter(
-        name = "jackson",
-        extensions = "json"
-)
 
-public class ExtensionsModel extends AbstractComponent {
+@Model(adaptables = Resource.class,
+       resourceType = EXTENSION_COMPONENT_PATH,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+       adapters = IComponent.class)
+@Exporter(name = JACKSON,
+          extensions = JSON)
 
-    public ExtensionsModel(Resource r) { super(r); }
+public class ExtensionsModel
+    extends AbstractComponent {
 
-    @Inject
-    private String id;
+    public ExtensionsModel(Resource r) {
+        super(r);
+    }
+
+    @Inject private String id;
 
     public String getId() {
-    return id;
+        return id;
     }
 
 }
