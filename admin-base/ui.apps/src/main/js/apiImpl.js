@@ -261,9 +261,12 @@ class PerAdminImpl {
                             })
                             promises.push(promise)
                         }
-                        //TODO: implement our own expression parsing for vueformgenerator visible
-                        let visible = eval(data.model.fields[i].visible)
-                        data.model.fields[i].visible = visible
+                        //TODO implement parsing for expressions
+                        let visible = data.model.fields[i].visible
+                        if(visible && visible.startsWith('model.')) {
+                            let name = visible.split('.')[1]
+                            data.model.fields[i].visible = function(model) { return model[name] === 'true' }
+                        }
                     }
                     Promise.all(promises).then( () => {
                             populateView('/admin/componentDefinitions', data.name, data.model)
