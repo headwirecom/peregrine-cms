@@ -261,10 +261,16 @@ class PerAdminImpl {
                             })
                             promises.push(promise)
                         }
-                        //TODO implement parsing for expressions
                         let visible = data.model.fields[i].visible
                         if(visible) {
-                            data.model.fields[i].visible = function(model) { return eval(visible) }
+                            data.model.fields[i].visible = function(model) { 
+                                let expression = exprEval.Parser.parse( visible );
+                                let variables = expression.variables().reduce((vars, current) => {
+                                    vars[current] = model[current]
+                                    return vars;
+                                }, {})
+                                return expression.evaluate( variables );
+                            }
                         }
                     }
                     Promise.all(promises).then( () => {
