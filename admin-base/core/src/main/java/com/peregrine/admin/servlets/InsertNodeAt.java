@@ -62,6 +62,7 @@ import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.getStringOrNull;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
@@ -161,7 +162,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
             // Component overrides the JSon component if provided
             properties.put(COMPONENT, component);
         } else {
-            component = properties.get(COMPONENT) + "";
+            component = getStringOrNull(properties, COMPONENT);
             if(component != null) {
                 properties.put(COMPONENT, ServletHelper.componentNameToPath(component));
             }

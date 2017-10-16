@@ -50,18 +50,57 @@
                     <outputDirectory>${basedir}/target/classes</outputDirectory>
                     <obrRepository>NONE</obrRepository>
                     <instructions>
+                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
+                        <Sling-Model-Packages>com.peregrine.it.client.model</Sling-Model-Packages>
                         <Sling-Initial-Content>
                             SLING-INF/apps/it;path:=/apps/it;overwrite=true;uninstall=false,
+                            SLING-INF/content/it;path:=/content/it;overwrite=true;uninstall=false,
                         </Sling-Initial-Content>
-                        <!--&lt;!&ndash;The Bundle Category is a tag to group bundles separated by a dot. This might not be necessary &ndash;&gt;-->
-                        <!--<Bundle-Category>sling</Bundle-Category>-->
-                        <!--&lt;!&ndash; Our Fragment is extending the Sling Form Authentication by providing a classloader resource therefore this must be the Symbolic Name of the bundle we extend &ndash;&gt;-->
-                        <!--<Fragment-Host>org.apache.sling.auth.form</Fragment-Host>-->
+                        <_dsannotations>*</_dsannotations>
+                        <_metatypeannotations>*</_metatypeannotations>
+                        <_removeheaders>
+                            Embed-Dependency,
+                            Private-Package,
+                            Include-Resource
+                        </_removeheaders>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.models.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
 
     <!--<profiles>-->
         <!--&lt;!&ndash;AS NOTE: Even though this is a Bundle we install it in the autoInstallPackage profile to install it with the rest of Peregrine &ndash;&gt;-->

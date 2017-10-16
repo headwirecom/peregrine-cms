@@ -19,6 +19,16 @@ public class TreeTest
         return logger;
     }
 
+    @Test
+    public void testStringFormat() {
+        String format = "Test me with: '%s'";
+        String value = "ABC";
+        String expected = "Test me with: '" + value + "'";
+        String actual = String.format(format, "ABC");
+        logger.info("String after formatting: '{}'", actual);
+        assertEquals("String Formatted String is not what is expected", expected, actual);
+    }
+
     /** Tests a simple Tree created through creating nodes **/
     @Test
     public void testSimpleTreeCreation() {

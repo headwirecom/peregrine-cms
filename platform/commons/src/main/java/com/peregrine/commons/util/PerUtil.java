@@ -573,6 +573,24 @@ public class PerUtil {
         return answer;
     }
 
+    /**
+     * Extracts a property from the given map and if found returns the
+     * string representation otherwise null
+     * @param source Source Map
+     * @param key Property Name
+     * @return Property Value as string otherwise null
+     */
+    public static String getStringOrNull(Map source, String key) {
+        String answer = null;
+        if(source != null && source.containsKey(key)) {
+            Object temp = source.get(key);
+            if(temp != null) {
+                answer = temp.toString();
+            }
+        }
+        return answer;
+    }
+
     /** Resource Check interface **/
     public static interface ResourceChecker {
         /** @return True if the resource checks out **/

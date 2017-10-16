@@ -42,6 +42,7 @@ import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -349,7 +350,7 @@ public class BasicTestHelpers {
                 List actualList = (List) actual.get(key);
                 List actualList2 = new ArrayList(actualList);
                 logger.info("Expected List: '{}', Actual List: '{}'", expectedlist, actualList);
-                for(Object temp: expectedlist) {
+                for(Object temp : expectedlist) {
                     if(temp instanceof Map) {
                         Map expectedListMap = (Map) temp;
                         String name = (String) expectedListMap.get("name");
@@ -399,9 +400,14 @@ public class BasicTestHelpers {
                         fail("Unknown type of list value: " + temp.getClass() + " (path: " + path + ")");
                     }
                 }
-                if(!actualList2.isEmpty()) { fail("Actual List has more entries: " + actualList2); }
+                if(!actualList2.isEmpty()) {
+                    fail("Actual List has more entries: " + actualList2);
+                }
+            } else if(value == null) {
+                Object expectedNull = actual.get(key);
+                assertNull("Expected a null value", expectedNull);
             } else {
-                fail("Unknown type of value: " + value.getClass() + " (path: " + path + ")");
+                fail("Unknown type of value: '" + (value == null ? "null" : value.getClass()) + "' (path: " + childPath + ")");
             }
         }
     }
@@ -650,14 +656,4 @@ public class BasicTestHelpers {
         return folder;
     }
 
-    public static String getStringOrNull(Map source, String key) {
-        String answer = null;
-        if(source != null && source.containsKey(key)) {
-            Object temp = source.get(key);
-            if(temp != null) {
-                answer = temp.toString();
-            }
-        }
-        return answer;
-    }
 }

@@ -186,17 +186,20 @@ public class RemoteS3SystemReplicationService
     private String awsRegionName;
 
     private void setup(BundleContext context, Configuration configuration) {
-        log.trace("Create Remote S3 Replication Service Name: '{}'", configuration.name());
+        log.trace("Create Remote S3 Replication Service with Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
         log.debug("Extension: '{}'", configuration.exportExtensions());
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
-        Map<String, List<String>> extensionParameters = null;
+        Map<String, List<String>> extensionParameters = new HashMap<>();
+//        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
+            log.trace("Extension Name: '{}'", name);
             if(isNotEmpty(name)) {
                 List<String> types = extension.getValue();
-                if(!types.isEmpty()) {
+                log.trace("Extension Types: '{}'", types);
+                if(types != null && !types.isEmpty()) {
                     List<String> parameters = extensionParameters.get(name);
                     boolean exportFolder = false;
                     if(parameters != null) {
@@ -207,6 +210,7 @@ public class RemoteS3SystemReplicationService
                         new ExportExtension(name, types).setExportFolders(exportFolder)
                     );
                 } else {
+                    log.trace("Extension Types is null or empty for Extension Name: '{}'", name);
                     throw new IllegalArgumentException("Supported Types is empty for Extension: " + extension);
                 }
             } else {

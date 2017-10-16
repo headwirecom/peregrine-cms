@@ -131,12 +131,12 @@ public class LocalFileSystemReplicationService
             required = true
         )
         String[] exportExtensions();
-        @AttributeDefinition(
-            name = "Extensions Parameters",
-            description = "List of Extension Parameters in the format of <extension>=[<parameter name>:<parameter value>|]*. For now 'exportFolder' takes a boolean (false is default)",
-            required = false
-        )
-        String[] extensionParameters();
+//        @AttributeDefinition(
+//            name = "Extensions Parameters",
+//            description = "List of Extension Parameters in the format of <extension>=[<parameter name>:<parameter value>|]*. For now 'exportFolder' takes a boolean (false is default)",
+//            required = false
+//        )
+//        String[] extensionParameters();
         @AttributeDefinition(
             name = "Mandatory Renditions",
             description = "List of all the required renditions that are replicated (if missing they are created)",
@@ -164,12 +164,13 @@ public class LocalFileSystemReplicationService
         creationStrategy = configuration.creationStrategy();
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
-        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
+        Map<String, List<String>> extensionParameters = new HashMap<>();
+//        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
             if(isNotEmpty(name)) {
                 List<String> types = extension.getValue();
-                if(!types.isEmpty()) {
+                if(types != null && !types.isEmpty()) {
                     List<String> parameters = extensionParameters.get(name);
                     boolean exportFolder = false;
                     if(parameters != null) {
