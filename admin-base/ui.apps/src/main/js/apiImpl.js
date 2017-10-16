@@ -264,13 +264,8 @@ class PerAdminImpl {
                         let visible = data.model.fields[i].visible
                         if(visible) {
                             data.model.fields[i].visible = function(model) { 
-                                let expression = exprEval.Parser.parse( visible );
-                                let variables = expression.variables().reduce((vars, current) => {
-                                    vars[current] = model[current]
-                                    return vars;
-                                }, {})
-                                return expression.evaluate( variables );
-                            }
+                                return exprEval.Parser.evaluate( visible, this );
+                            } 
                         }
                     }
                     Promise.all(promises).then( () => {
