@@ -2,16 +2,42 @@
     background-color: color("blue-grey", "lighten-5");
     height: 100%;
     width: 100%;
-    padding: 0 0.75rem 10px 0.75rem;
-    overflow: auto;    
+    display: flex;
+    flex-direction: column;
+    .editor-panel-content {
+        padding: 0.75rem;
+        overflow: auto;    
+        flex-grow: 1;
+    }
+    .editor-panel-buttons {
+        padding: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 55px;
+        max-height: 55px;
+    }
 }
 
 .right-panel {
     &.fullscreen {
+        .editor-panel {
+            overflow: auto;
+        }
         .editor-panel-content {
             width: 100%;
             max-width: 768px;
             margin: 0 auto;
+            overflow: visible;
+        }
+        .editor-panel-buttons {
+            width: 100%;
+            max-width: 768px;
+            margin: 0 auto;
+            justify-content: flex-end;
+            button {
+                margin: 0.75rem;
+            }
         }
     }
     &.narrow {

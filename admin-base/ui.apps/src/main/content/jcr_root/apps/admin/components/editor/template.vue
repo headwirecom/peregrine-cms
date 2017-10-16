@@ -24,23 +24,22 @@
   -->
 <template>
     <div class="editor-panel" ref="editorPanel">
-      <div class="editor-panel-content">
-        <span class="panel-title">Editor</span><span v-if="title"> - {{title}}</span>
-        <div v-if="!hasSchema">this component does not have a dialog defined</div>
-        <vue-form-generator
-            v-bind:schema  = "schema"
-            v-bind:model   = "dataModel"
-            v-bind:options = "formOptions">
-        </vue-form-generator>
-        <div class="right-align">
-            <button class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
-              <i class="material-icons">delete</button>
-            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
-              <i class="material-icons">close</button>
-            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
-              <i class="material-icons">check</i></button>
+        <div class="editor-panel-content">
+            <span class="panel-title">Editor</span>
+            <span v-if="title"> - {{title}}</span>
+            <div v-if="!hasSchema">this component does not have a dialog defined</div>
+            <vue-form-generator v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
+            </vue-form-generator>
         </div>
-      <div/>
+        <div class="editor-panel-buttons">
+            <button class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
+                <i class="material-icons">delete</button>
+            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
+                <i class="material-icons">close</button>
+            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
+                <i class="material-icons">check</i>
+            </button>
+        </div>
     </div>
 </template>
 
