@@ -191,7 +191,7 @@ public class RemoteS3SystemReplicationService
         log.debug("Extension: '{}'", configuration.exportExtensions());
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
-        Map<String, List<String>> extensionParameters = null;
+        Map<String, List<String>> extensionParameters = new HashMap<>();
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
             if(isNotEmpty(name)) {
