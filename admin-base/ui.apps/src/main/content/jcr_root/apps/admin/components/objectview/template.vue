@@ -176,16 +176,16 @@
                 this.valid = isValid
             },
           onEdit: function() {
+              $perAdminApp.stateAction('editObject', { selected: this.currentObject.show, path: '/state/tools/objects' })
               Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
           },
           onOk: function() {
-            // should store the current node
-            $perAdminApp.stateAction('saveObjectEdit', { data: this.currentObject.data, path: this.currentObject.show })
-              $perAdminApp.getNodeFromView('/state/tools').edit = false
+              // should store the current node
+              $perAdminApp.stateAction('saveObjectEdit', { data: this.currentObject.data, path: this.currentObject.show })
+              $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
           },
           onCancel: function() {
             $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
-              $perAdminApp.getNodeFromView('/state/tools').edit = false
           },
             renameObject() {
                 const name = $perAdminApp.getNodeFromView('/state/tools/object').show.substring($perAdminApp.getNodeFromView('/state/tools/object').show.lastIndexOf('/')+1)
