@@ -324,6 +324,8 @@ public abstract class BaseFileReplicationService
                     Resource contentResource = resource.getChild(JCR_CONTENT);
                     if(contentResource != null) {
                         updateReplicationProperties(contentResource, path, null);
+                    } else {
+                        updateReplicationProperties(resource, path, null);
                     }
                 }
             }
