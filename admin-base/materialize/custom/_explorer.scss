@@ -136,9 +136,21 @@
 					}
 				}
 				.explorer-preview-content {
-					padding: 0 0.75rem;
+					display: flex;
+					flex-direction: column;
 					height: 100%;
-					overflow: auto;
+					.vue-form-generator {
+						overflow: auto;
+						padding: 0 0.75rem;
+					}
+					.explorer-confirm-dialog {
+						padding: 0.75rem;
+						min-height: 55px;
+						max-height: 55px;
+						display: flex;
+						align-items: center;
+						justify-content: flex-end;
+					}
 					.explorer-preview-empty {
 						padding: 3rem 0 0;
 						text-align: center;
@@ -183,6 +195,7 @@
 							max-width: 100%;
 							height: auto;
 							max-height: 50%;
+							align-self: center;
 						}
 						iframe {
 							border: 0;
