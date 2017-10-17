@@ -119,28 +119,6 @@ public class ReplicationServletIT
         checkResourceByJson(client, liveRootFolderPath + "/" + templateName, 2, testLiveTemplate.toJSon(), true);
     }
 
-    private void checkReplicationResponse(SlingHttpResponse response, String sourceName, String sourcePath) throws IOException {
-        // Ensure that each item is only replicated once
-        Map responseMap = convertToMap(response);
-        logger.info("Replication Response: '{}'", responseMap);
-        assertEquals("Wrong Replication Source Name", sourceName, responseMap.get("sourceName"));
-        assertEquals("Wrong Replication Source Path", sourcePath, responseMap.get("sourcePath"));
-        // Make sure that the replicates contain only one entry for of each path
-        List<String> paths = new ArrayList<>();
-        for(Object item: (List) responseMap.get("replicates")) {
-            if(item instanceof Map) {
-                Map replicate = (Map) item;
-                String path = getStringOrNull(replicate, "path");
-                assertNotNull("Path should not be null", path);
-                if(paths.contains(path)) {
-                    fail("Found a duplicate path: '" + path + "'");
-                } else {
-                    paths.add(path);
-                }
-            }
-        }
-    }
-
     @Test
     public void testInSlingAssetReplication() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
@@ -525,6 +503,28 @@ public class ReplicationServletIT
         checkFile(new File(folder, imageName), "Asset - PNG", false);
         if(checkRenditions) {
             checkFile(new File(folder, imageName + ".thumbnail.png"), "Asset - Thumbnail PNG", false);
+        }
+    }
+
+    private void checkReplicationResponse(SlingHttpResponse response, String sourceName, String sourcePath) throws IOException {
+        // Ensure that each item is only replicated once
+        Map responseMap = convertToMap(response);
+        logger.info("Replication Response: '{}'", responseMap);
+        assertEquals("Wrong Replication Source Name", sourceName, responseMap.get("sourceName"));
+        assertEquals("Wrong Replication Source Path", sourcePath, responseMap.get("sourcePath"));
+        // Make sure that the replicates contain only one entry for of each path
+        List<String> paths = new ArrayList<>();
+        for(Object item: (List) responseMap.get("replicates")) {
+            if(item instanceof Map) {
+                Map replicate = (Map) item;
+                String path = getStringOrNull(replicate, "path");
+                assertNotNull("Path should not be null", path);
+                if(paths.contains(path)) {
+                    fail("Found a duplicate path: '" + path + "'");
+                } else {
+                    paths.add(path);
+                }
+            }
         }
     }
 

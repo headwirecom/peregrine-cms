@@ -23,15 +23,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>platform.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>login</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Peregrine's Custom Login Form</name>
+    <name>Peregrine CMS - Platform - Custom Login</name>
     <description>
         This bundle is a fragment attached to the Sling Selector Auth bundle and provides
         a simple customized login form.

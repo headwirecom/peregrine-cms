@@ -24,15 +24,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>platform.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>external</artifactId>
     <packaging>content-package</packaging>
 
-    <name>external dependencies for peregrine cms</name>
+    <name>Peregrine CMS - Platform - External</name>
     <description>
         This provides the dependencies for OSGi that is needed
         for peregrine

@@ -32,7 +32,7 @@
     <artifactId>felib.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
-    <name>peregrine-felib - UI Apps</name>
+    <name>Peregrine CMS - Platform - Felib - UI Apps</name>
     <description>
         This is an empty JCR Package where the JCR Content
         can be deployed with.

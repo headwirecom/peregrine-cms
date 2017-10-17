@@ -166,23 +166,20 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
         writeIfFound(json, ALLOWED_OBJECTS, properties);
 
-        // For the Replication data we need to obtain the content properties
-        //AS TODO: If there is not jcr:content we need to check for the properties on the given resource for nodes like per:Object etc
+        // For the Replication data we need to obtain the content properties. If not found
+        // then we try with the resoure's properties for non jcr:content nodes
         ValueMap replicationProperties = getProperties(resource);
         if(replicationProperties == null) { replicationProperties = properties; }
-//        if(replicationProperties != null) {
-            String replicationDate = writeIfFound(json, PER_REPLICATED, replicationProperties);
-            writeIfFound(json, PER_REPLICATED_BY, replicationProperties);
-            //        String replicationLocation = writeIfFound(json, PER_REPLICATION, properties);
-            String replicationLocationRef = writeIfFound(json, PER_REPLICATION_REF, replicationProperties);
-            if(replicationDate != null && !replicationDate.isEmpty()) {
-                String status = ACTIVATED;
-                if(replicationLocationRef == null || replicationLocationRef.isEmpty()) {
-                    status = DEACTIVATED;
-                }
-                json.writeAttribute(REPLICATION_STATUS, status);
+        String replicationDate = writeIfFound(json, PER_REPLICATED, replicationProperties);
+        writeIfFound(json, PER_REPLICATED_BY, replicationProperties);
+        String replicationLocationRef = writeIfFound(json, PER_REPLICATION_REF, replicationProperties);
+        if(replicationDate != null && !replicationDate.isEmpty()) {
+            String status = ACTIVATED;
+            if(replicationLocationRef == null || replicationLocationRef.isEmpty()) {
+                status = DEACTIVATED;
             }
-//        }
+            json.writeAttribute(REPLICATION_STATUS, status);
+        }
     }
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {

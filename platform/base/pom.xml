@@ -22,14 +22,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>platform.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>base.parent</artifactId>
     <packaging>pom</packaging>
 
+    <name>Peregrine CMS - Platform - Base Parent</name>
     <description>peregrine default node types Parent POM</description>
 
     <!--

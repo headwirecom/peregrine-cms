@@ -31,7 +31,7 @@
     <artifactId>node-js.core.script</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Sling Node Package Manager - Scripts Core</name>
+    <name>Peregrine CMS - Platform - Node-JS - Core Script</name>
     <description>
         This bundle provides the service need to:
         - execute scripts through J2V8
