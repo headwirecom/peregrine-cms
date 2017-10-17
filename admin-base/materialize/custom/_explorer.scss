@@ -195,6 +195,9 @@
 							flex-direction: column;
 							overflow: auto;
 							height: 100%;
+							.vue-form-generator {
+								overflow: visible;
+							}
 							img {
 								width: auto;
 								max-width: 100%;
