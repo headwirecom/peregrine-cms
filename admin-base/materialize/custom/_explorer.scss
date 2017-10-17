@@ -7,10 +7,10 @@
 		.row {
 			margin-bottom: 0;
 			.explorer-main {
-			display: flex;
-			flex-direction: column;
+				display: flex;
+				flex-direction: column;
 		    overflow-y: auto;
-			padding: 0;
+				padding: 0;
 				.empty-explorer {
 					flex-grow: 1;
 					display: flex;
