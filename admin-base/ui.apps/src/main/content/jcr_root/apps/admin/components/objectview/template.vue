@@ -65,10 +65,8 @@
                     </a>
                 </li>
             </ul>
-            <span class="panel-title">Object</span>
-            <div v-if="(edit === false || edit === undefined) && schema !== undefined" class="display-json">
-
-                <form v-if="currentObject.data && schema">
+            <template v-if="(edit === false || edit === undefined) && schema !== undefined">
+                <template v-if="currentObject.data && schema">
                     <vue-form-generator 
                             class="vfg-preview"
                             v-on:validated = "onValidated"
@@ -76,7 +74,7 @@
                             v-bind:model   = "currentObject.data"
                             v-bind:options = "formOptions">
                     </vue-form-generator>
-                </form>
+                </template>
     <!--
                 <div class="row" v-for="field in schema.fields">
                     <template v-if="!field.fields">
@@ -92,25 +90,27 @@
                     </template>
                 </div>
     -->
-            </div>
+            </template>
 
-            <form v-if="edit && currentObject.data && schema">
+            <template v-if="edit && currentObject.data && schema">
                 <vue-form-generator
                   v-on:validated = "onValidated"
                   v-bind:schema  = "schema"
                   v-bind:model   = "currentObject.data"
                   v-bind:options = "formOptions">
                 </vue-form-generator>
-                <button  
-                    v-if="edit"
-                    type="button"
-                    title="save object" 
-                    v-bind:disabled="!valid" 
-                    class="btn btn-raised waves-effect waves-light right" 
-                    v-on:click.stop.prevent="onOk">
-                    <i class="material-icons">check</i>
-                </button>
-            </form>
+                <div class="explorer-confirm-dialog">
+                    <button  
+                        v-if="edit"
+                        type="button"
+                        title="save object" 
+                        v-bind:disabled="!valid" 
+                        class="btn btn-raised waves-effect waves-light right" 
+                        v-on:click.stop.prevent="onOk">
+                        <i class="material-icons">check</i>
+                    </button>
+                </div>
+            </template>
         </template>
 
         <div v-if="currentObject === undefined" class="explorer-preview-empty">
