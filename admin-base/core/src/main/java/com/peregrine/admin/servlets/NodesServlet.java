@@ -167,12 +167,14 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, ALLOWED_OBJECTS, properties);
 
         // For the Replication data we need to obtain the content properties
-        ValueMap contentProperties = getProperties(resource);
-        if(contentProperties != null) {
-            String replicationDate = writeIfFound(json, PER_REPLICATED, contentProperties);
-            writeIfFound(json, PER_REPLICATED_BY, contentProperties);
+        //AS TODO: If there is not jcr:content we need to check for the properties on the given resource for nodes like per:Object etc
+        ValueMap replicationProperties = getProperties(resource);
+        if(replicationProperties == null) { replicationProperties = properties; }
+//        if(replicationProperties != null) {
+            String replicationDate = writeIfFound(json, PER_REPLICATED, replicationProperties);
+            writeIfFound(json, PER_REPLICATED_BY, replicationProperties);
             //        String replicationLocation = writeIfFound(json, PER_REPLICATION, properties);
-            String replicationLocationRef = writeIfFound(json, PER_REPLICATION_REF, contentProperties);
+            String replicationLocationRef = writeIfFound(json, PER_REPLICATION_REF, replicationProperties);
             if(replicationDate != null && !replicationDate.isEmpty()) {
                 String status = ACTIVATED;
                 if(replicationLocationRef == null || replicationLocationRef.isEmpty()) {
@@ -180,7 +182,7 @@ public class NodesServlet extends AbstractBaseServlet {
                 }
                 json.writeAttribute(REPLICATION_STATUS, status);
             }
-        }
+//        }
     }
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {

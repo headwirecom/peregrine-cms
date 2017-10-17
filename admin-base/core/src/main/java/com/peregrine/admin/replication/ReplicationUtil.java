@@ -107,29 +107,9 @@ public class ReplicationUtil {
         if(source != null) {
             boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
             if(!replicationMixin) {
-                Node node = source.adaptTo(Node.class);
-                if(node != null) {
-                    try {
-                        if(node.canAddMixin(PER_REPLICATION)) {
-                            node.addMixin(PER_REPLICATION);
-                            replicationMixin = true;
-                        }
-                    } catch(RepositoryException e) {
-                        LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);
-                    }
-                }
-                if(target != null) {
-                    node = target.adaptTo(Node.class);
-                    if(node != null) {
-                        try {
-                            if(node.canAddMixin(PER_REPLICATION)) {
-                                node.addMixin(PER_REPLICATION);
-                                replicationMixin = true;
-                            }
-                        } catch(RepositoryException e) {
-                            LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);
-                        }
-                    }
+                replicationMixin = ensureMixin(source);
+                if(replicationMixin) {
+                    ensureMixin(target);
                 }
             }
             LOGGER.trace("Is Replication Mixin: : {}, Source: '{}'", replicationMixin, source.getPath());
@@ -168,5 +148,21 @@ public class ReplicationUtil {
                 }
             }
         }
+    }
+
+    private static boolean ensureMixin(Resource resource) {
+        boolean answer = false;
+        Node node = resource.adaptTo(Node.class);
+        if(node != null) {
+            try {
+                if(node.canAddMixin(PER_REPLICATION)) {
+                    node.addMixin(PER_REPLICATION);
+                    answer = true;
+                }
+            } catch(RepositoryException e) {
+                LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);
+            }
+        }
+        return answer;
     }
 }

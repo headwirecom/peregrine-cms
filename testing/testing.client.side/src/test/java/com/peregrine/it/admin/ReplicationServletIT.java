@@ -4,11 +4,14 @@ import com.peregrine.admin.replication.DefaultReplicationMapperService;
 import com.peregrine.admin.replication.impl.LocalFileSystemReplicationService;
 import com.peregrine.admin.replication.impl.RemoteS3SystemReplicationService;
 import com.peregrine.commons.test.AbstractTest;
+import com.peregrine.it.basic.JsonTest.ObjectComponent;
+import com.peregrine.it.basic.JsonTest.Prop;
 import com.peregrine.it.basic.JsonTest.TestAsset;
 import com.peregrine.it.basic.JsonTest.TestPage;
 import com.peregrine.transform.operation.ThumbnailImageTransformation;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.SlingClient;
+import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.apache.sling.testing.clients.osgi.OsgiConsoleClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
 import org.junit.BeforeClass;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static com.peregrine.admin.replication.impl.LocalFileSystemReplicationService.CREATE_ALL_STRATEGY;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
@@ -31,14 +35,18 @@ import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFile;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderAndCreate;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
+import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createOSGiServiceConfiguration;
 import static com.peregrine.it.basic.BasicTestHelpers.findFolderByPath;
+import static com.peregrine.it.basic.BasicTestHelpers.getStringOrNull;
 import static com.peregrine.it.basic.BasicTestHelpers.listComponentsAsJson;
 import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static com.peregrine.it.basic.BasicTestHelpers.listServicesAsJson;
 import static com.peregrine.it.basic.BasicTestHelpers.loadFile;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
+import static com.peregrine.it.util.TestHarness.createObject;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;
 import static com.peregrine.it.util.TestHarness.deleteLeafFolder;
@@ -101,13 +109,36 @@ public class ReplicationServletIT
         createFolderStructure(client, REPLICATION_PATH);
 
         // Replicate the Page and check its new content
-        executeReplication(client, rootFolderPath + "/" + pageName, "local", 200);
+        SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + pageName, "local", 200);
+        checkReplicationResponse(response, pageName, rootFolderPath + "/" + pageName);
 
         // Check page and template
         TestPage testLivePage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, liveRootFolderPath + "/" + templateName);
         checkResourceByJson(client, liveRootFolderPath + "/" + pageName, 2, testLivePage.toJSon(), true);
         TestPage testLiveTemplate = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, null);
         checkResourceByJson(client, liveRootFolderPath + "/" + templateName, 2, testLiveTemplate.toJSon(), true);
+    }
+
+    private void checkReplicationResponse(SlingHttpResponse response, String sourceName, String sourcePath) throws IOException {
+        // Ensure that each item is only replicated once
+        Map responseMap = convertToMap(response);
+        logger.info("Replication Response: '{}'", responseMap);
+        assertEquals("Wrong Replication Source Name", sourceName, responseMap.get("sourceName"));
+        assertEquals("Wrong Replication Source Path", sourcePath, responseMap.get("sourcePath"));
+        // Make sure that the replicates contain only one entry for of each path
+        List<String> paths = new ArrayList<>();
+        for(Object item: (List) responseMap.get("replicates")) {
+            if(item instanceof Map) {
+                Map replicate = (Map) item;
+                String path = getStringOrNull(replicate, "path");
+                assertNotNull("Path should not be null", path);
+                if(paths.contains(path)) {
+                    fail("Found a duplicate path: '" + path + "'");
+                } else {
+                    paths.add(path);
+                }
+            }
+        }
     }
 
     @Test
@@ -126,11 +157,39 @@ public class ReplicationServletIT
         uploadFile(client, rootFolderPath, imageName, imageContent, PNG_MIME_TYPE,200);
 
         // Replicate the Page and check its new content
-        executeReplication(client, rootFolderPath + "/" + imageName, "local", 200);
+        SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + imageName, "local", 200);
+        checkReplicationResponse(response, imageName, rootFolderPath + "/" + imageName);
 
         // Check page and template
         TestAsset testAsset = new TestAsset(imageName, PNG_MIME_TYPE);
         checkResourceByJson(client, liveRootFolderPath + "/" + imageName, 2, testAsset.toJSon(), true);
+    }
+
+    @Test
+    public void testInSlingObjectReplication() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        String rootFolderPath = ROOT_PATH + "/test-isor";
+        String liveRootFolderPath = LIVE_ROOT_PATH + "/test-isor";
+        String objectName = "my-is-object";
+        createFolderStructure(client, rootFolderPath);
+
+        // Create Target Replication Folder
+        createFolderStructure(client, REPLICATION_PATH);
+
+        createObject(client, rootFolderPath, objectName, "it/replication/test/is", 200);
+        ObjectComponent testObject = new ObjectComponent(objectName, "it/replication/test/is");
+        checkResourceByJson(client, rootFolderPath + "/" + objectName, 2, testObject.toJSon(), true);
+
+        // Replicate the Page and check its new content
+        SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + objectName, "local", 200);
+        checkReplicationResponse(response, objectName, rootFolderPath + "/" + objectName);
+
+        // Check Object including Replication Properties
+        testObject.addProperties(
+            new Prop("per:ReplicationRef", "/content/tests/replication-source/test-isor/my-is-object"),
+            new Prop("per:ReplicatedBy", "admin")
+        );
+        checkResourceByJson(client, liveRootFolderPath + "/" + objectName, 2, testObject.toJSon(), true);
     }
 
     @Test
@@ -156,7 +215,8 @@ public class ReplicationServletIT
         checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
 
         // Replicate the Page and check its new content
-        executeReplication(client, rootFolderPath + "/" + pageName, replicationName, 200);
+        SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + pageName, replicationName, 200);
+        checkReplicationResponse(response, pageName, rootFolderPath + "/" + pageName);
 
         // Check page and template on the File System
         File folder = findFolderByPath(LOCAL_FOLDER, rootFolderPath);
@@ -202,7 +262,8 @@ public class ReplicationServletIT
         assertEquals("Wrong Asset found after upload", ASSET_PRIMARY_TYPE, asset.get(JCR_PRIMARY_TYPE));
 
         // Replicate the Page and check its new content
-        executeReplication(client, rootFolderPath + "/" + imageName, replicationName, 200);
+        SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + imageName, replicationName, 200);
+        checkReplicationResponse(response, imageName, rootFolderPath + "/" + imageName);
 
         // Check page and template on the File System
         File folder = findFolderByPath(LOCAL_FOLDER, rootFolderPath);
@@ -210,6 +271,97 @@ public class ReplicationServletIT
         checkFile(new File(folder, imageName), "Asset - PNG", false);
         if(checkRenditions) {
             checkFile(new File(folder, imageName + ".thumbnail.png"), "Asset - Thumbnail PNG", false);
+        }
+    }
+
+    @Test
+    public void testLocalFSObjectReplication() throws Exception {
+        checkFolderAndCreate(LOCAL_FOLDER, true);
+        SlingClient client = slingInstanceRule.getAdminClient();
+        OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
+        String objectName = "my-lfs-object";
+        String replicationName = "localFSObjectCreationTest";
+
+        createLocalReplicationConfiguration(client, replicationName, LOCAL_FOLDER);
+
+        Map<String, Object> tnProperties = new HashMap<>();
+        tnProperties.put("enabled", "true");
+        String tnPid = ThumbnailImageTransformation.class.getName();
+        osgiConsoleClient.editConfiguration(tnPid, null, tnProperties,302);
+        Map<String, Object> updatedServiceConfiguration = osgiConsoleClient.getConfiguration(tnPid, 200);
+        boolean checkRenditions = true;
+        if(!"true".equalsIgnoreCase(updatedServiceConfiguration.get("enabled") + "")) {
+            logger.warn("Thumbnail Image Transformation is not enabled and hence it will not be tested");
+            checkRenditions = false;
+        }
+
+        String rootFolderPath = ROOT_PATH + "/test-lfsor";
+        createFolderStructure(client, rootFolderPath);
+
+        // Create Object
+        createObject(client, rootFolderPath, objectName, "it/replication/test/lsor", 200);
+        ObjectComponent testObject = new ObjectComponent(objectName, "it/replication/test/lsor");
+        checkResourceByJson(client, rootFolderPath + "/" + objectName, 2, testObject.toJSon(), true);
+
+        // Replicate the Page and check its new content
+        SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + objectName, replicationName, 200);
+        checkReplicationResponse(response, objectName, rootFolderPath + "/" + objectName);
+        // Check Object including Replication Properties
+        testObject.addProperties(
+//AS TODO: To Check this we need to figure out the path to the file
+//            new Prop("per:ReplicationRef", "/content/tests/replication-source/test-isor/my-is-object"),
+            new Prop("per:ReplicatedBy", "admin")
+        );
+        checkResourceByJson(client, rootFolderPath + "/" + objectName, 2, testObject.toJSon(), true);
+
+        // Check page and template on the File System
+        File folder = findFolderByPath(LOCAL_FOLDER, rootFolderPath);
+        // Check the Page File
+        checkFile(new File(folder, objectName + ".infinity.json"), "Object - Infinity JSON", false);
+    }
+
+    @Test
+    public void testRemoteS3PageExportReplication() throws Exception {
+        checkFolderAndCreate(LOCAL_FOLDER, true);
+        SlingClient client = slingInstanceRule.getAdminClient();
+        String replicationName = "remoteS3ITExport";
+        boolean isFound = false;
+        String pid = RemoteS3SystemReplicationService.class.getName();
+        OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
+        List<Map> services = getServicesByID(client, pid);
+        for(Map service: services) {
+            String servicePid = service.get("pid") + "";
+            Map<String, Object> serviceConfiguration = osgiConsoleClient.getConfiguration(servicePid, 200);
+            logger.info("Remote S3 Service Configuration (pid: '{}'): '{}'", servicePid, serviceConfiguration);
+            String name = serviceConfiguration.get("name") + "";
+            if(replicationName.equals(name)) {
+                isFound = true;
+            }
+        }
+
+        if(isFound) {
+            // Remote S3 Replication found and active -> start testing
+            String rootFolderPath = ROOT_PATH + "/test-rs3per";
+            createFolderStructure(client, rootFolderPath);
+
+            createFolderStructure(client, rootFolderPath);
+            // First Create a Template, then a Page using it
+            String templateName = "replication-template";
+            createTemplate(client, rootFolderPath, templateName, EXAMPLE_PAGE_TYPE_PATH, 200);
+            TestPage testTemplate = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, null);
+            checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, testTemplate.toJSon(), true);
+
+            String pageName = "replication-page";
+            createPage(client, rootFolderPath, pageName, rootFolderPath + "/" + templateName, 200);
+            TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, rootFolderPath + "/" + templateName);
+            checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
+
+            // Replicate the Page
+            SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + pageName, replicationName, 200);
+            checkReplicationResponse(response, pageName, rootFolderPath + "/" + pageName);
+            //AS TODO: Open an S3 Connection and test if the content made it there
+        } else {
+            logger.warn("\n\n\nNo S3 Remote Export Replication Service Found -> Ignore \n\n\n");
         }
     }
 
@@ -251,7 +403,8 @@ public class ReplicationServletIT
             assertEquals("Wrong Asset found after upload", ASSET_PRIMARY_TYPE, asset.get(JCR_PRIMARY_TYPE));
 
             // Replicate the Page
-            executeReplication(client, rootFolderPath + "/" + imageName, replicationName, 200);
+            SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + imageName, replicationName, 200);
+            checkReplicationResponse(response, imageName, rootFolderPath + "/" + imageName);
             //AS TODO: Open an S3 Connection and test if the content made it there
         } else {
             logger.warn("\n\n\nNo S3 Remote Replication Servce Found -> Ignore \n\n\n");
@@ -259,18 +412,19 @@ public class ReplicationServletIT
     }
 
     @Test
-    public void testRemoteS3PageExportReplication() throws Exception {
+    public void testRemoteS3ObjectReplication() throws Exception {
         checkFolderAndCreate(LOCAL_FOLDER, true);
         SlingClient client = slingInstanceRule.getAdminClient();
-        String replicationName = "remoteS3ITExport";
+        String replicationName = "remoteS3IT";
         boolean isFound = false;
         String pid = RemoteS3SystemReplicationService.class.getName();
         OsgiConsoleClient osgiConsoleClient = new OsgiConsoleClient(client.getUrl(), client.getUser(), client.getPassword());
         List<Map> services = getServicesByID(client, pid);
+        logger.info("Remote S3 Configurations: '{}'", services);
         for(Map service: services) {
             String servicePid = service.get("pid") + "";
             Map<String, Object> serviceConfiguration = osgiConsoleClient.getConfiguration(servicePid, 200);
-            logger.info("Remote S3 Service Configuration (pid: '{}'): '{}'", servicePid, serviceConfiguration);
+            logger.info("Remote S3 Service Configuration: '{}'", serviceConfiguration);
             String name = serviceConfiguration.get("name") + "";
             if(replicationName.equals(name)) {
                 isFound = true;
@@ -279,26 +433,30 @@ public class ReplicationServletIT
 
         if(isFound) {
             // Remote S3 Replication found and active -> start testing
-            String rootFolderPath = ROOT_PATH + "/test-rs3per";
+            // First obtain the replication name to make sure
+            String objectName = "my-rs3-object";
+            String rootFolderPath = ROOT_PATH + "/test-res3or";
             createFolderStructure(client, rootFolderPath);
 
-            createFolderStructure(client, rootFolderPath);
-            // First Create a Template, then a Page using it
-            String templateName = "replication-template";
-            createTemplate(client, rootFolderPath, templateName, EXAMPLE_PAGE_TYPE_PATH, 200);
-            TestPage testTemplate = new TestPage(templateName, EXAMPLE_PAGE_TYPE_PATH, null);
-            checkResourceByJson(client, rootFolderPath + "/" + templateName, 2, testTemplate.toJSon(), true);
-
-            String pageName = "replication-page";
-            createPage(client, rootFolderPath, pageName, rootFolderPath + "/" + templateName, 200);
-            TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, rootFolderPath + "/" + templateName);
-            checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
+            // Create Object
+            createObject(client, rootFolderPath, objectName, "it/replication/test/rs3or", 200);
+            ObjectComponent testObject = new ObjectComponent(objectName, "it/replication/test/rs3or");
+            checkResourceByJson(client, rootFolderPath + "/" + objectName, 2, testObject.toJSon(), true);
 
             // Replicate the Page
-            executeReplication(client, rootFolderPath + "/" + pageName, replicationName, 200);
+            SlingHttpResponse response = executeReplication(client, rootFolderPath + "/" + objectName, replicationName, 200);
+            checkReplicationResponse(response, objectName, rootFolderPath + "/" + objectName);
             //AS TODO: Open an S3 Connection and test if the content made it there
+
+            // Check Object including Replication Properties
+            testObject.addProperties(
+                //AS TODO: To Check this we need to figure out the path to the file
+                //            new Prop("per:ReplicationRef", "/content/tests/replication-source/test-isor/my-is-object"),
+                new Prop("per:ReplicatedBy", "admin")
+            );
+            checkResourceByJson(client, rootFolderPath + "/" + objectName, 2, testObject.toJSon(), true);
         } else {
-            logger.warn("\n\n\nNo S3 Remote Export Replication Service Found -> Ignore \n\n\n");
+            logger.warn("\n\n\nNo S3 Remote Replication Servce Found -> Ignore \n\n\n");
         }
     }
 
@@ -352,7 +510,9 @@ public class ReplicationServletIT
         checkResourceByJson(client, assetFolderPath + "/" + imageName, 2, testAsset.toJSon(), true);
 
         // Replicate through the Default Asset Handler
-        executeDeepReplication(client, rootFolderPath, "defaultIT", 200);
+        SlingHttpResponse response = executeDeepReplication(client, rootFolderPath, "defaultIT", 200);
+        logger.info("Deep Default Replication Response: '{}'", response.getContent());
+        checkReplicationResponse(response, testFolderName, rootFolderPath);
 
         // Check if the Page made it to the /live folder and the Asset to the file system
         TestPage testLivePage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, livePageFolderPath + "/" + templateName);
