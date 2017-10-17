@@ -31,7 +31,7 @@
     <artifactId>base.core</artifactId>
     <packaging>bundle</packaging>
 
-    <name>peregrine default node types - Core</name>
+    <name>Peregrine CMS - Platform - Base - Core</name>
     <description>
         This is an empty OSGi Bundle which can be used
         to compile and deploy OSGi Services to Sling.

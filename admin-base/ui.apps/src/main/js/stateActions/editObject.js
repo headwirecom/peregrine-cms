@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('selectObject').setLevelDebug()
+let log = LoggerFactory.logger('editObject').setLevelDebug()
 
 import { set } from '../utils'
 
@@ -31,8 +31,19 @@ export default function(me, target) {
 
     log.fine(target)
 
+    me.beforeStateAction( function(name) {
+        if(name !== 'saveObjectEdit') {
+            const yes = confirm('save edit?')
+            if(yes) {
+                const currentObject = me.getNodeFromView("/state/tools/object")
+                me.stateAction('saveObjectEdit', { data: currentObject.data, path: currentObject.show })
+            }
+        }
+        return true
+    })
+
     let view = me.getView()
-    Vue.set(me.getNodeFromView('/state/tools'), 'edit', false)
+    Vue.set(me.getNodeFromView('/state/tools'), 'edit', true)
     me.getApi().populateObject(target.selected, '/state/tools/object', 'data').then( () => {
         set(view, '/state/tools/object/show', target.selected)
     })

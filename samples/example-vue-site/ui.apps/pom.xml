@@ -32,7 +32,7 @@
     <artifactId>example-vue.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
-    <name>example site - UI Apps</name>
+    <name>Peregrine CMS - Example Vue - UI Apps</name>
     <description>
         This is an empty JCR Package where the JCR Content
         can be deployed with.

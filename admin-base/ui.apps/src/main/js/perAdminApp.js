@@ -389,6 +389,18 @@ function actionImpl(component, command, target) {
 }
 
 /**
+ * keeps a list of the current state actions we want to perform after another state action is
+ * triggered (for example to ask if a change in the editor should be saved)
+ *
+ * @type {Array}
+ */
+let beforeStateActions = new Array()
+
+function beforeStateActionImpl(fun) {
+    beforeStateActions.push(fun)
+}
+
+/**
  * implementation of $perAdminApp.stateAction()
  *
  * @private
@@ -396,6 +408,17 @@ function actionImpl(component, command, target) {
  * @param target
  */
 function stateActionImpl(name, target) {
+
+    // execute all before state actions
+    if(beforeStateActions.length > 0) {
+        for(let i = 0; i < beforeStateActions.length; i++) {
+            let ret = beforeStateActions[i](name)
+            if(!ret) return
+        }
+    }
+
+    // clear the actions
+    beforeStateActions = new Array()
 
     try {
         const stateAction = StateActions(name)
@@ -889,6 +912,10 @@ var PerAdminApp = {
 
     forceFullRedraw() {
         this.getView().adminPage = JSON.parse(JSON.stringify(this.getView().adminPage))
+    },
+
+    beforeStateAction(fun) {
+        beforeStateActionImpl(fun)
     }
 
 }

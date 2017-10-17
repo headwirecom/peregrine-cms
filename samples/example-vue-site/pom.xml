@@ -30,6 +30,7 @@
     <artifactId>example-vue.parent</artifactId>
     <packaging>pom</packaging>
 
+    <name>Peregrine CMS - Example Vue Parent</name>
     <description>example site Parent POM</description>
 
     <!--

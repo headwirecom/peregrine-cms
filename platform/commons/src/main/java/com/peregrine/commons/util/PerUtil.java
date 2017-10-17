@@ -405,7 +405,9 @@ public class PerUtil {
         ResourceChecker childResourceChecker = resourceChecker;
         if(startingResource != null && resourceChecker != null && response != null) {
             if(resourceChecker.doAdd(startingResource)) {
-                response.add(startingResource);
+                if(!containsResource(response, startingResource)) {
+                    response.add(startingResource);
+                }
                 // If this is JCR Content we need to add all children
                 if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
                     childResourceChecker = new AddAllResourceChecker();
@@ -423,7 +425,23 @@ public class PerUtil {
         }
     }
 
-//AS TODO: This seems to be a duplicate of the method above?
+    public static boolean containsResource(List<Resource> resources, Resource check) {
+        boolean answer = false;
+        if(check != null) {
+            String path = check.getPath();
+            for(Resource item : resources) {
+                if(path.equals(item.getPath())) {
+                    answer = true;
+                    break;
+                }
+            }
+        } else {
+            answer = true;
+        }
+        return answer;
+    }
+
+    //AS TODO: This seems to be a duplicate of the method above?
 //    public static void listMatchingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
 //        ResourceChecker childResourceChecker = resourceChecker;
 //        if(startingResource != null && resourceChecker != null && response != null) {
@@ -470,7 +488,9 @@ public class PerUtil {
             // side and if not there add it to the list
             for(Resource sourceParent : parents) {
                 if(resourceChecker.doAdd(sourceParent)) {
-                    response.add(sourceParent);
+                    if(!containsResource(response, sourceParent)) {
+                        response.add(sourceParent);
+                    }
                 }
             }
         }

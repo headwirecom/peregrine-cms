@@ -32,7 +32,7 @@
     <artifactId>node-js.ui.apps.script</artifactId>
     <packaging>content-package</packaging>
 
-    <name>Sling Node Package Manager - UI Scripts Apps</name>
+    <name>Peregrine CMS - Platform - Node-JS - UI Apps Script</name>
     <description>
         This content package does provide:
         - Swagger UI for the Remote J2V8 scripts execution

@@ -32,7 +32,7 @@
     <artifactId>admin.ui.materialize</artifactId>
     <packaging>content-package</packaging>
 
-    <name>admin base - Materialize</name>
+    <name>Peregrine CMS - Admin - Materialize</name>
     <description>
         This is an empty JCR Package where the JCR Content
         can be deployed with.

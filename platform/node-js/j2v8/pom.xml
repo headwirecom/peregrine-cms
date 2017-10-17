@@ -14,7 +14,7 @@
     <artifactId>node-js.j2v8-installation</artifactId>
     <packaging>pom</packaging>
 
-    <name>Sling Node Package Manager - All</name>
+    <name>Peregrine CMS - Platform - Node-JS - J2V8</name>
     <description>
         This POM installs the necessary J2V8 bundled based on the users OS.
 

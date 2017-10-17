@@ -23,15 +23,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>platform.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>distribution</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Peregrine CMS Distribution Configuration</name>
+    <name>Peregrine CMS - Platform - Distribution (Configuration)</name>
     <description>
         The Apache Sling Distribution for Peregerine CMS bundle provides the necessary configurations and custom component implementations.
     </description>

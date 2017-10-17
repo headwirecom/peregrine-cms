@@ -261,11 +261,11 @@ class PerAdminImpl {
                             })
                             promises.push(promise)
                         }
-                        //TODO implement parsing for expressions
                         let visible = data.model.fields[i].visible
-                        if(visible && visible.startsWith('model.')) {
-                            let name = visible.split('.')[1]
-                            data.model.fields[i].visible = function(model) { return model[name] === 'true' }
+                        if(visible) {
+                            data.model.fields[i].visible = function(model) { 
+                                return exprEval.Parser.evaluate( visible, this );
+                            } 
                         }
                     }
                     Promise.all(promises).then( () => {

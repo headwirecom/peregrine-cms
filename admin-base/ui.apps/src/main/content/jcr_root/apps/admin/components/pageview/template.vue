@@ -84,14 +84,16 @@
                     v-bind:model="page"
                     v-bind:options="options">
                 </vue-form-generator>
-                <button 
-                    type="button"
-                    title="save page properties"
-                    v-bind:disabled="!valid"
-                    class="btn btn-raised waves-effect waves-light right"
-                    v-on:click.stop.prevent="onOk">
-                    <i class="material-icons">check</i>
-                </button>
+                <div class="explorer-confirm-dialog">
+                    <button 
+                        type="button"
+                        title="save page properties"
+                        v-bind:disabled="!valid"
+                        class="btn btn-raised waves-effect waves-light right"
+                        v-on:click.stop.prevent="onOk">
+                        <i class="material-icons">check</i>
+                    </button>
+                </div>
             </template>
         </template>
         <div v-else class="explorer-preview-empty">

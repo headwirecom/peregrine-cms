@@ -10,3 +10,4 @@ vue-multiselect.js
 vue-form-wizard.js
 drag-drop-touch.js
 spectrum.js
+expr-eval.js

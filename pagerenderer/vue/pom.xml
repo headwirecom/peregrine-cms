@@ -30,6 +30,7 @@
     <artifactId>pagerender-vue.parent</artifactId>
     <packaging>pom</packaging>
 
+    <name>Peregrine CMS - Page Render Vue Parent</name>
     <description>peregrine vuejs page renderer Parent POM</description>
 
     <!--

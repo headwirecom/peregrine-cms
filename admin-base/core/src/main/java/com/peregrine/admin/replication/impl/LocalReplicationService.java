@@ -64,8 +64,10 @@ import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 //import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 //import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 
 /**
@@ -179,7 +181,7 @@ public class LocalReplicationService
         ResourceChecker resourceChecker = new MissingOrOutdatedResourceChecker(source, target);
         // Need to check this list of they need to be replicated first
         for(Resource resource: referenceList) {
-            if(resourceChecker.doAdd(resource)) {
+            if(resourceChecker.doAdd(resource) && !containsResource(replicationList, resource)) {
                 replicationList.add(resource);
             }
         }
@@ -187,7 +189,7 @@ public class LocalReplicationService
         for(Resource reference: new ArrayList<Resource>(replicationList)) {
             listMissingResources(reference, replicationList, resourceChecker, false);
         }
-        PerUtil.listMissingParents(startingResource, replicationList, source, resourceChecker);
+        listMissingParents(startingResource, replicationList, source, resourceChecker);
         listMissingResources(startingResource, replicationList, resourceChecker, deep);
         return replicate(replicationList);
     }
@@ -214,6 +216,7 @@ public class LocalReplicationService
 
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+        List<Resource> handledSources = new ArrayList<>();
         List<Resource> answer = new ArrayList<>();
         // Replicate the resources
         ResourceResolver resourceResolver = null;
@@ -259,7 +262,7 @@ public class LocalReplicationService
             Session session = resourceResolver.adaptTo(Session.class);
             for(Resource item: resourceList) {
                 if(item != null) {
-                    handleParents(item, answer, pathMapping, resourceResolver);
+                    handleParents(handledSources, item, answer, pathMapping, resourceResolver);
                 }
             }
             try {
@@ -328,48 +331,51 @@ public class LocalReplicationService
         return answer;
     }
 
-    private boolean handleParents(Resource resource, List<Resource> resourceList, Map<String, String> pathMapping, ResourceResolver resourceResolver) {
-        String targetPath = pathMapping.get(resource.getPath());
-        log.trace("Handle Parents, Resource: '{}', Target Path: '{}'", resource.getPath(), targetPath);
-        if(targetPath != null) {
-            try {
-                //AS TODO: If the parent is not found because the are intermediate missing parents
-                //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
-                //AS TODO: or we fail and ignore it
-                String targetParent = PerUtil.getParent(targetPath);
-                log.trace("Target Parent: '{}'", targetParent);
-                if(targetParent == null) {
-                    // No more parent -> handling parents failed
-                    return false;
-                }
-                Resource targetParentResource = resourceResolver.getResource(targetParent);
-                log.trace("Target Parent Resource: '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
-                if(targetParentResource == null) {
-                    // Parent does not exist so try with its parent
-                    Resource parent = resource.getParent();
-                    log.trace("Source Parent: '{}'", parent == null ? "null" : parent.getPath());
-                    if(parent == null) {
+    private boolean handleParents(List<Resource> handledSources, Resource resource, List<Resource> resourceList, Map<String, String> pathMapping, ResourceResolver resourceResolver) {
+        if(!containsResource(handledSources, resource)) {
+            String targetPath = pathMapping.get(resource.getPath());
+            log.trace("Handle Parents, Resource: '{}', Target Path: '{}'", resource.getPath(), targetPath);
+            if(targetPath != null) {
+                try {
+                    //AS TODO: If the parent is not found because the are intermediate missing parents
+                    //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
+                    //AS TODO: or we fail and ignore it
+                    String targetParent = PerUtil.getParent(targetPath);
+                    log.trace("Target Parent: '{}'", targetParent);
+                    if(targetParent == null) {
                         // No more parent -> handling parents failed
                         return false;
                     }
-                    log.trace("Recursive Handle Parents: '{}'", resource.getParent().getPath());
-                    boolean ok = handleParents(resource.getParent(), resourceList, pathMapping, resourceResolver);
-                    if(!ok) {
-                        // Handling of parent failed -> leaving as failure
-                        return false;
-                    } else {
-                        targetParentResource = resourceResolver.getResource(targetParent);
-                        log.trace("Target Parent Resource(2): '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
-                        if(targetParentResource == null) {
-                            log.error("Target Parent:'" + targetParent + "' is still not found even after all parents were handled");
+                    Resource targetParentResource = resourceResolver.getResource(targetParent);
+                    log.trace("Target Parent Resource: '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
+                    if(targetParentResource == null) {
+                        // Parent does not exist so try with its parent
+                        Resource parent = resource.getParent();
+                        log.trace("Source Parent: '{}'", parent == null ? "null" : parent.getPath());
+                        if(parent == null) {
+                            // No more parent -> handling parents failed
+                            return false;
+                        }
+                        log.trace("Recursive Handle Parents: '{}'", resource.getParent().getPath());
+                        boolean ok = handleParents(handledSources, resource.getParent(), resourceList, pathMapping, resourceResolver);
+                        if(!ok) {
+                            // Handling of parent failed -> leaving as failure
+                            return false;
+                        } else {
+                            targetParentResource = resourceResolver.getResource(targetParent);
+                            log.trace("Target Parent Resource(2): '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
+                            if(targetParentResource == null) {
+                                log.error("Target Parent:'" + targetParent + "' is still not found even after all parents were handled");
+                            }
                         }
                     }
+                    log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource.getPath());
+                    Resource copy = copy(resource, targetParentResource, pathMapping);
+                    resourceList.add(copy);
+                    handledSources.add(resource);
+                } catch(PersistenceException e) {
+                    log.error("Failed to replicate resource: '{}' -> ignored", resource, e);
                 }
-                log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource.getPath());
-                Resource copy = copy(resource, targetParentResource, pathMapping);
-                resourceList.add(copy);
-            } catch(PersistenceException e) {
-                log.error("Failed to replicate resource: '{}' -> ignored", resource, e);
             }
         }
         return true;

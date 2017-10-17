@@ -39,8 +39,9 @@ public class ReplicationUtil {
         List<String> replicationPrimaries = getReplicationPrimaryNodeTypes(sourceNode);
         try {
             if(replicationPrimaries != null) {
-                return replicationPrimaries.contains(sourceNode.getPrimaryNodeType().getName());
-            } else {
+                answer = replicationPrimaries.contains(sourceNode.getPrimaryNodeType().getName());
+            }
+            if(!answer) {
                 NodeType[] mixins = sourceNode.getMixinNodeTypes();
                 for(NodeType mixin : mixins) {
                     if(mixin.getName().equals(PER_REPLICATION)) {
@@ -105,6 +106,12 @@ public class ReplicationUtil {
     public static void updateReplicationProperties(Resource source, String targetPath, Resource target) {
         if(source != null) {
             boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
+            if(!replicationMixin) {
+                replicationMixin = ensureMixin(source);
+                if(replicationMixin) {
+                    ensureMixin(target);
+                }
+            }
             LOGGER.trace("Is Replication Mixin: : {}, Source: '{}'", replicationMixin, source.getPath());
             if(replicationMixin) {
                 ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
@@ -120,19 +127,42 @@ public class ReplicationUtil {
                         sourceProperties.put(PER_REPLICATION_REF, targetPath);
                     }
                 } else {
-                    ModifiableValueMap targetProperties = getModifiableProperties(target, false);
-                    targetProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-                    targetProperties.put(PER_REPLICATED, replicated);
-                    if(JCR_CONTENT.equals(source.getName())) {
-                        sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
-                        targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
-                    } else {
-                        sourceProperties.put(PER_REPLICATION_REF, target.getPath());
-                        targetProperties.put(PER_REPLICATION_REF, source.getPath());
+                    try {
+                        ModifiableValueMap targetProperties = getModifiableProperties(target, false);
+                        String userId = source.getResourceResolver().getUserID();
+                        LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
+                        targetProperties.put(PER_REPLICATED_BY, userId);
+                        targetProperties.put(PER_REPLICATED, replicated);
+                        if(JCR_CONTENT.equals(source.getName())) {
+                            sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
+                            targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+                        } else {
+                            sourceProperties.put(PER_REPLICATION_REF, target.getPath());
+                            targetProperties.put(PER_REPLICATION_REF, source.getPath());
+                        }
+                        LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
+                    } catch(IllegalArgumentException e) {
+                        LOGGER.error("Failed to add replication properties", e);
+                        throw e;
                     }
-                    LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
                 }
             }
         }
+    }
+
+    private static boolean ensureMixin(Resource resource) {
+        boolean answer = false;
+        Node node = resource.adaptTo(Node.class);
+        if(node != null) {
+            try {
+                if(node.canAddMixin(PER_REPLICATION)) {
+                    node.addMixin(PER_REPLICATION);
+                    answer = true;
+                }
+            } catch(RepositoryException e) {
+                LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);
+            }
+        }
+        return answer;
     }
 }

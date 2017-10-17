@@ -31,7 +31,7 @@
     <artifactId>example-vue.core</artifactId>
     <packaging>bundle</packaging>
 
-    <name>example site - Core</name>
+    <name>Peregrine CMS - Example Vue - Core</name>
     <description>
         This is an empty OSGi Bundle which can be used
         to compile and deploy OSGi Services to Sling.

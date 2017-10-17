@@ -22,14 +22,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>platform.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>node-js.parent</artifactId>
     <packaging>pom</packaging>
 
+    <name>Peregrine CMS - Platform - Node-JS Parent</name>
     <description>Sling Node Package Manager Parent POM</description>
 
     <!--

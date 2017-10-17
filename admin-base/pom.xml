@@ -30,6 +30,7 @@
     <artifactId>admin.parent</artifactId>
     <packaging>pom</packaging>
 
+    <name>Peregrine CMS - Admin Parent</name>
     <description>admin base Parent POM</description>
 
     <!--

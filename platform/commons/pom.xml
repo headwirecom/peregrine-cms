@@ -23,15 +23,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>platform.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>commons</artifactId>
     <packaging>jar</packaging>
 
-    <name>Commons - Core</name>
+    <name>Peregrine CMS - Platform - Commons</name>
     <description>
         This is common code for the Peregrine CMS
     </description>

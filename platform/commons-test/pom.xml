@@ -23,15 +23,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>platform.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>commons-test</artifactId>
     <packaging>jar</packaging>
 
-    <name>Commons - Test</name>
+    <name>Peregrine CMS - Platform - Commons Test</name>
     <description>
         This is common test code for the Peregrine CMS
     </description>

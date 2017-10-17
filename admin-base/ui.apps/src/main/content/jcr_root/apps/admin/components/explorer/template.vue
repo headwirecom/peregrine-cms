@@ -405,7 +405,6 @@
             showInfo: function(me, target) {
                 if(target.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                    Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', false)
                     $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
@@ -485,9 +484,8 @@
                     $perAdminApp.stateAction('editTemplate', target )
                 } else if(path.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                    Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
                     me.selectedObject = path
-                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
+                    $perAdminApp.stateAction('editObject', { selected: node.path, path: me.model.dataFrom })
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }

@@ -31,7 +31,7 @@
     <artifactId>node-js.core.j2v8</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Sling Node Package Manager - Core</name>
+    <name>Peregrine CMS - Platform - Node-JS - Core J2V8</name>
     <description>
         This bundle provides the service need to:
         - list, install or remove nodes packages through NPM

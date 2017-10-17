@@ -75,16 +75,18 @@
                 </li>
             </ul>
             <template v-if="!edit && !references">
-                <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show" style="margin-top: 1em;"/>
-                <iframe v-else v-bind:src="currentObject.show" style="width: 100%; height: 60%; margin-top: 1em;"></iframe>
+                <div class="asset-info-view">
+                    <img v-if="isImage(currentObject.show)" v-bind:src="currentObject.show" style="margin-top: 1em;"/>
+                    <iframe v-else v-bind:src="currentObject.show" style="width: 100%; height: 60%; margin-top: 1em;"></iframe>
 
-                <vue-form-generator
-                        class="vfg-preview"
-                        v-on:validated = "onValidated"
-                        v-bind:schema  = "readOnlySchema"
-                        v-bind:model   = "asset"
-                        v-bind:options = "options">
-                </vue-form-generator>
+                    <vue-form-generator
+                            class="vfg-preview"
+                            v-on:validated = "onValidated"
+                            v-bind:schema  = "readOnlySchema"
+                            v-bind:model   = "asset"
+                            v-bind:options = "options">
+                    </vue-form-generator>
+                </div>
             </template>
 
             <template v-if="edit">
@@ -95,14 +97,16 @@
                     v-bind:model   = "asset"
                     v-bind:options = "options">
                 </vue-form-generator>
-                <button 
-                    type="button"
-                    title="save page properties"
-                    v-bind:disabled="!valid"
-                    class="btn btn-raised waves-effect waves-light right"
-                    v-on:click.stop.prevent="onOk">
-                    <i class="material-icons">check</i>
-                </button>
+                <div class="explorer-confirm-dialog">
+                    <button 
+                        type="button"
+                        title="save page properties"
+                        v-bind:disabled="!valid"
+                        class="btn btn-raised waves-effect waves-light right"
+                        v-on:click.stop.prevent="onOk">
+                        <i class="material-icons">check</i>
+                    </button>
+                </div>
             </template>
 
             <template v-if="references && !edit">
