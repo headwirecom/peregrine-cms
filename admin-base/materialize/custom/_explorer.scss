@@ -207,6 +207,8 @@
       		padding: 45px 0 0;
       	}
       	.explorer-preview-nav {
+					display: flex;
+					justify-content: flex-end;
       		text-align: right;
 					position: absolute;
 					overflow: hidden;
@@ -218,7 +220,6 @@
 			  	height: 45px;
 					border-right: 1px solid color("blue-grey", "lighten-5");
 			  	> li {
-			  		display: inline-block;
 			  		border-left: 1px solid color("blue-grey", "lighten-5");
 			  		border-right: 1px solid color("blue-grey", "lighten-3");
 			  		height: 100%;
