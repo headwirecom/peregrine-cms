@@ -345,7 +345,7 @@
                                     <goal>install</goal>
                                 </goals>
                                 <configuration>
-                                    <bundleFileName>${project.basedir}/../testing.config.client//target/testing.client.config-1.0-SNAPSHOT.jar</bundleFileName>
+                                    <bundleFileName>${project.basedir}/../testing.config.client//target/testing.config.client-1.0-SNAPSHOT.jar</bundleFileName>
                                 </configuration>
                             </execution>
                         </executions>

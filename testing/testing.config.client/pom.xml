@@ -28,7 +28,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>testing.client.config</artifactId>
+    <artifactId>testing.config.client</artifactId>
     <packaging>bundle</packaging>
 
     <name>Client Side Testing Configuration Bundle</name>

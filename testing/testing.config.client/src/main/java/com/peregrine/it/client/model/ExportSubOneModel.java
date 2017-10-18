@@ -9,6 +9,8 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,17 +26,20 @@ import static com.peregrine.commons.util.PerConstants.JSON;
  * Created by rr on 4/18/2017.
  */
 @Model(adaptables = Resource.class,
-       resourceType = "example/objects/collection",
+       resourceType = "it/objects/export/one/sub",
        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
        adapters = IComponent.class)
 @Exporter(name = JACKSON,
           extensions = JSON,
           selector = "export")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
-public class SecondModel
-    extends AbstractComponent {
+public class ExportSubOneModel
+    extends AbstractComponent
+{
 
-    public SecondModel(Resource resource) {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    public ExportSubOneModel(Resource resource) {
         super(resource);
     }
 
@@ -51,7 +56,9 @@ public class SecondModel
                 sb.append(" / ");
             }
         }
-        return sb.toString();
+        String answer = sb.toString();
+        log.info("Export Sub One Breadcrumb: '{}'", answer);
+        return answer;
     }
 
     public String getPath() {
@@ -63,17 +70,19 @@ public class SecondModel
             sb.append("/");
             sb.append(hierarchy.get(i).getName());
         }
-        return sb.toString();
-
+        String answer = sb.toString();
+        log.info("Export Sub One Path: '{}'", answer);
+        return answer;
     }
 
     private ArrayList<Resource> getHierarchy() {
         ArrayList<Resource> hierarchy = new ArrayList<>();
         Resource resource = getResource();
-        while(resource.getResourceType().equals("weedguide/objects/section")) {
+        while(resource.getResourceType().equals("it/objects/export/one/sub")) {
             hierarchy.add(resource);
             resource = resource.getParent();
         }
+        log.info("Export Sub One Hierarchy: '{}'", hierarchy);
         return hierarchy;
     }
 
@@ -86,6 +95,7 @@ public class SecondModel
     @Inject private IComponent queryParams;
 
     public List<IComponent> getAdditionalRequestParameters() {
+        log.info("Export Sub One Additional Request Parameters: '{}'", additionalRequestParameters);
         return additionalRequestParameters;
     }
 
@@ -110,13 +120,14 @@ public class SecondModel
                 answer.put(k, value);
             }
         }
-
+        log.info("Export Sub One Value Map: '{}'", answer);
         return answer;
     }
 
     @Override
     @JsonIgnore(value = false)
     public List<IComponent> getChildren() {
+        log.info("Export Sub One Children: '{}'", children);
         return children;
     }
 

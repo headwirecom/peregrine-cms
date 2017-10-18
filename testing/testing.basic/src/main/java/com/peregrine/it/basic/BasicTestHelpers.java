@@ -195,6 +195,14 @@ public class BasicTestHelpers {
         return answer;
     }
 
+    public static List convertToList(String json) throws IOException {
+        List answer = new ArrayList();
+        if(json != null) {
+            answer = JSON_MAPPER.readValue(json, ArrayList.class);
+        }
+        return answer;
+    }
+
     public static void checkPages(SlingHttpResponse listResponse, String ... expectedPageNames) throws IOException {
         checkPages(listResponse, false, expectedPageNames);
     }
@@ -324,9 +332,12 @@ public class BasicTestHelpers {
     }
 
     public static void compareJson(Map<Object, Object> expected, Map actual) throws IOException {
-        compareJson(expected, actual, "");
+        compareJson(expected, actual, "", false);
     }
-    public static void compareJson(Map<Object, Object> expected, Map actual, String path) throws IOException {
+    public static void compareJson(Map<Object, Object> expected, Map actual, boolean ignoreName) throws IOException {
+        compareJson(expected, actual, "", ignoreName);
+    }
+    public static void compareJson(Map<Object, Object> expected, Map actual, String path, boolean ignoreName) throws IOException {
         for(Entry<Object, Object> entry: expected.entrySet()) {
             Object key = entry.getKey() + "";
             assertTrue("Did not find Map Entry with Name: " + key + " (path: " + path + ")", actual.containsKey(key));
@@ -344,7 +355,7 @@ public class BasicTestHelpers {
                 Map expectedChild = (Map) value;
                 Map actualChild = (Map) actual.get(key);
                 assertNotNull("Child: " + key + " not found as child in response" + " (path: " + path + ")", actualChild);
-                compareJson(expectedChild, actualChild, childPath);
+                compareJson(expectedChild, actualChild, childPath, ignoreName);
             } else if(value instanceof List) {
                 List expectedlist = (List) value;
                 List actualList = (List) actual.get(key);
@@ -353,29 +364,57 @@ public class BasicTestHelpers {
                 for(Object temp : expectedlist) {
                     if(temp instanceof Map) {
                         Map expectedListMap = (Map) temp;
-                        String name = (String) expectedListMap.get("name");
-                        if(name == null) {
-                            fail("Expected List Map entry has no name: " + expectedListMap);
-                        }
                         Map actualListMap = null;
-                        for(Object temp2 : actualList2) {
-                            if(temp2 instanceof Map) {
-                                Map tempMap = (Map) temp2;
-                                String name2 = (String) tempMap.get("name");
-                                if(name == null) {
-                                    fail("Given List Map entry has no name: " + tempMap);
-                                }
-                                if(name2.equals(name2)) {
-                                    actualListMap = tempMap;
-                                    break;
+                        if(!ignoreName) {
+                            String name = (String) expectedListMap.get("name");
+                            if(name == null) {
+                                fail("Expected List Map entry has no name: " + expectedListMap);
+                            }
+                            for(Object temp2 : actualList2) {
+                                if(temp2 instanceof Map) {
+                                    Map tempMap = (Map) temp2;
+                                    String name2 = (String) tempMap.get("name");
+                                    if(name == null) {
+                                        fail("Given List Map entry has no name: " + tempMap);
+                                    }
+                                    if(name2.equals(name2)) {
+                                        actualListMap = tempMap;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        if(actualListMap == null) {
-                            fail("No Actual List Map Entry found for: " + name);
+                            if(actualListMap == null) {
+                                fail("No Actual List Map Entry found for: " + name);
+                            }
+                        } else {
+                            // When we ignore the name then we try to find a map entry in the actual
+                            // map that contains all entries from the expected map
+                            for(Object temp2 : actualList2) {
+                                if(temp2 instanceof Map) {
+                                    Map tempMap = (Map) temp2;
+                                    boolean found = true;
+                                    for(Object expectedKey : expectedListMap.keySet()) {
+                                        if(tempMap.containsKey(expectedKey)) {
+                                            Object expectedValue = expectedListMap.get(expectedKey);
+                                            Object actualValue = tempMap.get(expectedKey);
+                                            if(!(expectedValue == null && actualValue == null) && !(expectedValue.equals(actualValue))) {
+                                                found = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if(found) {
+                                        actualListMap = tempMap;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(actualListMap == null) {
+                                fail("No Actual List Map Entry found for Expected Map: " + expectedListMap);
+                            }
                         }
                         actualList2.remove(actualListMap);
-                        compareJson(expectedListMap, actualListMap, path);
+                        compareJson(expectedListMap, actualListMap, path, ignoreName);
                     } else if(temp instanceof String) {
                         String item = (String) temp;
                         logger.info("Expected List Item String: '{}'", item);

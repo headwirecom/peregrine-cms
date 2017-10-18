@@ -40,28 +40,22 @@ import org.slf4j.LoggerFactory;
 import javax.script.Bindings;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.PATH;
 
 /**
  * Created by rr on 5/8/2017.
  */
 @SuppressWarnings("serial")
-public class ObjectMerge
+public class FieldsWithChildrenObject
     implements Use {
 
     public static final String REQUEST = "request";
     public static final String SLING = "sling";
-    private final Logger log = LoggerFactory.getLogger(ObjectMerge.class);
+    private final Logger log = LoggerFactory.getLogger(FieldsWithChildrenObject.class);
 
     private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
 
@@ -74,16 +68,16 @@ public class ObjectMerge
         return renderContext.get();
     }
 
-    public String getMerged() {
+    public String getObject() {
         Resource res = request.getResource();
         log.trace("Merge Resource: '{}'", res.getPath());
         if(res.getName().equals(JCR_CONTENT)) {
             res = res.getParent();
         }
-        return toJSON(getMerged(res));
+        return toJSON(getObject(res));
     }
 
-    public Map getMerged(Resource resource) {
+    public Map getObject(Resource resource) {
         log.trace("Get Merge Resource: '{}'", resource.getPath());
         Map answer = Collections.<String, String> emptyMap();
         try {
