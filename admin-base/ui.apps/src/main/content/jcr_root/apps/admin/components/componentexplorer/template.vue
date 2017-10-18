@@ -140,7 +140,7 @@
                     obj[ current.group ].push( current );
                     return obj;
                 }, {})
-                
+
                 // make sure the currently selected group is an actual group
                 if(!ret[this.state.group]) { this.state.group = ''}
                 return ret
