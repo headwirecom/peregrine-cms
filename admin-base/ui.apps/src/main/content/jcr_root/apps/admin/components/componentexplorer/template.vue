@@ -26,17 +26,16 @@
     <div class="component-explorer">
         <span class="panel-title">Components</span>
             <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
-            <ul class="collapsible" data-collapsible="expandable" ref="groups">
+            <select class="browser-default" v-model="state.group">
+                <option value="">All Groups</option>
+                <option v-for="(group, key) in allGroups" v-bind:value="key">{{key}}</option>
+            </select>
+            <ul>
                 <li 
-                    v-for="(group, key) in groups" 
-                    v-bind:data-group-index="key" >
-                    <div :class="['collapsible-header', {active: isActive( key, group.length ) }]">
-                        <span>{{key}}</span><span class="right">({{group.length}})</span>
-                        <i class="material-icons">arrow_drop_down</i>
-                    </div>
-                    <div class="collapsible-body">
+                    v-for="(group, key) in groups">
+                    <div>
                         <ul class="collection">
-                            <li 
+                            <li
                                 class="collection-item"
                                 v-for="component in group"
                                 v-on:dragstart="onDragStart(component, $event)" 
@@ -57,33 +56,41 @@
 <script>
     export default {
         props: ['model'],
-        beforeCreate() {
-            let perState = $perAdminApp.getNodeFromViewOrNull('/state'); 
-            perState.componentExplorer = perState.componentExplorer || {
-                accordion: {},
-                filter: "" 
-            }
-        },
-
-        data() {
-            return {
-                state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer'),
-            }
-        },
+//        beforeCreate() {
+//            let perState = $perAdminApp.getNodeFromViewOrNull('/state');
+//            perState.componentExplorer = perState.componentExplorer || {
+//                accordion: {},
+//                filter: ""
+//            }
+//        },
+//
+//        data() {
+//            return {
+//                state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer'),
+//            }
+//        },
         
-        mounted() {
-            $(this.$refs.groups).collapsible({ 
-                accordion: false,
-                onOpen: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, true) },
-                onClose: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, false) }
-            })
-        },
+//        mounted() {
+//            $(this.$refs.groups).collapsible({
+//                accordion: false,
+//                onOpen: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, true) },
+//                onClose: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, false) }
+//            })
+//        },
 
-        beforeDestroy() {
-            $(this.$refs.groups).collapsible('destroy')
-        },
+//        beforeDestroy() {
+//            $(this.$refs.groups).collapsible('destroy')
+//        },
 
         computed: {
+            state() {
+                const state = $perAdminApp.getNodeFromView('/state/componentExplorer')
+                if(state) {
+                    return state
+                }
+                Vue.set($perAdminApp.getView().state, 'componentExplorer', {filter: ''})
+                return $perAdminApp.getNodeFromView('/state/componentExplorer')
+            },
             filteredList: function() {
                 if (!this.$root.$data.admin.components) return {}
                 // if(!this.$root.$data.admin.currentPageConfig) return {}
@@ -95,10 +102,28 @@
                 // Filter list to local components and with local filter
                 return list.filter(component => {
                     if (component.group === '.hidden') return false;
+                    if((this.state.group && this.state.group !== '') && component.group !== this.state.group) return false;
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
                     return component.path.startsWith(allowedComponents);
 
                 })
+            },
+            groupList: function() {
+                if (!this.$root.$data.admin.components) return {}
+                // if(!this.$root.$data.admin.currentPageConfig) return {}
+                var componentPath = this.$root.$data.pageView.path.split('/')
+                var allowedComponents = ['/apps/' + componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                var list = this.$root.$data.admin.components.data
+                if (!list || !allowedComponents) return {}
+
+                // Filter list to local components
+                const ret = list.filter(component => {
+                    if (component.group === '.hidden') return false;
+//                    if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
+                    return component.path.startsWith(allowedComponents);
+
+                })
+                return ret
             },
             groups: function () {
                 return this.filteredList.reduce( ( obj, current ) => {
@@ -107,6 +132,18 @@
                     obj[ current.group ].push( current ); 
                     return obj;
                 }, {})
+            },
+            allGroups: function () {
+                const ret = this.groupList.reduce( ( obj, current ) => {
+                    if ( !current.group ) current.group = 'General';
+                    if ( !obj[ current.group ]) Vue.set(obj, current.group, []);
+                    obj[ current.group ].push( current );
+                    return obj;
+                }, {})
+                
+                // make sure the currently selected group is an actual group
+                if(!ret[this.state.group]) { this.state.group = ''}
+                return ret
             }
         },
         methods: {
