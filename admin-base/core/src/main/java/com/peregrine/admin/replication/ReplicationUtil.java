@@ -108,7 +108,7 @@ public class ReplicationUtil {
             boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
             if(!replicationMixin) {
                 replicationMixin = ensureMixin(source);
-                if(replicationMixin) {
+                if(replicationMixin && target != null) {
                     ensureMixin(target);
                 }
             }

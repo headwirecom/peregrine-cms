@@ -32,6 +32,7 @@ import static com.peregrine.admin.replication.impl.LocalFileSystemReplicationSer
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
 import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.getStringOrNull;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFile;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderAndCreate;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
@@ -39,7 +40,6 @@ import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createOSGiServiceConfiguration;
 import static com.peregrine.it.basic.BasicTestHelpers.findFolderByPath;
-import static com.peregrine.it.basic.BasicTestHelpers.getStringOrNull;
 import static com.peregrine.it.basic.BasicTestHelpers.listComponentsAsJson;
 import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static com.peregrine.it.basic.BasicTestHelpers.listServicesAsJson;

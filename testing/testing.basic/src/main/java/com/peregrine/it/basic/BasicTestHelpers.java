@@ -42,6 +42,7 @@ import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -194,6 +195,14 @@ public class BasicTestHelpers {
         return answer;
     }
 
+    public static List convertToList(String json) throws IOException {
+        List answer = new ArrayList();
+        if(json != null) {
+            answer = JSON_MAPPER.readValue(json, ArrayList.class);
+        }
+        return answer;
+    }
+
     public static void checkPages(SlingHttpResponse listResponse, String ... expectedPageNames) throws IOException {
         checkPages(listResponse, false, expectedPageNames);
     }
@@ -323,9 +332,12 @@ public class BasicTestHelpers {
     }
 
     public static void compareJson(Map<Object, Object> expected, Map actual) throws IOException {
-        compareJson(expected, actual, "");
+        compareJson(expected, actual, "", false);
     }
-    public static void compareJson(Map<Object, Object> expected, Map actual, String path) throws IOException {
+    public static void compareJson(Map<Object, Object> expected, Map actual, boolean ignoreName) throws IOException {
+        compareJson(expected, actual, "", ignoreName);
+    }
+    public static void compareJson(Map<Object, Object> expected, Map actual, String path, boolean ignoreName) throws IOException {
         for(Entry<Object, Object> entry: expected.entrySet()) {
             Object key = entry.getKey() + "";
             assertTrue("Did not find Map Entry with Name: " + key + " (path: " + path + ")", actual.containsKey(key));
@@ -343,38 +355,66 @@ public class BasicTestHelpers {
                 Map expectedChild = (Map) value;
                 Map actualChild = (Map) actual.get(key);
                 assertNotNull("Child: " + key + " not found as child in response" + " (path: " + path + ")", actualChild);
-                compareJson(expectedChild, actualChild, childPath);
+                compareJson(expectedChild, actualChild, childPath, ignoreName);
             } else if(value instanceof List) {
                 List expectedlist = (List) value;
                 List actualList = (List) actual.get(key);
                 List actualList2 = new ArrayList(actualList);
                 logger.info("Expected List: '{}', Actual List: '{}'", expectedlist, actualList);
-                for(Object temp: expectedlist) {
+                for(Object temp : expectedlist) {
                     if(temp instanceof Map) {
                         Map expectedListMap = (Map) temp;
-                        String name = (String) expectedListMap.get("name");
-                        if(name == null) {
-                            fail("Expected List Map entry has no name: " + expectedListMap);
-                        }
                         Map actualListMap = null;
-                        for(Object temp2 : actualList2) {
-                            if(temp2 instanceof Map) {
-                                Map tempMap = (Map) temp2;
-                                String name2 = (String) tempMap.get("name");
-                                if(name == null) {
-                                    fail("Given List Map entry has no name: " + tempMap);
-                                }
-                                if(name2.equals(name2)) {
-                                    actualListMap = tempMap;
-                                    break;
+                        if(!ignoreName) {
+                            String name = (String) expectedListMap.get("name");
+                            if(name == null) {
+                                fail("Expected List Map entry has no name: " + expectedListMap);
+                            }
+                            for(Object temp2 : actualList2) {
+                                if(temp2 instanceof Map) {
+                                    Map tempMap = (Map) temp2;
+                                    String name2 = (String) tempMap.get("name");
+                                    if(name == null) {
+                                        fail("Given List Map entry has no name: " + tempMap);
+                                    }
+                                    if(name2.equals(name2)) {
+                                        actualListMap = tempMap;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        if(actualListMap == null) {
-                            fail("No Actual List Map Entry found for: " + name);
+                            if(actualListMap == null) {
+                                fail("No Actual List Map Entry found for: " + name);
+                            }
+                        } else {
+                            // When we ignore the name then we try to find a map entry in the actual
+                            // map that contains all entries from the expected map
+                            for(Object temp2 : actualList2) {
+                                if(temp2 instanceof Map) {
+                                    Map tempMap = (Map) temp2;
+                                    boolean found = true;
+                                    for(Object expectedKey : expectedListMap.keySet()) {
+                                        if(tempMap.containsKey(expectedKey)) {
+                                            Object expectedValue = expectedListMap.get(expectedKey);
+                                            Object actualValue = tempMap.get(expectedKey);
+                                            if(!(expectedValue == null && actualValue == null) && !(expectedValue.equals(actualValue))) {
+                                                found = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if(found) {
+                                        actualListMap = tempMap;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(actualListMap == null) {
+                                fail("No Actual List Map Entry found for Expected Map: " + expectedListMap);
+                            }
                         }
                         actualList2.remove(actualListMap);
-                        compareJson(expectedListMap, actualListMap, path);
+                        compareJson(expectedListMap, actualListMap, path, ignoreName);
                     } else if(temp instanceof String) {
                         String item = (String) temp;
                         logger.info("Expected List Item String: '{}'", item);
@@ -399,9 +439,14 @@ public class BasicTestHelpers {
                         fail("Unknown type of list value: " + temp.getClass() + " (path: " + path + ")");
                     }
                 }
-                if(!actualList2.isEmpty()) { fail("Actual List has more entries: " + actualList2); }
+                if(!actualList2.isEmpty()) {
+                    fail("Actual List has more entries: " + actualList2);
+                }
+            } else if(value == null) {
+                Object expectedNull = actual.get(key);
+                assertNull("Expected a null value", expectedNull);
             } else {
-                fail("Unknown type of value: " + value.getClass() + " (path: " + path + ")");
+                fail("Unknown type of value: '" + (value == null ? "null" : value.getClass()) + "' (path: " + childPath + ")");
             }
         }
     }
@@ -650,14 +695,4 @@ public class BasicTestHelpers {
         return folder;
     }
 
-    public static String getStringOrNull(Map source, String key) {
-        String answer = null;
-        if(source != null && source.containsKey(key)) {
-            Object temp = source.get(key);
-            if(temp != null) {
-                answer = temp.toString();
-            }
-        }
-        return answer;
-    }
 }

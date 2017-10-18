@@ -293,9 +293,9 @@ public class AdminResourceHandlerService
         if(resource == null) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
-        if(properties == null || properties.isEmpty()) {
-            throw new ManagementException(INSERT_RESOURCE_PROPERTIES_MISSING);
-        }
+//        if(properties == null || properties.isEmpty()) {
+//            throw new ManagementException(INSERT_RESOURCE_PROPERTIES_MISSING);
+//        }
         try {
             Node node = resource.adaptTo(Node.class);
             Node newNode;

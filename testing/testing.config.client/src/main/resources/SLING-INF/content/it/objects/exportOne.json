@@ -1,0 +1,7 @@
+{
+  "jcr:description": "Export One Example",
+  "jcr:primaryType": "sling:OrderedFolder",
+  "jcr:title": "Export One",
+  "sling:resourceType": "it/objects/export/one",
+  "allowedObjects": ["exportOneSub"]
+}

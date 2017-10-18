@@ -1,0 +1,87 @@
+{
+  "experiences": null,
+  "author": [
+    {
+      "name": "Byron Ponce",
+      "path": "/content/it/objects/fieldsWithChildrenObject/author/author0",
+      "component": "nt:unstructured",
+      "jcr:primaryType": "nt:unstructured",
+      "value": "bp@headwire.com"
+    },
+    {
+      "name": "Ruben Reusser",
+      "path": "/content/it/objects/fieldsWithChildrenObject/author/author1",
+      "component": "nt:unstructured",
+      "jcr:primaryType": "nt:unstructured",
+      "value": "rr@headwire.com"
+    },
+    {
+      "name": "Dustin Pelland",
+      "path": "/content/it/objects/fieldsWithChildrenObject/author/author2",
+      "component": "nt:unstructured",
+      "jcr:primaryType": "nt:unstructured",
+      "value": "dp@headwire.com"
+    }
+  ],
+  "collection": [
+    {
+      "name": "collection0",
+      "path": "/content/it/objects/fieldsWithChildrenObject/collection/collection0",
+      "component": "nt:unstructured",
+      "jcr:primaryType": "nt:unstructured",
+      "key": "multi item one key",
+      "value": "multi item one value"
+    },
+    {
+      "name": "collection1",
+      "path": "/content/it/objects/fieldsWithChildrenObject/collection/collection1",
+      "component": "nt:unstructured",
+      "jcr:primaryType": "nt:unstructured",
+      "key": "multi item two key",
+      "value": "multi item two value"
+    },
+    {
+      "name": "collection2",
+      "path": "/content/it/objects/fieldsWithChildrenObject/collection/collection2",
+      "component": "nt:unstructured",
+      "jcr:primaryType": "nt:unstructured",
+      "key": "multi item three key",
+      "value": "multi item three value"
+    }
+  ],
+  "path": "/content/it/objects/fieldsWithChildrenObject",
+  "component": "it-objects-fields-and-children",
+  "jcr:primaryType": "per:Object",
+  "jcr:createdBy": "admin",
+  "jcr:title": "sample",
+  "texteditor": "Lorem ipsum dolor sit amet.",
+  "rangefield": "50",
+  "telfield": "18581234567",
+  "textfield": "Byron Ponce",
+  "textarea": "Lorem ipsum dolor sit amet.",
+  "urlfield": "http://peregrine-cms.com",
+  "radios": "bp@headwire.com",
+  "select": "bp@headwire.com",
+  "skills": [
+    "headwire.com",
+    "rr@headwire.com",
+    "dp@headwire.com"
+  ],
+  "switch": "true",
+  "imagePath": "/content/assets/images",
+  "searchfield": "Byron Ponce",
+  "date": "2017-08-16",
+  "time": "19:30:00.000Z",
+  "spectrumcolor": "#ffad27",
+  "numberfield": "100",
+  "pagePath": "/content/sites/example",
+  "sling:resourceType": "it/objects/fieldsAndChildren",
+  "colorfield": "#ffad27",
+  "checkbox": "true",
+  "datetime": "2017-09-01T01:30:00.000Z",
+  "singlechildren": [
+    "single item one",
+    "single item two",
+    "single item three"
+  ]
+}
