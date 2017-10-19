@@ -31,8 +31,14 @@ export default function(me, target) {
 
     log.fine(target)
 
+    let checksum = ''
+
     me.beforeStateAction( function(name) {
         if(name !== 'saveObjectEdit') {
+            // if there was no change skip asking to save
+            if(checksum === JSON.stringify(me.getNodeFromView('/state/tools/object/data'))) {
+                return true
+            }
             const yes = confirm('save edit?')
             if(yes) {
                 const currentObject = me.getNodeFromView("/state/tools/object")
@@ -45,6 +51,7 @@ export default function(me, target) {
     let view = me.getView()
     Vue.set(me.getNodeFromView('/state/tools'), 'edit', true)
     me.getApi().populateObject(target.selected, '/state/tools/object', 'data').then( () => {
+        checksum = JSON.stringify(me.getNodeFromView('/state/tools/object/data'))
         set(view, '/state/tools/object/show', target.selected)
     })
 }

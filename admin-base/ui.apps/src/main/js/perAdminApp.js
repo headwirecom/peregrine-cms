@@ -285,6 +285,11 @@ function processLoaders(loaders) {
 function loadContentImpl(initialPath, firstTime, fromPopState) {
     logger.fine('loading content for', initialPath)
 
+    if(!runBeforeStateActions() ) {
+        logger.fine('not allowed to switch state')
+        return
+    }
+
     var pathInfo = makePathInfo(initialPath.toString())
     var path = pathInfo.path
 
@@ -400,6 +405,20 @@ function beforeStateActionImpl(fun) {
     beforeStateActions.push(fun)
 }
 
+function runBeforeStateActions(name) {
+    // execute all before state actions
+    if(beforeStateActions.length > 0) {
+        for(let i = 0; i < beforeStateActions.length; i++) {
+            let ret = beforeStateActions[i](name)
+            if(!ret) return false
+        }
+    }
+
+    // clear the actions
+    beforeStateActions = new Array()
+    return true
+}
+
 /**
  * implementation of $perAdminApp.stateAction()
  *
@@ -409,16 +428,7 @@ function beforeStateActionImpl(fun) {
  */
 function stateActionImpl(name, target) {
 
-    // execute all before state actions
-    if(beforeStateActions.length > 0) {
-        for(let i = 0; i < beforeStateActions.length; i++) {
-            let ret = beforeStateActions[i](name)
-            if(!ret) return
-        }
-    }
-
-    // clear the actions
-    beforeStateActions = new Array()
+    if(!runBeforeStateActions(name)) return
 
     try {
         const stateAction = StateActions(name)
