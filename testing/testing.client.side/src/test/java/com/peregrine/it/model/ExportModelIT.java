@@ -49,6 +49,22 @@ public class ExportModelIT
         compareJson(expectedMap, actualMap, true);
     }
 
+    @Test
+    public void testSimpleModel() throws Exception {
+        // Create an Object and export it using data.json
+        String rootFolderPath = ROOT_PATH + SLASH + "exportOne";
+        String objectName = "exportOneSub";
+        SlingClient client = slingInstanceRule.getAdminClient();
+        // Load the object with data.json
+        SlingHttpResponse response = client.doGet(rootFolderPath + SLASH + objectName + ".model.json", 200);
+        String responseContent = response.getContent();
+        logger.info("Data JSon Response: '{}'", responseContent);
+        Map actual = convertToMap(responseContent);
+        byte[] resultFileBytes = loadFile("src/test/resources/results/exportModel", "export.one.sub.model.json", "Failed to read Expected Export One Export");
+        Map expected = convertToMap(new String(resultFileBytes));
+        compareJson(expected, actual, true);
+    }
+
     /**
      * This test is here to ensure that we can list the content of an Object
      * using the .data.json extension.
