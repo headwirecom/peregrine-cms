@@ -41,9 +41,11 @@ we need to document the field types currently available in peregrine
 
 ## support for percli htmltovue * added
 
-we can now compile all fragments at once with `percli htmltovue *`. This can also be used
+we can now compile all fragments at once with `percli htmltovue "*"` (On Unix systems the
+star needs to be wrapped into double quotes to avoid greedy expasion). This can also be used
 in the `ui.apps/packages.json` file (add to the beginning of build: 
-`cd .. && percli htmltovue * && cd ui.apps &&`). node for archetype needs to be bumped to 7.10+
+`cd .. && percli htmltovue \"*\" && cd ui.apps &&` needs to be escaped with backslash
+as this is a JSon file). **node** for archetype needs to be bumped to 7.10+
 
 also mention `blockgenerator` file to block htmltovue on a component
 
