@@ -467,6 +467,8 @@
                 $perAdminApp.stateAction('createObjectWizard', { path: me.pt.path, target: target })
             },
             deletePage: function(me, target) {
+                const really = confirm('Are you sure to delete this node and all its children?')
+                if(!really) return
                 const resourceType = target.resourceType
                 if(resourceType === 'per:Object') {
                     $perAdminApp.stateAction('deleteObject', target.path)

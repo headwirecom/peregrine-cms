@@ -196,7 +196,10 @@
                 }
             },
             deleteObject() {
-                $perAdminApp.stateAction('deleteObject', $perAdminApp.getNodeFromView('/state/tools/object').show)
+                const really = confirm("Are you sure you want to delete this object and all its children?")
+                if(really) {
+                    $perAdminApp.stateAction('deleteObject', $perAdminApp.getNodeFromView('/state/tools/object').show)
+                }
             },
             moveObject() {
                 const root = '/content/objects'
