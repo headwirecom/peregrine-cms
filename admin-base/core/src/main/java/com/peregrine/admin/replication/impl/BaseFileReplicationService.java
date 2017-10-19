@@ -27,20 +27,15 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.admin.replication.impl.mock.MockRequestPathInfo;
-import com.peregrine.admin.replication.impl.mock.MockSlingHttpServletRequest;
-import com.peregrine.admin.replication.impl.mock.MockSlingHttpServletResponse;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
+import com.peregrine.render.RenderService;
+import com.peregrine.render.RenderService.RenderException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.engine.SlingRequestProcessor;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,9 +69,7 @@ public abstract class BaseFileReplicationService
 
     private static final String EXTENSION_NAME_MUST_BE_PROVIDED = "Extension Name must be provided";
     private static final String EXTENSION_TYPES_MUST_BE_PROVIDED = "Extension Types must be provided";
-    private static final String UNSUPPORTED_ENCODING_WHILE_CREATING_THE_RENDER_RESPONSE = "Unsupported Encoding while creating the Render Response";
-    private static final String FAILED_TO_RENDER_RESOURCE = "Failed to render resource: ";
-    private static final String RENDERING_REQUEST_FAILED = "Rendering Request: '%s' failed with status: '%s'";
+    public static final String RENDERING_OF_ASSET_FAILED = "Rendering of Asset failed";
 
     static {
         NAME_PATTERNS.add(Pattern.compile(".*\\.data\\.json"));
@@ -184,7 +177,7 @@ public abstract class BaseFileReplicationService
     }
 
     /** @return Sling Request Processor to render pages **/
-    abstract SlingRequestProcessor getRequestProcessor();
+    abstract RenderService getRenderService();
     /** @return Reference Lister to find referencing nodes **/
     abstract ReferenceLister getReferenceLister();
 
@@ -221,42 +214,48 @@ public abstract class BaseFileReplicationService
     abstract List<String> getMandatoryRenditions();
 
     private void replicateAsset(Resource resource) throws ReplicationException {
-        // Get the image data of the resource and write to the target
-        byte[] imageContent = renderRawResource(resource, "", false);
-        storeRendering(resource, "", imageContent);
-        // Loop over all existing renditions and write the image data to the target
-        List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
-        Resource renditions = resource.getChild(RENDITIONS);
-        if(renditions != null) {
-            for(Resource rendition: renditions.getChildren()) {
-                if(NT_FILE.equals(getPrimaryType(rendition))) {
-                    try {
-                        imageContent = renderRawResource(resource, RENDITION_ACTION + SLASH + rendition.getName(), true);
-                        storeRendering(resource, rendition.getName(), imageContent);
-                        checkRenditions.remove(rendition.getName());
-                    } catch(ReplicationException e) {
-                        log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
-                        log.warn("Rendition Failure", e);
+        try {
+            // Get the image data of the resource and write to the target
+            byte[] imageContent = getRenderService().renderRawInternally(resource, "");
+            storeRendering(resource, "", imageContent);
+            // Loop over all existing renditions and write the image data to the target
+            List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
+            Resource renditions = resource.getChild(RENDITIONS);
+            if(renditions != null) {
+                for(Resource rendition : renditions.getChildren()) {
+                    if(NT_FILE.equals(getPrimaryType(rendition))) {
+                        try {
+                            imageContent = getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + rendition.getName());
+                            storeRendering(resource, rendition.getName(), imageContent);
+                            checkRenditions.remove(rendition.getName());
+                        } catch(RenderException e) {
+                            log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
+                            log.warn("Rendition Failure", e);
+                        }
                     }
                 }
             }
-        }
-        // Loop over all remaining mandatory renditions and write the image data to the target
-        for(String renditionName: checkRenditions) {
-            try {
-                imageContent = renderRawResource(resource, RENDITION_ACTION + SLASH + renditionName, true);
-                // Get rendition
-                if(renditions == null) { renditions = resource.getChild(RENDITIONS); }
-                if(renditions != null) {
-                    Resource rendition = renditions.getChild(renditionName);
-                    if(rendition != null) {
-                        storeRendering(resource, rendition.getName(), imageContent);
+            // Loop over all remaining mandatory renditions and write the image data to the target
+            for(String renditionName : checkRenditions) {
+                try {
+                    imageContent = getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + renditionName);
+                    // Get rendition
+                    if(renditions == null) {
+                        renditions = resource.getChild(RENDITIONS);
                     }
+                    if(renditions != null) {
+                        Resource rendition = renditions.getChild(renditionName);
+                        if(rendition != null) {
+                            storeRendering(resource, rendition.getName(), imageContent);
+                        }
+                    }
+                } catch(RenderException e) {
+                    log.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
+                    log.warn("Rendition Failure", e);
                 }
-            } catch(ReplicationException e) {
-                log.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
-                log.warn("Rendition Failure", e);
             }
+        } catch(RenderException e) {
+            throw new ReplicationException(RENDERING_OF_ASSET_FAILED, e);
         }
     }
 
@@ -305,12 +304,14 @@ public abstract class BaseFileReplicationService
                 try {
                     if(raw) {
                         log.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
-                        renderingContent = renderRawResource(resource, extension, post);
+                        renderingContent = getRenderService().renderRawInternally(resource, extension);
                     } else {
                         log.trace("Before Rendering String Resource With Extension: '{}'", extension);
-                        renderingContent = renderResource(resource, extension, post);
+                        renderingContent = getRenderService().renderInternally(resource, extension);
                     }
-                } catch(ReplicationException e) {
+//                } catch(ReplicationException e) {
+//                    log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                } catch(RenderException e) {
                     log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
                 }
                 if(renderingContent != null) {
@@ -332,60 +333,30 @@ public abstract class BaseFileReplicationService
         }
     }
 
-    /**
-     * Renders the given resource inside this sling instance and returns its byte stream
-     * @param resource Resource to be rendered
-     * @param extension Extension of the rendering request
-     * @param post True if this is a POST request
-     * @return Byte Array of the rendered resource
-     * @throws ReplicationException If the rendering failed
-     */
-    private byte[] renderRawResource(Resource resource, String extension, boolean post) throws ReplicationException {
-        return renderResource0(resource, extension, post).getOutput();
-    }
-
-    /**
-     * Renders the given resource inside this sling instance and returns its byte stream
-     * @param resource Resource to be rendered
-     * @param extension Extension of the rendering request
-     * @param post True if this is a POST request
-     * @return String content of the rendered resource
-     * @throws ReplicationException If the rendering failed
-     */
-    private String renderResource(Resource resource, String extension, boolean post) throws ReplicationException {
-        return renderResource0(resource, extension, post).getOutputAsString();
-    }
-
-    private MockSlingHttpServletResponse renderResource0(Resource resource, String extension, boolean post) throws ReplicationException {
-        try {
-            MockSlingHttpServletRequest req = new MockSlingHttpServletRequest(resource.getResourceResolver());
-            MockRequestPathInfo mrpi = (MockRequestPathInfo) req.getRequestPathInfo();
-            mrpi.setResourcePath(resource.getPath());
-            if(isEmpty(extension)) {
-                extension = "";
-            }
-            log.trace("Render Resource Request Extension: '{}'", extension);
-            mrpi.setExtension(extension);
-            String requestPath = resource.getPath() + "." + extension;
-            log.trace("Render Resource Request Path: '{}'", mrpi);
-            MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
-            getRequestProcessor().processRequest(req, resp, resource.getResourceResolver());
-            log.trace("Response Status: '{}'", resp.getStatus());
-            //AS TODO: do we need to support redirects (301 / 302)
-            if(resp.getStatus() != 200) {
-                String content = resp.getOutputAsString();
-                log.error("Request of: '{}' failed (status: {}). Output : '{}'", requestPath, resp.getStatus(), content);
-                throw new ReplicationException(String.format(RENDERING_REQUEST_FAILED, requestPath, resp.getStatus()));
-            } else {
-                return resp;
-            }
-        } catch(UnsupportedEncodingException e) {
-            throw new ReplicationException(UNSUPPORTED_ENCODING_WHILE_CREATING_THE_RENDER_RESPONSE, e);
-        } catch(ServletException | IOException e) {
-            throw new ReplicationException(FAILED_TO_RENDER_RESOURCE + resource.getPath(), e);
-        }
-    }
-
+//    /**
+//     * Renders the given resource inside this sling instance and returns its byte stream
+//     * @param resource Resource to be rendered
+//     * @param extension Extension of the rendering request
+//     * @param post True if this is a POST request
+//     * @return Byte Array of the rendered resource
+//     * @throws ReplicationException If the rendering failed
+//     */
+//    private byte[] renderRawResource(Resource resource, String extension, boolean post) throws ReplicationException {
+//        return renderResource0(resource, extension, post).getOutput();
+//    }
+//
+//    /**
+//     * Renders the given resource inside this sling instance and returns its byte stream
+//     * @param resource Resource to be rendered
+//     * @param extension Extension of the rendering request
+//     * @param post True if this is a POST request
+//     * @return String content of the rendered resource
+//     * @throws ReplicationException If the rendering failed
+//     */
+//    private String renderResource(Resource resource, String extension, boolean post) throws ReplicationException {
+//        return renderResource0(resource, extension, post).getOutputAsString();
+//    }
+//
     public static class ExportExtension {
         private String name;
         private List<String> types = new ArrayList<>();

@@ -25,7 +25,6 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -44,10 +43,9 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
+import com.peregrine.render.RenderService;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.engine.SlingRequestProcessor;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -57,15 +55,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,10 +73,8 @@ import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getMimeType;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.intoList;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
-import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
 import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 
 /**
@@ -238,14 +227,14 @@ public class RemoteS3SystemReplicationService
     private ReferenceLister referenceLister;
     @Reference
     @SuppressWarnings("unused")
-    private SlingRequestProcessor requestProcessor;
+    private RenderService renderService;
     @Reference
     @SuppressWarnings("unused")
     ResourceResolverFactory resourceResolverFactory;
 
     @Override
-    SlingRequestProcessor getRequestProcessor() {
-        return requestProcessor;
+    RenderService getRenderService() {
+        return renderService;
     }
 
     @Override

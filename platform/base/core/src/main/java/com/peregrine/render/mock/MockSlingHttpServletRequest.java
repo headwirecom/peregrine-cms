@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.peregrine.admin.replication.impl.mock;
+package com.peregrine.render.mock;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -67,7 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.peregrine.admin.replication.impl.mock.MockSlingHttpServletResponse.CHARSET_SEPARATOR;
+import static com.peregrine.render.mock.MockSlingHttpServletResponse.CHARSET_SEPARATOR;
 
 /**
  * Mock {@link SlingHttpServletRequest} implementation.

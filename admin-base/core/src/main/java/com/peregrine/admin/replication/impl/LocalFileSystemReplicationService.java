@@ -27,9 +27,9 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.admin.replication.Replication;
+import com.peregrine.render.RenderService;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.engine.SlingRequestProcessor;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,8 +39,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -226,14 +224,14 @@ public class LocalFileSystemReplicationService
     private ReferenceLister referenceLister;
     @Reference
     @SuppressWarnings("unused")
-    private SlingRequestProcessor requestProcessor;
+    private RenderService renderService;
     @Reference
     @SuppressWarnings("unused")
     ResourceResolverFactory resourceResolverFactory;
 
     @Override
-    SlingRequestProcessor getRequestProcessor() {
-        return requestProcessor;
+    RenderService getRenderService() {
+        return renderService;
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.peregrine.nodejs.j2v8.J2V8WebExecution;
 import com.peregrine.nodejs.process.ExternalProcessException;
 import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.process.ProcessRunner;
+import com.peregrine.render.RenderService;
+import com.peregrine.render.RenderService.RenderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -33,6 +35,7 @@ import java.util.List;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.nodejs.script.servlet.ScriptCaller.EXECUTE_SCRIPT_WITH_J2V8;
 import static com.peregrine.nodejs.script.servlet.ScriptCaller.EXECUTE_SCRIPT_WITH_NODE_JS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
@@ -62,6 +65,8 @@ public class ScriptCallerServlet
     private ProcessRunner processRunner = new ProcessRunner();
 
     private J2V8WebExecution executor;
+
+    @Reference RenderService renderService;
 
     @Reference(
         cardinality = ReferenceCardinality.OPTIONAL,
@@ -112,7 +117,9 @@ public class ScriptCallerServlet
         if(EXECUTE_SCRIPT_WITH_NODE_JS.equals(request.getPathInfo())) {
             // Read JS file from Resource
             String script = "";
-            Resource jsResource = request.getResourceResolver().resolve(path + "/jcr:content");
+            Resource jsResource = getResource(request.getResourceResolver(), path + "/jcr:content");
+            log.trace("JS Resource (path: '{}'): '{}'", path, jsResource);
+//                request.getResourceResolver().resolve(path + "/jcr:content");
             if(jsResource != null) {
                 InputStream is = null;
                 try {
@@ -129,6 +136,26 @@ public class ScriptCallerServlet
                     IOUtils.closeQuietly(is);
                 }
             } else {
+                // Resource not found -> check if there is an extension and if then render the page internally
+                // and use the response as script
+                int lastSlash = path.lastIndexOf('/');
+                int extensionDot = path.indexOf('.', lastSlash);
+                int length = path.length();
+                if(extensionDot > 0 && extensionDot < length - 1) {
+                    String resourcePath = path.substring(0, extensionDot);
+                    String extension = path.substring(extensionDot + 1);
+                    jsResource = request.getResourceResolver().resolve(resourcePath);
+                    try {
+                        if(jsResource != null) {
+                            script = renderService.renderInternally(jsResource, extension);
+                            log.trace("Script loaded: '{}'", script);
+                        } else {
+                            log.error("Resource with path: '{}' could not be found", resourcePath);
+                        }
+                    } catch(RenderException e) {
+                        log.error("Failed to internally render resource: '{}' with extension: '{}'", jsResource.getPath(), extension);
+                    }
+                }
                 log.error("Resource: '{}' was not found", path);
             }
             if(script != null && !script.isEmpty()) {
