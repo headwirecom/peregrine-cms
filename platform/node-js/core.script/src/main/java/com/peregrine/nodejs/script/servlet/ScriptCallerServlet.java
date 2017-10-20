@@ -119,7 +119,6 @@ public class ScriptCallerServlet
             String script = "";
             Resource jsResource = getResource(request.getResourceResolver(), path + "/jcr:content");
             log.trace("JS Resource (path: '{}'): '{}'", path, jsResource);
-//                request.getResourceResolver().resolve(path + "/jcr:content");
             if(jsResource != null) {
                 InputStream is = null;
                 try {

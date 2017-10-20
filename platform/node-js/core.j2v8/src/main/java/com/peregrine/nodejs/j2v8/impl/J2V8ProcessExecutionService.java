@@ -7,6 +7,7 @@ import com.peregrine.nodejs.j2v8.J2V8ProcessExecution;
 import com.peregrine.nodejs.j2v8.ScriptException;
 import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.process.ProcessContextTracker;
+import com.peregrine.render.RenderService;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -42,10 +43,15 @@ public class J2V8ProcessExecutionService
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
+    @Reference
+    private RenderService renderService;
 
+    @Override
     protected ResourceResolverFactory getResourceResolverFactory() {
         return resourceResolverFactory;
     }
+    @Override
+    protected RenderService getRenderService() { return renderService; }
 
     @Activate
     public void activate() {

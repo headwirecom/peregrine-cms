@@ -6,6 +6,8 @@ import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import com.peregrine.nodejs.j2v8.ScriptException;
+import com.peregrine.render.RenderService;
+import com.peregrine.render.RenderService.RenderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -24,6 +26,10 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerUtil.getResource;
 
 /**
  * Base Class for J2V8 Execution Service
@@ -58,7 +64,7 @@ public abstract class AbstractJ2V8ExecutionService {
 
     /** Implement this method to provide a Resource Resolver Factory to this class **/
     protected abstract ResourceResolverFactory getResourceResolverFactory();
-
+    protected abstract RenderService getRenderService();
     /**
      * Create and Initialize a Node Wrapper with Java Callback needed to execute a script
      * - slingnode$request ??
@@ -95,7 +101,15 @@ public abstract class AbstractJ2V8ExecutionService {
                 boolean check = false;
                 try {
                     String jcrPath = parameters.getString(0);
-                    check = !ResourceUtil.isNonExistingResource(getScriptResource(jcrPath, cache));
+                    //AS To support page loading we need to extract extensions from the JCR Path
+                    int lastSlash = jcrPath.lastIndexOf('/');
+                    int firstDot = jcrPath.indexOf('.', lastSlash);
+                    if(firstDot > 0) {
+                        log.trace("Original Jcr Path to: '{}'", jcrPath);
+                        jcrPath = jcrPath.substring(0, firstDot);
+                        log.trace("Shortened Jcr Path to: '{}'", jcrPath);
+                    }
+                    check = !ResourceUtil.isNonExistingResource(getScriptResource(jcrPath + SLASH + JCR_CONTENT, cache));
                     log.trace("Check for JCR, path: '{}', answer: '{}'", jcrPath, check);
                 } catch(ScriptException e) {
                     log.error("Failed to obtain script at: '{}'", parameters, e);
@@ -196,6 +210,7 @@ public abstract class AbstractJ2V8ExecutionService {
         return tempFile;
     }
 
+    /*AS TODO: jcrPath is required now to be the full path so for nt:file it needs the path to the jcr:content node */
     private Resource getScriptResource(String jcrPath, ResourceCache cache)
         throws ScriptException
     {
@@ -209,8 +224,12 @@ public abstract class AbstractJ2V8ExecutionService {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put(ResourceResolverFactory.SUBSERVICE, SUB_SERVICE_NAME);
                 resourceResolver = getResourceResolverFactory().getServiceResourceResolver(params);
-                answer = resourceResolver.resolve(jcrPath + "/jcr:content");
-                log.trace("Cache found resource, Path: '{}', returns: '{}', is valid: '{}'", new Object[] {jcrPath, answer.getPath(), !ResourceUtil.isNonExistingResource(answer)});
+//                answer = getResource(resourceResolver, jcrPath + "/jcr:content");
+                answer = getResource(resourceResolver, jcrPath);
+                if(answer != null) {
+                    cache.putEntry(jcrPath, answer);
+                }
+                log.trace("Cache found resource, Path: '{}', returns: '{}'", jcrPath, answer == null ? "null" : answer.getPath());
             } catch(LoginException e) {
                 throw new ScriptException(COULD_OBTAIN_RESOURCE_RESOLVER, e);
             }
@@ -222,15 +241,22 @@ public abstract class AbstractJ2V8ExecutionService {
         throws ScriptException
     {
         String answer = null;
-        try {
-            Resource resource = null;
-            if(cache.containsEntry(jcrPath)) {
-                resource = cache.getEntry(jcrPath);
-            } else {
-                resource = getScriptResource(jcrPath, cache);
-            }
-            log.trace("Found resource to read, Path: '{}', returns: '{}', is valid: '{}'", new Object[] {jcrPath, resource.getPath(), !ResourceUtil.isNonExistingResource(resource)});
-            if(!ResourceUtil.isNonExistingResource(resource)) {
+        // Split of extension if provided
+        int lastSlash = jcrPath.lastIndexOf('/');
+        int extensionDot = jcrPath.indexOf('.', lastSlash);
+        int length = jcrPath.length();
+        String resourcePath, extension;
+        if(extensionDot > 0 && extensionDot < length - 1) {
+            resourcePath = jcrPath.substring(0, extensionDot);
+            extension = jcrPath.substring(extensionDot + 1);
+        } else {
+            // If not an extension then add jcr:content because it is a nt:file
+            resourcePath = jcrPath + SLASH + JCR_CONTENT;
+            extension = null;
+        }
+        Resource resource = getScriptResource(resourcePath, cache);
+        if(resource != null) {
+            if(extension == null) {
                 InputStream is = null;
                 try {
                     is = resource.adaptTo(InputStream.class);
@@ -243,14 +269,21 @@ public abstract class AbstractJ2V8ExecutionService {
                     } else {
                         log.error("Resource: '{}' is not a file to be read", resource);
                     }
+                } catch(IOException e) {
+                    throw new ScriptException(COULD_NOT_READ_FILE + jcrPath, e);
                 } finally {
                     IOUtils.closeQuietly(is);
                 }
             } else {
-                log.error("Resource: '{}' was not found", jcrPath);
+                try {
+                    answer = getRenderService().renderInternally(resource, extension);
+                    log.trace("Script loaded: '{}'", answer);
+                } catch(RenderException e) {
+                    log.error("Failed to internally render resource: '{}' with extension: '{}'", resource.getPath(), extension);
+                }
             }
-        } catch(IOException e) {
-            throw new ScriptException(COULD_NOT_READ_FILE + jcrPath, e);
+        } else {
+            log.error("Resource: '{}' was not found", resourcePath);
         }
         return answer;
     }

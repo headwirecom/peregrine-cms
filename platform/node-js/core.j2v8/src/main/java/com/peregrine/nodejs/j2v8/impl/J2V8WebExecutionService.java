@@ -5,6 +5,7 @@ import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import com.peregrine.nodejs.j2v8.J2V8WebExecution;
 import com.peregrine.nodejs.j2v8.ScriptException;
+import com.peregrine.render.RenderService;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -39,10 +40,15 @@ public class J2V8WebExecutionService
     public static final String SLINGNODE_GET_RESPONSE = "slingnode$getResponse";
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
+    @Reference
+    private RenderService renderService;
 
+    @Override
     protected ResourceResolverFactory getResourceResolverFactory() {
         return resourceResolverFactory;
     }
+    @Override
+    protected RenderService getRenderService() { return renderService; }
 
     /**
      * Creates a Node Wrapper and adds additional methods
