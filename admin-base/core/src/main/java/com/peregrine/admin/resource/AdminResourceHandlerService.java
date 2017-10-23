@@ -754,7 +754,18 @@ public class AdminResourceHandlerService
                                 moveNode(resourceListItem, first, false, true);
                             }
                         } else {
-                            moveNode(resourceListItem, lastResourceItem, false, false);
+                            // We only have to move if this wasn't already the first item due to deletion
+                            boolean doMove = false;
+                            Iterator<Resource> ir = resource.getChildren().iterator();
+                            if(ir.hasNext()) {
+                                if(!lastResourceItem.getName().equals(ir.next().getName())) {
+                                    doMove = true;
+                                    break;
+                                }
+                            }
+                            if(doMove) {
+                                moveNode(resourceListItem, lastResourceItem, false, false);
+                            }
                         }
                     }
                 }
