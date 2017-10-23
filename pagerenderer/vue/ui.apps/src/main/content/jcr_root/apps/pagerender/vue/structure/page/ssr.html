@@ -16,8 +16,6 @@ var $data = <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" />$
 <sly data-sly-use.helper="apps.pagerender.vue.structure.page.Helper"/>
 <sly data-sly-resource="${ '/etc/felibs/pagerender-vue' }"/>
 
-// we need to register all components here or use $peregrineApp with the initial data
-
 const app = new Vue({
 template: `<div id="peregrine-app">
     <span v-cloak>
@@ -28,6 +26,9 @@ data: {
 page: $data
 }
 })
+
+// we need to register all components here or use $peregrineApp with the initial data
+Vue.component('pagerender-vue-structure-page', cmpPagerenderVueStructurePage)
 
 renderer.renderToString(app, (err, html) => {
 if (err) throw err

@@ -31,7 +31,7 @@
       </button>
     </h5>
     <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'not-multifield'" ref="collapsible">
-        <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)">
+        <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)"> {{item._opDelete}}
             <div 
               class="collapsible-header" 
               draggable="true" 
@@ -52,7 +52,7 @@
             <div v-if="schema.multifield" class="collapsible-body">
                 <vue-form-generator
                   :schema="schema"
-                  :model="item"></vue-form-generator>
+                  :model="prepModel(item, schema)"></vue-form-generator>
             </div>
         </li>
     </ul>
@@ -62,7 +62,7 @@
           v-if="schema.multifield" 
           class="multifield"
           :schema="schema"
-          :model="item"></vue-form-generator>
+          :model="prepModel(item, schema)"></vue-form-generator>
         <vue-form-generator
           v-else 
           class="singlefield"
@@ -133,14 +133,26 @@
           }
           return parseInt(index) + 1
       },
-      onAddItem(e){
+        prepModel(model, schema) {
+            for(let i = 0; i < schema.fields.length; i++) {
+                const field = schema.fields[i].model
+                if(!model[field]) {
+                    Vue.set(model, field, '')
+                }
+            }
+            return model
+        },
+
+        onAddItem(e){
         if(!this.schema.multifield){
           var newChild = '';
         } else {
             var newChild = { name: 'n' + Date.now()}
+            this.prepModel(newChild, this.schema)
         }
         newChild['sling:resourceType'] = this.schema.resourceType
         this.value.push(newChild)
+//          Vue.set(this.value, this.value.length -1, newChild)
         this.onSetActiveItem(this.value.length - 1)
         this.$forceUpdate()
       },
@@ -154,6 +166,7 @@
           modelItem._opDelete = true
           this.$set(this.value, index, modelItem)
         }
+        this.$forceUpdate()
       },
       onSetActiveItem(index){
         if(!this.schema.multifield) return
