@@ -14,6 +14,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,8 @@ import java.util.Map;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.loginService;
+import static com.peregrine.nodejs.util.NodeConstants.NODE_JS_SUB_SERVICE_NAME;
 
 /**
  * Base Class for J2V8 Execution Service
@@ -38,8 +41,6 @@ import static com.peregrine.commons.util.PerUtil.getResource;
  */
 
 public abstract class AbstractJ2V8ExecutionService {
-
-    public static final String SUB_SERVICE_NAME = "nodejs-service";
 
     private static final String ROOT_SCRIPT =
         "try {\n" +
@@ -75,7 +76,7 @@ public abstract class AbstractJ2V8ExecutionService {
     public NodeWrapper createAndInitialize() {
         NodeJS node = NodeJS.createNodeJS();
         V8 runtime = node.getRuntime();
-        final ResourceCache cache = new ResourceCache();
+        final ResourceCache cache = new ResourceCache(getResourceResolverFactory());
         NodeWrapper answer = new NodeWrapper()
             .setCache(cache)
             .setNode(node)
@@ -101,15 +102,19 @@ public abstract class AbstractJ2V8ExecutionService {
                 boolean check = false;
                 try {
                     String jcrPath = parameters.getString(0);
-                    //AS To support page loading we need to extract extensions from the JCR Path
-                    int lastSlash = jcrPath.lastIndexOf('/');
-                    int firstDot = jcrPath.indexOf('.', lastSlash);
-                    if(firstDot > 0) {
-                        log.trace("Original Jcr Path to: '{}'", jcrPath);
-                        jcrPath = jcrPath.substring(0, firstDot);
-                        log.trace("Shortened Jcr Path to: '{}'", jcrPath);
+                    Resource resource = getScriptResource(jcrPath + SLASH + JCR_CONTENT, cache);
+                    if(resource == null) {
+                        //AS To support page loading we need to extract extensions from the JCR Path
+                        int lastSlash = jcrPath.lastIndexOf('/');
+                        int firstDot = jcrPath.indexOf('.', lastSlash);
+                        if(firstDot > 0) {
+                            log.trace("Original Jcr Path to: '{}'", jcrPath);
+                            jcrPath = jcrPath.substring(0, firstDot);
+                            log.trace("Shortened Jcr Path to: '{}'", jcrPath);
+                            resource = getScriptResource(jcrPath, cache);
+                        }
                     }
-                    check = !ResourceUtil.isNonExistingResource(getScriptResource(jcrPath + SLASH + JCR_CONTENT, cache));
+                    check = resource != null;
                     log.trace("Check for JCR, path: '{}', answer: '{}'", jcrPath, check);
                 } catch(ScriptException e) {
                     log.error("Failed to obtain script at: '{}'", parameters, e);
@@ -219,19 +224,15 @@ public abstract class AbstractJ2V8ExecutionService {
             answer = cache.getEntry(jcrPath);
             log.trace("Cache contains Path: '{}', returns: '{}'", jcrPath, answer.getPath());
         } else {
-            ResourceResolver resourceResolver = null;
-            try {
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put(ResourceResolverFactory.SUBSERVICE, SUB_SERVICE_NAME);
-                resourceResolver = getResourceResolverFactory().getServiceResourceResolver(params);
-//                answer = getResource(resourceResolver, jcrPath + "/jcr:content");
-                answer = getResource(resourceResolver, jcrPath);
+            ResourceResolver resourceResolver = cache.getResourceResolver();
+            if(resourceResolver != null) {
+                answer = resourceResolver.getResource(jcrPath);
                 if(answer != null) {
                     cache.putEntry(jcrPath, answer);
+                    log.trace("Found resource, Path: '{}', returns: '{}'", jcrPath, answer.getPath());
+                } else {
+                    log.trace("Failed to find resource, Path: '{}'", jcrPath);
                 }
-                log.trace("Cache found resource, Path: '{}', returns: '{}'", jcrPath, answer == null ? "null" : answer.getPath());
-            } catch(LoginException e) {
-                throw new ScriptException(COULD_OBTAIN_RESOURCE_RESOLVER, e);
             }
         }
         return answer;
@@ -241,24 +242,26 @@ public abstract class AbstractJ2V8ExecutionService {
         throws ScriptException
     {
         String answer = null;
-        // Split of extension if provided
-        int lastSlash = jcrPath.lastIndexOf('/');
-        int extensionDot = jcrPath.indexOf('.', lastSlash);
-        int length = jcrPath.length();
-        String resourcePath, extension;
-        if(extensionDot > 0 && extensionDot < length - 1) {
-            resourcePath = jcrPath.substring(0, extensionDot);
-            extension = jcrPath.substring(extensionDot + 1);
-        } else {
-            // If not an extension then add jcr:content because it is a nt:file
-            resourcePath = jcrPath + SLASH + JCR_CONTENT;
-            extension = null;
-        }
+        String resourcePath = jcrPath + SLASH + JCR_CONTENT;
         Resource resource = getScriptResource(resourcePath, cache);
+        String extension = null;
+        if(resource == null) {
+            resourcePath = jcrPath;
+            // Split of extension if provided
+            int lastSlash = resourcePath.lastIndexOf('/');
+            int extensionDot = resourcePath.indexOf('.', lastSlash);
+            int length = resourcePath.length();
+            if(extensionDot > 0 && extensionDot < length - 1) {
+                resourcePath = jcrPath.substring(0, extensionDot);
+                extension = jcrPath.substring(extensionDot + 1);
+                resource = getScriptResource(resourcePath, cache);
+            }
+        }
         if(resource != null) {
             if(extension == null) {
                 InputStream is = null;
                 try {
+                    log.trace("Adapt Resource: '{}' to Input Stream", resource);
                     is = resource.adaptTo(InputStream.class);
                     log.trace("Got Input Stream: '{}'", is);
                     if(is != null) {
@@ -283,7 +286,7 @@ public abstract class AbstractJ2V8ExecutionService {
                 }
             }
         } else {
-            log.error("Resource: '{}' was not found", resourcePath);
+            log.error("Resource: '{}' (extention: '{}') was not found", resourcePath, extension);
         }
         return answer;
     }
@@ -319,10 +322,33 @@ public abstract class AbstractJ2V8ExecutionService {
             this.cache = cache;
             return this;
         }
+
+        public void release() {
+            if(cache != null) {
+                cache.release();
+            }
+        }
     }
 
     private static class ResourceCache {
+        private ResourceResolverFactory resourceResolverFactory;
+        private ResourceResolver resourceResolver;
         private Map<String, Resource> cache = new HashMap<>();
+
+        public ResourceCache(ResourceResolverFactory resourceResolverFactory) {
+            this.resourceResolverFactory = resourceResolverFactory;
+        }
+
+        public ResourceResolver getResourceResolver() {
+            if(resourceResolver == null) {
+                try {
+                    resourceResolver = loginService(resourceResolverFactory, NODE_JS_SUB_SERVICE_NAME);
+                } catch(LoginException e) {
+                    // Failed to login return null
+                }
+            }
+            return resourceResolver;
+        }
 
         public boolean containsEntry(String name) {
             return cache.containsKey(name);
@@ -334,6 +360,12 @@ public abstract class AbstractJ2V8ExecutionService {
 
         public void putEntry(String name, Resource resource) {
             cache.put(name, resource);
+        }
+
+        public void release() {
+            if(resourceResolver != null) {
+                resourceResolver.close();
+            }
         }
     }
 }

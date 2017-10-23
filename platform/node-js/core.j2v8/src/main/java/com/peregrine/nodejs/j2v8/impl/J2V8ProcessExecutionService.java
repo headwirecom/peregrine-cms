@@ -111,5 +111,6 @@ public class J2V8ProcessExecutionService
     {
         NodeWrapper wrapper = createAndInitialize(processContext);
         super.executeScript(jcrPath, wrapper, arguments);
+        wrapper.release();
     }
 }

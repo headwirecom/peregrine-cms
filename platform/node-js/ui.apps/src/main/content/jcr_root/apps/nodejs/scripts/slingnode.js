@@ -27,18 +27,18 @@ Module._initPaths()
 
 var original_resolveFilename = Module._resolveFilename
 Module._resolveFilename = function(request, parent, isMain) {
-    // slingnode$javalog('(slingnode.js) Resolve File Name: ' + request + ', parent: ' + util.inspect(parent) + ', is main: ' + isMain)
+    slingnode$javalog('(slingnode.js) Resolve File Name: ' + request + ', parent: ' + util.inspect(parent) + ', is main: ' + isMain)
     if(request.startsWith('/')) {
-        // slingnode$javalog('(slingnode.js) File Name starts with a /: ' + request)
+        slingnode$javalog('(slingnode.js) File Name starts with a /: ' + request)
         // todo: this should check if the file or path exists in sling
         if(slingnode$checkJcrPath(request)) {
-            // slingnode$javalog('(slingnode.js) File Name is JCR Path /: ' + request)
+            slingnode$javalog('(slingnode.js) File Name is JCR Path /: ' + request)
             return request;
         }
     }
-    // slingnode$javalog('(slingnode.js) Try in Node.js')
-    // slingnode$javalog('(slingnode.js) Current Directory: ' + process.cwd())
-    // slingnode$javalog('(slingnode.js) Original Resolve File Name Function: ' + original_resolveFilename)
+    slingnode$javalog('(slingnode.js) Try in Node.js')
+    slingnode$javalog('(slingnode.js) Current Directory: ' + process.cwd())
+    slingnode$javalog('(slingnode.js) Original Resolve File Name Function: ' + original_resolveFilename)
     try {
         // add the root node modules folder
         if(parent.paths.indexOf(process.cwd() + '/node_modules') < 0) {
@@ -48,6 +48,6 @@ Module._resolveFilename = function(request, parent, isMain) {
     } catch(error) {
         slingnode$javalog('(slingnode.js) Resolve File Name failed with error: ' + error)
     }
-    // slingnode$javalog('(slingnode.js) Resolve File Name: ' + request + ', Resolved to: ' + ret)
+    slingnode$javalog('(slingnode.js) Resolve File Name: ' + request + ', Resolved to: ' + ret)
     return ret;
 }

@@ -115,5 +115,6 @@ public class J2V8WebExecutionService
     {
         NodeWrapper wrapper = createAndInitialize(request, response);
         executeScript(jcrPath, wrapper, arguments);
+        wrapper.release();
     }
 }
