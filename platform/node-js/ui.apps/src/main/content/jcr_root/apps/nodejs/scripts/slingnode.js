@@ -4,7 +4,7 @@ const util = require('util');
 
 var originalReadFileSync = fs.readFileSync
 fs.readFileSync = function(path, options) {
-    if(path.startsWith('/')) {
+    if(path && path.startsWith('/')) {
         // slingnode$javalog('(slingnode.js) File starts with /: ' + path)
         if(slingnode$checkJcrPath(path)) {
             // slingnode$javalog('(slingnode.js) File JCR Checked, load now: ' + path)
@@ -28,7 +28,7 @@ Module._initPaths()
 var original_resolveFilename = Module._resolveFilename
 Module._resolveFilename = function(request, parent, isMain) {
     slingnode$javalog('(slingnode.js) Resolve File Name: ' + request + ', parent: ' + util.inspect(parent) + ', is main: ' + isMain)
-    if(request.startsWith('/')) {
+    if(request && request.startsWith('/')) {
         slingnode$javalog('(slingnode.js) File Name starts with a /: ' + request)
         // todo: this should check if the file or path exists in sling
         if(slingnode$checkJcrPath(request)) {

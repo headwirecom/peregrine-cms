@@ -178,7 +178,6 @@ public class UpdateResourceServletIT
 
         insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_CAROUSEL_TYPE_PATH, "into-after", 302);
         Map<String, Map> children = extractChildNodes(listResourceAsJson(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, 1));
-        logger.info("List ");
         assertFalse("No Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.isEmpty());
         assertTrue("Too many Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.size() == 1);
         String carouselNodeName = children.keySet().iterator().next() + "";
@@ -229,6 +228,7 @@ public class UpdateResourceServletIT
         checkResourceByJson(client, folderPath + "/" + pageName, 3, pageWithCarouselWithoutSlide.toJSon(), true);        checkLastModified(client, folderPath + "/" + pageName, before);
     }
 
+    /** This test is making sure that deleting the first child in a collection is not causing an issue because there is no need to move it **/
     @Test
     public void testUpdatePageWithDeletedFirstChildNodeByFlag() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
@@ -247,13 +247,13 @@ public class UpdateResourceServletIT
 
         insertNodeAtAsComponent(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, "/apps/" + EXAMPLE_CAROUSEL_TYPE_PATH, "into-after", 302);
         Map<String, Map> children = extractChildNodes(listResourceAsJson(client, folderPath + "/" + pageName + "/" + JCR_CONTENT, 1));
-        logger.info("List ");
         assertFalse("No Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.isEmpty());
         assertTrue("Too many Children found of: " + folderPath + "/" + pageName + "/" + JCR_CONTENT, children.size() == 1);
         String carouselNodeName = children.keySet().iterator().next() + "";
         assertFalse("Carousel Name is not provided", carouselNodeName == null || carouselNodeName.isEmpty());
 
-        TestPage pageWithCarousel = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+//        TestPage pageWithCarousel = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        TestPage pageWithCarousel = new TestPage(emptyPage);
         pageWithCarousel.getContent()
             .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH));
         checkResourceByJson(client, folderPath + "/" + pageName, 3, pageWithCarousel.toJSon(), true);
@@ -274,16 +274,14 @@ public class UpdateResourceServletIT
         response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, insertSlide.toJSon(), 200);
 
         // Check page now
-        TestPage pageWithCarouselAndSlides = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+//        TestPage pageWithCarouselAndSlides = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        TestPage pageWithCarouselAndSlides = new TestPage(emptyPage);
         pageWithCarouselAndSlides.getContent()
             .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH)
                 .addChild(new ChildObject(slide1Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
                     .addProperties(new Prop("imagePath", image1Path))
-//AS TODO: Check if ignoring the 'name' property is done on purpose
-//                    .addProperties(new Prop("name", slide1Name), new Prop("imagePath", image1Path))
                 )
                 .addChild(new ChildObject(slide2Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
-//                    .addProperties(new Prop("name", slide2Name))
                     .addProperties(new Prop("imagePath", image2Path))
                 )
             );
@@ -300,11 +298,11 @@ public class UpdateResourceServletIT
         response = updateResource(client, folderPath + "/" + pageName + "/" + JCR_CONTENT + "/" + carouselNodeName, deleteNode.toJSon(), 200);
 
         // Check page now
-        TestPage pageWithCarouselWithoutSlide = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+//        TestPage pageWithCarouselWithoutSlide = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        TestPage pageWithCarouselWithoutSlide = new TestPage(emptyPage);
         pageWithCarouselWithoutSlide.getContent()
             .addChild(new ChildObject(carouselNodeName, EXAMPLE_CAROUSEL_TYPE_PATH)
                 .addChild(new ChildObject(slide2Name, EXAMPLE_CAROUSEL_ITEM_TYPE_PATH)
-//                    .addProperties(new Prop("name", slide2Name))
                     .addProperties(new Prop("imagePath", image2Path))
                 )
             );

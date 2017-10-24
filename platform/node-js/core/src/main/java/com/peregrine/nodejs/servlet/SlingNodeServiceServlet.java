@@ -1,5 +1,6 @@
 package com.peregrine.nodejs.servlet;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
@@ -149,6 +150,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
     private void handleListPackages(SlingHttpServletRequest request, SlingHttpServletResponse response)
         throws IOException
     {
+        checkNodeModulesFolder();
         String name = getParameter(request, LIST_NAME, String.class);
         if(name != null && name.isEmpty()) { name = null; }
         log.trace("Package Name: '{}'", name);
@@ -215,6 +217,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
     private void handleInstallPackage(SlingHttpServletRequest request, SlingHttpServletResponse response)
         throws IOException
     {
+        checkNodeModulesFolder();
         String name = getParameter(request, PACKAGE_NAME, String.class);
         if(name != null && name.isEmpty()) {
             createErrorResponse(response, PACKAGE_NAME_IS_REQUIRED_FOR_INSTALLING_A_PACKAGE);
@@ -242,6 +245,7 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
     private void handleRemovePackage(SlingHttpServletRequest request, SlingHttpServletResponse response)
         throws IOException
     {
+        checkNodeModulesFolder();
         String name = getParameter(request, PACKAGE_NAME, String.class);
         if(name != null && name.isEmpty()) {
             createErrorResponse(response, PACKAGE_NAME_IS_REQUIRED_FOR_REMOVING_A_PACKAGE);
@@ -400,6 +404,31 @@ public class SlingNodeServiceServlet extends SlingAllMethodsServlet {
     private <T> T getParameter(SlingHttpServletRequest request, String name, Class<T> type) {
         Object temp = request.getParameter(name);
         return ObjectConverter.convert(temp, type);
+    }
+
+    private void checkNodeModulesFolder() {
+        String path = System.getProperty("user.dir");
+        log.trace("Check Node Modules Folder, User DIR: '{}'", path);
+        File userDirectory = new File(path);
+        if(userDirectory.exists()) {
+            if(userDirectory.isDirectory()) {
+                File nodeModulesDirectory = new File(userDirectory, "node_modules");
+                if(nodeModulesDirectory.exists()) {
+                    if(nodeModulesDirectory.isDirectory()) {
+                        log.trace("node_modules folder found and is directory");
+                    } else {
+                        log.warn("node_modules exists but it is a file -> check this out and resolve");
+                    }
+                } else {
+                    log.trace("node_modules does not exist -> create");
+                    if(!nodeModulesDirectory.mkdirs()) {
+                        log.trace("node_modules could not be created -> check this out and resolve (probably a permission issue");
+                    }
+                }
+            } else {
+                log.trace("It looks like the user directory is wrong (not a folder)");
+            }
+        }
     }
 }
 

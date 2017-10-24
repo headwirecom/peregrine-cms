@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -48,6 +50,30 @@ public class JsonTest {
 
         public BasicImpl(String name) {
             setName(name);
+        }
+
+        public BasicImpl(BasicImpl source) {
+            this.name = source.getName();
+            for(Entry<String, Basic> entry: source.children.entrySet()) {
+                String key = entry.getKey();
+                Basic value = entry.getValue();
+                try {
+                    Constructor constructor = value.getClass().getConstructor(value.getClass());
+                    Basic copy = (Basic) constructor.newInstance(value);
+                    children.put(entry.getKey(), copy);
+                } catch(NoSuchMethodException e) {
+                    logger.error("Could not find Copy Constructor for instance: '{}'", value);
+                } catch(IllegalAccessException e) {
+                    logger.error("Could not access Copy Constructor for instance: '{}'", value);
+                } catch(InstantiationException e) {
+                    logger.error("Could not instantiate Copy Constructor for instance: '{}'", value);
+                } catch(InvocationTargetException e) {
+                    logger.error("Could not invoke Copy Constructor for instance: '{}'", value);
+                }
+            }
+            for(Entry<String, Prop> entry: source.properties.entrySet()) {
+                properties.put(entry.getKey(), entry.getValue());
+            }
         }
 
         public void setName(String name) {
@@ -132,6 +158,12 @@ public class JsonTest {
                 list.addAll(Arrays.asList(singleListItems));
             }
         }
+        public BasicListObject(BasicListObject source) {
+            super(source);
+            for(String item: source.list) {
+                list.add(item);
+            }
+        }
         @Override
         public String toJSon() throws IOException {
             StringWriter writer = new StringWriter();
@@ -168,7 +200,9 @@ public class JsonTest {
             super(name);
             addProperty(new Prop(JCR_PRIMARY_TYPE, primaryType));
         }
-
+        public BasicObject(BasicObject source) {
+            super(source);
+        }
         public BasicObject addSlingResourceType(String slingResourceType) {
             addProperty(new Prop(SLING_RESOURCE_TYPE, slingResourceType));
             return this;
@@ -179,6 +213,7 @@ public class JsonTest {
         public NoNameObject(String primaryType) {
             super(null, primaryType);
         }
+        public NoNameObject(NoNameObject source) { super(source); }
 
         @Override
         public void setName(String name) {
@@ -192,6 +227,9 @@ public class JsonTest {
                 addSlingResourceType(slingResourceType);
             }
         }
+        public BasicContentObject(BasicContentObject source) {
+            super(source);
+        }
     }
 
     public static class BasicWithContent extends BasicObject {
@@ -199,7 +237,10 @@ public class JsonTest {
             super(name, primaryType);
             addChild(new BasicContentObject(contentPrimaryType, slingResourceType));
         }
+        public BasicWithContent(BasicWithContent source) {
+            super(source);
 
+        }
         public BasicContentObject getContent() { return (BasicContentObject) getChildren().get(JCR_CONTENT); }
 
         public BasicWithContent addContentProperty(Prop prop) { getContent().addProperty(prop); return this; }
@@ -210,7 +251,9 @@ public class JsonTest {
             super(name, PAGE_PRIMARY_TYPE, PAGE_CONTENT_TYPE, slingResourceType);
             addContentProperty(new Prop(JCR_TITLE, name));
         }
-
+        public TestTemplate(TestTemplate source) {
+            super(source);
+        }
         public TestTemplate addContentChildren(Basic...children) {
             getContent().addChildren(children);
             return this;
@@ -224,6 +267,9 @@ public class JsonTest {
                 addContentProperty(new Prop(TEMPLATE, templatePath));
             }
         }
+        public TestPage(TestPage source) {
+            super(source);
+        }
     }
 
     public static class TestAsset extends BasicWithContent {
@@ -234,7 +280,9 @@ public class JsonTest {
             super(name, ASSET_PRIMARY_TYPE, ASSET_CONTENT_TYPE, null);
             addContentProperty(new Prop(JCR_MIME_TYPE, mimeType));
         }
-
+        public TestAsset(TestAsset source) {
+            super(source);
+        }
         // This is overridden to avoid a NPE because of the missing name
         @Override
         public void setName(String name) {
@@ -255,6 +303,7 @@ public class JsonTest {
                 addProperties(props);
             }
         }
+        public ObjectComponent(ObjectComponent source) { super(source); }
     }
 
     public static class ChildObject extends BasicObject {
@@ -266,6 +315,7 @@ public class JsonTest {
             super(name, primaryType);
             addSlingResourceType(slingResourceType);
         }
+        public ChildObject(ChildObject source) { super(source); }
     }
 
     public static class Prop {
