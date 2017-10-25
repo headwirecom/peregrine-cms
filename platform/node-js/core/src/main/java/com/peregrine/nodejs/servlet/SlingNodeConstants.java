@@ -9,11 +9,11 @@ import java.util.List;
  */
 public class SlingNodeConstants {
     /** Servlet Path for List Packages **/
-    public static final String LIST_PACKAGES = "/api/nodejs/list";
+    public static final String LIST_PACKAGES = "/perapi/nodejs/list";
     /** Servlet Path for Install Package **/
-    public static final String INSTALL_PACKAGE = "/api/nodejs/package/install";
+    public static final String INSTALL_PACKAGE = "/perapi/nodejs/package/install";
     /** Servlet Path for Remove Package **/
-    public static final String REMOVE_PACKAGE = "/api/nodejs/package/remove";
+    public static final String REMOVE_PACKAGE = "/perapi/nodejs/package/remove";
 
     /** Package Name argument **/
     public static final String LIST_NAME = "name";

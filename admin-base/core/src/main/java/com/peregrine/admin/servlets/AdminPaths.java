@@ -2,7 +2,7 @@ package com.peregrine.admin.servlets;
 
 public interface AdminPaths {
     public static final String JSON_EXTENSION = "json";
-    public static final String API_PREFIX = "api/admin/";
+    public static final String API_PREFIX = "perapi/admin/";
     public static final String RESOURCE_TYPE_ACCESS = API_PREFIX + "access";
     public static final String RESOURCE_TYPE_COMPONENT_DEFINITION = API_PREFIX + "componentDefinition";
     public static final String RESOURCE_TYPE_CONTENT = API_PREFIX + "content";

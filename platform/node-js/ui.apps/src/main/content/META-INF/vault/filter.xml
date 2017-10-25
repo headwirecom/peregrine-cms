@@ -17,7 +17,7 @@
         folder otherwise they wipe all installed bundles.
     -->
     <!--<filter root="/home/users/system/wEr2LXLE1mi10nrb_kTyt" mode="update"/>-->
-    <filter root="/api/nodejs/swaggereditor"/>
+    <filter root="/perapi/nodejs/swaggereditor"/>
     <filter root="/etc/openapi/nodejs"/>
     <filter root="/content/nodejs/example"/>
     <filter root="/apps/nodejs">

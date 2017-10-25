@@ -32,7 +32,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Blog List Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + "GET",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "api/blog/blogPosts"
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "perapi/blog/blogPosts"
     }
 )
 @SuppressWarnings("serial")

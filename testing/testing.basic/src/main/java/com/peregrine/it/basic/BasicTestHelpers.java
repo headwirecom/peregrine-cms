@@ -51,7 +51,7 @@ import static org.junit.Assert.fail;
  */
 public class BasicTestHelpers {
 
-    public static final String ADMIN_PREFIX_URL = "/api/admin/";
+    public static final String ADMIN_PREFIX_URL = "/perapi/admin/";
 
     private static final Logger logger = LoggerFactory.getLogger(BasicTestHelpers.class.getName());
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();

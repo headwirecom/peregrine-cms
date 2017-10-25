@@ -37,11 +37,11 @@ call.
 
 1. NPM Package Manager
 
-Open the Swagger UI on this URL: http://localhost:8080/api/nodejs/swaggereditor/
+Open the Swagger UI on this URL: http://localhost:8080/perapi/nodejs/swaggereditor/
 
 1. Scrip Caller
 
-Open the Swagger UI on this URL: http://localhost:8080/api/nodejs/execute/swaggereditor/
+Open the Swagger UI on this URL: http://localhost:8080/perapi/nodejs/execute/swaggereditor/
 
 ### Permissions
 

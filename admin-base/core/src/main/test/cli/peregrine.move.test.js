@@ -158,7 +158,7 @@ async function test() {
         toPath="/content/move-resource-test/target/targetTest2"
     }
 
-    await request.post(rootUrl + `/api/admin/move.json/path///content/${testFolderName}/source/sourceTest1//to//${toPath}//type//${type}`).auth(username, password, true).then( (data) => {
+    await request.post(rootUrl + `/perapi/admin/move.json/path///content/${testFolderName}/source/sourceTest1//to//${toPath}//type//${type}`).auth(username, password, true).then( (data) => {
         debug(data)
     })
 

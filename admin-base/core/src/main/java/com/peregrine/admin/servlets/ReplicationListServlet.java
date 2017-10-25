@@ -67,7 +67,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
  *
- * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/api/admin/repl.json/path///content/sites/example//name//local
+ * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/perapi/admin/repl.json/path///content/sites/example//name//local
  */
 public class ReplicationListServlet extends AbstractBaseServlet {
 

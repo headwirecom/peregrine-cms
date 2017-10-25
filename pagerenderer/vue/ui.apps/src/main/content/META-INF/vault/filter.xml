@@ -28,7 +28,7 @@
 <workspaceFilter version="1.0">
     <!--
         Any node that will contain customer data needs to be excluded
-        otherwise a Pacakge Installation will wipe them.
+        otherwise a Package Installation will wipe them.
 
         If there is a mix then all provided nodes must be included and
         all custom nodes excluded.
