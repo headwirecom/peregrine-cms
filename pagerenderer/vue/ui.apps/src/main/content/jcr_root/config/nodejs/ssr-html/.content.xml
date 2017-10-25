@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="per:NpmPackageConfig"
+          jcr:title="SSR HTML"
+          jcr:description="Packages needed for SSR selector"
+          vue="latest"
+          vue-server-renderer="latest"
+/>

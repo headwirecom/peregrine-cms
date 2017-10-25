@@ -51,4 +51,5 @@
     <filter root="/apps/pagerender/vue">
         <exclude pattern="/apps/pagerender/vue/install/.*"/>
     </filter>
+    <filter root="/config/nodejs/ssr-html"/>
 </workspaceFilter>

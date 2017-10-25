@@ -108,6 +108,8 @@ public class NpmExternalProcessService
             throw new ExternalProcessException("Service is not active");
         }
 
+        checkNodeModulesFolder();
+
         List<String> command = createProcessCommand(withJ2V8, PROCESS_LIST);
 
         if(depth >= 0) {
@@ -132,6 +134,8 @@ public class NpmExternalProcessService
             throw new ExternalProcessException("Service is not active");
         }
 
+        checkNodeModulesFolder();
+
         List<String> command = createProcessCommand(withJ2V8, PROCESS_INSTALL);
         if(name == null || name.isEmpty()) {
             throw new ExternalProcessException("Package Name must be provided to install it");
@@ -153,6 +157,8 @@ public class NpmExternalProcessService
         if(!active) {
             throw new ExternalProcessException("Service is not active");
         }
+
+        checkNodeModulesFolder();
 
         List<String> command = createProcessCommand(withJ2V8, PROCESS_REMOVE);
         if(name == null || name.isEmpty()) {
@@ -197,5 +203,30 @@ public class NpmExternalProcessService
         }
         return answer;
 
+    }
+
+    private void checkNodeModulesFolder() {
+        String path = System.getProperty("user.dir");
+        log.trace("Check Node Modules Folder, User DIR: '{}'", path);
+        File userDirectory = new File(path);
+        if(userDirectory.exists()) {
+            if(userDirectory.isDirectory()) {
+                File nodeModulesDirectory = new File(userDirectory, "node_modules");
+                if(nodeModulesDirectory.exists()) {
+                    if(nodeModulesDirectory.isDirectory()) {
+                        log.trace("node_modules folder found and is directory");
+                    } else {
+                        log.warn("node_modules exists but it is a file -> check this out and resolve");
+                    }
+                } else {
+                    log.trace("node_modules does not exist -> create");
+                    if(!nodeModulesDirectory.mkdirs()) {
+                        log.trace("node_modules could not be created -> check this out and resolve (probably a permission issue");
+                    }
+                }
+            } else {
+                log.trace("It looks like the user directory is wrong (not a folder)");
+            }
+        }
     }
 }

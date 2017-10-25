@@ -86,6 +86,7 @@
                             SLING-INF/nodetypes/page.cnd,
                             SLING-INF/nodetypes/component.cnd,
                             SLING-INF/nodetypes/felib.cnd,
+                            SLING-INF/nodetypes/npmpackageconfig.cnd,
                             SLING-INF/nodetypes/object.cnd,
                             SLING-INF/nodetypes/replication.cnd,
                             SLING-INF/nodetypes/objectdefinition.cnd,
