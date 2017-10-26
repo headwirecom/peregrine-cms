@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
 /*-
  * #%L
@@ -26,10 +26,6 @@ package com.peregrine.admin.replication;
  */
 
 import org.apache.sling.api.resource.Resource;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * This is a wrapper that contains the resource and property name

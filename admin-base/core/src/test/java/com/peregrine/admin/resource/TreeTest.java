@@ -1,13 +1,14 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.admin.resource;
 
-import com.peregrine.admin.replication.impl.ReferenceListerService.Node;
-import com.peregrine.admin.replication.impl.ReferenceListerService.Tree;
+import com.peregrine.admin.resource.ReferenceListerService.Node;
+import com.peregrine.admin.resource.ReferenceListerService.Tree;
 import com.peregrine.commons.test.AbstractTest;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TreeTest
     extends AbstractTest

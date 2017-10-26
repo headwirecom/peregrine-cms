@@ -1,6 +1,6 @@
 package com.peregrine.admin.replication;
 
-import com.peregrine.admin.replication.Replication;
+import com.peregrine.replication.Replication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

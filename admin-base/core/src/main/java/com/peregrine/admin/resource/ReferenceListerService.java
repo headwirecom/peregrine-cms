@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.admin.resource;
 
 /*-
  * #%L
@@ -25,9 +25,8 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.Reference;
-import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.commons.util.PerUtil;
+import com.peregrine.replication.Reference;
+import com.peregrine.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
@@ -51,6 +50,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.listMissingParents;
 
 /**
  * Lists References from and to a given Page
@@ -194,7 +194,7 @@ public class ReferenceListerService
                             log.info("Resource is already in the list: '{}'", child);
                         } else {
                             if(source  != null && target != null) {
-                                PerUtil.listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
+                                listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
                             }
                             log.trace("Found Reference Resource: '{}'", child);
                             response.add(child);

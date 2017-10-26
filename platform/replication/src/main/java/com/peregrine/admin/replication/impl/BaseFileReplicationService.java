@@ -26,7 +26,7 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
-import com.peregrine.admin.replication.ReferenceLister;
+import com.peregrine.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.render.RenderService;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
-import static com.peregrine.admin.util.AdminConstants.RENDITION_ACTION;
+import static com.peregrine.commons.util.PerConstants.RENDITION_ACTION;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
@@ -51,9 +51,6 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
-import static com.peregrine.commons.util.PerUtil.getPrimaryType;
-import static com.peregrine.commons.util.PerUtil.getResourceType;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 
 /**
  * Base Class for External File System / Storage Replications
@@ -162,7 +159,7 @@ public abstract class BaseFileReplicationService
      */
     public List<Resource> deactivate(Resource toBeDeleted, List<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
-        String primaryType = getPrimaryType(toBeDeleted);
+        String primaryType = PerUtil.getPrimaryType(toBeDeleted);
         if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
             removeReplica(toBeDeleted, null, false);
             answer.add(toBeDeleted);
@@ -199,8 +196,8 @@ public abstract class BaseFileReplicationService
     }
 
     private void replicateResource(Resource resource) throws ReplicationException {
-        // Need to figure out the type and replicate accordingly
-        String primaryType = getPrimaryType(resource);
+        // Need to figure out the type and replicate accordingl
+        String primaryType = PerUtil.getPrimaryType(resource);
         if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
             replicateAsset(resource);
         } else {
@@ -223,7 +220,7 @@ public abstract class BaseFileReplicationService
             Resource renditions = resource.getChild(RENDITIONS);
             if(renditions != null) {
                 for(Resource rendition : renditions.getChildren()) {
-                    if(NT_FILE.equals(getPrimaryType(rendition))) {
+                    if(NT_FILE.equals(PerUtil.getPrimaryType(rendition))) {
                         try {
                             imageContent = getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + rendition.getName());
                             storeRendering(resource, rendition.getName(), imageContent);
@@ -309,8 +306,6 @@ public abstract class BaseFileReplicationService
                         log.trace("Before Rendering String Resource With Extension: '{}'", extension);
                         renderingContent = getRenderService().renderInternally(resource, extension);
                     }
-//                } catch(ReplicationException e) {
-//                    log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
                 } catch(RenderException e) {
                     log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
                 }
@@ -333,37 +328,13 @@ public abstract class BaseFileReplicationService
         }
     }
 
-//    /**
-//     * Renders the given resource inside this sling instance and returns its byte stream
-//     * @param resource Resource to be rendered
-//     * @param extension Extension of the rendering request
-//     * @param post True if this is a POST request
-//     * @return Byte Array of the rendered resource
-//     * @throws ReplicationException If the rendering failed
-//     */
-//    private byte[] renderRawResource(Resource resource, String extension, boolean post) throws ReplicationException {
-//        return renderResource0(resource, extension, post).getOutput();
-//    }
-//
-//    /**
-//     * Renders the given resource inside this sling instance and returns its byte stream
-//     * @param resource Resource to be rendered
-//     * @param extension Extension of the rendering request
-//     * @param post True if this is a POST request
-//     * @return String content of the rendered resource
-//     * @throws ReplicationException If the rendering failed
-//     */
-//    private String renderResource(Resource resource, String extension, boolean post) throws ReplicationException {
-//        return renderResource0(resource, extension, post).getOutputAsString();
-//    }
-//
     public static class ExportExtension {
         private String name;
         private List<String> types = new ArrayList<>();
         private boolean exportFolders = false;
 
         public ExportExtension(String name, List<String> types) {
-            if(isEmpty(name)) {
+            if(PerUtil.isEmpty(name)) {
                 throw new IllegalArgumentException(EXTENSION_NAME_MUST_BE_PROVIDED);
             }
             if(types == null || types.isEmpty()) {
@@ -378,9 +349,9 @@ public abstract class BaseFileReplicationService
         }
 
         public boolean supportsResource(Resource resource) {
-            String primaryType = getPrimaryType(resource);
+            String primaryType = PerUtil.getPrimaryType(resource);
             if(types.contains(primaryType)) { return true; }
-            String slingResourceType = getResourceType(resource);
+            String slingResourceType = PerUtil.getResourceType(resource);
             if(types.contains(slingResourceType)) { return true; }
             return false;
         }

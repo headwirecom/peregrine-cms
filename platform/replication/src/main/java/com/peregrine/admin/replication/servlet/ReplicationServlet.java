@@ -1,4 +1,4 @@
-package com.peregrine.admin.servlets;
+package com.peregrine.admin.replication.servlet;
 
 /*-
  * #%L
@@ -25,9 +25,9 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.admin.replication.Replication;
-import com.peregrine.admin.replication.Replication.ReplicationException;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
+import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
@@ -42,10 +42,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.admin.util.AdminConstants.DEEP;
-import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
-import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
+import static com.peregrine.admin.replication.ReplicationConstants.DEEP;
+import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_DO_REPLICATION;
+import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
+import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;

@@ -26,11 +26,10 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
-import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.admin.replication.Replication;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
-//import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -40,7 +39,6 @@ import org.apache.sling.distribution.Distributor;
 import org.apache.sling.distribution.SimpleDistributionRequest;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
@@ -52,13 +50,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-//import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
-//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-//import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-//import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
 import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
  * This service is replicating resource to a remote sling instance
@@ -66,7 +61,7 @@ import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED
  * and an Importer Service on the remove Sling instance.
  */
 @Component(
-    configurationPolicy = ConfigurationPolicy.REQUIRE,
+    configurationPolicy = REQUIRE,
     service = Replication.class,
     immediate = true
 )

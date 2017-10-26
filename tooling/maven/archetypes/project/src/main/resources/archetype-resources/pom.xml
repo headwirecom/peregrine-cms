@@ -171,6 +171,7 @@
                 <artifactId>wcmio-content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <!-- AS TODO: Shall we split that into a Package Install for Sling and AEM ? -->
                     <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/</serviceURL>
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>

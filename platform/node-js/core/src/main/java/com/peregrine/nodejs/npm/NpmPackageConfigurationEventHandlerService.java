@@ -2,7 +2,7 @@ package com.peregrine.nodejs.npm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.nodejs.process.ExternalProcessException;
-import com.peregrine.nodejs.process.ProcessContext;
+import com.peregrine.nodejs.util.NodeConstants;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -28,8 +28,8 @@ import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
-import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_TYPE_ALL;
 import static com.peregrine.nodejs.util.NodeConstants.NODE_JS_SUB_SERVICE_NAME;
+import static com.peregrine.nodejs.util.NodeConstants.NPM_PACKAGE_CONFIG_PATH;
 import static org.apache.sling.api.resource.observation.ResourceChangeListener.CHANGES;
 import static org.apache.sling.api.resource.observation.ResourceChangeListener.PATHS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -41,7 +41,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "NPM Package Configuration Listener",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        PATHS + EQUALS + "glob:/config/nodejs/**",
+        PATHS + EQUALS + "glob:" + NPM_PACKAGE_CONFIG_PATH + "/**",
         CHANGES + EQUALS + "ADDED",
         CHANGES + EQUALS + "CHANGED",
         CHANGES + EQUALS + "REMOVED"
@@ -50,9 +50,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class NpmPackageConfigurationEventHandlerService
     implements ResourceChangeListener
 {
-    public static final String NPM_PACKAGE_CONFIG_PRIMARY_TYPE = "per:NpmPackageConfig";
-    public static final String VERSION_LATEST = "latest";
-    public static final String DEPENDENCIES = "dependencies";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -74,45 +71,27 @@ public class NpmPackageConfigurationEventHandlerService
                     resourceResolver = loginService(resourceResolverFactory, NODE_JS_SUB_SERVICE_NAME);
                     Resource resource = getResource(resourceResolver, change.getPath());
                     String primaryType = getPrimaryType(resource);
-                    if(NPM_PACKAGE_CONFIG_PRIMARY_TYPE.equals(primaryType)) {
+                    if(NodeConstants.NPM_PACKAGE_CONFIG_PRIMARY_TYPE.equals(primaryType)) {
                         ValueMap properties = getProperties(resource, false);
                         if(properties != null) {
-//                            ProcessContext result = null;
-//                            try {
-//                                result = npmExternalProcess.listPackages(false, null, 1, null, 1);
-//                            } catch(ExternalProcessException e) {
-//                                log.error("Failed to list all installed Packages", e);
-//                            }
-//                            if(result != null) {
-//                                String json = result.getOutput();
-//                                log.trace("JSon from List Packages: '{}'", json);
-//                                if(json == null || json.isEmpty()) {
-//                                    // In case there is nothing installed in the local node_modules the list packages fails and returns null
-//                                    json = "{\"dependencies\":{}}";
-//                                }
-                                // Loop through all Properties and handle all non-jcr/non-sling properties
-                                // which are considered a package
-                                for(String packageName: properties.keySet()) {
-                                    // Filter all properties with a color like jcr: or sling:
-                                    //AS TODO: Can a Node Package have a colon in its name? If so we need to excluded specific prefixes
-                                    if(packageName.indexOf(':') < 0) {
-                                        String packageVersion = properties.get(packageName, VERSION_LATEST);
-                                        if(packageVersion.isEmpty() || packageVersion.equalsIgnoreCase(VERSION_LATEST)) {
-                                            packageVersion = null;
-                                        }
-//                                        // Get the package name, check if they are already installed and if not install them
-//                                        Map npmPackage = getPackageFromList(json, packageName);
-//                                        if(npmPackage == null) {
-                                            // Listing failed or No package found -> install it
-                                            try {
-                                                npmExternalProcess.installPackage(false, packageName, packageVersion);
-                                            } catch(ExternalProcessException e) {
-                                                log.error("Failed to install package: " + packageName, e);
-                                            }
-//                                        }
+                            // Package List of NPM is not reliable and therefore not used here
+                            // Loop through all Properties and handle all non-jcr/non-sling properties
+                            // which are considered a package
+                            for(String packageName: properties.keySet()) {
+                                // Filter all properties with a color like jcr: or sling:
+                                //AS TODO: Can a Node Package have a colon in its name? If so we need to excluded specific prefixes
+                                if(packageName.indexOf(':') < 0) {
+                                    String packageVersion = properties.get(packageName, NodeConstants.VERSION_LATEST);
+                                    if(packageVersion.isEmpty() || packageVersion.equalsIgnoreCase(NodeConstants.VERSION_LATEST)) {
+                                        packageVersion = null;
+                                    }
+                                    try {
+                                        npmExternalProcess.installPackage(false, packageName, packageVersion);
+                                    } catch(ExternalProcessException e) {
+                                        log.error("Failed to install package: " + packageName, e);
                                     }
                                 }
-//                            }
+                            }
                         }
                     }
                 } catch(LoginException e) {
@@ -130,8 +109,8 @@ public class NpmPackageConfigurationEventHandlerService
         try {
             jsonMap = convertToMap(json);
             log.trace("NPM List report: '{}'", jsonMap);
-            if(jsonMap.containsKey(DEPENDENCIES)) {
-                Map dependencies = (Map) jsonMap.get(DEPENDENCIES);
+            if(jsonMap.containsKey(NodeConstants.DEPENDENCIES)) {
+                Map dependencies = (Map) jsonMap.get(NodeConstants.DEPENDENCIES);
                 if(dependencies.containsKey(name)) {
                     answer = (Map) dependencies.get(name);
                 }

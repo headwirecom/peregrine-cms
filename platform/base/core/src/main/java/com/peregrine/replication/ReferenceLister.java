@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
 /*-
  * #%L

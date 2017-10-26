@@ -25,8 +25,8 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.admin.replication.Replication;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
 import com.peregrine.render.RenderService;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;

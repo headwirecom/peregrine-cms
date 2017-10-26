@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import static com.peregrine.admin.replication.impl.LocalFileSystemReplicationService.CREATE_ALL_STRATEGY;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
@@ -45,7 +44,6 @@ import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static com.peregrine.it.basic.BasicTestHelpers.listServicesAsJson;
 import static com.peregrine.it.basic.BasicTestHelpers.loadFile;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createObject;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;

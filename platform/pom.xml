@@ -23,6 +23,7 @@
         <module>felib</module>
         <module>node-js</module>
         <module>login</module>
+        <module>replication</module>
     </modules>
 
 </project>

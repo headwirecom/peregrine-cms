@@ -22,8 +22,6 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_NODES = API_PREFIX + "nodes";
     public static final String RESOURCE_TYPE_REF = API_PREFIX + "ref";
     public static final String RESOURCE_TYPE_REF_BY = API_PREFIX + "refBy";
-    public static final String RESOURCE_TYPE_LIST_REPLICATION = API_PREFIX + "listRepl";
-    public static final String RESOURCE_TYPE_DO_REPLICATION = API_PREFIX + "repl";
     public static final String RESOURCE_TYPE_SEARCH = API_PREFIX + "search";
     public static final String RESOURCE_TYPE_UPDATE_RESOURCE = API_PREFIX + "updateResource";
     public static final String RESOURCE_TYPE_UPLOAD_FILES = API_PREFIX + "uploadFiles";

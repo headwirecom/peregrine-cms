@@ -81,4 +81,7 @@
     <filter root="/live">
         <exclude pattern="/live/.*"/>
     </filter>
+    <filter root="/oak:index/perComponent"/>
+    <filter root="/oak:index/perObjectDefinition"/>
+    <filter root="/oak:index/perPage"/>
 </workspaceFilter>

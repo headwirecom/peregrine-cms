@@ -1,8 +1,8 @@
 package com.peregrine.admin.replication;
 
-import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
-import com.peregrine.commons.util.PerUtil.ResourceChecker;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
 
 /**
@@ -161,7 +162,7 @@ public class DefaultReplicationMapperService
         logger.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
         replicationList.add(source);
-        PerUtil.listMissingResources(source, replicationList, new AddAllResourceChecker(), deep);
+        listMissingResources(source, replicationList, new AddAllResourceChecker(), deep);
         return replicate(replicationList);
     }
 

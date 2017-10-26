@@ -26,10 +26,8 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
-import com.peregrine.admin.replication.ReferenceLister;
-import com.peregrine.admin.replication.Replication;
-import com.peregrine.admin.replication.ReplicationUtil;
-import com.peregrine.commons.util.PerUtil;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
 import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
@@ -52,23 +50,21 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
-//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-//import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-//import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.containsResource;
+import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.getParent;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
+import static com.peregrine.commons.util.PerUtil.relativePath;
 
 /**
  * This service replicates resources within the same Peregrine
@@ -239,7 +235,7 @@ public class LocalReplicationService
             Map<String, String> pathMapping = new HashMap<>();
             for(Resource item: resourceList) {
                 if(item != null) {
-                    String relativePath = PerUtil.relativePath(source, item);
+                    String relativePath = relativePath(source, item);
                     if(relativePath != null) {
                         String targetPath = localTarget + '/' + relativePath;
                         log.trace("Add to Path mappings Source Path: '{}', Target Path: '{}'", item.getPath(), targetPath);
@@ -247,7 +243,7 @@ public class LocalReplicationService
                         // References need to be updated through the Path Mappings therefore we revisit them here
                         List<Resource> referenceList = referenceLister.getReferenceList(true, item, true, source, target);
                         for(Resource reference: referenceList) {
-                            relativePath = PerUtil.relativePath(source, reference);
+                            relativePath = relativePath(source, reference);
                             if(relativePath != null) {
                                 targetPath = localTarget + '/' + relativePath;
                                 log.trace("Add to Path mappings Reference Source Path: '{}', Target Path: '{}'", reference.getPath(), targetPath);
@@ -307,7 +303,7 @@ public class LocalReplicationService
                 updateReplicationProperties(item, "", null);
             }
             // Delete the replicated target resource
-            String relativePath = PerUtil.relativePath(source, toBeDeleted);
+            String relativePath = relativePath(source, toBeDeleted);
             if(relativePath != null) {
                 String targetPath = localTarget + '/' + relativePath;
                 Resource targetResource = getResource(resourceResolver, targetPath);
@@ -340,7 +336,7 @@ public class LocalReplicationService
                     //AS TODO: If the parent is not found because the are intermediate missing parents
                     //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
                     //AS TODO: or we fail and ignore it
-                    String targetParent = PerUtil.getParent(targetPath);
+                    String targetParent = getParent(targetPath);
                     log.trace("Target Parent: '{}'", targetParent);
                     if(targetParent == null) {
                         // No more parent -> handling parents failed
@@ -397,7 +393,7 @@ public class LocalReplicationService
         log.trace("Copy Resource: '{}', Target Parent Resource: '{}', Path Mappings: '{}'", source.getPath(), targetParent, pathMapping);
         Resource answer = null;
         Map<String, Object> newProperties = new HashMap<>();
-        ModifiableValueMap properties = PerUtil.getModifiableProperties(source, false);
+        ModifiableValueMap properties = getModifiableProperties(source, false);
         for(String key : properties.keySet()) {
             if(JCR_UUID.equals(key)) {
                 // UUIDs cannot be copied over -> ignore them

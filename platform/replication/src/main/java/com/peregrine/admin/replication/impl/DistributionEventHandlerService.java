@@ -1,45 +1,39 @@
 package com.peregrine.admin.replication.impl;
 
-//import com.peregrine.commons.util.PerConstants;
-import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.LoginException;
-//import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.distribution.event.DistributionEventProperties;
-import org.apache.sling.distribution.event.DistributionEventTopics;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-//import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-//import static com.peregrine.admin.replication.ReplicationUtil.supportsReplicationProperties;
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.DISTRIBUTION_SUB_SERVICE;
-//import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-//import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
+import static org.apache.sling.distribution.event.DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED;
+import static org.apache.sling.distribution.event.DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+import static org.osgi.service.event.EventConstants.EVENT_TOPIC;
 
 @Component(
     service = EventHandler.class,
     immediate = true,
     property = {
-        Constants.SERVICE_VENDOR + PerUtil.EQUALS + PerUtil.PER_PREFIX + "Replication Event Handler",
-        EventConstants.EVENT_TOPIC + PerUtil.EQUALS + DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED,
-        EventConstants.EVENT_TOPIC + PerUtil.EQUALS + DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED
+        SERVICE_VENDOR + EQUALS + PER_PREFIX + "Replication Event Handler",
+        EVENT_TOPIC + EQUALS + AGENT_PACKAGE_DISTRIBUTED,
+        EVENT_TOPIC + EQUALS + IMPORTER_PACKAGE_IMPORTED
     }
 )
 /**
@@ -70,10 +64,10 @@ public class DistributionEventHandlerService
     public void handleEvent(Event event) {
         final String topic = event.getTopic();
         String kind;
-        if(DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED.equals(topic)) {
+        if(AGENT_PACKAGE_DISTRIBUTED.equals(topic)) {
             // Forward Agent Event
             // Check the expected properties
-            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_AGENT, EVENT_TOPICS + EQUALS + DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED)) {
+            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_AGENT, EVENT_TOPICS + EQUALS + AGENT_PACKAGE_DISTRIBUTED)) {
                 // Ignore -> Done
                 logEvent("Received unexpected Agent Event", event);
                 return;
@@ -81,10 +75,10 @@ public class DistributionEventHandlerService
             kind = AGENT;
 
         } else
-        if(DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED.equals(topic)) {
+        if(IMPORTER_PACKAGE_IMPORTED.equals(topic)) {
             // Forward Agent Event
             // Check the expected properties
-            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_IMPORTER, EVENT_TOPICS + EQUALS + DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED)) {
+            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_IMPORTER, EVENT_TOPICS + EQUALS + IMPORTER_PACKAGE_IMPORTED)) {
                 // Ignore -> Done
                 logEvent("Received unexpected Importer Event", event);
                 return;
@@ -94,7 +88,7 @@ public class DistributionEventHandlerService
             log.trace("Received unhandled event: '{}'", event);
             return;
         }
-        Object value = event.getProperty(DistributionEventProperties.DISTRIBUTION_PATHS);
+        Object value = event.getProperty(DISTRIBUTION_PATHS);
         if(value instanceof String[]) {
             String[] paths = (String[]) value;
             for(String path: paths) {

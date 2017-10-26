@@ -62,6 +62,7 @@
                             com.peregrine.nodetypes.*,
                             com.peregrine.render,
                             com.peregrine.rendition,
+                            com.peregrine.replication,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
                             com.peregrine.commons.util

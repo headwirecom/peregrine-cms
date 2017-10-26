@@ -76,7 +76,7 @@
                 <artifactId>wcmio-content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
-                    <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
+                    <!--<serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>-->
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
@@ -141,6 +141,23 @@
                                 <goals>
                                     <goal>install</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>autoInstallPackageAEM</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bundle</id>
+                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>
