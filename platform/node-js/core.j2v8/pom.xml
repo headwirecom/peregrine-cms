@@ -194,6 +194,7 @@
     </dependencies>
 
     <profiles>
+        <!--TODO: Adjust Naming and support AEM -->
         <profile>
             <id>autoInstallBundle</id>
             <build>

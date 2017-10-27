@@ -43,6 +43,10 @@
         - Service User for OSGi Services
     </description>
 
+    <properties>
+        <noContent>false</noContent>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -134,52 +138,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>autoInstallPackage</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.wcm.maven.plugins</groupId>
-                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <group>com.peregrine-cms</group>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install-package</id>
-                                <goals>
-                                    <goal>install</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>autoInstallPackageAEM</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.wcm.maven.plugins</groupId>
-                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <group>com.peregrine-cms</group>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install-package</id>
-                                <goals>
-                                    <goal>install</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

@@ -44,6 +44,10 @@
         updated or not working at all).
     </description>
 
+    <!--<properties>-->
+        <!--<noContentSkip>true</noContentSkip>-->
+    <!--</properties>-->
+
     <build>
         <resources>
             <resource>

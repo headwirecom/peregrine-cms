@@ -62,9 +62,8 @@
     </build>
 
     <profiles>
-        <!--AS NOTE: Even though this is a Bundle we install it in the autoInstallPackage profile to install it with the rest of Peregrine -->
         <profile>
-            <id>autoInstallPackage</id>
+            <id>installSling</id>
             <build>
                 <plugins>
                     <plugin>
@@ -83,21 +82,22 @@
             </build>
         </profile>
         <profile>
-            <id>autoInstallPackageAEM</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.sling</groupId>
-                        <artifactId>maven-sling-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>install-bundle</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+            <id>installAEM</id>
+            <!--AS NOTE: No installation as custom login does not work in AEM -->
+            <!--<build>-->
+                <!--<plugins>-->
+                    <!--<plugin>-->
+                        <!--<groupId>org.apache.sling</groupId>-->
+                        <!--<artifactId>maven-sling-plugin</artifactId>-->
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--<id>install-bundle</id>-->
+                                <!--<phase>none</phase>-->
+                            <!--</execution>-->
+                        <!--</executions>-->
+                    <!--</plugin>-->
+                <!--</plugins>-->
+            <!--</build>-->
         </profile>
     </profiles>
 </project>

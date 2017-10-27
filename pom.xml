@@ -37,6 +37,8 @@
         <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
         <snapshotRepositoryUrl>https://oss.sonatype.org/content/repositories/snapshots</snapshotRepositoryUrl>
         <gpg.useagent>true</gpg.useagent>
+
+        <noContent>true</noContent>
     </properties>
 
     <build>
@@ -83,7 +85,6 @@
                 <artifactId>wcmio-content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
-                    <!--<serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>-->
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
@@ -189,8 +190,6 @@
                     <artifactId>wcmio-content-package-maven-plugin</artifactId>
                     <version>1.5.0</version>
                     <configuration>
-                        <!--<serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>-->
-                        <serviceURL>http://localhost:4502/crx/packmgr/service</serviceURL>
                         <userId>${sling.user}</userId>
                         <password>${sling.password}</password>
                         <failOnMissingEmbed>true</failOnMissingEmbed>
@@ -693,6 +692,70 @@
                             <execution>
                                 <goals>
                                     <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installSling</id>
+            <properties>
+                <!--<deployTo>true</deployTo>-->
+                <targetServiceUrl>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</targetServiceUrl>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.wcm.maven.plugins</groupId>
+                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serviceURL>${targetServiceUrl}</serviceURL>
+                            <group>com.peregrine-cms</group>
+                            <skip>${noContent}</skip>
+                            <userId>${sling.user}</userId>
+                            <password>${sling.password}</password>
+                            <group>com.peregrine-cms</group>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-package</id>
+                                <goals>
+                                    <goal>install</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>installAEM</id>
+            <properties>
+                <!--<deployTo>true</deployTo>-->
+                <targetServiceUrl>http://localhost:4502/crx/packmgr/service</targetServiceUrl>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.wcm.maven.plugins</groupId>
+                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serviceURL>${targetServiceUrl}</serviceURL>
+                            <group>com.peregrine-cms</group>
+                            <skip>${noContent}</skip>
+                            <userId>${sling.user}</userId>
+                            <password>${sling.password}</password>
+                            <group>com.peregrine-cms</group>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install-package</id>
+                                <goals>
+                                    <goal>install</goal>
                                 </goals>
                             </execution>
                         </executions>
