@@ -138,7 +138,6 @@
     </build>
 
     <profiles>
-        <!--AS NOTE: Even though this is a Bundle we install it in the autoInstallPackage profile to install it with the rest of Peregrine -->
         <profile>
             <id>installSling</id>
             <build>
@@ -160,21 +159,21 @@
         </profile>
         <profile>
             <id>installAEM</id>
-            <!--AS NOTE: No installation of Replication as we should use AEM's own Replication -->
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.sling</groupId>-->
-                        <!--<artifactId>maven-sling-plugin</artifactId>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>install-bundle</id>-->
-                                <!--<phase>none</phase>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
+            <build>
+                <plugins>
+                    <!--NOTE: Do not install on AEM as this is not supported yet-->
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>maven-sling-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bundle</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

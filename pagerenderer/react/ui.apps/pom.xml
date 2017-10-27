@@ -38,7 +38,7 @@
         can be deployed with.
 
         This module is deployed with the
-        Profile "autoInstallPackage" which deploys both
+        Profile "installSling" or "installAEM" which deploys both
         this JCR Package as well as the core "OSGi Bundle".
         If you add more modules to your project then you need
         to add them to that profile and include here
