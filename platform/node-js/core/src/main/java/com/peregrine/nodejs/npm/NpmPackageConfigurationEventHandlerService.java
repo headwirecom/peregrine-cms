@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +29,12 @@ import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.getStringOrNull;
 import static com.peregrine.commons.util.PerUtil.loginService;
 import static com.peregrine.nodejs.util.NodeConstants.NODE_JS_SUB_SERVICE_NAME;
 import static com.peregrine.nodejs.util.NodeConstants.NPM_PACKAGE_CONFIG_PATH;
+import static com.peregrine.nodejs.util.NodeConstants.PACKAGES_PROPERTY_NAME;
+import static com.peregrine.nodejs.util.NodeConstants.VERSION_LATEST;
 import static org.apache.sling.api.resource.observation.ResourceChangeListener.CHANGES;
 import static org.apache.sling.api.resource.observation.ResourceChangeListener.PATHS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -74,18 +79,33 @@ public class NpmPackageConfigurationEventHandlerService
                     if(NodeConstants.NPM_PACKAGE_CONFIG_PRIMARY_TYPE.equals(primaryType)) {
                         ValueMap properties = getProperties(resource, false);
                         if(properties != null) {
-                            // Package List of NPM is not reliable and therefore not used here
-                            // Loop through all Properties and handle all non-jcr/non-sling properties
-                            // which are considered a package
-                            for(String packageName: properties.keySet()) {
-                                // Filter all properties with a color like jcr: or sling:
-                                //AS TODO: Can a Node Package have a colon in its name? If so we need to excluded specific prefixes
-                                if(packageName.indexOf(':') < 0) {
-                                    String packageVersion = properties.get(packageName, NodeConstants.VERSION_LATEST);
-                                    if(packageVersion.isEmpty() || packageVersion.equalsIgnoreCase(NodeConstants.VERSION_LATEST)) {
-                                        packageVersion = null;
+                            Object temp = properties.get(PACKAGES_PROPERTY_NAME);
+                            List<String> packages;
+                            log.trace("NPM Packages: '{}', class: '{}'", temp, temp == null ? "null" : temp.getClass());
+                            if(temp instanceof String[]) {
+                                packages = new ArrayList<String>(Arrays.asList((String[]) temp));
+                            } else {
+                                log.error("There is no '{}' property in node: '{}' or is of an unexpected type -> configuration ignored", PACKAGES_PROPERTY_NAME, resource.getPath());
+                                continue;
+                            }
+                            log.trace("NPM Packages: '{}'", packages);
+                            for(String packageName: packages) {
+                                if(packageName != null && !packageName.isEmpty()) {
+                                    String packageVersion = VERSION_LATEST;
+                                    int index = packageName.indexOf('@');
+                                    if(index == 0) {
+                                        log.error("Package has no name: '{}' -> ignored", packageName);
+                                        continue;
+                                    } else if(index == packageName.length() - 1) {
+                                        log.error("Package has @ but no version: '{}' -> use latest", packageName);
+                                        packageName = packageName.substring(0, index);
+                                    } else if(index > 0) {
+                                        // Package Version is provided
+                                        packageVersion = packageName.substring(index + 1);
+                                        packageName = packageName.substring(0, index);
                                     }
                                     try {
+                                        log.info("Install NPM Package Name: '{}' and Version: '{}'", packageName, packageVersion);
                                         npmExternalProcess.installPackage(false, packageName, packageVersion);
                                     } catch(ExternalProcessException e) {
                                         log.error("Failed to install package: " + packageName, e);
@@ -96,36 +116,12 @@ public class NpmPackageConfigurationEventHandlerService
                     }
                 } catch(LoginException e) {
                     log.error("Could not obtain Node JS Service Resource Resolver", e);
+                } catch(RuntimeException e) {
+                    log.error("Unexpected Exception while installing resource: " + change.getPath(), e);
                 } finally {
                     if(resourceResolver != null) { resourceResolver.close(); }
                 }
             }
         }
-    }
-
-    private Map getPackageFromList(String json, String name) {
-        Map answer = null;
-        Map jsonMap = null;
-        try {
-            jsonMap = convertToMap(json);
-            log.trace("NPM List report: '{}'", jsonMap);
-            if(jsonMap.containsKey(NodeConstants.DEPENDENCIES)) {
-                Map dependencies = (Map) jsonMap.get(NodeConstants.DEPENDENCIES);
-                if(dependencies.containsKey(name)) {
-                    answer = (Map) dependencies.get(name);
-                }
-            }
-        } catch(IOException e) {
-            log.warn("Failed to convert JSon: '" + json + "' into map", e);
-        }
-        return answer;
-    }
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-    public static Map convertToMap(String json) throws IOException {
-        Map answer = new LinkedHashMap();
-        if(json != null) {
-            answer = JSON_MAPPER.readValue(json, LinkedHashMap.class);
-        }
-        return answer;
     }
 }
