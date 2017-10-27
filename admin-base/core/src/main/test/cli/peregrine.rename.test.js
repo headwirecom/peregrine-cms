@@ -152,7 +152,7 @@ async function test() {
     console.log('Move the Source to the Target Folder')
     console.log('-------------------------------------------------------------------------------')
 
-    await request.post(rootUrl + `/api/admin/rename.json/path///content/${testFolderName}/source/sourceTest${index}//to//renameTest${index}`).auth(username, password, true).then( (data) => {
+    await request.post(rootUrl + `/perapi/admin/rename.json/path///content/${testFolderName}/source/sourceTest${index}//to//renameTest${index}`).auth(username, password, true).then( (data) => {
         debug(data)
     })
 

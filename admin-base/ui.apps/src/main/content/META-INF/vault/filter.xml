@@ -42,9 +42,9 @@
         folder otherwise they wipe all installed bundles.
     -->
     <filter root="/i18n/admin"/>
-    <filter root="/api/admin"/>
-    <filter root="/api/swaggereditor"/>
-    <filter root="/api/definitions"/>
+    <filter root="/perapi/admin"/>
+    <filter root="/perapi/swaggereditor"/>
+    <filter root="/perapi/definitions"/>
     <filter root="/content/admin"/>
     <filter root="/content/sites/docs"/>
     <filter root="/etc/felibs/admin"/>
@@ -81,4 +81,7 @@
     <filter root="/live">
         <exclude pattern="/live/.*"/>
     </filter>
+    <filter root="/oak:index/perComponent"/>
+    <filter root="/oak:index/perObjectDefinition"/>
+    <filter root="/oak:index/perPage"/>
 </workspaceFilter>

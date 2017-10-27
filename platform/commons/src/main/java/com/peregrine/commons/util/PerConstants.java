@@ -37,6 +37,8 @@ public class PerConstants {
     public static final String PER_REPLICATED = "per:Replicated";
     public static final String PER_REPLICATION_REF = "per:ReplicationRef";
 
+    public static final String RENDITION_ACTION = "rendition.json";
+
     public static final String ORDER_BEFORE_TYPE = "before";
     public static final String ORDER_AFTER_TYPE = "after";
     public static final String ORDER_CHILD_TYPE = "child";

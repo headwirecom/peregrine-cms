@@ -56,7 +56,7 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
- * Raw Query Based Search. This is not part of the '/api/admin' but rather '/bin'.
+ * Raw Query Based Search. This is not part of the '/perapi/admin' but rather '/bin'.
  */
 @Component(
     service = Servlet.class,

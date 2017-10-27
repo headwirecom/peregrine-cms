@@ -13,7 +13,7 @@
     "title": "echo",
     "version": "1.0"
   },
-  "basePath": "/api/admin",
+  "basePath": "/perapi/admin",
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "paths": {

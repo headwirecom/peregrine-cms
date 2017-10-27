@@ -48,7 +48,7 @@ import static junit.framework.Assert.fail;
 public class NPMPackageManagerServletIT
     extends SlingTestBase
 {
-    public static final String SERVLET_BASE_PATH =  "/api/nodejs";
+    public static final String SERVLET_BASE_PATH =  "/perapi/nodejs";
     public static final String SERVLET_LIST_PATH =  SERVLET_BASE_PATH + "/list";
     public static final String SERVLET_INSTALL_PATH =  SERVLET_BASE_PATH + "/package/install";
     public static final String SERVLET_REMOVE_PATH =  SERVLET_BASE_PATH + "/package/remove";

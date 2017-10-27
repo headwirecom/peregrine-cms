@@ -21,13 +21,11 @@ public class AdminConstants {
     public static final String TOUR_COMPONENT_PATH = "admin/components/tour";
     public static final String SEARCH_PATH = "/bin/search";
 
-    public static final String RENDITION_ACTION = "rendition.json";
     public static final String MODEL_JSON = ".model.json";
 
     public static final String NOT_PROVIDED = "not provided";
     public static final String INTO = "into";
     public static final String BEFORE_POSTFIX = "-before";
-    public static final String DEEP = "deep";
     public static final String SOURCE_NAME = "sourceName";
     public static final String SOURCE_PATH = "sourcePath";
     public static final String CURRENT = "current";

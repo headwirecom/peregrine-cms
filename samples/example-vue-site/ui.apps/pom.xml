@@ -38,12 +38,16 @@
         can be deployed with.
 
         This module is deployed with the
-        Profile "autoInstallPackage" which deploys both
+        Profile "autoInstallPackage" or "installAEM" which deploys both
         this JCR Package as well as the core "OSGi Bundle".
         If you add more modules to your project then you need
         to add them to that profile and include here
         as dependencies.
     </description>
+
+    <properties>
+        <noContent>false</noContent>
+    </properties>
 
     <dependencies>
 
@@ -139,7 +143,7 @@
                 <artifactId>wcmio-content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
-                    <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
+                    <!--<serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>-->
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
@@ -174,29 +178,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>autoInstallPackage</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.wcm.maven.plugins</groupId>
-                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <group>com.peregrine-cms.example</group>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install-package</id>
-                                <goals>
-                                    <goal>install</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

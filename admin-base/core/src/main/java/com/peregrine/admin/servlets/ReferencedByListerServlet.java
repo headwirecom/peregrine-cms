@@ -25,8 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -88,12 +88,12 @@ public class ReferencedByListerServlet extends AbstractBaseServlet {
         String sourcePath = request.getParameter (PATH);
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
-            List<com.peregrine.admin.replication.Reference> references = referenceLister.getReferencedByList(source);
+            List<com.peregrine.replication.Reference> references = referenceLister.getReferencedByList(source);
             JsonResponse answer = new JsonResponse();
             answer.writeAttribute(SOURCE_NAME, source.getName());
             answer.writeAttribute(SOURCE_PATH, source.getPath());
             answer.writeArray(REFERENCED_BY);
-            for(com.peregrine.admin.replication.Reference child : references) {
+            for(com.peregrine.replication.Reference child : references) {
                 answer.writeObject();
                 answer.writeAttribute(NAME, child.getResource().getName());
                 answer.writeAttribute(PATH, child.getResource().getPath());

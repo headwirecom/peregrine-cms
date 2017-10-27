@@ -29,7 +29,7 @@ let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
 import { stripNulls} from './utils'
 
-const API_BASE = '/api'
+const API_BASE = '/perapi'
 const postConfig = {
     withCredentials: true
 }

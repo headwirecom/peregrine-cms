@@ -52,9 +52,9 @@ To install the OSGi bundle use the project **autoInstallBundle**:
     mvn clean install -P autoInstallBundle
 
 To install the Content together with the core bundle
-use the project **autoInstallPackage**:
+use the project **installSling** or **installAEM**:
 
-    mvn clean install -P autoInstallPackage
+    mvn clean install -P installSling
 
 ##### ATTENTION
 

@@ -17,7 +17,7 @@ schemes:
   - http
 
 # will be prefixed to all paths
-basePath: /api/nodejs
+basePath: /perapi/nodejs
 
 produces:
   - application/json

@@ -40,7 +40,7 @@ Please use the [Swagger UI](http://localhost:8080/api/swaggereditor/), look for 
 and click on **try it out**, enter the parameter values on the click on **Execute**.
 
 The **name** of the distribution service is the name of a service that implements the
-*com.peregrine.admin.replication.Replication* interface. If the name could not be found
+*com.peregrine.replication.Replication* interface. If the name could not be found
 the call ends with an exception.
 
 # Local, intra-Peregrine Copies

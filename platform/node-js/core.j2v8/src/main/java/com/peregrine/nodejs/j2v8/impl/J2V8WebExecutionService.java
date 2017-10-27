@@ -79,6 +79,7 @@ public class J2V8WebExecutionService
             }
         };
         answer.getRuntime().registerJavaMethod(outCallback, SLINGNODE_HTTPOUT);
+        log.trace("Registered: '{}'", SLINGNODE_HTTPOUT);
 
         answer.getRuntime().registerJavaMethod(
             new JavaCallback() {

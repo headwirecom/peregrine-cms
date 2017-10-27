@@ -25,8 +25,8 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.replication.ReferenceLister;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

@@ -96,7 +96,7 @@ echo ""
 echo "Move the Source to the Targe Folder"
 echo "-------------------------------------------------------------------------------"
 echo ""
-curl --user $SLING_USER:$SLING_PASSWORD -X "POST" "http://$SLING_HOST:$SLING_PORT/api/admin/move.json/path///content/move-resource-test/source/testS1//to//$toPath//type//$moveType"
+curl --user $SLING_USER:$SLING_PASSWORD -X "POST" "http://$SLING_HOST:$SLING_PORT/perapi/admin/move.json/path///content/move-resource-test/source/testS1//to//$toPath//type//$moveType"
 
 echo ""
 echo ""

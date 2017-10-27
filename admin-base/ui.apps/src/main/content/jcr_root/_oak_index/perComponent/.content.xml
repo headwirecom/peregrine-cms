@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:oak="http://jackrabbit.apache.org/oak/ns/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+
+          jcr:primaryType="oak:QueryIndexDefinition"
+          declaringNodeTypes="{Name}[per:Component]"
+          info="Oak index for queries with Peregrine Component node type"
+          nodeTypeListDefined="{Boolean}true"
+          propertyNames="{Name}[jcr:primaryType,jcr:mixinTypes]"
+          type="property"
+          version="{Long}1"
+/>

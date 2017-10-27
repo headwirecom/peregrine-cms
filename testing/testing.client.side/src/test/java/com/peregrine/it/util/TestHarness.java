@@ -21,7 +21,7 @@ import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
  */
 public class TestHarness {
 
-    public static final String ADMIN_PREFIX_URL = "/api/admin/";
+    public static final String ADMIN_PREFIX_URL = "/perapi/admin/";
 
     private static final Logger logger = LoggerFactory.getLogger(TestHarness.class.getName());
 
