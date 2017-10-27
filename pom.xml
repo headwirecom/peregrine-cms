@@ -700,9 +700,8 @@
             </build>
         </profile>
         <profile>
-            <id>installSling</id>
+            <id>autoInstallPackage</id>
             <properties>
-                <!--<deployTo>true</deployTo>-->
                 <targetServiceUrl>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</targetServiceUrl>
             </properties>
             <build>
@@ -734,7 +733,6 @@
         <profile>
             <id>installAEM</id>
             <properties>
-                <!--<deployTo>true</deployTo>-->
                 <targetServiceUrl>http://localhost:4502/crx/packmgr/service</targetServiceUrl>
             </properties>
             <build>

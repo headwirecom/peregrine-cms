@@ -139,7 +139,7 @@
 
     <profiles>
         <profile>
-            <id>installSling</id>
+            <id>autoInstallPackage</id>
             <build>
                 <plugins>
                     <plugin>
