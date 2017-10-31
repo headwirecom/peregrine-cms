@@ -96,7 +96,8 @@
 
                 }
             }
-            &.field-pathbrowser {
+            &.field-pathbrowser,
+            &.field-iconbrowser {
                 .wrap {
                     img {
                         max-width: 100%;
@@ -115,6 +116,24 @@
                         }
                     }
                 } 
+            }
+            &.field-iconbrowser {
+                .wrap {
+                    position: relative;
+                    .icon {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        botton: 0;
+                        padding-left: 15px;
+                        > i {
+                            line-height: 45px;
+                        }
+                    }
+                    input {
+                        padding-left: 45px;
+                    }
+                }
             }
             &.field-material-datepicker {
                 .wrap {
