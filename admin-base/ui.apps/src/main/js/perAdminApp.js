@@ -529,6 +529,20 @@ function notifyUserImpl(title, message, options) {
 }
 
 /**
+ * implementation of $perAdminApp.iconBrowser()
+ *
+ * @private
+ * @param selected
+ * @param options
+ */
+function iconBrowserImpl(selected, options) {
+    set(view, '/state/iconbrowser/family', false)
+    set(view, '/state/iconbrowser/selected', selected)
+    set(view, '/state/iconbrowser/original', selected)
+    $('#iconBrowserModal').modal('open', options)
+}
+
+/**
  * implemenation of $perAdminApp.pathBrowser()
  *
  * @private
@@ -849,6 +863,19 @@ var PerAdminApp = {
      */
     notifyUser(title, message, options) {
         notifyUserImpl(title, message, options)
+    },
+
+    /**
+     * open an icon browser
+     *
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param selected
+     * @param options
+     */
+    iconBrowser(selected, options) {
+        iconBrowserImpl(selected, options)
     },
 
     /**
