@@ -146,11 +146,15 @@
         onAddItem(e){
         if(!this.schema.multifield){
           var newChild = '';
+            if(!this.value || this.value === '')
+            {
+                Vue.set(this, 'value', new Array())
+            }
         } else {
             var newChild = { name: 'n' + Date.now()}
             this.prepModel(newChild, this.schema)
+            newChild['sling:resourceType'] = this.schema.resourceType
         }
-        newChild['sling:resourceType'] = this.schema.resourceType
         this.value.push(newChild)
 //          Vue.set(this.value, this.value.length -1, newChild)
         this.onSetActiveItem(this.value.length - 1)
