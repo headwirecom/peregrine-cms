@@ -1,0 +1,58 @@
+.pathbrowser.iconbrowser {
+  padding-top: 96px;
+  &.modal {
+    .iconbrowser-header {
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: transparent;
+      height: 96px;
+      width: auto;
+      white-space: nowrap;
+      z-index: 10;
+      padding: 0 0.75rem;
+      .iconbrowser-options {
+        height: 48px;
+        margin: 0;
+        list-style: none;
+        > li {
+          display: inline-block;
+          list-style-type: none;
+        }
+      }
+      .range-field {
+        height: 48px;
+        width: 100%;
+        margin: 0;
+      }
+    }
+    .modal-content {
+      height: calc(100% - 96px - 56px);
+      .col-browse {
+        width: 100%;
+      }
+    }
+    .modal-footer {
+      .selected-path {
+        > i {
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+  
+  /* tablet styles */
+	@media #{$medium-and-up} {
+		&.modal {
+			.modal-content {
+				.col-browse {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
