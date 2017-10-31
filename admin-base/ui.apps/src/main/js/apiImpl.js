@@ -41,11 +41,12 @@ function fetch(path) {
     logger.fine('Fetch ', path)
     return axios.get(API_BASE+path).then( (response) => {
         return new Promise( (resolve, reject) => {
-            // TODO 
+
             // Fix for IE11
-            // if(response.request.responseURL.indexOf('/system/sling/form/login') >= 0) {
-            //     reject('need to authenticate')
-            // }
+            if((typeof response.data === 'string' && response.data.startsWith("<!DOCTYPE")) || (response.request && response.request.responseURL && response.request.responseURL.indexOf('/system/sling/form/login') >= 0)) {
+                window.location = '/system/sling/form/login'
+                reject('need to authenticate')
+            }
             resolve(response.data)
         })
     }).catch( (error) => { logger.error('Fetch request to',
@@ -169,7 +170,7 @@ class PerAdminImpl {
 
     populateUser() {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/access.json')
+            fetch('/admin/access.json?'+(new Date()).getTime())
                 .then( (data) => {
                     populateView('/state', 'user', data.userID)
                     if(data.userID === 'anonymous') {
