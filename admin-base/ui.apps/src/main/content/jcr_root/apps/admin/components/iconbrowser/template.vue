@@ -88,7 +88,9 @@
         </div>
     </div>
     <div class="modal-footer">
-        <span class="selected-path"><i class="material-icons">{{selectedIcon}}</i> {{selectedIcon}}</span>
+        <span class="selected-path">
+            <i v-if="selectedIcon" v-bind:class="getIconClass(selectedIcon)">{{getIconClass(selectedIcon) === 'material-icons' ? selectedIcon : ''}}</i> {{selectedIcon}}
+        </span>
         <button type="button" class="modal-action modal-close waves-effect waves-green btn-flat" v-on:click.prevent=
         "onModalCancel">Cancel</button>
         <button type="button" class="modal-action modal-close waves-effect waves-green btn-flat" v-on:click.prevent=
@@ -120,10 +122,7 @@
                 cardSize: 120,
                 search: '',
                 icons: {
-                    fontAwesome: [
-
-                    ],
-                    materialIcons:[
+                    material:[
                         '3d_rotation',
                         'accessibility',
                         'accessible',
@@ -293,16 +292,10 @@
                 return $perAdminApp.getNodeFromViewOrNull('/state/iconbrowser/selected')
             },
             families(){
-                var iconFamilies = [ 'all']
-                for (var property in this.icons) {
-                    if (this.icons.hasOwnProperty(property)) {
-                        iconFamilies.push(property)
-                    }
-                }
-                return iconFamilies
+                return $perAdminApp.getNodeFromViewOrNull('/state/iconbrowser/families')
             },
             list(){
-                var selectedFamily = this.camelize(this.selectedFamily)
+                var selectedFamily = this.selectedFamily
                 if(selectedFamily === 'all'){
                     console.log('selected all families')
                     var icons = []
@@ -320,7 +313,8 @@
             }
         },
         methods: {
-            iconBrowserModalOpen(that, target) {
+            iconBrowserModalOpen(that, options) {
+                $('#iconBrowserModal').modal('open', options)
                 Vue.nextTick(function () {
                     that.$refs.isotope.layout('masonry')
                 })
@@ -330,7 +324,7 @@
                 return (icon.indexOf(this.search) >= 0)
             },
             selectFamily(family){
-                $perAdminApp.getNodeFromView('/state/iconbrowser').family = family
+                this.selectedFamily = this.camelize(family)
             },
             isSelected(icon) {
                 return this.selectedIcon === icon 
@@ -347,8 +341,21 @@
                     this.$refs.isotope.layout(layout)
                 })
             },
-            getFamily(){
-                return
+            getIconClass(icon) {
+                console.log('getIconClass for icon: ', icon)
+                var iconClass
+                switch(icon) {
+                    case (icon.includes('_')):
+                        iconClass = 'material-icons'
+                        break
+                    case (icon.includes('fa')):
+                        iconClass = 'fa ' + icon
+                        break
+                    default:
+                        iconClass = 'material-icons'
+                }
+                console.log('icon class: ', iconClass)
+                return iconClass
             },
             getIsotopeOptions: function() {
                 return {
