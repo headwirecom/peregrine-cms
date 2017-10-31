@@ -38,10 +38,10 @@
           <i class="material-icons">insert_drive_file</i>
         </button>
         <div class="icon">
-            <i :class="getIconFamily(value)">{{value}}</i>
+            <i v-bind:class="getIconFamily(value)">{{value}}</i>
         </div>
       </template>
-      <p v-else>{{value}}</p>
+      <p v-else><i v-bind:class="getIconFamily(value)">{{value}}</i> {{value}}</p>
     </div>
 </template>
 
@@ -52,46 +52,51 @@
         methods: {
             setIconValue(){
                 this.value = $perAdminApp.getNodeFromView('/state/iconbrowser/selected')
+                console.log('this.value: ', this.value)
             }, 
             browse() {
                 let selectedIcon = this.value
-                let options = this.schema.iconOptions
+                let families = this.schema.families
+                console.log('this.schema: ', this.schema)
+                let initialModalState = {
+                    families: families,
+                    selected: selectedIcon
+                }
+                let options = this.schema.modalOptions
                 if(!options) {
                     console.warn('No options specified.')
                     options = {}
                 }
                 options.complete = this.setIconValue 
                 // set pathbrowser modal initial state
-                $perAdminApp.iconBrowser(selectedIcon, options)
-                /* modal options:
-                {
-                    dismissible: true, // Modal can be dismissed by clicking outside of the modal
-                    opacity: .5, // Opacity of modal background
-                    inDuration: 300, // Transition in duration
-                    outDuration: 200, // Transition out duration
-                    startingTop: '4%', // Starting top style attribute
-                    endingTop: '10%', // Ending top style attribute
-                    ready: function(modal, trigger) {}, // Callback for Modal open. Modal and trigger parameters available.
-                    complete: function(){} // Callback for Modal close
-                }
-                */
+                $perAdminApp.iconBrowser(initialModalState, options)
+                // {
+                //     dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                //     opacity: .5, // Opacity of modal background
+                //     inDuration: 300, // Transition in duration
+                //     outDuration: 200, // Transition out duration
+                //     startingTop: '4%', // Starting top style attribute
+                //     endingTop: '10%', // Ending top style attribute
+                //     ready: function(modal, trigger) {}, // Callback for Modal open. Modal and trigger parameters available.
+                //     complete: function(){} // Callback for Modal close
+                // }
+                
             },
             getIconFamily(icon) {
                 console.log('getIconFamily: ', icon)
-                // var iconFamily
-                // switch(icon) {
-                //     case (icon.incldues('_')):
-                //         iconFamily = 'material-icons'
-                //         break
-                //     case (icon.incldues('fa')):
-                //         iconFamily = 'font-awesome'
-                //         break
-                //     default:
-                //         iconFamily = 'material-icons'
-                // }
-                // console.log('returning: ', iconFamily)
-                // return iconFamily
-                return 'material-icons'
+                var iconFamily
+                switch(icon) {
+                    case (icon.includes('_')):
+                        iconFamily = 'material-icons'
+                        break
+                    case (icon.includes('fa')):
+                        iconFamily = 'font-awesome'
+                        break
+                    default:
+                        iconFamily = 'material-icons'
+                }
+                console.log('returning: ', iconFamily)
+                return iconFamily
             }
         }
     }
