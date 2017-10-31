@@ -532,15 +532,15 @@ function notifyUserImpl(title, message, options) {
  * implementation of $perAdminApp.iconBrowser()
  *
  * @private
- * @param selected
+ * @param state
  * @param options
  */
-function iconBrowserImpl(selected, options) {
-    set(view, '/state/iconbrowser/family', false)
+function iconBrowserImpl(state, options) {
+    let { selected, families } = state
+    set(view, '/state/iconbrowser/families', families)
     set(view, '/state/iconbrowser/selected', selected)
     set(view, '/state/iconbrowser/original', selected)
-    $('#iconBrowserModal').modal('open', options)
-    actionImpl($perAdminApp.getApp().$children[0], 'iconBrowserModalOpen', {})
+    actionImpl($perAdminApp.getApp().$children[0], 'iconBrowserModalOpen', options)
 }
 
 /**
@@ -872,11 +872,11 @@ var PerAdminApp = {
      *
      * @memberOf PerAdminApp
      * @method
-     * @param selected
+     * @param state
      * @param options
      */
-    iconBrowser(selected, options) {
-        iconBrowserImpl(selected, options)
+    iconBrowser(state, options) {
+        iconBrowserImpl(state, options)
     },
 
     /**
