@@ -69,7 +69,6 @@
                             <div 
                                 v-if="searchFilter(icon)"
                                 :class="isSelected(icon) ? 'item-file selected' : 'item-file'"
-                                :title="icon"
                                 v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
                                 v-on:click.stop.prevent="selectIcon(icon)"
                                 v-bind:title="icon">
