@@ -263,5 +263,13 @@
     "hint": "This is the datetime picker.",
     "required": true,
     "validator": "required"
+  },
+  {
+    "type": "iconbrowser",
+    "label": "Icon Browser",
+    "model": "icon",
+    "required": true,
+    "validator": "required"
   }
+
 ]}
