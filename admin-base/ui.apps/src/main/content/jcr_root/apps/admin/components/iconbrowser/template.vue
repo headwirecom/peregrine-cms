@@ -320,6 +320,11 @@
             }
         },
         methods: {
+            iconBrowserModalOpen(that, target) {
+                Vue.nextTick(function () {
+                    that.$refs.isotope.layout('masonry')
+                })
+            },
             searchFilter(icon) {
                 if(this.search.length === 0) return true
                 return (icon.indexOf(this.search) >= 0)

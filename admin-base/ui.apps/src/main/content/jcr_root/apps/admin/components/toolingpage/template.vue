@@ -29,7 +29,7 @@
         </template>
         <admin-components-notifyuser></admin-components-notifyuser>
         <admin-components-pathbrowser></admin-components-pathbrowser>
-        <admin-components-iconbrowser></admin-components-iconbrowser>
+        <admin-components-iconbrowser ref="iconbrowser"></admin-components-iconbrowser>
     </div>
 </template>
 

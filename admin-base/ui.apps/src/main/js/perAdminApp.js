@@ -540,6 +540,7 @@ function iconBrowserImpl(selected, options) {
     set(view, '/state/iconbrowser/selected', selected)
     set(view, '/state/iconbrowser/original', selected)
     $('#iconBrowserModal').modal('open', options)
+    actionImpl($perAdminApp.getApp().$children[0], 'iconBrowserModalOpen', {})
 }
 
 /**
