@@ -37,6 +37,10 @@
         This is a set of Client Side Servlets Integration Tests
     </description>
 
+    <properties>
+        <targetServiceUrl>http://localhost:${http.port}/bin/cpm/package.service.html</targetServiceUrl>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -54,6 +58,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>base.core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>replication.core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -269,6 +279,7 @@
                             <userId>${sling.user}</userId>
                             <password>${sling.password}</password>
                             <failOnMissingEmbed>true</failOnMissingEmbed>
+                            <serviceURL>${targetServiceUrl}</serviceURL>
                         </configuration>
                         <executions>
                             <execution>
@@ -287,6 +298,12 @@
                                         <packageFile>
                                             <groupId>${project.groupId}</groupId>
                                             <artifactId>external</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>zip</type>
+                                        </packageFile>
+                                        <packageFile>
+                                            <groupId>${project.groupId}</groupId>
+                                            <artifactId>replication.ui.apps</artifactId>
                                             <version>${project.version}</version>
                                             <type>zip</type>
                                         </packageFile>

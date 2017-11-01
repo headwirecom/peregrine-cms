@@ -98,7 +98,8 @@ public class PeregrineAdapterFactory
     @SuppressWarnings("unchecked")
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
-        if(type.equals(PerPage.class)) {
+        log.trace("Get Adapter for Type: '{}' and Resource: '{}', ", type.getName(), resource);
+        if(type.getName().equals(PerPage.class.getName())) {
             String primaryType = PerUtil.getPrimaryType(resource);
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
@@ -112,7 +113,7 @@ public class PeregrineAdapterFactory
                     return (AdapterType) answer;
                 }
             }
-        } else if(type == PerAsset.class) {
+        } else if(type.getName().equals(PerAsset.class.getName())) {
             String primaryType = PerUtil.getPrimaryType(resource);
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerAssetImpl(resource);
@@ -121,7 +122,7 @@ public class PeregrineAdapterFactory
             }
             return (AdapterType) new PerAssetImpl(resource);
         } else {
-            log.debug("Unable to adapt unknown resource {} to type {}", resource, type.getName());
+            log.warn("Unable to adapt unknown resource {} to type {}", resource, type.getName());
         }
         return null;
     }
