@@ -24,15 +24,15 @@
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
-        <artifactId>felib.parent</artifactId>
+        <artifactId>replication.parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>felib.ui.apps</artifactId>
+    <artifactId>replication.ui.apps</artifactId>
     <packaging>content-package</packaging>
 
-    <name>Peregrine CMS - Platform - Felib - UI Apps</name>
+    <name>Peregrine CMS - Platform - Replication - UI Apps</name>
     <description>
         This is an empty JCR Package where the JCR Content
         can be deployed with.
@@ -52,40 +52,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>felib.core</artifactId>
+            <artifactId>replication.core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
-        <resources>
-            <!-- define the resources that will go into the package -->
-            <resource>
-                <!--
-                    we want to keep some of the META-INF files and not configure
-                    everything in the plugin.
-                -->
-                <directory>${basedir}/src/main/content/META-INF</directory>
-                <targetPath>../vault-work/META-INF</targetPath>
-            </resource>
-            <resource>
-                <directory>${basedir}/src/main/content/jcr_root</directory>
-                <excludes>
-                    <!-- exclude .vlt control files in the package -->
-                    <exclude>**/.vlt</exclude>
-                    <exclude>**/.vltignore</exclude>
-                    <exclude>**/.gitignore</exclude>
-                    <exclude>**/*.iml</exclude>
-                    <exclude>**/.classpath</exclude>
-                    <exclude>**/.project</exclude>
-                    <exclude>**/.settings</exclude>
-                    <exclude>**/.DS_Store</exclude>
-                    <exclude>**/target/**</exclude>
-                    <exclude>**/pom.xml</exclude>
-                </excludes>
-            </resource>
-        </resources>
-
         <plugins>
             <plugin>
                 <groupId>io.wcm.maven.plugins</groupId>
@@ -104,11 +76,11 @@
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <embeddedTarget>/apps/felib/install</embeddedTarget>
+                            <embeddedTarget>/apps/per/install</embeddedTarget>
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>felib.core</artifactId>
+                                    <artifactId>replication.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
@@ -118,26 +90,37 @@
                                     <name>base.ui.apps</name>
                                     <version>${project.version}</version>
                                 </dependency>
+                                <dependency>
+                                    <group>${project.groupId}</group>
+                                    <name>external</name>
+                                    <version>${project.version}</version>
+                                </dependency>
                             </dependencies>
                             <!-- ATTENTION: Do not include this package as sub package which would yield an endless loop -->
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <configuration>
-                    <licenseName>peregrine-cms-license</licenseName>
-                    <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
-                    <excludes>
-                        <!-- Need to provide a pattern that deals with folders as well -->
-                        <exclude>**/css.html</exclude>
-                        <exclude>**/js.html</exclude>
-                        <exclude>**/lib.html</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>installAEM</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.wcm.maven.plugins</groupId>
+                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>install-package</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -105,6 +105,13 @@
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
+                            <dependencies>
+                                <dependency>
+                                    <group>${project.groupId}</group>
+                                    <name>base.ui.apps</name>
+                                    <version>${project.version}</version>
+                                </dependency>
+                            </dependencies>
                             <!-- ATTENTION: Do not include this package as sub package which would yield an endless loop -->
                         </configuration>
                     </execution>

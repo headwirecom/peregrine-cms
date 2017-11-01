@@ -127,8 +127,8 @@
         </plugins>
     </build>
 
-  <modules>
-    <module>core</module>
-    <module>ui.apps</module>
-  </modules>
+    <modules>
+        <module>core</module>
+        <module>ui.apps</module>
+    </modules>
 </project>

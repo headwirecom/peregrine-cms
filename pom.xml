@@ -188,7 +188,7 @@
                 <plugin>
                     <groupId>io.wcm.maven.plugins</groupId>
                     <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                    <version>1.5.0</version>
+                    <version>1.6.0</version>
                     <configuration>
                         <userId>${sling.user}</userId>
                         <password>${sling.password}</password>
