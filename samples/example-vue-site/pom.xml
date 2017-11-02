@@ -31,23 +31,7 @@
     <packaging>pom</packaging>
 
     <name>Peregrine CMS - Example Vue Parent</name>
-    <description>example site Parent POM</description>
-
-    <!--
-        ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'
-                   Both of these modules are empty and you can start filling
-                   it in with your files.
-                   There are two other modules: 'core.example' and 'ui.apps.example'
-                   with have the same structure but have provide examples
-                   for showing a Page with the usage of a Sling Model. The
-                   idea is that a developer can copy any file he wants into
-                   the regular module. Unfortunately the Maven Archetype
-                   generating this project is adding all four modules to
-                   this POM. Even though the POMs for the example modules
-                   will not deploy it is best to remove them from this POM.
-
-                   Look for the modules at the end of this file.
-    -->
+    <description>Example site Parent POM</description>
 
     <properties>
         <sling.host>localhost</sling.host>

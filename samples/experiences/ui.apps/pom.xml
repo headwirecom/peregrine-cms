@@ -34,15 +34,7 @@
 
     <name>experiences - UI Apps</name>
     <description>
-        This is an empty JCR Package where the JCR Content
-        can be deployed with.
-
-        This module is deployed with the
-        Profile "autoInstallPackage" which deploys both
-        this JCR Package as well as the core "OSGi Bundle".
-        If you add more modules to your project then you need
-        to add them to that profile and include here
-        as dependencies.
+        Peregrine CMS Sample Experiences JCR Package.
     </description>
 
     <dependencies>

@@ -34,15 +34,7 @@
 
     <name>Peregrine CMS - Admin - Materialize</name>
     <description>
-        This is an empty JCR Package where the JCR Content
-        can be deployed with.
-
-        This module is deployed with the
-        Profile "autoInstallPackage" or "installAEM" which deploys both
-        this JCR Package as well as the core "OSGi Bundle".
-        If you add more modules to your project then you need
-        to add them to that profile and include here
-        as dependencies.
+        JCR Package for Peregrine CMS providing support for Materialize.
     </description>
 
     <properties>
@@ -50,10 +42,12 @@
     </properties>
 
     <dependencies>
+        <!-- This is not a real dependency but rather a way to make sure this is installed after admin.ui.apps -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>admin.core</artifactId>
+            <artifactId>admin.ui.apps</artifactId>
             <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.github.eirslett/frontend-maven-plugin -->
@@ -157,17 +151,10 @@
                         </goals>
                         <configuration>
                             <embeddedTarget>/apps/admin/install</embeddedTarget>
-                            <embeddeds>
-                                <embedded>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>admin.core</artifactId>
-                                    <generateFilter>true</generateFilter>
-                                </embedded>
-                            </embeddeds>
                             <dependencies>
                                 <dependency>
                                     <group>${project.groupId}</group>
-                                    <name>base.ui.apps</name>
+                                    <name>admin.ui.apps</name>
                                     <version>${project.version}</version>
                                 </dependency>
                             </dependencies>

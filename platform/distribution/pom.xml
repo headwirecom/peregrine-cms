@@ -33,7 +33,7 @@
 
     <name>Peregrine CMS - Platform - Distribution (Configuration)</name>
     <description>
-        The Apache Sling Distribution for Peregerine CMS bundle provides the necessary configurations and custom component implementations.
+        The Apache Sling Distribution for Peregrine CMS bundle provides the necessary configurations and custom component implementations.
     </description>
 
     <build>

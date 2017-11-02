@@ -31,7 +31,7 @@
     <packaging>pom</packaging>
 
     <name>Peregrine CMS - Page Render Vue Parent</name>
-    <description>peregrine vuejs page renderer Parent POM</description>
+    <description>Peregrine Vue JS Page Renderer Parent POM</description>
 
     <!--
         ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'

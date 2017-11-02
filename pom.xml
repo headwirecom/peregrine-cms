@@ -14,6 +14,8 @@
         <name>headwire inc.</name>
     </organization>
 
+    <description>Peregrine CMS Root POM. It contains the plugin and dependencies definitions and profiles</description>
+
     <properties>
         <sling.host>localhost</sling.host>
         <sling.port>8080</sling.port>
@@ -685,7 +687,6 @@
                             <executable>gpg2</executable>
                             <executable>${gpg.executable}</executable>
                             <passphrase>${gpg.passphrase}</passphrase>
-                            <!--<passphrase>Headwire@2017</passphrase>-->
                             <useAgent>${gpg.useagent}</useAgent>
                         </configuration>
                         <executions>

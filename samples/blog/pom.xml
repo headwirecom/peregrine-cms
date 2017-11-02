@@ -30,7 +30,7 @@
     <artifactId>blog.parent</artifactId>
     <packaging>pom</packaging>
 
-    <description>blog Parent POM</description>
+    <description>Peregrine CMS Blog Parent POM</description>
 
     <!--
         ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'

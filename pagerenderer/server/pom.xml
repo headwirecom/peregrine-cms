@@ -30,7 +30,7 @@
     <artifactId>pagerender-server.parent</artifactId>
     <packaging>pom</packaging>
 
-    <description>peregrine server page renderer Parent POM</description>
+    <description>Peregrine Server Page Renderer Parent POM</description>
 
     <!--
         ATTENTION: This archetype creates two modules: 'core' and 'ui.apps'
