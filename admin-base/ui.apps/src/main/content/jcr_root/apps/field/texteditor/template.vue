@@ -44,6 +44,8 @@
             <button tabindex="-1" class="ql-script" value="super"></button>
             <button tabindex="-1" class="ql-indent" value="-1"></button>
             <button tabindex="-1" class="ql-indent" value="+1"></button>
+            <select tabindex="-1" class="ql-color" value="[]"></select>
+            <select tabindex="-1" class="ql-background"></select>
             <button tabindex="-1" class="ql-code-block"></button>
             <button tabindex="-1" class="ql-clean"></button>
         </div>
