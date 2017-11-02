@@ -38,10 +38,10 @@
           <i class="material-icons">insert_drive_file</i>
         </button>
         <div class="icon">
-            <i v-bind:class="getIconFamily(value)">{{value}}</i>
+            <i v-bind:class="getIconClass(value)">{{getIconText(value)}}</i>
         </div>
       </template>
-      <p v-else><i v-bind:class="getIconFamily(value)">{{value}}</i> {{value}}</p>
+      <p v-else><i v-bind:class="getIconClass(value)">{{getIconText(value)}}</i>{{value}}</p>
     </div>
 </template>
 
@@ -82,21 +82,26 @@
                 // }
                 
             },
-            getIconFamily(icon) {
-                console.log('getIconFamily: ', icon)
-                var iconFamily
-                switch(icon) {
+            getIconText(icon){
+                if(this.getIconClass(icon) === 'material-icons'){
+                    return icon
+                }
+                return ''
+                
+            },
+            getIconClass(icon) {
+                var iconClass
+                switch(true) {
                     case (icon.includes('_')):
-                        iconFamily = 'material-icons'
+                        iconClass = 'material-icons'
                         break
                     case (icon.includes('fa')):
-                        iconFamily = 'font-awesome'
+                        iconClass = 'fa ' + icon
                         break
                     default:
-                        iconFamily = 'material-icons'
+                        iconClass = 'material-icons'
                 }
-                console.log('returning: ', iconFamily)
-                return iconFamily
+                return iconClass
             }
         }
     }
