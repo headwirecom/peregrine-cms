@@ -28,4 +28,9 @@
           jcr:primaryType="per:Component"
           jcr:title="Text"
           group="Content"
-          />
+          >
+    <jcr:content
+            jcr:primaryType="nt:unstructured"
+            text="example">
+    </jcr:content>
+</jcr:root>
