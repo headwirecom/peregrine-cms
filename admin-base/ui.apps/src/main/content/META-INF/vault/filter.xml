@@ -61,7 +61,6 @@
         <exclude pattern="/apps/admin/install/.*"/>
     </filter>
     <filter root="/apps/field"/>
-    <filter root="/index.html"/>
     <filter root="/empty.png"/>
     <filter root="/favicon.ico"/>
     <filter root="/live">

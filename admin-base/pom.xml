@@ -102,9 +102,10 @@
         </plugins>
     </build>
 
-  <modules>
-    <module>core</module>
-      <module>materialize</module>
-    <module>ui.apps</module>
-  </modules>
+    <modules>
+        <module>core</module>
+        <module>materialize</module>
+        <module>ui.apps</module>
+        <module>sling.ui.apps</module>
+    </modules>
 </project>
