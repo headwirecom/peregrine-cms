@@ -13,32 +13,106 @@
       width: auto;
       white-space: nowrap;
       z-index: 10;
-      padding: 0 0.75rem;
       .iconbrowser-options {
+        display: inline-block;
+        float: left;
         height: 48px;
         margin: 0;
         list-style: none;
-        > li {
-          display: inline-block;
-          list-style-type: none;
+        width: 15%;
+        .dropdown-button {
+          position: relative;
+          height: 47px;
+          border: 0;
+          color: #fff;
+          background-color: color("blue-grey", "darken-1");
+          display: block;
+          width: 100%;
+          padding: 0 0.75rem;
+          font-size: 14px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-align: left;
+          &:after {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            margin-top: -7.5px;
+            display: inline-block;
+            color:color("blue-grey", "lighten-5");
+            content: "\25BC";
+            font-size: 10px;
+            transition: transform 0.2s ease;
+          }
+          &.active {
+              &:after {
+                transform: rotate(180deg);
+              }
+          }
+        }
+      }
+      .iconbrowser-filter {
+        display: inline-block;
+        float: left;
+        width: 85%;
+        height: 48px;
+        input {
+          height: 47px;
+          border-left: 0;
+          border-right: 0;
         }
       }
       .range-field {
         height: 48px;
-        width: 100%;
-        margin: 0;
+        width: calc(100% - 1.5rem);
+        position: absolute;
+        top: 48px;
+        left: 0.75rem;
       }
     }
     .modal-content {
       height: calc(100% - 96px - 56px);
       .col-browse {
         width: 100%;
+        .item-icon {
+          cursor: pointer;
+          width: auto;
+          max-width: 100%;
+          margin-bottom: 15px;
+          text-align: center;
+          background-color: color("blue-grey", "lighten-5");
+          .item-content {
+            width: 100%;
+            color: color("blue-grey", "darken-2");
+            position: absolute;
+            top: 50%;
+            transform: translateY(-60%);
+            padding: 0.75rem;
+            i {
+              color: color("blue-grey", "darken-1");
+            }
+            > .truncate {
+              width: 100%;
+            }
+          }
+          &.selected {
+            background-color: color("blue-grey", "base");
+            .item-content {
+              i,
+              > .truncate {
+                color: color("blue-grey", "lighten-5");
+              }
+            }
+          }
+        }
       }
     }
     .modal-footer {
       .selected-path {
         > i {
           vertical-align: middle;
+          font-size: 2em;
+          padding-right: 0.75rem;
         }
       }
     }
