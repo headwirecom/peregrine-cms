@@ -19,5 +19,8 @@
     "selenium-install": "selenium-standalone install"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "wdio": "^1.0.3"
+  }
 }
