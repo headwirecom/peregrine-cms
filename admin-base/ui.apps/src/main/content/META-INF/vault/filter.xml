@@ -48,24 +48,10 @@
     <filter root="/content/admin"/>
     <filter root="/content/sites/docs"/>
     <filter root="/etc/felibs/admin"/>
-    <filter root="/content/templates">
-        <include pattern="/content/templates/jcr:content.*"/>
-        <exclude pattern="/content/templates/.*"/>
-    </filter>
-    <filter root="/content/assets">
-        <include pattern="/content/assets/jcr:content.*"/>
-        <exclude pattern="/content/assets/.*"/>
-    </filter>
-    <filter root="/content/objects">
-        <exclude pattern="/content/objects/.*"/>
-    </filter>
     <filter root="/content/objects/tags">
         <exclude pattern="/content/objects/tags/.*"/>
     </filter>
-    <filter root="/conf/sites">
-        <include pattern="/conf/sites/jcr:content.*"/>
-        <exclude pattern="/conf/sites/.*"/>
-    </filter>
+
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
         as it is in the '/apps/admin/install' folder (see the 'all'

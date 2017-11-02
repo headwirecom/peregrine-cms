@@ -125,7 +125,7 @@
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                     <excludes>
                         <!-- Need to provide a pattern that deals with folders as well -->
-                        <exclude>**/api/swaggereditor/**/*</exclude>
+                        <exclude>**/perapi/swaggereditor/**/*</exclude>
                         <exclude>**/*.svg</exclude>
                     </excludes>
                 </configuration>

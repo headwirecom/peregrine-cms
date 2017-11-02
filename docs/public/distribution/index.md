@@ -36,7 +36,7 @@ having these parameters:
 |deep|no|boolean|false|Replicate children as well|
 |deactivate|no|boolean|false|Deactivate / Remove replicants|
 
-Please use the [Swagger UI](http://localhost:8080/api/swaggereditor/), look for **repl.json**
+Please use the [Swagger UI](http://localhost:8080/perapi/swaggereditor/), look for **repl.json**
 and click on **try it out**, enter the parameter values on the click on **Execute**.
 
 The **name** of the distribution service is the name of a service that implements the
