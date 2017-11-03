@@ -266,10 +266,15 @@
   },
   {
     "type": "iconbrowser",
-    "label": "Icon Browser",
+    "label": "Icon Chooser",
     "model": "icon",
+    "hint": "Select an icon.",
     "required": true,
-    "validator": "required"
+    "validator": "required",
+    "families": [
+      "material",
+      "font awesome",
+      "ionicons"
+    ]
   }
-
 ]}
