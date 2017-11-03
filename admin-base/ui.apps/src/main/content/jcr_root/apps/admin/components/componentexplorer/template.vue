@@ -24,6 +24,7 @@
   -->
 <template>
     <div class="component-explorer">
+        {{filteredList}}
         <span class="panel-title">Components</span>
             <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
             <select class="browser-default" v-model="state.group">
@@ -99,8 +100,10 @@
                 var list = this.$root.$data.admin.components.data
                 if (!list || !allowedComponents) return {}
 
+                console.log(allowedComponents)
                 // Filter list to local components and with local filter
                 return list.filter(component => {
+                    console.log(component.title, component.path)
                     if (component.group === '.hidden') return false;
                     if((this.state.group && this.state.group !== '') && component.group !== this.state.group) return false;
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
