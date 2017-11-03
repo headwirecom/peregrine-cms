@@ -90,14 +90,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>7</source>
-                    <target>7</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>maven-sling-plugin</artifactId>
                 <configuration>
@@ -203,30 +195,25 @@
             <groupId>com.google.guava</groupId>
         </dependency>
 
-        <dependency>
-            <artifactId>org.apache.felix.http.jetty</artifactId>
-            <version>3.4.2</version>
-            <groupId>org.apache.felix</groupId>
-            <scope>provided</scope>
-        </dependency>
+        <!--AS TODO: Is that really needed -->
+        <!--<dependency>-->
+            <!--<artifactId>org.apache.felix.http.jetty</artifactId>-->
+            <!--<version>3.4.2</version>-->
+            <!--<groupId>org.apache.felix</groupId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.8.4</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.3.2</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.3.2</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

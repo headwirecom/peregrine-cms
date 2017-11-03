@@ -46,7 +46,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
-                <version>1.21.0</version>
                 <!-- As QDox is trying to inspect/load the classes
                      we have to add a slf4j implementation to the
                      class path of the plugin - we usually use
@@ -122,19 +121,19 @@
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
+            <!--<version>2.0</version>-->
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-api</artifactId>
-            <version>2.9.0</version>
-            <scope>provided</scope>
+            <!--<version>2.9.0</version>-->
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.jcr.api</artifactId>
-            <version>2.2.0</version>
+            <!--<version>2.2.0</version>-->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -144,13 +143,14 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-commons</artifactId>
-            <version>2.9.0</version>
+            <!--<version>2.9.0</version>-->
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.distribution.api</artifactId>
         </dependency>
 
+        <!-- Note: we do not use Felix SCR Annotations anymore so we keep this here for Sling Distributions -->
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.annotations</artifactId>

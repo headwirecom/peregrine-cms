@@ -48,14 +48,6 @@
             <artifactId>admin.core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.github.eirslett/frontend-maven-plugin -->
-        <dependency>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>1.4</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -130,8 +122,6 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.4</version>
-
                 <executions>
                     <execution>
                         <id>install node and npm</id>

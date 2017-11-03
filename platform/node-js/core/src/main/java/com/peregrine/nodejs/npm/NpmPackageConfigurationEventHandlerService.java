@@ -1,6 +1,5 @@
 package com.peregrine.nodejs.npm;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.nodejs.process.ExternalProcessException;
 import com.peregrine.nodejs.util.NodeConstants;
 import org.apache.sling.api.resource.LoginException;
@@ -16,12 +15,9 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -29,7 +25,6 @@ import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.getStringOrNull;
 import static com.peregrine.commons.util.PerUtil.loginService;
 import static com.peregrine.nodejs.util.NodeConstants.NODE_JS_SUB_SERVICE_NAME;
 import static com.peregrine.nodejs.util.NodeConstants.NPM_PACKAGE_CONFIG_PATH;
