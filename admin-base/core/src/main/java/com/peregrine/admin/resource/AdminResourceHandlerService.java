@@ -15,6 +15,7 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -58,6 +59,7 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
@@ -288,14 +290,11 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore) throws ManagementException {
+    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
         Resource answer = null;
         if(resource == null) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
-//        if(properties == null || properties.isEmpty()) {
-//            throw new ManagementException(INSERT_RESOURCE_PROPERTIES_MISSING);
-//        }
         try {
             Node node = resource.adaptTo(Node.class);
             Node newNode;
@@ -305,7 +304,7 @@ public class AdminResourceHandlerService
                     Iterator<Resource> i = resource.listChildren();
                     if(i.hasNext()) { firstChild = i.next(); }
                 }
-                newNode = createNode(node, properties);
+                newNode = createNode(node, properties, variation);
                 baseResourceHandler.updateModification(resource.getResourceResolver(), newNode);
                 if(firstChild != null) {
                     resourceRelocation.reorder(resource, newNode.getName(), firstChild.getName(), true);
@@ -314,7 +313,7 @@ public class AdminResourceHandlerService
                 baseResourceHandler.updateModification(answer);
             } else {
                 Node parent = node.getParent();
-                newNode = createNode(parent, properties);
+                newNode = createNode(parent, properties, variation);
                 baseResourceHandler.updateModification(resource.getResourceResolver(), newNode);
                 resourceRelocation.reorder(resource.getParent(), newNode.getName(), node.getName(), orderBefore);
                 answer = resource.getResourceResolver().getResource(newNode.getPath());
@@ -484,7 +483,7 @@ public class AdminResourceHandlerService
     }
 
     // todo: needs deep clone
-    private Node createNode(Node parent, Map data) throws RepositoryException, ManagementException {
+    private Node createNode(Node parent, Map data, String variation) throws RepositoryException, ManagementException {
         data.remove(PATH);
         String component = (String) data.remove(COMPONENT);
 
@@ -505,11 +504,62 @@ public class AdminResourceHandlerService
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
                 } else {
                     String componentPath = PerConstants.APPS + component;
+                    /*
+                        <jcr:content
+                            jcr:primaryType="nt:unstructured"
+                            __variations="true"
+                        >
+                            <v1 jcr:primaryType="nt:unstructured" title="Text V1">
+                                <jcr:content jcr:primaryType="nt:unstructured"
+                                    text="bla"/>
+                            </v1>
+                            <v2 jcr:primaryType="nt:unstructured">
+                                <jcr:content jcr:primaryType="nt:unstructured"
+                                     text="bli"/>
+                            </v2>
+                        </jcr:content>
+                    */
                     if(parent.getSession().itemExists(componentPath)) {
-                        Node componentNode = parent.getSession().getNode(PerConstants.APPS + component);
+                        Node componentNode = parent.getSession().getNode(componentPath);
                         if(componentNode.hasNode(JCR_CONTENT)) {
                             Node source = componentNode.getNode(JCR_CONTENT);
-                            copyNode(source, newNode, true);
+                            boolean isVariations = false;
+                            if(source.hasProperty(VARIATIONS)) {
+                                isVariations = source.getProperty(VARIATIONS).getBoolean();
+                            }
+                            if(isVariations) {
+                                boolean useDefault = true;
+                                if(isNotEmpty(variation)) {
+                                    // Look up the variation node
+                                    if(source.hasNode(variation)) {
+                                        Node variationNode = source.getNode(variation);
+                                        if(variationNode.hasNode(JCR_CONTENT)) {
+                                            source = variationNode.getNode(JCR_CONTENT);
+                                            useDefault = false;
+                                        } else {
+                                            logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                                            source = null;
+                                        }
+                                    } else {
+                                        logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, source.getPath());
+                                    }
+                                }
+                                if(useDefault) {
+                                    NodeIterator i = source.getNodes();
+                                    if(i.hasNext()) {
+                                        Node variationNode = i.nextNode();
+                                        if(variationNode.hasNode(JCR_CONTENT)) {
+                                            source = variationNode.getNode(JCR_CONTENT);
+                                        } else {
+                                            logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                                            source = null;
+                                        }
+                                    }
+                                }
+                            }
+                            if(source != null) {
+                                copyNode(source, newNode, true);
+                            }
                         }
                     }
                 }

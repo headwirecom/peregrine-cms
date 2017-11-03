@@ -226,6 +226,68 @@ public class InsertNodeAtServletIT
     }
 
     @Test
+    public void testCreatePageWithComponentVariation() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+
+        // Create Page
+        String rootFolderPath = ROOT_PATH + "/test-cpwcv";
+        String pageName = "testPage";
+        // Create the folder structure
+        createFolderStructure(client, rootFolderPath);
+        createPage(client, rootFolderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
+        TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
+
+        // Create Component Node with the Test Component
+        String componentPath = rootFolderPath + "/" + pageName + "/" + JCR_CONTENT;
+        SlingHttpResponse response = insertNodeAtAsContent(client, componentPath,
+            "{\"component\":\"it/components/testvariation\", \"test\": \"test-one\"}", "into", "v2", 302);
+        // Default Nodes to the Test Page and check if the match
+        // List the children and check if there is a folder
+        Map children = extractChildNodes(listResourceAsJson(client, componentPath, 3));
+        logger.info("Page Component Map: '{}'", children);
+        NoNameObject componentObject = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType("it/components/testvariation")
+            .addProperties(new Prop("v2-prop-1", "v2-value-1"), new Prop("v2-prop-2", "v2-value-2")
+        );
+        Map expected = convertToMap(componentObject.toJSon());
+        Map actual = (Map) children.values().iterator().next();
+        logger.info("Expected Map: '{}'", expected);
+        logger.info("Actual Map: '{}'", actual);
+        compareJson(expected, actual);
+    }
+
+    @Test
+    public void testCreatePageWithComponentDefaultVariation() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+
+        // Create Page
+        String rootFolderPath = ROOT_PATH + "/test-cpwcdv";
+        String pageName = "testPage";
+        // Create the folder structure
+        createFolderStructure(client, rootFolderPath);
+        createPage(client, rootFolderPath, pageName, EXAMPLE_TEMPLATE_PATH, 200);
+        TestPage testPage = new TestPage(pageName, EXAMPLE_PAGE_TYPE_PATH, EXAMPLE_TEMPLATE_PATH);
+        checkResourceByJson(client, rootFolderPath + "/" + pageName, 2, testPage.toJSon(), true);
+
+        // Create Component Node with the Test Component
+        String componentPath = rootFolderPath + "/" + pageName + "/" + JCR_CONTENT;
+        SlingHttpResponse response = insertNodeAtAsContent(client, componentPath,
+            "{\"component\":\"it/components/testvariation\", \"test\": \"test-one\"}", "into", 302);
+        // Default Nodes to the Test Page and check if the match
+        // List the children and check if there is a folder
+        Map children = extractChildNodes(listResourceAsJson(client, componentPath, 3));
+        logger.info("Page Component Map: '{}'", children);
+        NoNameObject componentObject = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType("it/components/testvariation")
+            .addProperties(new Prop("v1-prop-1", "v1-value-1"), new Prop("v1-prop-2", "v1-value-2")
+        );
+        Map expected = convertToMap(componentObject.toJSon());
+        Map actual = (Map) children.values().iterator().next();
+        logger.info("Expected Map: '{}'", expected);
+        logger.info("Actual Map: '{}'", actual);
+        compareJson(expected, actual);
+    }
+
+    @Test
     public void testCreateTemplateWithDefaults() throws Exception {
         SlingClient client = slingInstanceRule.getAdminClient();
 
