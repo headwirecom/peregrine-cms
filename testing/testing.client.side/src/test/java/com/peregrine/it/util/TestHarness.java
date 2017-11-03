@@ -166,6 +166,12 @@ public class TestHarness {
         return client.doPost(url, formEntry, expectedStatus);
     }
 
+    public static SlingHttpResponse insertNodeAtAsContent(SlingClient client, String path, String content, String type, String variation, int expectedStatus) throws ClientException, IOException {
+        String url = ADMIN_PREFIX_URL + "insertNodeAt.json" + path;
+        HttpEntity formEntry = FormEntityBuilder.create().addParameter("content", content).addParameter("type", type).addParameter("variation", variation).build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
     public static SlingHttpResponse getReferenceList(SlingClient client, String path, int expectedStatus) throws ClientException, IOException {
         String url = ADMIN_PREFIX_URL + "ref.json" + path;
         return client.doGet(url, expectedStatus);

@@ -113,10 +113,11 @@ public interface AdminResourceHandler {
      *                    - If false and added as a child then as last child
      *                    - If true and added as sibling then before the given resource
      *                    - If false and added as sibling then after the given resource
+     * @param variation Name of a default variation or null if default should be used
      * @return Newly created Resource
      * @throws ManagementException If the creation / reorder failed
      */
-    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore) throws ManagementException;
+    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException;
 
     /**
      * Moves an existing resource to a new place

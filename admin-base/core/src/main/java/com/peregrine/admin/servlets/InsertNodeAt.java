@@ -57,6 +57,7 @@ import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerConstants.VARIATION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -167,9 +168,9 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 properties.put(COMPONENT, ServletHelper.componentNameToPath(component));
             }
         }
-
+        String variation = request.getParameter(VARIATION);
         try {
-            Resource newResource = resourceManagement.insertNode(resource, properties, addAsChild, addBefore);
+            Resource newResource = resourceManagement.insertNode(resource, properties, addAsChild, addBefore, variation);
             newResource.getResourceResolver().commit();
             return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + MODEL_JSON);
         } catch (ManagementException e) {
