@@ -53,14 +53,6 @@
             <artifactId>node-js.core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.github.eirslett/frontend-maven-plugin -->
-        <dependency>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>1.4</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -138,7 +130,7 @@
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                     <excludes>
                         <!-- Need to provide a pattern that deals with folders as well -->
-                        <exclude>**/api/swaggereditor/**/*</exclude>
+                        <exclude>**/perapi/swaggereditor/**/*</exclude>
                         <exclude>**/*.svg</exclude>
                     </excludes>
                 </configuration>

@@ -56,6 +56,39 @@
 </template>
 
 <script>
+    function toQuill(value) {
+//        let ret = ''
+//        for(let i = 0; i < value.length; i++) {
+//            ret += value.charAt(i)
+//            if(ret.endsWith('<br>')) {
+//                ret = ret.slice(0,ret.length -4) + '</p><p>'
+//            } else if(ret.endsWith('</p><p>')) {
+//                ret = ret  + '<br></p><p>'
+//            }
+//        }
+//        return ret
+        return value
+    }
+
+    function fromQuill(value) {
+//        let ret = ''
+//        let skip = false
+//        for(let i = 0; i < value.length; i++) {
+//            ret += value.charAt(i)
+//            if(ret.endsWith('</p><p>')  && value.slice(i+1, i+5) !== '<br>' && !ret.endsWith('<br></p><p>') && !skip) {
+//                // console.log(value.slice(i+1, i+5))
+//                ret = ret.slice(0,ret.length -7) + '<br>'
+//            } else if(ret.endsWith('</p><p><br></p><p>')) {
+//                ret = ret.slice(0,ret.length -11)
+//                skip = true
+//            } else {
+//                skip = false
+//            }
+//        }
+//        return ret
+        return value
+    }
+
     export default {
         mixins: [ VueFormGenerator.abstractField ],
         mounted() {
@@ -66,14 +99,15 @@
         },
         watch: {
             value(newVal, oldVal) {
+                newVal = toQuill(newVal)
                 if(newVal != this.$refs.quilleditor.children[0].innerHTML) {
-                    this.$refs.quilleditor.children[0].innerHTML = this.value
+                    this.$refs.quilleditor.children[0].innerHTML = newVal
                 }
             }
         },
         methods: {
             initialize() {
-                this.$refs.quilleditor.innerHTML = this.value ? this.value : ''
+                this.$refs.quilleditor.innerHTML = toQuill(this.value ? this.value : '')
                 this.quill = new Quill(this.$refs.quilleditor, {
                     theme: 'snow',
                     modules: {
@@ -85,7 +119,7 @@
                   this.showPathBrowser(this.getSelectedPath())
                 })
                 this.quill.on('text-change', (delta, oldDelta, source) => {
-                    this.value = this.$refs.quilleditor.children[0].innerHTML
+                    this.value = fromQuill(this.$refs.quilleditor.children[0].innerHTML)
                 })
             },
             getSelectedPath(){

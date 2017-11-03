@@ -33,4 +33,20 @@
             jcr:primaryType="nt:unstructured"
             text="example">
     </jcr:content>
+    <!--
+    sample for variations
+    <jcr:content
+            jcr:primaryType="nt:unstructured"
+            __variations="true"
+          >
+            <v1 jcr:primaryType="nt:unstructured">
+                <jcr:content jcr:primaryType="nt:unstructured"
+                             text="bla"/>
+            </v1>
+            <v2 jcr:primaryType="nt:unstructured">
+                <jcr:content jcr:primaryType="nt:unstructured"
+                             text="bli"/>
+            </v2>
+    </jcr:content>
+    -->
 </jcr:root>

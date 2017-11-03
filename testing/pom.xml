@@ -211,16 +211,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Maven Compiler Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>7</source>
-                    <target>7</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 

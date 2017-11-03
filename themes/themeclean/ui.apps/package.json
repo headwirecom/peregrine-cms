@@ -1,0 +1,20 @@
+{
+  "name": "build",
+  "version": "1.0.0",
+  "description": "default vue build for peregrinecms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./src/main/content/buildscripts/buildvue.js themeclean"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fs-extra": "^3.0.0",
+    "rollup": "^0.41.6",
+    "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-vue": "^2.3.1",
+    "vue": "^2.2.6",
+    "vue-template-compiler": "^2.5.2"
+  }
+}

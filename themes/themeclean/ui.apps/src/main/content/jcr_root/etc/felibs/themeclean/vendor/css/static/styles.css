@@ -1,0 +1,42 @@
+body{background: black;}
+.percms-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.percms-image-wrap img, .percms-image-wrap iframe{
+  width: 100%;
+}
+
+.percms-caption {
+  position: relative;
+}
+.percms-caption div {
+  position: absolute;
+  bottom: 0;
+}
+
+.view-height {
+  height: 100vh
+}
+
+section {
+  background-size: cover;
+  background-position: center;
+}
+
+.scroll-arrow {
+  position: absolute;
+  bottom: 45px;
+}
+
+
+@media (max-width: 768px) {
+
+  .percms-image-wrap {
+    min-width: 100%;
+  }
+
+}

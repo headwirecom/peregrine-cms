@@ -50,4 +50,17 @@
         <exclude pattern="/apps/per/install/.*"/>
     </filter>
     <filter root="/apps/runmodes"/>
+
+    <filter root="/content/templates">
+        <exclude pattern="/content/templates/.*"/>
+    </filter>
+    <filter root="/content/sites">
+        <exclude pattern="/content/sites/.*"/>
+    </filter>
+    <filter root="/content/assets">
+        <exclude pattern="/content/assets/.*"/>
+    </filter>
+    <filter root="/content/objects">
+        <exclude pattern="/content/objects/.*"/>
+    </filter>
 </workspaceFilter>

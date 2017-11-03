@@ -79,6 +79,22 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.junit.core</artifactId>
         </dependency>
@@ -179,7 +195,7 @@
                     <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
                     <excludes>
                         <!-- Need to provide a pattern that deals with folders as well -->
-                        <exclude>**/api/swaggereditor/**/*</exclude>
+                        <exclude>**/perapi/swaggereditor/**/*</exclude>
                         <exclude>**/*.svg</exclude>
                     </excludes>
                 </configuration>

@@ -4,7 +4,7 @@
 		  <li v-for="item in items" :class="isItemChecked(item) ? 'checked' : ''">
 		    <input 
 		    	class="form-control"
-		    	:id="getItemName(item)"
+		    	:id="getItemName(item) + _uid"
 		    	type="radio" 
 		    	:class="schema.withGap ? 'with-gap' : ''"
 		    	:disabled="disabled" 
@@ -12,7 +12,7 @@
 		    	@click="onSelection(item)" 
 		    	:value="getItemValue(item)" 
 		    	:checked="isItemChecked(item)"/>
-		    <label :for="getItemName(item)">{{ getItemName(item) }}</label>
+		    <label :for="getItemName(item)+_uid">{{ getItemName(item) }}</label>
 		  </li>
 		</ul>
 		<template v-else>

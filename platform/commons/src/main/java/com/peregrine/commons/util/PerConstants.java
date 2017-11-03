@@ -70,6 +70,8 @@ public class PerConstants {
     public static final String NAME = "name";
     public static final String MODEL = "model";
     public static final String TYPE = "type";
+    public static final String VARIATION = "variation";
+    public static final String VARIATIONS = "__variations";
     public static final String STATUS = "status";
     public static final String TEMPLATE_PATH = "templatePath";
     public static final String CREATED = "created";
