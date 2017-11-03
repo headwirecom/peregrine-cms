@@ -536,10 +536,17 @@ function notifyUserImpl(title, message, options) {
  * @param options
  */
 function iconBrowserImpl(state, options) {
-    let { selected, families } = state
+    let { icon, families } = state
+    let iconParts = icon.split(':') //[iconFamily, iconClass, iconText]
+    let iconFamily = iconParts[0]
+    let iconClass = iconParts[1]
+    let iconText = iconParts[2]
+
     set(view, '/state/iconbrowser/families', families)
-    set(view, '/state/iconbrowser/selected', selected)
-    set(view, '/state/iconbrowser/original', selected)
+    set(view, '/state/iconbrowser/family', iconFamily)
+    set(view, '/state/iconbrowser/class', iconClass)
+    set(view, '/state/iconbrowser/text', iconText)
+    set(view, '/state/iconbrowser/original', icon)
     actionImpl($perAdminApp.getApp().$children[0], 'iconBrowserModalOpen', options)
 }
 
