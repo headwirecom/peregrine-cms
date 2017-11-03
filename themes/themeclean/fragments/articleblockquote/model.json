@@ -1,0 +1,19 @@
+{
+  "definitions": {
+    "Articleblockquote": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "text": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-type": "texteditor"
+        },
+        "bg": {
+          "$ref": "fragments/block/model.json#/definitions/Block",
+          "x-form-type": "reference"
+        }
+      }
+    }
+  }
+}
