@@ -1,0 +1,12 @@
+.idea
+aemdc-files/
+target/
+*.iml
+.classpath
+.project
+.settings/
+node/
+node_modules/
+out/
+sling/
+package-lock.json

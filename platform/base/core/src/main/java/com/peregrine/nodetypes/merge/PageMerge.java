@@ -89,8 +89,11 @@ public class PageMerge implements Use {
     }
 
     public Map getMerged(Resource resource) {
+        log.debug("getMerge({})", resource.getPath());
         try {
-            Map page = modelFactory.exportModelForResource(resource.getChild(JCR_CONTENT),
+            Resource content = resource.getChild(JCR_CONTENT);
+            if(content == null) return Collections.<String, String> emptyMap();
+            Map page = modelFactory.exportModelForResource(content,
                     JACKSON, Map.class,
                     Collections.<String, String> emptyMap());
             String templatePath = (String) page.get(TEMPLATE);
