@@ -1,0 +1,125 @@
+{
+  "fields": [
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Color",
+          "value": "color"
+        },
+        {
+          "name": "Gradient",
+          "value": "gradient"
+        }
+      ],
+      "placeholder": "backgroundtype",
+      "label": "Background Type",
+      "model": "backgroundtype"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "bgimage",
+      "label": "Background Image",
+      "model": "bgimage",
+      "visible": "model.backgroundtype == 'image'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "parallax",
+      "label": "Parallax",
+      "model": "parallax",
+      "visible": "model.backgroundtype == 'image'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "overlay",
+      "label": "Overlay",
+      "model": "overlay",
+      "visible": "model.backgroundtype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "overlaycolor",
+      "label": "Overlay Color",
+      "model": "overlaycolor",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "overlayopacity",
+      "label": "Overlay opacity",
+      "model": "overlayopacity",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+      "max": 100
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "bgcolor",
+      "label": "Background Color",
+      "model": "bgcolor",
+      "visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "color2",
+      "label": "Color 2",
+      "model": "color2",
+      "visible": "model.backgroundtype == 'gradient'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "fullwidth",
+      "label": "Full Width",
+      "model": "fullwidth"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "fullheight",
+      "label": "Full Height",
+      "model": "fullheight"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "toppadding",
+      "label": "Top Padding",
+      "model": "toppadding",
+      "visible": "model.fullheight != 'true'",
+      "max": 120
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "bottompadding",
+      "label": "Bottom Padding",
+      "model": "bottompadding",
+      "visible": "model.fullheight != 'true'",
+      "max": 120
+    }
+  ]
+}
