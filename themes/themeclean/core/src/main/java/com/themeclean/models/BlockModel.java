@@ -26,6 +26,7 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Background Type",
           "x-form-type": "materialradio",
+          "x-default": "color",
           "properties": {
             "image": {
               "x-form-name": "Image",
@@ -48,13 +49,6 @@ import javax.inject.Named;
           "x-form-type": "pathbrowser",
           "x-form-visible": "model.backgroundtype == 'image'"
         },
-        "parallax": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Parallax",
-          "x-form-type": "materialswitch",
-          "x-form-visible": "model.backgroundtype == 'image'"
-        },
         "overlay": {
           "type": "string",
           "x-source": "inject",
@@ -67,7 +61,8 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Overlay Color",
           "x-form-type": "color",
-          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'"
+          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+          "x-default": "#ffffff"
         },
         "overlayopacity": {
           "type": "string",
@@ -76,21 +71,24 @@ import javax.inject.Named;
           "x-form-type": "range",
           "x-form-min": 0,
           "x-form-max": 100,
-          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'"
+          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+          "x-default": "50"
         },
         "bgcolor": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Background Color",
           "x-form-type": "color",
-          "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'"
+          "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'",
+          "x-default": "#ffffff"
         },
         "color2": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Color 2",
           "x-form-type": "color",
-          "x-form-visible": "model.backgroundtype == 'gradient'"
+          "x-form-visible": "model.backgroundtype == 'gradient'",
+          "x-default": "#c0c0c0"
         },
         "fullwidth": {
           "type": "string",
@@ -152,36 +150,37 @@ public class BlockModel extends AbstractComponent {
     public BlockModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"}}} */
 	@Inject
+	@Default(values ="color")
 	private String backgroundtype;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'"} */
 	@Inject
 	private String bgimage;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Parallax","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image'"} */
-	@Inject
-	private String parallax;
-
 	/* {"type":"string","x-source":"inject","x-form-label":"Overlay","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image'"} */
 	@Inject
 	private String overlay;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'","x-default":"#ffffff"} */
 	@Inject
+	@Default(values ="#ffffff")
 	private String overlaycolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'","x-default":"50"} */
 	@Inject
+	@Default(values ="50")
 	private String overlayopacity;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient'","x-default":"#ffffff"} */
 	@Inject
+	@Default(values ="#ffffff")
 	private String bgcolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient'","x-default":"#c0c0c0"} */
 	@Inject
+	@Default(values ="#c0c0c0")
 	private String color2;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
@@ -204,7 +203,7 @@ public class BlockModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"}}} */
 	public String getBackgroundtype() {
 		return backgroundtype;
 	}
@@ -214,32 +213,27 @@ public class BlockModel extends AbstractComponent {
 		return bgimage;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Parallax","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image'"} */
-	public String getParallax() {
-		return parallax;
-	}
-
 	/* {"type":"string","x-source":"inject","x-form-label":"Overlay","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image'"} */
 	public String getOverlay() {
 		return overlay;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'","x-default":"#ffffff"} */
 	public String getOverlaycolor() {
 		return overlaycolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image'","x-default":"50"} */
 	public String getOverlayopacity() {
 		return overlayopacity;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient'","x-default":"#ffffff"} */
 	public String getBgcolor() {
 		return bgcolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient'","x-default":"#c0c0c0"} */
 	public String getColor2() {
 		return color2;
 	}
