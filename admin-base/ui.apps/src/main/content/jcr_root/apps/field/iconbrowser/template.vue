@@ -51,16 +51,15 @@
         mixins: [ VueFormGenerator.abstractField ],
         methods: {
             setIconValue(){
-                this.value = $perAdminApp.getNodeFromView('/state/iconbrowser/selected')
+                this.value = `${$perAdminApp.getNodeFromView('/state/iconbrowser/family')}:${$perAdminApp.getNodeFromView('/state/iconbrowser/class')}:${$perAdminApp.getNodeFromView('/state/iconbrowser/text')}`
                 console.log('this.value: ', this.value)
             }, 
             browse() {
-                let selectedIcon = this.value
+                let icon = this.value
                 let families = this.schema.families
-                console.log('this.schema: ', this.schema)
                 let initialModalState = {
-                    families: families,
-                    selected: selectedIcon
+                    icon: icon, 
+                    families: families
                 }
                 let options = this.schema.modalOptions
                 if(!options) {
@@ -82,26 +81,11 @@
                 // }
                 
             },
-            getIconText(icon){
-                if(this.getIconClass(icon) === 'material-icons'){
-                    return icon
-                }
-                return ''
-                
+            getIconClass(iconValue) {
+                return iconValue.split(':')[1]
             },
-            getIconClass(icon) {
-                var iconClass
-                switch(true) {
-                    case (icon.includes('_')):
-                        iconClass = 'material-icons'
-                        break
-                    case (icon.includes('fa')):
-                        iconClass = 'fa ' + icon
-                        break
-                    default:
-                        iconClass = 'material-icons'
-                }
-                return iconClass
+            getIconText(iconValue){
+                return iconValue.split(':')[2]
             }
         }
     }
