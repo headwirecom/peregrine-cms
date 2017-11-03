@@ -48,17 +48,6 @@
       "textOff": "no",
       "valueOn": "true",
       "valueOff": "false",
-      "placeholder": "parallax",
-      "label": "Parallax",
-      "model": "parallax",
-      "visible": "model.backgroundtype == 'image'"
-    },
-    {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
       "placeholder": "overlay",
       "label": "Overlay",
       "model": "overlay",
