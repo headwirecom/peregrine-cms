@@ -1,0 +1,55 @@
+{
+  "definitions": {
+    "Articleheader": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "$ref": "fragments/block/model.json#/definitions/Block/properties",
+        "showtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Title",
+          "x-form-type": "materialswitch"
+        },
+        "title": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "showsubtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Subtitle",
+          "x-form-type": "materialswitch"
+        },
+        "subtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Subtitle",
+          "x-form-visible": "model.showsubtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "textalign": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text align",
+          "x-form-type": "materialradio",
+          "properties": {
+            "left": {
+              "x-form-name": "Left",
+              "x-form-value": "text-left"
+            },"center": {
+              "x-form-name": "Center",
+              "x-form-value": "text-center"
+            },"right": {
+              "x-form-name": "Right",
+              "x-form-value": "text-right"
+            }
+          }
+        }
+      }
+    }
+  }
+}
