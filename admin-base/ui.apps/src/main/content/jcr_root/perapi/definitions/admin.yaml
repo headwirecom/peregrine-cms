@@ -334,6 +334,10 @@ paths:
           type: string
           in: formData
           description: same as drop parameter and can be used instead of drop
+        - name: variation
+          type: string
+          in: formData
+          description: name of a component variation to be used if available
       responses:
         200:
           description: Returns the parent model
@@ -435,7 +439,7 @@ paths:
             type: object
             additionalProperties:
               type: object
-  'uploadFiles.json{path}':
+  '/uploadFiles.json{path}':
     post:
       parameters:
         - name: path

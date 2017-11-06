@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.Component;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -44,16 +45,21 @@ import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.admin.util.AdminConstants.MORE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NODE_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerConstants.VARIATION;
+import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -154,34 +160,34 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                     answer.writeArray(DATA);
                     while(nodes.hasNext()) {
                         Node node = nodes.nextNode();
-                        answer.writeObject();
-                        answer.writeAttribute(NAME, node.getName());
-                        answer.writeAttribute(PATH, node.getPath());
                         if(node.getPrimaryNodeType().toString().equals(COMPONENT_PRIMARY_TYPE)) {
-                            if(node.hasProperty(GROUP)) {
-                                Property group = node.getProperty(GROUP);
-                                if(group != null) {
-                                    answer.writeAttribute(GROUP, group.getString());
+                            // Check if this component supports variations and if then loop over all child nodes
+                            // and add each one of them to the result set
+                            boolean done = false;
+                            if(node.hasNode(JCR_CONTENT)) {
+                                Node jcrContent = node.getNode(Node.JCR_CONTENT);
+                                if(jcrContent.hasProperty(VARIATIONS)) {
+                                    boolean isVariations = jcrContent.getProperty(VARIATIONS).getBoolean();
+                                    if(isVariations) {
+                                        NodeIterator variations = jcrContent.getNodes();
+                                        while(variations.hasNext()) {
+                                            Node variation = variations.nextNode();
+                                            writeComponentNode(node, variation, answer);
+                                            done = true;
+                                        }
+                                    }
                                 }
                             }
-                            if(node.hasProperty(JCR_TITLE)) {
-                                Property title = node.getProperty(JCR_TITLE);
-                                if(title != null) {
-                                    answer.writeAttribute(TITLE, title.getString());
-                                }
+                            if(!done) {
+                                writeComponentNode(node, null, answer);
                             }
-                            if(node.hasProperty(TEMPLATE_COMPONENT)) {
-                                Property templateComponent = node.getProperty(TEMPLATE_COMPONENT);
-                                if(templateComponent != null) {
-                                    answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
-                                }
-                            }
-                            if(node.hasNode(THUMBNAIL_PNG)) {
-                                answer.writeAttribute(THUMBNAIL, node.getPath() + "/" + THUMBNAIL_PNG);
-                            }
+                        } else {
+                            answer.writeObject();
+                            answer.writeAttribute(NAME, node.getName());
+                            answer.writeAttribute(PATH, node.getPath());
+                            answer.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
+                            answer.writeClose();
                         }
-                        answer.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
-                        answer.writeClose();
                     }
                     answer.writeClose();
                 }
@@ -190,6 +196,43 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
             }
         }
         return answer;
+    }
+
+    private void writeComponentNode(Node component, Node variation, JsonResponse answer) throws RepositoryException, IOException {
+        answer.writeObject();
+        answer.writeAttribute(NAME, component.getName());
+        answer.writeAttribute(PATH, component.getPath());
+        if(component.hasProperty(GROUP)) {
+            Property group = component.getProperty(GROUP);
+            if(group != null) {
+                answer.writeAttribute(GROUP, group.getString());
+            }
+        }
+        String title = null;
+        if(variation != null) {
+            String id = variation.getIdentifier();
+            answer.writeAttribute(VARIATION, id);
+            if(variation.hasProperty(TITLE)) {
+                title = variation.getProperty(TITLE).getString();
+            }
+        }
+        if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
+            title = component.getProperty(JCR_TITLE).getString();
+        }
+        if(isNotEmpty(title)) {
+            answer.writeAttribute(TITLE, title);
+        }
+        if(component.hasProperty(TEMPLATE_COMPONENT)) {
+            Property templateComponent = component.getProperty(TEMPLATE_COMPONENT);
+            if(templateComponent != null) {
+                answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
+            }
+        }
+        if(component.hasNode(THUMBNAIL_PNG)) {
+            answer.writeAttribute(THUMBNAIL, component.getPath() + "/" + THUMBNAIL_PNG);
+        }
+        answer.writeAttribute(NODE_TYPE, component.getPrimaryNodeType() + "");
+        answer.writeClose();
     }
 }
 
