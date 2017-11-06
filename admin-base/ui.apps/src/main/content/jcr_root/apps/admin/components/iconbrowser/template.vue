@@ -1436,7 +1436,6 @@
             list(){
                 var selectedFamily = this.camelize(this.selectedFamily)
                 if(selectedFamily === 'all'){
-                    console.log('selected all families')
                     var icons = []
                     for (var property in this.icons) {
                         if (this.icons.hasOwnProperty(property)) {
@@ -1446,7 +1445,6 @@
                     // console.log('icons: ', icons)
                     return icons
                 } else {
-                    console.log('selected family: ', selectedFamily)
                     return this.icons[selectedFamily]
                 }
             }
@@ -1475,9 +1473,7 @@
                 $perAdminApp.getNodeFromView('/state/iconbrowser').text = this.getIconText(icon)
             },
             getIconNameFromClass(iconClass){
-                if(!iconClass || iconClass === null){
-                    console.warn('no icon class')
-                } else {
+                if(iconClass || iconClass !== null){
                     var hasWhiteSpace = iconClass.includes(' ')
                     if(!hasWhiteSpace) return iconClass
                     // if iconClass has white space, icon name is last part (fa fa-add)
