@@ -58,6 +58,18 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *
+ * To Upload a File with CURL you have to do the following:
+ *
+ * curl -i -u admin:admin \
+ *    -F"test3.jpg=@./testme.jpg;type=image/jpeg" \
+ *    "http://localhost:8080/perapi/admin/uploadFiles.json/content/assets/test"
+ *
+ * 'test3.jpg' is the name of the asset under the given asset path in the URL,
+ * './testme.jpg' is the relative or absolute path to the file to be uploaded
+ * 'type=image/jpeg' defines the image content type which must be provided
+ * '/content/assets/test' is the path to the resource that will contain the resource
+ *
  */
 @Component(
     service = Servlet.class,
