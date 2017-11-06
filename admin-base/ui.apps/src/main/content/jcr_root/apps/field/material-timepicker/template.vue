@@ -18,46 +18,54 @@
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
 		mounted() {
-			if (window.Picker && window.$ && window.$.fn.pickatime && !this.schema.preview) {
-				const options = {
-					// TODO: update model to empty string when clicking clear 
-					twelvehour: true,
-					init: () => { 
-              // console.log("init timepicker")
-              this.$refs.timepicker.value = this.timeFromModel()
-          },
-          // beforeShow: () => {
-          //     console.log("before show")
-          // },
-          // afterShow: () => {
-          //     console.log("after show")
-          // },
-          // beforeHide: () => {
-          //     console.log("before hide")
-          // },
-          // afterHide: () => {
-          //     console.log("after hide")
-          // },
-          // beforeHourSelect: () => {
-          //     console.log("before hour selected")
-          // },
-          // afterHourSelect: () => {
-          //     console.log("after hour selected")
-          // },
-          // beforeDone: () => {
-          //     console.log("before done")
-          // },
-          afterDone: () => { 
-          	this.value = this.modelFromTime()
-          }
-				}
-				$(this.$refs.timepicker).pickatime(options)
-				
-			} else {
-				console.warn("jQuery or Materialize.js v0.99 is missing.");
-			}	
+			if(!this.schema.preview) this.init()
+		},
+		watch: {
+			schema: function (newSchema) {
+				if(!this.schema.preview) this.init()
+			}
 		},
 		methods: {
+			init(){
+				if (window.Picker && window.$ && window.$.fn.pickatime) {
+					const options = {
+						// TODO: update model to empty string when clicking clear 
+						twelvehour: true,
+						init: () => { 
+								// console.log("init timepicker")
+								this.$refs.timepicker.value = this.timeFromModel()
+						},
+						// beforeShow: () => {
+						//     console.log("before show")
+						// },
+						// afterShow: () => {
+						//     console.log("after show")
+						// },
+						// beforeHide: () => {
+						//     console.log("before hide")
+						// },
+						// afterHide: () => {
+						//     console.log("after hide")
+						// },
+						// beforeHourSelect: () => {
+						//     console.log("before hour selected")
+						// },
+						// afterHourSelect: () => {
+						//     console.log("after hour selected")
+						// },
+						// beforeDone: () => {
+						//     console.log("before done")
+						// },
+						afterDone: () => { 
+							this.value = this.modelFromTime()
+						}
+					}
+					$(this.$refs.timepicker).pickatime(options)
+					
+				} else {
+					console.warn("jQuery or Materialize.js v0.99 is missing.");
+				}	
+			},
 			modelFromTime(){
 				const parent = this.$refs.timepicker.parentNode
       	let hours = parseInt(parent.querySelector('.clockpicker-span-hours').textContent)
