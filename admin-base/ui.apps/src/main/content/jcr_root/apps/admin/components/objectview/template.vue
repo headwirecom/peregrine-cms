@@ -24,7 +24,7 @@
   -->
 <template>
     <div class="explorer-preview-content preview-object">
-        <template v-if="currentObject">
+        <template v-if="currentObject && schema">
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
@@ -113,7 +113,7 @@
             </template>
         </template>
 
-        <div v-if="currentObject === undefined" class="explorer-preview-empty">
+        <div v-if="currentObject === undefined || schema === undefined" class="explorer-preview-empty">
             <span>no object selected</span>
             <i class="material-icons">info</i>
         </div>
@@ -142,7 +142,7 @@
             return $perAdminApp.getNodeFromView("/state/tools/object")
           }, 
           schema: function () {
-            if(!this.currentObject) return
+            if(!this.currentObject || !this.currentObject.data) return
             let resourceType = this.currentObject.data['component'] ? this.currentObject.data['component'] : this.currentObject.data['sling:resourceType']
             resourceType = resourceType.split('/').join('-')
             return $perAdminApp.getNodeFromView('/admin/componentDefinitions/' + resourceType)
