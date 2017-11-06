@@ -231,8 +231,13 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                 answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
             }
         }
-        if(component.hasNode(THUMBNAIL_PNG)) {
+        if(variation == null && component.hasNode(THUMBNAIL_PNG)) {
             answer.writeAttribute(THUMBNAIL, component.getPath() + "/" + THUMBNAIL_PNG);
+        } else if(variation != null) {
+            String thumbnailName = THUMBNAIL + "-" + variation.getName().toLowerCase()+".png";
+            if(component.hasNode(thumbnailName)) {
+                answer.writeAttribute(THUMBNAIL, component.getPath() + "/" + thumbnailName);
+            }
         }
         answer.writeAttribute(NODE_TYPE, component.getPrimaryNodeType() + "");
         answer.writeClose();
