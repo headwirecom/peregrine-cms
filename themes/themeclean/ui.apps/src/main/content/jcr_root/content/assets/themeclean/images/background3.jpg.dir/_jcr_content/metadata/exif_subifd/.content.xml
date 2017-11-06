@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    aperture_value="f/9.0"
+    color_space="sRGB"
+    components_configuration="YCbCr"
+    date_time_original="2013:09:10 10:54:41"
+    exif_version="2.30"
+    exposure_time="1/400 sec"
+    f-number="f/9.0"
+    flashpix_version="1.00"
+    focal_length="10 mm"
+    iso_speed_ratings="100"
+    shutter_speed_value="1/399 sec"
+    sub-sec_time_original="10"/>

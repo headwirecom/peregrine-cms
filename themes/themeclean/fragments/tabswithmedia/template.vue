@@ -1,5 +1,5 @@
 <template>
-  <pcmsstock-components-block v-bind:model="model">
+  <themeclean-components-block v-bind:model="model">
     <div>
       <div class="row">
         <h2 class="text-center col-12 pb-4" v-if="model.showtitle == 'true'"
@@ -8,7 +8,7 @@
         v-html="model.subtitle"></h3>
       </div>
       <div class="row">
-        <pcmsstock-components-media :model="model"></pcmsstock-components-media>
+        <themeclean-components-media :model="model"></themeclean-components-media>
         <div class="col-12 col-md">
           <!-- Tab Nav -->
           <div class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist"
@@ -32,7 +32,7 @@
         </div>
       </div>
     </div>
-  </pcmsstock-components-block>
+  </themeclean-components-block>
 </template>
 
 <script>

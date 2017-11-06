@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    date_time="2009:10:17 08:34:40"
+    make="Canon"
+    model="Canon EOS DIGITAL REBEL XTi"
+    orientation="Top, left side (Horizontal / normal)"
+    resolution_unit="Inch"
+    software="Adobe Photoshop CS4 Windows"
+    x_resolution="72 dots per inch"
+    y_resolution="72 dots per inch"
+    ycbcr_positioning="Datum point"/>

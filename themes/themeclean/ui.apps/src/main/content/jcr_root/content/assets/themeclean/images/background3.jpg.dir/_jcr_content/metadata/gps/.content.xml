@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    gps_altitude="1319 metres"
+    gps_latitude="36° 51' 48.25&quot;"
+    gps_latitude_ref="N"
+    gps_longitude="-111° 22' 35.27&quot;"
+    gps_longitude_ref="W"
+    gps_version_id="2.200"/>

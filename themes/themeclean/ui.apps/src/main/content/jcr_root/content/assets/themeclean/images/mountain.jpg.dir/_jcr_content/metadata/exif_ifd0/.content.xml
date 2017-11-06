@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    date_time="2016:06:02 17:09:22"
+    make="SONY"
+    model="SLT-A58"
+    orientation="Top, left side (Horizontal / normal)"
+    resolution_unit="Inch"
+    software="Adobe Photoshop CC 2015 (Windows)"
+    x_resolution="300 dots per inch"
+    y_resolution="300 dots per inch"/>

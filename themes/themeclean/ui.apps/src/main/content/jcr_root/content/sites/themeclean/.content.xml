@@ -145,5 +145,46 @@
                     title="About Us"/>
             </tabs>
         </ncd834dce-94b5-4a4c-90fc-133c524f40d1>
+        <nc11cabcc-ae67-4699-9005-254b99fbecf4
+            jcr:lastModified="{Date}2017-11-06T13:43:11.842-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/tabswithmedia"
+            backgroundtype="gradient"
+            bgcolor="#ffffff"
+            bottompadding="{Long}80"
+            color2="#ffffff"
+            fullheight="false"
+            mediasrc="/content/assets/themeclean/images/screen.jpg"
+            mediatype="image"
+            mediawidth="{Long}42"
+            overlaycolor="#ffffff"
+            overlayopacity="50"
+            showsubtitle="true"
+            showtitle="true"
+            subtitle="Lorem ipsum dolor sit amet."
+            title="Tabs with media"
+            toppadding="{Long}80">
+            <tabs jcr:primaryType="nt:unstructured">
+                <tab1
+                    jcr:lastModified="{Date}2017-11-06T13:43:11.842-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="tab1"
+                    path="/jcr:content/nc11cabcc-ae67-4699-9005-254b99fbecf4/tabs/tab1"
+                    text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+                    title="Learn More"/>
+                <tab2
+                    jcr:lastModified="{Date}2017-11-06T13:43:11.842-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="tab2"
+                    path="/jcr:content/nc11cabcc-ae67-4699-9005-254b99fbecf4/tabs/tab2"
+                    text="when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting"
+                    title="Contact Us"/>
+            </tabs>
+        </nc11cabcc-ae67-4699-9005-254b99fbecf4>
     </jcr:content>
 </jcr:root>

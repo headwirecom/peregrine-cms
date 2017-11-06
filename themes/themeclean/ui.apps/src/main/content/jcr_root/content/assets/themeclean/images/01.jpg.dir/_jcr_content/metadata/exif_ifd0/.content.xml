@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    date_time="2007:08:26 13:38:36"
+    make="NIKON CORPORATION"
+    model="NIKON D50"
+    orientation="Top, left side (Horizontal / normal)"
+    resolution_unit="Inch"
+    software="Picasa 3.0"
+    x_resolution="96 dots per inch"
+    y_resolution="96 dots per inch"
+    ycbcr_positioning="Datum point"/>

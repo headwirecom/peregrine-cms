@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    component_1="Y component: Quantization table 0, Sampling factors 2 horiz/2 vert"
+    component_2="Cb component: Quantization table 1, Sampling factors 1 horiz/1 vert"
+    component_3="Cr component: Quantization table 1, Sampling factors 1 horiz/1 vert"
+    compression_type="Baseline"
+    data_precision="8 bits"
+    image_height="1285 pixels"
+    image_width="1920 pixels"
+    number_of_components="3"/>

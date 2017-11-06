@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    date_time_original="2012:02:08 08:46:49"
+    exposure_time="1.3 sec"
+    f-number="f/13.0"
+    flash="Flash did not fire, auto"
+    focal_length="18 mm"
+    iso_speed_ratings="100"
+    lens_model="18-50mm"/>
