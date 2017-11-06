@@ -161,7 +161,11 @@
             },
             onDragStart: function(component, ev) {
                 if(ev) {
-                    ev.dataTransfer.setData('text', component.path)
+                    if(component.variation) {
+                        ev.dataTransfer.setData('text', component.path+":"+component.variation)
+                    } else {
+                        ev.dataTransfer.setData('text', component.path)
+                    }
                 }
             }
         }

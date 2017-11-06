@@ -178,8 +178,8 @@ class PerApi {
         return impl.saveObjectEdit(path, node)
     }
 
-    insertNodeAt(path, component, drop) {
-        return impl.insertNodeAt(path, component, drop)
+    insertNodeAt(path, component, drop, variation) {
+        return impl.insertNodeAt(path, component, drop, variation)
     }
 
     insertNodeWithDataAt(path, data, drop) {

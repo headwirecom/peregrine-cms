@@ -71,6 +71,7 @@ public class PerConstants {
     public static final String MODEL = "model";
     public static final String TYPE = "type";
     public static final String VARIATION = "variation";
+    public static final String VARIATION_PATH = "variationPath";
     public static final String VARIATIONS = "__variations";
     public static final String STATUS = "status";
     public static final String TEMPLATE_PATH = "templatePath";
