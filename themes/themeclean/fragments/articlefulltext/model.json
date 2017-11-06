@@ -4,12 +4,15 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "$ref": "fragments/block/model.json#/definitions/Block/properties",
         "text": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Text",
           "x-form-type": "texteditor"
+        },
+        "bgref": {
+          "$ref": "fragments/block/model.json#/definitions/Block",
+          "x-form-type": "reference"
         }
       }
     }

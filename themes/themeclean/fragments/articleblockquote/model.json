@@ -10,7 +10,7 @@
           "x-form-label": "Text",
           "x-form-type": "texteditor"
         },
-        "bg": {
+        "bgref": {
           "$ref": "fragments/block/model.json#/definitions/Block",
           "x-form-type": "reference"
         }
