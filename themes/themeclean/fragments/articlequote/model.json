@@ -1,0 +1,29 @@
+{
+  "definitions": {
+    "Articlequote": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "text": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text",
+          "x-form-type": "texteditor"
+        },
+        "linewidth": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Line Width",
+          "x-form-visible": "",
+          "x-form-type": "range",
+          "x-form-min": 10,
+          "x-form-max": 100
+        },
+        "bgref": {
+          "$ref": "fragments/block/model.json#/definitions/Block",
+          "x-form-type": "reference"
+        }
+      }
+    }
+  }
+}
