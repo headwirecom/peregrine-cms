@@ -1,0 +1,46 @@
+{
+  "definitions": {
+    "Media": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "mediatype" : {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Media type",
+          "x-form-type": "materialradio",
+          "properties": {
+            "image": {
+              "x-form-name": "Image",
+              "x-form-value": "image"
+            },
+            "color": {
+              "x-form-name": "Video",
+              "x-form-value": "video"
+            }
+          }
+        },
+        "mediasrc": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Media source",
+          "x-form-type": "pathbrowser"
+        },
+        "mediawidth": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Width",
+          "x-form-type": "range",
+          "x-form-min": 10,
+          "x-form-max": 100
+        },
+        "mediacaption": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Caption",
+          "x-form-type": "text"
+        }
+      }
+    }
+  }
+}
