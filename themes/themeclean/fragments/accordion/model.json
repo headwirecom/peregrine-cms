@@ -1,0 +1,46 @@
+{
+  "definitions": {
+    "Accordion": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "showtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show title",
+          "x-form-type": "materialswitch"
+        },
+        "title": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Title",
+          "x-form-type": "text"
+        },
+        "tabs": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Tabs",
+          "x-form-type": "collection",
+          "properties": {
+            "title": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Title",
+              "x-form-type": "text"
+            },
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Text",
+          	  "x-form-type": "texteditor"
+            }
+          }
+        },
+        "bgref": {
+          "$ref": "fragments/block/model.json#/definitions/Block",
+          "x-form-type": "reference"
+        }
+      }
+    }
+  }
+}
