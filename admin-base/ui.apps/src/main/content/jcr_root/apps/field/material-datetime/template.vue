@@ -23,6 +23,14 @@
 			// use a non-reactive static object
 	    Object.assign(this, this.$options.extra || {})
 	  },
+		mounted() {
+			if(!this.schema.preview) this.init()
+		},
+		watch: {
+			schema: function (newSchema) {
+				if(!this.schema.preview) this.init()
+			}
+		},
 		extra: {
 	    picker: null,
 	  },
@@ -31,66 +39,65 @@
 				dateTime: null
 			}
 		},
-		mounted() {
-			if (window.Picker && window.$ && !this.schema.preview) {
-				/* Date Picker */
-				if(window.$.fn.pickadate){
-					const dateOptions = Object.assign({}, this.schema.options)
-					let input = $(this.$refs.datepicker).pickadate(dateOptions)
-					this.picker = input.pickadate('picker')
-					this.picker.on({
-					  close: () => {
-					  	// adding focus to diff element prevents auto-opening of picker
-					  	this.$refs.showPickerBtn.focus()
-					  },
-					  set: context => {
-					  	if(context.select){
-					    	this.dateTime = new Date(context.select)
-					    } else if(context.clear == null){
-					    	this.dateTime = ''
-					    }
-					    this.value = this.dateTime.toJSON()
-					  }
-					})
-					/* set inital dateTime from model */
-					if(this.isValidDateTime(this.value)){
-						this.dateTime = Date.parse(this.value)
-						this.$nextTick(function () {
-							this.picker.set('select', this.dateTime)
-						})
-					} else {
-						console.warn('model date format must be "yyyy-mm-ddThh:mm:ss.000Z"')
-					}
-				} else {
-					console.warn("jQuery pickadate method does not exist.")
-				}
-
-				/* Time Picker */
-				if(window.$.fn.pickatime){
-					const timeOptions = {
-						twelvehour: true,
-						init: () => { 
-							var time = this.timeFromModel()
-							this.$refs.timepicker.value = time
-	          },
-	          afterDone: () => { 
-							var time = this.modelFromTime()
-	          	this.value = time
-	          }
-					}
-					if(this.value){
-						// set time in human readable format from a complete date string
-					}
-					$(this.$refs.timepicker).pickatime(timeOptions)
-				} else {
-					console.warn("jQuery pickatime method does not exist.")
-				}
-			} else {
-				console.warn("jQuery or Materialize.js v0.99 is missing.")
-			}
-			
-		},
 		methods: {
+			init(){
+				if (window.Picker && window.$) {
+					/* Date Picker */
+					if(window.$.fn.pickadate){
+						const dateOptions = Object.assign({}, this.schema.options)
+						let input = $(this.$refs.datepicker).pickadate(dateOptions)
+						this.picker = input.pickadate('picker')
+						this.picker.on({
+							close: () => {
+								// adding focus to diff element prevents auto-opening of picker
+								this.$refs.showPickerBtn.focus()
+							},
+							set: context => {
+								if(context.select){
+									this.dateTime = new Date(context.select)
+								} else if(context.clear == null){
+									this.dateTime = ''
+								}
+								this.value = this.dateTime.toJSON()
+							}
+						})
+						/* set inital dateTime from model */
+						if(this.isValidDateTime(this.value)){
+							this.dateTime = Date.parse(this.value)
+							this.$nextTick(function () {
+								this.picker.set('select', this.dateTime)
+							})
+						} else {
+							console.warn('model date format must be "yyyy-mm-ddThh:mm:ss.000Z"')
+						}
+					} else {
+						console.warn("jQuery pickadate method does not exist.")
+					}
+
+					/* Time Picker */
+					if(window.$.fn.pickatime){
+						const timeOptions = {
+							twelvehour: true,
+							init: () => { 
+								var time = this.timeFromModel()
+								this.$refs.timepicker.value = time
+							},
+							afterDone: () => { 
+								var time = this.modelFromTime()
+								this.value = time
+							}
+						}
+						if(this.value){
+							// set time in human readable format from a complete date string
+						}
+						$(this.$refs.timepicker).pickatime(timeOptions)
+					} else {
+						console.warn("jQuery pickatime method does not exist.")
+					}
+				} else {
+					console.warn("jQuery or Materialize.js v0.99 is missing.")
+				}
+			},
 			showPicker(ev){
 				ev.preventDefault()
 				this.picker.open(false)
@@ -147,7 +154,6 @@
 				return this.dateTime.toJSON()
 			},
 			timeFromModel(){
-
 				if(this.isValidDateTime(this.value)) {
 					let indexT = this.value.lastIndexOf('T')
 					let timeString = this.value.substring(indexT + 1)
@@ -167,12 +173,10 @@
 					console.warn('model must be a date string with format  YYYY-MM-DDTHH:MM:SS.000Z')
 				}
 			},
-
 			dateFromModel(){
 				let model = this.value
 				return model.substring(0, model.indexOf('T'))
 			}
-
 		}
 	}
 </script>
