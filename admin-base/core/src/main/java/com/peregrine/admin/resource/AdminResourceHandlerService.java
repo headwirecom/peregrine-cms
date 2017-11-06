@@ -60,6 +60,7 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
+import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
@@ -824,15 +825,6 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
             }
         }
-    }
-
-    public static Map convertToMap(String json) throws IOException {
-        Map answer = new LinkedHashMap();
-        if(json != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            answer = mapper.readValue(json, LinkedHashMap.class);
-        }
-        return answer;
     }
 
     private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {

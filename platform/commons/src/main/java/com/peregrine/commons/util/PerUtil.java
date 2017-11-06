@@ -25,6 +25,7 @@ package com.peregrine.commons.util;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.LoginException;
@@ -37,6 +38,7 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -720,5 +722,20 @@ public class PerUtil {
         } else {
             return "";
         }
+    }
+
+    /**
+     * Tries to convert the given String into a Map if this is an JSon Object
+     * @param json String that must represent a JSon Object
+     * @return Map representing the JSon Object
+     * @throws IOException If it could not been converted
+     */
+    public static Map convertToMap(String json) throws IOException {
+        Map answer = new LinkedHashMap();
+        if(json != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            answer = mapper.readValue(json, LinkedHashMap.class);
+        }
+        return answer;
     }
 }
