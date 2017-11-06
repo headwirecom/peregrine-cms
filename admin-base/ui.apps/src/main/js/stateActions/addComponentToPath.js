@@ -33,8 +33,12 @@ export default function(me, target) {
 
     let view = me.getView()
 
+    const variationSeparator = target.component.indexOf(':')
+    const componentPath = variationSeparator === -1 ? target.component : target.component.slice(0, variationSeparator)
+    let variation = variationSeparator === -1 ? undefined : target.component.slice(variationSeparator + 1, target.component.length)
+
     // resolve path to component name
-    let componentName = target.component ? target.component.split('/').slice(2).join('-') : target.data.component
+    let componentName = componentPath ? componentPath.split('/').slice(2).join('-') : target.data.component
     log.fine('load',componentName, 'into edit view (make sure it is available')
     document.getElementById('editview').contentWindow.$peregrineApp.loadComponent(componentName)
 
@@ -53,7 +57,7 @@ export default function(me, target) {
 
     if(targetNode) {
         if(target.component) {
-            me.getApi().insertNodeAt(target.pagePath+targetNode.path, target.component, target.drop)
+            me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
                 .then( (data) => {
                     if(targetNodeUpdate.fromTemplate === true) {
                         me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))

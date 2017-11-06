@@ -573,12 +573,15 @@ class PerAdminImpl {
         })
     }
 
-    insertNodeAt(path, component, drop) {
+    insertNodeAt(path, component, drop, variation) {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
             let formData = new FormData();
             formData.append('component', component)
             formData.append('drop', drop)
+            if(variation) {
+                formData.append('variation', variation)
+            }
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
