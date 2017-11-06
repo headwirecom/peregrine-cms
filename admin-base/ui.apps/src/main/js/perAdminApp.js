@@ -22,6 +22,20 @@
  * under the License.
  * #L%
  */
+
+const consoleERROR = console.error
+
+if($perAdminApp) {
+    $perAdminApp.getView().admin.consoleErrors = false
+}
+
+console.error= function() {
+    if($perAdminApp) {
+        $perAdminApp.getView().admin.consoleErrors = true
+    }
+    consoleERROR.apply(this, arguments)
+}
+
 import { LoggerFactory } from './logger'
 import i18n from './i18n'
 import experiences from './experiences'
@@ -34,6 +48,7 @@ import {makePathInfo, pagePathToDataPath, set, get} from './utils'
 import StateActions from './stateActions'
 
 import { SUFFIX_PARAM_SEPARATOR } from "./constants"
+
 
 /**
  * registers a pop state listener for the adminui to track back/forward button and loads
@@ -284,6 +299,7 @@ function processLoaders(loaders) {
  */
 function loadContentImpl(initialPath, firstTime, fromPopState) {
     logger.fine('loading content for', initialPath)
+    view.admin.consoleErrors = false
 
     if(!runBeforeStateActions() ) {
         logger.fine('not allowed to switch state')
