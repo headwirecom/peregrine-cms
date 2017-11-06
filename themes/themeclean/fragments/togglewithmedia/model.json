@@ -1,0 +1,51 @@
+{
+  "definitions": {
+    "Togglewithmedia": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "showtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Title",
+          "x-form-type": "materialswitch"
+        },
+        "title": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "mediaref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/media/model.json#/definitions/Media"
+        },
+        "toggles": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Toggles",
+          "x-form-type": "collection",
+          "properties": {
+            "title": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Toggle Title",
+              "x-form-type": "text"
+            },
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Toggle Text",
+              "x-form-type": "texteditor"
+            }
+          }
+        },
+        "bgref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/block/model.json#/definitions/Block"
+        }
+      }
+    }
+  }
+}

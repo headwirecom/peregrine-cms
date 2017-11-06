@@ -186,5 +186,53 @@
                     title="Contact Us"/>
             </tabs>
         </nc11cabcc-ae67-4699-9005-254b99fbecf4>
+        <nf6e9f6ec-f50c-4205-8d8c-a43a6982e1fd
+            jcr:lastModified="{Date}2017-11-06T14:07:50.609-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/togglewithmedia"
+            backgroundtype="color"
+            bgcolor="#ffffff"
+            bottompadding="80"
+            color2="#ffffff"
+            fullheight="false"
+            mediasrc="/content/assets/pcmsstock/images/workers-looking-tablet.jpg"
+            mediatype="image"
+            mediawidth="45"
+            overlaycolor="#ffffff"
+            overlayopacity="50"
+            showtitle="true"
+            title="Peregrine Toggle"
+            toppadding="80">
+            <toggles jcr:primaryType="nt:unstructured">
+                <toggle1
+                    jcr:lastModified="{Date}2017-11-06T14:07:50.609-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="toggle1"
+                    path="/jcr:content/nf6e9f6ec-f50c-4205-8d8c-a43a6982e1fd/toggles/toggle1"
+                    text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+                    title="Why toggle?"/>
+                <toggle2
+                    jcr:lastModified="{Date}2017-11-06T14:07:50.609-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="toggle2"
+                    path="/jcr:content/nf6e9f6ec-f50c-4205-8d8c-a43a6982e1fd/toggles/toggle2"
+                    text="when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting"
+                    title="How to toggle?"/>
+                <toggle3
+                    jcr:lastModified="{Date}2017-11-06T14:07:50.609-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="toggle3"
+                    path="/jcr:content/nf6e9f6ec-f50c-4205-8d8c-a43a6982e1fd/toggles/toggle3"
+                    text="remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    title="Join toggle"/>
+            </toggles>
+        </nf6e9f6ec-f50c-4205-8d8c-a43a6982e1fd>
     </jcr:content>
 </jcr:root>
