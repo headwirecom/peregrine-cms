@@ -16,7 +16,7 @@
           "x-form-label": "Right Column",
           "x-form-type": "texteditor"
         },
-        "bg": {
+        "bgref": {
           "$ref": "fragments/block/model.json#/definitions/Block",
           "x-form-type": "reference"
         }

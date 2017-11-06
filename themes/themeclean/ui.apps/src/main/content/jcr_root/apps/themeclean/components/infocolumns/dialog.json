@@ -1,11 +1,103 @@
 {
   "fields": [
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showtitle",
+      "label": "Show Title",
+      "model": "showtitle"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "title",
+      "label": "Title",
+      "model": "title",
+      "visible": "model.showtitle == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showsubtitle",
+      "label": "Show Subtitle",
+      "model": "showsubtitle"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "subtitle",
+      "label": "Subtitle",
+      "model": "subtitle",
+      "visible": "model.showsubtitle == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showtext",
+      "label": "Show Text",
+      "model": "showtext"
+    },
+    {
       "type": "texteditor",
       "rows": 10,
       "placeholder": "text",
       "label": "Text",
-      "model": "text"
+      "model": "text",
+      "visible": "model.showtext == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showbutton",
+      "label": "Show Button",
+      "model": "showbutton"
+    },
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "buttontext",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "buttontext",
+          "label": "Button Text",
+          "model": "buttontext"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "buttonlink",
+          "label": "Button Link",
+          "model": "buttonlink"
+        },
+        {
+          "type": "input",
+          "inputType": "color",
+          "placeholder": "buttoncolor",
+          "label": "Button Color",
+          "model": "buttoncolor"
+        }
+      ],
+      "placeholder": "buttons",
+      "label": "Buttons",
+      "model": "buttons",
+      "visible": "model.showbutton == 'true'"
     },
     {
       "type": "material-radios",

@@ -17,17 +17,83 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Articleblockquote": {
+    "Infocolumns": {
       "type": "object",
       "x-type": "component",
       "properties": {
+        "showtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Title",
+          "x-form-type": "materialswitch"
+        },
+        "title": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "showsubtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Subtitle",
+          "x-form-type": "materialswitch"
+        },
+        "subtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Subtitle",
+          "x-form-visible": "model.showsubtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "showtext": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Text",
+          "x-form-type": "materialswitch"
+        },
         "text": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Text",
+          "x-form-visible": "model.showtext == 'true'",
           "x-form-type": "texteditor"
         },
-        "bg": {
+        "showbutton": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Button",
+          "x-form-type": "materialswitch"
+        },
+        "buttons": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Buttons",
+          "x-form-type": "collection",
+          "x-form-visible": "model.showbutton == 'true'",
+          "properties": {
+            "buttontext": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Button Text",
+              "x-form-type": "text"
+            },
+            "buttonlink": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Button Link",
+              "x-form-type": "pathbrowser"
+            },
+            "buttoncolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Button Color",
+              "x-form-type": "color"
+            }
+          }
+        },
+        "bgref": {
           "x-form-type": "reference",
           "type": "object",
           "x-type": "component",
@@ -136,10 +202,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Articleblockquote",
-  "componentPath": "themeclean/components/articleblockquote",
+  "name": "Infocolumns",
+  "componentPath": "themeclean/components/infocolumns",
   "package": "com.themeclean.models",
-  "modelName": "Articleblockquote",
+  "modelName": "Infocolumns",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -148,7 +214,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articleblockquote",
+        resourceType = "themeclean/components/infocolumns",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -158,14 +224,42 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class ArticleblockquoteModel extends AbstractComponent {
+public class InfocolumnsModel extends AbstractComponent {
 
-    public ArticleblockquoteModel(Resource r) { super(r); }
+    public InfocolumnsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+	@Inject
+	private String showtitle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-visible":"model.showtitle == 'true'","x-form-type":"text"} */
+	@Inject
+	private String title;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Subtitle","x-form-type":"materialswitch"} */
+	@Inject
+	private String showsubtitle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-type":"text"} */
+	@Inject
+	private String subtitle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Text","x-form-type":"materialswitch"} */
+	@Inject
+	private String showtext;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-visible":"model.showtext == 'true'","x-form-type":"texteditor"} */
 	@Inject
 	private String text;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
+	@Inject
+	private String showbutton;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
+	@Inject
+	private List<IComponent> buttons;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"}}} */
 	@Inject
@@ -220,9 +314,44 @@ public class ArticleblockquoteModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+	public String getShowtitle() {
+		return showtitle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-visible":"model.showtitle == 'true'","x-form-type":"text"} */
+	public String getTitle() {
+		return title;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Subtitle","x-form-type":"materialswitch"} */
+	public String getShowsubtitle() {
+		return showsubtitle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-type":"text"} */
+	public String getSubtitle() {
+		return subtitle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Text","x-form-type":"materialswitch"} */
+	public String getShowtext() {
+		return showtext;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-visible":"model.showtext == 'true'","x-form-type":"texteditor"} */
 	public String getText() {
 		return text;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
+	public String getShowbutton() {
+		return showbutton;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
+	public List<IComponent> getButtons() {
+		return buttons;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"}}} */

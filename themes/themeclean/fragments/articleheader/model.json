@@ -4,7 +4,6 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "$ref": "fragments/block/model.json#/definitions/Block/properties",
         "showtitle": {
           "type": "string",
           "x-source": "inject",
@@ -48,6 +47,10 @@
               "x-form-value": "text-right"
             }
           }
+        },
+        "bgref": {
+          "$ref": "fragments/block/model.json#/definitions/Block",
+          "x-form-type": "reference"
         }
       }
     }
