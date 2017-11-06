@@ -102,5 +102,48 @@
                     path="/jcr:content/infocolumns/buttons/button6"/>
             </buttons>
         </infocolumns>
+        <ncd834dce-94b5-4a4c-90fc-133c524f40d1
+            jcr:lastModified="{Date}2017-11-06T11:53:03.752-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/tabs"
+            backgroundtype="gradient"
+            bgcolor="#ffffff"
+            bottompadding="{Long}50"
+            color2="#e7e7e7"
+            fullheight="false"
+            overlaycolor="#ffffff"
+            overlayopacity="50"
+            toppadding="{Long}50">
+            <tabs jcr:primaryType="nt:unstructured">
+                <tab1
+                    jcr:lastModified="{Date}2017-11-06T11:53:03.752-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="tab1"
+                    path="/jcr:content/ncd834dce-94b5-4a4c-90fc-133c524f40d1/tabs/tab1"
+                    text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+                    title="Learn More"/>
+                <tab2
+                    jcr:lastModified="{Date}2017-11-06T11:53:03.752-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="tab2"
+                    path="/jcr:content/ncd834dce-94b5-4a4c-90fc-133c524f40d1/tabs/tab2"
+                    text="when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting"
+                    title="Contact Us"/>
+                <tab3
+                    jcr:lastModified="{Date}2017-11-06T11:53:03.752-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="tab3"
+                    path="/jcr:content/ncd834dce-94b5-4a4c-90fc-133c524f40d1/tabs/tab3"
+                    text="when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting"
+                    title="About Us"/>
+            </tabs>
+        </ncd834dce-94b5-4a4c-90fc-133c524f40d1>
     </jcr:content>
 </jcr:root>
