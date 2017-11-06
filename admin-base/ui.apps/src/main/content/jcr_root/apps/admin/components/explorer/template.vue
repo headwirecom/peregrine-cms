@@ -441,7 +441,8 @@
             },
             addPage: function(me, target) {
                 if(me.pt.path === '/content/sites') {
-                    $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
+                    $perAdminApp.stateAction('createSiteWizard', me.pt.path)
+//                    $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
                 } else {
                     $perAdminApp.stateAction('createPageWizard', me.pt.path)
                 }

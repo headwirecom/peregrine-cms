@@ -30,6 +30,7 @@ let actions = []
 import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
 import createPageWizard from './stateActions/createPageWizard'
+import createSiteWizard from './stateActions/createSiteWizard'
 import deletePage from './stateActions/deletePage'
 import renamePage from './stateActions/renamePage'
 import movePage from './stateActions/movePage'
@@ -73,6 +74,7 @@ import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
+actions['createSiteWizard'] = createSiteWizard
 actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['deletePage'] = deletePage
