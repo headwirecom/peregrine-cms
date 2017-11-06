@@ -234,5 +234,49 @@
                     title="Join toggle"/>
             </toggles>
         </nf6e9f6ec-f50c-4205-8d8c-a43a6982e1fd>
+        <nb3f3d6b5-4fba-4933-959d-70de5575e332
+            jcr:lastModified="{Date}2017-11-06T14:34:23.832-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/accordion"
+            backgroundtype="color"
+            bgcolor="#f1f1f1"
+            bottompadding="50"
+            color2="#ffffff"
+            overlaycolor="#ffffff"
+            overlayopacity="50"
+            showtitle="true"
+            title="Peregrine Accordion"
+            toppadding="50">
+            <tabs jcr:primaryType="nt:unstructured">
+                <accordion1
+                    jcr:lastModified="{Date}2017-11-06T14:34:23.831-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="accordion1"
+                    path="/jcr:content/nb3f3d6b5-4fba-4933-959d-70de5575e332/tabs/accordion1"
+                    text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+                    title="Why accordion?"/>
+                <accordion2
+                    jcr:lastModified="{Date}2017-11-06T14:34:23.831-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="accordion2"
+                    path="/jcr:content/nb3f3d6b5-4fba-4933-959d-70de5575e332/tabs/accordion2"
+                    text="when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting"
+                    title="How to accordion?"/>
+                <accordion3
+                    jcr:lastModified="{Date}2017-11-06T14:34:23.832-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    component="nt:unstructured"
+                    name="accordion3"
+                    path="/jcr:content/nb3f3d6b5-4fba-4933-959d-70de5575e332/tabs/accordion3"
+                    text="remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    title="Join accordion"/>
+            </tabs>
+        </nb3f3d6b5-4fba-4933-959d-70de5575e332>
     </jcr:content>
 </jcr:root>
