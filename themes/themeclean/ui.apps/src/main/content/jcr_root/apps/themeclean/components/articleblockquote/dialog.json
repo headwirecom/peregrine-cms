@@ -4,7 +4,7 @@
       "type": "texteditor",
       "rows": 10,
       "placeholder": "text",
-      "label": "text",
+      "label": "Text",
       "model": "text"
     },
     {

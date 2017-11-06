@@ -24,6 +24,7 @@ import javax.inject.Named;
         "text": {
           "type": "string",
           "x-source": "inject",
+          "x-form-label": "Text",
           "x-form-type": "texteditor"
         },
         "bg": {
@@ -162,7 +163,7 @@ public class ArticleblockquoteModel extends AbstractComponent {
     public ArticleblockquoteModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
 	@Inject
 	private String text;
 
@@ -219,7 +220,7 @@ public class ArticleblockquoteModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
 	public String getText() {
 		return text;
 	}

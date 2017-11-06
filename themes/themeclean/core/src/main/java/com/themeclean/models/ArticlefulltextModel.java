@@ -24,6 +24,7 @@ import javax.inject.Named;
         "text": {
           "type": "string",
           "x-source": "inject",
+          "x-form-label": "Text",
           "x-form-type": "texteditor"
         },
         "backgroundtype": {
@@ -155,7 +156,7 @@ public class ArticlefulltextModel extends AbstractComponent {
     public ArticlefulltextModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
 	@Inject
 	private String text;
 
@@ -212,7 +213,7 @@ public class ArticlefulltextModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
 	public String getText() {
 		return text;
 	}
