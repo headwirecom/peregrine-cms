@@ -56,7 +56,7 @@
             </div>
         </li>
     </ul>
-    <ol v-else class="preview-list">
+    <ol v-else class="preview-list clearfix">
       <li v-for="(item, index) in value" class="preview-item">
         <vue-form-generator
           v-if="schema.multifield" 
