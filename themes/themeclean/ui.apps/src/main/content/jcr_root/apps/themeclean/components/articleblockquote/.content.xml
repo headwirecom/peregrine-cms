@@ -5,8 +5,8 @@
           >
           <jcr:content
             jcr:primaryType="nt:unstructured"
-            toppadding="{Long}30"
-            bottompadding="{Long}30"
+            toppadding="30"
+            bottompadding="30"
             textcolor="#000000"
             bgcolor="#ffffff"
             text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus."/>

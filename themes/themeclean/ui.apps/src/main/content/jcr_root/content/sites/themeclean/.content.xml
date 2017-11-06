@@ -20,22 +20,22 @@
             sling:resourceType="themeclean/components/articleheader"
             backgroundtype="color"
             bgcolor="#ffffff"
-            bottompadding="{Long}50"
+            bottompadding="50"
             fullheight="false"
             showsubtitle="true"
             showtitle="true"
             subtitle="Molestiae alias et inventore voluptas"
             textalign="text-center"
             title="Peregrine blocks"
-            toppadding="{Long}50"/>
+            toppadding="50"/>
         <articlefulltext
             jcr:lastModified="{Date}2017-11-06T10:40:44.914-08:00"
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/articlefulltext"
             bgcolor="#ffffff"
-            toppadding="{Long}30"
-            bottompadding="{Long}60"
+            toppadding="30"
+            bottompadding="60"
             text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus."/>
         <articlecolumns
             jcr:lastModified="{Date}2017-11-06T10:40:48.471-08:00"
@@ -43,19 +43,19 @@
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/articlecolumns"
             bgcolor="#ffffff"
-            bottompadding="{Long}60"
+            bottompadding="30"
             textleft="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque massa quam, euismod a consectetur at, scelerisque eu diam. Nam vehicula justo a elit scelerisque, eu vulputate nisi sollicitudin. Aenean tempor ante a vestibulum dignissim. Mauris rutrum tortor vitae arcu tempus scelerisque. Maecenas ullamcorper facilisis tempor. Donec a justo ut nisl cursus dictum at vitae tortor."
             textright="Integer sit amet dui eget sapien finibus tempus nec id odio. Integer nulla neque, tincidunt at tempor vel, euismod nec massa. Proin elementum auctor felis, ut tristique arcu porta et. Quisque bibendum nibh tempor rutrum ultrices. Vivamus non rutrum nibh, sed rhoncus mauris. Maecenas vel porttitor augue, ac fringilla nisi. Aliquam rutrum sem eu ante tristique, in commodo odio placerat. Ut in urna nunc. Nam volutpat eu sem a pulvinar. Aenean consectetur lorem id lacus ultrices porta quis imperdiet nunc."
-            toppadding="{Long}30"/>
+            toppadding="60"/>
         <articleblockquote
             jcr:lastModified="{Date}2017-11-06T10:40:54.873-08:00"
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/articleblockquote"
             bgcolor="#ffffff"
-            bottompadding="{Long}60"
+            bottompadding="60"
             text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus."
-            toppadding="{Long}30"/>
+            toppadding="60"/>
         <infocolumns
             jcr:lastModified="{Date}2017-11-06T11:16:03.615-08:00"
             jcr:lastModifiedBy="admin"
@@ -63,7 +63,7 @@
             sling:resourceType="themeclean/components/infocolumns"
             backgroundtype="gradient"
             bgcolor="#ffffff"
-            bottompadding="{Long}60"
+            bottompadding="60"
             color2="#c0c0c0"
             fullheight="false"
             gradient="true"
@@ -76,7 +76,7 @@
             subtitle="Molestiae alias et inventore voluptas"
             text="Eligendi fugit asperiores et. Corrupti voluptatum quasi sit. Adipisci ut voluptatem necessitatibus cumque aspernatur."
             title="Peregrine blocks"
-            toppadding="{Long}60">
+            toppadding="60">
             <buttons jcr:primaryType="nt:unstructured">
                 <button5
                     jcr:lastModified="{Date}2017-11-06T11:16:03.615-08:00"
@@ -109,12 +109,12 @@
             sling:resourceType="themeclean/components/tabs"
             backgroundtype="gradient"
             bgcolor="#ffffff"
-            bottompadding="{Long}50"
+            bottompadding="50"
             color2="#e7e7e7"
             fullheight="false"
             overlaycolor="#ffffff"
             overlayopacity="50"
-            toppadding="{Long}50">
+            toppadding="50">
             <tabs jcr:primaryType="nt:unstructured">
                 <tab1
                     jcr:lastModified="{Date}2017-11-06T11:53:03.752-08:00"
@@ -152,7 +152,7 @@
             sling:resourceType="themeclean/components/tabswithmedia"
             backgroundtype="gradient"
             bgcolor="#ffffff"
-            bottompadding="{Long}80"
+            bottompadding="80"
             color2="#ffffff"
             fullheight="false"
             mediasrc="/content/assets/themeclean/images/screen.jpg"
@@ -164,7 +164,7 @@
             showtitle="true"
             subtitle="Lorem ipsum dolor sit amet."
             title="Tabs with media"
-            toppadding="{Long}80">
+            toppadding="80">
             <tabs jcr:primaryType="nt:unstructured">
                 <tab1
                     jcr:lastModified="{Date}2017-11-06T13:43:11.842-08:00"

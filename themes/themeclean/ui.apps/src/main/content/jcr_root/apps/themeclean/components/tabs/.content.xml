@@ -9,8 +9,8 @@
              color2="#e7e7e7"
              fullheight="false"
              backgroundtype="gradient"
-             bottompadding="{Long}50"
-             toppadding="{Long}50">
+             bottompadding="50"
+             toppadding="50">
              <tabs 
               	jcr:primaryType="nt:unstructured">
 	             <tab1
