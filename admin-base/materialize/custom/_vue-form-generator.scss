@@ -546,8 +546,10 @@
                 .preview-list {
                     > li.preview-item {
                         clear: both;
+                        padding-bottom: 0;
                         .singlefield {
                             float: left;
+                            padding-bottom: 0;
                             .form-group {
                                 padding: 0;
                             }
