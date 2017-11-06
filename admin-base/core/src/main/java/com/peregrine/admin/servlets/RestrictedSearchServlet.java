@@ -54,6 +54,7 @@ import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATION;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
+import static com.peregrine.commons.util.PerConstants.VARIATION_PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -211,7 +212,9 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         String title = null;
         if(variation != null) {
             String id = variation.getIdentifier();
-            answer.writeAttribute(VARIATION, id);
+            String name = variation.getName();
+            answer.writeAttribute(VARIATION, name);
+            answer.writeAttribute(VARIATION_PATH, id);
             if(variation.hasProperty(TITLE)) {
                 title = variation.getProperty(TITLE).getString();
             }
