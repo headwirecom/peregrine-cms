@@ -37,13 +37,15 @@
         jcr:primaryType="nt:unstructured"
         __variations="true"
     >
-        <v1 jcr:primaryType="nt:unstructured" title="Text V1">
+        <v1 jcr:primaryType="nt:unstructured" title="Text Lorem ipsum">
             <jcr:content jcr:primaryType="nt:unstructured"
-                         text="bla"/>
+                         text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed facilisis sem fringilla, commodo erat id, ultricies orci. Etiam sit amet eleifend ipsum. Phasellus vitae purus metus. Sed et eros enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus in ullamcorper augue. Aenean accumsan dictum nibh non sollicitudin. Integer venenatis nisi in nulla posuere, vitae congue sem lacinia. Sed vulputate feugiat quam, dapibus condimentum diam congue id. Sed condimentum metus mauris, vitae ultricies leo rutrum a. Ut cursus a nisi id tincidunt. Mauris dui enim, vehicula eget ante sit amet, pretium elementum orci. In hac habitasse platea dictumst. Nunc faucibus nibh vitae placerat feugiat. Nulla ac maximus sem. Duis ullamcorper lacinia erat, sollicitudin blandit nisl tempor at."
+            />
         </v1>
-        <v2 jcr:primaryType="nt:unstructured" title="Text V2">
+        <v2 jcr:primaryType="nt:unstructured" title="Text Integer vel">
             <jcr:content jcr:primaryType="nt:unstructured"
-                         text="bli"/>
+                         text="Integer vel ornare mauris, a volutpat quam. Nunc ullamcorper in sapien vel elementum. Ut porttitor semper dolor, sit amet gravida nulla maximus quis. Vivamus accumsan aliquet ligula sit amet tristique. Morbi porta, est nec egestas eleifend, lacus justo cursus lorem, ut venenatis quam neque quis massa. Proin pellentesque tincidunt sagittis. Nam eget libero nec nibh laoreet pharetra eu vitae purus. Integer lacinia viverra sollicitudin. Etiam eget mauris et purus pharetra lacinia a vitae nulla. Nulla mattis metus lacus, iaculis bibendum velit interdum nec."
+            />
         </v2>
     </jcr:content>
 </jcr:root>
