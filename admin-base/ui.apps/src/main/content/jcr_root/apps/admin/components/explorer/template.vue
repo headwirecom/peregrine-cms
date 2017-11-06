@@ -120,7 +120,13 @@
                 </li>
             </ul>
             <div v-if="children.length == 0" class="empty-explorer">
-                This folder is empty, use the navigation bar to add content...
+                <div v-if="path.startsWith('/content/assets')">
+                    This folder is empty, use the navigation bar to add an asset or drag and drop an asset
+                    from the file system onto the browser.
+                </div>
+                <div v-else>
+                    This folder is empty, use the navigation bar to add content...
+                </div>
             </div>
 
         </div>
