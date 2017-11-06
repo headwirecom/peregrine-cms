@@ -11,8 +11,8 @@
               title="Peregrine blocks"
               subtitle="Molestiae alias et inventore voluptas"
               fullheight="false"
-              toppadding="50"
-              bottompadding="50"
+              toppadding="{Long}50"
+              toppadding="{Long}50"
               backgroundtype="color"
               bgcolor="#ffffff"
           >

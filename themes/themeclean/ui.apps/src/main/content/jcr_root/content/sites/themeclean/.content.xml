@@ -20,41 +20,87 @@
             sling:resourceType="themeclean/components/articleheader"
             backgroundtype="color"
             bgcolor="#ffffff"
-            bottompadding="50"
+            bottompadding="{Long}50"
             fullheight="false"
             showsubtitle="true"
             showtitle="true"
             subtitle="Molestiae alias et inventore voluptas"
             textalign="text-center"
             title="Peregrine blocks"
-            toppadding="50"/>
+            toppadding="{Long}50"/>
         <articlefulltext
             jcr:lastModified="{Date}2017-11-06T10:40:44.914-08:00"
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/articlefulltext"
             bgcolor="#ffffff"
-            bottompadding="30"
-            text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus."
-            toppadding="30"/>
+            toppadding="{Long}30"
+            bottompadding="{Long}60"
+            text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus."/>
         <articlecolumns
             jcr:lastModified="{Date}2017-11-06T10:40:48.471-08:00"
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/articlecolumns"
             bgcolor="#ffffff"
-            bottompadding="30"
+            bottompadding="{Long}60"
             textleft="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque massa quam, euismod a consectetur at, scelerisque eu diam. Nam vehicula justo a elit scelerisque, eu vulputate nisi sollicitudin. Aenean tempor ante a vestibulum dignissim. Mauris rutrum tortor vitae arcu tempus scelerisque. Maecenas ullamcorper facilisis tempor. Donec a justo ut nisl cursus dictum at vitae tortor."
             textright="Integer sit amet dui eget sapien finibus tempus nec id odio. Integer nulla neque, tincidunt at tempor vel, euismod nec massa. Proin elementum auctor felis, ut tristique arcu porta et. Quisque bibendum nibh tempor rutrum ultrices. Vivamus non rutrum nibh, sed rhoncus mauris. Maecenas vel porttitor augue, ac fringilla nisi. Aliquam rutrum sem eu ante tristique, in commodo odio placerat. Ut in urna nunc. Nam volutpat eu sem a pulvinar. Aenean consectetur lorem id lacus ultrices porta quis imperdiet nunc."
-            toppadding="30"/>
+            toppadding="{Long}30"/>
         <articleblockquote
             jcr:lastModified="{Date}2017-11-06T10:40:54.873-08:00"
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/articleblockquote"
             bgcolor="#ffffff"
-            bottompadding="30"
+            bottompadding="{Long}60"
             text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus."
-            toppadding="30"/>
+            toppadding="{Long}30"/>
+        <infocolumns
+            jcr:lastModified="{Date}2017-11-06T11:16:03.615-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/infocolumns"
+            backgroundtype="gradient"
+            bgcolor="#ffffff"
+            bottompadding="{Long}60"
+            color2="#c0c0c0"
+            fullheight="false"
+            gradient="true"
+            overlaycolor="#ffffff"
+            overlayopacity="50"
+            showbutton="true"
+            showsubtitle="true"
+            showtext="true"
+            showtitle="true"
+            subtitle="Molestiae alias et inventore voluptas"
+            text="Eligendi fugit asperiores et. Corrupti voluptatum quasi sit. Adipisci ut voluptatem necessitatibus cumque aspernatur."
+            title="Peregrine blocks"
+            toppadding="{Long}60">
+            <buttons jcr:primaryType="nt:unstructured">
+                <button5
+                    jcr:lastModified="{Date}2017-11-06T11:16:03.615-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    buttoncolor="#008040"
+                    buttonlink="http://www.peregrine-cms.com"
+                    buttontext="See More"
+                    component="nt:unstructured"
+                    iconclass=""
+                    name="button5"
+                    path="/jcr:content/infocolumns/buttons/button5"/>
+                <button6
+                    jcr:lastModified="{Date}2017-11-06T11:16:03.615-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    buttoncolor="#006040"
+                    buttonlink="http://www.peregrine-cms.com"
+                    buttontext="About Us"
+                    component="nt:unstructured"
+                    iconclass=""
+                    name="button6"
+                    path="/jcr:content/infocolumns/buttons/button6"/>
+            </buttons>
+        </infocolumns>
     </jcr:content>
 </jcr:root>
