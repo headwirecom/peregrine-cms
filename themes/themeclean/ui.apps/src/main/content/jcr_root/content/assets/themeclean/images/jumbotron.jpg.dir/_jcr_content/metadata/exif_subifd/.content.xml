@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    date_time_original="2011:11:06 14:29:35"
+    exposure_time="0.02 sec"
+    f-number="f/2.8"
+    focal_length="35 mm"
+    lens_model="EF-S17-55mm f/2.8 IS USM"/>

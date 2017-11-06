@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    date_time="2003:12:07 13:40:57"
+    image_description="OLYMPUS DIGITAL CAMERA         "
+    make="OLYMPUS OPTICAL CO.,LTD"
+    model="C750UZ"
+    orientation="Top, left side (Horizontal / normal)"
+    resolution_unit="Inch"
+    software="v753-81"
+    x_resolution="72 dots per inch"
+    y_resolution="72 dots per inch"
+    ycbcr_positioning="Datum point"/>

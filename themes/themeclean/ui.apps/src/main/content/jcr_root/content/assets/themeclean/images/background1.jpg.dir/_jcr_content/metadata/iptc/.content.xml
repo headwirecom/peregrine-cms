@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    application_record_version="0"
+    by-line="@eberhardgross"
+    copyright_notice="copyright"
+    date_created="2017:06:11"
+    time_created="08:19:14"/>

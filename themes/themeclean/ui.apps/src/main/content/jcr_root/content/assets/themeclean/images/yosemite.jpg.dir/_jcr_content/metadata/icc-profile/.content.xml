@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    class="Display Device"
+    color_space="RGB "
+    connectionspace="XYZ "
+    copyright="Copyright (c) 1998 Hewlett-Packard Company"
+    dateandtime="1998:02:09 06:49:00"
+    description="sRGB IEC61966-2.1"
+    device_manufacturer="IEC "
+    platform="Microsoft Corporation"
+    signature="acsp"
+    size="3144"
+    tag_count="17"
+    version="2.1.0"/>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    date_time="2009:01:09 20:41:40"
+    make="Canon"
+    model="Canon PowerShot S5 IS"
+    orientation="Top, left side (Horizontal / normal)"
+    resolution_unit="Inch"
+    x_resolution="180 dots per inch"
+    y_resolution="180 dots per inch"
+    ycbcr_positioning="Center of pixel array"/>

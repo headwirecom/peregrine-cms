@@ -3,4 +3,4 @@
           jcr:primaryType="per:Component"
           sling:resourceSuperType="pagerender/vue/structure/page"
           jcr:title="page component (example site)"
-/>
+          group=".hidden"/>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    bits_per_sample="16 16 16 bits/component/pixel"
+    compression="Adobe Deflate"
+    date_time="2017:09:08 21:07:59"
+    image_height="3500 pixels"
+    image_width="5600 pixels"
+    make="SONY"
+    model="ILCE-7RM2"
+    orientation="Top, left side (Horizontal / normal)"
+    photometric_interpretation="RGB"
+    planar_configuration="Chunky (contiguous for each subsampling pixel)"
+    resolution_unit="Inch"
+    samples_per_pixel="3 samples/pixel"
+    software="Adobe Photoshop CC 2017 (Macintosh)"
+    x_resolution="240 dots per inch"
+    y_resolution="240 dots per inch"/>
