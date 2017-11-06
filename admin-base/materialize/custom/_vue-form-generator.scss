@@ -532,10 +532,22 @@
                     content: '';
                 }
             }
+            &.field-iconbrowser {
+                .wrap {
+                    > p {
+                        i {
+                            vertical-align: middle;
+                            margin-right: 5px;
+                        }
+                    }
+                }
+            }
             &.field-collection {
                 .preview-list {
                     > li.preview-item {
+                        clear: both;
                         .singlefield {
+                            float: left;
                             .form-group {
                                 padding: 0;
                             }
@@ -544,6 +556,7 @@
                             }
                         }
                         .multifield {
+                            float: left;
                             .form-group {
                                 padding: 0;
                             }

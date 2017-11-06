@@ -71,7 +71,6 @@
 				})
 
 				this.$nextTick(function () {
-					console.log('picker: ', this.picker)
 					if(this.value){
 						// regex to check string is four numbers - two numbers - two numbers 
 						if (this.isValidDate(this.value)) {

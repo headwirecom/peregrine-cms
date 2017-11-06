@@ -1,6 +1,6 @@
 <template>
 	<div class="wrapper">
-		<p v-if="schema.readonly">{{value ? prettyTimeDate(value) : ''}}</p>
+		<p v-if="schema.readonly">{{value ? value : ''}}</p>
 		<template v-else-if="!schema.preview">
 			<div class="date-wrapper">
 				<input ref="datepicker" class="form-control datepicker" type="date" :placeholder="schema.datePlaceholder" />
@@ -12,7 +12,7 @@
 				<input ref="timepicker" class="timepicker" type="text" :placeholder="schema.timePlaceholder" />
 			</div>
 		</template>
-		<p v-else>{{value ? prettyTimeDate(value) : ''}}</p>
+		<p v-else>{{dateFromModel()}} {{timeFromModel()}}</p>
 	</div>
 </template>
 
@@ -70,10 +70,12 @@
 					const timeOptions = {
 						twelvehour: true,
 						init: () => { 
-	              this.$refs.timepicker.value = this.timeFromModel()
+							var time = this.timeFromModel()
+							this.$refs.timepicker.value = time
 	          },
 	          afterDone: () => { 
-	          	this.value = this.modelFromTime()
+							var time = this.modelFromTime()
+	          	this.value = time
 	          }
 					}
 					if(this.value){
@@ -145,10 +147,10 @@
 				return this.dateTime.toJSON()
 			},
 			timeFromModel(){
+
 				if(this.isValidDateTime(this.value)) {
 					let indexT = this.value.lastIndexOf('T')
 					let timeString = this.value.substring(indexT + 1)
-					timeString = timeString.split('-')[1]
 					let today = new Date().toJSON()
 					let fauxDate = today.substring(0, today.indexOf('T'))
 					// create date object so localization is handled natively
@@ -159,21 +161,17 @@
 					if(hour.length === 1){
 						time = '0' + time
 					}
-					return time.replace(/\s+/g,'')
+					let prettyTime = time.replace(/\s+/g,'')
+					return prettyTime
 				} else {
 					console.warn('model must be a date string with format  YYYY-MM-DDTHH:MM:SS.000Z')
 				}
 			},
 
-			prettyTimeDate(value) {
-				const timezone = value.match(/-\d+$/)[0]
-				const formatted = value.replace(/\-\d+$/, 'Z')
-				const initial = new Date(formatted)
-				const d = new Date(initial.getTime() - 3600000*(timezone))
-				const time = d.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })
-				const date = `${d.getUTCMonth()+1}/${d.getDate()}/${d.getFullYear()}`
-				return `${date} ${time}`;
-			},
+			dateFromModel(){
+				let model = this.value
+				return model.substring(0, model.indexOf('T'))
+			}
 
 		}
 	}

@@ -9,7 +9,7 @@
 			:disabled    ="disabled"
 			:placeholder ="schema.placeholder"
 			:name        ="schema.inputName" />
-		<p v-else>{{value}}</p>
+		<p v-else>{{timeFromModel()}}</p>
 	</div>
 </template>
 
