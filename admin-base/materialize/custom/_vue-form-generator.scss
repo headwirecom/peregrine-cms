@@ -535,7 +535,9 @@
             &.field-collection {
                 .preview-list {
                     > li.preview-item {
+                        clear: both;
                         .singlefield {
+                            float: left;
                             .form-group {
                                 padding: 0;
                             }
@@ -544,6 +546,7 @@
                             }
                         }
                         .multifield {
+                            float: left;
                             .form-group {
                                 padding: 0;
                             }
