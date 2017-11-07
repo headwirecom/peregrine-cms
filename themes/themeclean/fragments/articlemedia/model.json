@@ -1,18 +1,13 @@
 {
   "definitions": {
-    "Articleblockquote": {
+    "Articlemedia": {
       "type": "object",
       "x-type": "component",
       "properties": {
         "text": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Text",
           "x-form-type": "texteditor"
-        },
-        "bgref": {
-          "$ref": "fragments/block/model-article.json#/definitions/Block",
-          "x-form-type": "reference"
         }
       }
     }
