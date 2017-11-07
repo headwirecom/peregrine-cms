@@ -5,7 +5,7 @@
           group="Features">
           <jcr:content
             jcr:primaryType="nt:unstructured"
-            bgcolor="#ffffff"
+            bgcolor="#eeeeee"
             bottompadding="30"
             showbutton="true"
             showtext="true"

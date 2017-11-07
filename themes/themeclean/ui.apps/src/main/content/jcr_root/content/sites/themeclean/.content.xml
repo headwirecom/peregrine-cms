@@ -367,8 +367,8 @@
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/featurescolumns"
-            backgroundtype="image"
-            bgcolor="#ffffff"
+            backgroundtype="color"
+            bgcolor="#eeeeee"
             bottompadding="30"
             color2="#c0c0c0"
             overlaycolor="#ffffff"
@@ -399,7 +399,7 @@
                     buttonlink="#"
                     buttontext="View Detail"
                     component="nt:unstructured"
-                    image="/content/assets/themeclean/images/01.jpg"
+                    image="/content/assets/themeclean/images/02.jpg"
                     name="card2"
                     path="/jcr:content/nda9fbd68-0abb-4cf4-845d-6396c6e73f81/cards/card2"
                     text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
@@ -412,7 +412,7 @@
                     buttonlink="#"
                     buttontext="View Detail"
                     component="nt:unstructured"
-                    image="/content/assets/themeclean/images/01.jpg"
+                    image="/content/assets/themeclean/images/04.jpg"
                     name="card3"
                     path="/jcr:content/nda9fbd68-0abb-4cf4-845d-6396c6e73f81/cards/card3"
                     text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
@@ -433,7 +433,8 @@
             showbutton="true"
             showtext="true"
             showtitle="true"
-            toppadding="30">
+            toppadding="30"
+            cardcolor="#eeeeee">
             <cards jcr:primaryType="nt:unstructured">
                 <card1
                     jcr:lastModified="{Date}2017-11-07T10:57:04.113-08:00"
@@ -443,11 +444,11 @@
                     buttonlink="#"
                     buttontext="View"
                     component="nt:unstructured"
-                    image="/content/assets/themeclean/images/feature1.jpg"
+                    image="/content/assets/themeclean/images/background1.jpg"
                     name="card1"
                     path="/jcr:content/nf46066e5-372f-469d-b0eb-be652eef0acd/cards/card1"
                     text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
-                    title="Product 1"/>
+                    title="Card One"/>
                 <card2
                     jcr:lastModified="{Date}2017-11-07T10:57:04.113-08:00"
                     jcr:lastModifiedBy="admin"
@@ -456,11 +457,24 @@
                     buttonlink="#"
                     buttontext="View"
                     component="nt:unstructured"
-                    image="/content/assets/themeclean/images/feature1.jpg"
+                    image="/content/assets/themeclean/images/background2.jpg"
                     name="card2"
                     path="/jcr:content/nf46066e5-372f-469d-b0eb-be652eef0acd/cards/card2"
                     text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
-                    title="Product 2"/>
+                    title="Card Two"/>
+                <card3
+                    jcr:lastModified="{Date}2017-11-07T10:57:04.113-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    buttoncolor="#008080"
+                    buttonlink="#"
+                    buttontext="View"
+                    component="nt:unstructured"
+                    image="/content/assets/themeclean/images/background3.jpg"
+                    name="card2"
+                    path="/jcr:content/nf46066e5-372f-469d-b0eb-be652eef0acd/cards/card2"
+                    text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
+                    title="Card Three"/>
             </cards>
         </nf46066e5-372f-469d-b0eb-be652eef0acd>
         
