@@ -6,7 +6,7 @@
           <jcr:content
               jcr:primaryType="nt:unstructured"
               backgroundtype="color"
-              bgcolor="#FFFFFF"
+              bgcolor="#eeeeee"
               collapsed="false"
               logo="/content/assets/themeclean/images/peregrine-logo.png"
               logourl="http://www.peregrine-cms.com"
