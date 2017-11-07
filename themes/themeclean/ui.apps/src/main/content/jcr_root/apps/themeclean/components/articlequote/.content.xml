@@ -5,8 +5,8 @@
           group="Article">
           <jcr:content
              jcr:primaryType="nt:unstructured"
-             toppadding="30"
-             bottompadding="30"
+             toppadding="0"
+             bottompadding="0"
              backgroundtype="color"
              bgcolor="#ffffff"
              linewidth="25" 

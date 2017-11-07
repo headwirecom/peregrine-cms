@@ -8,7 +8,7 @@
 	          mediatype="video"
 	          mediasrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
 	          mediawidth="100"
-	          toppadding="30"
-	          bottompadding="30">
+	          toppadding="0"
+	          bottompadding="0">
           </jcr:content>
 </jcr:root>
