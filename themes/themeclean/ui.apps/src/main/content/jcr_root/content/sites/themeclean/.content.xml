@@ -142,6 +142,50 @@
                     path="/jcr:content/infocolumns/buttons/button6"/>
             </buttons>
         </infocolumns>
+        <fullscreenintro
+            jcr:lastModified="{Date}2017-11-07T14:07:45.415-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/intro"
+            backgroundtype="image"
+            bgcolor="#ffffff"
+            bgimage="/content/assets/themeclean/images/jumbotron.jpg"
+            color2="#c0c0c0"
+            fullheight="true"
+            overlay="false"
+            overlaycolor="#ffffff"
+            overlayopacity="50"
+            showbutton="true"
+            showsubtitle="true"
+            showtext="true"
+            showtitle="true"
+            subtitle="Our mobile websites"
+            text="Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color."
+            title="FULL SCREEN INTRO">
+            <buttons jcr:primaryType="nt:unstructured">
+                <button1
+                    jcr:lastModified="{Date}2017-11-07T14:07:45.415-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    buttoncolor="#ff0000"
+                    buttonlink="#"
+                    buttontext="LEARN MORE"
+                    component="nt:unstructured"
+                    name="button1"
+                    path="/jcr:content/fullscreenintro/buttons/button1"/>
+                <button2
+                    jcr:lastModified="{Date}2017-11-07T14:07:45.415-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    buttoncolor="#0000ff"
+                    buttonlink="#"
+                    buttontext="LIVE DEMO"
+                    component="nt:unstructured"
+                    iconclass=""
+                    name="button2"
+                    path="/jcr:content/fullscreenintro/buttons/button2"/>
+            </buttons>
+        </fullscreenintro>
         <ncd834dce-94b5-4a4c-90fc-133c524f40d1
             jcr:lastModified="{Date}2017-11-06T11:53:03.752-08:00"
             jcr:lastModifiedBy="admin"
