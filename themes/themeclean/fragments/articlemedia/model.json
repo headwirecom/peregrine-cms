@@ -7,7 +7,16 @@
         "text": {
           "type": "string",
           "x-source": "inject",
+          "x-form-label": "Text",
           "x-form-type": "texteditor"
+        },
+        "mediaref": {
+          "x-form-type": "reference",
+        	"$ref": "fragments/media/model.json#/definitions/Media"
+        },
+        "bgref": {
+          "x-form-type": "reference",
+        	"$ref": "fragments/block/model-article.json#/definitions/Block"
         }
       }
     }

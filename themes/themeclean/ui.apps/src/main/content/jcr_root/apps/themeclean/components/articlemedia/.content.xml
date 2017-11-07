@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="per:Component"
-          jcr:title="articlemedia"
-          />
+          jcr:title="Article With Media"
+          group="Article">
+          <jcr:content
+	          jcr:primaryType="nt:unstructured"
+	          mediatype="image"
+	          mediasrc="/content/assets/pcmsstock/images/yosemite.jpg"
+	          mediawidth="45"
+	          toppadding="30"
+	          bottompadding="30"
+	          text="Dolorem aut qui eligendi atque corporis. Necessitatibus deleniti rerum vel modi consequatur necessitatibus. Accusamus voluptas dolorum debitis doloribus. Esse ea qui dolor quae. Est numquam maiores rem odit. Suscipit ut voluptatum sed et harum.">
+          </jcr:content>
+</jcr:root>
