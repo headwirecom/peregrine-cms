@@ -6,12 +6,12 @@
           <jcr:content
             jcr:primaryType="nt:unstructured"
             bgcolor="#ffffff"
-            bottompadding="30"
+            bottompadding="20"
             showbutton="true"
             showtext="true"
             showtitle="true"
-            toppadding="30"
-						cardcolor="#eeeeee">
+            toppadding="20"
+			cardcolor="#eeeeee">
             <cards 
               	jcr:primaryType="nt:unstructured">  
 	            <card1
