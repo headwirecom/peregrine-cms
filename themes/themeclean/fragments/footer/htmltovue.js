@@ -1,7 +1,7 @@
 module.exports = {
     convert: function($, f) {
         //f.bindPath($)
-        f.wrap($, 'pcmsstock-components-block')
+        f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
     	f.bindAttribute($.find('a').first(), 'href', 'model.logourl')
     	f.bindAttribute($.find('img').first(), 'src', 'model.logo')
