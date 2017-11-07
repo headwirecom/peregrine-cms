@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    resolution_units="none"
+    thumbnail_height_pixels="0"
+    thumbnail_width_pixels="0"
+    version="1.1"
+    x_resolution="1 dot"
+    y_resolution="1 dot"/>
