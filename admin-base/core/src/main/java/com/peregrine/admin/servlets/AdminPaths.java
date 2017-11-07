@@ -7,6 +7,7 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_COMPONENT_DEFINITION = API_PREFIX + "componentDefinition";
     public static final String RESOURCE_TYPE_CONTENT = API_PREFIX + "content";
     public static final String RESOURCE_TYPE_CREATION_FOLDER = API_PREFIX + "createFolder";
+    public static final String RESOURCE_TYPE_CREATION_SITE = API_PREFIX + "createSite";
     public static final String RESOURCE_TYPE_CREATION_OBJECT = API_PREFIX + "createObject";
     public static final String RESOURCE_TYPE_CREATION_PAGE = API_PREFIX + "createPage";
     public static final String RESOURCE_TYPE_CREATION_TEMPLATE = API_PREFIX + "createTemplate";

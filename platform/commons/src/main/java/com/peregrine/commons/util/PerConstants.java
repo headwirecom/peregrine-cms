@@ -67,6 +67,7 @@ public class PerConstants {
 
     public static final String COMPONENT = "component";
     public static final String PATH = "path";
+    public static final String SITE = "site";
     public static final String NAME = "name";
     public static final String MODEL = "model";
     public static final String TYPE = "type";

@@ -75,8 +75,7 @@
                                 command: 'editPage',
                                 tooltipTitle: `edit '${child.title || child.name}'`
                             }">
-                            <admin-components-iconeditpage v-if="isSites(path)"></admin-components-iconeditpage>
-                            <i v-else class="material-icons">edit</i>
+                            <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
 
                         <admin-components-action v-if="replicatable(child)"
