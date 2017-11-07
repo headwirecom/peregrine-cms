@@ -1,0 +1,239 @@
+{
+  "fields": [
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "logo",
+      "label": "Logo",
+      "model": "logo"
+    },
+    {
+      "type": "input",
+      "inputType": "url",
+      "placeholder": "logourl",
+      "label": "Logo Url",
+      "model": "logourl"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "logosize",
+      "label": "Logo Size",
+      "model": "logosize",
+      "min": 1,
+      "max": 10
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "title1",
+      "label": "Column 1 Title ",
+      "model": "title1"
+    },
+    {
+      "type": "texteditor",
+      "rows": 10,
+      "placeholder": "text1",
+      "label": "Column 1 Text",
+      "model": "text1"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "title2",
+      "label": "Column 2 Title",
+      "model": "title2"
+    },
+    {
+      "type": "texteditor",
+      "rows": 10,
+      "placeholder": "text2",
+      "label": "Column 2 Text",
+      "model": "text2"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "copyright",
+      "label": "Copyright Text",
+      "model": "copyright"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "title",
+      "label": "Links Section Title",
+      "model": "title"
+    },
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "text",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "text",
+          "label": "Link Text",
+          "model": "text"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "link",
+          "label": "Link Url",
+          "model": "link"
+        }
+      ],
+      "placeholder": "links",
+      "label": "Links",
+      "model": "links"
+    },
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "url",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "url",
+          "label": "Icon Url",
+          "model": "url"
+        },
+        {
+          "type": "iconbrowser",
+          "placeholder": "icon",
+          "label": "Icon Chooser",
+          "model": "icon",
+          "hint": "Select an icon.",
+          "required": true,
+          "validator": "required",
+          "families": [
+            "material",
+            "font awesome"
+          ]
+        }
+      ],
+      "placeholder": "icons",
+      "label": "Icons",
+      "model": "icons"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Color",
+          "value": "color"
+        },
+        {
+          "name": "Gradient",
+          "value": "gradient"
+        }
+      ],
+      "placeholder": "backgroundtype",
+      "label": "Background Type",
+      "model": "backgroundtype"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "bgimage",
+      "label": "Background Image",
+      "model": "bgimage",
+      "visible": "model.backgroundtype == 'image'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "overlay",
+      "label": "Overlay",
+      "model": "overlay",
+      "visible": "model.backgroundtype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "overlaycolor",
+      "label": "Overlay Color",
+      "model": "overlaycolor",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "overlayopacity",
+      "label": "Overlay opacity",
+      "model": "overlayopacity",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+      "max": 100
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "bgcolor",
+      "label": "Background Color",
+      "model": "bgcolor",
+      "visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "color2",
+      "label": "Color 2",
+      "model": "color2",
+      "visible": "model.backgroundtype == 'gradient'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "fullwidth",
+      "label": "Full Width",
+      "model": "fullwidth"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "fullheight",
+      "label": "Full Height",
+      "model": "fullheight"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "toppadding",
+      "label": "Top Padding",
+      "model": "toppadding",
+      "visible": "model.fullheight != 'true'",
+      "max": 120
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "bottompadding",
+      "label": "Bottom Padding",
+      "model": "bottompadding",
+      "visible": "model.fullheight != 'true'",
+      "max": 120
+    }
+  ]
+}

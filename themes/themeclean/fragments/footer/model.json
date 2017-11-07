@@ -1,0 +1,72 @@
+{
+  "definitions": {
+    "Footer": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "logo": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo",
+          "x-form-type": "pathbrowser"
+        },
+        "logourl": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Url",
+          "x-form-type": "url"
+        },
+        "logosize": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Size",
+          "x-form-type": "range",
+          "x-form-min": 1,
+ 		  "x-form-max": 10
+        },
+        "title1": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Column 1 Title ",
+          "x-form-type": "text"
+        },
+        "text1": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Column 1 Text",
+          "x-form-type": "texteditor"
+        },
+        "title2": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Column 2 Title",
+          "x-form-type": "text"
+        },
+        "text2": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Column 2 Text",
+          "x-form-type": "texteditor"
+        },
+        "copyright": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Copyright Text",
+          "x-form-type": "text"
+        },
+        "linksref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/textlinksvertical/model.json#/definitions/Textlinksvertical"
+        },
+        "socialref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/socialicons/model.json#/definitions/Socialicons"
+        },
+        "bgref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/block/model.json#/definitions/Block"
+        }
+      }
+    }
+  }
+}
