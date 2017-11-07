@@ -2,6 +2,8 @@ package com.peregrine.commons.servlets;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -15,9 +17,11 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashMap;
@@ -220,6 +224,15 @@ public abstract class AbstractBaseServlet
         }
     }
 
+    /** Sub class of the Jackson Pretty Printer to indent arrays as well **/
+    private static class PrettyPrinter extends DefaultPrettyPrinter {
+        public static final PrettyPrinter instance = new PrettyPrinter();
+
+        public PrettyPrinter() {
+            _arrayIndenter = DefaultIndenter.SYSTEM_LINEFEED_INSTANCE;
+        }
+    }
+
     /**
      * A JSon based content response. It provides helper methods
      * to create the response and will track the objects / arrays
@@ -250,7 +263,8 @@ public abstract class AbstractBaseServlet
             JsonFactory jf = new JsonFactory();
             writer = new StringWriter();
             json = jf.createGenerator(writer);
-            json.useDefaultPrettyPrinter();
+            // Use Pretty Printer that indents Arrays as well
+            json.setPrettyPrinter(new PrettyPrinter());
             json.writeStartObject();
             states.push(STATE.object);
         }
@@ -319,12 +333,6 @@ public abstract class AbstractBaseServlet
             json.writeRawValue(value);
             return this;
         }
-//
-//        public JsonResponse writeArray() throws IOException {
-//            json.writeStartArray();
-//            states.push(STATE.array);
-//            return this;
-//        }
 
         /**
          * Starts an JSon array field
@@ -337,6 +345,18 @@ public abstract class AbstractBaseServlet
             states.push(STATE.array);
             return this;
         }
+
+        /**
+         * Writes a single line of text of an aray
+         * @param value String value
+         * @return This instance for method chaining
+         * @throws IOException If this is not part of an array
+         */
+        public JsonResponse writeString(String value) throws IOException {
+            json.writeString(value);
+            return this;
+        }
+
         /**
          * Starts an JSon object value
          * @return This instance for method chaining
@@ -431,9 +451,20 @@ public abstract class AbstractBaseServlet
         }
         /** Sets an Exception that cause the Error which is written out a serialized exception **/
         public ErrorResponse setException(Exception e) throws IOException {
-            StringWriter out = new StringWriter();
-            e.printStackTrace(new PrintWriter(out));
-            return (ErrorResponse) writeAttribute(EXCEPTION, out.toString());
+            if(e != null) {
+                StringWriter out = new StringWriter();
+                e.printStackTrace(new PrintWriter(out));
+                // Instead of a single line of text we add each line as an array test item so the exception can be
+                // better listed and reviewed when received
+                BufferedReader br = new BufferedReader(new StringReader(out.toString()));
+                writeArray(EXCEPTION);
+                String line;
+                while((line = br.readLine()) != null) {
+                    writeString(line);
+                }
+                writeClose();
+            }
+            return this;
         }
     }
     /** Plain Text Response **/

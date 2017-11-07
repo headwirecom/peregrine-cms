@@ -1,0 +1,15 @@
+<template>
+  <themeclean-components-block v-bind:model="model">
+    <div class="col-12 col-md-8">
+      <hr class="line" v-bind:style="`width:${`${model.linewidth}%`};`">
+      <div class="text-center" v-html="model.text"></div>
+      <hr class="line" v-bind:style="`width:${`${model.linewidth}%`};`">
+    </div>
+  </themeclean-components-block>
+</template>
+
+<script>
+    export default {
+        props: ['model']
+    }
+</script>
