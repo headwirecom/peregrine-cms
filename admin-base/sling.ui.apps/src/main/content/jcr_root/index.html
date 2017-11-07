@@ -26,6 +26,11 @@
 <head>
     <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons" type="text/css">
     <link rel="stylesheet" href="/etc/felibs/materialize/materialize.css" type="text/css">
+    <style>
+        .browser-default a {
+            color: #b66f35;
+        }
+    </style>
 </head>
 <body>
     <div id="peregrine-adminapp">
@@ -54,13 +59,60 @@
             </div>
         </span>
     </div>
-    <div class="welcome-page container">
+    <div class="welcome-page container" style="margin-top: 40px;">
         <div class="row">
-            <div class="col s12 center-align">
-                <img class="welcome-page-logo" src="/etc/felibs/admin/images/peregrine-logo.svg" />
+            <div class="col s12 m6 l4">
+                <h5><a href="/content/admin.html">Administration</a></h5>
+                Start working in Peregrine CMS.
+                <ul class="browser-default">
+                    <li><a href="/content/admin.html">administration</a><br>General Administration and access to
+                    all areas of Peregrine CMS</li>
+                    <li><a href="/content/admin/pages.html">sites and pages</a><br>
+                        Manage and create new sites and pages for your website.
+                    </li>
+                    <li><a href="/content/admin/assets.html">assets</a><br>
+                        Manage assets such as images and documents for the use within your websites.
+                    </li>
+                    <li><a href="/content/admin/objects.html">data</a><br>
+                    Manage objects (general data) for your web sites and assets.
+                    </li>
+                </ul>
+            </div>
+            <div class="col s12 m6 l4">
+                <h5>Tools</h5>
+                Use the tools to help you understand and manage Peregrine CMS
+                <ul class="browser-default">
+                    <li><a href="/bin/browser.html">composum</a><br>
+                    Direct access to the content repository and package manager of Apache Sling.</li>
+                    <li><a href="/perapi/swaggereditor/">peregrine api</a><br>
+                    Explore the headless API used by Peregrine CMS for all client/server communication.</li>
+                    <li><a href="/content/apidocs/cms/index.html">javadocs</a><br>
+                    See the java documentation for all server side code of Peregrine CMS</li>
+                </ul>
+            </div>
+            <div class="col s12 m12 l4 center-align">
+                <p class="left-align">
+                    <img style="margin: 10px; width: 100px; max-width: 100px;" src="/etc/felibs/admin/images/peregrine-logo.svg" align="right"/>
+                    Peregrine CMS - a head optional content management system based on Apache Sling
+                    and Vue.JS.
+                </p>
+                <p class="left-align browser-default">
+                    For documentation about Peregrine CMS please visit our <a href="http://www.peregrine-cms.com">website</a>.
+                </p>
+                <p class="left-align browser-default">
+                    Peregrine CMS is an open source project sponsored by
+                    <a href="https://www.headwire.com" target="_blank">headwire.com, Inc</a>.
+                    Commercial support is available upon request. We encourage contributions
+                    to the project. Please let us know what you think about this product.
+                </p>
+                <p class="left-align browser-default">
+                    <a href="https://github.com/headwirecom/peregrine-cms" target="_blank">github</a><br>
+                    <a href="https://github.com/headwirecom/peregrine-cms/issues" target="_blank">issue tracker</a><br>
+                    <a href="mailto:info@headwire.com?subject=invite me+to peregrine-cms.slack.com" target="_blank">peregrine-cms.slack.com</a>
+                </p>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="display: none;">
             <div class="col s12 m6 offset-m3 l4">
                 <div class="card blue-grey darken-3">
                     <div class="card-content white-text">
