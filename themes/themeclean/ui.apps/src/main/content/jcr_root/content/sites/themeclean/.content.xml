@@ -393,5 +393,15 @@
                     title="Product 2"/>
             </cards>
         </nf46066e5-372f-469d-b0eb-be652eef0acd>
+        <articlefullmedia
+            jcr:lastModified="{Date}2017-11-07T11:16:08.075-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/articlemediafull"
+            bottompadding="30"
+            mediasrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
+            mediatype="video"
+            mediawidth="100"
+            toppadding="30"/>
     </jcr:content>
 </jcr:root>
