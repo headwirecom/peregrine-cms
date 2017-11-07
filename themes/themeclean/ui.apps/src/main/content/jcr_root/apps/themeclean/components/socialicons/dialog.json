@@ -1,0 +1,37 @@
+{
+  "fields": [
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "url",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "url",
+          "label": "Icon Url",
+          "model": "url"
+        },
+        {
+          "type": "iconbrowser",
+          "placeholder": "icon",
+          "label": "Icon Chooser",
+          "model": "icon",
+          "hint": "Select an icon.",
+          "required": true,
+          "validator": "required",
+          "families": [
+            "material",
+            "font awesome"
+          ]
+        }
+      ],
+      "placeholder": "icons",
+      "label": "Icons",
+      "model": "icons"
+    }
+  ]
+}
