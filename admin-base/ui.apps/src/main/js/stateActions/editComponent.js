@@ -29,6 +29,26 @@ import { set } from '../utils'
 
 function bringUpEditor(me, view, target) {
     log.fine('Bring Up Editor, ')
+
+    let checksum = ''
+
+    me.beforeStateAction( function(name) {
+        if(name !== 'savePageEdit') {
+            // if there was no change skip asking to save
+            if(checksum === JSON.stringify(me.getNodeFromView('/pageView/page'))) {
+                return true
+            }
+            const yes = confirm('save edit?')
+            if(yes) {
+                const currentObject = me.getNodeFromView("/state/tools/object")
+                me.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path})
+            }
+        }
+        return true
+    })
+
+    checksum = JSON.stringify(me.getNodeFromView('/pageView/page'))
+
     me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
             log.fine('component name is', name)
             set(view, '/state/editor/component', name)
