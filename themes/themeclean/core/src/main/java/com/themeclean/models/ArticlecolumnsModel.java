@@ -33,7 +33,7 @@ import javax.inject.Named;
           "x-form-label": "Right Column",
           "x-form-type": "texteditor"
         },
-        "bg": {
+        "bgref": {
           "x-form-type": "reference",
           "type": "object",
           "x-type": "component",
@@ -106,18 +106,6 @@ import javax.inject.Named;
               "x-form-type": "color",
               "x-form-visible": "model.backgroundtype == 'gradient'",
               "x-default": "#c0c0c0"
-            },
-            "fullwidth": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Full Width",
-              "x-form-type": "materialswitch"
-            },
-            "fullheight": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Full Height",
-              "x-form-type": "materialswitch"
             },
             "toppadding": {
               "type": "string",
@@ -210,14 +198,6 @@ public class ArticlecolumnsModel extends AbstractComponent {
 	@Default(values ="#c0c0c0")
 	private String color2;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
-	@Inject
-	private String fullwidth;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
-	@Inject
-	private String fullheight;
-
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
@@ -273,16 +253,6 @@ public class ArticlecolumnsModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient'","x-default":"#c0c0c0"} */
 	public String getColor2() {
 		return color2;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
-	public String getFullwidth() {
-		return fullwidth;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
-	public String getFullheight() {
-		return fullheight;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */

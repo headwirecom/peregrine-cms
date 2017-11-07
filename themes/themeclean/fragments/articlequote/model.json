@@ -20,7 +20,7 @@
           "x-form-max": 100
         },
         "bgref": {
-          "$ref": "fragments/block/model.json#/definitions/Block",
+          "$ref": "fragments/block/model-article.json#/definitions/Block",
           "x-form-type": "reference"
         }
       }

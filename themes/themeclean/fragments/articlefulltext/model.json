@@ -11,7 +11,7 @@
           "x-form-type": "texteditor"
         },
         "bgref": {
-          "$ref": "fragments/block/model.json#/definitions/Block",
+          "$ref": "fragments/block/model-article.json#/definitions/Block",
           "x-form-type": "reference"
         }
       }

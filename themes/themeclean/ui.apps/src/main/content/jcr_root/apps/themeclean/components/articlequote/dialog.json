@@ -89,26 +89,6 @@
       "visible": "model.backgroundtype == 'gradient'"
     },
     {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "fullwidth",
-      "label": "Full Width",
-      "model": "fullwidth"
-    },
-    {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "fullheight",
-      "label": "Full Height",
-      "model": "fullheight"
-    },
-    {
       "type": "input",
       "inputType": "range",
       "placeholder": "toppadding",

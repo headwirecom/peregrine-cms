@@ -67,104 +67,99 @@ import javax.inject.Named;
             }
           }
         },
-        "backgroundtype": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Background Type",
-          "x-form-type": "materialradio",
-          "x-default": "color",
+        "bgref": {
+          "x-form-type": "reference",
+          "type": "object",
+          "x-type": "component",
           "properties": {
-            "image": {
-              "x-form-name": "Image",
-              "x-form-value": "image"
+            "backgroundtype": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Background Type",
+              "x-form-type": "materialradio",
+              "x-default": "color",
+              "properties": {
+                "image": {
+                  "x-form-name": "Image",
+                  "x-form-value": "image"
+                },
+                "color": {
+                  "x-form-name": "Color",
+                  "x-form-value": "color"
+                },
+                "gradient": {
+                  "x-form-name": "Gradient",
+                  "x-form-value": "gradient"
+                }
+              }
             },
-            "color": {
-              "x-form-name": "Color",
-              "x-form-value": "color"
+            "bgimage": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Background Image",
+              "x-form-type": "pathbrowser",
+              "x-form-visible": "model.backgroundtype == 'image'"
             },
-            "gradient": {
-              "x-form-name": "Gradient",
-              "x-form-value": "gradient"
+            "overlay": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Overlay",
+              "x-form-type": "materialswitch",
+              "x-form-visible": "model.backgroundtype == 'image'"
+            },
+            "overlaycolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Overlay Color",
+              "x-form-type": "color",
+              "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+              "x-default": "#ffffff"
+            },
+            "overlayopacity": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Overlay opacity",
+              "x-form-type": "range",
+              "x-form-min": 0,
+              "x-form-max": 100,
+              "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+              "x-default": "50"
+            },
+            "bgcolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Background Color",
+              "x-form-type": "color",
+              "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'",
+              "x-default": "#ffffff"
+            },
+            "color2": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Color 2",
+              "x-form-type": "color",
+              "x-form-visible": "model.backgroundtype == 'gradient'",
+              "x-default": "#c0c0c0"
+            },
+            "toppadding": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Top Padding",
+              "x-form-type": "range",
+              "x-form-min": 0,
+              "x-form-max": 120,
+              "x-form-visible": "model.fullheight != 'true'"
+            },
+            "bottompadding": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Bottom Padding",
+              "x-form-type": "range",
+              "x-form-min": 0,
+              "x-form-max": 120,
+              "x-form-visible": "model.fullheight != 'true'"
             }
           }
-        },
-        "bgimage": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Background Image",
-          "x-form-type": "pathbrowser",
-          "x-form-visible": "model.backgroundtype == 'image'"
-        },
-        "overlay": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Overlay",
-          "x-form-type": "materialswitch",
-          "x-form-visible": "model.backgroundtype == 'image'"
-        },
-        "overlaycolor": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Overlay Color",
-          "x-form-type": "color",
-          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
-          "x-default": "#ffffff"
-        },
-        "overlayopacity": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Overlay opacity",
-          "x-form-type": "range",
-          "x-form-min": 0,
-          "x-form-max": 100,
-          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
-          "x-default": "50"
-        },
-        "bgcolor": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Background Color",
-          "x-form-type": "color",
-          "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'",
-          "x-default": "#ffffff"
-        },
-        "color2": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Color 2",
-          "x-form-type": "color",
-          "x-form-visible": "model.backgroundtype == 'gradient'",
-          "x-default": "#c0c0c0"
-        },
-        "fullwidth": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Full Width",
-          "x-form-type": "materialswitch"
-        },
-        "fullheight": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Full Height",
-          "x-form-type": "materialswitch"
-        },
-        "toppadding": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Top Padding",
-          "x-form-type": "range",
-          "x-form-min": 0,
-          "x-form-max": 120,
-          "x-form-visible": "model.fullheight != 'true'"
-        },
-        "bottompadding": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Bottom Padding",
-          "x-form-type": "range",
-          "x-form-min": 0,
-          "x-form-max": 120,
-          "x-form-visible": "model.fullheight != 'true'"
         }
       }
     }
@@ -249,14 +244,6 @@ public class ArticleheaderModel extends AbstractComponent {
 	@Default(values ="#c0c0c0")
 	private String color2;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
-	@Inject
-	private String fullwidth;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
-	@Inject
-	private String fullheight;
-
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
@@ -327,16 +314,6 @@ public class ArticleheaderModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient'","x-default":"#c0c0c0"} */
 	public String getColor2() {
 		return color2;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
-	public String getFullwidth() {
-		return fullwidth;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
-	public String getFullheight() {
-		return fullheight;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
