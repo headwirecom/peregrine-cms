@@ -259,6 +259,8 @@ class PerAdminImpl {
                                         data.model.fields[i].values.push({ value: val, name: name })
                                     }
                                 }
+                            }).catch( (error) => {
+                                logger.error('missing node', data.model.fields[i].valuesFrom, 'for list population in dialog', error)
                             })
                             promises.push(promise)
                         }
