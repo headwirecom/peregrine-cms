@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="per:Component"
+          jcr:title="Menu"
+          >
+          <jcr:content
+              jcr:primaryType="nt:unstructured"
+              backgroundtype="color"
+              bgcolor="#FFFFFF"
+              collapsed="false"
+              logo="/content/assets/themeclean/images/peregrine-logo.png"
+              logourl="http://www.peregrine-cms.com"
+              logosize="3">
+              <links
+		            jcr:primaryType="nt:unstructured">
+		                <text1
+				            jcr:primaryType="nt:unstructured"
+				            link="#"
+				            text="Services"/>
+				        <text2
+				            jcr:primaryType="nt:unstructured"
+				            link="#"
+				            text="About Us"/>
+				        <text3
+				            jcr:primaryType="nt:unstructured"
+				            link="#"
+				            text="Contact Us"/>
+			    </links>
+	        	<buttons
+	        	    jcr:primaryType="nt:unstructured">
+		                <button1
+				            jcr:primaryType="nt:unstructured"
+				            buttonlink="#"
+				            buttontext="Try It Now"
+				            buttoncolor="#149dcc"
+				            iconclass="mbri-save mbr-iconfont mbr-iconfont-btn"/>
+				</buttons>
+	      </jcr:content>
+</jcr:root>

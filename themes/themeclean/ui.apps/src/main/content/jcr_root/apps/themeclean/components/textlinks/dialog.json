@@ -1,0 +1,31 @@
+{
+  "fields": [
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "text",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "text",
+          "label": "Link Text",
+          "model": "text"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "link",
+          "label": "Link Url",
+          "model": "link"
+        }
+      ],
+      "placeholder": "links",
+      "label": "Links",
+      "model": "links"
+    }
+  ]
+}

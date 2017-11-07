@@ -1,0 +1,30 @@
+{
+  "definitions": {
+    "Textlinks": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "links": {
+          "type": "object",
+          "x-source": "inject",
+          "x-form-type": "collection",
+          "x-form-label": "Links",
+          "properties": {
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Link Text",
+              "x-form-type": "text"
+            },
+            "link": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Link Url",
+              "x-form-type": "pathbrowser"
+            }
+          }
+        }
+      }
+    }
+  }
+}
