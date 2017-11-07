@@ -383,13 +383,13 @@
             sling:resourceType="themeclean/components/accordion"
             backgroundtype="color"
             bgcolor="#f1f1f1"
-            bottompadding="50"
+            bottompadding="30"
             color2="#ffffff"
             overlaycolor="#ffffff"
             overlayopacity="50"
             showtitle="true"
             title="Peregrine Accordion"
-            toppadding="50">
+            toppadding="30">
             <tabs jcr:primaryType="nt:unstructured">
                 <accordion1
                     jcr:lastModified="{Date}2017-11-06T14:34:23.831-08:00"
@@ -484,14 +484,14 @@
             sling:resourceType="themeclean/components/featurescards"
             backgroundtype="color"
             bgcolor="#ffffff"
-            bottompadding="30"
+            bottompadding="20"
             color2="#c0c0c0"
             overlaycolor="#ffffff"
             overlayopacity="50"
             showbutton="true"
             showtext="true"
             showtitle="true"
-            toppadding="30"
+            toppadding="20"
             cardcolor="#eeeeee">
             <cards jcr:primaryType="nt:unstructured">
                 <card1

@@ -10,8 +10,8 @@
              backgroundtype="color"
              bgcolor="#f1f1f1"
              color2="#ffffff"
-             bottompadding="50"
-             toppadding="50">
+             bottompadding="30"
+             toppadding="30">
              <tabs jcr:primaryType="nt:unstructured">
 	         <accordion1
                 jcr:primaryType="nt:unstructured"
