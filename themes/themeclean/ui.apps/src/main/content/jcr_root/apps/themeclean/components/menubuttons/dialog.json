@@ -1,0 +1,38 @@
+{
+  "fields": [
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "buttontext",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "buttontext",
+          "label": "Button Text",
+          "model": "buttontext"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "buttonlink",
+          "label": "Button Link",
+          "model": "buttonlink"
+        },
+        {
+          "type": "input",
+          "inputType": "color",
+          "placeholder": "buttoncolor",
+          "label": "Button Color",
+          "model": "buttoncolor"
+        }
+      ],
+      "placeholder": "buttons",
+      "label": "Buttons",
+      "model": "buttons"
+    }
+  ]
+}
