@@ -9,7 +9,7 @@
              color2="#ffffff"
              fullheight="false"
              backgroundtype="gradient"
-             bottompadding="80"
+             bottompadding="30"
              showtitle="true"
              title="Tabs with media"
              showsubtitle="true"
@@ -17,7 +17,7 @@
              mediatype="image"
           	 mediasrc="/content/assets/themeclean/images/screen.jpg"
           	 mediawidth="45"
-             toppadding="80">
+             toppadding="30">
              <tabs
              	jcr:primaryType="nt:unstructured">
 	             <tab1

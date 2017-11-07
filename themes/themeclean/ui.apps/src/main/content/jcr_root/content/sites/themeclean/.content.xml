@@ -294,7 +294,7 @@
             sling:resourceType="themeclean/components/tabswithmedia"
             backgroundtype="gradient"
             bgcolor="#ffffff"
-            bottompadding="80"
+            bottompadding="30"
             color2="#ffffff"
             fullheight="false"
             mediasrc="/content/assets/themeclean/images/screen.jpg"
@@ -306,7 +306,7 @@
             showtitle="true"
             subtitle="Lorem ipsum dolor sit amet."
             title="Tabs with media"
-            toppadding="80">
+            toppadding="30">
             <tabs jcr:primaryType="nt:unstructured">
                 <tab1
                     jcr:lastModified="{Date}2017-11-06T13:43:11.842-08:00"
@@ -335,7 +335,7 @@
             sling:resourceType="themeclean/components/togglewithmedia"
             backgroundtype="color"
             bgcolor="#ffffff"
-            bottompadding="80"
+            bottompadding="30"
             color2="#ffffff"
             fullheight="false"
             mediasrc="/content/assets/pcmsstock/images/workers-looking-tablet.jpg"
@@ -345,7 +345,7 @@
             overlayopacity="50"
             showtitle="true"
             title="Peregrine Toggle"
-            toppadding="80">
+            toppadding="30">
             <toggles jcr:primaryType="nt:unstructured">
                 <toggle1
                     jcr:lastModified="{Date}2017-11-06T14:07:50.609-08:00"

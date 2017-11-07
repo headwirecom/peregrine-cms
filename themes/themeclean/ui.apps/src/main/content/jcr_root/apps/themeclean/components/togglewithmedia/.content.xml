@@ -11,8 +11,8 @@
              bgcolor="#ffffff"
              color2="#ffffff"
              fullheight="false"
-             bottompadding="80"
-             toppadding="80"
+             bottompadding="30"
+             toppadding="30"
              mediatype="image"
           	 mediasrc="/content/assets/themeclean/images/workers-looking-tablet.jpg"
           	 mediawidth="45">
