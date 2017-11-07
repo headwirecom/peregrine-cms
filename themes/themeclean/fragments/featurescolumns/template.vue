@@ -3,8 +3,8 @@
     <div class="container">
       <div class="row">
         <h1 v-if="editAndEmpty">Configure Here</h1>
-        <div class="card p-3 col-12 col-md border-0" v-for="(item,i) in model.cards"
-        :key="i">
+        <div class="card p-3 col-12 col-md border-0 bg-transparent"
+        v-for="(item,i) in model.cards" :key="i">
           <img class="card-img pb-3" v-bind:src="item.image">
           <div>
             <h5 class="pb-2" v-if="model.showtitle == 'true'" v-html="item.title"></h5>

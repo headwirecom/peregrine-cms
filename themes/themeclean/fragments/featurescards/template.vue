@@ -3,7 +3,7 @@
     <div class="card-deck">
       <h1 v-if="editAndEmpty">Configure Here</h1>
       <div class="card p-0 col-12 col-md border-0" v-for="(item,i) in model.cards"
-      :key="i">
+      :key="i" v-bind:style="`background-color:${model.cardcolor};`">
         <img class="card-img pb-1" v-bind:src="item.image">
         <div class="card-body">
           <h5 class="card-title" v-if="model.showtitle == 'true'" v-html="item.title"
