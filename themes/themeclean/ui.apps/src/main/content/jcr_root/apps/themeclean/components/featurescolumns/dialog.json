@@ -1,0 +1,204 @@
+{
+  "fields": [
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showtitle",
+      "label": "Show Title",
+      "model": "showtitle"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showtext",
+      "label": "Show Text",
+      "model": "showtext"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showbutton",
+      "label": "Show Button",
+      "model": "showbutton"
+    },
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "title",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "title",
+          "label": "Card Title",
+          "model": "title",
+          "visible": "model.showtitle == 'true'"
+        },
+        {
+          "type": "texteditor",
+          "rows": 10,
+          "placeholder": "text",
+          "label": "Card Text",
+          "model": "text",
+          "visible": "model.showtext == 'true'"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "image",
+          "label": "Card Image",
+          "model": "image"
+        },
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "buttontext",
+          "label": "Button Text",
+          "model": "buttontext",
+          "visible": "model.showbutton == 'true'"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "buttonlink",
+          "label": "Button Link",
+          "model": "buttonlink",
+          "visible": "model.showbutton == 'true'"
+        },
+        {
+          "type": "input",
+          "inputType": "color",
+          "placeholder": "buttoncolor",
+          "label": "Button Color",
+          "model": "buttoncolor",
+          "visible": "model.showbutton == 'true'"
+        }
+      ],
+      "placeholder": "cards",
+      "label": "Cards",
+      "model": "cards"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Color",
+          "value": "color"
+        },
+        {
+          "name": "Gradient",
+          "value": "gradient"
+        }
+      ],
+      "placeholder": "backgroundtype",
+      "label": "Background Type",
+      "model": "backgroundtype"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "bgimage",
+      "label": "Background Image",
+      "model": "bgimage",
+      "visible": "model.backgroundtype == 'image'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "overlay",
+      "label": "Overlay",
+      "model": "overlay",
+      "visible": "model.backgroundtype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "overlaycolor",
+      "label": "Overlay Color",
+      "model": "overlaycolor",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "overlayopacity",
+      "label": "Overlay opacity",
+      "model": "overlayopacity",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+      "max": 100
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "bgcolor",
+      "label": "Background Color",
+      "model": "bgcolor",
+      "visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "color2",
+      "label": "Color 2",
+      "model": "color2",
+      "visible": "model.backgroundtype == 'gradient'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "fullwidth",
+      "label": "Full Width",
+      "model": "fullwidth"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "fullheight",
+      "label": "Full Height",
+      "model": "fullheight"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "toppadding",
+      "label": "Top Padding",
+      "model": "toppadding",
+      "visible": "model.fullheight != 'true'",
+      "max": 120
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "bottompadding",
+      "label": "Bottom Padding",
+      "model": "bottompadding",
+      "visible": "model.fullheight != 'true'",
+      "max": 120
+    }
+  ]
+}
