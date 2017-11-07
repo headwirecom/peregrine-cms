@@ -349,5 +349,49 @@
                     title="Feature 3"/>
             </cards>
         </nda9fbd68-0abb-4cf4-845d-6396c6e73f81>
+        <nf46066e5-372f-469d-b0eb-be652eef0acd
+            jcr:lastModified="{Date}2017-11-07T10:57:04.113-08:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/featurescards"
+            backgroundtype="color"
+            bgcolor="#ffffff"
+            bottompadding="30"
+            color2="#c0c0c0"
+            overlaycolor="#ffffff"
+            overlayopacity="50"
+            showbutton="true"
+            showtext="true"
+            showtitle="true"
+            toppadding="30">
+            <cards jcr:primaryType="nt:unstructured">
+                <card1
+                    jcr:lastModified="{Date}2017-11-07T10:57:04.113-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    buttoncolor="#008080"
+                    buttonlink="#"
+                    buttontext="View"
+                    component="nt:unstructured"
+                    image="/content/assets/themeclean/images/feature1.jpg"
+                    name="card1"
+                    path="/jcr:content/nf46066e5-372f-469d-b0eb-be652eef0acd/cards/card1"
+                    text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
+                    title="Product 1"/>
+                <card2
+                    jcr:lastModified="{Date}2017-11-07T10:57:04.113-08:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    buttoncolor="#008080"
+                    buttonlink="#"
+                    buttontext="View"
+                    component="nt:unstructured"
+                    image="/content/assets/themeclean/images/feature1.jpg"
+                    name="card2"
+                    path="/jcr:content/nf46066e5-372f-469d-b0eb-be652eef0acd/cards/card2"
+                    text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
+                    title="Product 2"/>
+            </cards>
+        </nf46066e5-372f-469d-b0eb-be652eef0acd>
     </jcr:content>
 </jcr:root>
