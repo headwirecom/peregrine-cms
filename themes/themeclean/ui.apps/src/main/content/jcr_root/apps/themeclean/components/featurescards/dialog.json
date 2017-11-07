@@ -31,6 +31,13 @@
       "model": "showbutton"
     },
     {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "cardcolor",
+      "label": "Card Color",
+      "model": "cardcolor"
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [

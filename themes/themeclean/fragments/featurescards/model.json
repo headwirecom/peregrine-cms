@@ -22,6 +22,13 @@
           "x-form-label": "Show Button",
           "x-form-type": "materialswitch"
         },
+        "cardcolor": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Card Color",
+          "x-form-type": "color",
+          "x-default": "#ffffff"
+        },
         "cards": {
           "type": "string",
           "x-source": "inject",
