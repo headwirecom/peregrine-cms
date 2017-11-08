@@ -175,7 +175,6 @@
                         },
                         {
                             "type": "material-datetime",
-                            "inputType": "text",
                             "model": "created",
                             "label": "Created",
                             "readonly": true,
@@ -191,7 +190,6 @@
                         },
                         {
                             "type": "material-datetime",
-                            "inputType": "text",
                             "model": "lastModified",
                             "label": "Last Modified",
                             "readonly": true,
