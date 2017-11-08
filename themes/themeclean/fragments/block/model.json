@@ -20,8 +20,18 @@
             },"gradient": {
               "x-form-name": "Gradient",
               "x-form-value": "gradient"
+            },"video": {
+              "x-form-name": "Video",
+              "x-form-value": "video"
             }
           }
+        },
+        "bgvideo": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Background Video",
+          "x-form-type": "pathbrowser",
+          "x-form-visible": "model.backgroundtype == 'video'"
         },
         "bgimage": {
           "type": "string",
