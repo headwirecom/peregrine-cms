@@ -46,10 +46,10 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
- * Creates a Peregrine Site
+ * Creates a Peregrine Site by copying from another, existing Site
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
@@ -79,14 +79,14 @@ public class CreateSiteServlet extends AbstractBaseServlet {
 
         try {
             logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
-            Resource site = resourceManagement.copySite(request.getResourceResolver(), "/content/sites", fromSite, toSite);
+            Resource site = resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)
                 .writeAttribute(NAME, toSite)
                 .writeAttribute(PATH, site.getPath())
-                .writeAttribute(SOURCE_PATH, "/content/sites/" + fromSite);
+                .writeAttribute(SOURCE_PATH, SITES_ROOT + SLASH + fromSite);
         } catch(ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE).setException(e);
         }

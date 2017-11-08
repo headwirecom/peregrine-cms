@@ -63,7 +63,12 @@ public class PerConstants {
     public static final String JPG_MIME_TYPE = "image/jpg";
     public static final String TEXT_MIME_TYPE = "plain/text";
 
-    public static final String APPS = "/apps/";
+    public static final String APPS_ROOT = "/apps";
+    public static final String ASSETS_ROOT = "/content/assets";
+    public static final String FELIBS_ROOT = "/etc/felibs";
+    public static final String OBJECTS_ROOT = "/content/objects";
+    public static final String SITES_ROOT = "/content/sites";
+    public static final String TEMPLATES_ROOT = "/content/templates";
 
     public static final String COMPONENTS = "components";
     public static final String TEMPLATES = "templates";
@@ -95,5 +100,6 @@ public class PerConstants {
 
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
+    public static final String DEPENDENCIES = "dependencies";
 }
 

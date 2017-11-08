@@ -167,7 +167,8 @@ public interface AdminResourceHandler {
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
 
     /**
-     * Copies the Content of a given Node to another Node
+     * Copies the Content of a given Site to another Site which includes
+     * its content, assets, objects, templates and apps, felibs settings
      * @param resourceResolver Resource Resolver to obtain the resources
      * @param sitesParentPath Absolute Path to Sites
      * @param fromName Name of the source Site which must exist
