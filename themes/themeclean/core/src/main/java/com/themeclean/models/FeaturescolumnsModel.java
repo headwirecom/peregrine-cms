@@ -123,7 +123,8 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Background Video",
               "x-form-type": "pathbrowser",
-              "x-form-visible": "model.backgroundtype == 'video'"
+              "x-form-visible": "model.backgroundtype == 'video'",
+              "x-default": "https://www.youtube.com/embed/Ju86mknumYM"
             },
             "bgimage": {
               "type": "string",
@@ -256,8 +257,9 @@ public class FeaturescolumnsModel extends AbstractComponent {
 	@Default(values ="color")
 	private String backgroundtype;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM"} */
 	@Inject
+	@Default(values ="https://www.youtube.com/embed/Ju86mknumYM")
 	private String bgvideo;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'"} */
@@ -333,7 +335,7 @@ public class FeaturescolumnsModel extends AbstractComponent {
 		return backgroundtype;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM"} */
 	public String getBgvideo() {
 		return bgvideo;
 	}

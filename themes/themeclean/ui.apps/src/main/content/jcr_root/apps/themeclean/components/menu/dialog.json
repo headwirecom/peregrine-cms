@@ -118,11 +118,23 @@
         {
           "name": "Gradient",
           "value": "gradient"
+        },
+        {
+          "name": "Video",
+          "value": "video"
         }
       ],
       "placeholder": "backgroundtype",
       "label": "Background Type",
       "model": "backgroundtype"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "bgvideo",
+      "label": "Background Video",
+      "model": "bgvideo",
+      "visible": "model.backgroundtype == 'video'"
     },
     {
       "type": "pathbrowser",
