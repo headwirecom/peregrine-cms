@@ -66,6 +66,7 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
@@ -630,7 +631,9 @@ public class AdminResourceHandlerService
         Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + fromName);
         if(appsSource != null) {
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
-            if(appsTarget == null) { appsTarget = createFolder(resourceResolver, APPS_ROOT, targetName); }
+            if(appsTarget == null) {
+                appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
+            }
             // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
             // with the sling:resourceSuperType set to the <fromSite> component
             copyStubs(appsSource, appsTarget, COMPONENTS);
@@ -706,6 +709,7 @@ public class AdminResourceHandlerService
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
             target = source.getResourceResolver().create(targetParent, toName, newProperties);
+            updateTitle(target, toName);
         } catch(PersistenceException e) {
             logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
             return null;
@@ -722,6 +726,15 @@ public class AdminResourceHandlerService
             }
         }
         return answer;
+    }
+
+    private void updateTitle(Resource resource, String title) {
+        if(JCR_CONTENT.equals(resource.getName())) {
+            ValueMap properties = getModifiableProperties(resource, false);
+            if(properties.containsKey(JCR_TITLE)) {
+                properties.put(JCR_TITLE, title);
+            }
+        }
     }
 
     private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName) {
@@ -759,6 +772,7 @@ public class AdminResourceHandlerService
                     }
                 }
                 Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
+                updateTitle(childTarget, toName);
                 logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
                 // Copy grandchildren
                 if(deep) {
@@ -773,20 +787,38 @@ public class AdminResourceHandlerService
     }
 
     private void copyStubs(Resource source, Resource target, String folderName) throws ManagementException {
-        Resource appsComponentsSource = getResource(source, folderName);
-        if(appsComponentsSource != null) {
-            Resource appsComponentsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
-            if(appsComponentsTarget == null) { appsComponentsTarget = createFolder(source.getResourceResolver(), target.getPath(), folderName); }
-            for(Resource child : appsComponentsSource.getChildren()) {
+        Resource appsSource = getResource(source, folderName);
+        if(appsSource != null) {
+            Resource appsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
+            if(appsTarget == null) {
+                appsTarget = copyFolder(appsSource, target, folderName);
+                if(appsTarget == null) { return; }
+            }
+            for(Resource child : appsSource.getChildren()) {
                 ValueMap properties = child.getValueMap();
                 Map<String, Object> newProperties = new HashMap<>(properties);
+                String originalAppsPath = child.getPath();
+                originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
+                newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
                 try {
-                    source.getResourceResolver().create(appsComponentsTarget, child.getName(), newProperties);
+                    source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
                 } catch(PersistenceException e) {
                     logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
                 }
             }
         }
+    }
+
+    private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
+        Resource answer = null;
+        Map<String, Object> newProperties = copyProperties(folder.getValueMap());
+        logger.trace("Resource Properties: '{}'", newProperties);
+        try {
+            answer = folder.getResourceResolver().create(targetParent, folderName, newProperties);
+        } catch(PersistenceException e) {
+            logger.warn("Copy of " + folder.getName() + ": '" + folder.getPath() + "' failed", e);
+        }
+        return answer;
     }
 
     @Override
