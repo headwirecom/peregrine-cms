@@ -188,7 +188,7 @@ import javax.inject.Named;
     }
   },
   "name": "Articlemedia",
-  "componentPath": "themeclean/components/articlemedia",
+  "componentPath": "themeclean/fragments/articlemedia",
   "package": "com.themeclean.models",
   "modelName": "Articlemedia",
   "classNameParent": "AbstractComponent"
@@ -199,7 +199,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articlemedia",
+        resourceType = "themeclean/fragments/articlemedia",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )

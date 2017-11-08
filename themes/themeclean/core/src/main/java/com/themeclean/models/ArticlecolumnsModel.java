@@ -143,7 +143,7 @@ import javax.inject.Named;
     }
   },
   "name": "Articlecolumns",
-  "componentPath": "themeclean/components/articlecolumns",
+  "componentPath": "themeclean/fragments/articlecolumns",
   "package": "com.themeclean.models",
   "modelName": "Articlecolumns",
   "classNameParent": "AbstractComponent"
@@ -154,7 +154,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articlecolumns",
+        resourceType = "themeclean/fragments/articlecolumns",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
