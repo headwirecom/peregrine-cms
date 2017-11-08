@@ -1,6 +1,6 @@
 <template>
   <!-- timepicker -->
-  <div class="wrap">
+  <div class="wrap clearfix">
 		<input 
 			v-if 				 ="!schema.preview"
 			ref 				 ="timepicker"
@@ -28,7 +28,6 @@
 				let today = tempDateString.substring(0, tempDateString.indexOf('T'))
 				this.dateTime = new Date(today + 'T' + time)
 			}
-			
 		},
 		mounted() {
 			if(!this.schema.preview) this.init()

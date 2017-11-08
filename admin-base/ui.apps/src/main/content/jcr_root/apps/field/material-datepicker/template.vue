@@ -1,6 +1,6 @@
 <template>
   <!-- datepicker -->
-  <div class="wrap">
+  <div class="wrap clearfix">
   	<template v-if="!schema.preview">
 			<input 
 				tabindex="-1" 

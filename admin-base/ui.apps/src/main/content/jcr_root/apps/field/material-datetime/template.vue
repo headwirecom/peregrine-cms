@@ -1,5 +1,5 @@
 <template>
-	<div class="wrapper">
+	<div class="wrapper clearfix">
 		<p v-if="schema.readonly">{{dateFromModel()}} {{timeFromModel()}}</p>
 		<template v-else-if="!schema.preview">
 			<div class="date-wrapper">
