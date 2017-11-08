@@ -17,12 +17,30 @@
 	/* TODO: clear model when using 'clear' button in UI */
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
+		created() {
+			// create date object from time string
+			if(this.value && this.isValidTime(this.value)){
+				let time = this.normalizeTimeZone(this.value)
+				// create date object
+				let tempDate = new Date()
+				// update datobject with time from this.value
+				let tempDateString = tempDate.toJSON()
+				let today = tempDateString.substring(0, tempDateString.indexOf('T'))
+				this.dateTime = new Date(today + 'T' + time)
+			}
+			
+		},
 		mounted() {
 			if(!this.schema.preview) this.init()
 		},
 		watch: {
 			schema: function (newSchema) {
 				if(!this.schema.preview) this.init()
+			}
+		},
+		data () {
+			return {
+				dateTime: null
 			}
 		},
 		methods: {
@@ -87,23 +105,30 @@
       	let time = date.substring(date.indexOf('T') + 1)
       	return time
 			},
+			normalizeTimeZone(timeString){
+				let indexTimeEnding = timeString.lastIndexOf('.')
+				let timeEnding = timeString.substring(indexTimeEnding + 1)
+				let indexDash = timeEnding.lastIndexOf('-')
+				if(indexDash > -1){
+					let timeZone = timeEnding.substring(indexDash + 1)
+					if(timeZone.length <=2){
+						timeString = timeString + '00'
+					}
+				}
+				return timeString
+			},
 			timeFromModel(){
-				if(this.isValidTime(this.value)) {
-					let timeString = this.value.trim()
-					let today = new Date().toJSON()
-					let fauxDate = today.substring(0, today.indexOf('T'))
-					// create date object so localization is handled natively
-					let d = new Date(fauxDate + 'T' + timeString)
-					let time = d.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })
-					// console.log('timeFromModel: ', time)
+				if(this.dateTime !== null) {
+					let time = this.dateTime.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })
 					let timeParts = time.split(':')
 					let hour = timeParts[0]
 					if(hour.length === 1){
 						time = '0' + time
 					}
-					return time.replace(/\s+/g,'')
+					let prettyTime = time.replace(/\s+/g,'')
+					return prettyTime
 				} else {
-					console.warn('model must be a date string with format HH:MM:SS.000Z')
+					console.warn('model must be a date string with format  YYYY-MM-DDTHH:MM:SS.000Z')
 				}
 			},
 			isValidTime(timeString) {
