@@ -136,7 +136,7 @@ import javax.inject.Named;
     }
   },
   "name": "Block",
-  "componentPath": "themeclean/components/block",
+  "componentPath": "themeclean/fragments/block",
   "package": "com.themeclean.models",
   "modelName": "Block",
   "classNameParent": "AbstractComponent"
@@ -147,7 +147,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/block",
+        resourceType = "themeclean/fragments/block",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )

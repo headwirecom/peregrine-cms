@@ -5,7 +5,7 @@
     v-bind:style="`position:${'absolute'};pointer-events:${'none'};`">
       <iframe class="embed-responsive-item" v-bind:src="model.bgvideo + '?autoplay=1&amp;loop=1&amp;controls=0&amp;mute=1'"></iframe>
     </div>
-    <div class="container">
+    <div v-bind:class="model.fullwidth === 'true' ? 'container-fluid' : 'container'">
       <div class="row justify-content-center">
         <slot></slot>
       </div>
@@ -49,7 +49,8 @@
               paddingBottom: `${this.model.bottompadding}px`,
               background: this.backgroundStyles(),
               backgroundSize: 'cover',
-              position: 'relative'
+              position: 'relative',
+              overflow: 'hidden'
             }
           }
         },
