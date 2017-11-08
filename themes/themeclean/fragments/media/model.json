@@ -20,10 +20,18 @@
             }
           }
         },
-        "mediasrc": {
+        "imagesrc": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Media source",
+          "x-form-label": "Image Source",
+          "x-form-visible": "model.mediatype == 'image'",
+          "x-form-type": "pathbrowser"
+        },
+        "videosrc": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Video Source",
+          "x-form-visible": "model.mediatype == 'video'",
           "x-form-type": "pathbrowser"
         },
         "mediawidth": {
