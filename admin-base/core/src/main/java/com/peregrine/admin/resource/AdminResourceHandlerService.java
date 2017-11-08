@@ -531,52 +531,15 @@ public class AdminResourceHandlerService
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
                 } else {
                     String componentPath = APPS_ROOT + SLASH + component;
+                    Node contentNode = null;
                     if(parent.getSession().itemExists(componentPath)) {
                         Node componentNode = parent.getSession().getNode(componentPath);
                         if(componentNode != null) {
                             if(componentNode.hasNode(JCR_CONTENT)) {
-                                Node source = componentNode.getNode(JCR_CONTENT);
-                                boolean isVariations = false;
-                                if(source.hasProperty(VARIATIONS)) {
-                                    isVariations = source.getProperty(VARIATIONS).getBoolean();
-                                }
-                                if(isVariations) {
-                                    boolean useDefault = true;
-                                    if(isNotEmpty(variation)) {
-                                        // Look up the variation node
-                                        if(source.hasNode(variation)) {
-                                            Node variationNode = source.getNode(variation);
-                                            if(variationNode.hasNode(JCR_CONTENT)) {
-                                                source = variationNode.getNode(JCR_CONTENT);
-                                                useDefault = false;
-                                            } else {
-                                                logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                                                source = null;
-                                            }
-                                        } else {
-                                            logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, source.getPath());
-                                        }
-                                    }
-                                    if(useDefault) {
-                                        NodeIterator i = source.getNodes();
-                                        if(i.hasNext()) {
-                                            Node variationNode = i.nextNode();
-                                            if(variationNode.hasNode(JCR_CONTENT)) {
-                                                source = variationNode.getNode(JCR_CONTENT);
-                                            } else {
-                                                logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                                                source = null;
-                                            }
-                                        }
-                                    }
-                                }
-                                if(source != null) {
-                                    copyNode(source, newNode, true);
-                                }
+                                contentNode = componentNode.getNode(JCR_CONTENT);
                             } else {
                                 // Loop for a sling:resourceSuperType and copy this one in instead
                                 Node superTypeNode = componentNode;
-                                Node contentNode = null;
                                 while(true) {
                                     if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
                                         String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
@@ -593,6 +556,42 @@ public class AdminResourceHandlerService
                                             } catch(PathNotFoundException e) {
                                                 logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
                                                 break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if(contentNode != null) {
+                                boolean isVariations = false;
+                                if(contentNode.hasProperty(VARIATIONS)) {
+                                    isVariations = contentNode.getProperty(VARIATIONS).getBoolean();
+                                }
+                                if(isVariations) {
+                                    boolean useDefault = true;
+                                    if(isNotEmpty(variation)) {
+                                        // Look up the variation node
+                                        if(contentNode.hasNode(variation)) {
+                                            Node variationNode = contentNode.getNode(variation);
+                                            if(variationNode.hasNode(JCR_CONTENT)) {
+                                                contentNode = variationNode.getNode(JCR_CONTENT);
+                                                useDefault = false;
+                                            } else {
+                                                logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                                                contentNode = null;
+                                            }
+                                        } else {
+                                            logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
+                                        }
+                                    }
+                                    if(useDefault) {
+                                        NodeIterator i = contentNode.getNodes();
+                                        if(i.hasNext()) {
+                                            Node variationNode = i.nextNode();
+                                            if(variationNode.hasNode(JCR_CONTENT)) {
+                                                contentNode = variationNode.getNode(JCR_CONTENT);
+                                            } else {
+                                                logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                                                contentNode = null;
                                             }
                                         }
                                     }
