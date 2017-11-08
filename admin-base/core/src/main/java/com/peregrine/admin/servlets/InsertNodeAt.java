@@ -46,7 +46,7 @@ import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
 import static com.peregrine.admin.util.AdminConstants.INTO;
 import static com.peregrine.admin.util.AdminConstants.MODEL_JSON;
 import static com.peregrine.admin.util.AdminConstants.NOT_PROVIDED;
-import static com.peregrine.commons.util.PerConstants.APPS;
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.CONTENT;
 import static com.peregrine.commons.util.PerConstants.DROP;
@@ -56,6 +56,7 @@ import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -150,7 +151,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
         boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
         boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
         String component = request.getParameter(COMPONENT);
-        if(component != null && component.startsWith(APPS)) {
+        if(component != null && component.startsWith(APPS_ROOT + SLASH)) {
             component = component.substring(component.indexOf('/', 1) + 1);
         }
         Map<String, Object> properties = new HashMap<>();

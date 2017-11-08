@@ -37,10 +37,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DEFINITION;
-import static com.peregrine.commons.util.PerConstants.APPS;
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -83,10 +84,10 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
         String componentPath = "";
-        if(path.startsWith(APPS)) {
+        if(path.startsWith(APPS_ROOT + SLASH)) {
             componentPath = path;
         } else {
-            componentPath = APPS + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+            componentPath = APPS_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
         }
 
         Resource component = request.getResourceByPath(componentPath);
@@ -107,8 +108,8 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
     private Resource getDialogFromSuperType(Resource resource, boolean page) {
         String componentPath = resource.getValueMap().get(SLING_RESOURCE_SUPER_TYPE, String.class);
         if(componentPath != null) {
-            if (!componentPath.startsWith(APPS)) {
-                componentPath = APPS + componentPath;
+            if (!componentPath.startsWith(APPS_ROOT + SLASH)) {
+                componentPath = APPS_ROOT + SLASH + componentPath;
             }
             ResourceResolver resourceResolver = resource.getResourceResolver();
             Resource component = resourceResolver.getResource(componentPath);

@@ -45,6 +45,9 @@ import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.admin.util.AdminConstants.MORE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.COMPONENTS;
+import static com.peregrine.commons.util.PerConstants.TEMPLATES;
+import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -89,9 +92,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class RestrictedSearchServlet extends AbstractBaseServlet {
 
     private static final long ROWS_PER_PAGE = 1000;
-    public static final String COMPONENTS = "components";
-    public static final String TEMPLATES = "templates";
-    public static final String OBJECTS = "objects";
     public static final String UNKNOWN_TYPE = "Unknown Type: ";
     public static final String UNABLE_TO_GET_QUERY_MANAGER = "Unable to get query manager";
     public static final String GROUP = "group";
