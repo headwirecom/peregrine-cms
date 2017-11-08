@@ -1,0 +1,23 @@
+{
+  "fields": [
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "description",
+      "label": "Description",
+      "model": "description"
+    },
+    {
+      "type": "material-datetime",
+      "placeholder": "start",
+      "label": "Start",
+      "model": "start"
+    },
+    {
+      "type": "material-datetime",
+      "placeholder": "end",
+      "label": "End",
+      "model": "end"
+    }
+  ]
+}
