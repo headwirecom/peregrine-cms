@@ -17,16 +17,10 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Articlemedia": {
+    "Mediablock": {
       "type": "object",
       "x-type": "component",
       "properties": {
-        "text": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Text",
-          "x-form-type": "texteditor"
-        },
         "mediaref": {
           "x-form-type": "reference",
           "type": "object",
@@ -152,6 +146,18 @@ import javax.inject.Named;
               "x-form-visible": "model.backgroundtype == 'gradient'",
               "x-default": "#c0c0c0"
             },
+            "fullwidth": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Full Width",
+              "x-form-type": "materialswitch"
+            },
+            "fullheight": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Full Height",
+              "x-form-type": "materialswitch"
+            },
             "toppadding": {
               "type": "string",
               "x-source": "inject",
@@ -175,10 +181,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Articlemedia",
-  "componentPath": "themeclean/components/articlemedia",
+  "name": "Mediablock",
+  "componentPath": "themeclean/components/mediablock",
   "package": "com.themeclean.models",
-  "modelName": "Articlemedia",
+  "modelName": "Mediablock",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -187,7 +193,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articlemedia",
+        resourceType = "themeclean/components/mediablock",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -197,16 +203,12 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class ArticlemediaModel extends AbstractComponent {
+public class MediablockModel extends AbstractComponent {
 
-    public ArticlemediaModel(Resource r) { super(r); }
+    public MediablockModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
-	@Inject
-	private String text;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
 	private String mediatype;
 
@@ -259,6 +261,14 @@ public class ArticlemediaModel extends AbstractComponent {
 	@Default(values ="#c0c0c0")
 	private String color2;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
+	@Inject
+	private String fullwidth;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
+	@Inject
+	private String fullheight;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
@@ -271,12 +281,7 @@ public class ArticlemediaModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
-	public String getText() {
-		return text;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
 	public String getMediatype() {
 		return mediatype;
 	}
@@ -334,6 +339,16 @@ public class ArticlemediaModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient'","x-default":"#c0c0c0"} */
 	public String getColor2() {
 		return color2;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
+	public String getFullwidth() {
+		return fullwidth;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
+	public String getFullheight() {
+		return fullheight;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */

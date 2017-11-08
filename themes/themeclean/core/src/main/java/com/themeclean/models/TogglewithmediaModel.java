@@ -55,10 +55,18 @@ import javax.inject.Named;
                 }
               }
             },
-            "mediasrc": {
+            "imagesrc": {
               "type": "string",
               "x-source": "inject",
-              "x-form-label": "Media source",
+              "x-form-label": "Image Source",
+              "x-form-visible": "model.mediatype == 'image'",
+              "x-form-type": "pathbrowser"
+            },
+            "videosrc": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Video Source",
+              "x-form-visible": "model.mediatype == 'video'",
               "x-form-type": "pathbrowser"
             },
             "mediawidth": {
@@ -245,9 +253,13 @@ public class TogglewithmediaModel extends AbstractComponent {
 	@Inject
 	private String mediatype;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media source","x-form-type":"pathbrowser"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser"} */
 	@Inject
-	private String mediasrc;
+	private String imagesrc;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser"} */
+	@Inject
+	private String videosrc;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-min":10,"x-form-max":100} */
 	@Inject
@@ -329,9 +341,14 @@ public class TogglewithmediaModel extends AbstractComponent {
 		return mediatype;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media source","x-form-type":"pathbrowser"} */
-	public String getMediasrc() {
-		return mediasrc;
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser"} */
+	public String getImagesrc() {
+		return imagesrc;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser"} */
+	public String getVideosrc() {
+		return videosrc;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-min":10,"x-form-max":100} */

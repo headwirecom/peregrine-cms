@@ -1,42 +1,6 @@
 {
   "fields": [
     {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "showtitle",
-      "label": "Show Title",
-      "model": "showtitle"
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "title",
-      "label": "Title",
-      "model": "title",
-      "visible": "model.showtitle == 'true'"
-    },
-    {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "showsubtitle",
-      "label": "Show Subtitle",
-      "model": "showsubtitle"
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "subtitle",
-      "label": "Subtitle",
-      "model": "subtitle",
-      "visible": "model.showsubtitle == 'true'"
-    },
-    {
       "type": "material-radios",
       "values": [
         {
@@ -83,33 +47,6 @@
       "placeholder": "mediacaption",
       "label": "Caption",
       "model": "mediacaption"
-    },
-    {
-      "type": "collection",
-      "multifield": true,
-      "fieldLabel": [
-        "title",
-        "value"
-      ],
-      "fields": [
-        {
-          "type": "input",
-          "inputType": "text",
-          "placeholder": "title",
-          "label": "Tab Title",
-          "model": "title"
-        },
-        {
-          "type": "texteditor",
-          "rows": 10,
-          "placeholder": "text",
-          "label": "Tab Text",
-          "model": "text"
-        }
-      ],
-      "placeholder": "tabs",
-      "label": "Tabs",
-      "model": "tabs"
     },
     {
       "type": "material-radios",

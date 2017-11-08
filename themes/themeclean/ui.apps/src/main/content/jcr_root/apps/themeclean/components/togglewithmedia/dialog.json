@@ -37,9 +37,18 @@
     {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
-      "placeholder": "mediasrc",
-      "label": "Media source",
-      "model": "mediasrc"
+      "placeholder": "imagesrc",
+      "label": "Image Source",
+      "model": "imagesrc",
+      "visible": "model.mediatype == 'image'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "videosrc",
+      "label": "Video Source",
+      "model": "videosrc",
+      "visible": "model.mediatype == 'video'"
     },
     {
       "type": "input",

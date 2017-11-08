@@ -6,7 +6,7 @@
           <jcr:content
 	          jcr:primaryType="nt:unstructured"
 	          mediatype="video"
-	          mediasrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
+	          videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
 	          mediawidth="100"
 	          toppadding="10"
 	          bottompadding="10">

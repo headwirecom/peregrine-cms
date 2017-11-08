@@ -118,7 +118,8 @@
             bgcolor="#ffffff"
             bottompadding="10"
             color2="#c0c0c0"
-            mediasrc="/content/assets/pcmsstock/images/yosemite.jpg"
+            imagesrc="/content/assets/pcmsstock/images/yosemite.jpg"
+            videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
             mediatype="image"
             mediawidth="45"
             overlaycolor="#ffffff"
@@ -150,7 +151,7 @@
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/articlemediafull"
             bottompadding="10"
-            mediasrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
+            videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
             mediatype="video"
             mediawidth="100"
             toppadding="10"/>
@@ -244,6 +245,18 @@
                     path="/jcr:content/fullscreenintro/buttons/button2"/>
             </buttons>
         </fullscreenintro>
+        <mediablock
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="themeclean/components/mediablock"
+            toppadding="30"
+            bottompadding="30"
+            fullwidth="true"
+            mediatype="video"
+            videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
+            imagesrc="/content/assets/pcmsstock/images/013.jpg"
+            mediawidth="100"
+            >
+        </mediablock>
         <ndbf5528c-ca2d-4ca7-9d68-b0e712469f23
             jcr:lastModified="{Date}2017-11-07T15:21:12.449-08:00"
             jcr:lastModifiedBy="admin"
@@ -331,7 +344,7 @@
             bottompadding="30"
             color2="#ffffff"
             fullheight="false"
-            mediasrc="/content/assets/themeclean/images/screen.jpg"
+            imagesrc="/content/assets/themeclean/images/screen.jpg"
             mediatype="image"
             mediawidth="{Long}42"
             overlaycolor="#ffffff"
@@ -372,7 +385,7 @@
             bottompadding="30"
             color2="#ffffff"
             fullheight="false"
-            mediasrc="/content/assets/pcmsstock/images/workers-looking-tablet.jpg"
+            imagesrc="/content/assets/pcmsstock/images/workers-looking-tablet.jpg"
             mediatype="image"
             mediawidth="45"
             overlaycolor="#ffffff"

@@ -6,7 +6,8 @@
           <jcr:content
 	          jcr:primaryType="nt:unstructured"
 	          mediatype="image"
-	          mediasrc="/content/assets/pcmsstock/images/yosemite.jpg"
+	          imagesrc="/content/assets/pcmsstock/images/yosemite.jpg"
+	          videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
 	          mediawidth="45"
 	          toppadding="10"
 	          bottompadding="10"
