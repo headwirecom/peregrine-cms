@@ -74,26 +74,22 @@ public class CreateSiteServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String fromSite = request.getParameter(SITE);
-        String toSite = request.getParameter(NAME);
+        String fromSite = request.getParameter(FROM_SITE_NAME);
+        String toSite = request.getParameter(TO_SITE_NAME);
 
-        // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-        // with the sling:resourceSuperType set to the <fromSite> component
-
-        // for each object in /apps/<fromSite>/ovjects create a stub component in /apps/<toSite>/objects
-        // with the sling:resourceSuperType set to the <fromSite> object
-
-        // copy /content/assets/<fromSite> to /content/assets/<toSite>
-
-        // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
-
-        // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
-
-        // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
-
-        // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
-
-        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE);
+        try {
+            logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
+            Resource site = resourceManagement.copySite(request.getResourceResolver(), "/content/sites", fromSite, toSite);
+            request.getResourceResolver().commit();
+            return new JsonResponse()
+                .writeAttribute(TYPE, SITE)
+                .writeAttribute(STATUS, CREATED)
+                .writeAttribute(NAME, toSite)
+                .writeAttribute(PATH, site.getPath())
+                .writeAttribute(SOURCE_PATH, "/content/sites/" + fromSite);
+        } catch(ManagementException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE).setException(e);
+        }
     }
 
 }

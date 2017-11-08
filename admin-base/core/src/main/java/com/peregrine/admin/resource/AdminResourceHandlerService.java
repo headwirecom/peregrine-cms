@@ -5,9 +5,7 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.adaption.PerAsset;
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.ImageMetadataSelector;
@@ -36,16 +34,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import static com.peregrine.commons.util.PerConstants.APPS;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.COMPONENTS;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
 import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
@@ -53,17 +54,21 @@ import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -127,10 +132,15 @@ public class AdminResourceHandlerService
     private static final String RENDITION = "rendition";
 
     private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
+    private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_UUID);
+
+        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_UUID);
+        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED);
+        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED_BY);
     }
 
 
@@ -239,7 +249,7 @@ public class AdminResourceHandlerService
                     if(component.startsWith("/")) {
                         logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
                     } else {
-                        String componentPath = PerConstants.APPS + component;
+                        String componentPath = APPS + component;
                         if(newPage.getSession().itemExists(componentPath)) {
                             Node componentNode = newPage.getSession().getNode("/apps/" + component);
                             if(componentNode.hasNode(JCR_CONTENT)) {
@@ -504,7 +514,7 @@ public class AdminResourceHandlerService
                 if(component.startsWith("/")) {
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
                 } else {
-                    String componentPath = PerConstants.APPS + component;
+                    String componentPath = APPS + component;
                     /*
                         <jcr:content
                             jcr:primaryType="nt:unstructured"
@@ -598,6 +608,184 @@ public class AdminResourceHandlerService
         } catch(RepositoryException e) {
             logger.trace("Failed to copy components node", e);
             throw new ManagementException(String.format(FAILED_TO_COPY, source, target), e);
+        }
+    }
+
+    @Override
+    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException {
+        // Check the given parameters and make sure everything is correct
+        if(resourceResolver == null) { throw new ManagementException("Resource Resolver must be provide to copy a Site"); }
+        Resource parentResource = getResource(resourceResolver, sitesParentPath);
+        if(parentResource == null) { throw new ManagementException("Sites Parent Resource was not provided or does not exist"); }
+        if(isEmpty(fromName)) { throw new ManagementException("Source Name must be provide"); }
+        if(fromName.equals(targetName)) { throw new ManagementException("Source Name and Target Name cannot be the same value: " + fromName); }
+        Resource source = getResource(parentResource, fromName);
+        if(source == null) { throw new ManagementException("Source Site: '" + fromName + "' was not provided or does not exist"); }
+        if(isEmpty(targetName)) { throw new ManagementException("Name of the Target Site must be provided to copy a Site"); }
+        Resource answer = getResource(parentResource, targetName);
+        if(answer != null) { throw new ManagementException("Target Site: '" + targetName + "' does exist and so copy failed"); }
+        // Ensure the Site Resource is a page
+        if(!isPrimaryType(source, PAGE_PRIMARY_TYPE)) { throw new ManagementException("Source Site: '" + fromName + "' is not a Page"); }
+
+        Resource appsSource = getResource(resourceResolver, APPS + fromName);
+        if(appsSource != null) {
+            Resource appsTarget = getResource(resourceResolver, APPS + targetName);
+            if(appsTarget == null) { appsTarget = createFolder(resourceResolver, APPS, targetName); }
+            // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
+            // with the sling:resourceSuperType set to the <fromSite> component
+            copyStubs(appsSource, appsTarget, COMPONENTS);
+            // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
+            // with the sling:resourceSuperType set to the <fromSite> object
+            copyStubs(appsSource, appsTarget, OBJECTS);
+        }
+
+        // copy /content/assets/<fromSite> to /content/assets/<toSite>
+        Resource sourceResource = getResource(resourceResolver, "/content/assets/" + fromName);
+        if(sourceResource != null) {
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            if(targetResource != null) {
+                copyChildResources(sourceResource, true, targetResource, null, targetName);
+            }
+        }
+        // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
+        sourceResource = getResource(resourceResolver, "/content/objects/" + fromName);
+        if(sourceResource != null) {
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            if(targetResource != null) {
+                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+            }
+        }
+        // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
+        sourceResource = getResource(resourceResolver, "/content/templates/" + fromName);
+        if(sourceResource != null) {
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            if(targetResource != null) {
+                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+            }
+        }
+        // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
+        sourceResource = getResource(resourceResolver, "/content/sites/" + fromName);
+        if(sourceResource != null) {
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            if(targetResource != null) {
+                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+            }
+            answer = targetResource;
+        }
+        // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
+        sourceResource = getResource(resourceResolver, "/etc/felibs/" + fromName);
+        if(sourceResource != null) {
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
+            ValueMap properties = getModifiableProperties(targetResource, false);
+            logger.trace("Copied Felibs Properties: '{}'", properties);
+            if(properties != null) {
+                String[] dependencies = properties.get("dependencies", String[].class);
+                if(dependencies == null) {
+                    dependencies = new String[]{source.getPath()};
+                } else {
+                    String[] newDependencies = new String[dependencies.length + 1];
+                    System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
+                    newDependencies[dependencies.length] = source.getPath();
+                    dependencies = newDependencies;
+                }
+                properties.put("dependencies", dependencies);
+            }
+        }
+
+        return answer;
+    }
+
+    private Resource copyResources(Resource source, Resource targetParent, String toName) {
+        Resource target = getResource(targetParent, toName);
+        if(target != null) {
+            logger.warn("Target Resource: '{}' already exist -> copy is ignored", target.getPath());
+            return null;
+        }
+        Map<String, Object> newProperties = copyProperties(source.getValueMap());
+        logger.trace("Resource Properties: '{}'", newProperties);
+        try {
+            target = source.getResourceResolver().create(targetParent, toName, newProperties);
+        } catch(PersistenceException e) {
+            logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
+            return null;
+        }
+        logger.trace("New Resource Properties: '{}'", target.getValueMap());
+        return target;
+    }
+
+    private Map<String, Object> copyProperties(ValueMap source) {
+        Map<String, Object> answer = new HashMap<>(source);
+        for(String ignore: IGNORED_RESOURCE_PROPERTIES_FOR_COPY) {
+            if(answer.containsKey(ignore)) {
+                answer.remove(ignore);
+            }
+        }
+        return answer;
+    }
+
+    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName) {
+        logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
+        for(Resource child: source.getChildren()) {
+            logger.trace("Child handling started: '{}'", child.getPath());
+            Map<String, Object> newProperties = copyProperties(child.getValueMap());
+            try {
+                if(isNotEmpty(fromName)) {
+                    String pattern1 = SLASH + fromName;
+                    String pattern2 = fromName + SLASH;
+                    for(Entry<String, Object> entry : newProperties.entrySet()) {
+                        String key = entry.getKey();
+                        Object temp = entry.getValue();
+                        if(temp instanceof String) {
+                            String value = (String) temp;
+                            int index = value.indexOf(pattern1);
+                            String newValue = null;
+                            if(value.startsWith("/content/") && index > 0) {
+                                // Check if the string ends or if the next character is a slash to avoid collisions
+                                logger.trace("Value Length: {}, Index: {}, Pattern Length: {}", value.length(), index, pattern1.length());
+                                if(index + pattern1.length() == value.length()) {
+                                    newValue = value.substring(0, index) + SLASH + toName;
+                                } else if(value.charAt(index + pattern1.length()) == '/') {
+                                    newValue = value.substring(0, index) + SLASH + toName + SLASH + value.substring(index + pattern1.length() + 1);
+                                }
+                            } else if(value.startsWith(pattern2)) {
+                                newValue = toName + SLASH + value.substring(pattern2.length());
+                            }
+                            if(newValue != null) {
+                                entry.setValue(newValue);
+                                logger.trace("Updated Properties: '{}'", newProperties);
+                            }
+                        }
+                    }
+                }
+                Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
+                logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
+                // Copy grandchildren
+                if(deep) {
+                    copyChildResources(child, true, childTarget, fromName, toName);
+                }
+            } catch(PersistenceException e) {
+                logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
+                return;
+            }
+            logger.trace("Child handled: '{}'", child.getPath());
+        }
+    }
+
+    private void copyStubs(Resource source, Resource target, String folderName) throws ManagementException {
+        Resource appsComponentsSource = getResource(source, folderName);
+        if(appsComponentsSource != null) {
+            Resource appsComponentsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
+            if(appsComponentsTarget == null) { appsComponentsTarget = createFolder(source.getResourceResolver(), target.getPath(), folderName); }
+            for(Resource child : appsComponentsSource.getChildren()) {
+                ValueMap properties = child.getValueMap();
+                Map<String, Object> newProperties = new HashMap<>(properties);
+                try {
+                    source.getResourceResolver().create(appsComponentsTarget, child.getName(), newProperties);
+                } catch(PersistenceException e) {
+                    logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                }
+            }
         }
     }
 

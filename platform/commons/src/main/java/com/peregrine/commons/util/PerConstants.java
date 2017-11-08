@@ -65,6 +65,10 @@ public class PerConstants {
 
     public static final String APPS = "/apps/";
 
+    public static final String COMPONENTS = "components";
+    public static final String TEMPLATES = "templates";
+    public static final String OBJECTS = "objects";
+
     public static final String COMPONENT = "component";
     public static final String PATH = "path";
     public static final String SITE = "site";
@@ -76,6 +80,7 @@ public class PerConstants {
     public static final String VARIATIONS = "__variations";
     public static final String STATUS = "status";
     public static final String TEMPLATE_PATH = "templatePath";
+    public static final String SOURCE_PATH = "sourcePath";
     public static final String CREATED = "created";
     public static final String DELETED = "deleted";
     public static final String NODE_TYPE = "nodeType";
@@ -87,5 +92,8 @@ public class PerConstants {
     public static final String DROP = "drop";
     public static final String JACKSON = "jackson";
     public static final String JSON = "json";
+
+    public static final String FROM_SITE_NAME = "fromSite";
+    public static final String TO_SITE_NAME = "toSite";
 }
 
