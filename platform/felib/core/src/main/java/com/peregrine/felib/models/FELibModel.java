@@ -47,8 +47,20 @@ public class FELibModel {
     private Resource node;
 
     public ArrayList<JCRFile> getFiles(String fileName) {
+        return getFiles(node, fileName);
+    }
+
+    public ArrayList<JCRFile> getFiles(Resource node, String fileName) {
         ArrayList<JCRFile> ret = new ArrayList<JCRFile>();
         ResourceResolver rr = node.getResourceResolver();
+        if(node.getValueMap().containsKey("dependencies")) {
+            String[] dependents = node.getValueMap().get("dependencies", String[].class);
+            for (String dependent: dependents) {
+                Resource resourceDependent = rr.getResource(dependent);
+                ret.addAll(getFiles(resourceDependent, fileName));
+            }
+        }
+
         Resource definitionNode = node.getChild(fileName);
         if(definitionNode != null) {
             BufferedReader br = null;
