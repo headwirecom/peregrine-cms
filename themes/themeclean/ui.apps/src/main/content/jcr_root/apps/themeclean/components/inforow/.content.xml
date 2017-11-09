@@ -22,7 +22,7 @@
               	jcr:primaryType="nt:unstructured">    
 		          <button5
 	                    jcr:primaryType="nt:unstructured"
-	                    buttonlink="http://www.peregrine-cms.com"
+	                    buttonlink="/content/sites/themeclean.html"
 	                    buttontext="See More"
 	                    buttoncolor="#008040"
 	                    iconclass=""/>
