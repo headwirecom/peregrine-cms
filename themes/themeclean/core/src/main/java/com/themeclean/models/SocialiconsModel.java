@@ -27,12 +27,6 @@ import javax.inject.Named;
           "x-form-label": "Icons",
           "x-source": "inject",
           "properties": {
-            "url": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Icon Url",
-              "x-form-type": "pathbrowser"
-            },
             "icon": {
               "type": "string",
               "x-source": "inject",
@@ -45,6 +39,13 @@ import javax.inject.Named;
                 "material",
                 "font awesome"
               ]
+            },
+            "url": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Url",
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/sites"
             }
           }
         }
@@ -78,7 +79,7 @@ public class SocialiconsModel extends AbstractComponent {
     public SocialiconsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser"},"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]}}} */
+    	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	@Inject
 	private List<IComponent> icons;
 
@@ -86,7 +87,7 @@ public class SocialiconsModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser"},"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]}}} */
+    	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getIcons() {
 		return icons;
 	}

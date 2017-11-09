@@ -24,7 +24,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/assets",
+          "browserRoot": "/content/sites",
           "placeholder": "link",
           "label": "Link Url",
           "model": "link"

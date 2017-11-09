@@ -43,7 +43,8 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Link Url",
-              "x-form-type": "pathbrowser"
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/sites"
             }
           }
         }
@@ -81,7 +82,7 @@ public class TextlinksverticalModel extends AbstractComponent {
 	@Inject
 	private String title;
 
-	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser"}}} */
+	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	@Inject
 	private List<IComponent> links;
 
@@ -94,7 +95,7 @@ public class TextlinksverticalModel extends AbstractComponent {
 		return title;
 	}
 
-	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser"}}} */
+	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getLinks() {
 		return links;
 	}

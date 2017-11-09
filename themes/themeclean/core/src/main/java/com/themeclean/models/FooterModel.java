@@ -98,7 +98,8 @@ import javax.inject.Named;
                   "type": "string",
                   "x-source": "inject",
                   "x-form-label": "Link Url",
-                  "x-form-type": "pathbrowser"
+                  "x-form-type": "pathbrowser",
+                  "x-form-browserRoot": "/content/sites"
                 }
               }
             }
@@ -115,12 +116,6 @@ import javax.inject.Named;
               "x-form-label": "Icons",
               "x-source": "inject",
               "properties": {
-                "url": {
-                  "type": "string",
-                  "x-source": "inject",
-                  "x-form-label": "Icon Url",
-                  "x-form-type": "pathbrowser"
-                },
                 "icon": {
                   "type": "string",
                   "x-source": "inject",
@@ -133,6 +128,13 @@ import javax.inject.Named;
                     "material",
                     "font awesome"
                   ]
+                },
+                "url": {
+                  "type": "string",
+                  "x-source": "inject",
+                  "x-form-label": "Icon Url",
+                  "x-form-type": "pathbrowser",
+                  "x-form-browserRoot": "/content/sites"
                 }
               }
             }
@@ -322,11 +324,11 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String title;
 
-	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser"}}} */
+	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	@Inject
 	private List<IComponent> links;
 
-	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser"},"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]}}} */
+	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	@Inject
 	private List<IComponent> icons;
 
@@ -433,12 +435,12 @@ public class FooterModel extends AbstractComponent {
 		return title;
 	}
 
-	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser"}}} */
+	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getLinks() {
 		return links;
 	}
 
-	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser"},"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]}}} */
+	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getIcons() {
 		return icons;
 	}

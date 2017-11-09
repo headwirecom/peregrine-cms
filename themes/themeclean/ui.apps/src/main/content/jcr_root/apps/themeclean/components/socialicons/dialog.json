@@ -4,17 +4,10 @@
       "type": "collection",
       "multifield": true,
       "fieldLabel": [
-        "url",
+        "icon",
         "value"
       ],
       "fields": [
-        {
-          "type": "pathbrowser",
-          "browserRoot": "/content/assets",
-          "placeholder": "url",
-          "label": "Icon Url",
-          "model": "url"
-        },
         {
           "type": "iconbrowser",
           "placeholder": "icon",
@@ -27,6 +20,13 @@
             "material",
             "font awesome"
           ]
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/sites",
+          "placeholder": "url",
+          "label": "Icon Url",
+          "model": "url"
         }
       ],
       "placeholder": "icons",
