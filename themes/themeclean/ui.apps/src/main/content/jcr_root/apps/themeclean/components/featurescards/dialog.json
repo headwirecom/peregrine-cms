@@ -63,7 +63,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/assets",
+          "browserRoot": "/content",
           "placeholder": "image",
           "label": "Card Image",
           "model": "image"
@@ -78,7 +78,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/assets",
+          "browserRoot": "/content/sites",
           "placeholder": "buttonlink",
           "label": "Button Link",
           "model": "buttonlink",
@@ -123,7 +123,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content",
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
@@ -131,7 +131,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content",
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",
