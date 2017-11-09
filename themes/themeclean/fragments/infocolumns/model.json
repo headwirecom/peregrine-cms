@@ -66,7 +66,8 @@
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Button Link",
-              "x-form-type": "pathbrowser"
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/sites"
             },
             "buttoncolor": {
               "type": "string",
