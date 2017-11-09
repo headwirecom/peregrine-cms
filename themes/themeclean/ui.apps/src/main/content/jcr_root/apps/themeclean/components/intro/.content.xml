@@ -19,12 +19,12 @@
               	jcr:primaryType="nt:unstructured">
 		          <button1
 		            jcr:primaryType="nt:unstructured"
-		            buttonlink="#"
+		            buttonlink="/content/sites/themeclean.html"
 		            buttontext="LEARN MORE"
 		            buttoncolor="#ff0000"/>
 		          <button2
 		            jcr:primaryType="nt:unstructured"
-		            buttonlink="#"
+		            buttonlink="/content/sites/themeclean.html"
 		            buttontext="LIVE DEMO"
 		            buttoncolor="#0000ff"
 		            iconclass=""/>

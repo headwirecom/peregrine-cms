@@ -53,14 +53,16 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Image Source",
               "x-form-visible": "model.mediatype == 'image'",
-              "x-form-type": "pathbrowser"
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
             },
             "videosrc": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Video Source",
               "x-form-visible": "model.mediatype == 'video'",
-              "x-form-type": "pathbrowser"
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
             },
             "mediawidth": {
               "type": "string",
@@ -188,7 +190,7 @@ import javax.inject.Named;
     }
   },
   "name": "Articlemedia",
-  "componentPath": "themeclean/fragments/articlemedia",
+  "componentPath": "themeclean/components/articlemedia",
   "package": "com.themeclean.models",
   "modelName": "Articlemedia",
   "classNameParent": "AbstractComponent"
@@ -199,7 +201,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/fragments/articlemedia",
+        resourceType = "themeclean/components/articlemedia",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -222,11 +224,11 @@ public class ArticlemediaModel extends AbstractComponent {
 	@Inject
 	private String mediatype;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String imagesrc;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String videosrc;
 
@@ -297,12 +299,12 @@ public class ArticlemediaModel extends AbstractComponent {
 		return mediatype;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	public String getImagesrc() {
 		return imagesrc;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	public String getVideosrc() {
 		return videosrc;
 	}
