@@ -540,7 +540,11 @@ public class AdminResourceHandlerService
                             } else {
                                 // Loop for a sling:resourceSuperType and copy this one in instead
                                 Node superTypeNode = componentNode;
+                                List<String> alreadyVisitedNodes = new ArrayList<>();
                                 while(true) {
+                                    // If we already visited that node then exit to avoid an endless loop
+                                    if(alreadyVisitedNodes.contains(superTypeNode.getPath())) { break; }
+                                    alreadyVisitedNodes.add(superTypeNode.getPath());
                                     if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
                                         String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
                                         if(isNotEmpty(resourceSuperType)) {

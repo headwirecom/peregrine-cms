@@ -31,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -39,13 +40,18 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_SEARCH;
 import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.admin.util.AdminConstants.MORE;
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENTS;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES;
 import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -165,17 +171,45 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                             // Check if this component supports variations and if then loop over all child nodes
                             // and add each one of them to the result set
                             boolean done = false;
+                            Node jcrContent = null;
                             if(node.hasNode(JCR_CONTENT)) {
-                                Node jcrContent = node.getNode(Node.JCR_CONTENT);
-                                if(jcrContent.hasProperty(VARIATIONS)) {
-                                    boolean isVariations = jcrContent.getProperty(VARIATIONS).getBoolean();
-                                    if(isVariations) {
-                                        NodeIterator variations = jcrContent.getNodes();
-                                        while(variations.hasNext()) {
-                                            Node variation = variations.nextNode();
-                                            writeComponentNode(node, variation, answer);
-                                            done = true;
+                                jcrContent = node.getNode(Node.JCR_CONTENT);
+                            } else {
+                                // Loop for a sling:resourceSuperType and copy this one in instead
+                                Node superTypeNode = node;
+                                List<String> alreadyVisitedNodes = new ArrayList<>();
+                                while(true) {
+                                    // If we already visited that node then exit to avoid an endless loop
+                                    if(alreadyVisitedNodes.contains(superTypeNode.getPath())) { break; }
+                                    alreadyVisitedNodes.add(superTypeNode.getPath());
+                                    if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
+                                        String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
+                                        if(isNotEmpty(resourceSuperType)) {
+                                            try {
+                                                superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
+                                                logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
+                                                // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
+                                                if(superTypeNode.hasNode(JCR_CONTENT)) {
+                                                    jcrContent = superTypeNode.getNode(JCR_CONTENT);
+                                                    logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), jcrContent.getPath());
+                                                    break;
+                                                }
+                                            } catch(PathNotFoundException e) {
+                                                logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
+                                                break;
+                                            }
                                         }
+                                    }
+                                }
+                            }
+                            if(jcrContent != null && jcrContent.hasProperty(VARIATIONS)) {
+                                boolean isVariations = jcrContent.getProperty(VARIATIONS).getBoolean();
+                                if(isVariations) {
+                                    NodeIterator variations = jcrContent.getNodes();
+                                    while(variations.hasNext()) {
+                                        Node variation = variations.nextNode();
+                                        writeComponentNode(node, variation, answer);
+                                        done = true;
                                     }
                                 }
                             }
