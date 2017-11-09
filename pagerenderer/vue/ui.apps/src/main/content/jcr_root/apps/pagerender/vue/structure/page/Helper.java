@@ -38,9 +38,14 @@ public class Helper implements Use {
 
     private Object model;
     private String siteRootPath;
+    private String siteName;
 
     public String getHello() {
         return "hello";
+    }
+
+    public String getSiteName() {
+        return siteName;
     }
 
     public Object getModel() {
@@ -67,7 +72,7 @@ public class Helper implements Use {
             path = path.substring("/content/templates/".length());
         }
         int slash = path.indexOf("/");
-        String siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
+        siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
         siteRootPath = "/content/sites/"+siteName;
 
         try {
