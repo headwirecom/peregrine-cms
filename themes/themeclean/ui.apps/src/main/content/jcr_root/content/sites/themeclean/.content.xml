@@ -118,7 +118,7 @@
             bgcolor="#ffffff"
             bottompadding="10"
             color2="#c0c0c0"
-            imagesrc="/content/assets/pcmsstock/images/yosemite.jpg"
+            imagesrc="/content/assets/themeclean/images/yosemite.jpg"
             videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
             mediatype="image"
             mediawidth="45"
@@ -253,7 +253,7 @@
             fullwidth="true"
             mediatype="video"
             videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
-            imagesrc="/content/assets/pcmsstock/images/013.jpg"
+            imagesrc="/content/assets/themeclean/images/013.jpg"
             mediawidth="100"
             >
         </mediablock>
@@ -385,7 +385,7 @@
             bottompadding="30"
             color2="#ffffff"
             fullheight="false"
-            imagesrc="/content/assets/pcmsstock/images/workers-looking-tablet.jpg"
+            imagesrc="/content/assets/themeclean/images/workers-looking-tablet.jpg"
             mediatype="image"
             mediawidth="45"
             overlaycolor="#ffffff"
