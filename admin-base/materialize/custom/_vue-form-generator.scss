@@ -135,6 +135,15 @@
                     }
                 }
             }
+            // date, time, and dateTime modals
+            &.field-material-datepicker,
+            &.field-material-timepicker,
+            &.field-material-datetime {
+                .picker--opened .picker__frame {
+                    top: calc(112px + 1.5rem) !important;
+                }
+            }
+
             &.field-material-datepicker {
                 .wrap {
                     input {
@@ -155,9 +164,6 @@
                         display: inline-block;
                         padding: 0;
                         color: color("blue-grey", "darken-1");
-                    }
-                    > .picker--opened .picker__frame {
-                        top: calc(112px + 1.5rem) !important;
                     }
                 }
             }
