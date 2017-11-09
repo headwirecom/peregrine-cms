@@ -12,6 +12,11 @@
             }
             &:last-child {
                 border-bottom: 0;
+                .select-wrapper .dropdown-content.active,
+                .checklist-dropdown.expanded .dropdown-content {
+                    top: auto !important;
+                    bottom: -1px;
+                }
             }
         }
         .form-group {
