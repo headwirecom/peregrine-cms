@@ -20,7 +20,8 @@
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Link Url",
-              "x-form-type": "pathbrowser"
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/sites"
             }
           }
         }

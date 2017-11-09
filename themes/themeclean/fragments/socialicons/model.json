@@ -10,12 +10,6 @@
           "x-form-label": "Icons",
           "x-source": "inject",
           "properties": {
-            "url": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Icon Url",
-              "x-form-type": "pathbrowser"
-            },
             "icon": {
               "type": "string",
               "x-source": "inject",
@@ -25,6 +19,12 @@
               "x-form-required": true,
               "x-form-validator": "required",
               "x-form-families": ["material","font awesome"]
+            },
+            "url": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Url",
+              "x-form-type": "pathbrowser"
             }
           }
         }
