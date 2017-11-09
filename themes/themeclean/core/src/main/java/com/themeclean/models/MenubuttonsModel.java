@@ -37,7 +37,8 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Button Link",
-              "x-form-type": "pathbrowser"
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/sites"
             },
             "buttoncolor": {
               "type": "string",
@@ -77,7 +78,7 @@ public class MenubuttonsModel extends AbstractComponent {
     public MenubuttonsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
 	@Inject
 	private List<IComponent> buttons;
 
@@ -85,7 +86,7 @@ public class MenubuttonsModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
 	public List<IComponent> getButtons() {
 		return buttons;
 	}
