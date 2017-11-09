@@ -177,7 +177,7 @@ import javax.inject.Named;
     }
   },
   "name": "Articleheader",
-  "componentPath": "themeclean/components/articleheader",
+  "componentPath": "themeclean/fragments/articleheader",
   "package": "com.themeclean.models",
   "modelName": "Articleheader",
   "classNameParent": "AbstractComponent"
@@ -188,7 +188,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articleheader",
+        resourceType = "themeclean/fragments/articleheader",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )

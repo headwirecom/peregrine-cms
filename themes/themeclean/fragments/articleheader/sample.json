@@ -1,0 +1,11 @@
+{
+  "title": "Article Header",
+  "group": "Article",
+  "model": {
+    "showtitle": "true",
+    "title": "Peregrine Clean Theme",
+    "showsubtitle": "true",
+    "subtitle": "Blazing fast CMS",
+    "textalign": "left"
+  }
+}
