@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Article List">
+  <jcr:content jcr:primaryType="nt:unstructured" jcr:title="Article List" group="Article" numberedlist="true">
+    <listitems jcr:primaryType="nt:unstructured">
+      <listitems0 jcr:primaryType="nt:unstructured" text="List item 1"/>
+      <listitems1 jcr:primaryType="nt:unstructured" text="List item 2"/>
+    </listitems>
+  </jcr:content>
+</jcr:root>

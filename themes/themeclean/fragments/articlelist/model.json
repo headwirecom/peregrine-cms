@@ -1,0 +1,32 @@
+{
+  "definitions": {
+    "Articlelist": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "$ref": "fragments/block/model.json#/definitions/Block/properties",
+        "numberedlist": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Numbered List",
+          "x-form-type": "materialswitch"
+        },
+        "listitems": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "List Items",
+          "x-form-type": "collection",
+          "x-form-multifield": "true",
+          "properties": {
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Text",
+              "x-form-type": "textarea"
+            }
+          }
+        }
+      }
+    }
+  }
+}
