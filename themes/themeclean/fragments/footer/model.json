@@ -8,7 +8,8 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Logo",
-          "x-form-type": "pathbrowser"
+          "x-form-type": "pathbrowser",
+          "x-form-browserRoot": "/content/assets"
         },
         "logourl": {
           "type": "string",
