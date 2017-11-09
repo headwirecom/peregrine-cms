@@ -25,7 +25,8 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Logo",
-          "x-form-type": "pathbrowser"
+          "x-form-type": "pathbrowser",
+          "x-form-browserRoot": "/content/assets"
         },
         "logourl": {
           "type": "string",
@@ -288,7 +289,7 @@ public class FooterModel extends AbstractComponent {
     public FooterModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String logo;
 
@@ -390,7 +391,7 @@ public class FooterModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	public String getLogo() {
 		return logo;
 	}
