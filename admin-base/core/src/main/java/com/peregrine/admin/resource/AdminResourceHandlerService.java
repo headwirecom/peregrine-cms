@@ -731,6 +731,49 @@ public class AdminResourceHandlerService
         return answer;
     }
 
+    @Override
+    public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException {
+        // Check the given parameters and make sure everything is correct
+        if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
+        Resource parentResource = getResource(resourceResolver, sitesParentPath);
+        if(parentResource == null) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
+        if(isEmpty(name)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
+
+        Resource source = getResource(parentResource, name);
+        if(source == null) { throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, name)); }
+
+        if(!isPrimaryType(source, PAGE_PRIMARY_TYPE)) { throw new ManagementException(String.format(SOURCE_SITE_IS_NOT_A_PAGE, name)); }
+
+        Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + name);
+        deleteResource(resourceResolver, appsSource);
+
+        Resource sourceResource = getResource(resourceResolver, ASSETS_ROOT + SLASH + name);
+        deleteResource(resourceResolver, sourceResource);
+
+        sourceResource = getResource(resourceResolver, OBJECTS_ROOT + SLASH + name);
+        deleteResource(resourceResolver, sourceResource);
+
+        sourceResource = getResource(resourceResolver, TEMPLATES_ROOT + SLASH + name);
+        deleteResource(resourceResolver, sourceResource);
+
+        sourceResource = getResource(resourceResolver, SITES_ROOT + SLASH + name);
+        deleteResource(resourceResolver, sourceResource);
+
+        sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + name);
+        deleteResource(resourceResolver, sourceResource);
+
+    }
+
+    private void deleteResource(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
+        if(resource != null) {
+            try {
+                resourceResolver.delete(resource);
+            } catch (PersistenceException e) {
+                throw new ManagementException(String.format("not able to delete {}", resource.getPath()));
+            }
+        }
+    }
+
     private Resource copyResources(Resource source, Resource targetParent, String toName) {
         Resource target = getResource(targetParent, toName);
         if(target != null) {

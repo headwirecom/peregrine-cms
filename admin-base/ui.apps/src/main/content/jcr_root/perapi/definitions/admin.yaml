@@ -349,6 +349,34 @@ paths:
           description: If the path did not resolve to a resource
           schema:
             $ref: "#/definitions/Error"
+  '/deleteSite.json':
+    post:
+      description: Delete a Site
+      parameters:
+        - name: name
+          type: string
+          in: formData
+          description: The Name of the Site to delete
+          required: true
+      responses:
+        200:
+          description: returns the path of the deleted site
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Type set to 'site'
+              status:
+                type: string
+                description: Status set to 'deleted'
+              sourcePath:
+                type: string
+                description: Path of the source site
+        400:
+          description: If the path did not resolve to a resource
+          schema:
+            $ref: "#/definitions/Error"
   '/insertNodeAt.json{path}':
     post:
       description: insert node at a path based on a component or content properties
