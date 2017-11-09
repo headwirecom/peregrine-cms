@@ -71,7 +71,7 @@ nav {
         }
       }
       &:only-of-type {
-        margin-left: 50px;
+        margin-left: 100px;
       }
     }
     .pathfield {
@@ -79,7 +79,7 @@ nav {
       display: inline-block;
       padding-left: 0.75rem;
       line-height: 20px;
-      width: calc(100% - 100px);
+      width: calc(100% - 150px);
       vertical-align: middle;
        > span {
         display: inline-block;
