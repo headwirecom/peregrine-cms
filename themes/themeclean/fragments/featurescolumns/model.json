@@ -46,7 +46,8 @@
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Card Image",
-              "x-form-type": "pathbrowser"
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
             },
             "buttontext": {
               "type": "string",

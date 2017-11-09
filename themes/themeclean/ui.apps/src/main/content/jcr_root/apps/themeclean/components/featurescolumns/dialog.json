@@ -56,7 +56,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content",
+          "browserRoot": "/content/assets",
           "placeholder": "image",
           "label": "Card Image",
           "model": "image"
