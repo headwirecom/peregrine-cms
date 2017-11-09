@@ -31,6 +31,7 @@ import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
 import createPageWizard from './stateActions/createPageWizard'
 import createSiteWizard from './stateActions/createSiteWizard'
+import createSite from './stateActions/createSite'
 import deletePage from './stateActions/deletePage'
 import renamePage from './stateActions/renamePage'
 import movePage from './stateActions/movePage'
@@ -75,6 +76,7 @@ import moveObject from './stateActions/moveObject'
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createSiteWizard'] = createSiteWizard
+actions['createSite'] = createSite
 actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['deletePage'] = deletePage

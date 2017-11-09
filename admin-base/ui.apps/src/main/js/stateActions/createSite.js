@@ -23,31 +23,15 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('savePageProperties').setLevelDebug()
+import {SUFFIX_PARAM_SEPARATOR} from "../constants";
+let log = LoggerFactory.logger('createSite').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
-
-    const view = me.getView()
-    const nodeData = {}
-
-    nodeData.path = '/jcr:content'
-    nodeData.component = target.component
-
-    const component = target.component
-    const schema = view.admin.componentDefinitions[component]
-
-    for(let i = 0; i < schema.fields.length; i++) {
-        if(!schema.fields[i].readonly) {
-            const srcName = schema.fields[i].model
-            const dstName = schema.fields[i]['x-model'] ? schema.fields[i]['x-model'] : srcName
-            nodeData[dstName] = target[srcName]
-        }
-    }
-
-    log.fine(nodeData)
-
-    me.getApi().savePageEdit(target.path, nodeData).then( () => {
+    var api = me.getApi()
+    api.createSite(target.fromName, target.toName).then( () => {
+        me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/sites')
     })
+
 }

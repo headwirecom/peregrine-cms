@@ -332,6 +332,17 @@ class PerAdminImpl {
         })
     }
 
+    createSite(fromName, toName) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('fromSite', fromName)
+            data.append('toSite', toName)
+            updateWithForm('/admin/createSite.json', data)
+                .then( (data) => this.populateNodesForBrowser(callbacks.getView().state.tools.pages) )
+                .then( () => resolve() )
+        })
+    }
+
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()

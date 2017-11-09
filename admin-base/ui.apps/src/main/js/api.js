@@ -106,6 +106,10 @@ class PerApi {
         return impl.populateI18N(language)
     }
 
+    createSite(fromName, toName) {
+        return impl.createSite(fromName, toName)
+    }
+
     createPage(parentPath, name, templatePath) {
         return impl.createPage(parentPath, name, templatePath)
     }

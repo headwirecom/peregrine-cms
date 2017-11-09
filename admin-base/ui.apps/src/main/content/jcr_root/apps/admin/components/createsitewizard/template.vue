@@ -131,7 +131,7 @@
                 return this.formmodel.templatePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createSite', { name: this.formmodel.name, template: this.formmodel.templatePath })
+                $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name })
             },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
