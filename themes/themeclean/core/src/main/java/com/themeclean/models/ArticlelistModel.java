@@ -189,7 +189,7 @@ public class ArticlelistModel extends AbstractComponent {
 
 	/* {"type":"string","x-source":"inject","x-form-label":"List Items","x-form-type":"collection","x-form-multifield":"true","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"textarea"}}} */
 	@Inject
-	private String[] listitems;
+	private List<IComponent> listitems;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
@@ -255,7 +255,7 @@ public class ArticlelistModel extends AbstractComponent {
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"List Items","x-form-type":"collection","x-form-multifield":"true","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"textarea"}}} */
-	public String[] getListitems() {
+	public List<IComponent> getListitems() {
 		return listitems;
 	}
 
