@@ -81,7 +81,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content",
+      "browserRoot": "/content/assets",
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
@@ -89,7 +89,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content",
+      "browserRoot": "/content/assets",
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",
