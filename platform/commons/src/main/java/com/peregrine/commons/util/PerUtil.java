@@ -724,6 +724,17 @@ public class PerUtil {
         }
     }
 
+    public static String getComponentVariableNameFromString(String resourceType) {
+        if (resourceType != null) {
+            if(resourceType.startsWith("/")) {
+                resourceType = StringUtils.substringAfter(resourceType, SLASH);
+            }
+            return "cmp"+CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, resourceType.replaceAll(SLASH, DASH));
+        } else {
+            return "";
+        }
+    }
+
     /**
      * Tries to convert the given String into a Map if this is an JSon Object
      * @param json String that must represent a JSon Object

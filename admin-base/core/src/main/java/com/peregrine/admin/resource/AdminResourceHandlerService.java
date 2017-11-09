@@ -21,13 +21,11 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
+import javax.jcr.*;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.version.VersionException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,37 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.COMPONENTS;
-import static com.peregrine.commons.util.PerConstants.DEPENDENCIES;
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_DATA;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JCR_UUID;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.OBJECTS;
-import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
-import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
-import static com.peregrine.commons.util.PerConstants.VARIATIONS;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
@@ -660,6 +628,8 @@ public class AdminResourceHandlerService
         // Ensure the Site Resource is a page
         if(!isPrimaryType(source, PAGE_PRIMARY_TYPE)) { throw new ManagementException(String.format(SOURCE_SITE_IS_NOT_A_PAGE, fromName)); }
 
+        ArrayList<String> superTypes = new ArrayList<>();
+
         Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + fromName);
         if(appsSource != null) {
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
@@ -668,10 +638,10 @@ public class AdminResourceHandlerService
             }
             // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
             // with the sling:resourceSuperType set to the <fromSite> component
-            copyStubs(appsSource, appsTarget, COMPONENTS);
+            copyStubs(appsSource, appsTarget, COMPONENTS, superTypes);
             // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
             // with the sling:resourceSuperType set to the <fromSite> object
-            copyStubs(appsSource, appsTarget, OBJECTS);
+            copyStubs(appsSource, appsTarget, OBJECTS, null);
         }
 
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
@@ -726,9 +696,35 @@ public class AdminResourceHandlerService
                 }
                 properties.put(DEPENDENCIES, dependencies);
             }
+
+            StringBuilder mappings = new StringBuilder();
+            for (String superType : superTypes) {
+                String componentSourceName = PerUtil.getComponentVariableNameFromString(superType);
+                String componentDestName = PerUtil.getComponentVariableNameFromString(superType.replace(fromName+"/", targetName+"/"));
+                mappings.append("var ");
+                mappings.append(componentDestName);
+                mappings.append(" = ");
+                mappings.append(componentSourceName);
+                mappings.append('\n');
+            }
+            createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
+            createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
         }
 
         return answer;
+    }
+
+    private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {
+        try {
+            Node parentNode = parent.adaptTo(Node.class);
+            Node newAsset = parentNode.addNode(name, NT_FILE);
+            Node content = newAsset.addNode(JCR_CONTENT, NT_RESOURCE);
+            content.setProperty(JCR_DATA, data);
+            content.setProperty(JCR_MIME_TYPE, TEXT_MIME_TYPE);
+        } catch(RepositoryException e) {
+            logger.error("failed to create resource {}", name, e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, name, parent.getPath(), name), e);
+        }
     }
 
     @Override
@@ -861,7 +857,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void copyStubs(Resource source, Resource target, String folderName) throws ManagementException {
+    private void copyStubs(Resource source, Resource target, String folderName, List superTypes) throws ManagementException {
         Resource appsSource = getResource(source, folderName);
         if(appsSource != null) {
             Resource appsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
@@ -874,6 +870,9 @@ public class AdminResourceHandlerService
                 Map<String, Object> newProperties = new HashMap<>(properties);
                 String originalAppsPath = child.getPath();
                 originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
+                if(superTypes != null) {
+                    superTypes.add(originalAppsPath);
+                }
                 newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
                 try {
                     source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
