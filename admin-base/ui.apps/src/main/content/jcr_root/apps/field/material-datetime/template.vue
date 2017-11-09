@@ -62,7 +62,9 @@
 								} else if(context.clear == null){
 									this.dateTime = null
 								}
-								this.value = this.dateTime.toJSON()
+								if(this.dateTime) {
+                                    this.value = this.dateTime.toJSON()
+								}
 							}
 						})
 						this.picker.set('select', this.dateTime)
