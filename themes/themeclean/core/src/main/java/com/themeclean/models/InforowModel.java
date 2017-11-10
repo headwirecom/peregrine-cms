@@ -117,14 +117,16 @@ import javax.inject.Named;
               "x-form-label": "Background Video",
               "x-form-type": "pathbrowser",
               "x-form-visible": "model.backgroundtype == 'video'",
-              "x-default": "https://www.youtube.com/embed/Ju86mknumYM"
+              "x-default": "https://www.youtube.com/embed/Ju86mknumYM",
+              "x-form-browserRoot": "/content/assets"
             },
             "bgimage": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Background Image",
               "x-form-type": "pathbrowser",
-              "x-form-visible": "model.backgroundtype == 'image'"
+              "x-form-visible": "model.backgroundtype == 'image'",
+              "x-form-browserRoot": "/content/assets"
             },
             "overlay": {
               "type": "string",
@@ -258,12 +260,12 @@ public class InforowModel extends AbstractComponent {
 	@Default(values ="color")
 	private String backgroundtype;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	@Default(values ="https://www.youtube.com/embed/Ju86mknumYM")
 	private String bgvideo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String bgimage;
 
@@ -346,12 +348,12 @@ public class InforowModel extends AbstractComponent {
 		return backgroundtype;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
 	public String getBgvideo() {
 		return bgvideo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'","x-form-browserRoot":"/content/assets"} */
 	public String getBgimage() {
 		return bgimage;
 	}

@@ -1,0 +1,12 @@
+{
+  "title": "Article Media Full",
+  "default": true,
+  "group": "Article",
+  "model": {
+    "mediatype": "video",
+    "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
+    "mediawidth": "100",
+    "toppadding": "10",
+    "bottompadding": "10"
+  }
+}
