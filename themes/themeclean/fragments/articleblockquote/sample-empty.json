@@ -1,0 +1,8 @@
+{
+  "title": "Article Block Quote no default values",
+  "default": true,
+  "group": "Article",
+  "model": {
+    
+  }
+}
