@@ -1,6 +1,6 @@
 {
   "title": "Menu no default value",
-  "default": true,
+  "default": false,
   "group": "General",
   "model": {
     
