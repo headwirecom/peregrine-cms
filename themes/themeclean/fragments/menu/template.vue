@@ -1,6 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <nav class="container navbar align-items-center navbar-light" v-bind:class="{'navbar-expand-lg':model.collapsed === 'false'}">
+      <h1 v-if="editAndEmpty">Configure Menu</h1>
       <!-- Logo -->
       <span class="navbar-logo">
         <a v-bind:href="model.logourl">

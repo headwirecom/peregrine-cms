@@ -1,6 +1,6 @@
 {
   "title": "Menu",
-  "default": true,
+  "default": false,
   "group": "General",
   "model": {
     "backgroundtype": "color",
