@@ -9,6 +9,24 @@
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	editAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                var model = this.model
+                console.log(model)
+                console.log(model.title)
+                for (var property in model) {
+                    if (model.hasOwnProperty(property)) {
+                    	console.log(model[property])
+                        // check if model.prop is false/null
+                        if(!model[property] || model[property] == null || model[property].length === 0){
+                            return true
+                        } 
+                    }
+                }
+                return false
+            }
+        }
     }
 </script>
