@@ -2,4 +2,15 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="per:Component"
           jcr:title="Media Block"
-          />
+          group="Media">
+          <jcr:content
+              jcr:primaryType="nt:unstructured"
+              toppadding="30"
+              bottompadding="30"
+              fullwidth="true"
+              mediatype="video"
+              videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE"
+              imagesrc="/content/assets/themeclean/images/013.jpg"
+              mediawidth="100">
+          </jcr:content>
+</jcr:root>

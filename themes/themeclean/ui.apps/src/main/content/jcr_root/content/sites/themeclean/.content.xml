@@ -584,8 +584,8 @@
         </nf46066e5-372f-469d-b0eb-be652eef0acd>
 
         <footer
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="themeclean/components/footer"
+              jcr:primaryType="nt:unstructured"
+              sling:resourceType="themeclean/components/footer"
               toppadding="30"
               bottompadding="0"
               backgroundtype="color"
