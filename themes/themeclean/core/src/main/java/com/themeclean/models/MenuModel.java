@@ -287,6 +287,7 @@ public class MenuModel extends AbstractComponent {
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-defualt":"https://www.youtube.com/embed/Ju86mknumYM"} */
 	@Inject
+	@Default(values ="https://www.youtube.com/embed/Ju86mknumYM")
 	private String bgvideo;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'"} */
