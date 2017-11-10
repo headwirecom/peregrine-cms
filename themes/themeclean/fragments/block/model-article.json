@@ -32,14 +32,16 @@
           "x-form-label": "Background Video",
           "x-form-type": "pathbrowser",
           "x-form-visible": "model.backgroundtype == 'video'",
-          "x-defualt": "https://www.youtube.com/embed/Ju86mknumYM"
+          "x-defualt": "https://www.youtube.com/embed/Ju86mknumYM",
+          "x-form-browserRoot": "/content/assets"
         },
         "bgimage": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Background Image",
           "x-form-type": "pathbrowser",
-          "x-form-visible": "model.backgroundtype == 'image'"
+          "x-form-visible": "model.backgroundtype == 'image'",
+          "x-form-browserRoot": "/content/assets"
         },
         "overlay": {
           "type": "string",
