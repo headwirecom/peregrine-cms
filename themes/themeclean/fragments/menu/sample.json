@@ -1,10 +1,11 @@
 {
   "title": "Menu",
   "default": true,
-  "group": "Menu",
+  "group": "General",
   "model": {
     "backgroundtype": "color",
     "bgcolor": "#eeeeee",
+    "bgvideo": "https://www.youtube.com/embed/Ju86mknumYM",
     "collapsed": "false",
     "logo": "/content/assets/themeclean/images/peregrine-logo.png",
     "logourl": "http://www.peregrine-cms.com",
@@ -25,8 +26,7 @@
       {
         "buttonlink": "/content/sites/themeclean.html",
         "buttontext": "Try It Now",
-        "buttoncolor": "#149dcc",
-        "iconclass": "mbri-save mbr-iconfont mbr-iconfont-btn"
+        "buttoncolor": "#149dcc"
       }
     ]
   }
