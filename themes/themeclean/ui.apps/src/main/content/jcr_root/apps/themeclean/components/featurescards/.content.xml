@@ -1,49 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Component"
-          jcr:title="Features Cards"
-          group="Features">
-          <jcr:content
-            jcr:primaryType="nt:unstructured"
-            bgcolor="#ffffff"
-            bottompadding="20"
-            showbutton="true"
-            showtext="true"
-            showtitle="true"
-            toppadding="20"
-			cardcolor="#eeeeee">
-            <cards 
-              	jcr:primaryType="nt:unstructured">  
-	            <card1
-	                jcr:lastModified="{Date}2017-10-19T16:22:45.529-07:00"
-	                jcr:lastModifiedBy="admin"
-	                jcr:primaryType="nt:unstructured"
-	                buttonlink="/content/sites/themeclean.html"
-	                buttontext="View"
-	                buttoncolor="#008080"
-	                image="/content/assets/themeclean/images/background1.jpg"
-	                text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
-	                title="Card One"/>
-	            <card2
-	                jcr:lastModified="{Date}2017-10-19T16:22:45.529-07:00"
-	                jcr:lastModifiedBy="admin"
-	                jcr:primaryType="nt:unstructured"
-	                buttonlink="/content/sites/themeclean.html"
-	                buttontext="View"
-	                buttoncolor="#008080"
-	                image="/content/assets/themeclean/images/background2.jpg"
-	                text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
-	                title="Card Two"/>
-	            <card3
-	                jcr:lastModified="{Date}2017-10-19T16:22:45.529-07:00"
-	                jcr:lastModifiedBy="admin"
-	                jcr:primaryType="nt:unstructured"
-	                buttonlink="/content/sites/themeclean.html"
-	                buttontext="View"
-	                buttoncolor="#008080"
-	                image="/content/assets/themeclean/images/background3.jpg"
-	                text="&lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&lt;/p>"
-	                title="Card Three"/>
-	        </cards>
-          </jcr:content>
+<?xml version="1.0" encoding="utf-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Features Cards" group="Features">
+  <jcr:content jcr:primaryType="nt:unstructured" bgcolor="#ffffff" bottompadding="20" showbutton="true" showtext="true" showtitle="true" toppadding="20" cardcolor="#eeeeee">
+    <cards jcr:primaryType="nt:unstructured">
+      <cards0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="View" buttoncolor="#008080" image="/content/assets/themeclean/images/background1.jpg" text="&amp;lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&amp;lt;/p>" title="Card One"/>
+      <cards1 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="View" buttoncolor="#008080" image="/content/assets/themeclean/images/background2.jpg" text="&amp;lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&amp;lt;/p>" title="Card Two"/>
+      <cards2 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="View" buttoncolor="#008080" image="/content/assets/themeclean/images/background3.jpg" text="&amp;lt;p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.&amp;lt;/p>" title="Card Three"/>
+    </cards>
+  </jcr:content>
 </jcr:root>
