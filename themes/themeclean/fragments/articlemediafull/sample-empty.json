@@ -1,0 +1,8 @@
+{
+  "title": "Article Media Full no default value",
+  "default": true,
+  "group": "Article",
+  "model": {
+    
+  }
+}

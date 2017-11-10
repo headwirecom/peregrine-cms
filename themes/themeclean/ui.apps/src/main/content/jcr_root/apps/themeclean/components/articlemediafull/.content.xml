@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Article Media Full" group="Article">
-  <jcr:content jcr:primaryType="nt:unstructured" mediatype="video" videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE" mediawidth="100" toppadding="10" bottompadding="10"/>
+  <jcr:content jcr:primaryType="nt:unstructured" __variations="true">
+    <!-- <v1 jcr:primaryType="nt:unstructured" title="Article Media Full no default value">
+      <jcr:content jcr:primaryType="nt:unstructured"/>
+    </v1> -->
+    <v2 jcr:primaryType="nt:unstructured" title="Article Media Full">
+      <jcr:content jcr:primaryType="nt:unstructured" mediatype="video" videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE" mediawidth="100" toppadding="10" bottompadding="10"/>
+    </v2>
+  </jcr:content>
 </jcr:root>
