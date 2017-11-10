@@ -8,8 +8,8 @@
       "model": "logo"
     },
     {
-      "type": "input",
-      "inputType": "url",
+      "type": "pathbrowser",
+      "browserRoot": "/content/sites",
       "placeholder": "logourl",
       "label": "Logo Url",
       "model": "logourl"
