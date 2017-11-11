@@ -582,6 +582,7 @@ function pathBrowserImpl(state, options) {
         set(view, '/state/pathbrowser/current', current)
         set(view, '/state/pathbrowser/selected', selected)
         set(view, '/state/pathbrowser/original', selected)
+        set(view, '/state/pathbrowser/isOpen', true)
     }).then( () => {
         $('#pathBrowserModal').modal('open', options)
     })
