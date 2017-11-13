@@ -95,8 +95,8 @@
                             </div>
                         </div>
                     </nav>
-                    <ul class="browse-list">
-                        <template v-for="item in nodes.children">
+                    <ul class="browse-list" v-if="list.length > 0">
+                        <template v-for="item in list">
                             <li v-if="isFolder(item)" 
                                 v-on:click.stop.prevent="navigateFolder(item)"
                                 :class="isSelected(item.path) ? 'selected' : ''">
@@ -115,6 +115,7 @@
                             </li>
                         </template>
                     </ul>
+                    <p v-else class="flow-text">{{getEmptyText()}}</li>
                 </template>
                 <template v-if="tab === 'cards' && !search">
                     <nav class="modal-content-nav clearfix">
@@ -264,7 +265,7 @@
                             </div>
                         </isotope>
                     </template>
-                    <p v-else class="flow-text">This folder is empty.</p>
+                    <p v-else class="flow-text">{{getEmptyText()}}</p>
                 </template>
                 <template v-if="withLinkTab && tab === 'link' && !search">
                     <p>
@@ -389,7 +390,10 @@
                 return {}
             },
             list(){
-                return this.nodes.children || []
+                if(this.nodes.children){
+                    return this.nodes.children
+                }
+                return []
             },
             tabIndicatorPosition(){
                 let position
@@ -426,6 +430,9 @@
             },
             getFolderIcon(){
                 return this.browserType === 'asset' ? 'folder_open' : 'description'
+            },
+            getEmptyText(){
+                return this.browserType === 'asset' ? 'Folder is empty' : 'No child pages'
             },
             cardIconSize: function(cardSize){
                 return Math.floor(cardSize/3)
@@ -490,7 +497,7 @@
                 parentFolder.pop()
                 let newPath = parentFolder.join('/')
                 /* TODO: pass in obj with name and type, not just path */
-                this.navigateFolder({ path: newPath} )
+                this.navigateFolder({ path: newPath})
             },
             display(item) {
                 return item.name !== 'jcr:content'
