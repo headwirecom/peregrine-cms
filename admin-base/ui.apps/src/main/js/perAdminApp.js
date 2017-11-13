@@ -574,17 +574,21 @@ function iconBrowserImpl(state, options) {
  * @param options
  */
 function pathBrowserImpl(state, options) {
-    let { root, type, current, selected } = state
     api.populateNodesForBrowser(state.current, 'pathBrowser')
-    .then( () => {
-        set(view, '/state/pathbrowser/root', root)
-        set(view, '/state/pathbrowser/type', type)
-        set(view, '/state/pathbrowser/current', current)
-        set(view, '/state/pathbrowser/selected', selected)
-        set(view, '/state/pathbrowser/original', selected)
+    .then( () => { 
+        set(view, '/state/pathbrowser/root', state.root)
+        set(view, '/state/pathbrowser/type', state.type)
+        set(view, '/state/pathbrowser/current', state.current)
+        set(view, '/state/pathbrowser/selected', state.selected)
+        set(view, '/state/pathbrowser/original', state.selected)
+        set(view, '/state/pathbrowser/withLink', options.withLink)
         set(view, '/state/pathbrowser/isOpen', true)
-    }).then( () => {
-        $('#pathBrowserModal').modal('open', options)
+     })
+    .then( () => { $('#pathBrowserModal').modal('open', options) })
+    .catch( (err) => {
+        // retry by setting current dir to root dir
+        state.current = state.root
+        pathBrowserImpl(state, options)
     })
 }
 

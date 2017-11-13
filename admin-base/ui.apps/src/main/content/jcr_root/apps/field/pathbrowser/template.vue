@@ -51,6 +51,9 @@
             isImage(path) {
                 return /\.(jpg|png|gif)$/.test(path);
             },
+            isValidPath(path, root){
+                return path && path !== root && path.includes(root)
+            },
             setPathBrowserValue(){
                 this.value = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
             }, 
@@ -61,29 +64,30 @@
                     console.warn('browserRoot not defined in schema. All paths are available.')
                     root = '/'
                 }
-                // browser type is used to limit action and file types
+                // browser type is used to limit browsing and show correct file/icon types
                 let type = this.schema.browserType
                 if(!type) {
                     console.warn('browserType not defined in schema. Infering type from root path.')
                     switch(root) {
                         case ('/content/assets'):
-                            type = 'file'
+                            type = 'asset'
                             break
                         case ('/content/sites'):
-                            type = 'folder'
+                            type = 'page'
                             break;
                         default:
-                            type = 'default'
+                            type = 'asset'
                     }
                 }
                 let selectedPath = this.value
                 // current path is the active directory in the path browser
-                // if a path is selected, currentPath becomes the selected path's parent
-                // if no path is selected, currentPath becomes the root path
                 let currentPath
-                selectedPath
-                    ? currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
-                    : currentPath = root
+                // if a selected path is valid, currentPath becomes the selected path's parent
+                if(this.isValidPath(selectedPath, root)){
+                    currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
+                } else { // if path is invalid
+                    currentPath = root
+                }
                 const initModalState = {
                     root: root,
                     type: type,
@@ -93,7 +97,9 @@
                 let options = this.schema.browserOptions
                 if(!options) {
                     console.warn('No options specified. Modal will open with defaults.')
-                    options = {}
+                    options = {
+                        withLink: true
+                    }
                 }
                 options.complete = this.setPathBrowserValue 
                 // set pathbrowser modal initial state
