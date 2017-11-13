@@ -220,6 +220,7 @@ class PerAdminImpl {
             fetch('/admin/nodes.json'+path+'?includeParents='+includeParents)
                 .then( (data) => populateView('/admin', target, data ) )
                 .then( () => resolve() )
+                .catch( (err) => reject(err) )
         })
     }
 

@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-    <div id="pathBrowserModal" class="pathbrowser modal default modal-fixed-footer">
+    <div v-if="isOpen" id="pathBrowserModal" class="pathbrowser modal default modal-fixed-footer">
         <ul class="pathbrowser-tabs">
             <li class="tab">
                 <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
@@ -102,7 +102,7 @@
                                 :class="isSelected(item.path) ? 'selected' : ''">
                                 <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                 <label v-on:click.stop.prevent="selectItem(item)"></label>
-                                <i class="material-icons">folder</i>
+                                <i class="material-icons">{{getFolderIcon()}}</i>
                                 <span>{{item.name}}</span>
                             </li>
                             <li v-if="isFile(item) && isFileAllowed()" 
@@ -233,7 +233,7 @@
                                         <div class="item-content">
                                             <i 
                                                 class="material-icons"
-                                                :style="`font-size: ${cardIconSize(cardSize)}px`">folder_open</i>
+                                                :style="`font-size: ${cardIconSize(cardSize)}px`">{{getFolderIcon()}}</i>
                                             <br/>
                                             <span class="truncate">{{item.name}}</span>
                                         </div>
@@ -254,7 +254,7 @@
                                         <div class="item-content">
                                             <i 
                                                 class="material-icons"
-                                                :style="`font-size: ${cardIconSize(cardSize)}px`">{{getFileIcon(item)}}</i>
+                                                :style="`font-size: ${cardIconSize(cardSize)}px`">{{getFileIcon()}}</i>
                                             <br/>
                                             <span class="truncate">{{item.name}}</span>
                                         </div>
@@ -324,9 +324,24 @@
 <script>
     export default {
         props: ['model'],
+        watch: {
+            cardSize: function (newCardSize) {
+                this.updateIsotopeLayout('masonry')
+            },
+            isOpen: function (isOpen) {
+                if(isOpen){
+                    let isExternalLink = this.selectedPath.includes('http')
+                    if(this.withLinkTab && isExternalLink){
+                        this.tab = 'link'
+                    } else {
+                        this.tab = 'browse'
+                    }
+                }
+			}
+        },
         data: function() {
             return {
-                tab: 'browse',
+                tab: null,
                 cardSize: 120,
                 search: '',
                 previewType: this.selectedPath ? 'selected' : 'current',
@@ -334,12 +349,10 @@
                 filterBy: '*'
             }
         },
-        watch: {
-            cardSize: function (newCardSize) {
-                this.updateIsotopeLayout('masonry')
-            }
-        },
         computed: {
+            isOpen(){
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/isOpen')
+            },
             browserRoot(){
                 return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/root')
             }, 
@@ -353,7 +366,7 @@
                 return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/selected')
             },
             withLinkTab(){
-                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/type') === 'link'
+                return $perAdminApp.getNodeFromViewOrNull('/state/pathbrowser/withLink')
             },
             isRoot(){
                 return this.currentPath === this.browserRoot
@@ -408,8 +421,11 @@
             isImage(item){
                 return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(item.mimeType) >= 0
             }, 
-            getFileIcon(item){
+            getFileIcon(){
                 return 'insert_drive_file'
+            },
+            getFolderIcon(){
+                return this.browserType === 'asset' ? 'folder_open' : 'description'
             },
             cardIconSize: function(cardSize){
                 return Math.floor(cardSize/3)
@@ -483,7 +499,7 @@
                 return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
             },
             isFileAllowed(){
-                return this.browserType !== 'folder'
+                return this.browserType !== 'page'
             },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
@@ -496,7 +512,7 @@
                     .then( () => {
                         this.previewType = 'current'
                         $perAdminApp.getNodeFromView('/state/pathbrowser').current = item.path
-                        if(this.tab === 'cards') this.updateIsotopeLayout('masonry')
+                        if(this.tab === 'cards' && this.list.length > 0) this.updateIsotopeLayout('masonry')
                     })
             },
             selectItem(item) {
@@ -511,11 +527,18 @@
             },
             onModalSelect(){
                 $('#pathBrowserModal').modal('close')
+                setTimeout(function(){ 
+                    $perAdminApp.getNodeFromView('/state/pathbrowser').isOpen = false
+                 }, 200);
             },
             onModalCancel(){
                 // set selected path to original path
                 $perAdminApp.getNodeFromView('/state/pathbrowser').selected = $perAdminApp.getNodeFromView('/state/pathbrowser/original')
                 $('#pathBrowserModal').modal('close')
+                setTimeout(function(){ 
+                    $perAdminApp.getNodeFromView('/state/pathbrowser').isOpen = false
+                 }, 200);
+                
             }
         }
     }
