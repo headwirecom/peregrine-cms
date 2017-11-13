@@ -71,7 +71,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/sites",
+          "browserRoot": "/content/assets",
           "placeholder": "buttonlink",
           "label": "Button Link",
           "model": "buttonlink",
