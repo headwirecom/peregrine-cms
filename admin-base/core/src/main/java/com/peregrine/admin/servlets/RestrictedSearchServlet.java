@@ -237,12 +237,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         answer.writeObject();
         answer.writeAttribute(NAME, component.getName());
         answer.writeAttribute(PATH, component.getPath());
-        if(component.hasProperty(GROUP)) {
-            Property group = component.getProperty(GROUP);
-            if(group != null) {
-                answer.writeAttribute(GROUP, group.getString());
-            }
-        }
+        String group = null;
         String title = null;
         if(variation != null) {
             String id = variation.getIdentifier();
@@ -252,12 +247,21 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
             if(variation.hasProperty(TITLE)) {
                 title = variation.getProperty(TITLE).getString();
             }
+            if(variation.hasProperty(GROUP)) {
+                title = variation.getProperty(GROUP).getString();
+            }
         }
         if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
             title = component.getProperty(JCR_TITLE).getString();
         }
+        if(isEmpty(group) && component.hasProperty(GROUP)) {
+            group = component.getProperty(GROUP).getString();
+        }
         if(isNotEmpty(title)) {
             answer.writeAttribute(TITLE, title);
+        }
+        if(isNotEmpty(group)) {
+            answer.writeAttribute(GROUP, group);
         }
         if(component.hasProperty(TEMPLATE_COMPONENT)) {
             Property templateComponent = component.getProperty(TEMPLATE_COMPONENT);
