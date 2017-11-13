@@ -4,12 +4,19 @@
       <themeclean-components-media v-bind:model="model"></themeclean-components-media>
       <div class="col-sm-12 col-md p-0 pt-3 p-md-3"
       v-html="model.text"></div>
+      <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
     </div>
   </themeclean-components-block>
 </template>
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return !(this.model.text || this.model.imagesrc || this.model.videosrc)
+            }
+        }
     }
 </script>

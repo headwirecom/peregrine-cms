@@ -4,5 +4,6 @@ module.exports = {
         f.bindAttribute($.parent(),'model','model')
         f.mapRichField( $.find('div').eq(0), 'model.textleft')
         f.mapRichField( $.find('div').eq(1), 'model.textright')
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
     }
 }
