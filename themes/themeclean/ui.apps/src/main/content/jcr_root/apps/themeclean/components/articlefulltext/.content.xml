@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Article Full Text" group="Article">
-  <jcr:content jcr:primaryType="nt:unstructured" __variations="true">
-    <v1 jcr:primaryType="nt:unstructured" title="Article Full Text no default value">
-      <jcr:content jcr:primaryType="nt:unstructured"/>
+  <jcr:content jcr:primaryType="nt:unstructured" __variations="true" toppadding="0" bottompadding="0" textcolor="#000000" bgcolor="#ffffff" text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus.">
+    <v1 jcr:primaryType="nt:unstructured">
+      <jcr:content jcr:primaryType="nt:unstructured" jcr:title="Article Full Text"/>
     </v1>
-    <v2 jcr:primaryType="nt:unstructured" title="Article Full Text">
-      <jcr:content jcr:primaryType="nt:unstructured" toppadding="0" bottompadding="0" textcolor="#000000" bgcolor="#ffffff" text="Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus."/>
-    </v2>
   </jcr:content>
 </jcr:root>
