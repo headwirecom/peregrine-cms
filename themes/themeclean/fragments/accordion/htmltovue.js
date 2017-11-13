@@ -12,5 +12,6 @@ module.exports = {
         f.bindAttribute($.find('a').first(), 'href', '`#accordion${_uid}${i}`')
         f.bindAttribute($.find('a').first(), 'aria-controls', '`accordion${_uid}${i}`')
         f.bindAttribute($.find('div.collapse').first(), 'id', '`accordion${_uid}${i}`')
+        $.append('<div v-if="isEditAndEmpty">no content defined for component</div>')
     }
 }

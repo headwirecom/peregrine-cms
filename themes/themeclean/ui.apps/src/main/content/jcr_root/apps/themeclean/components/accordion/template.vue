@@ -11,12 +11,19 @@
           <div class="card-body rounded-0" v-html="item.text"></div>
         </div>
       </div>
+      <h1 v-if="isEditAndEmpty">Configure Here</h1>
     </div>
   </themeclean-components-block>
 </template>
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return this.model.tabs.length === 0  
+            }
+        }
     }
 </script>
