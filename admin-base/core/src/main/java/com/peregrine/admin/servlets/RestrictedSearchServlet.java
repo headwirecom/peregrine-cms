@@ -248,7 +248,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                 title = variation.getProperty(TITLE).getString();
             }
             if(variation.hasProperty(GROUP)) {
-                title = variation.getProperty(GROUP).getString();
+                group = variation.getProperty(GROUP).getString();
             }
         }
         if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
