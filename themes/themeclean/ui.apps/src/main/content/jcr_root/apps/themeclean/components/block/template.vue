@@ -1,6 +1,6 @@
 <template>
-  <section class="d-flex align-items-center" ref="section" style="min-height: 30px;"
-  v-bind:class="classes" v-bind:style="[styles, sticky]" v-bind:data-per-path="model.path">
+  <section class="d-flex align-items-center" ref="section" v-bind:class="classes"
+  v-bind:style="[styles, sticky]" v-bind:data-per-path="model.path">
     <div class="embed-responsive embed-responsive-16by9" v-if="model.backgroundtype == 'video' &amp;&amp; model.bgvideo"
     v-bind:style="`position:${'absolute'};pointer-events:${'none'};`">
       <iframe class="embed-responsive-item" v-bind:src="model.bgvideo + '?autoplay=1&amp;loop=1&amp;controls=0&amp;mute=1'"></iframe>
