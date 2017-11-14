@@ -21,6 +21,10 @@ blockquote{
   font-style: italic;
 }
 
+.article {
+  font-size: 18px;
+}
+
 .percms-caption {
   position: relative;
 }
