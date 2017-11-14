@@ -48,7 +48,7 @@
         },
         "bgref": {
             "x-form-type": "reference",
-        	"$ref": "fragments/block/model-article.json#/definitions/Block"
+        	"$ref": "fragments/block/model.json#/definitions/Block"
         }
       }
     }
