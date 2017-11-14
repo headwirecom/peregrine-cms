@@ -2,6 +2,6 @@
   "title": "Article With Media no default value",
   "group": "Article",
   "model": {
-    
+    "text": "<p><br></p>"
   }
 }
