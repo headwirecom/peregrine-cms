@@ -2,6 +2,8 @@
   "title": "Features Cards no default value",
   "group": "Features",
   "model": {
-    
+    "cards": [
+      
+    ]
   }
 }
