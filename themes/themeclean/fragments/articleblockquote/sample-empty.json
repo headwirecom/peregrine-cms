@@ -2,6 +2,6 @@
   "title": "Article Block Quote no default values",
   "group": "Article",
   "model": {
-    
+     "text":"<p><br></p>"
   }
 }
