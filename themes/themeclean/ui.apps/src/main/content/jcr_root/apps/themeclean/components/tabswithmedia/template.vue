@@ -1,6 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <div>
+      <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <div class="row">
         <h2 class="text-center col-12 pb-4" v-if="model.showtitle == 'true'"
         v-html="model.title"></h2>
@@ -37,6 +38,12 @@
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return !(this.model.showtitle === 'true' || this.model.showsubtitle === 'true' || this.model.tabs || this.model.imagesrc || this.model.videosrc)
+            }
+        }
     }
 </script>
