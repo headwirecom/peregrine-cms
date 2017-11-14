@@ -1,6 +1,5 @@
 {
   "title": "Article Columns no default values",
-  "default": false,
   "group": "Article",
   "model": {
     

@@ -1,6 +1,5 @@
 {
   "title": "Full Screen Intro",
-  "default": true,
   "group": "Info",
   "model": {
     "fullheight": "true",

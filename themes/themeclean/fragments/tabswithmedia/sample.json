@@ -1,6 +1,5 @@
 {
   "title": "Tabs With Media",
-  "default": true,
   "group": "Tabs",
   "model": {
     "bgcolor": "#ffffff",

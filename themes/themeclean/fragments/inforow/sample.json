@@ -1,6 +1,5 @@
 {
   "title": "Info Row",
-  "default": true,
   "group": "Info",
   "model": {
     "showtitle": "true",

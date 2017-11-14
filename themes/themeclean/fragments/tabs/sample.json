@@ -1,6 +1,5 @@
 {
   "title": "Tabs",
-  "default": true,
   "group": "Tabs",
   "model": {
     "bgcolor": "#ffffff",

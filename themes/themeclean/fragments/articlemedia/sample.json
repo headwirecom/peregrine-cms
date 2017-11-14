@@ -1,6 +1,5 @@
 {
   "title": "Article With Media",
-  "default": true,
   "group": "Article",
   "model": {
     "mediatype": "image",
