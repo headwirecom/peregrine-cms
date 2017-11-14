@@ -9,7 +9,7 @@
       </div>
       <div class="row">
         <themeclean-components-media :model="model"></themeclean-components-media>
-        <div class="col-12 col-md">
+        <div class="col-12 col-md pt-3 d-flex flex-column justify-content-center">
           <!-- Tab Nav -->
           <div class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist"
           style="margin-left: 2em">
