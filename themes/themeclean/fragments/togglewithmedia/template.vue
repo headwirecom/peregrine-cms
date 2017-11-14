@@ -1,6 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <div class="container">
+      <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <h2 class="text-center pb-4" v-if="model.showtitle == 'true'"
       v-html="model.title"></h2>
       <div class="row justify-content-center">
@@ -23,6 +24,12 @@
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return !(this.model.showtitle === 'true' || this.model.toggles.length > 0 || this.model.imagesrc || this.model.videosrc)
+            }
+        }
     }
 </script>
