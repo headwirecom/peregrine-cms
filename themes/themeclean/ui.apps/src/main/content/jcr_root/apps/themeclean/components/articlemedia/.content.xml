@@ -5,7 +5,7 @@
       <jcr:content jcr:primaryType="nt:unstructured"/>
     </v1>
     <v2 jcr:primaryType="nt:unstructured" title="Article With Media" group="Article">
-      <jcr:content jcr:primaryType="nt:unstructured" mediatype="image" imagesrc="/content/assets/themeclean/images/yosemite.jpg" videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE" mediawidth="45" toppadding="10" bottompadding="10" text="Dolorem aut qui eligendi atque corporis. Necessitatibus deleniti rerum vel modi consequatur necessitatibus. Accusamus voluptas dolorum debitis doloribus. Esse ea qui dolor quae. Est numquam maiores rem odit. Suscipit ut voluptatum sed et harum."/>
+      <jcr:content jcr:primaryType="nt:unstructured" mediatype="image" imagesrc="/content/assets/themeclean/images/yosemite.jpg" videosrc="https://www.youtube-nocookie.com/embed/NM2wtte1JRE" mediawidth="40" toppadding="0" bottompadding="0" text="Dolorem aut qui eligendi atque corporis. Necessitatibus deleniti rerum vel modi consequatur necessitatibus. Accusamus voluptas dolorum debitis doloribus. Esse ea qui dolor quae. Est numquam maiores rem odit. Suscipit ut voluptatum sed et harum."/>
     </v2>
   </jcr:content>
 </jcr:root>
