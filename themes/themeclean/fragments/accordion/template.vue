@@ -11,7 +11,7 @@
           <div class="card-body rounded-0" v-html="item.text"></div>
         </div>
       </div>
-      <h1 v-if="isEditAndEmpty">Configure Here</h1>
+      <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>
   </themeclean-components-block>
 </template>

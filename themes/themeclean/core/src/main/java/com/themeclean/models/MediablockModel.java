@@ -63,6 +63,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Width",
               "x-form-type": "range",
+              "x-default": 100,
               "x-form-min": 10,
               "x-form-max": 100
             },
@@ -236,8 +237,9 @@ public class MediablockModel extends AbstractComponent {
 	@Inject
 	private String videosrc;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-default":100,"x-form-min":10,"x-form-max":100} */
 	@Inject
+	@Default(values ="100")
 	private String mediawidth;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Caption","x-form-type":"text"} */
@@ -317,7 +319,7 @@ public class MediablockModel extends AbstractComponent {
 		return videosrc;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-default":100,"x-form-min":10,"x-form-max":100} */
 	public String getMediawidth() {
 		return mediawidth;
 	}

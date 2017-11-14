@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Article Header no default value" group="Article">
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Article Header no default value">
   <jcr:content jcr:primaryType="nt:unstructured" __variations="true">
-    <v1 jcr:primaryType="nt:unstructured" title="Article Header no default value">
+    <v1 jcr:primaryType="nt:unstructured" title="Article Header no default value" group="Article">
       <jcr:content jcr:primaryType="nt:unstructured"/>
     </v1>
-    <v2 jcr:primaryType="nt:unstructured" title="Article Header">
+    <v2 jcr:primaryType="nt:unstructured" title="Article Header" group="Article">
       <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Clean Theme" showsubtitle="true" subtitle="Blazing fast CMS" textalign="left"/>
     </v2>
   </jcr:content>

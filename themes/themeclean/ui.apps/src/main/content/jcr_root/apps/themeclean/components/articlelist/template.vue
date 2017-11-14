@@ -15,8 +15,6 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                console.log('whole thing: '+(!this.model.listitems || Object.keys(this.model.listitems).length === 0))
-                console.log('null: '+!this.model.listitems)
                 return (!this.model.listitems || Object.keys(this.model.listitems).length === 0)
             }
         }
