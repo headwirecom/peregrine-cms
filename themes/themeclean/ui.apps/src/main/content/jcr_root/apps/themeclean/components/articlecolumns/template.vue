@@ -15,7 +15,8 @@
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
                 //return this.model.textleft == '<p><br></p>' && this.model.textright == '<p><br></p>'
-                return !(this.model.textleft != '<p><br></p>' || this.model.textright != '<p><br></p>')
+                // return !(this.model.textleft != '<p><br></p>' || this.model.textright != '<p><br></p>')
+                return this.$helper.areAllEmpty( this.model.textleft, this.model.textright )
             }
         }
     }
