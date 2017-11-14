@@ -3,6 +3,8 @@
   "default": false,
   "group": "Tabs",
   "model": {
-    
+    "tabs": [
+      
+    ]
   }
 }
