@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Full Screen Intro" group="Info">
-  <jcr:content jcr:primaryType="nt:unstructured" fullheight="true" showtitle="true" showsubtitle="true" showtext="true" showbutton="true" backgroundtype="image" bgimage="/content/assets/themeclean/images/jumbotron.jpg" overlay="true" overlaycolor="#000000" overlayopacity="50" subtitle="Our mobile websites" text="Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color." title="FULL SCREEN INTRO">
-    <buttons jcr:primaryType="nt:unstructured">
-      <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="LEARN MORE" buttoncolor="#ff0000" iconclass=""/>
-      <buttons1 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="LIVE DEMO" buttoncolor="#0000ff" iconclass=""/>
-    </buttons>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Full Screen Intro no default values">
+  <jcr:content jcr:primaryType="nt:unstructured" __variations="true">
+    <v1 jcr:primaryType="nt:unstructured" title="Full Screen Intro no default values" group="Info">
+      <jcr:content jcr:primaryType="nt:unstructured"/>
+    </v1>
+    <v2 jcr:primaryType="nt:unstructured" title="Full Screen Intro" group="Info">
+      <jcr:content jcr:primaryType="nt:unstructured" fullheight="true" showtitle="true" showsubtitle="true" showtext="true" showbutton="true" backgroundtype="image" bgimage="/content/assets/themeclean/images/jumbotron.jpg" overlay="true" overlaycolor="#000000" overlayopacity="50" subtitle="Our mobile websites" text="Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color." title="FULL SCREEN INTRO">
+        <buttons jcr:primaryType="nt:unstructured">
+          <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="LEARN MORE" buttoncolor="#ff0000" iconclass=""/>
+          <buttons1 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="LIVE DEMO" buttoncolor="#0000ff" iconclass=""/>
+        </buttons>
+      </jcr:content>
+    </v2>
   </jcr:content>
 </jcr:root>
