@@ -1,9 +1,9 @@
-.article h1 {
+.article h2 {
   font-size:42px;
   line-height: 1.04;
   letter-spacing: -.015em;
 }
-.article h2 {
+.article h3 {
   font-size: 28px;
   line-height: 1.22;
   letter-spacing: -.012em;
