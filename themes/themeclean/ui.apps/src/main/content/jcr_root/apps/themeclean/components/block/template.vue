@@ -30,7 +30,9 @@
         computed: {          
           classes: function() {
             return {
-              'view-height': this.model.fullheight == 'true'
+              'view-height': this.model.fullheight == 'true',
+              'bg-dark': this.model.colorscheme === 'dark',
+              'bg-light': this.model.colorscheme === 'light',
             }
           },
           sticky: function() {
@@ -67,6 +69,7 @@
 
                 case 'color':
                   return `${this.model.bgcolor}`
+
             }
           },
           colorOpacity() {
