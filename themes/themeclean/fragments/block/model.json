@@ -4,6 +4,22 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "colorscheme" : {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Block color",
+          "x-form-type": "materialradio",
+          "x-default": "light",
+          "properties": {
+            "light": {
+              "x-form-name": "Light",
+              "x-form-value": "light"
+            },
+            "dark": {
+              "x-form-name": "Dark",
+              "x-form-value": "dark"
+            }
+        },
         "backgroundtype": {
           "type": "string",
           "x-source": "inject",
