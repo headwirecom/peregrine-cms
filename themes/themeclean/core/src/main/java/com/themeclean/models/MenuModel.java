@@ -153,7 +153,7 @@ import javax.inject.Named;
               "x-form-label": "Background Video",
               "x-form-type": "pathbrowser",
               "x-form-visible": "model.backgroundtype == 'video'",
-              "x-defualt": "https://www.youtube.com/embed/Ju86mknumYM",
+              "x-default": "https://www.youtube.com/embed/Ju86mknumYM",
               "x-form-browserRoot": "/content/assets"
             },
             "bgimage": {
@@ -205,6 +205,18 @@ import javax.inject.Named;
               "x-form-visible": "model.backgroundtype == 'gradient'",
               "x-default": "#c0c0c0"
             },
+            "fullwidth": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Full Width",
+              "x-form-type": "materialswitch"
+            },
+            "fullheight": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Full Height",
+              "x-form-type": "materialswitch"
+            },
             "toppadding": {
               "type": "string",
               "x-source": "inject",
@@ -220,7 +232,7 @@ import javax.inject.Named;
               "x-form-label": "Bottom Padding",
               "x-form-type": "range",
               "x-form-min": 0,
-              "x-form-max": 120,
+              "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
             }
           }
@@ -288,8 +300,9 @@ public class MenuModel extends AbstractComponent {
 	@Default(values ="color")
 	private String backgroundtype;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-defualt":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
 	@Inject
+	@Default(values ="https://www.youtube.com/embed/Ju86mknumYM")
 	private String bgvideo;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image'","x-form-browserRoot":"/content/assets"} */
@@ -320,11 +333,19 @@ public class MenuModel extends AbstractComponent {
 	@Default(values ="#c0c0c0")
 	private String color2;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
+	@Inject
+	private String fullwidth;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
+	@Inject
+	private String fullheight;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String bottompadding;
 
@@ -372,7 +393,7 @@ public class MenuModel extends AbstractComponent {
 		return backgroundtype;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-defualt":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
 	public String getBgvideo() {
 		return bgvideo;
 	}
@@ -407,12 +428,22 @@ public class MenuModel extends AbstractComponent {
 		return color2;
 	}
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
+	public String getFullwidth() {
+		return fullwidth;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
+	public String getFullheight() {
+		return fullheight;
+	}
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getBottompadding() {
 		return bottompadding;
 	}
