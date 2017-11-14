@@ -210,7 +210,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "max": 150
     }
   ]
 }

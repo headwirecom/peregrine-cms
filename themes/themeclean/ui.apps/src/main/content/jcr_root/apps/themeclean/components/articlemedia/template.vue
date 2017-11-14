@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="col-12 col-md-8 d-md-flex align-items-center justify-content-center flex-wrap">
+    <div class="col-12 col-md-8 d-md-flex align-items-center justify-content-center flex-wrap article">
       <themeclean-components-media v-bind:model="model"></themeclean-components-media>
       <div class="col-sm-12 col-md p-0 pt-3 p-md-3"
       v-html="model.text"></div>
