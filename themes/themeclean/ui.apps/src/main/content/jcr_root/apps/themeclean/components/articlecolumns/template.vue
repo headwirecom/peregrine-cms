@@ -14,7 +14,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return this.model.textleft == '<p><br></p>' && this.model.textright == '<p><br></p>'
+                //return this.model.textleft == '<p><br></p>' && this.model.textright == '<p><br></p>'
+                return !(this.model.textleft != '<p><br></p>' || this.model.textright != '<p><br></p>')
             }
         }
     }
