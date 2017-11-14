@@ -93,6 +93,21 @@
       "model": "links"
     },
     {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "iconcolor",
+      "label": "Icon Color",
+      "model": "iconcolor"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "iconsize",
+      "label": "Icon Size",
+      "model": "iconsize",
+      "max": 150
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [
@@ -245,7 +260,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "max": 150
     }
   ]
 }

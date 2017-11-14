@@ -111,6 +111,22 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "iconcolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Color",
+              "x-default": "#000000",
+              "x-form-type": "color"
+            },
+            "iconsize": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Size",
+              "x-form-type": "range",
+              "x-default": "30",
+              "x-form-min": 0,
+              "x-form-max": 150
+            },
             "icons": {
               "type": "object",
               "x-form-type": "collection",
@@ -256,7 +272,7 @@ import javax.inject.Named;
               "x-form-label": "Bottom Padding",
               "x-form-type": "range",
               "x-form-min": 0,
-              "x-form-max": 120,
+              "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
             }
           }
@@ -331,6 +347,16 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> links;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	@Inject
+	@Default(values ="#000000")
+	private String iconcolor;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"30","x-form-min":0,"x-form-max":150} */
+	@Inject
+	@Default(values ="30")
+	private String iconsize;
+
 	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	@Inject
 	private List<IComponent> icons;
@@ -385,7 +411,7 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String toppadding;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String bottompadding;
 
@@ -441,6 +467,16 @@ public class FooterModel extends AbstractComponent {
 	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getLinks() {
 		return links;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	public String getIconcolor() {
+		return iconcolor;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"30","x-form-min":0,"x-form-max":150} */
+	public String getIconsize() {
+		return iconsize;
 	}
 
 	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
@@ -503,7 +539,7 @@ public class FooterModel extends AbstractComponent {
 		return toppadding;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getBottompadding() {
 		return bottompadding;
 	}

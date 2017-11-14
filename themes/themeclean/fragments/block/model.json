@@ -111,7 +111,7 @@
           "x-form-label": "Bottom Padding",
           "x-form-type": "range",
           "x-form-min": 0,
-          "x-form-max": 120,
+          "x-form-max": 150,
           "x-form-visible": "model.fullheight != 'true'"
         }
       }

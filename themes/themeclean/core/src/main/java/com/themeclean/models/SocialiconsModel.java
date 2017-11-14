@@ -21,6 +21,22 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "iconcolor": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Icon Color",
+          "x-default": "#000000",
+          "x-form-type": "color"
+        },
+        "iconsize": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Icon Size",
+          "x-form-type": "range",
+          "x-default": "30",
+          "x-form-min": 0,
+          "x-form-max": 150
+        },
         "icons": {
           "type": "object",
           "x-form-type": "collection",
@@ -79,7 +95,17 @@ public class SocialiconsModel extends AbstractComponent {
     public SocialiconsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	@Inject
+	@Default(values ="#000000")
+	private String iconcolor;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"30","x-form-min":0,"x-form-max":150} */
+	@Inject
+	@Default(values ="30")
+	private String iconsize;
+
+	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	@Inject
 	private List<IComponent> icons;
 
@@ -87,7 +113,17 @@ public class SocialiconsModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	public String getIconcolor() {
+		return iconcolor;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"30","x-form-min":0,"x-form-max":150} */
+	public String getIconsize() {
+		return iconsize;
+	}
+
+	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getIcons() {
 		return icons;
 	}
