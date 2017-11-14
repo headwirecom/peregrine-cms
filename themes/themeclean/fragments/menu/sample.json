@@ -3,14 +3,14 @@
   "group": "General",
   "model": {
     "backgroundtype": "color",
-    "bgcolor": "#ffffff",
-    "toppadding": "5",
-    "bottompadding": "5",
+    "bgcolor": "#eeeeee",
+    "bottompadding": "0",
+    "toppadding": "0",
     "bgvideo": "https://www.youtube.com/embed/Ju86mknumYM",
     "collapsed": "false",
     "logo": "/content/assets/themeclean/images/peregrine-logo.png",
     "logourl": "http://www.peregrine-cms.com",
-    "logosize": "4",
+    "logosize": "3",
     "links": [
       {
         "link": "/content/sites/themeclean.html",
