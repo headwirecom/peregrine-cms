@@ -7,7 +7,7 @@
         "colorscheme" : {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Block color",
+          "x-form-label": "Block Color Scheme",
           "x-form-type": "materialradio",
           "x-default": "light",
           "properties": {
@@ -19,6 +19,7 @@
               "x-form-name": "Dark",
               "x-form-value": "dark"
             }
+          }
         },
         "backgroundtype": {
           "type": "string",

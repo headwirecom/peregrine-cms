@@ -21,6 +21,23 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "colorscheme": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Block Color Scheme",
+          "x-form-type": "materialradio",
+          "x-default": "light",
+          "properties": {
+            "light": {
+              "x-form-name": "Light",
+              "x-form-value": "light"
+            },
+            "dark": {
+              "x-form-name": "Dark",
+              "x-form-value": "dark"
+            }
+          }
+        },
         "backgroundtype": {
           "type": "string",
           "x-source": "inject",
@@ -164,7 +181,12 @@ public class BlockModel extends AbstractComponent {
     public BlockModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="light")
+	private String colorscheme;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
 	@Default(values ="color")
 	private String backgroundtype;
@@ -222,7 +244,12 @@ public class BlockModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	public String getColorscheme() {
+		return colorscheme;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	public String getBackgroundtype() {
 		return backgroundtype;
 	}

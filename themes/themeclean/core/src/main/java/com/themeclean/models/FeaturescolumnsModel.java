@@ -95,6 +95,23 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "colorscheme": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Block Color Scheme",
+              "x-form-type": "materialradio",
+              "x-default": "light",
+              "properties": {
+                "light": {
+                  "x-form-name": "Light",
+                  "x-form-value": "light"
+                },
+                "dark": {
+                  "x-form-name": "Dark",
+                  "x-form-value": "dark"
+                }
+              }
+            },
             "backgroundtype": {
               "type": "string",
               "x-source": "inject",
@@ -256,6 +273,11 @@ public class FeaturescolumnsModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> cards;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="light")
+	private String colorscheme;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
 	@Default(values ="color")
@@ -332,6 +354,11 @@ public class FeaturescolumnsModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Cards","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Card Title","x-form-visible":"model.showtitle == 'true'","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Card Text","x-form-visible":"model.showtext == 'true'","x-form-type":"texteditor"},"image":{"type":"string","x-source":"inject","x-form-label":"Card Image","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"},"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-visible":"model.showbutton == 'true'","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-visible":"model.showbutton == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-visible":"model.showbutton == 'true'","x-form-type":"color"}}} */
 	public List<IComponent> getCards() {
 		return cards;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	public String getColorscheme() {
+		return colorscheme;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */

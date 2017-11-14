@@ -162,6 +162,23 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "colorscheme": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Block Color Scheme",
+              "x-form-type": "materialradio",
+              "x-default": "light",
+              "properties": {
+                "light": {
+                  "x-form-name": "Light",
+                  "x-form-value": "light"
+                },
+                "dark": {
+                  "x-form-name": "Dark",
+                  "x-form-value": "dark"
+                }
+              }
+            },
             "backgroundtype": {
               "type": "string",
               "x-source": "inject",
@@ -361,6 +378,11 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> icons;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="light")
+	private String colorscheme;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
 	@Default(values ="color")
@@ -482,6 +504,11 @@ public class FooterModel extends AbstractComponent {
 	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getIcons() {
 		return icons;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	public String getColorscheme() {
+		return colorscheme;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */

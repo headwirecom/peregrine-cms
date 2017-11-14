@@ -99,6 +99,23 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "colorscheme": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Block Color Scheme",
+              "x-form-type": "materialradio",
+              "x-default": "light",
+              "properties": {
+                "light": {
+                  "x-form-name": "Light",
+                  "x-form-value": "light"
+                },
+                "dark": {
+                  "x-form-name": "Dark",
+                  "x-form-value": "dark"
+                }
+              }
+            },
             "backgroundtype": {
               "type": "string",
               "x-source": "inject",
@@ -276,6 +293,11 @@ public class IntroModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> buttons;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="light")
+	private String colorscheme;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
 	@Default(values ="color")
@@ -372,6 +394,11 @@ public class IntroModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
 	public List<IComponent> getButtons() {
 		return buttons;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	public String getColorscheme() {
+		return colorscheme;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */

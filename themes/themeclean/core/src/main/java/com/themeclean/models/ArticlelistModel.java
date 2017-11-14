@@ -42,6 +42,23 @@ import javax.inject.Named;
             }
           }
         },
+        "colorscheme": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Block Color Scheme",
+          "x-form-type": "materialradio",
+          "x-default": "light",
+          "properties": {
+            "light": {
+              "x-form-name": "Light",
+              "x-form-value": "light"
+            },
+            "dark": {
+              "x-form-name": "Dark",
+              "x-form-value": "dark"
+            }
+          }
+        },
         "backgroundtype": {
           "type": "string",
           "x-source": "inject",
@@ -193,6 +210,11 @@ public class ArticlelistModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> listitems;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="light")
+	private String colorscheme;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
 	@Default(values ="color")
@@ -259,6 +281,11 @@ public class ArticlelistModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"List Items","x-form-type":"collection","x-form-multifield":"true","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"textarea"}}} */
 	public List<IComponent> getListitems() {
 		return listitems;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	public String getColorscheme() {
+		return colorscheme;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */

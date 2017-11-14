@@ -46,6 +46,23 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "colorscheme": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Block Color Scheme",
+              "x-form-type": "materialradio",
+              "x-default": "light",
+              "properties": {
+                "light": {
+                  "x-form-name": "Light",
+                  "x-form-value": "light"
+                },
+                "dark": {
+                  "x-form-name": "Dark",
+                  "x-form-value": "dark"
+                }
+              }
+            },
             "backgroundtype": {
               "type": "string",
               "x-source": "inject",
@@ -195,6 +212,11 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> tabs;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="light")
+	private String colorscheme;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	@Inject
 	@Default(values ="color")
@@ -256,6 +278,11 @@ public class TabsModel extends AbstractComponent {
     	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
 	public List<IComponent> getTabs() {
 		return tabs;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	public String getColorscheme() {
+		return colorscheme;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */

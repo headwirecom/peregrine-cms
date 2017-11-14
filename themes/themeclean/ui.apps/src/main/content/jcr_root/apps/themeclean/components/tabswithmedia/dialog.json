@@ -115,6 +115,22 @@
       "type": "material-radios",
       "values": [
         {
+          "name": "Light",
+          "value": "light"
+        },
+        {
+          "name": "Dark",
+          "value": "dark"
+        }
+      ],
+      "placeholder": "colorscheme",
+      "label": "Block Color Scheme",
+      "model": "colorscheme"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
           "name": "Image",
           "value": "image"
         },
