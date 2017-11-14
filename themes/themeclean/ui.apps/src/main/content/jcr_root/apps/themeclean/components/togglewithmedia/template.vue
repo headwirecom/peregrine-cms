@@ -5,7 +5,7 @@
       v-html="model.title"></h2>
       <div class="row justify-content-center">
         <themeclean-components-media :model="model"></themeclean-components-media>
-        <div class="col-12 col-md">
+        <div class="col-12 col-md pt-3 d-flex flex-column justify-content-center">
           <div class="item card bg-transparent border-0 rounded-0" v-for="(item,i) in model.toggles"
           :key="i">
             <a aria-expanded="false" class="card-header border rounded-0 text-dark"
