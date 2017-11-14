@@ -2,8 +2,7 @@ module.exports = {
     convert: function($, f) {
     	f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
-        f.addIf($.find('h1').first(), 'editAndEmpty')
-        
+                
         f.addFor($.find('div.card').first(), 'model.cards')
         f.bindAttribute($.find('img').first(), 'src', 'item.image')
         f.addIf($.find('h5').first(), 'model.showtitle == \'true\'')
@@ -15,5 +14,6 @@ module.exports = {
         f.mapRichField($.find('a.btn').first(), "item.buttontext")
         f.addStyle($.find('a.btn').first(), 'backgroundColor', 'item.buttoncolor')
         f.addStyle($.find('a.btn').first(), 'borderColor', 'item.buttoncolor')
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
     }
 }

@@ -1,7 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <div class="card-deck">
-      <h1 v-if="editAndEmpty">Configure Here</h1>
+      <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <div class="card p-3 col-12 col-md border-0 bg-transparent"
       v-for="(item,i) in model.cards" :key="i">
         <img class="card-img pb-3" v-bind:src="item.image">
@@ -22,7 +22,7 @@
     export default {
         props: ['model'],
         computed: {
-            editAndEmpty() {
+            isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
                 return this.model.cards.length === 0
             },
