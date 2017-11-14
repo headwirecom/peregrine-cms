@@ -15,5 +15,6 @@ module.exports = {
         f.mapRichField($.find('a.btn').first(), "item.buttontext")
         f.addStyle($.find('a.btn').first(), 'backgroundColor', 'item.buttoncolor')
         f.addStyle($.find('a.btn').first(), 'borderColor', 'item.buttoncolor')
+        $.append('<div v-if="isEditAndEmpty">no content defined for component</div>')
     }
 }

@@ -11,12 +11,24 @@
         <a class="btn btn-secondary btn-lg m-2" v-for="(item,i) in model.buttons"
         :key="i" v-bind:href="item.buttonlink" v-html="item.buttontext" v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
+      <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>
   </themeclean-components-block>
 </template>
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return !(
+                  this.model.showtitle === 'true' || 
+                  this.model.showsubtitle === 'true' || 
+                  this.model.showsubtext === 'true' || 
+                  this.model.showbutton === 'true'
+                )
+            }
+        }
     }
 </script>
