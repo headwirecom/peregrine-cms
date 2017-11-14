@@ -5,7 +5,7 @@
       <jcr:content jcr:primaryType="nt:unstructured"/>
     </v1>
     <v2 jcr:primaryType="nt:unstructured" title="Article Header" group="Article">
-      <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Clean Theme" showsubtitle="true" subtitle="Blazing fast CMS" textalign="left"/>
+      <jcr:content jcr:primaryType="nt:unstructured" backgroundtype="color" toppadding="20" bottompadding="0" showtitle="true" title="Peregrine Clean Theme" showsubtitle="true" subtitle="Blazing fast CMS" textalign="left"/>
     </v2>
   </jcr:content>
 </jcr:root>
