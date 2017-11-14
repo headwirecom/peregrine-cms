@@ -1,6 +1,5 @@
 {
   "title": "Info Row no default values",
-  "default": false,
   "group": "Info",
   "model": {
     

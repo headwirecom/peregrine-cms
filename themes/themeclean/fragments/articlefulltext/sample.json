@@ -1,6 +1,5 @@
 {
   "title": "Article Full Text",
-  "default": true,
   "group": "Article",
   "model": {
     "toppadding": "0",

@@ -1,6 +1,5 @@
 {
   "title": "Article Columns",
-  "default": true,
   "group": "Article",
   "model": {
     "bgcolor": "#ffffff",

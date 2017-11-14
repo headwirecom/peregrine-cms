@@ -1,6 +1,5 @@
 {
   "title": "Video",
-  "default": true,
   "group": "Media",
   "model": {
     "mediatype": "video",

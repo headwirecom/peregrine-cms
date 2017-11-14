@@ -1,6 +1,5 @@
 {
   "title": "Article Block Quote",
-  "default": true,
   "group": "Article",
   "model": {
     "toppadding": "0",

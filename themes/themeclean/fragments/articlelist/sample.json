@@ -1,7 +1,6 @@
 {
   "title": "Article List",
   "group": "Article",
-  "default": true,
   "model": {
     "numberedlist": "true",
     "listitems": [
