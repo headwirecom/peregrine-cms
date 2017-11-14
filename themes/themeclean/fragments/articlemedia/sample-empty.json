@@ -1,6 +1,5 @@
 {
   "title": "Article With Media no default value",
-  "default": false,
   "group": "Article",
   "model": {
     

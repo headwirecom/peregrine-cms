@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="col-12 col-md-8">
+    <div class="col-12 col-md-8 article">
       <component class="col-12" :is="model.numberedlist === 'true' ? 'ol':'ul'">
         <li v-for="(item,i) in model.listitems" :key="i" v-html="item.text"></li>
       </component>

@@ -1,6 +1,5 @@
 {
   "title": "Features Cards",
-  "default": true,
   "group": "Features",
   "model": {
     "bgcolor": "#ffffff",

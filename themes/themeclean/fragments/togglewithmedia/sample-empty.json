@@ -1,0 +1,9 @@
+{
+  "title": "Toggle With Media no default values",
+  "group": "Accordion and Toggle",
+  "model": {
+    "toggles": [
+      
+    ]
+  }
+}

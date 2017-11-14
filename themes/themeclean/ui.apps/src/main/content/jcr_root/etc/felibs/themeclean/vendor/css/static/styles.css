@@ -1,12 +1,28 @@
-.percms-intro {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+body {
+  font-size: 21px;
+  line-height: 1.58;
+  letter-spacing: -.003em;
+}
+h1 { 
+  font-size: 62px;
+  letter-spacing: -.015em;
+}
+h2 {
+  font-size:42px;
+  line-height: 1.04;
+  letter-spacing: -.015em;
+}
+h3 {
+  font-size: 28px;
+  line-height: 1.22;
+  letter-spacing: -.012em;
+}
+blockquote{
+  font-style: italic;
 }
 
-.percms-image-wrap img, .percms-image-wrap iframe{
-  width: 100%;
+.article {
+  font-size: 18px;
 }
 
 .percms-caption {
@@ -21,16 +37,9 @@
   min-height: 100vh
 }
 
-section {
-  background-size: cover;
-  background-position: center;
+.percms-image-wrap img, .percms-image-wrap iframe{
+  width: 100%;
 }
-
-.scroll-arrow {
-  position: absolute;
-  bottom: 45px;
-}
-
 
 @media (max-width: 768px) {
 

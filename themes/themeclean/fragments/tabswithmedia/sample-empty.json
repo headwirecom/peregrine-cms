@@ -1,6 +1,5 @@
 {
   "title": "Tabs With Media no default values",
-  "default": true,
   "group": "Tabs",
   "model": {
     "tabs": [

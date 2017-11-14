@@ -1,6 +1,5 @@
 {
   "title": "Full Screen Intro",
-  "default": true,
   "group": "Info",
   "model": {
     "fullheight": "true",
@@ -10,6 +9,9 @@
     "showbutton": "true",
     "backgroundtype": "image",
     "bgimage": "/content/assets/themeclean/images/jumbotron.jpg",
+    "overlay": "true",
+    "overlaycolor": "#000000",
+    "overlayopacity": "50",
     "subtitle": "Our mobile websites",
     "text": "Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color.",
     "title": "FULL SCREEN INTRO",

@@ -1,7 +1,6 @@
 {
   "title": "Article List no default values",
   "group": "Article",
-  "default": false,
   "model": {
   }
 }

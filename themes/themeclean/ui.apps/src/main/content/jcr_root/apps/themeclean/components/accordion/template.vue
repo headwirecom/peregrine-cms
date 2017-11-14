@@ -22,7 +22,7 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return this.model.tabs.length === 0  
+                return !(this.model.showtitle === 'true' || this.model.tabs.length > 0)
             }
         }
     }
