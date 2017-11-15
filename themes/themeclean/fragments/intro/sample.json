@@ -19,12 +19,12 @@
     "title": "FULL SCREEN INTRO",
     "buttons": [
       {
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "LEARN MORE",
         "buttoncolor": "#ff0000",
         "iconclass": ""
       },{
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "LIVE DEMO",
         "buttoncolor": "#0000ff",
         "iconclass": ""
