@@ -9,7 +9,8 @@
       </div>
       <div class="col-12 p-0" v-if="model.showbutton == 'true'">
         <a class="btn btn-secondary btn-lg m-2" v-for="(item,i) in model.buttons"
-        :key="i" v-bind:href="item.buttonlink" v-html="item.buttontext" v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
+        :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
+        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
       <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>

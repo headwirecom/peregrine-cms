@@ -9,7 +9,7 @@ module.exports = {
         f.mapRichField($.find('h4').first(), "model.subtitle")
         f.addIf($.find('div.col-md').first(), 'model.showbutton == \'true\'')
         f.addFor($.find('div.col-md>a').first(), 'model.buttons')
-        f.bindAttribute($.find('a.btn').first(), 'href', 'item.buttonlink')
+        f.bindAttribute($.find('a.btn').first(), 'href', f.pathToUrl('item.buttonlink'))
         f.mapRichField($.find('a.btn').first(), "item.buttontext")
         f.addStyle($.find('a.btn').first(), 'backgroundColor', 'item.buttoncolor')
         f.addStyle($.find('a.btn').first(), 'borderColor', 'item.buttoncolor')

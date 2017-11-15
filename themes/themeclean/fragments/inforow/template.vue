@@ -9,7 +9,8 @@
       </div>
       <div class="col-12 col-md p-0 d-flex justify-content-end" v-if="model.showbutton == 'true'">
         <a class="btn btn-primary btn-lg m-2" v-for="(item,i) in model.buttons"
-        :key="i" v-bind:href="item.buttonlink" v-html="item.buttontext" v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
+        :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
+        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
     </div>
   </themeclean-components-block>
