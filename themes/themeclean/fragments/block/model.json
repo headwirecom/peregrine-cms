@@ -97,7 +97,7 @@
           "x-source": "inject",
           "x-form-label": "Background Color",
           "x-form-type": "color",
-          "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'",
+          "x-form-visible": "(model.backgroundtype == 'color' or model.backgroundtype == 'gradient') and model.custombackground == 'true'",
           "x-default": "#ffffff"
         },
         "color2": {
