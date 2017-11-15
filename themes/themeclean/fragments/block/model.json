@@ -11,6 +11,10 @@
           "x-form-type": "materialradio",
           "x-default": "light",
           "properties": {
+            "none": {
+              "x-form-name": "None",
+              "x-form-value": "none"
+            },
             "light": {
               "x-form-name": "Light",
               "x-form-value": "light"

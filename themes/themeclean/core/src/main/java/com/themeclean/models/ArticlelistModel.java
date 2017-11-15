@@ -49,6 +49,10 @@ import javax.inject.Named;
           "x-form-type": "materialradio",
           "x-default": "light",
           "properties": {
+            "none": {
+              "x-form-name": "None",
+              "x-form-value": "none"
+            },
             "light": {
               "x-form-name": "Light",
               "x-form-value": "light"
@@ -217,7 +221,7 @@ public class ArticlelistModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> listitems;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	@Default(values ="light")
 	private String colorscheme;
@@ -294,7 +298,7 @@ public class ArticlelistModel extends AbstractComponent {
 		return listitems;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}

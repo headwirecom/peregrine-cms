@@ -87,6 +87,10 @@ import javax.inject.Named;
               "x-form-type": "materialradio",
               "x-default": "light",
               "properties": {
+                "none": {
+                  "x-form-name": "None",
+                  "x-form-value": "none"
+                },
                 "light": {
                   "x-form-name": "Light",
                   "x-form-value": "light"
@@ -270,7 +274,7 @@ public class MediablockModel extends AbstractComponent {
 	@Inject
 	private String mediacaption;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	@Default(values ="light")
 	private String colorscheme;
@@ -362,7 +366,7 @@ public class MediablockModel extends AbstractComponent {
 		return mediacaption;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}
