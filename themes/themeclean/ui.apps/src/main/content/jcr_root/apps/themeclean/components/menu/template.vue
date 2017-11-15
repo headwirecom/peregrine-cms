@@ -4,8 +4,9 @@
       <h1 v-if="editAndEmpty">Configure Menu</h1>
       <!-- Logo -->
       <span class="navbar-logo">
-        <a v-bind:href="model.logourl">
-          <img class="menu-logo" alt="logo" v-bind:src="model.logo" v-bind:style="`height:${parseInt(model.logosize)}rem;`">
+        <a v-bind:href="$helper.pathToUrl(model.logourl)">
+          <img class="menu-logo" alt="logo" v-bind:src="$helper.pathToUrl(model.logo)"
+          v-bind:style="`height:${parseInt(model.logosize)}rem;`">
         </a>
       </span>
       <!-- Hamburger toggle button -->
