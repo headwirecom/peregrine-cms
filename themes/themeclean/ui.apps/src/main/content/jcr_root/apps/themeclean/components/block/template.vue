@@ -66,7 +66,7 @@
         },
         methods: {
           backgroundStyles() {
-              if( this.model.custombackground === 'false') return false
+              if( this.model.custombackground === 'false') return ''
               switch (this.model.backgroundtype) {
 
                 case 'image':
@@ -80,7 +80,7 @@
                   return `${this.model.bgcolor}`
                 
                 default:
-                  return false 
+                  return '' 
 
             }
           },
