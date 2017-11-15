@@ -55,7 +55,7 @@
           "x-source": "inject",
           "x-form-label": "Background Video",
           "x-form-type": "pathbrowser",
-          "x-form-visible": "model.backgroundtype == 'video' && model.custombackground == 'true'",
+          "x-form-visible": "model.backgroundtype == 'video' and model.custombackground == 'true'",
           "x-default": "https://www.youtube.com/embed/Ju86mknumYM",
           "x-form-browserRoot": "/content/assets"
         },
@@ -64,7 +64,7 @@
           "x-source": "inject",
           "x-form-label": "Background Image",
           "x-form-type": "pathbrowser",
-          "x-form-visible": "model.backgroundtype == 'image' && model.custombackground == 'true'",
+          "x-form-visible": "model.backgroundtype == 'image' and model.custombackground == 'true'",
           "x-form-browserRoot": "/content/assets"
         },
         "overlay": {
@@ -72,14 +72,14 @@
           "x-source": "inject",
           "x-form-label": "Overlay",
           "x-form-type": "materialswitch",
-          "x-form-visible": "model.backgroundtype == 'image' && model.custombackground == 'true'"
+          "x-form-visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
         },
         "overlaycolor": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Overlay Color",
           "x-form-type": "color",
-          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'",
+          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
           "x-default": "#ffffff"
         },
         "overlayopacity": {
@@ -89,7 +89,7 @@
           "x-form-type": "range",
           "x-form-min": 0,
           "x-form-max": 100,
-          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'",
+          "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
           "x-default": "50"
         },
         "bgcolor": {
@@ -97,7 +97,7 @@
           "x-source": "inject",
           "x-form-label": "Background Color",
           "x-form-type": "color",
-          "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' && model.custombackground == 'true'",
+          "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'",
           "x-default": "#ffffff"
         },
         "color2": {
@@ -105,7 +105,7 @@
           "x-source": "inject",
           "x-form-label": "Color 2",
           "x-form-type": "color",
-          "x-form-visible": "model.backgroundtype == 'gradient' && model.custombackground == 'true'",
+          "x-form-visible": "model.backgroundtype == 'gradient' and model.custombackground == 'true'",
           "x-default": "#c0c0c0"
         },
         "fullwidth": {
