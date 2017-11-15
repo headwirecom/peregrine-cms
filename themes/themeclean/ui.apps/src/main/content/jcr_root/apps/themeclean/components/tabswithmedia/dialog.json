@@ -128,12 +128,18 @@
       "model": "colorscheme"
     },
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "custombackground",
+      "label": "Custom Background",
+      "model": "custombackground"
+    },
+    {
       "type": "material-radios",
       "values": [
-        {
-          "name": "Image",
-          "value": "image"
-        },
         {
           "name": "Color",
           "value": "color"
@@ -143,13 +149,18 @@
           "value": "gradient"
         },
         {
+          "name": "Image",
+          "value": "image"
+        },
+        {
           "name": "Video",
           "value": "video"
         }
       ],
       "placeholder": "backgroundtype",
       "label": "Background Type",
-      "model": "backgroundtype"
+      "model": "backgroundtype",
+      "visible": "model.custombackground == 'true'"
     },
     {
       "type": "pathbrowser",

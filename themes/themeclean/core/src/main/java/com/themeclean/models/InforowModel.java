@@ -103,17 +103,19 @@ import javax.inject.Named;
                 }
               }
             },
+            "custombackground": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Custom Background",
+              "x-form-type": "materialswitch"
+            },
             "backgroundtype": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Background Type",
               "x-form-type": "materialradio",
-              "x-default": "color",
+              "x-form-visible": "model.custombackground == 'true'",
               "properties": {
-                "image": {
-                  "x-form-name": "Image",
-                  "x-form-value": "image"
-                },
                 "color": {
                   "x-form-name": "Color",
                   "x-form-value": "color"
@@ -121,6 +123,10 @@ import javax.inject.Named;
                 "gradient": {
                   "x-form-name": "Gradient",
                   "x-form-value": "gradient"
+                },
+                "image": {
+                  "x-form-name": "Image",
+                  "x-form-value": "image"
                 },
                 "video": {
                   "x-form-name": "Video",
@@ -277,9 +283,12 @@ public class InforowModel extends AbstractComponent {
 	@Default(values ="light")
 	private String colorscheme;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch"} */
 	@Inject
-	@Default(values ="color")
+	private String custombackground;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-form-visible":"model.custombackground == 'true'","properties":{"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"image":{"x-form-name":"Image","x-form-value":"image"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
+	@Inject
 	private String backgroundtype;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
@@ -370,7 +379,12 @@ public class InforowModel extends AbstractComponent {
 		return colorscheme;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-default":"color","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch"} */
+	public String getCustombackground() {
+		return custombackground;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-form-visible":"model.custombackground == 'true'","properties":{"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"image":{"x-form-name":"Image","x-form-value":"image"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
 	public String getBackgroundtype() {
 		return backgroundtype;
 	}
