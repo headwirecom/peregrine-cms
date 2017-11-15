@@ -13,19 +13,19 @@
     "logosize": "3",
     "links": [
       {
-        "link": "/content/sites/themeclean.html",
+        "link": "/content/sites/themeclean",
         "text": "Services"
       },{
-        "link": "/content/sites/themeclean.html",
+        "link": "/content/sites/themeclean",
         "text": "About Us"
       },{
-        "link": "/content/sites/themeclean.html",
+        "link": "/content/sites/themeclean",
         "text": "Contact Us"
       }
     ],
     "buttons": [
       {
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "Try It Now",
         "buttoncolor": "#149dcc"
       }
