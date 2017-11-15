@@ -101,7 +101,7 @@
       "placeholder": "bgcolor",
       "label": "Background Color",
       "model": "bgcolor",
-      "visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'"
+      "visible": "(model.backgroundtype == 'color' or model.backgroundtype == 'gradient') and model.custombackground == 'true'"
     },
     {
       "type": "input",

@@ -168,7 +168,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Background Color",
               "x-form-type": "color",
-              "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'",
+              "x-form-visible": "(model.backgroundtype == 'color' or model.backgroundtype == 'gradient') and model.custombackground == 'true'",
               "x-default": "#ffffff"
             },
             "color2": {
@@ -286,7 +286,7 @@ public class ArticleheaderModel extends AbstractComponent {
 	@Default(values ="50")
 	private String overlayopacity;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"(model.backgroundtype == 'color' or model.backgroundtype == 'gradient') and model.custombackground == 'true'","x-default":"#ffffff"} */
 	@Inject
 	@Default(values ="#ffffff")
 	private String bgcolor;
@@ -373,7 +373,7 @@ public class ArticleheaderModel extends AbstractComponent {
 		return overlayopacity;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"(model.backgroundtype == 'color' or model.backgroundtype == 'gradient') and model.custombackground == 'true'","x-default":"#ffffff"} */
 	public String getBgcolor() {
 		return bgcolor;
 	}
