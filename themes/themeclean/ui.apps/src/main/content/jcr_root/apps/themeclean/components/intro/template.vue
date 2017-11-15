@@ -10,7 +10,6 @@
         <a class="btn btn-lg btn-secondary m-2" role="button" v-for="(item,i) in model.buttons"
         :key="i" v-bind:href="item.buttonlink" v-html="item.buttontext" v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
-      <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>
   </themeclean-components-block>
 </template>
