@@ -1,5 +1,5 @@
 <template>
-  <section class="d-flex align-items-center" ref="section" v-bind:class="classes"
+  <section class="d-flex align-items-center" ref="section" v-bind:class="[classes, colors]"
   v-bind:style="[styles, sticky]" v-bind:data-per-path="model.path">
     <div class="embed-responsive embed-responsive-16by9" v-if="model.backgroundtype == 'video' &amp;&amp; model.bgvideo"
     v-bind:style="`position:${'absolute'};pointer-events:${'none'};`">
@@ -30,10 +30,18 @@
         computed: {          
           classes: function() {
             return {
-              'view-height': this.model.fullheight == 'true',
-              'bg-dark': this.model.colorscheme === 'dark',
-              'bg-light': this.model.colorscheme === 'light',
+              'view-height': this.model.fullheight == 'true'
             }
+          },
+          colors: function() {
+            let classes = {}
+            if( this.model.custombackground === 'false' ) {
+              classes['bg-dark'] = this.model.colorscheme === 'dark'
+              classes['bg-light'] = this.model.colorscheme === 'light'
+            }
+            classes['text-dark'] = this.model.colorscheme === 'light'
+            classes['text-light'] = this.model.colorscheme === 'dark'
+            return classes
           },
           sticky: function() {
             const sticky = this.model.sticky === 'true'
@@ -58,6 +66,7 @@
         },
         methods: {
           backgroundStyles() {
+              if( this.model.custombackground === 'false') return false
               switch (this.model.backgroundtype) {
 
                 case 'image':
@@ -69,6 +78,9 @@
 
                 case 'color':
                   return `${this.model.bgcolor}`
+                
+                default:
+                  return false 
 
             }
           },
