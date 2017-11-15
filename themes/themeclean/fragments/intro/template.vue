@@ -1,7 +1,9 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <div class="text-white col-md-10 d-flex flex-column text-center">
-      <h1 class="pb-3" v-if="model.showtitle == 'true'" v-html="model.title"></h1>
+      <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
+      <h1 class="pb-3" v-if="model.showtitle == 'true'"
+      v-html="model.title"></h1>
       <h3 class="pb-3" v-if="model.showsubtitle == 'true'" v-html="model.subtitle"></h3>
       <p class="pb-3" v-if="model.showtext == 'true'" v-html="model.text"></p>
       <div class="d-flex justify-content-center" v-if="model.showbutton == 'true'">
@@ -22,9 +24,8 @@
                 return !(
                   this.model.showtitle === 'true' || 
                   this.model.showsubtitle === 'true' || 
-                  this.model.showsubtext === 'true' || 
-                  this.model.showbutton === 'true' ||
-                  this.model.fullheight === 'true'
+                  this.model.showtext === 'true' || 
+                  this.model.showbutton === 'true' 
                 )
             }
         }

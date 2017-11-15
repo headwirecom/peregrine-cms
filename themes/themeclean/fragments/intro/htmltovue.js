@@ -17,5 +17,6 @@ module.exports = {
         f.addStyle($.find('a.btn').first(), 'backgroundColor', 'item.buttoncolor')
         f.addStyle($.find('a.btn').first(), 'borderColor', 'item.buttoncolor')
         $.append('<div v-if="isEditAndEmpty">no content defined for component</div>')
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
     }
 }
