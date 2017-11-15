@@ -42,7 +42,8 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Custom Background",
-          "x-form-type": "materialswitch"
+          "x-form-type": "materialswitch",
+          "x-default": "false"
         },
         "backgroundtype": {
           "type": "string",
@@ -192,8 +193,9 @@ public class BlockModel extends AbstractComponent {
 	@Default(values ="light")
 	private String colorscheme;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch","x-default":"false"} */
 	@Inject
+	@Default(values ="false")
 	private String custombackground;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Background Type","x-form-type":"materialradio","x-form-visible":"model.custombackground == 'true'","properties":{"color":{"x-form-name":"Color","x-form-value":"color"},"gradient":{"x-form-name":"Gradient","x-form-value":"gradient"},"image":{"x-form-name":"Image","x-form-value":"image"},"video":{"x-form-name":"Video","x-form-value":"video"}}} */
@@ -258,7 +260,7 @@ public class BlockModel extends AbstractComponent {
 		return colorscheme;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch","x-default":"false"} */
 	public String getCustombackground() {
 		return custombackground;
 	}

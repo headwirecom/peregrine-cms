@@ -25,7 +25,8 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Custom Background",
-          "x-form-type": "materialswitch"
+          "x-form-type": "materialswitch",
+          "x-default": "false" 
         },
         "backgroundtype": {
           "type": "string",
