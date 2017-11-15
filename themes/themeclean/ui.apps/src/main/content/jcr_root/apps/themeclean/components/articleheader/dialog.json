@@ -113,7 +113,7 @@
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
-      "visible": "model.backgroundtype == 'video' && model.custombackground == 'true'"
+      "visible": "model.backgroundtype == 'video' and model.custombackground == 'true'"
     },
     {
       "type": "pathbrowser",
@@ -121,7 +121,7 @@
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",
-      "visible": "model.backgroundtype == 'image' && model.custombackground == 'true'"
+      "visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
       "type": "materialswitch",
@@ -132,7 +132,7 @@
       "placeholder": "overlay",
       "label": "Overlay",
       "model": "overlay",
-      "visible": "model.backgroundtype == 'image' && model.custombackground == 'true'"
+      "visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
       "type": "input",
@@ -140,7 +140,7 @@
       "placeholder": "overlaycolor",
       "label": "Overlay Color",
       "model": "overlaycolor",
-      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'"
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
       "type": "input",
@@ -148,7 +148,7 @@
       "placeholder": "overlayopacity",
       "label": "Overlay opacity",
       "model": "overlayopacity",
-      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
       "max": 100
     },
     {
@@ -157,7 +157,7 @@
       "placeholder": "bgcolor",
       "label": "Background Color",
       "model": "bgcolor",
-      "visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' && model.custombackground == 'true'"
+      "visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'"
     },
     {
       "type": "input",
@@ -165,7 +165,7 @@
       "placeholder": "color2",
       "label": "Color 2",
       "model": "color2",
-      "visible": "model.backgroundtype == 'gradient' && model.custombackground == 'true'"
+      "visible": "model.backgroundtype == 'gradient' and model.custombackground == 'true'"
     },
     {
       "type": "input",

@@ -100,7 +100,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Background Video",
               "x-form-type": "pathbrowser",
-              "x-form-visible": "model.backgroundtype == 'video' && model.custombackground == 'true'",
+              "x-form-visible": "model.backgroundtype == 'video' and model.custombackground == 'true'",
               "x-default": "https://www.youtube.com/embed/Ju86mknumYM",
               "x-form-browserRoot": "/content/assets"
             },
@@ -109,7 +109,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Background Image",
               "x-form-type": "pathbrowser",
-              "x-form-visible": "model.backgroundtype == 'image' && model.custombackground == 'true'",
+              "x-form-visible": "model.backgroundtype == 'image' and model.custombackground == 'true'",
               "x-form-browserRoot": "/content/assets"
             },
             "overlay": {
@@ -117,14 +117,14 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Overlay",
               "x-form-type": "materialswitch",
-              "x-form-visible": "model.backgroundtype == 'image' && model.custombackground == 'true'"
+              "x-form-visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
             },
             "overlaycolor": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Overlay Color",
               "x-form-type": "color",
-              "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'",
+              "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
               "x-default": "#ffffff"
             },
             "overlayopacity": {
@@ -134,7 +134,7 @@ import javax.inject.Named;
               "x-form-type": "range",
               "x-form-min": 0,
               "x-form-max": 100,
-              "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'",
+              "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
               "x-default": "50"
             },
             "bgcolor": {
@@ -142,7 +142,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Background Color",
               "x-form-type": "color",
-              "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' && model.custombackground == 'true'",
+              "x-form-visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'",
               "x-default": "#ffffff"
             },
             "color2": {
@@ -150,7 +150,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Color 2",
               "x-form-type": "color",
-              "x-form-visible": "model.backgroundtype == 'gradient' && model.custombackground == 'true'",
+              "x-form-visible": "model.backgroundtype == 'gradient' and model.custombackground == 'true'",
               "x-default": "#c0c0c0"
             },
             "fullwidth": {
@@ -233,35 +233,35 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	private String backgroundtype;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' && model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' and model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	@Default(values ="https://www.youtube.com/embed/Ju86mknumYM")
 	private String bgvideo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' && model.custombackground == 'true'","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String bgimage;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image' && model.custombackground == 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'"} */
 	@Inject
 	private String overlay;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"#ffffff"} */
 	@Inject
 	@Default(values ="#ffffff")
 	private String overlaycolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	@Inject
 	@Default(values ="50")
 	private String overlayopacity;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient' && model.custombackground == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'","x-default":"#ffffff"} */
 	@Inject
 	@Default(values ="#ffffff")
 	private String bgcolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient' && model.custombackground == 'true'","x-default":"#c0c0c0"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient' and model.custombackground == 'true'","x-default":"#c0c0c0"} */
 	@Inject
 	@Default(values ="#c0c0c0")
 	private String color2;
@@ -306,37 +306,37 @@ public class TabsModel extends AbstractComponent {
 		return backgroundtype;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' && model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' and model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
 	public String getBgvideo() {
 		return bgvideo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' && model.custombackground == 'true'","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'","x-form-browserRoot":"/content/assets"} */
 	public String getBgimage() {
 		return bgimage;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image' && model.custombackground == 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay","x-form-type":"materialswitch","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'"} */
 	public String getOverlay() {
 		return overlay;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay Color","x-form-type":"color","x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"#ffffff"} */
 	public String getOverlaycolor() {
 		return overlaycolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' && model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	public String getOverlayopacity() {
 		return overlayopacity;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient' && model.custombackground == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Color","x-form-type":"color","x-form-visible":"model.backgroundtype == 'color' or model.backgroundtype == 'gradient' and model.custombackground == 'true'","x-default":"#ffffff"} */
 	public String getBgcolor() {
 		return bgcolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient' && model.custombackground == 'true'","x-default":"#c0c0c0"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient' and model.custombackground == 'true'","x-default":"#c0c0c0"} */
 	public String getColor2() {
 		return color2;
 	}
