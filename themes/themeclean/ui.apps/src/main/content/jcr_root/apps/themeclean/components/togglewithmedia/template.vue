@@ -9,8 +9,8 @@
         <div class="col-12 col-md pt-3 d-flex flex-column justify-content-center">
           <div class="item card bg-transparent border-0 rounded-0" v-for="(item,i) in model.toggles"
           :key="i">
-            <a aria-expanded="false" class="card-header border rounded-0 text-dark"
-            data-toggle="collapse" v-bind:data-parent="`#accordion${_uid}`" v-bind:href="`#accordion${_uid}${i}`"
+            <a aria-expanded="false" class="card-header border rounded-0" data-toggle="collapse"
+            v-bind:data-parent="`#accordion${_uid}`" v-bind:href="`#accordion${_uid}${i}`"
             v-bind:aria-controls="`accordion${_uid}${i}`" v-html="item.title"></a>
             <div class="collapse rounded-0" role="tabpanel" v-bind:id="`accordion${_uid}${i}`">
               <div class="card-body rounded-0" v-html="item.text"></div>
