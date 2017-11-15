@@ -32,7 +32,8 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Logo Url",
-          "x-form-type": "url"
+          "x-form-type": "pathbrowser",
+          "x-form-browserRoot": "/content/sites"
         },
         "logosize": {
           "type": "string",
@@ -339,7 +340,7 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String logo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"url"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
 	@Inject
 	private String logourl;
 
@@ -461,7 +462,7 @@ public class FooterModel extends AbstractComponent {
 		return logo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"url"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
 	public String getLogourl() {
 		return logourl;
 	}

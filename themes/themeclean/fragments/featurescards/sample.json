@@ -11,21 +11,21 @@
     "cardcolor": "#eeeeee",
     "cards": [
       {
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "View",
         "buttoncolor": "#008080",
         "image": "/content/assets/themeclean/images/background1.jpg",
         "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.",
         "title": "Card One"
       },{
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "View",
         "buttoncolor": "#008080",
         "image": "/content/assets/themeclean/images/background2.jpg",
         "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.",
         "title": "Card Two"
       },{
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "View",
         "buttoncolor": "#008080",
         "image": "/content/assets/themeclean/images/background3.jpg",
