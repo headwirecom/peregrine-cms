@@ -48,6 +48,10 @@
       "type": "material-radios",
       "values": [
         {
+          "name": "None",
+          "value": "none"
+        },
+        {
           "name": "Light",
           "value": "light"
         },
