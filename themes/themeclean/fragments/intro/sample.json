@@ -7,6 +7,8 @@
     "showsubtitle": "true",
     "showtext": "true",
     "showbutton": "true",
+    "colorscheme": "dark",
+    "custombackground": "true",
     "backgroundtype": "image",
     "bgimage": "/content/assets/themeclean/images/jumbotron.jpg",
     "overlay": "true",

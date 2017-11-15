@@ -5,7 +5,7 @@
       <jcr:content jcr:primaryType="nt:unstructured"/>
     </v1>
     <v2 jcr:primaryType="nt:unstructured" title="Full Screen Intro" group="Info">
-      <jcr:content jcr:primaryType="nt:unstructured" fullheight="true" showtitle="true" showsubtitle="true" showtext="true" showbutton="true" backgroundtype="image" bgimage="/content/assets/themeclean/images/jumbotron.jpg" overlay="true" overlaycolor="#000000" overlayopacity="50" subtitle="Our mobile websites" text="Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color." title="FULL SCREEN INTRO">
+      <jcr:content jcr:primaryType="nt:unstructured" fullheight="true" showtitle="true" showsubtitle="true" showtext="true" showbutton="true" colorscheme="dark" custombackground="true" backgroundtype="image" bgimage="/content/assets/themeclean/images/jumbotron.jpg" overlay="true" overlaycolor="#000000" overlayopacity="50" subtitle="Our mobile websites" text="Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color." title="FULL SCREEN INTRO">
         <buttons jcr:primaryType="nt:unstructured">
           <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="LEARN MORE" buttoncolor="#ff0000" iconclass=""/>
           <buttons1 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="LIVE DEMO" buttoncolor="#0000ff" iconclass=""/>
