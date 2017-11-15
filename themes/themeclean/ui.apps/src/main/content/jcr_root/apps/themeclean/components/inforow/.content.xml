@@ -7,8 +7,8 @@
     <v2 jcr:primaryType="nt:unstructured" title="Info Row" group="Info">
       <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" showsubtitle="true" showbutton="true" buttonlocation="right" backgroundtype="color" fullheight="false" toppadding="30" bottompadding="30" bgcolor="#f9f9f9" gradient="true" color2="#c0c0c0" subtitle="Molestiae alias et inventore voluptas" title="Peregrine blocks">
         <buttons jcr:primaryType="nt:unstructured">
-          <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="See More" buttoncolor="#008040" iconclass=""/>
-          <buttons1 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean.html" buttontext="About Us" buttoncolor="#006040" iconclass=""/>
+          <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean" buttontext="See More" buttoncolor="#008040" iconclass=""/>
+          <buttons1 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean" buttontext="About Us" buttoncolor="#006040" iconclass=""/>
         </buttons>
       </jcr:content>
     </v2>

@@ -17,12 +17,12 @@
     "title": "Peregrine blocks",
     "buttons": [
       {
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "See More",
         "buttoncolor": "#008040",
         "iconclass": ""
       },{
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "About Us",
         "buttoncolor": "#006040",
         "iconclass": ""
