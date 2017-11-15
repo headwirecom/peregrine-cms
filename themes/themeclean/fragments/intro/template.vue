@@ -8,7 +8,8 @@
       <p class="pb-3" v-if="model.showtext == 'true'" v-html="model.text"></p>
       <div class="d-flex justify-content-center" v-if="model.showbutton == 'true'">
         <a class="btn btn-lg btn-secondary m-2" role="button" v-for="(item,i) in model.buttons"
-        :key="i" v-bind:href="item.buttonlink" v-html="item.buttontext" v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
+        :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
+        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
     </div>
   </themeclean-components-block>
