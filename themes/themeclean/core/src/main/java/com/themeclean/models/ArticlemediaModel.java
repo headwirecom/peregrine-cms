@@ -21,6 +21,12 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "reverselayout": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Reverse Layout",
+          "x-form-type": "materialswitch"
+        },
         "text": {
           "type": "string",
           "x-source": "inject",
@@ -247,7 +253,11 @@ public class ArticlemediaModel extends AbstractComponent {
     public ArticlemediaModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Reverse Layout","x-form-type":"materialswitch"} */
+	@Inject
+	private String reverselayout;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
 	@Inject
 	private String text;
 
@@ -331,7 +341,12 @@ public class ArticlemediaModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Reverse Layout","x-form-type":"materialswitch"} */
+	public String getReverselayout() {
+		return reverselayout;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
 	public String getText() {
 		return text;
 	}

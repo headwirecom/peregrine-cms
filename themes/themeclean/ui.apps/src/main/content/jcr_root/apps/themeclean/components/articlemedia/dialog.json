@@ -1,6 +1,16 @@
 {
   "fields": [
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "reverselayout",
+      "label": "Reverse Layout",
+      "model": "reverselayout"
+    },
+    {
       "type": "texteditor",
       "rows": 10,
       "placeholder": "text",
