@@ -14,7 +14,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return !(this.model.text != '<p><br></p>')
+                //return !(this.model.text != '<p><br></p>')
+                return this.$helper.areAllEmpty(this.model.text)
             }
         }
     }
