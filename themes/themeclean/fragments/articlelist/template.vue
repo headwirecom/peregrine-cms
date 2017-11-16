@@ -15,7 +15,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return (!this.model.listitems || Object.keys(this.model.listitems).length === 0)
+                //return (!this.model.listitems || Object.keys(this.model.listitems).length === 0)
+                return this.$helper.areAllEmpty(this.model.listitems)
             }
         }
     }
