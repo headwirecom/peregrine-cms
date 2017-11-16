@@ -1,6 +1,6 @@
 {
   "title": "Article Quote no default value",
-  "group": "Article",
+  "group": "Empty",
   "model": {
     "text": "<p><br></p>"
   }
