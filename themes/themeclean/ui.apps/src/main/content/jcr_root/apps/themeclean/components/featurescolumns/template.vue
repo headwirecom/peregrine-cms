@@ -25,7 +25,8 @@
         computed: {
             isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return this.model.cards.length === 0
+                //return this.model.cards.length === 0
+                return this.$helper.areAllEmpty(this.model.cards)
             },
         }
     }
