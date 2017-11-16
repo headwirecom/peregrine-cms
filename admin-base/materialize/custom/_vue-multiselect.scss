@@ -117,8 +117,8 @@ fieldset[disabled] .multiselect {
   margin-bottom: 8px;
 }
 
-.multiselect__tag ~ .multiselect__input,
-.multiselect__tag ~ .multiselect__single {
+.multiselect__tag~.multiselect__input,
+.multiselect__tag~.multiselect__single {
   width: auto;
 }
 
@@ -134,8 +134,9 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__single {
-  padding-left: 6px;
-  margin-bottom: 8px;
+  padding-left: 0;
+  margin-bottom: 0;
+  line-height: 38px;
 }
 
 .multiselect__tags-wrap {
@@ -149,6 +150,7 @@ fieldset[disabled] .multiselect {
   border: 1px solid color("blue-grey", "lighten-4");
   background: #fff;
 }
+
 .multiselect__tags input.multiselect__input {
   border-top: none;
   border-left: none;
@@ -157,6 +159,7 @@ fieldset[disabled] .multiselect {
   padding-left: 0;
   width: 100%;
 }
+
 .multiselect__tag {
   display: inline-block;
   height: 32px;
@@ -180,6 +183,7 @@ fieldset[disabled] .multiselect {
   padding-left: 8px;
   padding-right: 12px;
 }
+
 .multiselect__tag {
   &:hover,
   &:focus,
@@ -189,10 +193,12 @@ fieldset[disabled] .multiselect {
     }
   }
 }
+
 .multiselect__tag-icon:after {
   content: "\00d7";
   font-style: normal;
 }
+
 .multiselect__current {
   line-height: 16px;
   min-height: 40px;
@@ -252,8 +258,8 @@ fieldset[disabled] .multiselect {
   border-top: none;
   z-index: 50;
   -webkit-overflow-scrolling: touch;
-  -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
 }
 
 .multiselect__content {
@@ -269,9 +275,10 @@ fieldset[disabled] .multiselect {
   border-bottom: none;
   border-top: 1px solid #E8E8E8;
 }
+
 .multiselect__content {
-  > li:last-child {
-    > .multiselect__option {
+  >li:last-child {
+    >.multiselect__option {
       font-size: 13px;
       font-weight: 400;
       font-style: italic;
@@ -279,6 +286,7 @@ fieldset[disabled] .multiselect {
     }
   }
 }
+
 .multiselect__content::webkit-scrollbar {
   display: none;
 }
@@ -296,11 +304,11 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option {
-    font-size: 16px;
-    color: color("blue-grey", "darken-2");
-    display: block;
-    line-height: 22px;
-    padding: 14px 16px;
+  font-size: 16px;
+  color: color("blue-grey", "darken-2");
+  display: block;
+  line-height: 22px;
+  padding: 14px 16px;
 }
 
 .multiselect__option:after {
@@ -311,6 +319,7 @@ fieldset[disabled] .multiselect {
   padding-right: 16px;
   padding-left: 20px;
   font-size: 75%;
+  content: '';
 }
 
 .multiselect__option--highlight {
@@ -322,19 +331,19 @@ fieldset[disabled] .multiselect {
   float: none !important;
 }
 
-.multiselect__option--highlight:after {
-  content: attr(data-select);
-}
+// .multiselect__option--highlight:after {
+//   content: attr(data-select);
+// }
 
 .multiselect__option--selected {
   background: color("blue-grey", "lighten-5");
   color: color("blue-grey", "darken-2");
 }
 
-.multiselect__option--selected:after {
-  content: attr(data-selected);
-  color: color("blue-grey", "darken-2");
-}
+// .multiselect__option--selected:after {
+//   content: attr(data-selected);
+//   color: color("blue-grey", "darken-2");
+// }
 
 .multiselect__option--selected.multiselect__option--highlight {
   color: color("blue-grey", "darken-2");
@@ -342,7 +351,8 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--selected.multiselect__option--highlight:after {
   content: attr(data-deselect);
-  color: color("red", "base");
+  font-size: 20px;
+  // color: color("red", "base");
 }
 
 .multiselect--disabled {
@@ -383,7 +393,10 @@ fieldset[disabled] .multiselect {
 }
 
 @keyframes spinning {
-  from { transform:rotate(0) }
-  to { transform:rotate(2turn) }
+  from {
+    transform: rotate(0)
+  }
+  to {
+    transform: rotate(2turn)
+  }
 }
-
