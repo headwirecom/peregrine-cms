@@ -1,0 +1,60 @@
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+  .modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+    .modal-container {
+      width: 80%;
+      max-width: 1200px;
+      position: relative;
+      margin: 0px auto;
+      height: calc(70% - 56px - 48px);
+      max-height: calc(70% - 56px - 48px);
+      padding: 48px 0 56px;
+      background-color: #fff;
+      border-radius: 2px;
+      box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+      0 3px 14px 2px rgba(0, 0, 0, 0.12),
+      0 5px 5px -3px rgba(0, 0, 0, 0.3);
+      transition: all .3s ease;
+      .modal-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        position: absolute;
+        bottom: 0;
+        border-radius: 0 0 2px 2px;
+        background-color: #fafafa;
+        padding: 4px 6px;
+        height: 56px;
+        width: 100%;
+        text-align: right;
+      }
+    }
+  }
+}
+
+// open/close transitions
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter,
+.modal-leave-active {
+  .modal-container {
+    -webkit-transform: scale(1.1);
+    -moz-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+}
