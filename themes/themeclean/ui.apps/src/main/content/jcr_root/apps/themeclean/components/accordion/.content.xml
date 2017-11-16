@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Accordion">
   <jcr:content jcr:primaryType="nt:unstructured" __variations="true">
-    <sample jcr:primaryType="nt:unstructured" title="Accordion" group="Accordion and Toggle">
+    <v1 jcr:primaryType="nt:unstructured" title="Accordion no default values" group="Empty">
+      <jcr:content jcr:primaryType="nt:unstructured">
+        <tabs jcr:primaryType="nt:unstructured"/>
+      </jcr:content>
+    </v1>
+    <v2 jcr:primaryType="nt:unstructured" title="Accordion" group="Accordion and Toggle">
       <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Accordion" backgroundtype="color" bgcolor="#f1f1f1" color2="#ffffff" bottompadding="30" toppadding="30">
         <tabs jcr:primaryType="nt:unstructured">
           <tabs0 jcr:primaryType="nt:unstructured" text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s" title="Why accordion?"/>
@@ -9,11 +14,6 @@
           <tabs2 jcr:primaryType="nt:unstructured" text="remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." title="Join accordion"/>
         </tabs>
       </jcr:content>
-    </sample>
-    <sample-empty jcr:primaryType="nt:unstructured" title="Accordion no default values" group="Accordion and Toggle">
-      <jcr:content jcr:primaryType="nt:unstructured">
-        <tabs jcr:primaryType="nt:unstructured"/>
-      </jcr:content>
-    </sample-empty>
+    </v2>
   </jcr:content>
 </jcr:root>

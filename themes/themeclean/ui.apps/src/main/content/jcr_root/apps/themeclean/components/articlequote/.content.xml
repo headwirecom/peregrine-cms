@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Article Quote">
   <jcr:content jcr:primaryType="nt:unstructured" __variations="true">
-    <sample jcr:primaryType="nt:unstructured" title="Article Quote" group="Article">
-      <jcr:content jcr:primaryType="nt:unstructured" toppadding="0" bottompadding="0" backgroundtype="color" bgcolor="#ffffff" linewidth="25" text="&lt;p>&lt;em>&quot;Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero .&quot;&lt;/em>&lt;/p>"/>
-    </sample>
-    <sample-empty jcr:primaryType="nt:unstructured" title="Article Quote no default value" group="Article">
+    <v1 jcr:primaryType="nt:unstructured" title="Article Quote no default value" group="Empty">
       <jcr:content jcr:primaryType="nt:unstructured" text="&lt;p>&lt;br>&lt;/p>"/>
-    </sample-empty>
+    </v1>
+    <v2 jcr:primaryType="nt:unstructured" title="Article Quote" group="Article">
+      <jcr:content jcr:primaryType="nt:unstructured" toppadding="0" bottompadding="0" backgroundtype="color" bgcolor="#ffffff" linewidth="25" text="&lt;p>&lt;em>&quot;Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero .&quot;&lt;/em>&lt;/p>"/>
+    </v2>
   </jcr:content>
 </jcr:root>
