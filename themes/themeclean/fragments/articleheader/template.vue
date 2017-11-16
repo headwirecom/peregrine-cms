@@ -14,7 +14,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return !(this.model.showtitle === 'true' || this.model.showsubtitle === 'true')
+                //return !(this.model.showtitle === 'true' || this.model.showsubtitle === 'true')
+                return this.$helper.areAllEmpty(this.model.showtitle === 'true', this.model.showsubtitle === 'true')
             }
         }
     }
