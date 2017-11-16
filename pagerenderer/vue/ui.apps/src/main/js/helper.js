@@ -1,7 +1,7 @@
 
 const helpers = {
     isEmpty: function(field) {
-        if(field === undefined || field === null || field === '' || field === '<p><br></p>') {
+        if(field === undefined || field === null || field === '' || field === '<p><br></p>' || field === [] || field === false) {
             return true
         }
         return false
