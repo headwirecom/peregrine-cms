@@ -1,16 +1,21 @@
 { "fields":[
   {
-    "type": "spectrum",
-    "label": "Spectrum",
-    "model": "spectrumcolor"
-  },
-  {
     "type": "input",
     "inputType": "color",
     "label": "Color field",
     "model": "colorfield",
     "placeholder": "select a color",
     "hint": "This is a native color picker.",
+    "required": true,
+    "validator": "required"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "label": "Text field",
+    "model": "textfield",
+    "placeholder": "text field",
+    "hint": "This is some additional help text.",
     "required": true,
     "validator": "required"
   },
@@ -45,56 +50,6 @@
         "model": "value"
       }
     ]
-  },
-  {
-    "type": "input",
-    "inputType": "text",
-    "label": "Text field",
-    "model": "textfield",
-    "placeholder": "text field",
-    "hint": "This is some additional help text.",
-    "required": true,
-    "validator": "required"
-  },
-  {
-    "type": "input",
-    "inputType": "search",
-    "label": "Search field",
-    "model": "searchfield",
-    "placeholder": "text field",
-    "hint": "This is the native html5 search field.",
-    "required": true,
-    "validator": "required"
-  },
-  {
-    "type": "input",
-    "inputType": "number",
-    "label": "Number field",
-    "model": "numberfield",
-    "placeholder": "enter a number",
-    "hint": "This is the native html5 number field.",
-    "required": true,
-    "validator": "required"
-  },
-  {
-    "type": "input",
-    "inputType": "url",
-    "label": "URL field",
-    "model": "urlfield",
-    "placeholder": "enter a number",
-    "hint": "This is the native html5 url field.",
-    "required": true,
-    "validator": "required"
-  },
-  {
-    "type": "input",
-    "inputType": "tel",
-    "label": "Telephone field",
-    "model": "telfield",
-    "placeholder": "enter a number",
-    "hint": "This is the native html5 telephone field.",
-    "required": true,
-    "validator": "required"
   },
   {    
     "type": "input",
@@ -142,67 +97,6 @@
     "required": true,
     "validator": "required"
   },
-  {
-    "type": "material-select",
-    "label": "Select",
-    "model": "select",
-    "values": [
-      { "name": "Byron Ponce", "value": "bp@headwire.com"},
-      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
-      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
-      { "name": "Li Qin", "value": "lq@headwire.com"},
-      { "name": "Robert Jolly", "value": "rj@headwire.com"},
-      { "name": "Jason Groves", "value": "jg@headwire.com"}
-    ],
-    "hint": "This is the material select.",
-    "required": true,
-    "validator": "required"
-  }, 
-  {
-    "type": "material-checklist",
-    "listBox": false,
-    "label": "Checklist",
-    "model": "skills",
-    "multi": true,
-    "multiSelect": true,
-    "values": [
-      { "name": "Byron Ponce", "value": "bp@headwire.com"},
-      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
-      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
-      { "name": "Li Qin", "value": "lq@headwire.com"},
-      { "name": "Robert Jolly", "value": "rj@headwire.com"},
-      { "name": "Jason Groves", "value": "jg@headwire.com"}
-    ],
-    "hint": "This is the material checklist.",
-    "required": true,
-    "validator": "required"
-  },
-  {
-    "type": "vueMultiSelect",
-    "label": "Multiselect",
-    "placeholder": "Select a language",
-    "model": "author",
-    "selectOptions": {
-      "multiple": true,
-      "trackBy": "name",
-      "label": "name",
-      "searchable": true,
-      "clearOnSelect": true,
-      "closeOnSelect": false,
-      "taggable": true
-    },
-    "values": [
-      { "name": "Byron Ponce", "value": "bp@headwire.com"},
-      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
-      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
-      { "name": "Li Qin", "value": "lq@headwire.com"},
-      { "name": "Robert Jolly", "value": "rj@headwire.com"},
-      { "name": "Jason Groves", "value": "jg@headwire.com"}
-    ],
-    "hint": "This is the vue multiselect.",
-    "required": true,
-    "validator": "required"
-  }, 
   {
     "type": "material-checkbox",
     "label": "Checkbox",
@@ -276,5 +170,58 @@
       "font awesome",
       "ionicons"
     ]
+  },
+  {
+    "type": "material-select",
+    "label": "Multiselect",
+    "placeholder": "Select a language",
+    "model": "author",
+    "selectOptions": {
+      "multiple": true,
+      "trackBy": "name",
+      "label": "name",
+      "searchable": false,
+      "clearOnSelect": true,
+      "closeOnSelect": false,
+      "taggable": true,
+      "deselectLabel": "×",
+      "placeholder":"Select author"
+    },
+    "values": [
+      { "name": "Byron Ponce", "value": "bp@headwire.com"},
+      { "name": "Ruben Reusser", "value": "rr@headwire.com"},
+      { "name": "Dustin Pelland", "value": "dp@headwire.com"},
+      { "name": "Li Qin", "value": "lq@headwire.com"},
+      { "name": "Robert Jolly", "value": "rj@headwire.com"},
+      { "name": "Jason Groves", "value": "jg@headwire.com"}
+    ],
+    "hint": "This is the vue multiselect.",
+    "required": true,
+    "validator": "required"
+  }, 
+  {
+    "type": "material-select",
+    "label": "Select",
+    "model": "language",
+    "selectOptions": {
+      "multiple": false,
+      "trackBy": "name",
+      "label": "name",
+      "searchable": false,
+      "taggable": false,
+      "deselectLabel": "×",
+      "placeholder":"Select language",
+      "clearOnSelect": true,
+      "closeOnSelect": true,
+      "allowEmpty": true
+    },
+    "values": [
+      { "name": "English", "value": "en"},
+      { "name": "Spanish", "value": "es"},
+      { "name": "French", "value": "fr"}
+    ],
+    "hint": "This is the material select.",
+    "required": true,
+    "validator": "required"
   }
 ]}

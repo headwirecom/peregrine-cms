@@ -29,14 +29,9 @@
           jcr:primaryType="per:Object"
           jcr:title="sample"
           sling:resourceType="example/objects/allfields"
-          spectrumcolor="#ffad27" 
           colorfield="#ffad27" 
           singlechildren="[single item one,single item two,single item three]"
           textfield="Byron Ponce" 
-          searchfield="Byron Ponce" 
-          numberfield="100" 
-          urlfield="http://peregrine-cms.com" 
-          telfield="18581234567" 
           rangefield="50"  
           textarea="Lorem ipsum dolor sit amet." 
           texteditor="Lorem ipsum dolor sit amet." 
@@ -48,9 +43,21 @@
           time="19:30:00.000Z" 
           datetime="2017-09-01T01:30:00.000Z"
           radios="bp@headwire.com" 
-          select="bp@headwire.com"
-          skills="[bp@headwire.com,rr@headwire.com,dp@headwire.com]"
           icon="material:material-icons:build">
+  <language jcr:primaryType="nt:unstructured">
+    <language0 
+        jcr:primaryType="nt:unstructured" 
+        name="English" 
+        value="en" />
+    <language1 
+        jcr:primaryType="nt:unstructured" 
+        name="Spanish" 
+        value="es" />
+    <language2  
+        jcr:primaryType="nt:unstructured" 
+        name="French" 
+        value="fr" />
+  </language>
 
   <author jcr:primaryType="nt:unstructured">
     <author0 
@@ -66,6 +73,7 @@
         name="Dustin Pelland" 
         value="dp@headwire.com" />
   </author>
+
   <collection jcr:primaryType="nt:unstructured">
       <collection0 
         jcr:primaryType="nt:unstructured" 
