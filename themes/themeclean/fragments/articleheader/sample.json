@@ -3,7 +3,7 @@
   "group": "Article",
   "model": {
     "backgroundtype": "color",
-    "toppadding": "20",
+    "toppadding": "0",
     "bottompadding": "0",
     "showtitle": "true",
     "title": "Peregrine Clean Theme",
