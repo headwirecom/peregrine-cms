@@ -63,14 +63,13 @@ nav {
     display: inline-block;
     font-size: $navbar-brand-font-size;
     padding: 0;
-    white-space: nowrap;
 
     &.center {
       left: 50%;
       transform: translateX(-50%);
     }
 
-    @media #{$small-and-down} {
+    @media #{$medium-and-down} {
       left: 50%;
       transform: translateX(-50%);
 
