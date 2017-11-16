@@ -17,7 +17,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return !(this.model.text != '<p><br></p>' || this.model.imagesrc || this.model.videosrc)
+                //return !(this.model.text != '<p><br></p>' || this.model.imagesrc || this.model.videosrc)
+                return this.$helper.areAllEmpty(this.model.text, this.model.imagesrc, this.model.videosrc)
             }
         }
     }
