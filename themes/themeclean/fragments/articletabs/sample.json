@@ -8,7 +8,7 @@
     "fullheight": "false",
     "backgroundtype": "gradient",
     "bottompadding": "0",
-    "toppadding": "0",
+    "toppadding": "10",
     "tabs": [
       {
         "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
