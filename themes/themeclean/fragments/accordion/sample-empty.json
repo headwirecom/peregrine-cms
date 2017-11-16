@@ -1,6 +1,6 @@
 {
   "title": "Accordion no default values",
-  "group": "Accordion and Toggle",
+  "group": "Empty",
   "model": {
     "tabs": [
     ]
