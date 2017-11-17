@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="col-12">
+    <footer class="col-12">
       <div class="row justify-content-between text-center text-md-left">
         <div class="col-12 col-md-3">
           <a v-bind:href="$helper.pathToUrl(model.logourl)">
@@ -25,7 +25,7 @@
         </div>
         <themeclean-components-socialicons v-bind:model="model"></themeclean-components-socialicons>
       </div>
-    </div>
+    </footer>
   </themeclean-components-block>
 </template>
 

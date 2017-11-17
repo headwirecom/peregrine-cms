@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Footer">
   <jcr:content jcr:primaryType="nt:unstructured" __variations="true">
-    <v1 jcr:primaryType="nt:unstructured" title="Footer no default values" group="Empty">
-      <jcr:content jcr:primaryType="nt:unstructured"/>
-    </v1>
-    <v2 jcr:primaryType="nt:unstructured" title="Footer" group="General">
+    <sample jcr:primaryType="nt:unstructured" title="Footer" group="General">
       <jcr:content jcr:primaryType="nt:unstructured" backgroundtype="color" bgcolor="#eeeeee" bottompadding="0" toppadding="30" logo="/content/assets/themeclean/images/peregrine-logo.png" logourl="http://www.peregrine-cms.com" logosize="6" copyright="Copyright 2017 Peregrine - All Rights Reserved" title="Help Links" title1="Address" text1="1234 Street Name&amp;lt;br&amp;gt;City, AA 99999" title2="Contacts" text2="Email: support@headwire.com&amp;lt;br&amp;gt;Phone: +1 (0) 000 0000 001&amp;lt;br&amp;gt;Fax: +1 (0) 000 0000 002">
         <links jcr:primaryType="nt:unstructured">
           <links0 jcr:primaryType="nt:unstructured" link="/content/sites/themeclean" text="Website Builder"/>
@@ -17,6 +14,9 @@
           <icons2 jcr:primaryType="nt:unstructured" url="/content/sites/themeclean" icon=":material-icons:account_balance"/>
         </icons>
       </jcr:content>
-    </v2>
+    </sample>
+    <sample-empty jcr:primaryType="nt:unstructured" title="Footer no default values" group="Empty">
+      <jcr:content jcr:primaryType="nt:unstructured"/>
+    </sample-empty>
   </jcr:content>
 </jcr:root>
