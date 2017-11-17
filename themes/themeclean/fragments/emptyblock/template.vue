@@ -1,6 +1,7 @@
 <template>
-    <div v-bind:data-per-path="model.path" v-html="model.text">
-    </div>
+  <themeclean-components-block v-bind:model="model">
+    <div v-bind:style="`height:${model.height}vh;`"></div>
+  </themeclean-components-block>
 </template>
 
 <script>
