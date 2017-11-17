@@ -42,7 +42,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return !(this.model.showtitle === 'true' || this.model.showsubtitle === 'true'  || this.model.tabs.length > 0 || this.model.imagesrc || this.model.videosrc)
+                //return !(this.model.showtitle === 'true' || this.model.showsubtitle === 'true'  || this.model.tabs.length > 0 || this.model.imagesrc || this.model.videosrc)
+                return this.$helper.areAllEmpty(this.model.showtitle === 'true' , this.model.showsubtitle === 'true'  , this.model.tabs , this.model.imagesrc , this.model.videosrc)
             }
         }
     }
