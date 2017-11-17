@@ -38,10 +38,17 @@
           <i class="material-icons">insert_drive_file</i>
         </button>
         <div class="icon">
-            <i v-bind:class="getIconClass(value)">{{getIconText(value)}}</i>
+            <i v-bind:class="selectedIcon.class">{{selectedIcon.text}}</i>
         </div>
+        <admin-components-iconbrowser 
+            v-if="isOpen"
+            :families="families"
+            :selectedIcon="selectedIcon"
+            :onCancel="onCancel"
+            :onSelect="onSelect">
+        </admin-components-iconbrowser>
       </template>
-      <p v-else><i v-bind:class="getIconClass(value)">{{getIconText(value)}}</i>{{value}}</p>
+      <p v-else><i v-bind:class="selectedIcon.class">{{selectedIcon.text}}</i>{{value}}</p>
     </div>
 </template>
 
@@ -49,43 +56,60 @@
     export default {
         props: ['model'],
         mixins: [ VueFormGenerator.abstractField ],
+        data () {
+            return {
+                isOpen: false,
+                families: null,
+                selectedIcon: {
+                    family: null,
+                    class: null,
+                    text: null
+                }
+            }
+        },
+        created () {
+            // set initial state from value
+            this.selectedIcon = this.getIconFromValue(this.value)
+            // create families array from schema
+            this.families = this.schema.families.map(family => {
+                return {
+                    name: family,
+                    value: this.camelize(family)
+                }
+            })
+        },
+        watch: {
+            value (newValue) {
+                // keep selectedIcon synced with value (if valid)
+                this.selectedIcon = this.getIconFromValue(newValue)
+            }
+        },
         methods: {
-            setIconValue(){
-                this.value = `${$perAdminApp.getNodeFromView('/state/iconbrowser/family')}:${$perAdminApp.getNodeFromView('/state/iconbrowser/class')}:${$perAdminApp.getNodeFromView('/state/iconbrowser/text')}`
-                console.log('this.value: ', this.value)
-            }, 
-            browse() {
-                let icon = this.value
-                let families = this.schema.families
-                let initialModalState = {
-                    icon: icon, 
-                    families: families
-                }
-                let options = this.schema.modalOptions
-                if(!options) {
-                    console.warn('No options specified.')
-                    options = {}
-                }
-                options.complete = this.setIconValue 
-                // set pathbrowser modal initial state
-                $perAdminApp.iconBrowser(initialModalState, options)
-                // {
-                //     dismissible: true, // Modal can be dismissed by clicking outside of the modal
-                //     opacity: .5, // Opacity of modal background
-                //     inDuration: 300, // Transition in duration
-                //     outDuration: 200, // Transition out duration
-                //     startingTop: '4%', // Starting top style attribute
-                //     endingTop: '10%', // Ending top style attribute
-                //     ready: function(modal, trigger) {}, // Callback for Modal open. Modal and trigger parameters available.
-                //     complete: function(){} // Callback for Modal close
-                // }
-                
+            onCancel () {
+                this.isOpen = false
             },
-            getIconClass(iconValue) {
-                return iconValue.split(':')[1]
+            onSelect (icon) {
+                this.value = `${icon.family}:${icon.class}:${icon.text}`
+                this.isOpen = false
             },
-            getIconText(iconValue){
-                return iconValue.split(':')[2]
+            browse () {
+                this.isOpen = true
+            },
+            getIconFromValue (value) {
+                let iconParts = value.split(':') //[iconFamily, iconClass, iconText]
+                if(iconParts && iconParts.length > 2){
+                    return {
+                        family: iconParts[0],
+                        class: iconParts[1],
+                        text: iconParts[2]
+                    }
+                }
+                return this.selectedIcon
+            },
+            camelize (str) {
+                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+                    return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
+                }).replace(/\s+/g, '');
             }
         }
     }
