@@ -26,7 +26,7 @@
   <div class="wrap">
     <multiselect 
       v-if="!schema.preview"
-      v-model="value" 
+      v-model="modelFromValue" 
       v-bind="schema.selectOptions"
       :options="schema.values">
     </multiselect>
@@ -37,10 +37,7 @@
           <label>Value:</label> {{item.value}}
         </li>
       </ol>
-      <p v-else class="preview-item">
-        <label>Name:</label> {{value.name}} <br>
-        <label>Value:</label> {{value.value}}
-      </p>
+      <p v-else class="preview-item">{{value}}</p>
     </template>
   </div>
 </template>
@@ -49,6 +46,24 @@
     export default {
       // v-bind="obj" is same as ...obj (object destructuring)
       props: ['model'], 
-      mixins: [ VueFormGenerator.abstractField ]
+      mixins: [ VueFormGenerator.abstractField ],
+      computed: {
+        modelFromValue: {
+          get () {
+            if(this.value){
+              this.schema.values.forEach(item => {
+                if (item.value === this.value) {
+                  return item
+                }
+              })
+            } else {
+              return ''
+            }
+          },
+          set (newValue) {
+            this.value = newValue
+          }
+        }
+      }
     }
 </script>

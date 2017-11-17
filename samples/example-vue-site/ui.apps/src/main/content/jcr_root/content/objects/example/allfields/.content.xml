@@ -43,21 +43,8 @@
           time="19:30:00.000Z" 
           datetime="2017-09-01T01:30:00.000Z"
           radios="bp@headwire.com" 
-          icon="material:material-icons:build">
-  <language jcr:primaryType="nt:unstructured">
-    <language0 
-        jcr:primaryType="nt:unstructured" 
-        name="English" 
-        value="en" />
-    <language1 
-        jcr:primaryType="nt:unstructured" 
-        name="Spanish" 
-        value="es" />
-    <language2  
-        jcr:primaryType="nt:unstructured" 
-        name="French" 
-        value="fr" />
-  </language>
+          icon="material:material-icons:build"
+          language="en">
 
   <author jcr:primaryType="nt:unstructured">
     <author0 
