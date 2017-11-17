@@ -21,6 +21,9 @@ h3 {
 blockquote{
   font-style: italic;
 }
+nav a{
+  font-size: 18px;
+}
 .article {
   font-size: 18px;
 }
