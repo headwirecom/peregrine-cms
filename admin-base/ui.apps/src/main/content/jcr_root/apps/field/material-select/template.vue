@@ -50,18 +50,20 @@
       computed: {
         modelFromValue: {
           get () {
-            if(this.value){
-              this.schema.values.forEach(item => {
-                if (item.value === this.value) {
-                  return item
-                }
-              })
+            // will catch falsy, null or undefined
+            if(this.value && this.value != null){
+              // if model is a string, convert to object with name and value
+              if(typeof this.value === 'string'){ 
+                return this.schema.values.filter(item => item.value === this.value)[0]     
+              } else {
+                return this.value
+              }
             } else {
               return ''
             }
           },
           set (newValue) {
-            this.value = newValue
+            this.value = newValue.value
           }
         }
       }
