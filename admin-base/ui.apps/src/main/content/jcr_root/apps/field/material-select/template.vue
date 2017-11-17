@@ -27,14 +27,23 @@
     <multiselect 
       v-if="!schema.preview"
       v-model="modelFromValue" 
-      v-bind="schema.selectOptions"
-      :options="schema.values">
+      :track-by="trackBy"
+      :label="label"
+      :deselectLabel="deselectLabel"
+      :options="schema.values"
+      :searchable="false"
+      :taggable="false"
+      :clear-on-select="true"
+      :close-on-select="true"
+      :placeholder="placeholder"
+      :allow-empty="allowEmpty"
+      :show-labels="false">
     </multiselect>
     <template v-else>
       <ol v-if="schema.selectOptions.multiple" class="preview-items">
         <li v-for="item in value" class="preview-item">
-          <label>Name:</label> {{item.name}} <br>
-          <label>Value:</label> {{item.value}}
+          <label>Name:</label> {{item[label]}} <br>
+          <label>Value:</label> {{item[trackBy]}}
         </li>
       </ol>
       <p v-else class="preview-item">{{value}}</p>
@@ -48,20 +57,53 @@
       props: ['model'], 
       mixins: [ VueFormGenerator.abstractField ],
       computed: {
+        placeholder () {
+          if(this.schema.selectOptions && this.schema.selectOptions.placeholder){
+            return this.schema.selectOptions.placeholder
+          }
+          return 'Nothing selected'
+        },
+        allowEmpty () {
+          return this.schema.required ? false : true
+        },
+        trackBy () {
+          if(this.schema.selectOptions && this.schema.selectOptions.value){
+            return this.schema.selectOptions.value
+          }
+          return 'value'
+        },
+        label () {
+          if(this.schema.selectOptions && this.schema.selectOptions.name){
+            return this.schema.selectOptions.name
+          }
+          return 'name'
+        },
+        deselectLabel () {
+          if(this.schema.selectOptions && this.schema.selectOptions.deselectLabel){
+            return this.schema.selectOptions.deselectLabel
+          }
+          return ''
+        },
         modelFromValue: {
           get () {
-            if(this.value){
-              this.schema.values.forEach(item => {
-                if (item.value === this.value) {
-                  return item
-                }
-              })
+            // will catch falsy, null or undefined
+            if(this.value && this.value != null){
+              // if model is a string, convert to object with name and value
+              if(typeof this.value === 'string'){ 
+                return this.schema.values.filter(item => item.value === this.value)[0]     
+              } else {
+                return this.value
+              }
             } else {
               return ''
             }
           },
           set (newValue) {
-            this.value = newValue
+            if(newValue && newValue != null){
+              this.value = newValue[this.trackBy]
+            } else {
+              this.value = ''
+            }
           }
         }
       }
