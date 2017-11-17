@@ -28,14 +28,16 @@
             <component v-bind:is="child.component" v-bind:model="child"></component>
         </template>
         <admin-components-notifyuser></admin-components-notifyuser>
-        <admin-components-pathbrowser></admin-components-pathbrowser>
-        <admin-components-iconbrowser ref="iconbrowser"></admin-components-iconbrowser>
     </div>
 </template>
 
 <script>
 export default {
     props: ['model'],
+    mounted(){
+        // init materialize plugins
+        $('.modal').modal()
+    },
     methods: {
         selectPath: function(me, target) {
             $perAdminApp.loadContent(target+'.html')
