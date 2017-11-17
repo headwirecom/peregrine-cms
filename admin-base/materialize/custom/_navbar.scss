@@ -55,6 +55,39 @@ nav {
         }
       }
     }
+    .multiselect {
+      .multiselect__select {
+        top: 26px;
+        right: 15px;
+        padding: 0 15px;
+        &:before {
+          color: #fff;
+          font-size: 8px;
+        }
+      }
+      .multiselect__tags {
+        cursor: pointer;
+        background: none;
+        color: #fff;
+        border: 0;
+        padding-left: 15px;
+        &:hover,
+        &:focus,
+        &:active {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+      }
+      .multiselect__single {
+        background: none;
+        color: #fff;
+        min-width: 30px;
+      }
+      &.multiselect--active {
+        .multiselect__tags {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
   }
   .sub-nav {
     min-height: 48px;

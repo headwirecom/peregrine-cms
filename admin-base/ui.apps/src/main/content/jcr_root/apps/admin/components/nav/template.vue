@@ -47,9 +47,6 @@
                 </template>
             </template>
         </div>
-        <ul id="languages" class="dropdown-content">
-            <li v-for="item in $i18nGetLanguages()"><a href="#!" v-on:click="onSelectLang(item.name)">{{item.name}}</a></li>
-        </ul>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
             <li v-if="this.$root.$data.state">
                 <a title="logout" href="/system/sling/logout?resource=/index.html">
@@ -60,12 +57,17 @@
                 <a title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
             </li>
             <li>
-                <a  href="#!"  
-                    ref="languageButton" 
-                    data-activates="languages">
-                    {{language}}
-                    <i class="material-icons right">arrow_drop_down</i>
-                </a>
+                 <multiselect
+                    :value="language"
+                    deselect-label=""
+                    track-by="name"
+                    label="name"
+                    placeholder="Select one"
+                    :options="languages"
+                    :searchable="false"
+                    :allow-empty="false"
+                    @select="onSelectLang"
+                 ></multiselect>
             </li>
         </ul>
       </div>
@@ -80,31 +82,31 @@
 <script>
 export default {
     props: ['model'],
-    mounted(){
-        $(this.$refs.languageButton).dropdown()
-    },
     computed: {
-        language() {
-            return $perAdminApp.getView().state.language
+        language () {
+            return { name: $perAdminApp.getView().state.language }
         },
-        vueRoot: function() {
+        languages () {
+            return this.$i18nGetLanguages()
+        },
+        vueRoot () {
             return this.$root
         },
-        isExtended: function() {
+        isExtended () {
             return this.model.children && this.model.children.length > 0
         },
-        help() {
+        help () {
             if($perAdminApp.getView()) {
                 return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
             }
         }
     },
     methods: {
-        onSelectLang(name) {
+        onSelectLang ({name}) {
             this.$i18nSetLanguage(name)
             $perAdminApp.forceFullRedraw()
         },
-        onShowHelp() {
+        onShowHelp () {
             $perAdminApp.action(this, 'showTour', '')
         }
     }
