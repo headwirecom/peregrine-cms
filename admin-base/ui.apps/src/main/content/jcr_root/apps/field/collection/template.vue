@@ -30,7 +30,7 @@
         <i class="material-icons">add</i>
       </button>
     </h5>
-    <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'not-multifield'" ref="collapsible">
+    <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'singlefield'" ref="collapsible">
         <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)"> {{item._opDelete}}
             <div 
               class="collapsible-header" 
@@ -49,11 +49,16 @@
                   :model="value"></vue-form-generator>
                 <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
             </div>
-            <div v-if="schema.multifield" class="collapsible-body">
-                <vue-form-generator
-                  :schema="schema"
-                  :model="prepModel(item, schema)"></vue-form-generator>
-            </div>
+            <transition
+              v-on:enter="enter"
+              v-on:leave="leave"
+              v-bind:css="false">
+              <div v-if="schema.multifield && activeItem === index" class="collapsible-body">
+                  <vue-form-generator
+                    :schema="schema"
+                    :model="prepModel(item, schema)"></vue-form-generator>
+              </div>
+            </transition>
         </li>
     </ul>
     <ol v-else class="preview-list clearfix">
@@ -79,14 +84,6 @@
     mixins: [ VueFormGenerator.abstractField ],
     beforeMount(){
       if(!this.value) this.value = []
-    },
-    mounted(){
-      if(this.schema.multifield){
-        $(this.$refs.collapsible).collapsible({accordion: false})
-      }
-    },
-    beforeDestroy(){
-      $(this.$refs.collapsible).collapsible('destroy')
     },
   	data(){
   		return{
@@ -133,7 +130,7 @@
           }
           return parseInt(index) + 1
       },
-        prepModel(model, schema) {
+      prepModel(model, schema) {
             for(let i = 0; i < schema.fields.length; i++) {
                 const field = schema.fields[i].model
                 if(!model[field]) {
@@ -143,7 +140,7 @@
             return model
         },
 
-        onAddItem(e){
+      onAddItem(e){
         if(!this.schema.multifield){
           var newChild = '';
             if(!this.value || this.value === '')
@@ -156,7 +153,7 @@
             newChild['sling:resourceType'] = this.schema.resourceType
         }
         this.value.push(newChild)
-//          Vue.set(this.value, this.value.length -1, newChild)
+        // Vue.set(this.value, this.value.length -1, newChild)
         this.onSetActiveItem(this.value.length - 1)
         this.$forceUpdate()
       },
@@ -216,6 +213,13 @@
             }
         }
         this.value.splice(new_index, 0, this.value.splice(old_index, 1)[0]);
+      },
+      // animations with Velocity.js
+      enter: function (el, done) {
+        window.Materialize.Vel(el, "slideDown", { duration: 250 })
+      },
+      leave: function (el, done) {
+        window.Materialize.Vel(el, "slideUp", { duration: 250 }, { complete: done })
       }
     }
   }
