@@ -71,7 +71,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/assets",
+          "browserRoot": "/content/sites",
           "placeholder": "buttonlink",
           "label": "Button Link",
           "model": "buttonlink",
@@ -94,9 +94,35 @@
       "type": "material-radios",
       "values": [
         {
-          "name": "Image",
-          "value": "image"
+          "name": "None",
+          "value": "none"
         },
+        {
+          "name": "Light",
+          "value": "light"
+        },
+        {
+          "name": "Dark",
+          "value": "dark"
+        }
+      ],
+      "placeholder": "colorscheme",
+      "label": "Block Color Scheme",
+      "model": "colorscheme"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "custombackground",
+      "label": "Custom Background",
+      "model": "custombackground"
+    },
+    {
+      "type": "material-radios",
+      "values": [
         {
           "name": "Color",
           "value": "color"
@@ -106,13 +132,18 @@
           "value": "gradient"
         },
         {
+          "name": "Image",
+          "value": "image"
+        },
+        {
           "name": "Video",
           "value": "video"
         }
       ],
       "placeholder": "backgroundtype",
       "label": "Background Type",
-      "model": "backgroundtype"
+      "model": "backgroundtype",
+      "visible": "model.custombackground == 'true'"
     },
     {
       "type": "pathbrowser",
@@ -120,7 +151,7 @@
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
-      "visible": "model.backgroundtype == 'video'"
+      "visible": "model.backgroundtype == 'video' and model.custombackground == 'true'"
     },
     {
       "type": "pathbrowser",
@@ -128,7 +159,7 @@
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",
-      "visible": "model.backgroundtype == 'image'"
+      "visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
       "type": "materialswitch",
@@ -139,7 +170,7 @@
       "placeholder": "overlay",
       "label": "Overlay",
       "model": "overlay",
-      "visible": "model.backgroundtype == 'image'"
+      "visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
       "type": "input",
@@ -147,7 +178,7 @@
       "placeholder": "overlaycolor",
       "label": "Overlay Color",
       "model": "overlaycolor",
-      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'"
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
       "type": "input",
@@ -155,7 +186,7 @@
       "placeholder": "overlayopacity",
       "label": "Overlay opacity",
       "model": "overlayopacity",
-      "visible": "model.overlay == 'true' and model.backgroundtype == 'image'",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
       "max": 100
     },
     {
@@ -164,7 +195,7 @@
       "placeholder": "bgcolor",
       "label": "Background Color",
       "model": "bgcolor",
-      "visible": "model.backgroundtype == 'color' or model.backgroundtype == 'gradient'"
+      "visible": "(model.backgroundtype == 'color' or model.backgroundtype == 'gradient') and model.custombackground == 'true'"
     },
     {
       "type": "input",
@@ -172,7 +203,7 @@
       "placeholder": "color2",
       "label": "Color 2",
       "model": "color2",
-      "visible": "model.backgroundtype == 'gradient'"
+      "visible": "model.backgroundtype == 'gradient' and model.custombackground == 'true'"
     },
     {
       "type": "materialswitch",
@@ -210,7 +241,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "max": 150
     }
   ]
 }

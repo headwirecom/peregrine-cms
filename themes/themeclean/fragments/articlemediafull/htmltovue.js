@@ -3,5 +3,6 @@ module.exports = {
     	f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
         f.replace( $.find('img'), '<themeclean-components-media :model="model"></themeclean-components-media>')
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
     }
 }

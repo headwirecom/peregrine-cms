@@ -1,8 +1,7 @@
 {
-  "title": "Article Full Text no default value",
-  "default": false,
-  "group": "Article",
+  "title": "Article Text no default value",
+  "group": "Empty",
   "model": {
-    
+       "text": "<p><br></p>"
   }
 }

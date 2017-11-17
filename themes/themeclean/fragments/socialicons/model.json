@@ -4,6 +4,22 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "iconcolor": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Icon Color",
+          "x-default": "#000000",
+          "x-form-type": "color"
+        },
+        "iconsize": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Icon Size",
+          "x-form-type": "range",
+          "x-default": "30",
+          "x-form-min": 0,
+          "x-form-max": 150
+        },
         "icons": {
           "type": "object",
           "x-form-type": "collection",

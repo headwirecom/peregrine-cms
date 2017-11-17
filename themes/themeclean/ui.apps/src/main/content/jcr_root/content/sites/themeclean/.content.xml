@@ -34,7 +34,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     component="nt:unstructured"
-                    link="/content/sites/themeclean.html"
+                    link="/content/sites/themeclean"
                     name="text1"
                     path="/jcr:content/n61bf5042-49c8-4fe8-b83f-96ad036c2d55/links/text1"
                     text="Services"/>
@@ -43,7 +43,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     component="nt:unstructured"
-                    link="/content/sites/themeclean.html"
+                    link="/content/sites/themeclean"
                     name="text2"
                     path="/jcr:content/n61bf5042-49c8-4fe8-b83f-96ad036c2d55/links/text2"
                     text="About Us"/>
@@ -52,7 +52,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     component="nt:unstructured"
-                    link="/content/sites/themeclean.html"
+                    link="/content/sites/themeclean"
                     name="text3"
                     path="/jcr:content/n61bf5042-49c8-4fe8-b83f-96ad036c2d55/links/text3"
                     text="Contact Us"/>
@@ -63,7 +63,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#149dcc"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="Try It Now"
                     component="nt:unstructured"
                     iconclass="mbri-save mbr-iconfont mbr-iconfont-btn"
@@ -182,7 +182,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#008040"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="See More"
                     component="nt:unstructured"
                     iconclass=""
@@ -193,7 +193,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#006040"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="About Us"
                     component="nt:unstructured"
                     iconclass=""
@@ -227,7 +227,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#ff0000"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="LEARN MORE"
                     component="nt:unstructured"
                     name="button1"
@@ -237,7 +237,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#0000ff"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="LIVE DEMO"
                     component="nt:unstructured"
                     iconclass=""
@@ -283,7 +283,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#008040"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="See More"
                     component="nt:unstructured"
                     iconclass=""
@@ -488,7 +488,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#c0c0c0"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="View Detail"
                     component="nt:unstructured"
                     image="/content/assets/themeclean/images/01.jpg"
@@ -501,7 +501,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#c0c0c0"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="View Detail"
                     component="nt:unstructured"
                     image="/content/assets/themeclean/images/02.jpg"
@@ -514,7 +514,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#c0c0c0"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="View Detail"
                     component="nt:unstructured"
                     image="/content/assets/themeclean/images/04.jpg"
@@ -546,7 +546,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#008080"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="View"
                     component="nt:unstructured"
                     image="/content/assets/themeclean/images/background1.jpg"
@@ -559,7 +559,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#008080"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="View"
                     component="nt:unstructured"
                     image="/content/assets/themeclean/images/background2.jpg"
@@ -572,7 +572,7 @@
                     jcr:lastModifiedBy="admin"
                     jcr:primaryType="nt:unstructured"
                     buttoncolor="#008080"
-                    buttonlink="/content/sites/themeclean.html"
+                    buttonlink="/content/sites/themeclean"
                     buttontext="View"
                     component="nt:unstructured"
                     image="/content/assets/themeclean/images/background3.jpg"
@@ -603,30 +603,30 @@
 	                jcr:primaryType="nt:unstructured">
 		            <text1
 			            jcr:primaryType="nt:unstructured"
-			            link="/content/sites/themeclean.html"
+			            link="/content/sites/themeclean"
 			            text="Website Builder"/>
 			        <text2
 			            jcr:primaryType="nt:unstructured"
-			            link="/content/sites/themeclean.html"
+			            link="/content/sites/themeclean"
 			            text="For Windows"/>
 			        <text3
 			            jcr:primaryType="nt:unstructured"
-			            link="/content/sites/themeclean.html"
+			            link="/content/sites/themeclean"
 			            text="For Mac"/>
 			    </links>
 		        <icons 
 		            jcr:primaryType="nt:unstructured">
 		            <icon1
 			            jcr:primaryType="nt:unstructured"
-			            url="/content/sites/themeclean.html"
+			            url="/content/sites/themeclean"
 			            icon=":material-icons:face"/>
 			        <icon2
 			            jcr:primaryType="nt:unstructured"
-			            url="/content/sites/themeclean.html"
+			            url="/content/sites/themeclean"
 			            icon=":material-icons:favorite"/>
 			        <icon3
 			            jcr:primaryType="nt:unstructured"
-			            url="/content/sites/themeclean.html"
+			            url="/content/sites/themeclean"
 			            icon=":material-icons:account_balance"/>
 			    </icons>
         </footer>

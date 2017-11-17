@@ -10,6 +10,7 @@
           v-html="item.title"></a>
         </li>
       </ul>
+      <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <!-- Tab Content -->
       <div class="tab-content" id="myTabContent">
         <div role="tabpanel" v-for="(item,i) in model.tabs" :key="i" v-bind:id="`tab${_uid}${parseInt(i)+1}`"
@@ -23,6 +24,12 @@
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return !(this.model.tabs.length > 0)
+            }
+        }
     }
 </script>

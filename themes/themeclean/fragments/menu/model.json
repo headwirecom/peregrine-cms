@@ -32,6 +32,16 @@
           "x-form-label": "Collapse Menu",
           "x-form-type": "materialswitch"
         },
+        "elevation": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Elevation",
+          "x-form-visible": "",
+          "x-form-type": "range",
+          "x-default": 0,
+          "x-form-min": 0,
+          "x-form-max": 5
+        },
         "sticky": {
           "type": "string",
           "x-source": "inject",
@@ -48,7 +58,7 @@
         },
         "bgref": {
             "x-form-type": "reference",
-        	"$ref": "fragments/block/model-article.json#/definitions/Block"
+        	"$ref": "fragments/block/model.json#/definitions/Block"
         }
       }
     }

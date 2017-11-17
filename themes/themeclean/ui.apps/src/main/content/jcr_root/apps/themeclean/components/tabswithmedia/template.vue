@@ -1,6 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <div>
+      <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <div class="row">
         <h2 class="text-center col-12 pb-4" v-if="model.showtitle == 'true'"
         v-html="model.title"></h2>
@@ -9,7 +10,7 @@
       </div>
       <div class="row">
         <themeclean-components-media :model="model"></themeclean-components-media>
-        <div class="col-12 col-md">
+        <div class="col-12 col-md pt-3 d-flex flex-column justify-content-center">
           <!-- Tab Nav -->
           <div class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist"
           style="margin-left: 2em">
@@ -37,6 +38,12 @@
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return !(this.model.showtitle === 'true' || this.model.showsubtitle === 'true'  || this.model.tabs.length > 0 || this.model.imagesrc || this.model.videosrc)
+            }
+        }
     }
 </script>

@@ -4,7 +4,7 @@ module.exports = {
         f.bindAttribute($.parent(),'model','model')
         f.addFor($.find('div.card').first(), 'model.cards')
         f.addStyle($.find('div.card').first(), 'background-color', 'model.cardcolor')
-        f.bindAttribute($.find('img').first(), 'src', 'item.image')
+        f.bindAttribute($.find('img').first(), 'src', f.pathToUrl('item.image'))
         f.addIf($.find('h5').first(), 'model.showtitle == \'true\'')
         f.mapRichField($.find('h5').first(), "item.title")
         f.addStyle($.find('h5').first(), 'color', 'item.color')
@@ -12,9 +12,10 @@ module.exports = {
         f.addIf($.find('h1').first(), 'editAndEmpty')
         f.mapRichField($.find('p').first(), "item.text")
         //f.addStyle($.find('p').first(), 'color', 'item.color')
-        f.bindAttribute($.find('a.btn').first(), 'href', 'item.buttonlink')
+        f.bindAttribute($.find('a.btn').first(), 'href', f.pathToUrl('item.buttonlink'))
         f.mapRichField($.find('a.btn').first(), "item.buttontext")
         f.addStyle($.find('a.btn').first(), 'backgroundColor', 'item.buttoncolor')
         f.addStyle($.find('a.btn').first(), 'borderColor', 'item.buttoncolor')
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
     }
 }

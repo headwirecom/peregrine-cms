@@ -41,6 +41,7 @@
           "x-source": "inject",
           "x-form-label": "Width",
           "x-form-type": "range",
+          "x-default": 100,
           "x-form-min": 10,
           "x-form-max": 100
         },

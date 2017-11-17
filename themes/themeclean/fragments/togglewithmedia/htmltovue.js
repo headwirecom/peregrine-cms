@@ -14,5 +14,6 @@ module.exports = {
         
         f.bindAttribute($.find('div.collapse').first(), 'id', '`accordion${_uid}${i}`')
         f.mapRichField($.find('div.card-body').first(), "item.text")
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
     }
 }

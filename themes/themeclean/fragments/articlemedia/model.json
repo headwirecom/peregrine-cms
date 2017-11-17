@@ -4,6 +4,12 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "reverselayout": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Reverse Layout",
+          "x-form-type": "materialswitch"
+        },
         "text": {
           "type": "string",
           "x-source": "inject",

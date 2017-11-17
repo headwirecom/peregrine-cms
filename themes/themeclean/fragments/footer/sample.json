@@ -1,0 +1,45 @@
+{
+  "title": "Footer",
+  "group": "General",
+  "model": {
+    "backgroundtype": "color",
+    "bgcolor": "#eeeeee",
+    "bottompadding": "0",
+    "toppadding": "30",
+    "logo": "/content/assets/themeclean/images/peregrine-logo.png",
+    "logourl": "http://www.peregrine-cms.com",
+    "logosize": "6",
+    "copyright": "Copyright 2017 Peregrine - All Rights Reserved",
+    "title": "Help Links",
+    "title1": "Address",
+    "text1": "1234 Street Name&lt;br&gt;City, AA 99999",
+    "title2": "Contacts",
+    "text2": "Email: support@headwire.com&lt;br&gt;Phone: +1 (0) 000 0000 001&lt;br&gt;Fax: +1 (0) 000 0000 002",
+    "links": [
+      {
+        "link": "/content/sites/themeclean",
+        "text": "Website Builder"
+      },{
+        "link": "/content/sites/themeclean",
+        "text": "For Windows"
+      },{
+        "link": "/content/sites/themeclean",
+        "text": "For Mac"
+      }
+    ],
+    "icons": [
+      {
+        "url": "/content/sites/themeclean",
+        "icon": ":material-icons:face"
+      },
+      {
+        "url": "/content/sites/themeclean",
+        "icon": ":material-icons:favorite"
+      },
+      {
+        "url": "/content/sites/themeclean",
+        "icon": ":material-icons:account_balance"
+      }
+    ]
+  }
+}

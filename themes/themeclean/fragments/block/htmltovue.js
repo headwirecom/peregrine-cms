@@ -1,6 +1,6 @@
 module.exports = {
     convert: function($, f) {
-        f.bindAttribute( $, 'class', 'classes', false)
+        f.bindAttribute( $, 'class', '[classes, colors]', false)
         f.bindAttribute( $, 'style', '[styles, sticky]', false)
         f.bindAttribute( $, 'data-per-path', 'model.path')
 

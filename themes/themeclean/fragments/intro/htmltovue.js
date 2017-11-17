@@ -12,9 +12,10 @@ module.exports = {
         
         f.addIf($.find('div.d-flex').first(), 'model.showbutton == \'true\'')
         f.addFor($.find('div.d-flex>a').first(), 'model.buttons')
-        f.bindAttribute($.find('a.btn').first(), 'href', 'item.buttonlink')
+        f.bindAttribute($.find('a.btn').first(), 'href', f.pathToUrl('item.buttonlink'))
         f.mapRichField($.find('a.btn').first(), "item.buttontext")
         f.addStyle($.find('a.btn').first(), 'backgroundColor', 'item.buttoncolor')
         f.addStyle($.find('a.btn').first(), 'borderColor', 'item.buttoncolor')
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
     }
 }

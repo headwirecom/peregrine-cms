@@ -3,8 +3,9 @@
     <div class="col-12">
       <div class="row justify-content-between text-center text-md-left">
         <div class="col-12 col-md-3">
-          <a v-bind:href="model.logourl">
-            <img class="mb-3" alt="logo" v-bind:src="model.logo" v-bind:style="`height:${parseInt(model.logosize)}rem;`">
+          <a v-bind:href="$helper.pathToUrl(model.logourl)">
+            <img class="mb-3" alt="logo" v-bind:src="$helper.pathToUrl(model.logo)"
+            v-bind:style="`height:${parseInt(model.logosize)}rem;`">
           </a>
         </div>
         <div class="col-12 col-md-3">

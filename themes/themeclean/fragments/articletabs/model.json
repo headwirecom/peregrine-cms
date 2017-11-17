@@ -1,0 +1,34 @@
+{
+  "definitions": {
+    "Articletabs": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "tabs": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Tabs",
+          "x-form-type": "collection",
+          "properties": {
+            "title": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Tab Title",
+              "x-form-type": "text"
+            },
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Tab Text",
+              "x-form-type": "texteditor"
+            }
+          }
+        },
+        "bgref": {
+          "$ref": "fragments/block/model.json#/definitions/Block",
+          "x-form-type": "reference"
+        }
+      }
+    }
+  }
+}

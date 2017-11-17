@@ -1,10 +1,12 @@
 {
   "title": "Menu",
-  "default": true,
   "group": "General",
   "model": {
     "backgroundtype": "color",
     "bgcolor": "#eeeeee",
+    "bottompadding": "0",
+    "elevation": 1,
+    "toppadding": "0",
     "bgvideo": "https://www.youtube.com/embed/Ju86mknumYM",
     "collapsed": "false",
     "logo": "/content/assets/themeclean/images/peregrine-logo.png",
@@ -12,19 +14,19 @@
     "logosize": "3",
     "links": [
       {
-        "link": "/content/sites/themeclean.html",
+        "link": "/content/sites/themeclean",
         "text": "Services"
       },{
-        "link": "/content/sites/themeclean.html",
+        "link": "/content/sites/themeclean",
         "text": "About Us"
       },{
-        "link": "/content/sites/themeclean.html",
+        "link": "/content/sites/themeclean",
         "text": "Contact Us"
       }
     ],
     "buttons": [
       {
-        "buttonlink": "/content/sites/themeclean.html",
+        "buttonlink": "/content/sites/themeclean",
         "buttontext": "Try It Now",
         "buttoncolor": "#149dcc"
       }

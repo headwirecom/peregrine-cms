@@ -36,6 +36,12 @@ const postConfig = {
 
 let callbacks
 
+function json(data) {
+    const content = JSON.stringify(data)
+    const blob = new Blob([content], {type : 'application/json; charset=utf-8'})
+    return blob
+}
+
 function fetch(path) {
 
     logger.fine('Fetch ', path)
@@ -562,7 +568,8 @@ class PerAdminImpl {
                 nodeData['sling:resourceType'] = node.component.split('-').join('/')
             }
             stripNulls(nodeData)
-            formData.append('content', JSON.stringify(nodeData))
+
+            formData.append('content', json(nodeData))
 
             updateWithForm('/admin/updateResource.json'+path + node.path, formData)
                 // .then( (data) => this.populateNodesForBrowser(parentPath) )
@@ -580,7 +587,7 @@ class PerAdminImpl {
             delete nodeData['jcr:createdBy']
             delete nodeData['jcr:lastModified']
             delete nodeData['jcr:lastModifiedBy']
-            formData.append('content', JSON.stringify(nodeData))
+            formData.append('content', json(nodeData))
 
             updateWithForm('/admin/updateResource.json'+path, formData)
                 .then( () => resolve() )
@@ -607,7 +614,7 @@ class PerAdminImpl {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
             let formData = new FormData();
-            formData.append('content', JSON.stringify(data))
+            formData.append('content', json(data))
             formData.append('drop', drop);
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( (data) => {

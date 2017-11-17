@@ -1,0 +1,9 @@
+{
+  "title": "Tabs With Media no default values",
+  "group": "Empty",
+  "model": {
+    "tabs": [
+      
+    ]
+  }
+}

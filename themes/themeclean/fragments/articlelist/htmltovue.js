@@ -2,7 +2,7 @@ module.exports = {
     convert: function($, f) {
         f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
-
+        f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
         const li = $.find('li')
         f.addFor( li, 'model.listitems' )
         f.mapRichField( li, 'item.text' )

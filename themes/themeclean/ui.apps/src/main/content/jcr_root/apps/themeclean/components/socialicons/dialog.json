@@ -1,6 +1,21 @@
 {
   "fields": [
     {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "iconcolor",
+      "label": "Icon Color",
+      "model": "iconcolor"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "iconsize",
+      "label": "Icon Size",
+      "model": "iconsize",
+      "max": 150
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [
