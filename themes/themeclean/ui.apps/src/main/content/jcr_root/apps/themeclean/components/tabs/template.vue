@@ -28,7 +28,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return !(this.model.tabs.length > 0)
+                //return !(this.model.tabs.length > 0)
+                return this.$helper.areAllEmpty(this.model.tabs)
             }
         }
     }
