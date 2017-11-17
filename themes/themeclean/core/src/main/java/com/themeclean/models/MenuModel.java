@@ -49,6 +49,16 @@ import javax.inject.Named;
           "x-form-label": "Collapse Menu",
           "x-form-type": "materialswitch"
         },
+        "elevation": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Elevation",
+          "x-form-visible": "",
+          "x-form-type": "range",
+          "x-default": 0,
+          "x-form-min": 0,
+          "x-form-max": 5
+        },
         "sticky": {
           "type": "string",
           "x-source": "inject",
@@ -311,6 +321,10 @@ public class MenuModel extends AbstractComponent {
 	@Inject
 	private String collapsed;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Elevation","x-form-visible":"","x-form-type":"range","x-default":0,"x-form-min":0,"x-form-max":5} */
+	@Inject
+	private String elevation;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Sticky","x-form-type":"materialswitch"} */
 	@Inject
 	private String sticky;
@@ -408,6 +422,11 @@ public class MenuModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Menu","x-form-type":"materialswitch"} */
 	public String getCollapsed() {
 		return collapsed;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Elevation","x-form-visible":"","x-form-type":"range","x-default":0,"x-form-min":0,"x-form-max":5} */
+	public String getElevation() {
+		return elevation;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Sticky","x-form-type":"materialswitch"} */

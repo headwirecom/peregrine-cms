@@ -29,9 +29,10 @@
         },
         computed: {          
           classes: function() {
-            return {
-              'view-height': this.model.fullheight == 'true'
-            }
+            let classObject = {}
+            classObject['view-height'] = this.model.fullheight == 'true'
+            classObject[`elevation-${this.model.elevation}`] = this.model.elevation > 0
+            return classObject      
           },
           colors: function() {
             let classes = {}
