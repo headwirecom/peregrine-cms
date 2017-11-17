@@ -38,6 +38,19 @@
           <i class="material-icons">insert_drive_file</i>
         </button>
         <img v-if="isImage(value)" :src="value" />
+        <admin-components-pathbrowser 
+            v-if="isOpen"
+            :isOpen="isOpen" 
+            :browserRoot="browserRoot" 
+            :browserType="browserType" 
+            :currentPath="currentPath" 
+            :selectedPath="selectedPath" 
+            :withLinkTab="withLinkTab"
+            :setCurrentPath="setCurrentPath"
+            :setSelectedPath="setSelectedPath"
+            :onCancel="onCancel"
+            :onSelect="onSelect">
+        </admin-components-pathbrowser>
       </template>
       <p v-else>{{value}}</p>
     </div>
@@ -47,16 +60,36 @@
     export default {
         props: ['model'],
         mixins: [ VueFormGenerator.abstractField ],
+        data () {
+            return {
+                isOpen: false,
+                browserRoot: '/content/assets',
+                browserType: 'asset',
+                currentPath: '/content/assets',
+                selectedPath: null,
+                withLinkTab: true
+            }
+        },
         methods: {
+            onCancel(){
+                this.isOpen = false
+            },
+            onSelect() {
+                this.value = this.selectedPath
+                this.isOpen = false
+            },
+            setCurrentPath(path){
+                this.currentPath = path
+            },
+            setSelectedPath(path){
+                this.selectedPath = path
+            },
             isImage(path) {
                 return /\.(jpg|png|gif)$/.test(path);
             },
             isValidPath(path, root){
                 return path && path !== root && path.includes(root)
             },
-            setPathBrowserValue(){
-                this.value = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
-            }, 
             browse() {
                 // root path is used to limit top lever directory of path browser
                 let root = this.schema.browserRoot
@@ -67,17 +100,7 @@
                 // browser type is used to limit browsing and show correct file/icon types
                 let type = this.schema.browserType
                 if(!type) {
-                    console.warn('browserType not defined in schema. Infering type from root path.')
-                    switch(root) {
-                        case ('/content/assets'):
-                            type = 'asset'
-                            break
-                        case ('/content/sites'):
-                            type = 'page'
-                            break;
-                        default:
-                            type = 'asset'
-                    }
+                    root === '/content/sites' ? type = 'page' : type = 'asset'
                 }
                 let selectedPath = this.value
                 // current path is the active directory in the path browser
@@ -88,34 +111,23 @@
                 } else { // if path is invalid
                     currentPath = root
                 }
-                const initModalState = {
-                    root: root,
-                    type: type,
-                    current: currentPath,
-                    selected: selectedPath
-                }
+                this.browserRoot = root
+                this.browserType = type
+                this.currentPath = currentPath
+                this.selectedPath = selectedPath
+
                 let options = this.schema.browserOptions
-                if(!options) {
-                    console.warn('No options specified. Modal will open with defaults.')
-                    options = {
-                        withLink: true
-                    }
+                if(options && options.withLink){
+                    this.withLinkTab = options.withLink
+                } else {
+                    this.withLinkTab = true
                 }
-                options.complete = this.setPathBrowserValue 
-                // set pathbrowser modal initial state
-                $perAdminApp.pathBrowser(initModalState, options)
-                /* modal options:
-                {
-                    dismissible: true, // Modal can be dismissed by clicking outside of the modal
-                    opacity: .5, // Opacity of modal background
-                    inDuration: 300, // Transition in duration
-                    outDuration: 200, // Transition out duration
-                    startingTop: '4%', // Starting top style attribute
-                    endingTop: '10%', // Ending top style attribute
-                    ready: function(modal, trigger) {}, // Callback for Modal open. Modal and trigger parameters available.
-                    complete: function(){} // Callback for Modal close
-                }
-                */
+                $perAdminApp.getApi().populateNodesForBrowser(currentPath, 'pathBrowser')
+                    .then( () => {
+                        this.isOpen = true
+                    }).catch( (err) => {
+                        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+                    })
             }
         }
     }
