@@ -24,82 +24,31 @@
   -->
 <template>
   <div class="wrap">
-    <div v-if="!schema.preview" :class="`select-wrapper ${dropdownActive ? 'active' : ''}`">
-        <span class="caret"></span>
-        <input 
-          ref="selectInput"
-          type="text" 
-          class="form-control select-dropdown" 
-          :value="dropdownValue"
-          v-on:click.stop.prevent="showDropdown" />
-        <ul 
-          :class="dropDownClasses">
-          <li v-if="!selectOptions.hideNoneSelectedText" class="disabled">
-            <span>{{ selectOptions.noneSelectedText || "&lt;Nothing selected&gt;" }}</span>
-          </li>
-          <li 
-            v-for="val in schema.values" 
-            :class="value === val.value ? 'active' : ''" 
-            v-on:click="onClick(val.name, val.value)">
-            <span>{{ val.name }}</span>
-          </li>
-        </ul>
-    </div>
-    <p v-else>{{ dropdownValue }}</p>
+    <multiselect 
+      v-if="!schema.preview"
+      v-model="value" 
+      v-bind="schema.selectOptions"
+      :options="schema.values">
+    </multiselect>
+    <template v-else>
+      <ol v-if="schema.selectOptions.multiple" class="preview-items">
+        <li v-for="item in value" class="preview-item">
+          <label>Name:</label> {{item.name}} <br>
+          <label>Value:</label> {{item.value}}
+        </li>
+      </ol>
+      <p v-else class="preview-item">
+        <label>Name:</label> {{value.name}} <br>
+        <label>Value:</label> {{value.value}}
+      </p>
+    </template>
   </div>
 </template>
 
 <script>
     export default {
-        props: ['model'], 
-        mixins: [ VueFormGenerator.abstractField ], 
-        mounted(){
-          if(this.schema.selectOptions && this.schema.selectOptions.noneSelectedText){
-            this.dropdownValue = this.schema.selectOptions.noneSelectedText
-          }
-          this.schema.values.forEach((val, index) => {
-            if(val.value === this.value){
-              this.dropdownValue = val.name
-            }
-          })
-        }, 
-        data() {
-          return {
-            dropdownValue: '<Nothing selected>',
-            dropdownActive: false
-          }
-        }, 
-        computed: {
-          dropDownClasses() {
-            const defaultClasses = 'dropdown-content select-dropdown'
-            if(this.dropdownActive){
-              return defaultClasses + ' active'
-            } else {
-              return defaultClasses
-            }
-          },
-
-          selectOptions() {
-            return this.schema.selectOptions || {} 
-          }     
-        },
-        methods: {
-          onClick(name, value){
-              if(name === '') {
-                  name = '<Nothing selected>'
-              }
-            this.value = value
-            this.dropdownValue = name
-            this.dropdownActive = false
-          },
-          showDropdown(){
-            this.dropdownActive = true
-            document.body.addEventListener('click', this.hideDropdown)
-          },
-          hideDropdown(){
-            this.dropdownActive = false
-            document.body.removeEventListener('click', this.hideDropdown)
-          }
-        }
+      // v-bind="obj" is same as ...obj (object destructuring)
+      props: ['model'], 
+      mixins: [ VueFormGenerator.abstractField ]
     }
 </script>
