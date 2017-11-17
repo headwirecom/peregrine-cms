@@ -1,0 +1,9 @@
+{
+  "title": "Emptyblock",
+  "group": "General",
+  "model": {
+    "height": "20",
+    "toppadding": "0",
+    "bottompadding": "0"
+  }
+}

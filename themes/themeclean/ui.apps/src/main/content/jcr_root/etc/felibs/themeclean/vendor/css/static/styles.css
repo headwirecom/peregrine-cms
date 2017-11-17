@@ -18,8 +18,14 @@ h3 {
   line-height: 1.22;
   letter-spacing: -.012em;
 }
-blockquote{
+blockquote {
   font-style: italic;
+}
+nav a {
+  font-size: 18px;
+}
+footer {
+  font-size: 18px;
 }
 .article {
   font-size: 18px;
