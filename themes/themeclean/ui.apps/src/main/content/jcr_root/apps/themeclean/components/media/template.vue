@@ -1,11 +1,11 @@
 <template>
-  <div class="col-12 percms-image-wrap p-0" :style="{flexBasis: `${model.mediawidth}%`}">
+  <div class="w-100">
 
     <div v-if="model.mediatype === 'video'" class="embed-responsive embed-responsive-16by9">
       <iframe :src="$helper.pathToUrl(model.videosrc)" frameborder="0" allowfullscreen></iframe>
       </iframe>
     </div>
-    <img v-else :src="$helper.pathToUrl(model.imagesrc)"> 
+    <img v-else class="w-100" :src="$helper.pathToUrl(model.imagesrc)"> 
 
     <div v-if="model.mediacaption" class="percms-caption">
       <div>
