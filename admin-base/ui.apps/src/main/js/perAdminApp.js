@@ -544,53 +544,6 @@ function notifyUserImpl(title, message, options) {
     $('#notifyUserModal').modal('open', options)
 }
 
-/**
- * implementation of $perAdminApp.iconBrowser()
- *
- * @private
- * @param state
- * @param options
- */
-function iconBrowserImpl(state, options) {
-    let { icon, families } = state
-    let iconParts = icon.split(':') //[iconFamily, iconClass, iconText]
-    let iconFamily = iconParts[0]
-    let iconClass = iconParts[1]
-    let iconText = iconParts[2]
-
-    set(view, '/state/iconbrowser/families', families)
-    set(view, '/state/iconbrowser/family', iconFamily)
-    set(view, '/state/iconbrowser/class', iconClass)
-    set(view, '/state/iconbrowser/text', iconText)
-    set(view, '/state/iconbrowser/original', icon)
-    actionImpl($perAdminApp.getApp().$children[0], 'iconBrowserModalOpen', options)
-}
-
-/**
- * implemenation of $perAdminApp.pathBrowser()
- *
- * @private
- * @param state
- * @param options
- */
-function pathBrowserImpl(state, options) {
-    api.populateNodesForBrowser(state.current, 'pathBrowser')
-    .then( () => { 
-        set(view, '/state/pathbrowser/root', state.root)
-        set(view, '/state/pathbrowser/type', state.type)
-        set(view, '/state/pathbrowser/current', state.current)
-        set(view, '/state/pathbrowser/selected', state.selected)
-        set(view, '/state/pathbrowser/original', state.selected)
-        set(view, '/state/pathbrowser/withLink', options.withLink)
-        set(view, '/state/pathbrowser/isOpen', true)
-     })
-    .then( () => { $('#pathBrowserModal').modal('open', options) })
-    .catch( (err) => {
-        // retry by setting current dir to root dir
-        state.current = state.root
-        pathBrowserImpl(state, options)
-    })
-}
 
 /**
  * implementation of $perAdminApp.isPreviewMode()
@@ -892,31 +845,6 @@ var PerAdminApp = {
      */
     notifyUser(title, message, options) {
         notifyUserImpl(title, message, options)
-    },
-
-    /**
-     * open an icon browser
-     *
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param state
-     * @param options
-     */
-    iconBrowser(state, options) {
-        iconBrowserImpl(state, options)
-    },
-
-    /**
-     * open a path browser for the provided root, notify the callback on selection
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param state
-     * @param options
-     */
-    pathBrowser(state, options) {
-        pathBrowserImpl(state, options)
     },
 
     /**
