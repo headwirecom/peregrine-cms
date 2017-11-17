@@ -1,7 +1,9 @@
 {
   "title": "Emptyblock",
-  "group": "",
+  "group": "General",
   "model": {
-    "text": "example"
+    "height": "20",
+    "toppadding": "0",
+    "bottompadding": "0"
   }
 }
