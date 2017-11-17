@@ -3,6 +3,8 @@ module.exports = {
         //f.bindPath($)
     	f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
+        f.replace( $.find('img'), '<themeclean-components-media :model="model"></themeclean-components-media>')
+        f.bindAttribute($.find('div').eq(2), 'style', "{flexBasis:`${model.mediawidth}%`}")
     	f.addIf($.find('h2').first(), 'model.showtitle == \'true\'')
         f.mapRichField($.find('h2').first(), "model.title")
         f.addFor($.find('div.card').first(), 'model.toggles')
