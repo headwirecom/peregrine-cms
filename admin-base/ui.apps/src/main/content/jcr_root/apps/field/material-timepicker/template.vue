@@ -1,13 +1,18 @@
 <template>
-		<datetime v-model="value" type="time" placeholder="Select time"></datetime>
+		<datetime v-model="sanitizedValue" type="time" placeholder="Select time"></datetime>
 </template>
 
 <script>	
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
-	  data: function(){
-			return {
-				time: '20:40:00Z'
+	  computed: {
+			sanitizedValue: {
+				get () {
+      		return this.value ? this.value : ''
+				},
+				set (newValue) {
+					this.value = newValue
+				}
 			}
 		}
 	}
