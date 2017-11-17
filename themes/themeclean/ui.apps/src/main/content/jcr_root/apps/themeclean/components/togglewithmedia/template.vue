@@ -5,7 +5,9 @@
       <h2 class="text-center pb-4" v-if="model.showtitle == 'true'"
       v-html="model.title"></h2>
       <div class="row justify-content-center">
-        <themeclean-components-media :model="model"></themeclean-components-media>
+        <div v-bind:style="{flexBasis:`${model.mediawidth}%`}">
+          <themeclean-components-media :model="model"></themeclean-components-media>
+        </div>
         <div class="col-12 col-md pt-3 d-flex flex-column justify-content-center">
           <div class="item card bg-transparent border-0 rounded-0" v-for="(item,i) in model.toggles"
           :key="i">
@@ -28,7 +30,8 @@
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false
-                return !(this.model.showtitle === 'true' || this.model.toggles.length > 0 || this.model.imagesrc || this.model.videosrc)
+                //return !(this.model.showtitle === 'true' || this.model.toggles.length > 0 || this.model.imagesrc || this.model.videosrc)
+                return this.$helper.areAllEmpty(this.model.showtitle === 'true' , this.model.toggles, this.model.imagesrc , this.model.videosrc)
             }
         }
     }
