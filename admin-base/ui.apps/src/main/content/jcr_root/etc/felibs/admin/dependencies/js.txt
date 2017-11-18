@@ -5,9 +5,11 @@ font-families.js
 lodash.js
 moment.js
 isotope.js
+trumbowyg.js
+vfg.js
+vue-trumbowyg.js
 vue-isotope.js
 vue-imagesloaded.js
-vfg.js
 vue-multiselect.js
 vue-form-wizard.js
 vue-datetime.js
