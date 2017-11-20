@@ -32,6 +32,7 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Logo",
           "x-form-type": "pathbrowser",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-browserRoot": "/content/assets"
         },
         "logourl": {
@@ -39,6 +40,7 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Logo Url",
           "x-form-type": "pathbrowser",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-browserRoot": "/content/sites"
         },
         "logosize": {
@@ -46,6 +48,7 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Logo Size",
           "x-form-type": "range",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-min": 1,
           "x-form-max": 300
         },
@@ -309,15 +312,15 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String showlogo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String logo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */
 	@Inject
 	private String logourl;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-min":1,"x-form-max":300} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-visible":"model.showlogo == 'true'","x-form-min":1,"x-form-max":300} */
 	@Inject
 	private String logosize;
 
@@ -415,17 +418,17 @@ public class FooterModel extends AbstractComponent {
 		return showlogo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/assets"} */
 	public String getLogo() {
 		return logo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */
 	public String getLogourl() {
 		return logourl;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-min":1,"x-form-max":300} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-visible":"model.showlogo == 'true'","x-form-min":1,"x-form-max":300} */
 	public String getLogosize() {
 		return logosize;
 	}

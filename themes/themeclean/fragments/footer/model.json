@@ -15,6 +15,7 @@
           "x-source": "inject",
           "x-form-label": "Logo",
           "x-form-type": "pathbrowser",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-browserRoot": "/content/assets"
         },
         "logourl": {
@@ -22,6 +23,7 @@
           "x-source": "inject",
           "x-form-label": "Logo Url",
           "x-form-type": "pathbrowser",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-browserRoot": "/content/sites"
         },
         "logosize": {
@@ -29,6 +31,7 @@
           "x-source": "inject",
           "x-form-label": "Logo Size",
           "x-form-type": "range",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-min": 1,
           "x-form-max": 300 
         },

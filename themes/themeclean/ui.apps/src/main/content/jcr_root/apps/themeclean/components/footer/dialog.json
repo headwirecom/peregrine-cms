@@ -15,14 +15,16 @@
       "browserRoot": "/content/assets",
       "placeholder": "logo",
       "label": "Logo",
-      "model": "logo"
+      "model": "logo",
+      "visible": "model.showlogo == 'true'"
     },
     {
       "type": "pathbrowser",
       "browserRoot": "/content/sites",
       "placeholder": "logourl",
       "label": "Logo Url",
-      "model": "logourl"
+      "model": "logourl",
+      "visible": "model.showlogo == 'true'"
     },
     {
       "type": "input",
@@ -30,6 +32,7 @@
       "placeholder": "logosize",
       "label": "Logo Size",
       "model": "logosize",
+      "visible": "model.showlogo == 'true'",
       "min": 1,
       "max": 300
     },
