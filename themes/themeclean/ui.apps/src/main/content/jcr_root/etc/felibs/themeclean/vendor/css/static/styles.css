@@ -73,14 +73,10 @@ footer {
   min-height: 100vh
 }
 
-.percms-image-wrap img, .percms-image-wrap iframe{
-  width: 100%;
-}
-
 @media (max-width: 768px) {
 
   .percms-image-wrap {
-    min-width: 100%;
+    flex-basis: auto !important;
   }
 
 }
