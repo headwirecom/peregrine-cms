@@ -4,6 +4,12 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "showlogo": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Logo",
+          "x-form-type": "materialswitch"
+        },
         "logo": {
           "type": "string",
           "x-source": "inject",
@@ -24,41 +30,34 @@
           "x-form-label": "Logo Size",
           "x-form-type": "range",
           "x-form-min": 1,
- 		  "x-form-max": 10
+          "x-form-max": 300 
         },
-        "title1": {
+        "columns": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Column 1 Title ",
-          "x-form-type": "text"
-        },
-        "text1": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Column 1 Text",
-          "x-form-type": "texteditor"
-        },
-        "title2": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Column 2 Title",
-          "x-form-type": "text"
-        },
-        "text2": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Column 2 Text",
-          "x-form-type": "texteditor"
+          "x-form-label": "Columns",
+          "x-form-type": "collection",
+          "x-form-multifield": "true",
+          "properties": {
+            "title": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Title",
+              "x-form-type": "text"
+            },
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Text",
+              "x-form-type": "texteditor"
+            }
+          }
         },
         "copyright": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Copyright Text",
           "x-form-type": "text"
-        },
-        "linksref": {
-            "x-form-type": "reference",
-        	"$ref": "fragments/textlinksvertical/model.json#/definitions/Textlinksvertical"
         },
         "socialref": {
             "x-form-type": "reference",
