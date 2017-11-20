@@ -1,6 +1,16 @@
 {
   "fields": [
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showlogo",
+      "label": "Show Logo",
+      "model": "showlogo"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
       "placeholder": "logo",
@@ -21,35 +31,34 @@
       "label": "Logo Size",
       "model": "logosize",
       "min": 1,
-      "max": 10
+      "max": 300
     },
     {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "title1",
-      "label": "Column 1 Title ",
-      "model": "title1"
-    },
-    {
-      "type": "texteditor",
-      "rows": 10,
-      "placeholder": "text1",
-      "label": "Column 1 Text",
-      "model": "text1"
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "title2",
-      "label": "Column 2 Title",
-      "model": "title2"
-    },
-    {
-      "type": "texteditor",
-      "rows": 10,
-      "placeholder": "text2",
-      "label": "Column 2 Text",
-      "model": "text2"
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "title",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "title",
+          "label": "Title",
+          "model": "title"
+        },
+        {
+          "type": "texteditor",
+          "rows": 10,
+          "placeholder": "text",
+          "label": "Text",
+          "model": "text"
+        }
+      ],
+      "placeholder": "columns",
+      "label": "Columns",
+      "model": "columns"
     },
     {
       "type": "input",
@@ -57,40 +66,6 @@
       "placeholder": "copyright",
       "label": "Copyright Text",
       "model": "copyright"
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "title",
-      "label": "Links Section Title",
-      "model": "title"
-    },
-    {
-      "type": "collection",
-      "multifield": true,
-      "fieldLabel": [
-        "text",
-        "value"
-      ],
-      "fields": [
-        {
-          "type": "input",
-          "inputType": "text",
-          "placeholder": "text",
-          "label": "Link Text",
-          "model": "text"
-        },
-        {
-          "type": "pathbrowser",
-          "browserRoot": "/content/sites",
-          "placeholder": "link",
-          "label": "Link Url",
-          "model": "link"
-        }
-      ],
-      "placeholder": "links",
-      "label": "Links",
-      "model": "links"
     },
     {
       "type": "input",
