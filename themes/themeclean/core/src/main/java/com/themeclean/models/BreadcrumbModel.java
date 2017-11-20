@@ -82,11 +82,12 @@ public class BreadcrumbModel extends AbstractComponent {
     public List<TextLink> getLinks(){
     	
     	links = new ArrayList<TextLink>();
-    	if(Integer.parseInt(getLevel()) > 0) {
+    	/*if(Integer.parseInt(getLevel()) > 0) {
     		return getDeepLinks(getResource());
     	} else {
     		return null;
-    	}
+    	}*/
+    	return getDeepLinks(getResource());
     	
     }
     
@@ -102,7 +103,7 @@ public class BreadcrumbModel extends AbstractComponent {
 			    links.add(0,link);
 		    }
 		    // move on to its parent resource
-		    if(resource.getParent() != null && links.size() < Integer.parseInt(getLevel())) {
+		    if(resource.getParent() != null) {
 		    	getDeepLinks(resource.getParent());
 		    }
     	} catch(Exception e){
