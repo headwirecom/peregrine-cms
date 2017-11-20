@@ -9,15 +9,19 @@
     "showlogo": "true",
     "logo": "/content/assets/themeclean/images/peregrine-logo.png",
     "logourl": "http://www.peregrine-cms.com",
-    "logosize": "6",
+    "logosize": "60",
     "copyright": "Copyright 2017 Peregrine - All Rights Reserved",
     "columns": [
       {
-        "text": "Website Builder"
+        "title": "Empty Space",
+        "text": ""
+      },
+      {
+        "title": "Contact",
+        "text": "Contact Information<br>email@email.com<br>1-800-888-8888"
       },{
-        "text": "For Windows"
-      },{
-        "text": "For Mac"
+        "title": "Location",
+        "text": "Address<br>1234 S Pointe Drive, Laguna Hills, CA 92653"
       }
     ],
     "icons": [
