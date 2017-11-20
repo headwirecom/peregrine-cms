@@ -4,12 +4,11 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "rootpath": {
+        "level": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Root Path",
-          "x-form-type": "pathbrowser",
-          "x-form-browserRoot": "/content/sites"
+          "x-form-label": "Number Of Levels",
+          "x-form-type": "number"
         }
       }
     }

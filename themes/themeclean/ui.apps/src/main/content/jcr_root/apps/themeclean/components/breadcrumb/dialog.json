@@ -1,11 +1,11 @@
 {
   "fields": [
     {
-      "type": "pathbrowser",
-      "browserRoot": "/content/sites",
-      "placeholder": "rootpath",
-      "label": "Root Path",
-      "model": "rootpath"
+      "type": "input",
+      "inputType": "number",
+      "placeholder": "level",
+      "label": "Number Of Levels",
+      "model": "level"
     }
   ]
 }

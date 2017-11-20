@@ -27,12 +27,11 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
-        "rootpath": {
+        "level": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Root Path",
-          "x-form-type": "pathbrowser",
-          "x-form-browserRoot": "/content/sites"
+          "x-form-label": "Number Of Levels",
+          "x-form-type": "number"
         }
       }
     }
@@ -64,26 +63,30 @@ public class BreadcrumbModel extends AbstractComponent {
 	public BreadcrumbModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Root Path","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Number Of Levels","x-form-type":"number"} */
 	@Inject
-	private String rootpath;
+	private String level;
 
 
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Root Path","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
-	public String getRootpath() {
-		return rootpath;
+    	/* {"type":"string","x-source":"inject","x-form-label":"Number Of Levels","x-form-type":"number"} */
+	public String getLevel() {
+		return level;
 	}
-
-public List<TextLink> links;
+	
+	public List<TextLink> links;
 	
 	/* Method to recursively get child page links, given a root page path */
     public List<TextLink> getLinks(){
     	
     	links = new ArrayList<TextLink>();
-    	return getDeepLinks(getResource());
+    	if(Integer.parseInt(getLevel()) > 0) {
+    		return getDeepLinks(getResource());
+    	} else {
+    		return null;
+    	}
     	
     }
     
@@ -99,7 +102,7 @@ public List<TextLink> links;
 			    links.add(0,link);
 		    }
 		    // move on to its parent resource
-		    if(resource.getParent() != null) {
+		    if(resource.getParent() != null && links.size() < Integer.parseInt(getLevel())) {
 		    	getDeepLinks(resource.getParent());
 		    }
     	} catch(Exception e){
@@ -140,6 +143,7 @@ public List<TextLink> links;
 			return text;
 		}
 	}
+
 
 //GEN]
 
