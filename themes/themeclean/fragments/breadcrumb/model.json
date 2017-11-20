@@ -1,0 +1,17 @@
+{
+  "definitions": {
+    "Breadcrumb": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "rootpath": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Root Path",
+          "x-form-type": "pathbrowser",
+          "x-form-browserRoot": "/content/sites"
+        }
+      }
+    }
+  }
+}
