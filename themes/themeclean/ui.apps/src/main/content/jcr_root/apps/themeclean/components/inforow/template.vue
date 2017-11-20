@@ -3,8 +3,7 @@
     <div class="row col-12 col-md-10 align-items-center justify-content-between">
       <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <div class="col-12 col-md-7 p-0">
-        <h2 class="text-uppercase" v-if="model.showtitle == 'true'"
-        v-html="model.title"></h2>
+        <h2 class="" v-if="model.showtitle == 'true'" v-html="model.title"></h2>
         <h4 class="" v-if="model.showsubtitle == 'true'" v-html="model.subtitle"></h4>
       </div>
       <div class="col-12 col-md p-0 d-flex justify-content-end" v-if="model.showbutton == 'true'">
@@ -24,6 +23,7 @@
                 if(!$peregrineApp.isAuthorMode()) return false
                 //return !(this.model.showtitle === 'true' || this.model.showsubtitle === 'true' || this.model.showbutton === 'true')
                 return this.$helper.areAllEmpty(this.model.showtitle === 'true' , this.model.showsubtitle === 'true' , this.model.showbutton === 'true')
+                
             }
         }
     }
