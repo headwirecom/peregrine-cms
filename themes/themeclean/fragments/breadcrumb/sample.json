@@ -2,6 +2,6 @@
   "title": "Breadcrumb",
   "group": "",
   "model": {
-    "rootpath": "/content/sites/themeclean"
+    "level": "3"
   }
 }

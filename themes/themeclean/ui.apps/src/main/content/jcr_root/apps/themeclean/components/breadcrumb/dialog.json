@@ -1,11 +1,5 @@
 {
   "fields": [
-    {
-      "type": "input",
-      "inputType": "number",
-      "placeholder": "level",
-      "label": "Number Of Levels",
-      "model": "level"
-    }
+    
   ]
 }

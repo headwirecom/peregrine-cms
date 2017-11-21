@@ -1,5 +1,6 @@
 package com.themeclean.models;
 
+
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import com.peregrine.nodetypes.models.Container;
@@ -11,6 +12,9 @@ import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -61,6 +65,8 @@ import javax.inject.Named;
 public class BreadcrumbModel extends AbstractComponent {
 	
 	public BreadcrumbModel(Resource r) { super(r); }
+	
+	private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbModel.class);
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Number Of Levels","x-form-type":"number"} */
@@ -69,18 +75,20 @@ public class BreadcrumbModel extends AbstractComponent {
 
 
 //GEN]
-
     //GEN[:GETTERS
     	/* {"type":"string","x-source":"inject","x-form-label":"Number Of Levels","x-form-type":"number"} */
 	public String getLevel() {
 		return level;
 	}
-	
-	public List<TextLink> links;
+
+	@Inject
+	private List<TextLink> links;
 	
 	/* Method to recursively get child page links, given a root page path */
     public List<TextLink> getLinks(){
     	
+    	//LOG.error("in BreadcrumbModel...");
+    	//LOG.error("level is: " + getLevel());
     	links = new ArrayList<TextLink>();
     	/*if(Integer.parseInt(getLevel()) > 0) {
     		return getDeepLinks(getResource());
@@ -107,6 +115,7 @@ public class BreadcrumbModel extends AbstractComponent {
 		    	getDeepLinks(resource.getParent());
 		    }
     	} catch(Exception e){
+    		LOG.error("Exception: " + e);
 			e.printStackTrace();
 		}
     	
@@ -122,6 +131,7 @@ public class BreadcrumbModel extends AbstractComponent {
 			ValueMap props = resourceResolver.getResource(resourcePath).adaptTo(ValueMap.class);
 			return props.get("jcr:title", "title not found");
 		} catch(Exception e){
+			LOG.error("Exception: " + e);
 			e.printStackTrace();
 			return "title not found....";
 		}
@@ -144,7 +154,6 @@ public class BreadcrumbModel extends AbstractComponent {
 			return text;
 		}
 	}
-
 
 //GEN]
 
