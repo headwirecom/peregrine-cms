@@ -6,6 +6,7 @@
     "bgcolor": "#eeeeee",
     "bottompadding": "0",
     "toppadding": "30",
+    "colorscheme": "light",
     "showlogo": "true",
     "logo": "/content/assets/themeclean/images/peregrine-logo.png",
     "logourl": "http://www.peregrine-cms.com",

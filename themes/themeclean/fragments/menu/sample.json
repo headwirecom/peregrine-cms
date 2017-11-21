@@ -5,6 +5,7 @@
     "backgroundtype": "color",
     "bgcolor": "#eeeeee",
     "bottompadding": "0",
+    "colorscheme": "light",
     "elevation": 1,
     "toppadding": "0",
     "bgvideo": "https://www.youtube.com/embed/Ju86mknumYM",
