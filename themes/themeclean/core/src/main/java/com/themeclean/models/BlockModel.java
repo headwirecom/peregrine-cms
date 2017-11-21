@@ -258,11 +258,7 @@ public class BlockModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-<<<<<<< Updated upstream
-    	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
-=======
     	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
->>>>>>> Stashed changes
 	public String getColorscheme() {
 		return colorscheme;
 	}

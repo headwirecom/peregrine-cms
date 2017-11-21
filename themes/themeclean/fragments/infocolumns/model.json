@@ -4,11 +4,12 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "textalign": {
+        "aligncontent": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Text align",
+          "x-form-label": "Align Content",
           "x-form-type": "materialradio",
+          "x-default": "center",
           "properties": {
             "left": {
               "x-form-name": "Left",
@@ -61,6 +62,15 @@
           "x-form-visible": "model.showtext == 'true'",
           "x-form-type": "texteditor"
         },
+        "textwidth": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text Width",
+          "x-form-type": "range",
+          "x-form-min": 0,
+          "x-form-max": 100,
+          "x-default": 100
+        },
         "showbutton": {
           "type": "string",
           "x-source": "inject",
@@ -73,15 +83,16 @@
           "x-form-label": "Button Alignment",
           "x-form-visible": "",
           "x-form-type": "materialradio",
+          "x-default": "center",
           "properties": {
             "left": {
-              "x-form-name": "Start",
+              "x-form-name": "Left",
               "x-form-value": "start"
             },"center": {
               "x-form-name": "Center",
               "x-form-value": "center"
             },"right": {
-              "x-form-name": "End",
+              "x-form-name": "Right",
               "x-form-value": "end"
             }
           }

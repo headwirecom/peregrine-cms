@@ -1,13 +1,14 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="row col-12 col-md-10 align-items-center justify-content-start">
-      <div class="col-12 p-0" v-bind:class="`text-${model.textalign}`">
+    <div class="row col-12 col-md-10 align-items-center justify-content-start"
+    v-bind:class="{'justify-content-start': model.aligncontent == 'left','justify-content-center': model.aligncontent == 'center','justify-content-end': model.aligncontent == 'right'}">
+      <div class="col-12 p-0" v-bind:class="`text-${model.aligncontent}`" v-bind:style="`flex-basis:${model.textwidth}%;`">
         <h2 class="" v-if="model.showtitle == 'true'" v-html="model.title"></h2>
         <h4 class="" v-if="model.showsubtitle == 'true'" v-html="model.subtitle"></h4>
         <p v-if="model.showtext == 'true'" v-html="model.text"></p>
       </div>
-      <div class="col-12 p-0 d-flex" v-if="model.showbutton == 'true'"
-      v-bind:class="`justify-content-${model.alignbuttons}`">
+      <div class="col-12 p-0 d-flex justify-content-center" v-if="model.showbutton == 'true'"
+      v-bind:class="`justify-content-sm-${model.alignbuttons}`">
         <a class="btn btn-secondary btn-lg" v-for="(item,i) in model.buttons"
         :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
         v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};margin-left:${i == 0 ? 0 : '0.5rem'};margin-right:${i == model.buttons.length-1 ? 0: '0.5rem'};`"></a>
