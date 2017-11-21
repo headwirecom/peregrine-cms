@@ -4,6 +4,7 @@ module.exports = {
         f.bindAttribute($.parent(),'model','model')
 
         //Text
+        f.bindAttribute($.find('div.col-12.p-0').first(), 'class', "`text-${model.textalign}`",false)
     	f.addIf($.find('h2').first(), 'model.showtitle == \'true\'')
         f.mapRichField($.find('h2').first(), "model.title")
         f.addIf($.find('h4').first(), 'model.showsubtitle == \'true\'')

@@ -1,7 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <div class="row col-12 col-md-10 align-items-center justify-content-start">
-      <div class="col-12 p-0">
+      <div class="col-12 p-0" v-bind:class="`text-${model.textalign}`">
         <h2 class="" v-if="model.showtitle == 'true'" v-html="model.title"></h2>
         <h4 class="" v-if="model.showsubtitle == 'true'" v-html="model.subtitle"></h4>
         <p v-if="model.showtext == 'true'" v-html="model.text"></p>

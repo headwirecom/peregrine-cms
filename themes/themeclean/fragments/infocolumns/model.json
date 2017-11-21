@@ -4,6 +4,24 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "textalign": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text align",
+          "x-form-type": "materialradio",
+          "properties": {
+            "left": {
+              "x-form-name": "Left",
+              "x-form-value": "left"
+            },"center": {
+              "x-form-name": "Center",
+              "x-form-value": "center"
+            },"right": {
+              "x-form-name": "Right",
+              "x-form-value": "right"
+            }
+          }
+        },
         "showtitle": {
           "type": "string",
           "x-source": "inject",

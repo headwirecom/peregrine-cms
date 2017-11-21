@@ -21,6 +21,26 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "textalign": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text align",
+          "x-form-type": "materialradio",
+          "properties": {
+            "left": {
+              "x-form-name": "Left",
+              "x-form-value": "left"
+            },
+            "center": {
+              "x-form-name": "Center",
+              "x-form-value": "center"
+            },
+            "right": {
+              "x-form-name": "Right",
+              "x-form-value": "right"
+            }
+          }
+        },
         "showtitle": {
           "type": "string",
           "x-source": "inject",
@@ -293,7 +313,11 @@ public class InfocolumnsModel extends AbstractComponent {
     public InfocolumnsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Text align","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+	@Inject
+	private String textalign;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
 	private String showtitle;
 
@@ -396,7 +420,12 @@ public class InfocolumnsModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Text align","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+	public String getTextalign() {
+		return textalign;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	public String getShowtitle() {
 		return showtitle;
 	}

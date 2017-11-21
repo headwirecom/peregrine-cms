@@ -1,6 +1,26 @@
 {
   "fields": [
     {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Left",
+          "value": "left"
+        },
+        {
+          "name": "Center",
+          "value": "center"
+        },
+        {
+          "name": "Right",
+          "value": "right"
+        }
+      ],
+      "placeholder": "textalign",
+      "label": "Text align",
+      "model": "textalign"
+    },
+    {
       "type": "materialswitch",
       "textOn": "yes",
       "textOff": "no",
