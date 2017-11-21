@@ -9,7 +9,7 @@
           "x-source": "inject",
           "x-form-label": "Block Color Scheme",
           "x-form-type": "materialradio",
-          "x-default": "none",
+          "x-default": "",
           "properties": {
             "none": {
               "x-form-name": "None",
