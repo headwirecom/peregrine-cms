@@ -87,8 +87,8 @@ public class BreadcrumbModel extends AbstractComponent {
 	/* Method to recursively get child page links, given a root page path */
     public List<TextLink> getLinks(){
     	
-    	//LOG.error("in BreadcrumbModel...");
-    	//LOG.error("level is: " + getLevel());
+    	LOG.error("in BreadcrumbModel...");
+    	LOG.error("level is: " + getLevel());
     	links = new ArrayList<TextLink>();
     	/*if(Integer.parseInt(getLevel()) > 0) {
     		return getDeepLinks(getResource());
@@ -116,7 +116,7 @@ public class BreadcrumbModel extends AbstractComponent {
 		    }
     	} catch(Exception e){
     		LOG.error("Exception: " + e);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
     	
     	return links;
@@ -132,7 +132,7 @@ public class BreadcrumbModel extends AbstractComponent {
 			return props.get("jcr:title", "title not found");
 		} catch(Exception e){
 			LOG.error("Exception: " + e);
-			e.printStackTrace();
+			//e.printStackTrace();
 			return "title not found....";
 		}
 	}
