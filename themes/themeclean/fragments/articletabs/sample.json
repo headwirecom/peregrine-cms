@@ -2,7 +2,6 @@
   "title": "Article Tabs",
   "group": "Article",
   "model": {
-    "colorscheme": "light",
     "bgcolor": "#ffffff",
     "color2": "#e7e7e7",
     "fullheight": "false",
