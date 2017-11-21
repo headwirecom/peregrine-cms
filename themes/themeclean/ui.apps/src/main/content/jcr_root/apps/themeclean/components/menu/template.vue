@@ -6,7 +6,7 @@
       <span class="navbar-logo">
         <a v-bind:href="$helper.pathToUrl(model.logourl)">
           <img class="menu-logo" alt="logo" v-bind:src="$helper.pathToUrl(model.logo)"
-          v-bind:style="`height:${parseInt(model.logosize)}rem;`">
+          v-bind:style="`height:${parseInt(model.logosize)}px;`">
         </a>
       </span>
       <!-- Hamburger toggle button -->

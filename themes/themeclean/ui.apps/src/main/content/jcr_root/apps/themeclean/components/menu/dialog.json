@@ -21,7 +21,7 @@
       "label": "Logo Size",
       "model": "logosize",
       "min": 1,
-      "max": 10
+      "max": 300
     },
     {
       "type": "materialswitch",
@@ -254,7 +254,7 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "max": 150
     },
     {
       "type": "input",
