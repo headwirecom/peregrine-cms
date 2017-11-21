@@ -14,15 +14,15 @@
     "copyright": "Copyright 2017 Peregrine - All Rights Reserved",
     "columns": [
       {
-        "title": "Empty Space",
+        "title": "",
         "text": ""
       },
       {
         "title": "Contact",
-        "text": "Contact Information<br>email@email.com<br>1-800-888-8888"
+        "text": "email@email.com<br>1-800-888-8888"
       },{
         "title": "Location",
-        "text": "Address<br>1234 S Pointe Drive, Laguna Hills, CA 92653"
+        "text": "1234 S Pointe Drive, Laguna Hills, CA 92653"
       }
     ],
     "icons": [
