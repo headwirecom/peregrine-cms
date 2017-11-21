@@ -23,8 +23,9 @@
           "x-source": "inject",
           "x-form-label": "Logo Size",
           "x-form-type": "range",
+          "x-default": 50,
           "x-form-min": 1,
- 		  "x-form-max": 10
+          "x-form-max": 300 
         },
         "collapsed": {
           "type": "string",
