@@ -239,7 +239,7 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "max": 150
     },
     {
       "type": "input",
