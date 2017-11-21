@@ -36,7 +36,7 @@
           },
           colors: function() {
             let classes = {}
-            if( this.model.colorscheme === 'none' ) return classes
+            if( this.model.colorscheme === '' ) return classes
             if( this.model.custombackground === 'false' ) {
               classes['bg-dark'] = this.model.colorscheme === 'dark'
               classes['bg-light'] = this.model.colorscheme === 'light'
