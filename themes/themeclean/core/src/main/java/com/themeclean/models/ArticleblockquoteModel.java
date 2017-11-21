@@ -37,7 +37,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Block Color Scheme",
               "x-form-type": "materialradio",
-              "x-default": "light",
+              "x-default": "",
               "properties": {
                 "none": {
                   "x-form-name": "None",
@@ -197,9 +197,8 @@ public class ArticleblockquoteModel extends AbstractComponent {
 	@Inject
 	private String text;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
-	@Default(values ="light")
 	private String colorscheme;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch","x-default":"false"} */
@@ -261,7 +260,7 @@ public class ArticleblockquoteModel extends AbstractComponent {
 		return text;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}
