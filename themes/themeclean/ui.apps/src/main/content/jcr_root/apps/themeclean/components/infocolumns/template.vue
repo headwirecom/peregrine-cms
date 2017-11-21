@@ -2,15 +2,15 @@
   <themeclean-components-block v-bind:model="model">
     <div class="row col-12 col-md-10 align-items-center justify-content-start">
       <div class="col-12 p-0">
-        <h2 class="text-uppercase" v-if="model.showtitle == 'true'"
-        v-html="model.title"></h2>
+        <h2 class="" v-if="model.showtitle == 'true'" v-html="model.title"></h2>
         <h4 class="" v-if="model.showsubtitle == 'true'" v-html="model.subtitle"></h4>
         <p v-if="model.showtext == 'true'" v-html="model.text"></p>
       </div>
-      <div class="col-12 p-0" v-if="model.showbutton == 'true'">
-        <a class="btn btn-secondary btn-lg m-2" v-for="(item,i) in model.buttons"
+      <div class="col-12 p-0 d-flex" v-if="model.showbutton == 'true'"
+      v-bind:class="`justify-content-${model.alignbuttons}`">
+        <a class="btn btn-secondary btn-lg" v-for="(item,i) in model.buttons"
         :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
-        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
+        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};margin-left:${i == 0 ? 0 : '0.5rem'};margin-right:${i == model.buttons.length-1 ? 0: '0.5rem'};`"></a>
       </div>
       <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>

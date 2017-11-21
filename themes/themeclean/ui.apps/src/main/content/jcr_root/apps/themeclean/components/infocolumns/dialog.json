@@ -65,6 +65,26 @@
       "model": "showbutton"
     },
     {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Start",
+          "value": "start"
+        },
+        {
+          "name": "Center",
+          "value": "center"
+        },
+        {
+          "name": "End",
+          "value": "end"
+        }
+      ],
+      "placeholder": "alignbuttons",
+      "label": "Button Alignment",
+      "model": "alignbuttons"
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [

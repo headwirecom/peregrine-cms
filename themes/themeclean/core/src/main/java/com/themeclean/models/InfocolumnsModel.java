@@ -66,6 +66,27 @@ import javax.inject.Named;
           "x-form-label": "Show Button",
           "x-form-type": "materialswitch"
         },
+        "alignbuttons": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Button Alignment",
+          "x-form-visible": "",
+          "x-form-type": "materialradio",
+          "properties": {
+            "left": {
+              "x-form-name": "Start",
+              "x-form-value": "start"
+            },
+            "center": {
+              "x-form-name": "Center",
+              "x-form-value": "center"
+            },
+            "right": {
+              "x-form-name": "End",
+              "x-form-value": "end"
+            }
+          }
+        },
         "buttons": {
           "type": "string",
           "x-source": "inject",
@@ -300,6 +321,10 @@ public class InfocolumnsModel extends AbstractComponent {
 	@Inject
 	private String showbutton;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Start","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"End","x-form-value":"end"}}} */
+	@Inject
+	private String alignbuttons;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
 	@Inject
 	private List<IComponent> buttons;
@@ -404,6 +429,11 @@ public class InfocolumnsModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
 	public String getShowbutton() {
 		return showbutton;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Start","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"End","x-form-value":"end"}}} */
+	public String getAlignbuttons() {
+		return alignbuttons;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
