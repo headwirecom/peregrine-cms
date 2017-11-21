@@ -13,7 +13,7 @@
           "properties": {
             "none": {
               "x-form-name": "None",
-              "x-form-value": "none"
+              "x-form-value": ""
             },
             "light": {
               "x-form-name": "Light",
