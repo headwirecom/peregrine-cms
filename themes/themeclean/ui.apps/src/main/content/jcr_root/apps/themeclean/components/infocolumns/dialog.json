@@ -16,9 +16,9 @@
           "value": "right"
         }
       ],
-      "placeholder": "textalign",
-      "label": "Text align",
-      "model": "textalign"
+      "placeholder": "aligncontent",
+      "label": "Align Content",
+      "model": "aligncontent"
     },
     {
       "type": "materialswitch",
@@ -75,6 +75,14 @@
       "visible": "model.showtext == 'true'"
     },
     {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "textwidth",
+      "label": "Text Width",
+      "model": "textwidth",
+      "max": 100
+    },
+    {
       "type": "materialswitch",
       "textOn": "yes",
       "textOff": "no",
@@ -88,7 +96,7 @@
       "type": "material-radios",
       "values": [
         {
-          "name": "Start",
+          "name": "Left",
           "value": "start"
         },
         {
@@ -96,7 +104,7 @@
           "value": "center"
         },
         {
-          "name": "End",
+          "name": "Right",
           "value": "end"
         }
       ],

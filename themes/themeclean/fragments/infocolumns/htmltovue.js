@@ -3,8 +3,17 @@ module.exports = {
     	f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
 
+        //Container
+        let justifyClasses = 
+            "{'justify-content-start': model.aligncontent == 'left'," +
+            "'justify-content-center': model.aligncontent == 'center',"+
+            "'justify-content-end': model.aligncontent == 'right'}"
+
+        f.bindAttribute( $, 'class', justifyClasses ,false)
+
         //Text
-        f.bindAttribute($.find('div.col-12.p-0').first(), 'class', "`text-${model.textalign}`",false)
+        f.bindAttribute($.find('div.col-12.p-0').first(), 'class', "`text-${model.aligncontent}`",false)
+        f.addStyle( $.find('div.col-12.p-0').first(), 'flex-basis', 'model.textwidth', '%')
     	f.addIf($.find('h2').first(), 'model.showtitle == \'true\'')
         f.mapRichField($.find('h2').first(), "model.title")
         f.addIf($.find('h4').first(), 'model.showsubtitle == \'true\'')
@@ -14,7 +23,7 @@ module.exports = {
 
         //Buttons
         f.addIf($.find('div.col-12.p-0').eq(1), 'model.showbutton == \'true\'')
-        f.bindAttribute($.find('div.col-12.p-0').eq(1), 'class', '`justify-content-${model.alignbuttons}`',false)
+        f.bindAttribute($.find('div.col-12.p-0').eq(1), 'class', '`justify-content-sm-${model.alignbuttons}`',false)
         f.addFor($.find('div.col-12>a').first(), 'model.buttons')
         f.bindAttribute($.find('a.btn').first(), 'href', f.pathToUrl('item.buttonlink'))
         f.mapRichField($.find('a.btn').first(), "item.buttontext")

@@ -21,11 +21,12 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
-        "textalign": {
+        "aligncontent": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Text align",
+          "x-form-label": "Align Content",
           "x-form-type": "materialradio",
+          "x-default": "center",
           "properties": {
             "left": {
               "x-form-name": "Left",
@@ -80,6 +81,15 @@ import javax.inject.Named;
           "x-form-visible": "model.showtext == 'true'",
           "x-form-type": "texteditor"
         },
+        "textwidth": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text Width",
+          "x-form-type": "range",
+          "x-form-min": 0,
+          "x-form-max": 100,
+          "x-default": 100
+        },
         "showbutton": {
           "type": "string",
           "x-source": "inject",
@@ -92,9 +102,10 @@ import javax.inject.Named;
           "x-form-label": "Button Alignment",
           "x-form-visible": "",
           "x-form-type": "materialradio",
+          "x-default": "center",
           "properties": {
             "left": {
-              "x-form-name": "Start",
+              "x-form-name": "Left",
               "x-form-value": "start"
             },
             "center": {
@@ -102,7 +113,7 @@ import javax.inject.Named;
               "x-form-value": "center"
             },
             "right": {
-              "x-form-name": "End",
+              "x-form-name": "Right",
               "x-form-value": "end"
             }
           }
@@ -149,7 +160,7 @@ import javax.inject.Named;
               "properties": {
                 "none": {
                   "x-form-name": "None",
-                  "x-form-value": "none"
+                  "x-form-value": ""
                 },
                 "light": {
                   "x-form-name": "Light",
@@ -313,9 +324,10 @@ public class InfocolumnsModel extends AbstractComponent {
     public InfocolumnsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text align","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Align Content","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
 	@Inject
-	private String textalign;
+	@Default(values ="center")
+	private String aligncontent;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
@@ -341,19 +353,25 @@ public class InfocolumnsModel extends AbstractComponent {
 	@Inject
 	private String text;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Text Width","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-default":100} */
+	@Inject
+	@Default(values ="100")
+	private String textwidth;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
 	@Inject
 	private String showbutton;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Start","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"End","x-form-value":"end"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"end"}}} */
 	@Inject
+	@Default(values ="center")
 	private String alignbuttons;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
 	@Inject
 	private List<IComponent> buttons;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	private String colorscheme;
 
@@ -419,9 +437,9 @@ public class InfocolumnsModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Text align","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
-	public String getTextalign() {
-		return textalign;
+    	/* {"type":"string","x-source":"inject","x-form-label":"Align Content","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+	public String getAligncontent() {
+		return aligncontent;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
@@ -454,12 +472,17 @@ public class InfocolumnsModel extends AbstractComponent {
 		return text;
 	}
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Text Width","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-default":100} */
+	public String getTextwidth() {
+		return textwidth;
+	}
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
 	public String getShowbutton() {
 		return showbutton;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","properties":{"left":{"x-form-name":"Start","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"End","x-form-value":"end"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"end"}}} */
 	public String getAlignbuttons() {
 		return alignbuttons;
 	}
@@ -469,7 +492,7 @@ public class InfocolumnsModel extends AbstractComponent {
 		return buttons;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}
