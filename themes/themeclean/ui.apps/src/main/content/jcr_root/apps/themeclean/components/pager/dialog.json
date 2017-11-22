@@ -1,3 +1,11 @@
 {
-  "fields": []
+  "fields": [
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "prevlink",
+      "label": "prevlink",
+      "model": "prevlink"
+    }
+  ]
 }

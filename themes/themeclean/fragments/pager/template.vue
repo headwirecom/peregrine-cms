@@ -1,5 +1,10 @@
 <template>
-  <div v-bind:data-per-path="model.path">pager</div>
+  <themeclean-components-block v-bind:model="model">
+    <div class="w-100 d-flex justify-content-between">
+      <a class="btn btn-outline-primary" v-bind:href="model.previous">Prev</a>
+      <a class="btn btn-outline-primary" v-bind:href="model.next">Next</a>
+    </div>
+  </themeclean-components-block>
 </template>
 
 <script>

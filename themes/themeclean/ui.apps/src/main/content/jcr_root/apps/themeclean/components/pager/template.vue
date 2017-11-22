@@ -1,15 +1,15 @@
 <template>
-  <ul class="pager" v-bind:data-per-path="model.path">
-    <li v-if="model.previous" class="previous">
-      <a v-bind:href="model.previous  + '.html'">Prev</a>
-    </li>
-    <li v-if="model.next" class="next">
-      <a v-bind:href="model.next + '.html'">Next</a>
-    </li>
-  </ul>
+  <themeclean-components-block v-bind:model="model">
+    <div class="w-100 d-flex justify-content-between">
+      <a class="btn btn-outline-primary" v-bind:href="model.previous">Prev</a>
+      <a class="btn btn-outline-primary" v-bind:href="model.next">Next</a>
+    </div>
+  </themeclean-components-block>
 </template>
 
 <script>
-export default { props: ['model'] }
+    export default {
+        props: ['model']
+    }
 </script>
 

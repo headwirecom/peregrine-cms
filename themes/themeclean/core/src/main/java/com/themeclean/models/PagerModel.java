@@ -27,10 +27,12 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
-        "text": {
+        "prevlink": {
           "type": "string",
           "x-source": "inject",
-          "x-form-type": "texteditor"
+          "x-form-label": "",
+          "x-form-visible": "",
+          "x-form-type": ""
         }
       }
     }
