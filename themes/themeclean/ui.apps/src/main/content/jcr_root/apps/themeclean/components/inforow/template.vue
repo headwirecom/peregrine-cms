@@ -3,11 +3,12 @@
     <div class="row col-12 col-md-10 align-items-center justify-content-between"
     v-bind:class="model.reverselayout">
       <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
-      <div class="col-12 col-md-auto p-0">
+      <div class="col-12 col-md p-0">
         <h2 class="" v-if="model.showtitle == 'true'" v-html="model.title"></h2>
         <h4 class="" v-if="model.showsubtitle == 'true'" v-html="model.subtitle"></h4>
+        <p v-if="model.showtext == 'true'" v-html="model.text"></p>
       </div>
-      <div class="col-12 col-md-auto p-0 d-flex justify-content-end" v-if="model.showbutton == 'true'">
+      <div class="col-12 col-md-auto p-0 d-flex justify-content-end">
         <a class="btn btn-primary btn-lg" v-for="(item,i) in model.buttons" :key="i"
         v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
         v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};margin-left:${i == 0 ? 0 : '0.5rem'};margin-right:${i == model.buttons.length-1 ? 0: '0.5rem'};`"></a>

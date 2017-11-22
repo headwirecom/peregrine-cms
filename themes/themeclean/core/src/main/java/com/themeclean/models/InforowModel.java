@@ -47,6 +47,19 @@ import javax.inject.Named;
           "x-form-visible": "model.showsubtitle == 'true'",
           "x-form-type": "text"
         },
+        "showtext": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Text",
+          "x-form-type": "materialswitch"
+        },
+        "text": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text",
+          "x-form-visible": "model.showtext == 'true'",
+          "x-form-type": "texteditor"
+        },
         "reverselayout": {
           "type": "string",
           "x-source": "inject",
@@ -292,6 +305,14 @@ public class InforowModel extends AbstractComponent {
 	@Inject
 	private String subtitle;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Text","x-form-type":"materialswitch"} */
+	@Inject
+	private String showtext;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-visible":"model.showtext == 'true'","x-form-type":"texteditor"} */
+	@Inject
+	private String text;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Text Location","x-form-type":"materialradio","x-default":"flex-row","properties":{"left":{"x-form-name":"Left","x-form-value":"flex-row"},"right":{"x-form-name":"Right","x-form-value":"flex-row-reverse"}}} */
 	@Inject
 	@Default(values ="flex-row")
@@ -390,6 +411,16 @@ public class InforowModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-type":"text"} */
 	public String getSubtitle() {
 		return subtitle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Text","x-form-type":"materialswitch"} */
+	public String getShowtext() {
+		return showtext;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-visible":"model.showtext == 'true'","x-form-type":"texteditor"} */
+	public String getText() {
+		return text;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Text Location","x-form-type":"materialradio","x-default":"flex-row","properties":{"left":{"x-form-name":"Left","x-form-value":"flex-row"},"right":{"x-form-name":"Right","x-form-value":"flex-row-reverse"}}} */
