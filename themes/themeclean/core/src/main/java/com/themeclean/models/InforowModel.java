@@ -47,28 +47,28 @@ import javax.inject.Named;
           "x-form-visible": "model.showsubtitle == 'true'",
           "x-form-type": "text"
         },
-        "showbutton": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Show Button",
-          "x-form-type": "materialswitch"
-        },
         "reverselayout": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Buttons Location",
+          "x-form-label": "Text Location",
           "x-form-type": "materialradio",
           "x-default": "flex-row",
           "properties": {
             "left": {
               "x-form-name": "Left",
-              "x-form-value": "flex-row-reverse"
+              "x-form-value": "flex-row"
             },
             "right": {
               "x-form-name": "Right",
-              "x-form-value": "flex-row"
+              "x-form-value": "flex-row-reverse"
             }
           }
+        },
+        "showbutton": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Button",
+          "x-form-type": "materialswitch"
         },
         "buttons": {
           "type": "string",
@@ -292,14 +292,14 @@ public class InforowModel extends AbstractComponent {
 	@Inject
 	private String subtitle;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
-	@Inject
-	private String showbutton;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Buttons Location","x-form-type":"materialradio","x-default":"flex-row","properties":{"left":{"x-form-name":"Left","x-form-value":"flex-row-reverse"},"right":{"x-form-name":"Right","x-form-value":"flex-row"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Text Location","x-form-type":"materialradio","x-default":"flex-row","properties":{"left":{"x-form-name":"Left","x-form-value":"flex-row"},"right":{"x-form-name":"Right","x-form-value":"flex-row-reverse"}}} */
 	@Inject
 	@Default(values ="flex-row")
 	private String reverselayout;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
+	@Inject
+	private String showbutton;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
 	@Inject
@@ -392,14 +392,14 @@ public class InforowModel extends AbstractComponent {
 		return subtitle;
 	}
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Text Location","x-form-type":"materialradio","x-default":"flex-row","properties":{"left":{"x-form-name":"Left","x-form-value":"flex-row"},"right":{"x-form-name":"Right","x-form-value":"flex-row-reverse"}}} */
+	public String getReverselayout() {
+		return reverselayout;
+	}
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Button","x-form-type":"materialswitch"} */
 	public String getShowbutton() {
 		return showbutton;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Buttons Location","x-form-type":"materialradio","x-default":"flex-row","properties":{"left":{"x-form-name":"Left","x-form-value":"flex-row-reverse"},"right":{"x-form-name":"Right","x-form-value":"flex-row"}}} */
-	public String getReverselayout() {
-		return reverselayout;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */

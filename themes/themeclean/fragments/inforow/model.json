@@ -30,28 +30,28 @@
           "x-form-visible": "model.showsubtitle == 'true'",
           "x-form-type": "text"
         },
-        "showbutton": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Show Button",
-          "x-form-type": "materialswitch"
-        },
         "reverselayout": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Buttons Location",
+          "x-form-label": "Text Location",
           "x-form-type": "materialradio",
           "x-default": "flex-row",
           "properties": {
             "left": {
               "x-form-name": "Left",
-              "x-form-value": "flex-row-reverse"
+              "x-form-value": "flex-row"
             },
             "right": {
               "x-form-name": "Right",
-              "x-form-value": "flex-row"
+              "x-form-value": "flex-row-reverse"
             }
           }
+        },
+        "showbutton": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Button",
+          "x-form-type": "materialswitch"
         },
         "buttons": {
           "type": "string",

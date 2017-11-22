@@ -37,6 +37,22 @@
       "visible": "model.showsubtitle == 'true'"
     },
     {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Left",
+          "value": "flex-row"
+        },
+        {
+          "name": "Right",
+          "value": "flex-row-reverse"
+        }
+      ],
+      "placeholder": "reverselayout",
+      "label": "Text Location",
+      "model": "reverselayout"
+    },
+    {
       "type": "materialswitch",
       "textOn": "yes",
       "textOff": "no",
@@ -45,22 +61,6 @@
       "placeholder": "showbutton",
       "label": "Show Button",
       "model": "showbutton"
-    },
-    {
-      "type": "material-radios",
-      "values": [
-        {
-          "name": "Left",
-          "value": "flex-row-reverse"
-        },
-        {
-          "name": "Right",
-          "value": "flex-row"
-        }
-      ],
-      "placeholder": "reverselayout",
-      "label": "Buttons Location",
-      "model": "reverselayout"
     },
     {
       "type": "collection",
