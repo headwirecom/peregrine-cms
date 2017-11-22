@@ -280,7 +280,7 @@ import javax.inject.Named;
               "x-form-label": "Top Padding",
               "x-form-type": "range",
               "x-form-min": 0,
-              "x-form-max": 120,
+              "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
             },
             "bottompadding": {
@@ -426,7 +426,7 @@ public class InfocolumnsModel extends AbstractComponent {
 	@Inject
 	private String fullheight;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
@@ -553,7 +553,7 @@ public class InfocolumnsModel extends AbstractComponent {
 		return fullheight;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}

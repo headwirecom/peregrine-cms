@@ -103,6 +103,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
     public static final String GROUP = "group";
     public static final String TEMPLATE_COMPONENT = "templateComponent";
     public static final String THUMBNAIL_PNG = "thumbnail.png";
+    public static final String THUMBNAIL_SAMPLE_PNG = "thumbnail-sample.png";
     public static final String THUMBNAIL = "thumbnail";
 
     @Override
@@ -271,6 +272,8 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         }
         if(variation == null && component.hasNode(THUMBNAIL_PNG)) {
             answer.writeAttribute(THUMBNAIL, component.getPath() + "/" + THUMBNAIL_PNG);
+        } else if(variation == null && component.hasNode(THUMBNAIL_SAMPLE_PNG)) {
+            answer.writeAttribute(THUMBNAIL, component.getPath() + "/" + THUMBNAIL_SAMPLE_PNG);
         } else if(variation != null) {
             String thumbnailName = THUMBNAIL + "-" + variation.getName().toLowerCase()+".png";
             if(component.hasNode(thumbnailName)) {
