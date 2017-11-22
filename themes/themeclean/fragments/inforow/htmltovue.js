@@ -12,7 +12,7 @@ module.exports = {
         f.mapRichField($.find('h2').first(), "model.title")
         f.addIf($.find('h4').first(), 'model.showsubtitle == \'true\'')
         f.mapRichField($.find('h4').first(), "model.subtitle")
-        f.addIf($.find('div.col-md-auto').first(), 'model.showbutton == \'true\'')
+        f.addIf($.find('div.col-md-auto').eq(1), 'model.showbutton == \'true\'')
         f.addFor($.find('div.col-md-auto>a').first(), 'model.buttons')
 
         //Buttons
