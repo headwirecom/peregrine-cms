@@ -15,6 +15,7 @@
     "color2": "#c0c0c0",
     "subtitle": "Molestiae alias et inventore voluptas",
     "title": "Peregrine blocks",
+    "reverselayout": "flex-row",
     "buttons": [
       {
         "buttonlink": "/content/sites/themeclean",
