@@ -9,51 +9,49 @@
         jcr:primaryType="per:PageContent"
         jcr:title="base page"
         sling:resourceType="themeclean/components/page">
-        <n9931a4e3-19e8-4ae2-9bdb-cc08a1ec38be
-            jcr:lastModified="{Date}2017-11-26T20:31:50.927-08:00"
-            jcr:lastModifiedBy="admin"
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="themeclean/components/menu"
-            backgroundtype="color"
-            bgcolor="#eeeeee"
-            bgvideo="https://www.youtube.com/embed/Ju86mknumYM"
-            bottompadding="0"
-            collapsed="false"
-            colorscheme="light"
-            elevation="1"
-            logo="/content/assets/themeclean/images/peregrine-logo.png"
-            logosize="3"
-            logourl="http://www.peregrine-cms.com"
-            toppadding="0">
+        <header
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="themeclean/components/header"
+                backgroundtype="color"
+                bgcolor="#eeeeee"
+                bgvideo="https://www.youtube.com/embed/Ju86mknumYM"
+                bottompadding="0"
+                collapsed="false"
+                colorscheme="light"
+                elevation="1"
+                logo="/content/assets/themeclean/images/peregrine-logo.png"
+                logosize="60"
+                logourl="http://www.peregrine-cms.com"
+                toppadding="0">
             <links jcr:primaryType="nt:unstructured">
                 <links0
-                    jcr:primaryType="nt:unstructured"
-                    link="/content/sites/themeclean"
-                    text="Services"/>
+                        jcr:primaryType="nt:unstructured"
+                        link="/content/sites/themeclean"
+                        text="Services"/>
                 <links1
-                    jcr:primaryType="nt:unstructured"
-                    link="/content/sites/themeclean"
-                    text="About Us"/>
+                        jcr:primaryType="nt:unstructured"
+                        link="/content/sites/themeclean"
+                        text="About Us"/>
                 <links2
-                    jcr:primaryType="nt:unstructured"
-                    link="/content/sites/themeclean"
-                    text="Contact Us"/>
+                        jcr:primaryType="nt:unstructured"
+                        link="/content/sites/themeclean"
+                        text="Contact Us"/>
             </links>
             <buttons jcr:primaryType="nt:unstructured">
                 <buttons0
-                    jcr:primaryType="nt:unstructured"
-                    buttoncolor="#149dcc"
-                    buttonlink="/content/sites/themeclean"
-                    buttontext="Try It Now"/>
+                        jcr:primaryType="nt:unstructured"
+                        buttoncolor="#149dcc"
+                        buttonlink="/content/sites/themeclean"
+                        buttontext="Try It Now"/>
             </buttons>
-        </n9931a4e3-19e8-4ae2-9bdb-cc08a1ec38be>
-        <n5900b342-fb33-44e9-ab33-b8c34a61cca7
+        </header>
+        <container
             jcr:lastModified="{Date}2017-11-26T20:31:55.998-08:00"
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
             sling:resourceType="themeclean/components/container">
-        </n5900b342-fb33-44e9-ab33-b8c34a61cca7>
-        <n116f13e0-cf74-40d2-b208-7d022923eef7
+        </container>
+        <footer
             jcr:lastModified="{Date}2017-11-26T20:31:58.352-08:00"
             jcr:lastModifiedBy="admin"
             jcr:primaryType="nt:unstructured"
@@ -96,6 +94,6 @@
                     icon=":material-icons:account_balance"
                     url="/content/sites/themeclean"/>
             </icons>
-        </n116f13e0-cf74-40d2-b208-7d022923eef7>
+        </footer>
     </jcr:content>
 </jcr:root>
