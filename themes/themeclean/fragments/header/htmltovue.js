@@ -4,7 +4,7 @@ module.exports = {
     	f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
         f.addIf($.find('h1').first(), 'editAndEmpty')
-
+        f.addIf($.find('span.navbar-logo a').first(), 'model.logo')
         let navclasses = "{" +
             "'navbar-expand-lg': model.collapsed === 'false'," +
             "'navbar-light': model.colorscheme === 'light'," +
