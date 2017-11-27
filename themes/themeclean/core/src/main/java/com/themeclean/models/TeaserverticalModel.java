@@ -17,7 +17,7 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Infocolumns": {
+    "Teaservertical": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -314,10 +314,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Infocolumns",
-  "componentPath": "themeclean/components/infocolumns",
+  "name": "Teaservertical",
+  "componentPath": "themeclean/components/teaservertical",
   "package": "com.themeclean.models",
-  "modelName": "Infocolumns",
+  "modelName": "Teaservertical",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -326,7 +326,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/infocolumns",
+        resourceType = "themeclean/components/teaservertical",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -336,9 +336,9 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class InfocolumnsModel extends AbstractComponent {
+public class TeaserverticalModel extends AbstractComponent {
 
-    public InfocolumnsModel(Resource r) { super(r); }
+    public TeaserverticalModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Layout Direction","x-form-type":"materialradio","x-default":"vertical","properties":{"vertical":{"x-form-name":"Vertical","x-form-value":"vertical"},"horizontal":{"x-form-name":"Horizontal","x-form-value":"horizontal"}}} */

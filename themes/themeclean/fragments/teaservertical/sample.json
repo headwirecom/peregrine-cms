@@ -1,6 +1,6 @@
 {
-  "title": "Info Columns",
-  "group": "Info",
+  "title": "Teaser Vertical",
+  "group": "Features",
   "model": {
     "showtitle": "true",
     "showsubtitle": "true",
