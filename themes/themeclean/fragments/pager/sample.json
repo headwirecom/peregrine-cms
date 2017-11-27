@@ -2,6 +2,8 @@
   "title": "Pager",
   "group": "Article",
   "model": {
-    "text": "example"
+    "bottompadding": "10",
+    "toppadding": "10",
+    "colorscheme": ""
   }
 }

@@ -4,12 +4,9 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "prevlink": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "",
-          "x-form-visible": "",
-          "x-form-type": ""
+        "bgref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/block/model.json#/definitions/Block"
         }
       }
     }
