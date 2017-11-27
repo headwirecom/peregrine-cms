@@ -1,6 +1,6 @@
 {
   "title": "Breadcrumb",
-  "group": "",
+  "group": ".hidden",
   "model": {
     "level": "3"
   }
