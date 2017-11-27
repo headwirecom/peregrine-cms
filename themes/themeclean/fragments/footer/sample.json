@@ -1,6 +1,6 @@
 {
   "title": "Footer",
-  "group": "General",
+  "group": "Chrome",
   "model": {
     "backgroundtype": "color",
     "bgcolor": "#eeeeee",

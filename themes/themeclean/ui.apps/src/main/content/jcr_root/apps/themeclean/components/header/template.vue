@@ -1,7 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <nav class="navbar align-items-center navbar-light w-100" v-bind:class="{'navbar-expand-lg': model.collapsed === 'false','navbar-light': model.colorscheme === 'light','navbar-dark': model.colorscheme === 'dark'}">
-      <h1 v-if="editAndEmpty">Configure Menu</h1>
+      <h1 v-if="editAndEmpty">Configure Header</h1>
       <!-- Logo -->
       <span class="navbar-logo">
         <a v-bind:href="$helper.pathToUrl(model.logourl)">

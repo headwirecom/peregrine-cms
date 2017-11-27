@@ -1,9 +1,9 @@
 {
-  "title": "Accordion",
+  "title": "Toggle",
   "group": "Features",
   "model": {
     "showtitle": "true",
-    "title": "Peregrine Accordion",
+    "title": "Peregrine Toggle",
     "backgroundtype": "color",
     "bgcolor": "#f1f1f1",
     "color2": "#ffffff",

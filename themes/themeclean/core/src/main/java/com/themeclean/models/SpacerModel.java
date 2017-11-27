@@ -17,7 +17,7 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Emptyblock": {
+    "Spacer": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -25,7 +25,6 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Empty Space",
-          "x-form-visible": "",
           "x-form-type": "range",
           "x-form-min": 0,
           "x-form-max": 100
@@ -181,10 +180,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Emptyblock",
-  "componentPath": "themeclean/components/emptyblock",
+  "name": "Spacer",
+  "componentPath": "themeclean/components/spacer",
   "package": "com.themeclean.models",
-  "modelName": "Emptyblock",
+  "modelName": "Spacer",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -193,7 +192,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/emptyblock",
+        resourceType = "themeclean/components/spacer",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -203,12 +202,12 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class EmptyblockModel extends AbstractComponent {
+public class SpacerModel extends AbstractComponent {
 
-    public EmptyblockModel(Resource r) { super(r); }
+    public SpacerModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Empty Space","x-form-visible":"","x-form-type":"range","x-form-min":0,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Empty Space","x-form-type":"range","x-form-min":0,"x-form-max":100} */
 	@Inject
 	private String height;
 
@@ -279,7 +278,7 @@ public class EmptyblockModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Empty Space","x-form-visible":"","x-form-type":"range","x-form-min":0,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Empty Space","x-form-type":"range","x-form-min":0,"x-form-max":100} */
 	public String getHeight() {
 		return height;
 	}
