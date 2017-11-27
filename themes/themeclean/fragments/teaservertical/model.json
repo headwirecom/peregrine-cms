@@ -4,23 +4,6 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "layoutdirection": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Layout Direction",
-          "x-form-type": "materialradio",
-          "x-default": "vertical",
-          "properties": {
-            "vertical": {
-              "x-form-name": "Vertical",
-              "x-form-value": "vertical"
-            },
-            "horizontal": {
-              "x-form-name": "Horizontal",
-              "x-form-value": "horizontal"
-            }
-          }
-        },
         "aligncontent": {
           "type": "string",
           "x-source": "inject",
