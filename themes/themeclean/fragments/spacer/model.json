@@ -1,6 +1,6 @@
 {
   "definitions": {
-    "Emptyblock": {
+    "Spacer": {
       "type": "object",
       "x-type": "component",
       "properties": {
