@@ -39,11 +39,18 @@ import javax.inject.Named;
           "x-form-label": "Show Button",
           "x-form-type": "materialswitch"
         },
+        "showcard": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Card Background",
+          "x-form-type": "materialswitch"
+        },
         "cardcolor": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Card Color",
           "x-form-type": "color",
+          "x-form-visible": "model.showcard == 'true'",
           "x-default": "#ffffff"
         },
         "cards": {
@@ -288,7 +295,11 @@ public class CardsModel extends AbstractComponent {
 	@Inject
 	private String showbutton;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Card Background","x-form-type":"materialswitch"} */
+	@Inject
+	private String showcard;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-form-visible":"model.showcard == 'true'","x-default":"#ffffff"} */
 	@Inject
 	@Default(values ="#ffffff")
 	private String cardcolor;
@@ -379,7 +390,12 @@ public class CardsModel extends AbstractComponent {
 		return showbutton;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Card Background","x-form-type":"materialswitch"} */
+	public String getShowcard() {
+		return showcard;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-form-visible":"model.showcard == 'true'","x-default":"#ffffff"} */
 	public String getCardcolor() {
 		return cardcolor;
 	}
