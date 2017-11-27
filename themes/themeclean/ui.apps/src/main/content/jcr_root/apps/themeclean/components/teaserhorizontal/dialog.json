@@ -1,6 +1,26 @@
 {
   "fields": [
     {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Left",
+          "value": "left"
+        },
+        {
+          "name": "Center",
+          "value": "center"
+        },
+        {
+          "name": "Right",
+          "value": "right"
+        }
+      ],
+      "placeholder": "aligncontent",
+      "label": "Align Content",
+      "model": "aligncontent"
+    },
+    {
       "type": "materialswitch",
       "textOn": "yes",
       "textOff": "no",
@@ -55,20 +75,12 @@
       "visible": "model.showtext == 'true'"
     },
     {
-      "type": "material-radios",
-      "values": [
-        {
-          "name": "Left",
-          "value": "flex-row"
-        },
-        {
-          "name": "Right",
-          "value": "flex-row-reverse"
-        }
-      ],
-      "placeholder": "reverselayout",
-      "label": "Text Location",
-      "model": "reverselayout"
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "textwidth",
+      "label": "Text Width",
+      "model": "textwidth",
+      "max": 100
     },
     {
       "type": "materialswitch",
@@ -79,6 +91,26 @@
       "placeholder": "showbutton",
       "label": "Show Button",
       "model": "showbutton"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Left",
+          "value": "start"
+        },
+        {
+          "name": "Center",
+          "value": "center"
+        },
+        {
+          "name": "Right",
+          "value": "end"
+        }
+      ],
+      "placeholder": "alignbuttons",
+      "label": "Button Alignment",
+      "model": "alignbuttons"
     },
     {
       "type": "collection",
