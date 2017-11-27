@@ -1,6 +1,6 @@
 {
-  "title": "Menu",
-  "group": "General",
+  "title": "Header",
+  "group": "Chrome",
   "model": {
     "backgroundtype": "color",
     "bgcolor": "#eeeeee",

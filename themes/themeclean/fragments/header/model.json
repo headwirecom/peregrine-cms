@@ -1,6 +1,6 @@
 {
   "definitions": {
-    "Menu": {
+    "Header": {
       "type": "object",
       "x-type": "component",
       "properties": {

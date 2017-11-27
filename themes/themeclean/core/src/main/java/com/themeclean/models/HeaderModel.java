@@ -2,22 +2,20 @@ package com.themeclean.models;
 
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.Container;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import java.util.List;
 
 /*
     //GEN[:DATA
     {
   "definitions": {
-    "Menu": {
+    "Header": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -279,10 +277,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Menu",
-  "componentPath": "themeclean/components/menu",
+  "name": "Header",
+  "componentPath": "themeclean/components/header",
   "package": "com.themeclean.models",
-  "modelName": "Menu",
+  "modelName": "Header",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -291,7 +289,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/menu",
+        resourceType = "themeclean/components/header",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -301,9 +299,9 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class MenuModel extends AbstractComponent {
+public class HeaderModel extends AbstractComponent {
 
-    public MenuModel(Resource r) { super(r); }
+    public HeaderModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
