@@ -4,7 +4,7 @@
       "type": "input",
       "inputType": "range",
       "placeholder": "height",
-      "label": "Empty Space",
+      "label": "Height",
       "model": "height",
       "max": 100
     },
@@ -122,44 +122,6 @@
       "label": "Color 2",
       "model": "color2",
       "visible": "model.backgroundtype == 'gradient' and model.custombackground == 'true'"
-    },
-    {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "fullwidth",
-      "label": "Full Width",
-      "model": "fullwidth"
-    },
-    {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "fullheight",
-      "label": "Full Height",
-      "model": "fullheight"
-    },
-    {
-      "type": "input",
-      "inputType": "range",
-      "placeholder": "toppadding",
-      "label": "Top Padding",
-      "model": "toppadding",
-      "visible": "model.fullheight != 'true'",
-      "max": 150
-    },
-    {
-      "type": "input",
-      "inputType": "range",
-      "placeholder": "bottompadding",
-      "label": "Bottom Padding",
-      "model": "bottompadding",
-      "visible": "model.fullheight != 'true'",
-      "max": 150
     }
   ]
 }

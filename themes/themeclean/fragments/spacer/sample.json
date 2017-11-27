@@ -2,8 +2,6 @@
   "title": "Spacer",
   "group": "Chrome",
   "model": {
-    "height": "20",
-    "toppadding": "0",
-    "bottompadding": "0"
+    "height": "20"
   }
 }
