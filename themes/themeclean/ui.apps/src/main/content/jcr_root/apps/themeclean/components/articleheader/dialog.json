@@ -29,8 +29,9 @@
       "model": "showsubtitle"
     },
     {
-      "type": "input",
-      "inputType": "text",
+      "type": "material-textarea",
+      "rows": 10,
+      "max": 500,
       "placeholder": "subtitle",
       "label": "Subtitle",
       "model": "subtitle",
