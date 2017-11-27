@@ -606,7 +606,9 @@ class PerAdminImpl {
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
-                })
+                }).catch(error => {
+                resolve( {} )
+            })
         })
     }
 
@@ -619,7 +621,9 @@ class PerAdminImpl {
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( (data) => {
                     resolve(data)
-                })
+                }).catch(error => {
+                resolve( {} )
+            })
         })
     }
 
