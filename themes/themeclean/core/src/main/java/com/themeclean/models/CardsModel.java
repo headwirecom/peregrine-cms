@@ -17,7 +17,7 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Featurescards": {
+    "Cards": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -249,10 +249,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Featurescards",
-  "componentPath": "themeclean/components/featurescards",
+  "name": "Cards",
+  "componentPath": "themeclean/components/cards",
   "package": "com.themeclean.models",
-  "modelName": "Featurescards",
+  "modelName": "Cards",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -261,7 +261,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/featurescards",
+        resourceType = "themeclean/components/cards",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -271,9 +271,9 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class FeaturescardsModel extends AbstractComponent {
+public class CardsModel extends AbstractComponent {
 
-    public FeaturescardsModel(Resource r) { super(r); }
+    public CardsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
