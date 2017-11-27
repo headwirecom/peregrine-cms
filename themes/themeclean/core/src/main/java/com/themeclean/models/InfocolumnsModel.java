@@ -21,6 +21,23 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "layoutdirection": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Layout Direction",
+          "x-form-type": "materialradio",
+          "x-default": "vertical",
+          "properties": {
+            "vertical": {
+              "x-form-name": "Vertical",
+              "x-form-value": "vertical"
+            },
+            "horizontal": {
+              "x-form-name": "Horizontal",
+              "x-form-value": "horizontal"
+            }
+          }
+        },
         "aligncontent": {
           "type": "string",
           "x-source": "inject",
@@ -324,7 +341,12 @@ public class InfocolumnsModel extends AbstractComponent {
     public InfocolumnsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Align Content","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Layout Direction","x-form-type":"materialradio","x-default":"vertical","properties":{"vertical":{"x-form-name":"Vertical","x-form-value":"vertical"},"horizontal":{"x-form-name":"Horizontal","x-form-value":"horizontal"}}} */
+	@Inject
+	@Default(values ="vertical")
+	private String layoutdirection;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Align Content","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
 	@Inject
 	@Default(values ="center")
 	private String aligncontent;
@@ -438,7 +460,12 @@ public class InfocolumnsModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Align Content","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Layout Direction","x-form-type":"materialradio","x-default":"vertical","properties":{"vertical":{"x-form-name":"Vertical","x-form-value":"vertical"},"horizontal":{"x-form-name":"Horizontal","x-form-value":"horizontal"}}} */
+	public String getLayoutdirection() {
+		return layoutdirection;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Align Content","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
 	public String getAligncontent() {
 		return aligncontent;
 	}

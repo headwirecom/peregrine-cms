@@ -4,6 +4,22 @@
       "type": "material-radios",
       "values": [
         {
+          "name": "Vertical",
+          "value": "vertical"
+        },
+        {
+          "name": "Horizontal",
+          "value": "horizontal"
+        }
+      ],
+      "placeholder": "layoutdirection",
+      "label": "Layout Direction",
+      "model": "layoutdirection"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
           "name": "Left",
           "value": "left"
         },
