@@ -14,7 +14,7 @@
     "overlaycolor": "#ffffff",
     "overlayopacity": "60",
     "subtitle": "Our mobile websites",
-    "text": "Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color.",
+    "text": "<p>Click on component to open up editor dialog on the right. You can hide/show buttons, text, title and change the component background image or color.</p>",
     "title": "FULL SCREEN INTRO",
     "buttons": [
       {
