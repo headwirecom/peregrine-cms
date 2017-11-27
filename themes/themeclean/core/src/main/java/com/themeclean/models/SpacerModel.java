@@ -24,7 +24,7 @@ import javax.inject.Named;
         "height": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Empty Space",
+          "x-form-label": "Height",
           "x-form-type": "range",
           "x-form-min": 0,
           "x-form-max": 100
@@ -144,36 +144,6 @@ import javax.inject.Named;
               "x-form-type": "color",
               "x-form-visible": "model.backgroundtype == 'gradient' and model.custombackground == 'true'",
               "x-default": "#c0c0c0"
-            },
-            "fullwidth": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Full Width",
-              "x-form-type": "materialswitch"
-            },
-            "fullheight": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Full Height",
-              "x-form-type": "materialswitch"
-            },
-            "toppadding": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Top Padding",
-              "x-form-type": "range",
-              "x-form-min": 0,
-              "x-form-max": 150,
-              "x-form-visible": "model.fullheight != 'true'"
-            },
-            "bottompadding": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Bottom Padding",
-              "x-form-type": "range",
-              "x-form-min": 0,
-              "x-form-max": 150,
-              "x-form-visible": "model.fullheight != 'true'"
             }
           }
         }
@@ -207,7 +177,7 @@ public class SpacerModel extends AbstractComponent {
     public SpacerModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Empty Space","x-form-type":"range","x-form-min":0,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Height","x-form-type":"range","x-form-min":0,"x-form-max":100} */
 	@Inject
 	private String height;
 
@@ -258,27 +228,11 @@ public class SpacerModel extends AbstractComponent {
 	@Default(values ="#c0c0c0")
 	private String color2;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
-	@Inject
-	private String fullwidth;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
-	@Inject
-	private String fullheight;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
-	@Inject
-	private String toppadding;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
-	@Inject
-	private String bottompadding;
-
 
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Empty Space","x-form-type":"range","x-form-min":0,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Height","x-form-type":"range","x-form-min":0,"x-form-max":100} */
 	public String getHeight() {
 		return height;
 	}
@@ -331,26 +285,6 @@ public class SpacerModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Color 2","x-form-type":"color","x-form-visible":"model.backgroundtype == 'gradient' and model.custombackground == 'true'","x-default":"#c0c0c0"} */
 	public String getColor2() {
 		return color2;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Width","x-form-type":"materialswitch"} */
-	public String getFullwidth() {
-		return fullwidth;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Full Height","x-form-type":"materialswitch"} */
-	public String getFullheight() {
-		return fullheight;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
-	public String getToppadding() {
-		return toppadding;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
-	public String getBottompadding() {
-		return bottompadding;
 	}
 
 
