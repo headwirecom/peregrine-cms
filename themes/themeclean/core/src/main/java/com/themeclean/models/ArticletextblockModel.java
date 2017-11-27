@@ -17,7 +17,7 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Articlefulltext": {
+    "Articletextblock": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -166,10 +166,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Articlefulltext",
-  "componentPath": "themeclean/components/articlefulltext",
+  "name": "Articletextblock",
+  "componentPath": "themeclean/components/articletextblock",
   "package": "com.themeclean.models",
-  "modelName": "Articlefulltext",
+  "modelName": "Articletextblock",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -178,7 +178,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articlefulltext",
+        resourceType = "themeclean/components/articletextblock",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -188,9 +188,9 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class ArticlefulltextModel extends AbstractComponent {
+public class ArticletextblockModel extends AbstractComponent {
 
-    public ArticlefulltextModel(Resource r) { super(r); }
+    public ArticletextblockModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */

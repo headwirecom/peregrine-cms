@@ -1,6 +1,6 @@
 {
   "definitions": {
-    "Articlefulltext": {
+    "Articletextblock": {
       "type": "object",
       "x-type": "component",
       "properties": {

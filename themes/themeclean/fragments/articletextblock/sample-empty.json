@@ -1,5 +1,5 @@
 {
-  "title": "Article Text no default value",
+  "title": "Article Text Block no default value",
   "group": "Empty",
   "model": {
        "text": "<p><br></p>"
