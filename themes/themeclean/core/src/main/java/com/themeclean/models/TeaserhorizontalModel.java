@@ -96,25 +96,21 @@ import javax.inject.Named;
           "x-form-label": "Show Button",
           "x-form-type": "materialswitch"
         },
-        "alignbuttons": {
+        "buttonside": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Button Alignment",
-          "x-form-visible": "",
+          "x-form-label": "Button Side",
           "x-form-type": "materialradio",
-          "x-default": "center",
+          "x-form-visible": "model.showbutton == 'true'",
+          "x-default": "right",
           "properties": {
             "left": {
               "x-form-name": "Left",
-              "x-form-value": "start"
-            },
-            "center": {
-              "x-form-name": "Center",
-              "x-form-value": "center"
+              "x-form-value": "left"
             },
             "right": {
               "x-form-name": "Right",
-              "x-form-value": "end"
+              "x-form-value": "right"
             }
           }
         },
@@ -362,10 +358,10 @@ public class TeaserhorizontalModel extends AbstractComponent {
 	@Inject
 	private String showbutton;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"end"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Side","x-form-type":"materialradio","x-form-visible":"model.showbutton == 'true'","x-default":"right","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
 	@Inject
-	@Default(values ="center")
-	private String alignbuttons;
+	@Default(values ="right")
+	private String buttonside;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
 	@Inject
@@ -483,9 +479,9 @@ public class TeaserhorizontalModel extends AbstractComponent {
 		return showbutton;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Button Alignment","x-form-visible":"","x-form-type":"materialradio","x-default":"center","properties":{"left":{"x-form-name":"Left","x-form-value":"start"},"center":{"x-form-name":"Center","x-form-value":"center"},"right":{"x-form-name":"Right","x-form-value":"end"}}} */
-	public String getAlignbuttons() {
-		return alignbuttons;
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Side","x-form-type":"materialradio","x-form-visible":"model.showbutton == 'true'","x-default":"right","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+	public String getButtonside() {
+		return buttonside;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */

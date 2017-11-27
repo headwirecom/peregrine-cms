@@ -97,20 +97,17 @@
       "values": [
         {
           "name": "Left",
-          "value": "start"
-        },
-        {
-          "name": "Center",
-          "value": "center"
+          "value": "left"
         },
         {
           "name": "Right",
-          "value": "end"
+          "value": "right"
         }
       ],
-      "placeholder": "alignbuttons",
-      "label": "Button Alignment",
-      "model": "alignbuttons"
+      "placeholder": "buttonside",
+      "label": "Button Side",
+      "model": "buttonside",
+      "visible": "model.showbutton == 'true'"
     },
     {
       "type": "collection",

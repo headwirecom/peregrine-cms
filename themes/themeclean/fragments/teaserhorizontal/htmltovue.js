@@ -4,6 +4,11 @@ module.exports = {
         f.bindAttribute($.parent(),'model','model')
 
         //Container
+        let containerClasses = `{
+            'flex-md-row-reverse': model.buttonside === 'left',
+            'flex-md-row': model.buttonside === 'right',
+        }`
+        f.bindAttribute( $, 'class', containerClasses ,false)
 
         //Text
         let textClasses = `{
@@ -24,8 +29,12 @@ module.exports = {
         //Buttons
         let buttonsDiv = $.find('div').eq(1)
         let link = buttonsDiv.find('a')
+        let buttonClasses = `{
+            'justify-content-end': model.buttonside === 'right',
+            'justify-content-start': model.buttonside === 'left',
+        }`
         f.addIf( buttonsDiv, 'model.showbutton == \'true\'')
-        f.bindAttribute( buttonsDiv, 'class', '`align-self-sm-${model.alignbuttons}`',false)
+        f.bindAttribute( buttonsDiv, 'class', buttonClasses,false)
         f.addFor( link, 'model.buttons')
         f.bindAttribute( link, 'href', f.pathToUrl('item.buttonlink'))
         f.mapRichField( link, "item.buttontext")
