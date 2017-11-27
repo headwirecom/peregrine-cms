@@ -1,6 +1,6 @@
 {
-  "title": "Emptyblock",
-  "group": "General",
+  "title": "Spacer",
+  "group": "Chrome",
   "model": {
     "height": "20",
     "toppadding": "0",
