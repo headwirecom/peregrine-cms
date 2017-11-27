@@ -4,11 +4,20 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "reverselayout": {
+        "mediaposition": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Reverse Layout",
-          "x-form-type": "materialswitch"
+          "x-form-label": "Media on Left/Right",
+          "x-form-type": "materialradio",
+          "properties": {
+		    "type1": {
+		      "x-form-name": "Left",
+		      "x-form-value": "left"
+		    },"type2": {
+		      "x-form-name": "Right",
+		      "x-form-value": "right"
+		    }
+  		  }
         },
         "text": {
           "type": "string",
