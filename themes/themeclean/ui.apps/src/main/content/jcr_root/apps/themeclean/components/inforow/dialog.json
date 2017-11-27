@@ -37,6 +37,24 @@
       "visible": "model.showsubtitle == 'true'"
     },
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showtext",
+      "label": "Show Text",
+      "model": "showtext"
+    },
+    {
+      "type": "texteditor",
+      "rows": 10,
+      "placeholder": "text",
+      "label": "Text",
+      "model": "text",
+      "visible": "model.showtext == 'true'"
+    },
+    {
       "type": "material-radios",
       "values": [
         {

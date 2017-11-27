@@ -1,6 +1,6 @@
 {
   "definitions": {
-    "Inforow": {
+    "Cards": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -10,42 +10,11 @@
           "x-form-label": "Show Title",
           "x-form-type": "materialswitch"
         },
-        "title": {
+        "showtext": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Title",
-          "x-form-visible": "model.showtitle == 'true'",
-          "x-form-type": "text"
-        },
-        "showsubtitle": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Show Subtitle",
+          "x-form-label": "Show Text",
           "x-form-type": "materialswitch"
-        },
-        "subtitle": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Subtitle",
-          "x-form-visible": "model.showsubtitle == 'true'",
-          "x-form-type": "text"
-        },
-        "reverselayout": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Text Location",
-          "x-form-type": "materialradio",
-          "x-default": "flex-row",
-          "properties": {
-            "left": {
-              "x-form-name": "Left",
-              "x-form-value": "flex-row"
-            },
-            "right": {
-              "x-form-name": "Right",
-              "x-form-value": "flex-row-reverse"
-            }
-          }
         },
         "showbutton": {
           "type": "string",
@@ -53,23 +22,53 @@
           "x-form-label": "Show Button",
           "x-form-type": "materialswitch"
         },
-        "buttons": {
+        "cardcolor": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Buttons",
+          "x-form-label": "Card Color",
+          "x-form-type": "color",
+          "x-default": "#ffffff"
+        },
+        "cards": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Cards",
+          "x-form-fieldLabel": "title",
           "x-form-type": "collection",
-          "x-form-visible": "model.showbutton == 'true'",
           "properties": {
+            "title": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Card Title",
+              "x-form-visible": "model.showtitle == 'true'",
+              "x-form-type": "text"
+            },
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Card Text",
+              "x-form-visible": "model.showtext == 'true'",
+              "x-form-type": "texteditor"
+            },
+            "image": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Card Image",
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
+            },
             "buttontext": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Button Text",
+              "x-form-visible": "model.showbutton == 'true'",
               "x-form-type": "text"
             },
             "buttonlink": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Button Link",
+              "x-form-visible": "model.showbutton == 'true'",
               "x-form-type": "pathbrowser",
               "x-form-browserRoot": "/content/sites"
             },
@@ -77,6 +76,7 @@
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Button Color",
+              "x-form-visible": "model.showbutton == 'true'",
               "x-form-type": "color"
             }
           }
