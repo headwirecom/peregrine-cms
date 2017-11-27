@@ -1,6 +1,6 @@
 {
   "definitions": {
-    "Articlecolumns": {
+    "Articletwocolumn": {
       "type": "object",
       "x-type": "component",
       "properties": {

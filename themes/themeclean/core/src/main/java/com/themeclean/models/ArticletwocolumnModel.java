@@ -17,7 +17,7 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Articlecolumns": {
+    "Articletwocolumn": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -172,10 +172,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Articlecolumns",
-  "componentPath": "themeclean/components/articlecolumns",
+  "name": "Articletwocolumn",
+  "componentPath": "themeclean/components/articletwocolumn",
   "package": "com.themeclean.models",
-  "modelName": "Articlecolumns",
+  "modelName": "Articletwocolumn",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -184,7 +184,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articlecolumns",
+        resourceType = "themeclean/components/articletwocolumn",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -194,9 +194,9 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class ArticlecolumnsModel extends AbstractComponent {
+public class ArticletwocolumnModel extends AbstractComponent {
 
-    public ArticlecolumnsModel(Resource r) { super(r); }
+    public ArticletwocolumnModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Left Column","x-form-type":"texteditor"} */
