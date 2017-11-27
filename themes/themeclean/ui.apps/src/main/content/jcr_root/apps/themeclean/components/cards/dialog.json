@@ -31,11 +31,22 @@
       "model": "showbutton"
     },
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showcard",
+      "label": "Show Card Background",
+      "model": "showcard"
+    },
+    {
       "type": "input",
       "inputType": "color",
       "placeholder": "cardcolor",
       "label": "Card Color",
-      "model": "cardcolor"
+      "model": "cardcolor",
+      "visible": "model.showcard == 'true'"
     },
     {
       "type": "collection",
