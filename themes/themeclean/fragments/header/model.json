@@ -1,0 +1,67 @@
+{
+  "definitions": {
+    "Header": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "logo": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo",
+          "x-form-type": "pathbrowser",
+          "x-form-browserRoot": "/content/assets"
+        },
+        "logourl": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Url",
+          "x-form-type": "pathbrowser",
+          "x-form-browserRoot": "/content/sites"
+        },
+        "logosize": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Size",
+          "x-form-type": "range",
+          "x-default": 50,
+          "x-form-min": 1,
+          "x-form-max": 300 
+        },
+        "collapsed": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Collapse Menu",
+          "x-form-type": "materialswitch"
+        },
+        "elevation": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Elevation",
+          "x-form-visible": "",
+          "x-form-type": "range",
+          "x-default": 0,
+          "x-form-min": 0,
+          "x-form-max": 5
+        },
+        "sticky": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Sticky",
+          "x-form-type": "materialswitch"
+        },
+        "linksref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/textlinks/model.json#/definitions/Textlinks"
+        },
+        "buttonsref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/menubuttons/model.json#/definitions/Menubuttons"
+        },
+        "bgref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/block/model.json#/definitions/Block"
+        }
+      }
+    }
+  }
+}

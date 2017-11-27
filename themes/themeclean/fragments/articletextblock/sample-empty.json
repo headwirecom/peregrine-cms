@@ -1,0 +1,7 @@
+{
+  "title": "Article Text Block no default value",
+  "group": "Empty",
+  "model": {
+       "text": "<p><br></p>"
+  }
+}
