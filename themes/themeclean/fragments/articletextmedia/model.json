@@ -1,6 +1,6 @@
 {
   "definitions": {
-    "Articlemedia": {
+    "Articletextmedia": {
       "type": "object",
       "x-type": "component",
       "properties": {

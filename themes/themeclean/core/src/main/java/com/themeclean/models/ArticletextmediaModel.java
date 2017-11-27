@@ -17,7 +17,7 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Articlemedia": {
+    "Articletextmedia": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -226,10 +226,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Articlemedia",
-  "componentPath": "themeclean/components/articlemedia",
+  "name": "Articletextmedia",
+  "componentPath": "themeclean/components/articletextmedia",
   "package": "com.themeclean.models",
-  "modelName": "Articlemedia",
+  "modelName": "Articletextmedia",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -238,7 +238,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/articlemedia",
+        resourceType = "themeclean/components/articletextmedia",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -248,9 +248,9 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class ArticlemediaModel extends AbstractComponent {
+public class ArticletextmediaModel extends AbstractComponent {
 
-    public ArticlemediaModel(Resource r) { super(r); }
+    public ArticletextmediaModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Reverse Layout","x-form-type":"materialswitch"} */

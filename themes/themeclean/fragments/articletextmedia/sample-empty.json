@@ -1,5 +1,5 @@
 {
-  "title": "Article With Media no default value",
+  "title": "Article Text Media no default value",
   "group": "Empty",
   "model": {
     "text": "<p><br></p>"
