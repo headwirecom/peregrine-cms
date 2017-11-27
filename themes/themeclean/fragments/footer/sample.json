@@ -19,10 +19,10 @@
       },
       {
         "title": "Contact",
-        "text": "email@email.com<br>1-800-888-8888"
+        "text": "<p>email@email.com<br>1-800-888-8888</p>"
       },{
         "title": "Location",
-        "text": "1234 S Pointe Drive, Laguna Hills, CA 92653"
+        "text": "<p>1234 S Pointe Drive, Laguna Hills, CA 92653</p>"
       }
     ],
     "icons": [
