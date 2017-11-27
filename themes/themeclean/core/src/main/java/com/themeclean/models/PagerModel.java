@@ -27,12 +27,10 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
-        "prevlink": {
+        "text": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "",
-          "x-form-visible": "",
-          "x-form-type": ""
+          "x-form-type": "texteditor"
         }
       }
     }
@@ -80,18 +78,25 @@ public class PagerModel extends AbstractComponent {
     }
     
     private Resource getCurrentPage(Resource resource) {
+    	String resourceType = null;
     	try{
     		
     		ValueMap props = resource.adaptTo(ValueMap.class);
-		    String resourceType = props.get("jcr:primaryType", "type not found");
+		    resourceType = props.get("jcr:primaryType", "type not found");
+		    LOG.debug("resource type is: " + resourceType + "  path is:" + resource.getPath());
 		    // we only care about per:page node
-		    if(! "per:Page".equals(resourceType)) {
-		    	getCurrentPage(resource.getParent());
+		    if("per:Page".equals(resourceType)) {
+		    	LOG.debug("returned resource type is: " + resourceType + "  path is:" + resource.getPath());
+		    	return resource;
+		    }
+		    else {
+		    	return getCurrentPage(resource.getParent());
 		    }
 		} catch(Exception e){
     		LOG.error("Exception: " + e);
+    		return null;
 		}
-    	return resource;
+    	
     }
 
 
