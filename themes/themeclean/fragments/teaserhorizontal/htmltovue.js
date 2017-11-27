@@ -13,7 +13,7 @@ module.exports = {
         }`
         let textDiv = $.find('div').eq(0)
         f.bindAttribute( textDiv, 'class', textClasses,false)
-        f.addStyle( textDiv, 'width', 'model.textwidth', '%')
+        f.addStyle( textDiv, 'flex-basis', 'model.textwidth', '%')
     	f.addIf($.find('h2').first(), 'model.showtitle == \'true\'')
         f.addIf($.find('h4').first(), 'model.showsubtitle == \'true\'')
         f.addIf($.find('p').first(), 'model.showtext == \'true\'')

@@ -1,16 +1,17 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="d-flex flex-row col-12 col-md-10 justify-content-between align-items-center">
+    <div class="d-flex flex-column flex-md-row col-12 col-md-10 justify-content-between align-items-center">
       <div class="" v-bind:class="{
             'text-left': model.aligncontent === 'left',
             'text-center': model.aligncontent === 'center',
             'text-right': model.aligncontent === 'right'
-        }" v-bind:style="`width:${model.textwidth}%;`">
+        }" v-bind:style="`flex-basis:${model.textwidth}%;`">
         <h2 class="" v-if="model.showtitle == 'true'" v-html="model.title"></h2>
         <h4 class="" v-if="model.showsubtitle == 'true'" v-html="model.subtitle"></h4>
         <p v-if="model.showtext == 'true'" v-html="model.text"></p>
       </div>
-      <div class="d-flex" v-if="model.showbutton == 'true'" v-bind:class="`align-self-sm-${model.alignbuttons}`">
+      <div class="d-flex justify-content-end flex-wrap" v-if="model.showbutton == 'true'"
+      v-bind:class="`align-self-sm-${model.alignbuttons}`">
         <a class="btn m-2 btn-secondary btn-lg" v-for="(item,i) in model.buttons"
         :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
         v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
