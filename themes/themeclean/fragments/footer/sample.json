@@ -27,16 +27,24 @@
     ],
     "icons": [
       {
-        "url": "/content/sites/themeclean",
-        "icon": ":material-icons:face"
+        "url": "https://www.facebook.com/",
+        "icon": "fontAwesome:fa fa-facebook:"
       },
       {
-        "url": "/content/sites/themeclean",
-        "icon": ":material-icons:favorite"
+        "url": "https://twitter.com/",
+        "icon": "fontAwesome:fa fa-twitter:"
       },
       {
-        "url": "/content/sites/themeclean",
-        "icon": ":material-icons:account_balance"
+        "url": "https://www.instagram.com/",
+        "icon": "fontAwesome:fa fa-instagram:"
+      },
+      {
+        "url": "https://www.pinterest.com/",
+        "icon": "fontAwesome:fa fa-pinterest-p:"
+      },
+      {
+        "url": "https://www.youtube.com/",
+        "icon": "fontAwesome:fa fa-youtube-play:"
       }
     ]
   }

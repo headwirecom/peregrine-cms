@@ -7,9 +7,11 @@
       <columns2 jcr:primaryType="nt:unstructured" title="Location" text="1234 S Pointe Drive, Laguna Hills, CA 92653"/>
     </columns>
     <icons jcr:primaryType="nt:unstructured">
-      <icons0 jcr:primaryType="nt:unstructured" url="/content/sites/themeclean" icon=":material-icons:face"/>
-      <icons1 jcr:primaryType="nt:unstructured" url="/content/sites/themeclean" icon=":material-icons:favorite"/>
-      <icons2 jcr:primaryType="nt:unstructured" url="/content/sites/themeclean" icon=":material-icons:account_balance"/>
+      <icons0 jcr:primaryType="nt:unstructured" url="https://www.facebook.com/" icon="fontAwesome:fa fa-facebook:"/>
+      <icons1 jcr:primaryType="nt:unstructured" url="https://twitter.com/" icon="fontAwesome:fa fa-twitter:"/>
+      <icons2 jcr:primaryType="nt:unstructured" url="https://www.instagram.com/" icon="fontAwesome:fa fa-instagram:"/>
+      <icons3 jcr:primaryType="nt:unstructured" url="https://www.pinterest.com/" icon="fontAwesome:fa fa-pinterest-p:"/>
+      <icons4 jcr:primaryType="nt:unstructured" url="https://www.youtube.com/" icon="fontAwesome:fa fa-youtube-play:"/>
     </icons>
   </jcr:content>
 </jcr:root>
