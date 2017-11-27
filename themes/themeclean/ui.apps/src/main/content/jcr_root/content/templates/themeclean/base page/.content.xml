@@ -81,18 +81,11 @@
                     title="Location"/>
             </columns>
             <icons jcr:primaryType="nt:unstructured">
-                <icons0
-                    jcr:primaryType="nt:unstructured"
-                    icon=":material-icons:face"
-                    url="/content/sites/themeclean"/>
-                <icons1
-                    jcr:primaryType="nt:unstructured"
-                    icon=":material-icons:favorite"
-                    url="/content/sites/themeclean"/>
-                <icons2
-                    jcr:primaryType="nt:unstructured"
-                    icon=":material-icons:account_balance"
-                    url="/content/sites/themeclean"/>
+                <icons0 jcr:primaryType="nt:unstructured" url="https://www.facebook.com/" icon="fontAwesome:fa fa-facebook:"/>
+                <icons1 jcr:primaryType="nt:unstructured" url="https://twitter.com/" icon="fontAwesome:fa fa-twitter:"/>
+                <icons2 jcr:primaryType="nt:unstructured" url="https://www.instagram.com/" icon="fontAwesome:fa fa-instagram:"/>
+                <icons3 jcr:primaryType="nt:unstructured" url="https://www.pinterest.com/" icon="fontAwesome:fa fa-pinterest-p:"/>
+                <icons4 jcr:primaryType="nt:unstructured" url="https://www.youtube.com/" icon="fontAwesome:fa fa-youtube-play:"/>
             </icons>
         </footer>
     </jcr:content>
