@@ -3,6 +3,9 @@
   "group": "Article",
   "model": {
     "prevlabel": "Prev",
-    "nextlabel": "Next"
+    "nextlabel": "Next",
+    "colorscheme": "",
+    "toppadding": "10",
+    "bottompadding": "10"
   }
 }

@@ -202,7 +202,7 @@ import javax.inject.Named;
 //GEN]
 public class ArticlepagerModel extends AbstractComponent {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PagerModel.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ArticlepagerModel.class);
 	
     public ArticlepagerModel(Resource r) { super(r); }
 
