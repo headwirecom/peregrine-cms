@@ -14,11 +14,25 @@
               "x-form-name": "Image",
               "x-form-value": "image"
             },
-            "color": {
+            "video": {
               "x-form-name": "Video",
               "x-form-value": "video"
+            },
+            "icon": {
+              "x-form-name": "Icon",
+              "x-form-value": "icon"
             }
           }
+        },
+        "mediaicon": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Icon Chooser",
+          "x-form-type": "iconbrowser",
+          "x-form-hint": "Select an icon.",
+          "x-form-validator": "required",
+          "x-form-visible": "model.mediatype == 'icon'",
+          "x-form-families": ["material","font awesome"]
         },
         "imagesrc": {
           "type": "string",
