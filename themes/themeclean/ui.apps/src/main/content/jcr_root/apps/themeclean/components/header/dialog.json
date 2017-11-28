@@ -8,6 +8,13 @@
       "model": "logo"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "logoalttext",
+      "label": "Logo Alt Text",
+      "model": "logoalttext"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/sites",
       "placeholder": "logourl",

@@ -2,9 +2,9 @@
   <themeclean-components-block v-bind:model="model">
     <footer class="col-12">
       <div class="row justify-content-between text-center text-md-left">
-        <div class="col-12 col-md-auto" v-if="model.showlogo === 'true' &amp;&amp; model.logo">
+        <div class="col-12 col-md-auto" v-if="model.showlogo === 'true' &amp;&amp; (model.logo || model.logoalttext)">
           <a v-bind:href="$helper.pathToUrl(model.logourl)">
-            <img class="mb-3" alt="logo" v-bind:src="$helper.pathToUrl(model.logo)"
+            <img class="mb-3" v-bind:src="$helper.pathToUrl(model.logo)" v-bind:alt="model.logoalttext"
             v-bind:style="`height:${parseInt(model.logosize)}px;`">
           </a>
         </div>

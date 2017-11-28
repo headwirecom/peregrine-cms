@@ -19,6 +19,14 @@
       "visible": "model.showlogo == 'true'"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "logoalttext",
+      "label": "Logo Alt Text",
+      "model": "logoalttext",
+      "visible": "model.showlogo == 'true'"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/sites",
       "placeholder": "logourl",

@@ -26,6 +26,12 @@ import java.util.List;
           "x-form-type": "pathbrowser",
           "x-form-browserRoot": "/content/assets"
         },
+        "logoalttext": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Alt Text",
+          "x-form-type": "text"
+        },
         "logourl": {
           "type": "string",
           "x-source": "inject",
@@ -308,6 +314,10 @@ public class HeaderModel extends AbstractComponent {
 	@Inject
 	private String logo;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Alt Text","x-form-type":"text"} */
+	@Inject
+	private String logoalttext;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
 	@Inject
 	private String logourl;
@@ -407,6 +417,11 @@ public class HeaderModel extends AbstractComponent {
     	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	public String getLogo() {
 		return logo;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Alt Text","x-form-type":"text"} */
+	public String getLogoalttext() {
+		return logoalttext;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */

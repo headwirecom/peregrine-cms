@@ -35,6 +35,13 @@ import javax.inject.Named;
           "x-form-visible": "model.showlogo == 'true'",
           "x-form-browserRoot": "/content/assets"
         },
+        "logoalttext": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Alt Text",
+          "x-form-visible": "model.showlogo == 'true'",
+          "x-form-type": "text"
+        },
         "logourl": {
           "type": "string",
           "x-source": "inject",
@@ -316,6 +323,10 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String logo;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Alt Text","x-form-visible":"model.showlogo == 'true'","x-form-type":"text"} */
+	@Inject
+	private String logoalttext;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */
 	@Inject
 	private String logourl;
@@ -421,6 +432,11 @@ public class FooterModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/assets"} */
 	public String getLogo() {
 		return logo;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Alt Text","x-form-visible":"model.showlogo == 'true'","x-form-type":"text"} */
+	public String getLogoalttext() {
+		return logoalttext;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */

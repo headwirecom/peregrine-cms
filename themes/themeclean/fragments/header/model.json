@@ -11,6 +11,12 @@
           "x-form-type": "pathbrowser",
           "x-form-browserRoot": "/content/assets"
         },
+        "logoalttext": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Alt Text",
+          "x-form-type": "text"
+        },
         "logourl": {
           "type": "string",
           "x-source": "inject",
