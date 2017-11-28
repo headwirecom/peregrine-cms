@@ -128,7 +128,13 @@ export default {
         viewMode: function() {
             const viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
             const previewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
-            return viewMode ? viewMode: 'desktop' + ( previewMode ? ' ' + previewMode : '' )
+            let ret = ''
+            if(viewMode) {
+                ret = viewMode + (previewMode ? ' ' + previewMode : '' )
+            } else {
+                ret = 'desktop' + (previewMode ? ' ' + previewMode : '' )
+            }
+            return ret
         },
         viewModeClass: function() {
             return this.viewMode
