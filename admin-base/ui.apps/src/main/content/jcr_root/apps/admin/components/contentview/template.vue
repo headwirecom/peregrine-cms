@@ -126,9 +126,9 @@ export default {
             return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
         },
         viewMode: function() {
-            let viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
-            if(viewMode) return viewMode
-            return 'desktop'
+            const viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
+            const previewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
+            return viewMode ? viewMode: 'desktop' + ( previewMode ? ' ' + previewMode : '' )
         },
         viewModeClass: function() {
             return this.viewMode
@@ -199,7 +199,7 @@ export default {
 
         setIframeScrollState(viewMode) {
              var iframeDoc = this.$refs.editview.contentWindow.document
-            if(viewMode === 'preview'){
+            if(viewMode.endsWith('preview')){
                 iframeDoc.body.style.overflowX = 'hidden'
                 iframeDoc.body.style.overflowY = 'auto'
             } else {
