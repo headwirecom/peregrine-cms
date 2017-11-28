@@ -33,11 +33,46 @@
         {
           "name": "Video",
           "value": "video"
+        },
+        {
+          "name": "Icon",
+          "value": "icon"
         }
       ],
       "placeholder": "mediatype",
       "label": "Media type",
       "model": "mediatype"
+    },
+    {
+      "type": "iconbrowser",
+      "placeholder": "mediaicon",
+      "label": "Icon Chooser",
+      "model": "mediaicon",
+      "visible": "model.mediatype == 'icon'",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediaiconsize",
+      "label": "Icon Size",
+      "model": "mediaiconsize",
+      "visible": "model.mediatype == 'icon'",
+      "min": 1,
+      "max": 1000
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "mediaiconcolor",
+      "label": "Icon Color",
+      "model": "mediaiconcolor",
+      "visible": "model.mediatype == 'icon'"
     },
     {
       "type": "pathbrowser",
