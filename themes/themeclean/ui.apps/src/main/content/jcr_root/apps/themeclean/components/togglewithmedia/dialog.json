@@ -28,11 +28,28 @@
         {
           "name": "Video",
           "value": "video"
+        },
+        {
+          "name": "Icon",
+          "value": "icon"
         }
       ],
       "placeholder": "mediatype",
       "label": "Media type",
       "model": "mediatype"
+    },
+    {
+      "type": "iconbrowser",
+      "placeholder": "mediaicon",
+      "label": "Icon Chooser",
+      "model": "mediaicon",
+      "visible": "model.mediatype == 'icon'",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
     },
     {
       "type": "pathbrowser",

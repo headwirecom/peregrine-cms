@@ -58,11 +58,28 @@ import javax.inject.Named;
                   "x-form-name": "Image",
                   "x-form-value": "image"
                 },
-                "color": {
+                "video": {
                   "x-form-name": "Video",
                   "x-form-value": "video"
+                },
+                "icon": {
+                  "x-form-name": "Icon",
+                  "x-form-value": "icon"
                 }
               }
+            },
+            "mediaicon": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Chooser",
+              "x-form-type": "iconbrowser",
+              "x-form-hint": "Select an icon.",
+              "x-form-validator": "required",
+              "x-form-visible": "model.mediatype == 'icon'",
+              "x-form-families": [
+                "material",
+                "font awesome"
+              ]
             },
             "imagesrc": {
               "type": "string",
@@ -271,9 +288,13 @@ public class ArticletextmediaModel extends AbstractComponent {
 	@Inject
 	private String text;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"video":{"x-form-name":"Video","x-form-value":"video"},"icon":{"x-form-name":"Icon","x-form-value":"icon"}}} */
 	@Inject
 	private String mediatype;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-validator":"required","x-form-visible":"model.mediatype == 'icon'","x-form-families":["material","font awesome"]} */
+	@Inject
+	private String mediaicon;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	@Inject
@@ -361,9 +382,14 @@ public class ArticletextmediaModel extends AbstractComponent {
 		return text;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"video":{"x-form-name":"Video","x-form-value":"video"},"icon":{"x-form-name":"Icon","x-form-value":"icon"}}} */
 	public String getMediatype() {
 		return mediatype;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-validator":"required","x-form-visible":"model.mediatype == 'icon'","x-form-families":["material","font awesome"]} */
+	public String getMediaicon() {
+		return mediaicon;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */

@@ -5,8 +5,8 @@
       <iframe :src="$helper.pathToUrl(model.videosrc)" frameborder="0" allowfullscreen></iframe>
       </iframe>
     </div>
-    <i v-if="model.mediatype === 'icon'" v-bind:class="item.icon.split(':')[1]" v-bind:style="`font-size:${model.iconsize}px;color:${model.iconcolor};`">
-      {{mediaicon.split(':')[2]}}
+    <i v-if="model.mediatype === 'icon'" v-bind:class="model.mediaicon.split(':')[1]">
+      {{model.mediaicon.split(':')[2]}}
     </i>
     <img v-else class="w-100" :src="$helper.pathToUrl(model.imagesrc)"> 
 
