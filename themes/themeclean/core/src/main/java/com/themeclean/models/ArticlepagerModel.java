@@ -27,6 +27,18 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "prevlabel": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Previous Label",
+          "x-form-type": "text"
+        },
+        "nextlabel": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Next Label",
+          "x-form-type": "text"
+        },
         "bgref": {
           "x-form-type": "reference",
           "type": "object",
@@ -207,7 +219,15 @@ public class ArticlepagerModel extends AbstractComponent {
     public ArticlepagerModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Previous Label","x-form-type":"text"} */
+	@Inject
+	private String prevlabel;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Next Label","x-form-type":"text"} */
+	@Inject
+	private String nextlabel;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	@Default(values ="")
 	private String colorscheme;
@@ -274,7 +294,17 @@ public class ArticlepagerModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Previous Label","x-form-type":"text"} */
+	public String getPrevlabel() {
+		return prevlabel;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Next Label","x-form-type":"text"} */
+	public String getNextlabel() {
+		return nextlabel;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}

@@ -1,6 +1,20 @@
 {
   "fields": [
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "prevlabel",
+      "label": "Previous Label",
+      "model": "prevlabel"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "nextlabel",
+      "label": "Next Label",
+      "model": "nextlabel"
+    },
+    {
       "type": "material-radios",
       "values": [
         {
