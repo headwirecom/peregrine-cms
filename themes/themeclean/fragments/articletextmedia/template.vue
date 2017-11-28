@@ -1,7 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
     <div class="row col-12 col-md-8 p-0 d-md-flex align-items-center justify-content-center flex-wrap article"
-    v-bind:class="model.reverselayout === 'true' ? 'flex-row': 'flex-row-reverse'">
+    v-bind:class="model.mediaposition === 'right' ? 'flex-row-reverse': 'flex-row'">
       <div class="percms-image-wrap px-3" v-bind:style="{flexBasis: `${model.mediawidth}%`}">
         <themeclean-components-media v-bind:model="model"></themeclean-components-media>
       </div>

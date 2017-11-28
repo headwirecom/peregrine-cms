@@ -1,14 +1,20 @@
 {
   "fields": [
     {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "reverselayout",
-      "label": "Reverse Layout",
-      "model": "reverselayout"
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Left",
+          "value": "left"
+        },
+        {
+          "name": "Right",
+          "value": "right"
+        }
+      ],
+      "placeholder": "mediaposition",
+      "label": "Media on Left/Right",
+      "model": "mediaposition"
     },
     {
       "type": "texteditor",

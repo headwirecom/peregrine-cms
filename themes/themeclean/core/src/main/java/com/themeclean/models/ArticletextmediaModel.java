@@ -21,11 +21,21 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
-        "reverselayout": {
+        "mediaposition": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Reverse Layout",
-          "x-form-type": "materialswitch"
+          "x-form-label": "Media on Left/Right",
+          "x-form-type": "materialradio",
+          "properties": {
+            "type1": {
+              "x-form-name": "Left",
+              "x-form-value": "left"
+            },
+            "type2": {
+              "x-form-name": "Right",
+              "x-form-value": "right"
+            }
+          }
         },
         "text": {
           "type": "string",
@@ -253,9 +263,9 @@ public class ArticletextmediaModel extends AbstractComponent {
     public ArticletextmediaModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Reverse Layout","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Left","x-form-value":"left"},"type2":{"x-form-name":"Right","x-form-value":"right"}}} */
 	@Inject
-	private String reverselayout;
+	private String mediaposition;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
 	@Inject
@@ -341,9 +351,9 @@ public class ArticletextmediaModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Reverse Layout","x-form-type":"materialswitch"} */
-	public String getReverselayout() {
-		return reverselayout;
+    	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Left","x-form-value":"left"},"type2":{"x-form-name":"Right","x-form-value":"right"}}} */
+	public String getMediaposition() {
+		return mediaposition;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"} */
