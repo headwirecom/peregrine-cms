@@ -21,6 +21,104 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "showtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Title",
+          "x-form-type": "materialswitch"
+        },
+        "title": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "showsubtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Subtitle",
+          "x-form-type": "materialswitch"
+        },
+        "subtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Subtitle",
+          "x-form-visible": "model.showsubtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "mediaref": {
+          "x-form-type": "reference",
+          "type": "object",
+          "x-type": "component",
+          "properties": {
+            "showmedia": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Show Media",
+              "x-form-type": "materialswitch"
+            },
+            "mediatype": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Media type",
+              "x-form-visible": "model.showmedia == 'true'",
+              "x-form-type": "materialradio",
+              "properties": {
+                "image": {
+                  "x-form-name": "Image",
+                  "x-form-value": "image"
+                },
+                "color": {
+                  "x-form-name": "Video",
+                  "x-form-value": "video"
+                }
+              }
+            },
+            "imagesrc": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Source",
+              "x-form-visible": "model.mediatype == 'image' and model.showmedia == 'true'",
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
+            },
+            "videosrc": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Video Source",
+              "x-form-visible": "model.mediatype == 'video' and model.showmedia == 'true'",
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
+            },
+            "mediawidth": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Width",
+              "x-form-type": "range",
+              "x-form-visible": "model.showmedia == 'true'",
+              "x-default": 100,
+              "x-form-min": 10,
+              "x-form-max": 100
+            },
+            "mediacaption": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Caption",
+              "x-form-visible": "model.showmedia == 'true'",
+              "x-form-type": "text"
+            }
+          }
+        },
+        "mediaalignment": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Align Media Left/Right",
+          "x-form-textOn": "right",
+          "x-form-textOff": "left",
+          "x-form-visible": "model.showmedia == 'true'",
+          "x-form-type": "materialswitch"
+        },
         "tabs": {
           "type": "string",
           "x-source": "inject",
@@ -219,7 +317,52 @@ public class TabsModel extends AbstractComponent {
     public TabsModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+	@Inject
+	private String showtitle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-visible":"model.showtitle == 'true'","x-form-type":"text"} */
+	@Inject
+	private String title;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Subtitle","x-form-type":"materialswitch"} */
+	@Inject
+	private String showsubtitle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-type":"text"} */
+	@Inject
+	private String subtitle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Media","x-form-type":"materialswitch"} */
+	@Inject
+	private String showmedia;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
+	@Inject
+	private String mediatype;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	@Inject
+	private String imagesrc;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	@Inject
+	private String videosrc;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-visible":"model.showmedia == 'true'","x-default":100,"x-form-min":10,"x-form-max":100} */
+	@Inject
+	@Default(values ="100")
+	private String mediawidth;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Caption","x-form-visible":"model.showmedia == 'true'","x-form-type":"text"} */
+	@Inject
+	private String mediacaption;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Align Media Left/Right","x-form-textOn":"right","x-form-textOff":"left","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialswitch"} */
+	@Inject
+	private String mediaalignment;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
 	@Inject
 	private List<IComponent> tabs;
 
@@ -290,7 +433,62 @@ public class TabsModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+	public String getShowtitle() {
+		return showtitle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-visible":"model.showtitle == 'true'","x-form-type":"text"} */
+	public String getTitle() {
+		return title;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Subtitle","x-form-type":"materialswitch"} */
+	public String getShowsubtitle() {
+		return showsubtitle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-type":"text"} */
+	public String getSubtitle() {
+		return subtitle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Media","x-form-type":"materialswitch"} */
+	public String getShowmedia() {
+		return showmedia;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"color":{"x-form-name":"Video","x-form-value":"video"}}} */
+	public String getMediatype() {
+		return mediatype;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	public String getImagesrc() {
+		return imagesrc;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	public String getVideosrc() {
+		return videosrc;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-visible":"model.showmedia == 'true'","x-default":100,"x-form-min":10,"x-form-max":100} */
+	public String getMediawidth() {
+		return mediawidth;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Caption","x-form-visible":"model.showmedia == 'true'","x-form-type":"text"} */
+	public String getMediacaption() {
+		return mediacaption;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Align Media Left/Right","x-form-textOn":"right","x-form-textOff":"left","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialswitch"} */
+	public String getMediaalignment() {
+		return mediaalignment;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
 	public List<IComponent> getTabs() {
 		return tabs;
 	}
