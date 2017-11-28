@@ -111,6 +111,13 @@ import javax.inject.Named;
               "x-form-type": "pathbrowser",
               "x-form-browserRoot": "/content/assets"
             },
+            "mediaalttext": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Media Alt Text",
+              "x-form-visible": "model.mediatype == 'image'",
+              "x-form-type": "text"
+            },
             "videosrc": {
               "type": "string",
               "x-source": "inject",
@@ -127,12 +134,6 @@ import javax.inject.Named;
               "x-default": 100,
               "x-form-min": 10,
               "x-form-max": 100
-            },
-            "mediacaption": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Caption",
-              "x-form-type": "text"
             }
           }
         },
@@ -372,6 +373,10 @@ public class TabswithmediaModel extends AbstractComponent {
 	@Inject
 	private String imagesrc;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Alt Text","x-form-visible":"model.mediatype == 'image'","x-form-type":"text"} */
+	@Inject
+	private String mediaalttext;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String videosrc;
@@ -380,10 +385,6 @@ public class TabswithmediaModel extends AbstractComponent {
 	@Inject
 	@Default(values ="100")
 	private String mediawidth;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Caption","x-form-type":"text"} */
-	@Inject
-	private String mediacaption;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
 	@Inject
@@ -501,6 +502,11 @@ public class TabswithmediaModel extends AbstractComponent {
 		return imagesrc;
 	}
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Alt Text","x-form-visible":"model.mediatype == 'image'","x-form-type":"text"} */
+	public String getMediaalttext() {
+		return mediaalttext;
+	}
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	public String getVideosrc() {
 		return videosrc;
@@ -509,11 +515,6 @@ public class TabswithmediaModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-default":100,"x-form-min":10,"x-form-max":100} */
 	public String getMediawidth() {
 		return mediawidth;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Caption","x-form-type":"text"} */
-	public String getMediacaption() {
-		return mediacaption;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
