@@ -7,11 +7,7 @@
     </div>
     <img v-else class="w-100" :src="$helper.pathToUrl(model.imagesrc)"> 
 
-    <div v-if="model.mediacaption" class="percms-caption">
-      <div>
-        <h1 class="p-5" v-html="model.mediacaption"></h1>
-      </div>
-    </div>
+    
 
   </div>
 </template>

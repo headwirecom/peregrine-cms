@@ -44,12 +44,6 @@
           "x-default": 100,
           "x-form-min": 10,
           "x-form-max": 100
-        },
-        "mediacaption": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Caption",
-          "x-form-type": "text"
         }
       }
     }
