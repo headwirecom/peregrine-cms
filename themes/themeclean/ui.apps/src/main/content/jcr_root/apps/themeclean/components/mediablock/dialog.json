@@ -60,6 +60,14 @@
       "visible": "model.mediatype == 'image'"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "mediaalttext",
+      "label": "Media Alt Text",
+      "model": "mediaalttext",
+      "visible": "model.mediatype == 'image'"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
       "placeholder": "videosrc",
@@ -75,13 +83,6 @@
       "model": "mediawidth",
       "min": 10,
       "max": 100
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "mediacaption",
-      "label": "Caption",
-      "model": "mediacaption"
     },
     {
       "type": "material-radios",
