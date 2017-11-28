@@ -1,6 +1,6 @@
 {
   "definitions": {
-    "Pager": {
+    "Articlepager": {
       "type": "object",
       "x-type": "component",
       "properties": {
