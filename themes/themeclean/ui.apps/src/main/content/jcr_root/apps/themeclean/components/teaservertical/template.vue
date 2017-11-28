@@ -6,7 +6,7 @@
             'justify-content-center': model.aligncontent === 'center',
             'justify-content-end': model.aligncontent === 'right'
         }">
-        <div class="" v-bind:class="{
+        <div class="percms-w-sm-100" v-bind:class="{
             'text-left': model.aligncontent === 'left',
             'text-center': model.aligncontent === 'center',
             'text-right': model.aligncontent === 'right',
