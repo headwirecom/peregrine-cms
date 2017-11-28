@@ -32,6 +32,15 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    set(view, '/state/tools/workspace/view', target)
-    set(view, '/pageView/view', target)
+    if(target === 'preview') {
+        if(view.state.tools.workspace.preview === 'preview') {
+            set(view, '/state/tools/workspace/preview', '')
+            set(view, '/pageView/view', view.state.tools.workspace.view)
+        } else {
+            set(view, '/state/tools/workspace/preview', target)
+            set(view, '/pageView/view', target)
+        }
+    } else {
+        set(view, '/state/tools/workspace/view', target)
+    }
 }
