@@ -11,7 +11,8 @@
     "showmedia": "true",
     "mediaalighment": "false",
     "mediatype": "image",
-    "mediawidth": "50",
+    "mediawidth": "33",
+    "mediaiconsize": "200",
     "imagesrc": "/content/assets/themeclean/images/yosemite.jpg",
     "tabs": [
       {

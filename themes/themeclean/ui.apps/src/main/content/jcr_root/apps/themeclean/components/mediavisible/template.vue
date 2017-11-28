@@ -5,13 +5,12 @@
       <iframe :src="$helper.pathToUrl(model.videosrc)" frameborder="0" allowfullscreen></iframe>
       </iframe>
     </div>
-    <img v-else class="w-100" :src="$helper.pathToUrl(model.imagesrc)"> 
+    <i v-if="model.mediatype === 'icon'" class="w-100 text-center" v-bind:class="model.mediaicon.split(':')[1]" v-bind:style="{'font-size': `${model.mediaiconsize}px`, 'color': model.mediaiconcolor}">
+      {{model.mediaicon.split(':')[2]}}
+    </i>
+    <img v-if="model.mediatype === 'image'" class="w-100" :src="$helper.pathToUrl(model.imagesrc)" v-bind:alt="model.mediaalttext">
 
-    <div v-if="model.mediacaption" class="percms-caption">
-      <div>
-        <h1 class="p-5" v-html="model.mediacaption"></h1>
-      </div>
-    </div>
+
 
   </div>
 </template>
