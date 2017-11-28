@@ -23,7 +23,7 @@ import javax.inject.Named;
     //GEN[:DATA
     {
   "definitions": {
-    "Pager": {
+    "Articlepager": {
       "type": "object",
       "x-type": "component",
       "properties": {
@@ -178,10 +178,10 @@ import javax.inject.Named;
       }
     }
   },
-  "name": "Pager",
-  "componentPath": "themeclean/components/pager",
+  "name": "Articlepager",
+  "componentPath": "themeclean/components/articlepager",
   "package": "com.themeclean.models",
-  "modelName": "Pager",
+  "modelName": "Articlepager",
   "classNameParent": "AbstractComponent"
 }
 //GEN]
@@ -190,7 +190,7 @@ import javax.inject.Named;
 //GEN[:DEF
 @Model(
         adaptables = Resource.class,
-        resourceType = "themeclean/components/pager",
+        resourceType = "themeclean/components/articlepager",
         defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
         adapters = IComponent.class
 )
@@ -200,11 +200,11 @@ import javax.inject.Named;
 )
 
 //GEN]
-public class PagerModel extends AbstractComponent {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(PagerModel.class);
+public class ArticlepagerModel extends AbstractComponent {
 
-    public PagerModel(Resource r) { super(r); }
+	private static final Logger LOG = LoggerFactory.getLogger(PagerModel.class);
+	
+    public ArticlepagerModel(Resource r) { super(r); }
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
@@ -384,5 +384,4 @@ public class PagerModel extends AbstractComponent {
 		}
     	
     }
-
 }

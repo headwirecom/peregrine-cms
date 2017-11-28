@@ -1,9 +1,0 @@
-{
-  "title": "Pager",
-  "group": "Article",
-  "model": {
-    "bottompadding": "10",
-    "toppadding": "10",
-    "colorscheme": ""
-  }
-}
