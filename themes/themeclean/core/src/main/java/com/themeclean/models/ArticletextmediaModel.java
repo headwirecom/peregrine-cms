@@ -81,6 +81,24 @@ import javax.inject.Named;
                 "font awesome"
               ]
             },
+            "mediaiconsize": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Size",
+              "x-form-type": "range",
+              "x-form-visible": "model.mediatype == 'icon'",
+              "x-default": 50,
+              "x-form-min": 1,
+              "x-form-max": 1000
+            },
+            "mediaiconcolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Color",
+              "x-form-type": "color",
+              "x-form-visible": "model.mediatype == 'icon'",
+              "x-default": "#000000"
+            },
             "imagesrc": {
               "type": "string",
               "x-source": "inject",
@@ -296,6 +314,16 @@ public class ArticletextmediaModel extends AbstractComponent {
 	@Inject
 	private String mediaicon;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-form-visible":"model.mediatype == 'icon'","x-default":50,"x-form-min":1,"x-form-max":1000} */
+	@Inject
+	@Default(values ="50")
+	private String mediaiconsize;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-form-type":"color","x-form-visible":"model.mediatype == 'icon'","x-default":"#000000"} */
+	@Inject
+	@Default(values ="#000000")
+	private String mediaiconcolor;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String imagesrc;
@@ -390,6 +418,16 @@ public class ArticletextmediaModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-validator":"required","x-form-visible":"model.mediatype == 'icon'","x-form-families":["material","font awesome"]} */
 	public String getMediaicon() {
 		return mediaicon;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-form-visible":"model.mediatype == 'icon'","x-default":50,"x-form-min":1,"x-form-max":1000} */
+	public String getMediaiconsize() {
+		return mediaiconsize;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-form-type":"color","x-form-visible":"model.mediatype == 'icon'","x-default":"#000000"} */
+	public String getMediaiconcolor() {
+		return mediaiconcolor;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */

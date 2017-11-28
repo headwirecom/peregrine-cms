@@ -34,6 +34,24 @@
           "x-form-visible": "model.mediatype == 'icon'",
           "x-form-families": ["material","font awesome"]
         },
+        "mediaiconsize": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Icon Size",
+          "x-form-type": "range",
+          "x-form-visible": "model.mediatype == 'icon'",
+          "x-default": 50,
+          "x-form-min": 1,
+          "x-form-max": 1000
+        },
+        "mediaiconcolor": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Icon Color",
+          "x-form-type": "color",
+          "x-form-visible": "model.mediatype == 'icon'",
+          "x-default": "#000000"
+        },
         "imagesrc": {
           "type": "string",
           "x-source": "inject",
