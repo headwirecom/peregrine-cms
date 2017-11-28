@@ -1,6 +1,7 @@
 module.exports = {
     convert: function($, f) {
     	f.wrap($, 'themeclean-components-block')
+    	f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
         f.bindAttribute($.parent(),'model','model')
         f.addIf($.find('a').eq(0), 'model.previous == \'unknown\'')
         f.mapField( $.find('a').eq(0), 'model.prevlabel')
