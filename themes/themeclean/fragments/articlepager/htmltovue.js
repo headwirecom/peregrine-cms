@@ -3,15 +3,22 @@ module.exports = {
     	f.wrap($, 'themeclean-components-block')
     	f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
         f.bindAttribute($.parent(),'model','model')
-        f.addIf($.find('a').eq(0), 'model.previous == \'unknown\'')
-        f.mapField( $.find('a').eq(0), 'model.prevlabel')
-        f.addIf($.find('a').eq(1), 'model.previous != \'unknown\'')
-        f.bindAttribute($.find('a').eq(1), 'href', f.pathToUrl('model.previous'))
-        f.mapField( $.find('a').eq(1), 'model.prevlabel')
-        f.addIf($.find('a').eq(2), 'model.next == \'unknown\'')
-        f.mapField( $.find('a').eq(2), 'model.nextlabel')
-        f.addIf($.find('a').eq(3), 'model.next != \'unknown\'')
-        f.bindAttribute($.find('a').eq(3), 'href', f.pathToUrl('model.next'))
-        f.mapField( $.find('a').eq(3), 'model.nextlabel')
+        
+        let a1 =$.find('a').eq(0)
+        let a2 =$.find('a').eq(1)
+        let prevLinkClass = `{
+            'disabled': model.previous === 'unknown'
+        }`
+    	let nextLinkClass = `{
+            'disabled': model.next === 'unknown'
+        }`
+        	
+        f.mapField( a1, 'model.prevlabel')
+        f.bindAttribute(a1, 'href', f.pathToUrl('model.previous'))
+        f.bindAttribute(a1,'class', prevLinkClass, false)
+        
+        f.mapField(a2, 'model.nextlabel')
+        f.bindAttribute(a2, 'href', f.pathToUrl('model.next'))
+        f.bindAttribute(a2,'class', nextLinkClass, false)
     }
 }
