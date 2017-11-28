@@ -349,7 +349,7 @@
         },
         mounted(){
             // set initial tab
-            if(this.withLinkTab && this.selectedPath.includes('http')){
+            if(this.withLinkTab && this.selectedPath && this.selectedPath.includes('http')){
                 this.tab = 'link'
             } else {
                 this.tab = 'browse'

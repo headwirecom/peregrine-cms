@@ -93,8 +93,10 @@
         mounted (){
             if(this.selectedIcon){
                 this.currentIcon = this.selectedIcon
-                this.selectedFamily.name = this.selectedIcon.family
-                this.selectedFamily.value = this.camelize(this.selectedIcon.family)
+                if(this.selectedIcon.family){
+                    this.selectedFamily.name = this.selectedIcon.family
+                    this.selectedFamily.value = this.camelize(this.selectedIcon.family)
+                }
             }
         },
         data () {
@@ -115,7 +117,7 @@
         computed: {
             icons () {
                 if(this.selectedFamily.name === 'all'){
-                    return peregrineFontFamilies.map(icon => icon)
+                    return peregrineFontFamilies
                 }
                 return peregrineFontFamilies
                     .map(icon => icon)
