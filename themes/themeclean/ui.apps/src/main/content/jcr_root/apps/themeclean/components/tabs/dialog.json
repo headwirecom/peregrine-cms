@@ -1,6 +1,114 @@
 {
   "fields": [
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showtitle",
+      "label": "Show Title",
+      "model": "showtitle"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "title",
+      "label": "Title",
+      "model": "title",
+      "visible": "model.showtitle == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showsubtitle",
+      "label": "Show Subtitle",
+      "model": "showsubtitle"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "subtitle",
+      "label": "Subtitle",
+      "model": "subtitle",
+      "visible": "model.showsubtitle == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showmedia",
+      "label": "Show Media",
+      "model": "showmedia"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Video",
+          "value": "video"
+        }
+      ],
+      "placeholder": "mediatype",
+      "label": "Media type",
+      "model": "mediatype",
+      "visible": "model.showmedia == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "imagesrc",
+      "label": "Image Source",
+      "model": "imagesrc",
+      "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "videosrc",
+      "label": "Video Source",
+      "model": "videosrc",
+      "visible": "model.mediatype == 'video' and model.showmedia == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediawidth",
+      "label": "Width",
+      "model": "mediawidth",
+      "visible": "model.showmedia == 'true'",
+      "min": 10,
+      "max": 100
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "mediacaption",
+      "label": "Caption",
+      "model": "mediacaption",
+      "visible": "model.showmedia == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "right",
+      "textOff": "left",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "mediaalignment",
+      "label": "Align Media Left/Right",
+      "model": "mediaalignment",
+      "visible": "model.showmedia == 'true'"
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [

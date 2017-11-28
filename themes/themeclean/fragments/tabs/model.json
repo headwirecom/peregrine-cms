@@ -4,6 +4,45 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "showtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Title",
+          "x-form-type": "materialswitch"
+        },
+        "title": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "showsubtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Subtitle",
+          "x-form-type": "materialswitch"
+        },
+        "subtitle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Subtitle",
+          "x-form-visible": "model.showsubtitle == 'true'",
+          "x-form-type": "text"
+        },
+        "mediaref": {
+            "x-form-type": "reference",
+            "$ref": "fragments/mediavisible/model.json#/definitions/Mediavisible"
+        },
+        "mediaalignment": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Align Media Left/Right",
+          "x-form-textOn": "right",
+          "x-form-textOff": "left",
+          "x-form-visible": "model.showmedia == 'true'",
+          "x-form-type": "materialswitch"
+        },
         "tabs": {
           "type": "string",
           "x-source": "inject",

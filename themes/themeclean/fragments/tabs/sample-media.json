@@ -1,21 +1,18 @@
 {
   "title": "Tabs With Media",
-  "group": "Tabs",
+  "group": "Features",
   "model": {
     "bgcolor": "#ffffff",
-    "color2": "#ffffff",
+    "color2": "#e7e7e7",
     "fullheight": "false",
     "backgroundtype": "gradient",
-    "bottompadding": "30",
-    "showtitle": "true",
-    "title": "Tabs with media",
-    "showsubtitle": "true",
-    "subtitle": "Lorem ipsum dolor sit amet.",
+    "bottompadding": "40",
+    "toppadding": "10",
+    "showmedia": "true",
+    "mediaalighment": "false",
     "mediatype": "image",
-    "imagesrc": "/content/assets/themeclean/images/screen.jpg",
-    "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
-    "mediawidth": "45",
-    "toppadding": "30",
+    "mediawidth": "50",
+    "imagesrc": "/content/assets/themeclean/images/yosemite.jpg",
     "tabs": [
       {
         "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",
@@ -23,6 +20,9 @@
       },{
         "text": "<p>when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting</p>",
         "title": "Contact Us"
+      },{
+        "text": "<p>Again when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting</p>",
+        "title": "About Us"
       }
     ]
   }
