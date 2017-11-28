@@ -5,7 +5,7 @@ module.exports = {
         f.bindAttribute($.parent(),'model','model')
     	f.addFor($.find('li.nav-item').first(), 'model.tabs')
     	f.bindAttribute($.find('a').first(), 'href', '`#tab${_uid}${parseInt(i)+1}`')
-    	f.bindAttribute($.find('a').first(), 'class', 'i == 0 ? \'nav-link active\' : \'nav-link\'')
+    	f.bindAttribute($.find('a').first(), 'class', 'i == 0 ? \'btn nav-link active\' : \'btn nav-link\'')
     	f.bindAttribute($.find('a').first(), 'id', '`tab-control-${_uid}${parseInt(i)+1}`')
     	f.bindAttribute($.find('a').first(), 'aria-controls', '`tab${_uid}${parseInt(i)+1}`')
     	f.mapRichField($.find('a').first(), "item.title")

@@ -5,7 +5,7 @@
       <ul class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist">
         <li class="nav-item" v-for="(item,i) in model.tabs" :key="i">
           <a data-toggle="pill" role="tab" aria-expanded="true" v-bind:href="`#tab${_uid}${parseInt(i)+1}`"
-          v-bind:class="i == 0 ? 'nav-link active' : 'nav-link'"
+          v-bind:class="i == 0 ? 'btn nav-link active' : 'btn nav-link'"
           v-bind:id="`tab-control-${_uid}${parseInt(i)+1}`" v-bind:aria-controls="`tab${_uid}${parseInt(i)+1}`"
           v-html="item.title"></a>
         </li>
