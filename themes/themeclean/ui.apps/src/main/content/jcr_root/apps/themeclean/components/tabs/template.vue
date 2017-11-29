@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div>
+    <div class="col-12 col-md-10">
       <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <div class="row">
         <h2 class="text-center col-12 pb-4" v-if="model.showtitle == 'true' &amp;&amp; model.title"
@@ -8,10 +8,13 @@
         <h3 class="text-center col-12 pb-4" v-if="model.showsubtitle == 'true' &amp;&amp; model.subtitle"
         v-html="model.subtitle"></h3>
       </div>
-      <div class="row">
-        <div class="media-left" v-bind:style="{flexBasis:`${model.mediawidth}%`}"
-        v-if="model.showmedia == 'true' &amp;&amp; model.mediaalignment != 'true' &amp;&amp; ((model.videosrc &amp;&amp; model.mediatype === 'video') || (model.imagesrc &amp;&amp; model.mediatype === 'image') || (model.mediaicon &amp;&amp; model.mediatype === 'icon'))">
-          <themeclean-components-mediavisible :model="model" v-if="model.showmedia == 'true'"></themeclean-components-mediavisible>
+      <div class="row justify-content-center" v-bind:class="{
+            'flex-row': model.medialignment === 'left',
+            'flex-row-reverse': model.medialignment === 'right'
+        }">
+        <div class="col col-md-auto" v-if="model.showmedia == 'true'"
+        v-bind:style="{width:`${model.mediawidth}%`}">
+          <themeclean-components-mediavisible :model="model"></themeclean-components-mediavisible>
         </div>
         <div class="col-12 col-md pt-3 d-flex flex-column justify-content-center">
           <!-- Tab Nav -->
@@ -30,10 +33,6 @@
               <div v-html="item.text" v-bind:class="model.showmedia == 'true' &amp;&amp; ((model.videosrc &amp;&amp; model.mediatype === 'video') || (model.imagesrc &amp;&amp; model.mediatype === 'image') || (model.mediaicon &amp;&amp; model.mediatype === 'icon')) ? 'py-5' : 'text-center py-5'"></div>
             </div>
           </div>
-        </div>
-        <div class="media-right" v-bind:style="{flexBasis:`${model.mediawidth}%`}"
-        v-if="model.showmedia == 'true' &amp;&amp; model.mediaalignment == 'true' &amp;&amp; ((model.videosrc &amp;&amp; model.mediatype === 'video') || (model.imagesrc &amp;&amp; model.mediatype === 'image') || (model.mediaicon &amp;&amp; model.mediatype === 'icon'))">
-          <themeclean-components-mediavisible :model="model"></themeclean-components-mediavisible>
         </div>
       </div>
     </div>
