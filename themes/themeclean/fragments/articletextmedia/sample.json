@@ -3,7 +3,7 @@
   "group": "Article",
   "model": {
     "mediatype": "image",
-    "mediaposition": "left",
+    "mediaposition": "before",
     "imagesrc": "/content/assets/themeclean/images/yosemite.jpg",
     "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
     "mediawidth": "50",

@@ -24,16 +24,16 @@ import javax.inject.Named;
         "mediaposition": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Media on Left/Right",
+          "x-form-label": "Media Position",
           "x-form-type": "materialradio",
           "properties": {
             "type1": {
-              "x-form-name": "Left",
-              "x-form-value": "left"
+              "x-form-name": "Before Content",
+              "x-form-value": "before"
             },
             "type2": {
-              "x-form-name": "Right",
-              "x-form-value": "right"
+              "x-form-name": "After Content",
+              "x-form-value": "after"
             }
           }
         },
@@ -299,7 +299,7 @@ public class ArticletextmediaModel extends AbstractComponent {
     public ArticletextmediaModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Left","x-form-value":"left"},"type2":{"x-form-name":"Right","x-form-value":"right"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	@Inject
 	private String mediaposition;
 
@@ -401,7 +401,7 @@ public class ArticletextmediaModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Left","x-form-value":"left"},"type2":{"x-form-name":"Right","x-form-value":"right"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	public String getMediaposition() {
 		return mediaposition;
 	}
