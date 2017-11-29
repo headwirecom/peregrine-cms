@@ -45,7 +45,8 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Subtitle",
           "x-form-visible": "model.showsubtitle == 'true'",
-          "x-form-type": "text"
+          "x-form-rows": 3,
+          "x-form-type": "textarea"
         },
         "mediaref": {
           "x-form-type": "reference",
@@ -364,7 +365,7 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	private String showsubtitle;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-type":"text"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-rows":3,"x-form-type":"textarea"} */
 	@Inject
 	private String subtitle;
 
@@ -497,7 +498,7 @@ public class TabsModel extends AbstractComponent {
 		return showsubtitle;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-type":"text"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Subtitle","x-form-visible":"model.showsubtitle == 'true'","x-form-rows":3,"x-form-type":"textarea"} */
 	public String getSubtitle() {
 		return subtitle;
 	}

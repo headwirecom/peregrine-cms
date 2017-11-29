@@ -30,7 +30,7 @@
     },
     {
       "type": "material-textarea",
-      "rows": 10,
+      "rows": 3,
       "max": 500,
       "placeholder": "subtitle",
       "label": "Subtitle",

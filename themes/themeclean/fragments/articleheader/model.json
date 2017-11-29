@@ -28,6 +28,7 @@
           "x-source": "inject",
           "x-form-label": "Subtitle",
           "x-form-visible": "model.showsubtitle == 'true'",
+          "x-form-rows": 3,
           "x-form-type": "textarea"
         },
         "textalign": {
