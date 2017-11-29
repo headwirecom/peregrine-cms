@@ -5,8 +5,9 @@
       <div class="card p-0 col-12 col-md border-0 d-flex flex-column justify-content-between"
       v-for="(item,i) in model.cards" :key="i" v-bind:style="`background-color:${model.showcard == 'true' ? model.cardcolor : 'transparent'};`">
         <div>
-          <img alt="logo" v-bind:class="model.showcard == 'true' ? 'card-img pb-1' : 'card-img pb-3'"
-          v-bind:src="$helper.pathToUrl(item.image)" v-if="item.image">
+          <img v-bind:class="model.showcard == 'true' ? 'card-img pb-1' : 'card-img pb-3'"
+          v-bind:src="$helper.pathToUrl(item.image)" v-bind:alt="item.imagealttext"
+          v-if="item.image">
           <div v-bind:class="model.showcard == 'true' ? 'card-body' : ''">
             <h5 class="card-title" v-if="model.showtitle == 'true'" v-html="item.title"
             v-bind:style="`color:${item.color};`"></h5>

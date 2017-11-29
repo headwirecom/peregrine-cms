@@ -11,6 +11,7 @@ module.exports = {
         //Image
         f.bindAttribute($.find('img').first(), 'class', "model.showcard == 'true' ? 'card-img pb-1' : 'card-img pb-3'")
         f.bindAttribute($.find('img').first(), 'src', f.pathToUrl('item.image'))
+        f.bindAttribute($.find('img').first(), 'alt', 'item.imagealttext')
         f.addIf($.find('img').first(), 'item.image')
 
         //Title

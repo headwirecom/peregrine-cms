@@ -67,6 +67,13 @@
           "x-form-type": "pathbrowser",
           "x-form-browserRoot": "/content/assets"
         },
+        "imagealttext": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Image Alt Text",
+          "x-form-visible": "model.mediatype == 'image' and model.showmedia == 'true'",
+          "x-form-type": "text"
+        },
         "videosrc": {
           "type": "string",
           "x-source": "inject",
@@ -84,13 +91,6 @@
           "x-default": 100,
           "x-form-min": 10,
           "x-form-max": 100
-        },
-        "mediacaption": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Caption",
-          "x-form-visible": "model.showmedia == 'true'",
-          "x-form-type": "text"
         }
       }
     }

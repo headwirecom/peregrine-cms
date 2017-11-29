@@ -108,6 +108,14 @@
       "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "imagealttext",
+      "label": "Image Alt Text",
+      "model": "imagealttext",
+      "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
       "placeholder": "videosrc",
