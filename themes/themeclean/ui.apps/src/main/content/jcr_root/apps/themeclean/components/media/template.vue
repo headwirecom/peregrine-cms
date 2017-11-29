@@ -9,6 +9,7 @@
       {{model.mediaicon.split(':')[2]}}
     </i>
     <img v-if="model.mediatype === 'image'" class="w-100" :src="$helper.pathToUrl(model.imagesrc)" v-bind:alt="model.mediaalttext"> 
+    <h3 v-if="noMedia()" class="w-100 text-center">No media content</h3>
 
     
 
@@ -17,6 +18,16 @@
 
 <script>
 export default {
-  props: ["model"]
+  props: ["model"],
+  computed: {
+    noMedia() {
+      let { mediatype, videosrc, imagesrc, mediaicon } = this.model
+      if (mediatype !== 'image' && mediatype !== 'video' && mediatype !== 'icon') return true;
+      if (mediatype === 'image' && imagesrc === '') return true;
+      if (mediatype === 'video' && videosrc === '') return true;
+      if (mediatype === 'icon' && mediaicon === '') return true;
+      return false
+    }
+  }
 }
 </script>
