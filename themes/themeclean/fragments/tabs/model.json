@@ -35,14 +35,23 @@
             "x-form-type": "reference",
             "$ref": "fragments/mediavisible/model.json#/definitions/Mediavisible"
         },
-        "mediaalignment": {
+        "medialignment": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Align Media Left/Right",
-          "x-form-textOn": "right",
-          "x-form-textOff": "left",
+          "x-form-label": "Media on Left/Right",
+          "x-form-type": "materialradio",
+          "x-default": "center",
           "x-form-visible": "model.showmedia == 'true'",
-          "x-form-type": "materialswitch"
+          "properties": {
+            "left": {
+              "x-form-name": "Left",
+              "x-form-value": "left"
+            },
+            "right": {
+              "x-form-name": "Right",
+              "x-form-value": "right"
+            }
+          }
         },
         "tabs": {
           "type": "string",

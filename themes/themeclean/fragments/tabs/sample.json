@@ -8,6 +8,8 @@
     "backgroundtype": "gradient",
     "bottompadding": "40",
     "toppadding": "10",
+    "mediatype": "image",
+    "imagesrc": "/content/assets/themeclean/images/yosemite.jpg",
     "mediawidth": "33",
     "mediaiconsize": "200",
     "tabs": [

@@ -134,14 +134,20 @@
       "max": 100
     },
     {
-      "type": "materialswitch",
-      "textOn": "right",
-      "textOff": "left",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "mediaalignment",
-      "label": "Align Media Left/Right",
-      "model": "mediaalignment",
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Left",
+          "value": "left"
+        },
+        {
+          "name": "Right",
+          "value": "right"
+        }
+      ],
+      "placeholder": "medialignment",
+      "label": "Media on Left/Right",
+      "model": "medialignment",
       "visible": "model.showmedia == 'true'"
     },
     {
