@@ -38,6 +38,23 @@
       "visible": "model.showsubtitle == 'true'"
     },
     {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Before Content",
+          "value": "before"
+        },
+        {
+          "name": "After Content",
+          "value": "after"
+        }
+      ],
+      "placeholder": "mediaposition",
+      "label": "Media Position",
+      "model": "mediaposition",
+      "visible": "model.showmedia == 'true'"
+    },
+    {
       "type": "materialswitch",
       "textOn": "yes",
       "textOff": "no",
@@ -132,23 +149,6 @@
       "visible": "model.showmedia == 'true'",
       "min": 10,
       "max": 100
-    },
-    {
-      "type": "material-radios",
-      "values": [
-        {
-          "name": "Before Content",
-          "value": "before"
-        },
-        {
-          "name": "After Content",
-          "value": "after"
-        }
-      ],
-      "placeholder": "medialignment",
-      "label": "Media Position",
-      "model": "medialignment",
-      "visible": "model.showmedia == 'true'"
     },
     {
       "type": "collection",

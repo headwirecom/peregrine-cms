@@ -31,16 +31,12 @@
           "x-form-rows": 3,
           "x-form-type": "textarea"
         },
-        "mediaref": {
-            "x-form-type": "reference",
-            "$ref": "fragments/mediavisible/model.json#/definitions/Mediavisible"
-        },
-        "medialignment": {
+        "mediaposition": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Media Position",
           "x-form-type": "materialradio",
-          "x-default": "center",
+          "x-default": "before",
           "x-form-visible": "model.showmedia == 'true'",
           "properties": {
             "type1": {
@@ -52,6 +48,10 @@
               "x-form-value": "after"
             }
           }
+        },
+        "mediaref": {
+            "x-form-type": "reference",
+            "$ref": "fragments/mediavisible/model.json#/definitions/Mediavisible"
         },
         "tabs": {
           "type": "string",

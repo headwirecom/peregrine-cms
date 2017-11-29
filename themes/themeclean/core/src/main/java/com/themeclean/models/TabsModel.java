@@ -48,6 +48,24 @@ import javax.inject.Named;
           "x-form-rows": 3,
           "x-form-type": "textarea"
         },
+        "mediaposition": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Media Position",
+          "x-form-type": "materialradio",
+          "x-default": "before",
+          "x-form-visible": "model.showmedia == 'true'",
+          "properties": {
+            "type1": {
+              "x-form-name": "Before Content",
+              "x-form-value": "before"
+            },
+            "type2": {
+              "x-form-name": "After Content",
+              "x-form-value": "after"
+            }
+          }
+        },
         "mediaref": {
           "x-form-type": "reference",
           "type": "object",
@@ -143,24 +161,6 @@ import javax.inject.Named;
               "x-default": 100,
               "x-form-min": 10,
               "x-form-max": 100
-            }
-          }
-        },
-        "medialignment": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Media Position",
-          "x-form-type": "materialradio",
-          "x-default": "center",
-          "x-form-visible": "model.showmedia == 'true'",
-          "properties": {
-            "type1": {
-              "x-form-name": "Before Content",
-              "x-form-value": "before"
-            },
-            "type2": {
-              "x-form-name": "After Content",
-              "x-form-value": "after"
             }
           }
         },
@@ -378,6 +378,11 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	private String subtitle;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-default":"before","x-form-visible":"model.showmedia == 'true'","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
+	@Inject
+	@Default(values ="before")
+	private String mediaposition;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Media","x-form-type":"materialswitch"} */
 	@Inject
 	private String showmedia;
@@ -416,11 +421,6 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	@Default(values ="100")
 	private String mediawidth;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
-	@Inject
-	@Default(values ="center")
-	private String medialignment;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
 	@Inject
@@ -513,6 +513,11 @@ public class TabsModel extends AbstractComponent {
 		return subtitle;
 	}
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-default":"before","x-form-visible":"model.showmedia == 'true'","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
+	public String getMediaposition() {
+		return mediaposition;
+	}
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Media","x-form-type":"materialswitch"} */
 	public String getShowmedia() {
 		return showmedia;
@@ -556,11 +561,6 @@ public class TabsModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-visible":"model.showmedia == 'true'","x-default":100,"x-form-min":10,"x-form-max":100} */
 	public String getMediawidth() {
 		return mediawidth;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
-	public String getMedialignment() {
-		return medialignment;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */

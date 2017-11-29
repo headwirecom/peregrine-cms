@@ -10,6 +10,7 @@
     "toppadding": "10",
     "mediatype": "image",
     "imagesrc": "/content/assets/themeclean/images/yosemite.jpg",
+    "mediaposition": "before",
     "mediawidth": "33",
     "mediaiconsize": "200",
     "tabs": [
