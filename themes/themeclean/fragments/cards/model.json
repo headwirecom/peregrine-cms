@@ -64,6 +64,12 @@
               "x-form-type": "pathbrowser",
               "x-form-browserRoot": "/content/assets"
             },
+            "imagealttext": {
+	          "type": "string",
+	          "x-source": "inject",
+	          "x-form-label": "Image Alt Text",
+	          "x-form-type": "text"
+	        },
             "buttontext": {
               "type": "string",
               "x-source": "inject",
