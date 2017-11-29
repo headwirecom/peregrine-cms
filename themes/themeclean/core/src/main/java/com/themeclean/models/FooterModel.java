@@ -91,11 +91,18 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "iconcustomcolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Custom Icons Color",
+              "x-form-type": "materialswitch"
+            },
             "iconcolor": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Icon Color",
               "x-default": "#000000",
+              "x-form-visible": "model.iconcustomcolor == 'true'",
               "x-form-type": "color"
             },
             "iconsize": {
@@ -343,7 +350,11 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String copyright;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Icons Color","x-form-type":"materialswitch"} */
+	@Inject
+	private String iconcustomcolor;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-visible":"model.iconcustomcolor == 'true'","x-form-type":"color"} */
 	@Inject
 	@Default(values ="#000000")
 	private String iconcolor;
@@ -459,7 +470,12 @@ public class FooterModel extends AbstractComponent {
 		return copyright;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Icons Color","x-form-type":"materialswitch"} */
+	public String getIconcustomcolor() {
+		return iconcustomcolor;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-visible":"model.iconcustomcolor == 'true'","x-form-type":"color"} */
 	public String getIconcolor() {
 		return iconcolor;
 	}
