@@ -119,6 +119,13 @@ import javax.inject.Named;
               "x-form-type": "pathbrowser",
               "x-form-browserRoot": "/content/assets"
             },
+            "imagealttext": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Alt Text",
+              "x-form-visible": "model.mediatype == 'image' and model.showmedia == 'true'",
+              "x-form-type": "text"
+            },
             "videosrc": {
               "type": "string",
               "x-source": "inject",
@@ -136,13 +143,6 @@ import javax.inject.Named;
               "x-default": 100,
               "x-form-min": 10,
               "x-form-max": 100
-            },
-            "mediacaption": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Caption",
-              "x-form-visible": "model.showmedia == 'true'",
-              "x-form-type": "text"
             }
           }
         },
@@ -395,6 +395,10 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	private String imagesrc;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"text"} */
+	@Inject
+	private String imagealttext;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String videosrc;
@@ -403,10 +407,6 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	@Default(values ="100")
 	private String mediawidth;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Caption","x-form-visible":"model.showmedia == 'true'","x-form-type":"text"} */
-	@Inject
-	private String mediacaption;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Align Media Left/Right","x-form-textOn":"right","x-form-textOff":"left","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialswitch"} */
 	@Inject
@@ -533,6 +533,11 @@ public class TabsModel extends AbstractComponent {
 		return imagesrc;
 	}
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"text"} */
+	public String getImagealttext() {
+		return imagealttext;
+	}
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
 	public String getVideosrc() {
 		return videosrc;
@@ -541,11 +546,6 @@ public class TabsModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-visible":"model.showmedia == 'true'","x-default":100,"x-form-min":10,"x-form-max":100} */
 	public String getMediawidth() {
 		return mediawidth;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Caption","x-form-visible":"model.showmedia == 'true'","x-form-type":"text"} */
-	public String getMediacaption() {
-		return mediacaption;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Align Media Left/Right","x-form-textOn":"right","x-form-textOff":"left","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialswitch"} */

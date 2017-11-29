@@ -108,6 +108,14 @@
       "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "imagealttext",
+      "label": "Image Alt Text",
+      "model": "imagealttext",
+      "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
       "placeholder": "videosrc",
@@ -124,14 +132,6 @@
       "visible": "model.showmedia == 'true'",
       "min": 10,
       "max": 100
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "mediacaption",
-      "label": "Caption",
-      "model": "mediacaption",
-      "visible": "model.showmedia == 'true'"
     },
     {
       "type": "materialswitch",
