@@ -4,6 +4,12 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "text": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text",
+          "x-form-type": "texteditor"
+        },
         "mediaposition": {
           "type": "string",
           "x-source": "inject",
@@ -18,12 +24,6 @@
 		      "x-form-value": "after"
 		    }
   		  }
-        },
-        "text": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Text",
-          "x-form-type": "texteditor"
         },
         "mediaref": {
           "x-form-type": "reference",
