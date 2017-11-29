@@ -27,11 +27,17 @@ import javax.inject.Named;
           "x-form-label": "Text",
           "x-form-type": "texteditor"
         },
+        "blockquote": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Block Quote",
+          "x-form-type": "materialswitch"
+        },
         "linewidth": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Line Width",
-          "x-form-visible": "",
+          "x-form-visible": "model.blockquote == 'false'",
           "x-form-type": "range",
           "x-form-min": 10,
           "x-form-max": 100
@@ -206,7 +212,11 @@ public class ArticlequoteModel extends AbstractComponent {
 	@Inject
 	private String text;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"","x-form-type":"range","x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Quote","x-form-type":"materialswitch"} */
+	@Inject
+	private String blockquote;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"model.blockquote == 'false'","x-form-type":"range","x-form-min":10,"x-form-max":100} */
 	@Inject
 	private String linewidth;
 
@@ -274,7 +284,12 @@ public class ArticlequoteModel extends AbstractComponent {
 		return text;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"","x-form-type":"range","x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Quote","x-form-type":"materialswitch"} */
+	public String getBlockquote() {
+		return blockquote;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"model.blockquote == 'false'","x-form-type":"range","x-form-min":10,"x-form-max":100} */
 	public String getLinewidth() {
 		return linewidth;
 	}

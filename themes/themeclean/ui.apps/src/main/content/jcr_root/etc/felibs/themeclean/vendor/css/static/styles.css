@@ -67,6 +67,10 @@ footer {
 .percms-btn-pager {
   font-size:18px;  
 }
+.percms-blockquote {
+  border-left: 5px solid;
+  padding: 5px 0;
+}
 .percms-caption {
   position: relative;
 }

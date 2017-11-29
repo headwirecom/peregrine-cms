@@ -8,11 +8,22 @@
       "model": "text"
     },
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "blockquote",
+      "label": "Block Quote",
+      "model": "blockquote"
+    },
+    {
       "type": "input",
       "inputType": "range",
       "placeholder": "linewidth",
       "label": "Line Width",
       "model": "linewidth",
+      "visible": "model.blockquote == 'false'",
       "min": 10,
       "max": 100
     },
