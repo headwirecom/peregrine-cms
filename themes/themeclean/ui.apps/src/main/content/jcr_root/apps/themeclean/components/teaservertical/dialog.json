@@ -21,6 +21,14 @@
       "model": "aligncontent"
     },
     {
+      "type": "material-checkbox",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "isprimary",
+      "label": "Make Primary",
+      "model": "isprimary"
+    },
+    {
       "type": "materialswitch",
       "textOn": "yes",
       "textOff": "no",

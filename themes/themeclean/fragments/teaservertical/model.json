@@ -23,6 +23,13 @@
             }
           }
         },
+        "isprimary": {
+		  "type": "string",
+		  "x-source": "inject",
+		  "x-form-label": "Make Primary",
+		  "x-form-type": "materialcheckbox",
+		  "x-form-default": false
+		},
         "showtitle": {
           "type": "string",
           "x-source": "inject",
