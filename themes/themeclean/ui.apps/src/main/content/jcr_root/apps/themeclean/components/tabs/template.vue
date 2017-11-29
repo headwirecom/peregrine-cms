@@ -12,11 +12,11 @@
             'flex-row': model.medialignment === 'left',
             'flex-row-reverse': model.medialignment === 'right'
         }">
-        <div class="col col-md-auto" v-if="model.showmedia == 'true'"
+        <div class="col col-md-auto pb-3" v-if="model.showmedia == 'true'"
         v-bind:style="{width:`${model.mediawidth}%`}">
-          <themeclean-components-mediavisible :model="model"></themeclean-components-mediavisible>
+          <themeclean-components-media :model="model"></themeclean-components-media>
         </div>
-        <div class="col-12 col-md pt-3 d-flex flex-column justify-content-center">
+        <div class="col-12 col-md py-3 py-md-0 d-flex flex-column">
           <!-- Tab Nav -->
           <ul class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist">
             <li class="nav-item" v-for="(item,i) in model.tabs" :key="i">
@@ -30,7 +30,7 @@
           <div class="tab-content" id="myTabContent">
             <div role="tabpanel" v-for="(item,i) in model.tabs" :key="i" v-bind:id="`tab${_uid}${parseInt(i)+1}`"
             v-bind:aria-labelledby="`tablabel${_uid}${parseInt(i)+1}`" v-bind:class="i == 0 ? 'tab-pane fade show active' : 'tab-pane fade'">
-              <div v-html="item.text" v-bind:class="model.showmedia == 'true' &amp;&amp; ((model.videosrc &amp;&amp; model.mediatype === 'video') || (model.imagesrc &amp;&amp; model.mediatype === 'image') || (model.mediaicon &amp;&amp; model.mediatype === 'icon')) ? 'py-5' : 'text-center py-5'"></div>
+              <div class="text-center py-3" v-html="item.text"></div>
             </div>
           </div>
         </div>
