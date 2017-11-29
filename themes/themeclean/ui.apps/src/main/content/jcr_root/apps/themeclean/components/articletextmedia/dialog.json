@@ -1,6 +1,13 @@
 {
   "fields": [
     {
+      "type": "texteditor",
+      "rows": 10,
+      "placeholder": "text",
+      "label": "Text",
+      "model": "text"
+    },
+    {
       "type": "material-radios",
       "values": [
         {
@@ -15,13 +22,6 @@
       "placeholder": "mediaposition",
       "label": "Media Position",
       "model": "mediaposition"
-    },
-    {
-      "type": "texteditor",
-      "rows": 10,
-      "placeholder": "text",
-      "label": "Text",
-      "model": "text"
     },
     {
       "type": "material-radios",
