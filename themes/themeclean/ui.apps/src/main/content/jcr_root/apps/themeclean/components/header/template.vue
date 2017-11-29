@@ -4,7 +4,7 @@
       <h1 v-if="editAndEmpty">Configure Header</h1>
       <!-- Logo -->
       <span class="navbar-logo">
-        <a v-if="model.logo || model.logoalttext" v-bind:href="$helper.pathToUrl(model.logourl)">
+        <a v-if="model.logo" v-bind:href="$helper.pathToUrl(model.logourl)">
           <img class="menu-logo" v-bind:src="$helper.pathToUrl(model.logo)" v-bind:alt="model.logoalttext"
           v-bind:style="`height:${parseInt(model.logosize)}px;`">
         </a>
