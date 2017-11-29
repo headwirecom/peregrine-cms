@@ -43,7 +43,7 @@ import javax.inject.Named;
           }
         },
         "isprimary": {
-          "type": "string",
+          "type": "boolean",
           "x-source": "inject",
           "x-form-label": "Make Primary",
           "x-form-type": "materialcheckbox",
@@ -333,9 +333,9 @@ public class TeaserhorizontalModel extends AbstractComponent {
 	@Default(values ="center")
 	private String aligncontent;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
+	/* {"type":"boolean","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
 	@Inject
-	private String isprimary;
+	private Boolean isprimary;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
@@ -451,8 +451,8 @@ public class TeaserhorizontalModel extends AbstractComponent {
 		return aligncontent;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
-	public String getIsprimary() {
+	/* {"type":"boolean","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
+	public Boolean getIsprimary() {
 		return isprimary;
 	}
 
