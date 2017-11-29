@@ -149,18 +149,18 @@ import javax.inject.Named;
         "medialignment": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Media on Left/Right",
+          "x-form-label": "Media Position",
           "x-form-type": "materialradio",
           "x-default": "center",
           "x-form-visible": "model.showmedia == 'true'",
           "properties": {
-            "left": {
-              "x-form-name": "Left",
-              "x-form-value": "left"
+            "type1": {
+              "x-form-name": "Before Content",
+              "x-form-value": "before"
             },
-            "right": {
-              "x-form-name": "Right",
-              "x-form-value": "right"
+            "type2": {
+              "x-form-name": "After Content",
+              "x-form-value": "after"
             }
           }
         },
@@ -417,7 +417,7 @@ public class TabsModel extends AbstractComponent {
 	@Default(values ="100")
 	private String mediawidth;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	@Inject
 	@Default(values ="center")
 	private String medialignment;
@@ -558,7 +558,7 @@ public class TabsModel extends AbstractComponent {
 		return mediawidth;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	public String getMedialignment() {
 		return medialignment;
 	}

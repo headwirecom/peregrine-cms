@@ -9,7 +9,7 @@
     "bottompadding": "40",
     "toppadding": "10",
     "showmedia": "true",
-    "mediaalighment": "false",
+    "mediaalighment": "before",
     "mediatype": "image",
     "mediawidth": "33",
     "mediaiconsize": "200",

@@ -11,8 +11,8 @@ module.exports = {
         f.addIf( imageDiv, 'model.showmedia == \'true\'')
 
         let containerClasses = `{
-            'flex-row': model.medialignment === 'left',
-            'flex-row-reverse': model.medialignment === 'right'
+            'flex-row': model.medialignment === 'before',
+            'flex-row-reverse': model.medialignment === 'after'
         }`
         f.bindAttribute($.find('div.row').eq(1), 'class', containerClasses, false)
 

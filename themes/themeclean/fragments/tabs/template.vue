@@ -9,8 +9,8 @@
         v-html="model.subtitle"></h3>
       </div>
       <div class="row justify-content-center" v-bind:class="{
-            'flex-row': model.medialignment === 'left',
-            'flex-row-reverse': model.medialignment === 'right'
+            'flex-row': model.medialignment === 'before',
+            'flex-row-reverse': model.medialignment === 'after'
         }">
         <div class="col col-md-auto pb-3" v-if="model.showmedia == 'true'"
         v-bind:style="{width:`${model.mediawidth}%`}">
