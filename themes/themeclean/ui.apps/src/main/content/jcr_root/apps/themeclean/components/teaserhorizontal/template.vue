@@ -10,11 +10,11 @@
             'text-center': model.aligncontent === 'center',
             'text-right': model.aligncontent === 'right'
         }" v-bind:style="`flex-basis:${model.textwidth}%;`">
-        <h2 class="" v-if="model.showtitle === 'true' &amp;&amp; model.isprimary === false"
+        <h2 class="" v-if="model.showtitle === 'true' &amp;&amp; (model.isprimary === false || ! model.isprimary)"
         v-html="model.title"></h2>
-        <h4 class="" v-if="model.showsubtitle === 'true' &amp;&amp; model.isprimary === false"
+        <h4 class="" v-if="model.showsubtitle === 'true' &amp;&amp; (model.isprimary === false || ! model.isprimary)"
         v-html="model.subtitle"></h4>
-        <p v-if="model.showtext === 'true' &amp;&amp; model.isprimary === false"
+        <p v-if="model.showtext === 'true' &amp;&amp; (model.isprimary === false || ! model.isprimary)"
         v-html="model.text"></p>
         <h1 class="" v-if="model.showtitle == 'true' &amp;&amp; model.isprimary === true"
         v-html="model.title"></h1>
