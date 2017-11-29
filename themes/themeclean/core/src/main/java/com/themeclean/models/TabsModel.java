@@ -417,7 +417,7 @@ public class TabsModel extends AbstractComponent {
 	@Default(values ="100")
 	private String mediawidth;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Align Media Left/Right","x-form-textOn":"right","x-form-textOff":"left","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialswitch"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
 	@Inject
 	@Default(values ="center")
 	private String medialignment;
@@ -558,9 +558,9 @@ public class TabsModel extends AbstractComponent {
 		return mediawidth;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Align Media Left/Right","x-form-textOn":"right","x-form-textOff":"left","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialswitch"} */
-	public String getMediaalignment() {
-		return mediaalignment;
+	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","x-default":"center","x-form-visible":"model.showmedia == 'true'","properties":{"left":{"x-form-name":"Left","x-form-value":"left"},"right":{"x-form-name":"Right","x-form-value":"right"}}} */
+	public String getMedialignment() {
+		return medialignment;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */

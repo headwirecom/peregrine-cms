@@ -134,14 +134,6 @@
       "max": 100
     },
     {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "mediacaption",
-      "label": "Caption",
-      "model": "mediacaption",
-      "visible": "model.showmedia == 'true'"
-    },
-    {
       "type": "material-radios",
       "values": [
         {
