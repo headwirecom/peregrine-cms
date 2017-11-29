@@ -5,7 +5,7 @@ module.exports = {
         f.bindAttribute($.parent(),'model','model')
 
 
-        f.replace( $.find('img'), '<themeclean-components-mediavisible :model="model"></themeclean-components-mediavisible>')
+        f.replace( $.find('img'), '<themeclean-components-media :model="model"></themeclean-components-media>')
 
         let imageDiv = $.find('div.col-md-auto').first()
         f.addIf( imageDiv, 'model.showmedia == \'true\'')
@@ -34,7 +34,6 @@ module.exports = {
         f.bindAttribute($.find('div.tab-pane').first(), 'aria-labelledby', '`tablabel${_uid}${parseInt(i)+1}`')
         f.bindAttribute($.find('div.tab-pane').first(), 'class', 'i == 0 ? \'tab-pane fade show active\' : \'tab-pane fade\'')
         f.mapRichField($.find('div.text-center').first(), "item.text")
-        f.bindAttribute($.find('div.text-center').first(), 'class',"model.showmedia == 'true' && ((model.videosrc && model.mediatype === 'video') || (model.imagesrc && model.mediatype === 'image') || (model.mediaicon && model.mediatype === 'icon')) ? 'py-5' : 'text-center py-5'")
     	f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
         
     }
