@@ -6,10 +6,10 @@
       v-html="model.title"></h2>
       <div class="row col-12 p-0 d-md-flex flex-wrap justify-content-center"
       v-bind:class="model.mediaposition === 'after' ? 'flex-row-reverse': 'flex-row'">
-        <div class="percms-image-wrap px-3" v-bind:style="{flexBasis:`${model.mediawidth}%`}">
-          <themeclean-components-mediavisible :model="model"></themeclean-components-mediavisible>
+        <div class="col-auto" v-bind:style="{width:`${model.mediawidth}%`}">
+          <themeclean-components-media :model="model"></themeclean-components-media>
         </div>
-        <div class="col-sm-12 col-md">
+        <div class="col-12 col-md" v-bind:ref="collapsible" v-bind:id="model.toggletype === 'accordion' ? `accordion${_uid}` : ''">
           <div class="item card bg-transparent border-0 rounded-0" v-for="(item,i) in model.accordiontoggle"
           :key="i">
             <a aria-expanded="false" class="card-header border rounded-0" data-toggle="collapse"
@@ -28,11 +28,14 @@
 <script>
     export default {
         props: ['model'],
+        updated() {
+          $(this.$refs.collapsible).collapse()
+        },
         computed: {
         	isEditAndEmpty() {
-                if(!$peregrineApp.isAuthorMode()) return false
-                return this.$helper.areAllEmpty( this.model.showtitle === 'true' , this.model.tabs );
-            }
+            if(!$peregrineApp.isAuthorMode()) return false
+            return this.$helper.areAllEmpty( this.model.showtitle === 'true' , this.model.tabs );
+          }
         }
     }
 </script>
