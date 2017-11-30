@@ -34,7 +34,7 @@
         computed: {
         	isEditAndEmpty() {
             if(!$peregrineApp.isAuthorMode()) return false
-            return this.$helper.areAllEmpty( this.model.showtitle === 'true' , this.model.tabs );
+            return this.$helper.areAllEmpty( this.model.showtitle === 'true' && this.model.title, this.model.showmedia === 'true', this.model.accordiontoggle );
           }
         }
     }
