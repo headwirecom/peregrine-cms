@@ -5,13 +5,14 @@ module.exports = {
 
         //Card
         let cardClasses = `{
-            'bg-dark': model.colorscheme == 'light',
-            'bg-light': model.colorscheme == 'dark',
-            'text-dark': model.colorscheme == 'dark',
-            'text-light': model.colorscheme == 'light',
+            'bg-dark': model.colorscheme === 'light',
+            'bg-light': model.colorscheme === 'dark',
+            'text-dark': (model.showcard === 'false' && model.colorscheme === 'light') || (model.showcard === 'true' && model.colorscheme === 'dark'),
+            'text-light': (model.showcard === 'false' && model.colorscheme === 'dark') || (model.showcard === 'true' && model.colorscheme === 'light'),
+            'bg-transparent': model.showcard === 'false'
         }`
         f.addFor($.find('div.card').first(), 'model.cards')
-        f.addStyle($.find('div.card').first(), 'background-color', "model.showcard == 'false' ? 'transparent' : model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'")
+        f.addStyle($.find('div.card').first(), 'background-color', "model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'")
         f.bindAttribute($.find('div.card').first(), 'class', cardClasses, false)
 
         let cardBodyClasses = `{

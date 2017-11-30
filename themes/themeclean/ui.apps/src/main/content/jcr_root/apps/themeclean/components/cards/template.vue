@@ -3,12 +3,13 @@
     <div class="card-deck">
       <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <div class="card p-0 col-12 col-md border-0 d-flex flex-column justify-content-between"
-      v-for="(item,i) in model.cards" :key="i" v-bind:style="`background-color:${model.showcard == 'false' ? 'transparent' : model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'};`"
+      v-for="(item,i) in model.cards" :key="i" v-bind:style="`background-color:${model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'};`"
       v-bind:class="{
-            'bg-dark': model.colorscheme == 'light',
-            'bg-light': model.colorscheme == 'dark',
-            'text-dark': model.colorscheme == 'dark',
-            'text-light': model.colorscheme == 'light',
+            'bg-dark': model.colorscheme === 'light',
+            'bg-light': model.colorscheme === 'dark',
+            'text-dark': (model.showcard === 'false' &amp;&amp; model.colorscheme === 'light') || (model.showcard === 'true' &amp;&amp; model.colorscheme === 'dark'),
+            'text-light': (model.showcard === 'false' &amp;&amp; model.colorscheme === 'dark') || (model.showcard === 'true' &amp;&amp; model.colorscheme === 'light'),
+            'bg-transparent': model.showcard === 'false'
         }">
         <div>
           <img v-bind:class="model.showcard == 'true' ? 'card-img pb-1' : 'card-img pb-3'"
