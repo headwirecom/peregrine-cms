@@ -10,6 +10,7 @@
     "bottompadding": "30",
     "toppadding": "30",
     "showmedia": "false",
+    "mediawidth": "33",
     "accordionortoggle": "false",
     "accordiontoggle": [
       {

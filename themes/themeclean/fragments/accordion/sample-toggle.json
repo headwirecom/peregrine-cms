@@ -9,8 +9,9 @@
     "color2": "#ffffff",
     "bottompadding": "30",
     "toppadding": "30",
-    "accordionortoggle": "true",
+    "toggletype": "toggle",
     "showmedia": "false",
+    "mediawidth": "33",
     "accordiontoggle": [
       {
         "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",

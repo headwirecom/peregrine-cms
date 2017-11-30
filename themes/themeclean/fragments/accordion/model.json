@@ -4,13 +4,21 @@
       "type": "object",
       "x-type": "component",
       "properties": {
-        "accordionortoggle": {
+        "toggletype": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Accordion Or Toggle",
-          "x-form-textOn": "toggle",
-          "x-form-textOff": "accordion",
-          "x-form-type": "materialswitch"
+          "x-form-label": "Collapse Style",
+          "x-form-type": "materialradio",
+          "properties": {
+            "toggle": {
+              "x-form-name": "Toggle",
+              "x-form-value": "toggle"
+            },
+            "accordion": {
+              "x-form-name": "Accordion",
+              "x-form-value": "accordion"
+            }
+          }
         },
         "showtitle": {
           "type": "string",
@@ -34,6 +42,8 @@
           "x-source": "inject",
           "x-form-label": "Media Position",
           "x-form-type": "materialradio",
+          "x-form-visible": "model.showmedia == 'true'",
+          "x-default": "before",
           "properties": {
 		    "type1": {
 		      "x-form-name": "Before Content",
