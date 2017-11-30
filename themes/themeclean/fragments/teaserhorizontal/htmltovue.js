@@ -37,8 +37,8 @@ module.exports = {
         let buttonsDiv = $.find('div').eq(1)
         let link = buttonsDiv.find('a')
         let buttonClasses = `{
-            'justify-content-end': model.buttonside === 'right',
-            'justify-content-start': model.buttonside === 'left',
+            'justify-content-md-end': model.buttonside === 'right',
+            'justify-content-md-start': model.buttonside === 'left',
         }`
         f.addIf( buttonsDiv, 'model.showbutton == \'true\'')
         f.bindAttribute( buttonsDiv, 'class', buttonClasses,false)

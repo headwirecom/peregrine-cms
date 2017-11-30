@@ -23,10 +23,10 @@
         <h5 v-if="model.showtext === 'true' &amp;&amp; model.isprimary === true"
         v-html="model.text"></h5>
       </div>
-      <div class="d-flex flex-wrap" v-if="model.showbutton == 'true'"
+      <div class="d-flex flex-wrap justify-content-center" v-if="model.showbutton == 'true'"
       v-bind:class="{
-            'justify-content-end': model.buttonside === 'right',
-            'justify-content-start': model.buttonside === 'left',
+            'justify-content-md-end': model.buttonside === 'right',
+            'justify-content-md-start': model.buttonside === 'left',
         }">
         <a class="btn m-2 btn-secondary btn-lg" v-for="(item,i) in model.buttons"
         :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
