@@ -12,7 +12,7 @@ module.exports = {
             'bg-transparent': model.showcard === 'false'
         }`
         f.addFor($.find('div.card').first(), 'model.cards')
-        f.addStyle($.find('div.card').first(), 'background-color', "model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'")
+        f.addStyle($.find('div.card').first(), 'background-color', "model.customcardcolor == 'true' ? model.cardcolor + '!important' : 'gainsboro'")
         f.bindAttribute($.find('div.card').first(), 'class', cardClasses, false)
 
         let cardBodyClasses = `{

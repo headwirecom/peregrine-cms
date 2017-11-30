@@ -3,7 +3,7 @@
     <div class="card-deck">
       <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <div class="card p-0 col-12 col-md border-0 d-flex flex-column justify-content-between"
-      v-for="(item,i) in model.cards" :key="i" v-bind:style="`background-color:${model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'};`"
+      v-for="(item,i) in model.cards" :key="i" v-bind:style="`background-color:${model.customcardcolor == 'true' ? model.cardcolor + '!important' : 'gainsboro'};`"
       v-bind:class="{
             'bg-dark': model.colorscheme === 'light',
             'bg-light': model.colorscheme === 'dark',
