@@ -28,7 +28,7 @@
           "x-form-label": "Show Card Background",
           "x-form-type": "materialswitch"
         },
-        "customcolor": {
+        "customcardcolor": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Custom Card Color",
@@ -40,7 +40,7 @@
           "x-source": "inject",
           "x-form-label": "Card Color",
           "x-form-type": "color",
-          "x-form-visible": "model.showcard == 'true' and model.customcolor == 'true'",
+          "x-form-visible": "model.showcard == 'true' and model.customcardcolor == 'true'",
           "x-default": "#ffffff"
         },
         "cards": {

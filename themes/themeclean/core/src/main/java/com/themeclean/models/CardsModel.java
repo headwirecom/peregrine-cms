@@ -45,7 +45,7 @@ import javax.inject.Named;
           "x-form-label": "Show Card Background",
           "x-form-type": "materialswitch"
         },
-        "customcolor": {
+        "customcardcolor": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Custom Card Color",
@@ -57,7 +57,7 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Card Color",
           "x-form-type": "color",
-          "x-form-visible": "model.showcard == 'true' and model.customcolor == 'true'",
+          "x-form-visible": "model.showcard == 'true' and model.customcardcolor == 'true'",
           "x-default": "#ffffff"
         },
         "cards": {
@@ -314,9 +314,9 @@ public class CardsModel extends AbstractComponent {
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Custom Card Color","x-form-visible":"model.showcard == 'true'","x-form-type":"materialswitch"} */
 	@Inject
-	private String customcolor;
+	private String customcardcolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-form-visible":"model.showcard == 'true' and model.customcolor == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-form-visible":"model.showcard == 'true' and model.customcardcolor == 'true'","x-default":"#ffffff"} */
 	@Inject
 	@Default(values ="#ffffff")
 	private String cardcolor;
@@ -413,11 +413,11 @@ public class CardsModel extends AbstractComponent {
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Custom Card Color","x-form-visible":"model.showcard == 'true'","x-form-type":"materialswitch"} */
-	public String getCustomcolor() {
-		return customcolor;
+	public String getCustomcardcolor() {
+		return customcardcolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-form-visible":"model.showcard == 'true' and model.customcolor == 'true'","x-default":"#ffffff"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Card Color","x-form-type":"color","x-form-visible":"model.showcard == 'true' and model.customcardcolor == 'true'","x-default":"#ffffff"} */
 	public String getCardcolor() {
 		return cardcolor;
 	}

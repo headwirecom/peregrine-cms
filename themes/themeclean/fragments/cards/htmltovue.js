@@ -4,8 +4,15 @@ module.exports = {
         f.bindAttribute($.parent(),'model','model')
 
         //Card Body
+        let cardClasses = `{
+            'bg-dark': model.colorscheme == 'light',
+            'bg-light': model.colorscheme == 'dark',
+            'text-dark': model.colorscheme == 'dark',
+            'text-light': model.colorscheme == 'light',
+        }`
         f.addFor($.find('div.card').first(), 'model.cards')
-        f.addStyle($.find('div.card').first(), 'background-color', "model.showcard == 'true' ? model.cardcolor : 'transparent'")
+        f.addStyle($.find('div.card').first(), 'background-color', "model.showcard == 'false' ? 'transparent' : model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'")
+        f.bindAttribute($.find('div.card').first(), 'class', cardClasses, false)
         f.bindAttribute($.find('div.card-body').first(), 'class', "model.showcard == 'true' ? 'card-body' : ''")
 
         //Image

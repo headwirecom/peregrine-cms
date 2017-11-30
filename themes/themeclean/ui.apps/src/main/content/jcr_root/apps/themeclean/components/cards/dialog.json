@@ -46,9 +46,9 @@
       "textOff": "no",
       "valueOn": "true",
       "valueOff": "false",
-      "placeholder": "customcolor",
+      "placeholder": "customcardcolor",
       "label": "Custom Card Color",
-      "model": "customcolor",
+      "model": "customcardcolor",
       "visible": "model.showcard == 'true'"
     },
     {
@@ -57,7 +57,7 @@
       "placeholder": "cardcolor",
       "label": "Card Color",
       "model": "cardcolor",
-      "visible": "model.showcard == 'true' and model.customcolor == 'true'"
+      "visible": "model.showcard == 'true' and model.customcardcolor == 'true'"
     },
     {
       "type": "collection",
