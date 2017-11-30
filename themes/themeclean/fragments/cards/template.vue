@@ -14,7 +14,10 @@
           <img v-bind:class="model.showcard == 'true' ? 'card-img pb-1' : 'card-img pb-3'"
           v-bind:src="$helper.pathToUrl(item.image)" v-bind:alt="item.imagealttext"
           v-if="item.image">
-          <div v-bind:class="model.showcard == 'true' ? 'card-body' : ''">
+          <div v-bind:class="{
+            'card-body': model.showcard === 'true',
+            'px-3 p-md-0': model.showcard === 'false'
+        }">
             <h5 class="card-title" v-if="model.showtitle == 'true'" v-html="item.title"
             v-bind:style="`color:${item.color};`"></h5>
             <p v-if="model.showtext == 'true'" v-html="item.text"></p>

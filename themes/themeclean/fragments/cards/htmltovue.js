@@ -3,7 +3,7 @@ module.exports = {
     	f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
 
-        //Card Body
+        //Card
         let cardClasses = `{
             'bg-dark': model.colorscheme == 'light',
             'bg-light': model.colorscheme == 'dark',
@@ -13,7 +13,12 @@ module.exports = {
         f.addFor($.find('div.card').first(), 'model.cards')
         f.addStyle($.find('div.card').first(), 'background-color', "model.showcard == 'false' ? 'transparent' : model.customcardcolor == 'true' ? model.cardcolor : 'gainsboro'")
         f.bindAttribute($.find('div.card').first(), 'class', cardClasses, false)
-        f.bindAttribute($.find('div.card-body').first(), 'class', "model.showcard == 'true' ? 'card-body' : ''")
+
+        let cardBodyClasses = `{
+            'card-body': model.showcard === 'true',
+            'px-3 p-md-0': model.showcard === 'false'
+        }`
+        f.bindAttribute($.find('div.card-body').first(), 'class', cardBodyClasses)
 
         //Image
         f.bindAttribute($.find('img').first(), 'class', "model.showcard == 'true' ? 'card-img pb-1' : 'card-img pb-3'")
