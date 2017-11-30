@@ -1,12 +1,12 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="container">
+    <div class="col-12 col-md-10">
       <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <h2 class="text-center pb-4" v-if="model.showtitle == 'true'"
       v-html="model.title"></h2>
-      <div class="row col-12 p-0 d-md-flex flex-wrap justify-content-center"
-      v-bind:class="model.mediaposition === 'after' ? 'flex-row-reverse': 'flex-row'">
-        <div class="col-auto" v-bind:style="{width:`${model.mediawidth}%`}">
+      <div class="row" v-bind:class="model.mediaposition === 'after' ? 'flex-row-reverse': 'flex-row'">
+        <div class="col-12 col-md-auto" v-if="model.showmedia === 'true'"
+        v-bind:style="{width:`${model.mediawidth}%`}">
           <themeclean-components-media :model="model"></themeclean-components-media>
         </div>
         <div class="col-12 col-md" v-bind:ref="collapsible" v-bind:id="model.toggletype === 'accordion' ? `accordion${_uid}` : ''">

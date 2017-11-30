@@ -8,8 +8,13 @@ module.exports = {
         f.mapRichField($.find('h2').first(), "model.title")
         f.addFor($.find('div.card').first(), 'model.accordiontoggle')
 
+        //Content Container
+        let contentDiv = $.find('div.row')
+        f.bindAttribute(  contentDiv,  'class', "model.mediaposition === 'after' ? 'flex-row-reverse': 'flex-row'", false)
+
         //Media
         let mediaDiv  = $.find('div.row>div').first()
+        f.addIf( mediaDiv, "model.showmedia === 'true'")
         f.bindAttribute( mediaDiv, 'style', "{width:`${model.mediawidth}%`}")
         f.replace( mediaDiv.find('img'), '<themeclean-components-media :model="model"></themeclean-components-media>')
 
@@ -27,7 +32,7 @@ module.exports = {
         //Acocordion Item Body
         f.bindAttribute($.find('div.collapse').first(), 'id', '`accordion${_uid}${i}`')
         f.mapRichField($.find('div.card-body').first(), "item.text")
+
         f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
-        f.bindAttribute($.find('div.flex-wrap').first(),  'class', "model.mediaposition === 'after' ? 'flex-row-reverse': 'flex-row'", false)
     }
 }

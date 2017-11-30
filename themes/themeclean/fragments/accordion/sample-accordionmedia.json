@@ -12,9 +12,9 @@
     "toppadding": "30",
     "mediatype": "image",
     "imagesrc": "/content/assets/themeclean/images/workers-looking-tablet.jpg",
-    "mediawidth": "45",
+    "mediawidth": "33",
     "showmedia": "true",
-    "accordionortoggle": "false",
+    "toggletype": "accordion",
     "accordiontoggle": [
       {
         "text": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>",

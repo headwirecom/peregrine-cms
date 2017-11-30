@@ -1,14 +1,20 @@
 {
   "fields": [
     {
-      "type": "materialswitch",
-      "textOn": "toggle",
-      "textOff": "accordion",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "accordionortoggle",
-      "label": "Accordion Or Toggle",
-      "model": "accordionortoggle"
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Toggle",
+          "value": "toggle"
+        },
+        {
+          "name": "Accordion",
+          "value": "accordion"
+        }
+      ],
+      "placeholder": "toggletype",
+      "label": "Collapse Style",
+      "model": "toggletype"
     },
     {
       "type": "materialswitch",
@@ -138,7 +144,8 @@
       ],
       "placeholder": "mediaposition",
       "label": "Media Position",
-      "model": "mediaposition"
+      "model": "mediaposition",
+      "visible": "model.showmedia == 'true'"
     },
     {
       "type": "collection",

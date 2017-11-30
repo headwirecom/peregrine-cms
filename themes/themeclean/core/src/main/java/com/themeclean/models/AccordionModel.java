@@ -21,13 +21,21 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
-        "accordionortoggle": {
+        "toggletype": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Accordion Or Toggle",
-          "x-form-textOn": "toggle",
-          "x-form-textOff": "accordion",
-          "x-form-type": "materialswitch"
+          "x-form-label": "Collapse Style",
+          "x-form-type": "materialradio",
+          "properties": {
+            "toggle": {
+              "x-form-name": "Toggle",
+              "x-form-value": "toggle"
+            },
+            "accordion": {
+              "x-form-name": "Accordion",
+              "x-form-value": "accordion"
+            }
+          }
         },
         "showtitle": {
           "type": "string",
@@ -145,6 +153,8 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Media Position",
           "x-form-type": "materialradio",
+          "x-form-visible": "model.showmedia == 'true'",
+          "x-default": "before",
           "properties": {
             "type1": {
               "x-form-name": "Before Content",
@@ -354,9 +364,9 @@ public class AccordionModel extends AbstractComponent {
     public AccordionModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Accordion Or Toggle","x-form-textOn":"toggle","x-form-textOff":"accordion","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
 	@Inject
-	private String accordionortoggle;
+	private String toggletype;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
@@ -405,8 +415,9 @@ public class AccordionModel extends AbstractComponent {
 	@Default(values ="100")
 	private String mediawidth;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-form-visible":"model.showmedia == 'true'","x-default":"before","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	@Inject
+	@Default(values ="before")
 	private String mediaposition;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Accordion/Toggle","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"}}} */
@@ -480,9 +491,9 @@ public class AccordionModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Accordion Or Toggle","x-form-textOn":"toggle","x-form-textOff":"accordion","x-form-type":"materialswitch"} */
-	public String getAccordionortoggle() {
-		return accordionortoggle;
+    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
+	public String getToggletype() {
+		return toggletype;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
@@ -540,7 +551,7 @@ public class AccordionModel extends AbstractComponent {
 		return mediawidth;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-form-visible":"model.showmedia == 'true'","x-default":"before","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	public String getMediaposition() {
 		return mediaposition;
 	}
