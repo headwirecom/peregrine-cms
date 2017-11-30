@@ -11,7 +11,7 @@ module.exports = {
             'text-light': (model.showcard === 'false' && model.colorscheme === 'dark') || (model.showcard === 'true' && model.colorscheme === 'light'),
             'bg-transparent': model.showcard === 'false'
         }`
-        f.addFor($.find('div.card').first(), 'model.cards')
+        f.addFor($.find('div.col-12').first(), 'model.cards')
         f.addStyle($.find('div.card').first(), 'background-color', "model.customcardcolor === 'true' ? model.cardcolor: ''")
         f.bindAttribute($.find('div.card').first(), 'class', cardClasses, false)
 
