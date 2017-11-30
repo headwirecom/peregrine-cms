@@ -335,7 +335,7 @@ public class TeaserhorizontalModel extends AbstractComponent {
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
 	@Inject
-	private String isprimary;
+	private Boolean isprimary;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
@@ -452,7 +452,7 @@ public class TeaserhorizontalModel extends AbstractComponent {
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
-	public String getIsprimary() {
+	public Boolean getIsprimary() {
 		return isprimary;
 	}
 
