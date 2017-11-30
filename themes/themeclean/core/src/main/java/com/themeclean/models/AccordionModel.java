@@ -21,6 +21,14 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "accordionortoggle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Accordion Or Toggle",
+          "x-form-textOn": "toggle",
+          "x-form-textOff": "accordion",
+          "x-form-type": "materialswitch"
+        },
         "showtitle": {
           "type": "string",
           "x-source": "inject",
@@ -346,7 +354,11 @@ public class AccordionModel extends AbstractComponent {
     public AccordionModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Accordion Or Toggle","x-form-textOn":"toggle","x-form-textOff":"accordion","x-form-type":"materialswitch"} */
+	@Inject
+	private String accordionortoggle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
 	private String showtitle;
 
@@ -468,7 +480,12 @@ public class AccordionModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Accordion Or Toggle","x-form-textOn":"toggle","x-form-textOff":"accordion","x-form-type":"materialswitch"} */
+	public String getAccordionortoggle() {
+		return accordionortoggle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	public String getShowtitle() {
 		return showtitle;
 	}

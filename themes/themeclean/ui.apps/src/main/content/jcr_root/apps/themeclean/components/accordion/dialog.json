@@ -2,6 +2,16 @@
   "fields": [
     {
       "type": "materialswitch",
+      "textOn": "toggle",
+      "textOff": "accordion",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "accordionortoggle",
+      "label": "Accordion Or Toggle",
+      "model": "accordionortoggle"
+    },
+    {
+      "type": "materialswitch",
       "textOn": "yes",
       "textOff": "no",
       "valueOn": "true",

@@ -4,6 +4,14 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "accordionortoggle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Accordion Or Toggle",
+          "x-form-textOn": "toggle",
+          "x-form-textOff": "accordion",
+          "x-form-type": "materialswitch"
+        },
         "showtitle": {
           "type": "string",
           "x-source": "inject",
