@@ -1,6 +1,6 @@
 {
   "title": "Full Screen Intro",
-  "group": "Info",
+  "group": "Features",
   "model": {
     "fullheight": "true",
     "showtitle": "true",
