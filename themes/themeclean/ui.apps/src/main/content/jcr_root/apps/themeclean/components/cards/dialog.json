@@ -41,12 +41,23 @@
       "model": "showcard"
     },
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "customcolor",
+      "label": "Custom Card Color",
+      "model": "customcolor",
+      "visible": "model.showcard == 'true'"
+    },
+    {
       "type": "input",
       "inputType": "color",
       "placeholder": "cardcolor",
       "label": "Card Color",
       "model": "cardcolor",
-      "visible": "model.showcard == 'true'"
+      "visible": "model.showcard == 'true' and model.customcolor == 'true'"
     },
     {
       "type": "collection",

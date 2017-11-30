@@ -28,12 +28,19 @@
           "x-form-label": "Show Card Background",
           "x-form-type": "materialswitch"
         },
+        "customcolor": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Custom Card Color",
+          "x-form-visible": "model.showcard == 'true'",
+          "x-form-type": "materialswitch"
+        },
         "cardcolor": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Card Color",
           "x-form-type": "color",
-          "x-form-visible": "model.showcard == 'true'",
+          "x-form-visible": "model.showcard == 'true' and model.customcolor == 'true'",
           "x-default": "#ffffff"
         },
         "cards": {
