@@ -20,7 +20,7 @@ module.exports = {
 		f.mapRichField( colcontent, "item.text")
 
 		//Copyright
-		f.mapRichField($.find('p').eq(1), "model.copyright")
+		f.mapRichField($.find('p').eq(0), "model.copyright")
 
     }
 }

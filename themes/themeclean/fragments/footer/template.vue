@@ -16,7 +16,7 @@
       <hr>
       <div class="row text-center text-md-left">
         <div class="col-md-6">
-          <p>&#xA9; Copyright 2017 Peregrine - All Rights Reserved</p>
+          <p v-html="model.copyright"></p>
         </div>
         <themeclean-components-socialicons v-bind:model="model"></themeclean-components-socialicons>
       </div>
