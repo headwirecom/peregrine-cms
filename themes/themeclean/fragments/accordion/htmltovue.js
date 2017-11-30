@@ -16,6 +16,6 @@ module.exports = {
         f.bindAttribute($.find('div.collapse').first(), 'id', '`accordion${_uid}${i}`')
         f.mapRichField($.find('div.card-body').first(), "item.text")
         f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
-        f.bindAttribute($.find('div.flex-wrap').first(),  'class', "model.mediaposition === 'right' ? 'flex-row-reverse': 'flex-row'", false)
+        f.bindAttribute($.find('div.flex-wrap').first(),  'class', "model.mediaposition === 'after' ? 'flex-row-reverse': 'flex-row'", false)
     }
 }

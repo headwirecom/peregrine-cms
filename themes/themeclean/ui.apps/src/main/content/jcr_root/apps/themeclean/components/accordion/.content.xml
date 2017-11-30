@@ -10,7 +10,7 @@
         </accordiontoggle>
       </jcr:content>
     </sample>
-    <sample-toggle jcr:primaryType="nt:unstructured" title="Toggle With Media" group="Accordion and Toggle">
+    <sample-toggle jcr:primaryType="nt:unstructured" title="Toggle With Media" group="Features">
       <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Toggle" backgroundtype="color" bgcolor="#ffffff" color2="#ffffff" fullheight="false" bottompadding="30" toppadding="30" mediatype="image" imagesrc="/content/assets/themeclean/images/workers-looking-tablet.jpg" mediawidth="45" showmedia="true">
         <accordiontoggle jcr:primaryType="nt:unstructured">
           <accordiontoggle0 jcr:primaryType="nt:unstructured" text="&lt;p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s&lt;/p>" title="Learn More"/>

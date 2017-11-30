@@ -5,7 +5,7 @@
       <h2 class="text-center pb-4" v-if="model.showtitle == 'true'"
       v-html="model.title"></h2>
       <div class="row col-12 p-0 d-md-flex flex-wrap justify-content-center"
-      v-bind:class="model.mediaposition === 'right' ? 'flex-row-reverse': 'flex-row'">
+      v-bind:class="model.mediaposition === 'after' ? 'flex-row-reverse': 'flex-row'">
         <div class="percms-image-wrap px-3" v-bind:style="{flexBasis:`${model.mediawidth}%`}">
           <themeclean-components-mediavisible :model="model"></themeclean-components-mediavisible>
         </div>
