@@ -24,10 +24,15 @@ module.exports = {
         f.bindAttribute( accordionContainer, 'id', "model.toggletype === 'accordion' ? `accordion${_uid}` : ''")
 
         //Accordion Item Title Bar
-        f.bindAttribute($.find('a').first(), 'data-parent', '`#accordion${_uid}`')
-        f.bindAttribute($.find('a').first(), 'href', '`#accordion${_uid}${i}`')
-        f.bindAttribute($.find('a').first(), 'aria-controls', '`accordion${_uid}${i}`')
-        f.mapRichField($.find('a').first(), "item.title")
+        let a = $.find('a').first()
+        let aClasses = `{
+            'text-light': model.colorscheme === 'dark',
+            'text-dark': model.colorscheme === 'light',
+        }`
+        f.bindAttribute( a, 'data-parent', '`#accordion${_uid}`')
+        f.bindAttribute( a, 'href', '`#accordion${_uid}${i}`')
+        f.bindAttribute( a, 'aria-controls', '`accordion${_uid}${i}`')
+        f.mapRichField( a.find('h4'), "item.title")
 
         //Acocordion Item Body
         f.bindAttribute($.find('div.collapse').first(), 'id', '`accordion${_uid}${i}`')
