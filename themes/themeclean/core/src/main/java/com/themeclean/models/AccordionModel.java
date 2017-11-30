@@ -135,16 +135,16 @@ import javax.inject.Named;
         "mediaposition": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Media on Left/Right",
+          "x-form-label": "Media Position",
           "x-form-type": "materialradio",
           "properties": {
             "type1": {
-              "x-form-name": "Left",
-              "x-form-value": "left"
+              "x-form-name": "Before Content",
+              "x-form-value": "before"
             },
             "type2": {
-              "x-form-name": "Right",
-              "x-form-value": "right"
+              "x-form-name": "After Content",
+              "x-form-value": "after"
             }
           }
         },
@@ -393,7 +393,7 @@ public class AccordionModel extends AbstractComponent {
 	@Default(values ="100")
 	private String mediawidth;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Left","x-form-value":"left"},"type2":{"x-form-name":"Right","x-form-value":"right"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	@Inject
 	private String mediaposition;
 
@@ -523,7 +523,7 @@ public class AccordionModel extends AbstractComponent {
 		return mediawidth;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Media on Left/Right","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Left","x-form-value":"left"},"type2":{"x-form-name":"Right","x-form-value":"right"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
 	public String getMediaposition() {
 		return mediaposition;
 	}
