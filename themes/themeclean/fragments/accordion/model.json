@@ -7,19 +7,39 @@
         "showtitle": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Show title",
+          "x-form-label": "Show Title",
           "x-form-type": "materialswitch"
         },
         "title": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
           "x-form-type": "text"
         },
-        "tabs": {
+        "mediaref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/mediavisible/model.json#/definitions/Mediavisible"
+        },
+        "mediaposition": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Tabs",
+          "x-form-label": "Media on Left/Right",
+          "x-form-type": "materialradio",
+          "properties": {
+		    "type1": {
+		      "x-form-name": "Left",
+		      "x-form-value": "left"
+		    },"type2": {
+		      "x-form-name": "Right",
+		      "x-form-value": "right"
+		    }
+  		  }
+        },
+        "accordiontoggle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Accordion/Toggle",
           "x-form-type": "collection",
           "properties": {
             "title": {
@@ -32,13 +52,13 @@
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Text",
-          	  "x-form-type": "texteditor"
+              "x-form-type": "texteditor"
             }
           }
         },
         "bgref": {
-          "$ref": "fragments/block/model.json#/definitions/Block",
-          "x-form-type": "reference"
+            "x-form-type": "reference",
+        	"$ref": "fragments/block/model.json#/definitions/Block"
         }
       }
     }

@@ -7,7 +7,7 @@
       "valueOn": "true",
       "valueOff": "false",
       "placeholder": "showtitle",
-      "label": "Show title",
+      "label": "Show Title",
       "model": "showtitle"
     },
     {
@@ -15,7 +15,120 @@
       "inputType": "text",
       "placeholder": "title",
       "label": "Title",
-      "model": "title"
+      "model": "title",
+      "visible": "model.showtitle == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showmedia",
+      "label": "Show Media",
+      "model": "showmedia"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Video",
+          "value": "video"
+        },
+        {
+          "name": "Icon",
+          "value": "icon"
+        }
+      ],
+      "placeholder": "mediatype",
+      "label": "Media type",
+      "model": "mediatype",
+      "visible": "model.showmedia == 'true'"
+    },
+    {
+      "type": "iconbrowser",
+      "placeholder": "mediaicon",
+      "label": "Icon Chooser",
+      "model": "mediaicon",
+      "visible": "model.mediatype == 'icon' and model.showmedia == 'true'",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediaiconsize",
+      "label": "Icon Size",
+      "model": "mediaiconsize",
+      "visible": "model.mediatype == 'icon' and model.showmedia == 'true'",
+      "min": 1,
+      "max": 1000
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "mediaiconcolor",
+      "label": "Icon Color",
+      "model": "mediaiconcolor",
+      "visible": "model.mediatype == 'icon' and model.showmedia == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "imagesrc",
+      "label": "Image Source",
+      "model": "imagesrc",
+      "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "imagealttext",
+      "label": "Image Alt Text",
+      "model": "imagealttext",
+      "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "videosrc",
+      "label": "Video Source",
+      "model": "videosrc",
+      "visible": "model.mediatype == 'video' and model.showmedia == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediawidth",
+      "label": "Width",
+      "model": "mediawidth",
+      "visible": "model.showmedia == 'true'",
+      "min": 10,
+      "max": 100
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Left",
+          "value": "left"
+        },
+        {
+          "name": "Right",
+          "value": "right"
+        }
+      ],
+      "placeholder": "mediaposition",
+      "label": "Media on Left/Right",
+      "model": "mediaposition"
     },
     {
       "type": "collection",
@@ -40,9 +153,9 @@
           "model": "text"
         }
       ],
-      "placeholder": "tabs",
-      "label": "Tabs",
-      "model": "tabs"
+      "placeholder": "accordiontoggle",
+      "label": "Accordion/Toggle",
+      "model": "accordiontoggle"
     },
     {
       "type": "material-radios",
