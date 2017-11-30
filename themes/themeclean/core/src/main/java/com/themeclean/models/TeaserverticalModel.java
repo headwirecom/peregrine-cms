@@ -339,7 +339,7 @@ public class TeaserverticalModel extends AbstractComponent {
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
 	@Inject
-	private Boolean isprimary;
+	private String isprimary;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
@@ -456,7 +456,7 @@ public class TeaserverticalModel extends AbstractComponent {
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
-	public Boolean getIsprimary() {
+	public String getIsprimary() {
 		return isprimary;
 	}
 

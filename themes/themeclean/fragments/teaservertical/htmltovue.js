@@ -37,17 +37,24 @@ module.exports = {
         f.mapRichField($.find('h5').first(), "model.text")
 
         //Buttons
+        let buttonsClasses = `{
+            'justify-content-md-start': model.alignbuttons === 'start',
+            'justify-content-md-center': model.alignbuttons === 'center',
+            'justify-content-md-end': model.alignbuttons === 'end'
+        }`
+        
         let buttonsDiv = $.find('div.col-12').eq(1)
         let link = buttonsDiv.find('a')
         f.addIf( buttonsDiv, 'model.showbutton == \'true\'')
-        f.bindAttribute( buttonsDiv, 'class', '`justify-content-sm-${model.alignbuttons}`',false)
+        f.bindAttribute( buttonsDiv, 'class', buttonsClasses,false)
+
+        let buttonClasses = `{
+        }`
         f.addFor( link, 'model.buttons')
         f.bindAttribute( link, 'href', f.pathToUrl('item.buttonlink'))
         f.mapRichField( link, "item.buttontext")
         f.addStyle( link, 'backgroundColor', 'item.buttoncolor')
         f.addStyle( link, 'borderColor', 'item.buttoncolor')
-        f.addStyle( link, 'margin-left', "i == 0 ? 0 : '0.5rem'")
-        f.addStyle( link, 'margin-right', "i == model.buttons.length-1 ? 0: '0.5rem'")
 
         $.append('<div v-if="isEditAndEmpty">no content defined for component</div>')
     }

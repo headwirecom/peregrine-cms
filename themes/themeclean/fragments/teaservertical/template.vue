@@ -25,11 +25,15 @@
           v-html="model.text"></h5>
         </div>
       </div>
-      <div class="col-12 p-0 d-flex" v-if="model.showbutton == 'true'"
-      v-bind:class="`justify-content-sm-${model.alignbuttons}`">
-        <a class="btn btn-secondary btn-lg" v-for="(item,i) in model.buttons"
+      <div class="col-12 d-flex flex-wrap p-0 justify-content-center" v-if="model.showbutton == 'true'"
+      v-bind:class="{
+            'justify-content-md-start': model.alignbuttons === 'start',
+            'justify-content-md-center': model.alignbuttons === 'center',
+            'justify-content-md-end': model.alignbuttons === 'end'
+        }">
+        <a class="btn btn-secondary btn-lg m-2" v-for="(item,i) in model.buttons"
         :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
-        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};margin-left:${i == 0 ? 0 : '0.5rem'};margin-right:${i == model.buttons.length-1 ? 0: '0.5rem'};`"></a>
+        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
       <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>
