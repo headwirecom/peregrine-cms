@@ -26,6 +26,7 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Collapse Style",
           "x-form-type": "materialradio",
+          "x-default": "accordion",
           "properties": {
             "toggle": {
               "x-form-name": "Toggle",
@@ -364,8 +365,9 @@ public class AccordionModel extends AbstractComponent {
     public AccordionModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","x-default":"accordion","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
 	@Inject
+	@Default(values ="accordion")
 	private String toggletype;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
@@ -491,7 +493,7 @@ public class AccordionModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","x-default":"accordion","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
 	public String getToggletype() {
 		return toggletype;
 	}

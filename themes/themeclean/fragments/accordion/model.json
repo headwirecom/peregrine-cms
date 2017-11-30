@@ -9,6 +9,7 @@
           "x-source": "inject",
           "x-form-label": "Collapse Style",
           "x-form-type": "materialradio",
+          "x-default": "accordion",
           "properties": {
             "toggle": {
               "x-form-name": "Toggle",
