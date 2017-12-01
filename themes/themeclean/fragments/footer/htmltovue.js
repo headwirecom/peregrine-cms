@@ -17,6 +17,7 @@ module.exports = {
 		f.addFor( col, "model.columns")
 		f.addIf( coltitle, "item.title !== ''")
 		f.mapField( coltitle, "item.title")
+		f.addIf( colcontent, "item.text !== ''")
 		f.mapRichField( colcontent, "item.text")
 
 		//Copyright
