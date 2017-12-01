@@ -9,7 +9,7 @@
         </buttons>
       </jcr:content>
     </sample>
-    <sample-teaserfull jcr:primaryType="nt:unstructured" title="Full Screen Teaser" group="Features">
+    <sample-teaserfull jcr:primaryType="nt:unstructured" title="Teaser Primary" group="Features">
       <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" showsubtitle="false" showtext="true" showbutton="true" isprimary="true" fullheight="true" custombackground="true" backgroundtype="image" bgimage="/content/assets/themeclean/images/meeting_room.jpg" overlay="true" overlaycolor="#ffffff" overlayopacity="70" bottompadding="30" toppadding="30" text="&lt;p>Eligendi fugit asperiores et. Corrupti voluptatum quasi sit. Adipisci ut voluptatem necessitatibus cumque aspernatur.&lt;/p>" subtitle="Molestiae alias et inventore voluptas" title="Peregrine blocks">
         <buttons jcr:primaryType="nt:unstructured">
           <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean" buttontext="See More" buttoncolor="#008040" iconclass=""/>
