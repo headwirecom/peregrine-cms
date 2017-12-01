@@ -78,9 +78,65 @@ public class BreadcrumbModel extends AbstractComponent {
     //GEN[:GETTERS
     	/* {"type":"string","x-source":"inject","x-form-label":"Number Of Levels","x-form-type":"number"} */
 	public String getLevel() {
+		LOG.error("in getLevel");
 		return level;
 	}
 
+	private List<IComponent> links;
+	
+	/* Method to recursively get child page links, given a root page path */
+    public List<IComponent> getLinks(){
+    	
+    	LOG.error("in getLinks...");
+    	//LOG.error("level is: " + getLevel());
+    	links = new ArrayList<IComponent>();
+    	if(Integer.parseInt(getLevel()) > 0) {
+    		return getDeepLinks(getResource());
+    	} else {
+    		return null;
+    	}
+    }
+    
+    private List<IComponent> getDeepLinks(Resource resource){
+    	
+    	try{
+			    		
+    		ValueMap props = resource.adaptTo(ValueMap.class);
+		    String resourceType = props.get("jcr:primaryType", "type not found");
+		    // we only care about per:page child
+		    if(resourceType.equals("per:Page")){
+			    TextlinkModel link = new TextlinkModel(resource);
+			    link.setLink(resource.getPath());
+			    link.setText(getPageTitle(resource.getPath()));
+			    links.add(0,(IComponent)link);
+		    }
+		    // move on to its parent resource
+		    if(resource.getParent() != null && links.size() < Integer.parseInt(getLevel())) {
+		    	getDeepLinks(resource.getParent());
+		    }
+    	} catch(Exception e){
+    		LOG.error("Exception: " + e);
+			//e.printStackTrace();
+		}
+    	
+    	return links;
+    	
+    	
+    }
+    	
+	private String getPageTitle(String pageUrl){
+		try{
+			String resourcePath = pageUrl + "/jcr:content";
+			ResourceResolver resourceResolver = getResource().getResourceResolver();
+			ValueMap props = resourceResolver.getResource(resourcePath).adaptTo(ValueMap.class);
+			return props.get("jcr:title", "title not found");
+		} catch(Exception e){
+			LOG.error("Exception: " + e);
+			//e.printStackTrace();
+			return "title not found....";
+		}
+	}
+    
 
 //GEN]
 
