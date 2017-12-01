@@ -5,8 +5,8 @@ module.exports = {
 
         //Card
         let cardClasses = `{
-            'bg-dark': model.customcardcolor === 'false' && model.colorscheme === 'light',
-            'bg-light': model.customcardcolor === 'false' &&  model.colorscheme === 'dark',
+            'bg-dark': model.customcardcolor !== 'true' && model.colorscheme === 'light',
+            'bg-light': model.customcardcolor !== 'true' &&  model.colorscheme === 'dark',
             'text-dark': (model.showcard === 'false' && model.colorscheme === 'light') || (model.showcard === 'true' && model.colorscheme === 'dark'),
             'text-light': (model.showcard === 'false' && model.colorscheme === 'dark') || (model.showcard === 'true' && model.colorscheme === 'light'),
             'bg-transparent': model.showcard === 'false'

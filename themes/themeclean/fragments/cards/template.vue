@@ -7,8 +7,8 @@
         <div class="card p-0 border-0 d-flex flex-column justify-content-between h-100"
         v-bind:style="`background-color:${model.customcardcolor === 'true' ? model.cardcolor: ''};`"
         v-bind:class="{
-            'bg-dark': model.customcardcolor === 'false' &amp;&amp; model.colorscheme === 'light',
-            'bg-light': model.customcardcolor === 'false' &amp;&amp;  model.colorscheme === 'dark',
+            'bg-dark': model.customcardcolor !== 'true' &amp;&amp; model.colorscheme === 'light',
+            'bg-light': model.customcardcolor !== 'true' &amp;&amp;  model.colorscheme === 'dark',
             'text-dark': (model.showcard === 'false' &amp;&amp; model.colorscheme === 'light') || (model.showcard === 'true' &amp;&amp; model.colorscheme === 'dark'),
             'text-light': (model.showcard === 'false' &amp;&amp; model.colorscheme === 'dark') || (model.showcard === 'true' &amp;&amp; model.colorscheme === 'light'),
             'bg-transparent': model.showcard === 'false'
