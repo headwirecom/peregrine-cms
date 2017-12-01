@@ -90,15 +90,11 @@ public class BreadcrumbModel extends AbstractComponent {
     	LOG.error("in getLinks...");
     	//LOG.error("level is: " + getLevel());
     	links = new ArrayList<IComponent>();
-    	/*if(Integer.parseInt(getLevel()) > 0) {
+    	if(Integer.parseInt(getLevel()) > 0) {
     		return getDeepLinks(getResource());
     	} else {
     		return null;
-    	}*/
-    	//return null;
-    	//return getDeepLinks(getResource());
-    	return getDeepLinks(getResource()); 
-    	
+    	}
     }
     
     private List<IComponent> getDeepLinks(Resource resource){
@@ -115,7 +111,7 @@ public class BreadcrumbModel extends AbstractComponent {
 			    links.add(0,(IComponent)link);
 		    }
 		    // move on to its parent resource
-		    if(resource.getParent() != null) {
+		    if(resource.getParent() != null && links.size() < Integer.parseInt(getLevel())) {
 		    	getDeepLinks(resource.getParent());
 		    }
     	} catch(Exception e){
