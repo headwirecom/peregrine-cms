@@ -84,12 +84,7 @@ footer {
 }
 
 @media (max-width: 768px) {
-
-  .percms-image-wrap {
-    flex-basis: auto !important;
-  }
   .percms-w-sm-100{
     width: 100% !important;
   }
-
 }
