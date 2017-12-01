@@ -5,7 +5,7 @@
       <a class="btn btn-sm percms-btn-pager"
       v-bind:href="$helper.pathToUrl(model.previous)" v-bind:class="{
             'disabled': model.previous === 'unknown',
-            'button-outline-primary': model.previous !== 'unknown'
+            'btn-outline-primary': model.previous !== 'unknown'
         }">{{model.prevlabel}}</a>
       <a class="btn btn-sm percms-btn-pager" v-bind:href="$helper.pathToUrl(model.next)"
       v-bind:class="{
