@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -144,23 +143,49 @@ public class PagelistModel extends AbstractComponent {
         return page != null ? page.getPath(): "";
 	}
 
-	public List<PerPage> getChildrenPages() {
-		List<PerPage> childrenPages = new ArrayList<PerPage>();
+	public List<Page> getChildrenPages() {
+		List<Page> childPages = new ArrayList<Page>();
 		PerPage page = getCurrentPage(getResource()).adaptTo(PerPage.class);
 		if(page != null) {
-			Iterator<PerPage> children = page.listChildren().iterator();
-			while (children.hasNext()) {
-				PerPage child = children.next();
-				LOG.debug("Class: {}",child.getClass());
-				LOG.debug("Path: {}",child.getPath());
-				LOG.debug("Title: {}",child.getTitle());
-				//if (child.adaptTo(PerPage.class) != null) {
-				//	childrenPages.add(child);
-				//}
+			for (PerPage child: page.listChildren()) {
+				if(!child.getPath().equals(page.getPath())) {
+					childPages.add(new Page(child));
+				}
 			}
 		}
-		return childrenPages;
+		return childPages;
 	}
     //GEN]
+
+}
+
+class Page {
+
+	private PerPage page;
+
+	public Page(PerPage page) {
+		this.page = page;
+	}
+
+	public String getTitle() {
+		return page.getTitle();
+	}
+
+	public String getPath() {
+		return page.getPath();
+	}
+
+	public List<Page> getChildrenPages() {
+		List<Page> childPages = new ArrayList<Page>();
+		System.out.println();
+		if(page != null) {
+			for (PerPage child: page.listChildren()) {
+				if(!child.getPath().equals(page.getPath())) {
+					childPages.add(new Page(child));
+				}
+			}
+		}
+		return childPages;
+	}
 
 }
