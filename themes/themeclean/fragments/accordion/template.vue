@@ -10,13 +10,13 @@
           <themeclean-components-media :model="model"></themeclean-components-media>
         </div>
         <!-- Card Container -->
-        <div class="col-12 col-md p-0 border-0" v-bind:ref="collapsible" v-bind:id="model.toggletype === 'accordion' ? `accordion${_uid}` : ''">
+        <div class="col-12 col-md p-0 border-0" v-bind:id="`accordion${_uid}`">
           <!-- Card Items -->
           <div class="item card bg-transparent border-0" v-for="(item,i) in model.accordiontoggle"
           :key="i">
             <a aria-expanded="false" class="d-flex justify-content-between align-items-center card-header border-0 bg-transparent px-3"
-            data-toggle="collapse" v-bind:data-parent="`#accordion${_uid}`" v-bind:href="`#accordion${_uid}${i}`"
-            v-bind:aria-controls="`accordion${_uid}${i}`">
+            ref="collapsible" data-toggle="collapse" v-bind:data-parent="model.toggletype === 'accordion' ? `#accordion${_uid}` : ''"
+            v-bind:href="`#accordion${_uid}${i}`" v-bind:aria-controls="`accordion${_uid}${i}`">
               <h4 v-html="item.title"></h4>
               <i class="fa fa-chevron-down" aria-hidden="true"></i>
             </a>
@@ -33,9 +33,6 @@
 <script>
     export default {
         props: ['model'],
-        updated() {
-          $(this.$refs.collapsible).collapse()
-        },
         computed: {
         	isEditAndEmpty() {
             if(!$peregrineApp.isAuthorMode()) return false

@@ -20,8 +20,8 @@ module.exports = {
 
         //Accordion Container
         let accordionContainer = $.find('div.col-12').eq(1)
-        f.bindAttribute( accordionContainer, 'ref', 'collapsible')
-        f.bindAttribute( accordionContainer, 'id', "model.toggletype === 'accordion' ? `accordion${_uid}` : ''")
+        // f.bindAttribute( accordionContainer, 'id', "model.toggletype === 'accordion' ? `accordion${_uid}` : ''")
+        f.bindAttribute( accordionContainer, 'id', "`accordion${_uid}`")
 
         //Accordion Item Title Bar
         let a = $.find('a').first()
@@ -29,7 +29,7 @@ module.exports = {
             'text-light': model.colorscheme === 'dark',
             'text-dark': model.colorscheme === 'light',
         }`
-        f.bindAttribute( a, 'data-parent', '`#accordion${_uid}`')
+        f.bindAttribute( a, 'data-parent', "model.toggletype === 'accordion' ? `#accordion${_uid}` : ''")
         f.bindAttribute( a, 'href', '`#accordion${_uid}${i}`')
         f.bindAttribute( a, 'aria-controls', '`accordion${_uid}${i}`')
         f.mapRichField( a.find('h4'), "item.title")
