@@ -45,9 +45,9 @@ import javax.inject.Named;
         "isprimary": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Make Primary",
-          "x-form-type": "materialcheckbox",
-          "x-form-default": false
+          "x-form-label": "Enlarge Text",
+          "x-form-type": "materialswitch",
+          "x-form-default": "false"
         },
         "showtitle": {
           "type": "string",
@@ -337,9 +337,9 @@ public class TeaserverticalModel extends AbstractComponent {
 	@Default(values ="center")
 	private String aligncontent;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Enlarge Text","x-form-type":"materialswitch","x-form-default":"false"} */
 	@Inject
-	private Boolean isprimary;
+	private String isprimary;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
@@ -455,8 +455,8 @@ public class TeaserverticalModel extends AbstractComponent {
 		return aligncontent;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialcheckbox","x-form-default":false} */
-	public Boolean getIsprimary() {
+	/* {"type":"string","x-source":"inject","x-form-label":"Enlarge Text","x-form-type":"materialswitch","x-form-default":"false"} */
+	public String getIsprimary() {
 		return isprimary;
 	}
 

@@ -21,12 +21,15 @@
       "model": "aligncontent"
     },
     {
-      "type": "material-checkbox",
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
       "valueOn": "true",
       "valueOff": "false",
       "placeholder": "isprimary",
-      "label": "Make Primary",
-      "model": "isprimary"
+      "label": "Enlarge Text",
+      "model": "isprimary",
+      "default": "false"
     },
     {
       "type": "materialswitch",
