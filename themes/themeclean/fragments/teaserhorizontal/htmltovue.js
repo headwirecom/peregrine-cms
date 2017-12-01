@@ -14,24 +14,19 @@ module.exports = {
         let textClasses = `{
             'text-left': model.aligncontent === 'left',
             'text-center': model.aligncontent === 'center',
-            'text-right': model.aligncontent === 'right'
+            'text-right': model.aligncontent === 'right',
+            'percms-text-large': model.isprimary === 'true'
         }`
         let textDiv = $.find('div').eq(0)
         f.bindAttribute( textDiv, 'class', textClasses,false)
         f.addStyle( textDiv, 'flex-basis', 'model.textwidth', '%')
-    	f.addIf($.find('h2').first(), "model.showtitle === 'true' && (model.isprimary === false || ! model.isprimary)")
-        f.addIf($.find('h4').first(), "model.showsubtitle === 'true' && (model.isprimary === false || ! model.isprimary)")
-        f.addIf($.find('p').first(), "model.showtext === 'true' && (model.isprimary === false || ! model.isprimary)")
+        
+    	f.addIf($.find('h2').first(), "model.showtitle === 'true'")
+        f.addIf($.find('h4').first(), "model.showsubtitle === 'true'")
+        f.addIf($.find('p').first(), "model.showtext === 'true'")
         f.mapRichField($.find('h2').first(), "model.title")
         f.mapRichField($.find('h4').first(), "model.subtitle")
         f.mapRichField($.find('p').first(), "model.text")
-        
-        f.addIf($.find('h1').first(), "model.showtitle == 'true' && model.isprimary === true")
-        f.addIf($.find('h3').first(), "model.showsubtitle === 'true' && model.isprimary === true")
-        f.addIf($.find('h5').first(), "model.showtext === 'true' && model.isprimary === true")
-        f.mapRichField($.find('h1').first(), "model.title")
-        f.mapRichField($.find('h3').first(), "model.subtitle")
-        f.mapRichField($.find('h5').first(), "model.text")
         
         //Buttons
         let buttonsDiv = $.find('div').eq(1)

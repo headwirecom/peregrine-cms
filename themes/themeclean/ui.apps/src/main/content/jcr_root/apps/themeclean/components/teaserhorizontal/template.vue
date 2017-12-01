@@ -8,20 +8,12 @@
       <div class="" v-bind:class="{
             'text-left': model.aligncontent === 'left',
             'text-center': model.aligncontent === 'center',
-            'text-right': model.aligncontent === 'right'
+            'text-right': model.aligncontent === 'right',
+            'percms-text-large': model.isprimary === 'true'
         }" v-bind:style="`flex-basis:${model.textwidth}%;`">
-        <h2 class="" v-if="model.showtitle === 'true' &amp;&amp; (model.isprimary === false || ! model.isprimary)"
-        v-html="model.title"></h2>
-        <h4 class="" v-if="model.showsubtitle === 'true' &amp;&amp; (model.isprimary === false || ! model.isprimary)"
-        v-html="model.subtitle"></h4>
-        <p v-if="model.showtext === 'true' &amp;&amp; (model.isprimary === false || ! model.isprimary)"
-        v-html="model.text"></p>
-        <h1 class="" v-if="model.showtitle == 'true' &amp;&amp; model.isprimary === true"
-        v-html="model.title"></h1>
-        <h3 class="" v-if="model.showsubtitle === 'true' &amp;&amp; model.isprimary === true"
-        v-html="model.subtitle"></h3>
-        <h5 v-if="model.showtext === 'true' &amp;&amp; model.isprimary === true"
-        v-html="model.text"></h5>
+        <h2 class="" v-if="model.showtitle === 'true'" v-html="model.title"></h2>
+        <h4 class="" v-if="model.showsubtitle === 'true'" v-html="model.subtitle"></h4>
+        <p v-if="model.showtext === 'true'" v-html="model.text"></p>
       </div>
       <div class="d-flex flex-wrap justify-content-center" v-if="model.showbutton == 'true'"
       v-bind:class="{
