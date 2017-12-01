@@ -1,17 +1,21 @@
 package com.themeclean.models;
 
+import com.peregrine.adaption.PerPage;
+import com.peregrine.adaption.PerPageManager;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.Container;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Default;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /*
     //GEN[:DATA
@@ -107,6 +111,56 @@ public class PagelistModel extends AbstractComponent {
 //GEN]
 
     //GEN[:CUSTOMGETTERS
+	private static final Logger LOG = LoggerFactory.getLogger(PagelistModel.class);
+	private Resource getCurrentPage(Resource resource) {
+    	String resourceType = null;
+    	try{
+    		ValueMap props = resource.adaptTo(ValueMap.class);
+		    resourceType = props.get("jcr:primaryType", "type not found");
+		    // we only care about per:page node
+		    if("per:Page".equals(resourceType)) {
+		    	return resource;
+		    }
+		    else {
+		    	return getCurrentPage(resource.getParent());
+		    }
+		} catch(Exception e){
+    		LOG.error("Exception: " + e);
+    		return null;
+		}
+    }
+
+	public String getRootPageTitle() {
+		PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
+		PerPage page = ppm.getPage(getRootpage());
+        if(page == null) return "not adaptable";
+        return page != null ? page.getTitle(): "";
+	}
+
+	public String getRootPageLink() {
+		PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
+		PerPage page = ppm.getPage(getRootpage());
+        if(page == null) return "not adaptable";
+        return page != null ? page.getPath(): "";
+	}
+
+	public List<PerPage> getChildrenPages() {
+		List<PerPage> childrenPages = new ArrayList<PerPage>();
+		PerPage page = getCurrentPage(getResource()).adaptTo(PerPage.class);
+		if(page != null) {
+			Iterator<PerPage> children = page.listChildren().iterator();
+			while (children.hasNext()) {
+				PerPage child = children.next();
+				LOG.debug("Class: {}",child.getClass());
+				LOG.debug("Path: {}",child.getPath());
+				LOG.debug("Title: {}",child.getTitle());
+				//if (child.adaptTo(PerPage.class) != null) {
+				//	childrenPages.add(child);
+				//}
+			}
+		}
+		return childrenPages;
+	}
     //GEN]
 
 }

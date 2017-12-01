@@ -1,0 +1,10 @@
+{
+  "definitions": {
+    "Pagelistnested": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+      }
+    }
+  }
+}
