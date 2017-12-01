@@ -20,13 +20,20 @@
         </div>
         <themeclean-components-socialicons v-bind:model="model"></themeclean-components-socialicons>
       </div>
+      <div v-if="isEditAndEmpty">no content defined for component</div>
     </footer>
   </themeclean-components-block>
 </template>
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return this.$helper.areAllEmpty(this.model.showlogo === 'true', this.model.columns,  this.model.copyright, this.model.icons)
+            }
+        }
     }
 </script>
 

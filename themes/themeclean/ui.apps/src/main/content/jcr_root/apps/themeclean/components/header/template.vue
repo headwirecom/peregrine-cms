@@ -19,12 +19,19 @@
         <themeclean-components-textlinks v-bind:model="model"></themeclean-components-textlinks>
         <themeclean-components-menubuttons v-bind:model="model"></themeclean-components-menubuttons>
       </div>
+      <div v-if="isEditAndEmpty">no content defined for component</div>
     </nav>
   </themeclean-components-block>
 </template>
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        computed: {
+        	isEditAndEmpty() {
+                if(!$peregrineApp.isAuthorMode()) return false
+                return this.$helper.areAllEmpty(this.model.logo, this.model.links,  this.model.buttons)
+            }
+        }
     }
 </script>
