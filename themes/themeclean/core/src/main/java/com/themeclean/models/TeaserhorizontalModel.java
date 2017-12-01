@@ -45,7 +45,7 @@ import javax.inject.Named;
         "isprimary": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Make Primary",
+          "x-form-label": "Enlarge Text",
           "x-form-type": "materialswitch",
           "x-form-default": "false"
         },
@@ -333,7 +333,7 @@ public class TeaserhorizontalModel extends AbstractComponent {
 	@Default(values ="center")
 	private String aligncontent;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialswitch","x-form-default":"false"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Enlarge Text","x-form-type":"materialswitch","x-form-default":"false"} */
 	@Inject
 	private String isprimary;
 
@@ -451,7 +451,7 @@ public class TeaserhorizontalModel extends AbstractComponent {
 		return aligncontent;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Make Primary","x-form-type":"materialswitch","x-form-default":"false"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Enlarge Text","x-form-type":"materialswitch","x-form-default":"false"} */
 	public String getIsprimary() {
 		return isprimary;
 	}

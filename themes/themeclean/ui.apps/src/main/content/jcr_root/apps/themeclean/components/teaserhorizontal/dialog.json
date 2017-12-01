@@ -27,7 +27,7 @@
       "valueOn": "true",
       "valueOff": "false",
       "placeholder": "isprimary",
-      "label": "Make Primary",
+      "label": "Enlarge Text",
       "model": "isprimary",
       "default": "false"
     },
