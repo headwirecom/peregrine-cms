@@ -7,10 +7,12 @@ module.exports = {
         let a1 =$.find('a').eq(0)
         let a2 =$.find('a').eq(1)
         let prevLinkClass = `{
-            'disabled': model.previous === 'unknown'
+            'disabled': model.previous === 'unknown',
+            'button-outline-primary': model.previous !== 'unknown'
         }`
     	let nextLinkClass = `{
-            'disabled': model.next === 'unknown'
+            'disabled': model.next === 'unknown',
+            'btn-outline-primary': model.next !== 'unknown'
         }`
         	
         f.mapField( a1, 'model.prevlabel')
