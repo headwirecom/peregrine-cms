@@ -33,17 +33,6 @@
 <script>
     export default {
         props: ['model'],
-        // mounted() {
-        //   let toggle = this.model.toggletype === 'toggle'
-        //   $(this.$refs.collapsible).collapse({toggle:toggle})
-        // },
-        // updated() {
-        //   let toggle = this.model.toggletype === 'toggle'
-        //   $(this.$refs.collapsible).collapse({toggle:toggle})
-        // },
-        // beforeDestroy() {
-        //   // $(this.$refs.collapsible).collapse()
-        // },
         computed: {
         	isEditAndEmpty() {
             if(!$peregrineApp.isAuthorMode()) return false

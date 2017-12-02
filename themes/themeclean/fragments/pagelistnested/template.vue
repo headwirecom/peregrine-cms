@@ -1,19 +1,11 @@
 <template>
-  <div>
-    <ul>
-      <li class="children">
-        <a href="">Pageeee 1</a>
-        <ul class="nested">
-          <li>
-            <a href="">Subbb Page 1</a>
-          </li>
-          <li>
-            <a href="">Subbbb Page 1</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+  <ul>
+    <li class="children" v-for="(child,i) in model.childrenPages" :key="i">
+      <a v-bind:href="child.path">{{child.title}}</a>
+      <themeclean-components-pagelistnested v-bind:model="child"
+      v-if="child.hasChildren"></themeclean-components-pagelistnested>
+    </li>
+  </ul>
 </template>
 
 <script>

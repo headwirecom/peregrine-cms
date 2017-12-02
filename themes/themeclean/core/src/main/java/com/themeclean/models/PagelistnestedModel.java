@@ -52,40 +52,7 @@ public class PagelistnestedModel extends AbstractComponent {
 //GEN]
 
     //GEN[:CUSTOMGETTERS
-	/*private Resource getCurrentPage(Resource resource) {
-    	String resourceType = null;
-    	try{
-    		ValueMap props = resource.adaptTo(ValueMap.class);
-		    resourceType = props.get("jcr:primaryType", "type not found");
-		    // we only care about per:page node
-		    if("per:Page".equals(resourceType)) {
-		    	return resource;
-		    }
-		    else {
-		    	return getCurrentPage(resource.getParent());
-		    }
-		} catch(Exception e){
-    		return null;
-		}
-    }
-
-	public PerPage getPage() {
-		if (getCurrentPage(getResource()) != null) {
-			PerPage perPage = getCurrentPage(getResource()).adaptTo(PerPage.class);
-			return perPage;
-		} else {
-			return null;
-		}
-	}
-
-	public List<PerPage> getChildrenPages() {
-		List<PerPage> childList = new ArrayList<PerPage>();
-		Iterator<PerPage> children = getPage().listChildren().iterator();
-		while (children.hasNext()) {
-			childList.add(children.next());
-		}
-		return childList;
-	}*/
+    
     //GEN]
 
 }
