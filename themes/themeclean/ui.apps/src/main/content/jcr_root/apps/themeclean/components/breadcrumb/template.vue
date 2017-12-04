@@ -11,7 +11,13 @@
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        methods: {
+           beforeSave(data) {
+               delete data.links
+               return data
+           }
+        }
     }
 </script>
 
