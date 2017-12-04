@@ -182,6 +182,30 @@ import javax.inject.Named;
                 "secondary": {
                   "x-form-name": "Secondary",
                   "x-form-value": "secondary"
+                },
+                "success": {
+                  "x-form-name": "Success",
+                  "x-form-value": "success"
+                },
+                "danger": {
+                  "x-form-name": "Danger",
+                  "x-form-value": "danger"
+                },
+                "warning": {
+                  "x-form-name": "Warning",
+                  "x-form-value": "warning"
+                },
+                "info": {
+                  "x-form-name": "Info",
+                  "x-form-value": "info"
+                },
+                "light": {
+                  "x-form-name": "Light",
+                  "x-form-value": "light"
+                },
+                "dark": {
+                  "x-form-name": "Dark",
+                  "x-form-value": "dark"
                 }
               }
             }
@@ -417,7 +441,7 @@ public class TeaserverticalModel extends AbstractComponent {
 	@Default(values ="default")
 	private String buttonsize;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"}}}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"},"success":{"x-form-name":"Success","x-form-value":"success"},"danger":{"x-form-name":"Danger","x-form-value":"danger"},"warning":{"x-form-name":"Warning","x-form-value":"warning"},"info":{"x-form-name":"Info","x-form-value":"info"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}}}} */
 	@Inject
 	private List<IComponent> buttons;
 
@@ -548,7 +572,7 @@ public class TeaserverticalModel extends AbstractComponent {
 		return buttonsize;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"}}}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"},"success":{"x-form-name":"Success","x-form-value":"success"},"danger":{"x-form-name":"Danger","x-form-value":"danger"},"warning":{"x-form-name":"Warning","x-form-value":"warning"},"info":{"x-form-name":"Info","x-form-value":"info"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}}}} */
 	public List<IComponent> getButtons() {
 		return buttons;
 	}

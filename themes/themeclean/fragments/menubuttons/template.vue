@@ -4,8 +4,14 @@
     :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-bind:class="{
             'btn-lg': model.buttonsize === 'large',
             'btn-sm': model.buttonsize === 'small',
-            'btn-primary': model.buttoncolor === 'primary',
-            'btn-secondary': model.buttoncolor === 'secondary'
+            'btn-primary': item.buttoncolor === 'primary',
+            'btn-secondary': item.buttoncolor === 'secondary',
+            'btn-success': item.buttoncolor === 'success',
+            'btn-danger': item.buttoncolor === 'danger',
+            'btn-warning': item.buttoncolor === 'warning',
+            'btn-info': item.buttoncolor === 'info',
+            'btn-light': item.buttoncolor === 'light',
+            'btn-dark': item.buttoncolor === 'dark'
         }" v-html="item.buttontext"></a>
   </div>
 </template>

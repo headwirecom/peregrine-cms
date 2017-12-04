@@ -89,22 +89,6 @@
       "type": "material-select",
       "values": [
         {
-          "name": "Primary",
-          "value": "primary"
-        },
-        {
-          "name": "Secondary",
-          "value": "secondary"
-        }
-      ],
-      "placeholder": "buttoncolor",
-      "label": "Button Color",
-      "model": "buttoncolor"
-    },
-    {
-      "type": "material-select",
-      "values": [
-        {
           "name": "Default",
           "value": "default"
         },
@@ -142,6 +126,46 @@
           "placeholder": "buttonlink",
           "label": "Button Link",
           "model": "buttonlink"
+        },
+        {
+          "type": "material-select",
+          "values": [
+            {
+              "name": "Primary",
+              "value": "primary"
+            },
+            {
+              "name": "Secondary",
+              "value": "secondary"
+            },
+            {
+              "name": "Success",
+              "value": "success"
+            },
+            {
+              "name": "Danger",
+              "value": "danger"
+            },
+            {
+              "name": "Warning",
+              "value": "warning"
+            },
+            {
+              "name": "Info",
+              "value": "info"
+            },
+            {
+              "name": "Light",
+              "value": "light"
+            },
+            {
+              "name": "Dark",
+              "value": "dark"
+            }
+          ],
+          "placeholder": "buttoncolor",
+          "label": "Button Color",
+          "model": "buttoncolor"
         }
       ],
       "placeholder": "buttons",
