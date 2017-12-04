@@ -1,0 +1,109 @@
+{
+  "fields": [
+    {
+      "type": "input",
+      "inputType": "number",
+      "placeholder": "interval",
+      "label": "Interval",
+      "model": "interval"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "pause",
+      "label": "Pause",
+      "model": "pause"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "ride",
+      "label": "Ride",
+      "model": "ride"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "indicators",
+      "label": "Indicators",
+      "model": "indicators"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "controls",
+      "label": "Controls",
+      "model": "controls"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "wrap",
+      "label": "Wrap",
+      "model": "wrap"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "keyboard",
+      "label": "Keyboard",
+      "model": "keyboard"
+    },
+    {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "heading",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "imagepath",
+          "label": "Image Source",
+          "model": "imagepath"
+        },
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "heading",
+          "label": "Image Heading",
+          "model": "heading"
+        },
+        {
+          "type": "texteditor",
+          "rows": 10,
+          "placeholder": "text",
+          "label": "Image Text",
+          "model": "text"
+        },
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "alt",
+          "label": "Image Alt Text",
+          "model": "alt"
+        }
+      ],
+      "placeholder": "slides",
+      "label": "Slides",
+      "model": "slides"
+    }
+  ]
+}

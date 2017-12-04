@@ -42,7 +42,8 @@ import java.util.List;
           "x-source": "inject",
           "x-form-type": "number",
           "x-form-label": "Levels",
-          "x-form-default": 1
+          "x-form-default": 1,
+          "x-form-min": 1
         }
       }
     }
@@ -82,7 +83,7 @@ public class PagelistModel extends AbstractComponent {
 	@Inject
 	private String includeroot;
 
-	/* {"type":"string","x-source":"inject","x-form-type":"number","x-form-label":"Levels","x-form-default":1} */
+	/* {"type":"string","x-source":"inject","x-form-type":"number","x-form-label":"Levels","x-form-default":1,"x-form-min":1} */
 	@Inject
 	private String levels;
 
@@ -100,16 +101,16 @@ public class PagelistModel extends AbstractComponent {
 		return includeroot;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-type":"number","x-form-label":"Levels","x-form-default":1} */
-	public String getLevels() {
-		return levels;
-	}
-
 
 //GEN]
 
     //GEN[:CUSTOMGETTERS
 	private static final Logger LOG = LoggerFactory.getLogger(PagelistModel.class);
+
+	/* {"type":"string","x-source":"inject","x-form-type":"number","x-form-label":"Levels","x-form-default":1,"x-form-min":1} */
+	public String getLevels() {
+		return levels == null ? "1" : levels;
+	}
 
 	public String getRootPageTitle() {
 		PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
@@ -126,14 +127,17 @@ public class PagelistModel extends AbstractComponent {
 	}
 
 	public List<Page> getChildrenPages() {
-		int levels = Integer.parseInt(getLevels());
 		List<Page> childPages = new ArrayList<Page>();
-		PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
-		PerPage page = ppm.getPage(getRootpage());
-		if(page != null) {
-			for (PerPage child: page.listChildren()) {
-				if(!child.getPath().equals(page.getPath())) {
-					childPages.add(new Page(child, levels));
+		String rootPage = getRootpage();
+		if (rootPage != null) {
+			int levels = Integer.parseInt(getLevels());
+			PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
+			PerPage page = ppm.getPage(getRootpage());
+			if (page != null) {
+				for (PerPage child : page.listChildren()) {
+					if (!child.getPath().equals(page.getPath())) {
+						childPages.add(new Page(child, levels));
+					}
 				}
 			}
 		}
