@@ -27,9 +27,13 @@
             </div>
           </div>
           <div class="text-center" v-if="item.buttontext">
-            <a class="btn btn-lg btn-primary mb-3" v-if="model.showbutton == 'true'"
-            v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
-            v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
+            <a class="btn mb-3" v-if="model.showbutton == 'true'" v-bind:href="$helper.pathToUrl(item.buttonlink)"
+            v-bind:class="{
+            'btn-lg': item.buttonsize === 'large',
+            'btn-sm': item.buttonsize === 'small',
+            'btn-primary': item.buttoncolor === 'primary',
+            'btn-secondary': item.buttoncolor === 'secondary'
+        }" v-html="item.buttontext"></a>
           </div>
         </div>
       </div>
