@@ -144,8 +144,17 @@
           "model": "buttonlink"
         },
         {
-          "type": "input",
-          "inputType": "color",
+          "type": "material-select",
+          "values": [
+            {
+              "name": "Primary",
+              "value": "primary"
+            },
+            {
+              "name": "Secondary",
+              "value": "secondary"
+            }
+          ],
           "placeholder": "buttoncolor",
           "label": "Button Color",
           "model": "buttoncolor"

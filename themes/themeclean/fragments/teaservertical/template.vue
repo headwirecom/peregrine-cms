@@ -23,9 +23,13 @@
             'justify-content-md-center': model.alignbuttons === 'center',
             'justify-content-md-end': model.alignbuttons === 'end'
         }">
-        <a class="btn btn-secondary btn-lg m-2" v-for="(item,i) in model.buttons"
-        :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)" v-html="item.buttontext"
-        v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
+        <a class="btn m-2" v-for="(item,i) in model.buttons" :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)"
+        v-bind:class="{
+            'btn-lg': model.buttonsize === 'large',
+            'btn-sm': model.buttonsize === 'small',
+            'btn-primary': item.buttoncolor === 'primary',
+            'btn-secondary': item.buttoncolor === 'secondary'
+        }" v-html="item.buttontext" v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
       <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>

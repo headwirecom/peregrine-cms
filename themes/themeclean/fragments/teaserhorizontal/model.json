@@ -126,7 +126,18 @@
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Button Color",
-              "x-form-type": "color"
+              "x-form-type": "materialselect",
+              "x-default": "primary",
+              "properties":{
+                "primary": {
+                  "x-form-name": "Primary",
+                  "x-form-value": "primary"
+                },
+                "secondary": {
+                  "x-form-name": "Secondary",
+                  "x-form-value": "secondary"
+                }
+              }
             }
           }
         },

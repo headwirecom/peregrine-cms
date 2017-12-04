@@ -37,12 +37,18 @@ module.exports = {
         f.mapRichField($.find('p').first(), "item.text")
 
         //Button
+        let aClasses = `{
+            'btn-lg': item.buttonsize === 'large',
+            'btn-sm': item.buttonsize === 'small',
+            'btn-primary': item.buttoncolor === 'primary',
+            'btn-secondary': item.buttoncolor === 'secondary'
+        }`
+        let a = $.find('a.btn')
         f.addIf($.find('div.text-center').first(), 'item.buttontext')
-        f.addIf($.find('a.btn').first(), 'model.showbutton == \'true\'')
-        f.bindAttribute($.find('a.btn').first(), 'href', f.pathToUrl('item.buttonlink'))
-        f.mapRichField($.find('a.btn').first(), "item.buttontext")
-        f.addStyle($.find('a.btn').first(), 'backgroundColor', 'item.buttoncolor')
-        f.addStyle($.find('a.btn').first(), 'borderColor', 'item.buttoncolor')
+        f.addIf( a, 'model.showbutton == \'true\'')
+        f.bindAttribute( a, 'href', f.pathToUrl('item.buttonlink'))
+        f.bindAttribute( a, 'class', aClasses, false)
+        f.mapRichField( a, "item.buttontext")
 
         f.addIf($.find('.perIsEditAndEmpty').first(), 'isEditAndEmpty')
         f.addIf($.find('h1').first(), 'editAndEmpty')

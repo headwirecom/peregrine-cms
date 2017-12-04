@@ -31,14 +31,22 @@ module.exports = {
         //Buttons
         let buttonsDiv = $.find('div').eq(1)
         let link = buttonsDiv.find('a')
-        let buttonClasses = `{
+        let buttonsClasses = `{
             'justify-content-md-end': model.buttonside === 'right',
             'justify-content-md-start': model.buttonside === 'left',
         }`
+
+        let aClasses = `{
+            'btn-lg': model.buttonsize === 'large',
+            'btn-sm': model.buttonsize === 'small',
+            'btn-primary': item.buttoncolor === 'primary',
+            'btn-secondary': item.buttoncolor === 'secondary'
+        }`
         f.addIf( buttonsDiv, 'model.showbutton == \'true\'')
-        f.bindAttribute( buttonsDiv, 'class', buttonClasses,false)
+        f.bindAttribute( buttonsDiv, 'class', buttonsClasses,false)
         f.addFor( link, 'model.buttons')
         f.bindAttribute( link, 'href', f.pathToUrl('item.buttonlink'))
+        f.bindAttribute( link, 'class', aClasses, false)
         f.mapRichField( link, "item.buttontext")
         f.addStyle( link, 'backgroundColor', 'item.buttoncolor')
         f.addStyle( link, 'borderColor', 'item.buttoncolor')
