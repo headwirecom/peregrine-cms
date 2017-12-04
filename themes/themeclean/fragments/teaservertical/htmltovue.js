@@ -31,14 +31,20 @@ module.exports = {
         f.mapRichField($.find('p').first(), "model.text")
 
         //Buttons
+        let buttonsDiv = $.find('div.col-12').eq(1)
+        let link = buttonsDiv.find('a')
         let buttonsClasses = `{
             'justify-content-md-start': model.alignbuttons === 'start',
             'justify-content-md-center': model.alignbuttons === 'center',
             'justify-content-md-end': model.alignbuttons === 'end'
         }`
-        
-        let buttonsDiv = $.find('div.col-12').eq(1)
-        let link = buttonsDiv.find('a')
+        let aClasses = `{
+            'btn-lg': model.buttonsize === 'large',
+            'btn-sm': model.buttonsize === 'small',
+            'btn-primary': item.buttoncolor === 'primary',
+            'btn-secondary': item.buttoncolor === 'secondary'
+        }`
+
         f.addIf( buttonsDiv, 'model.showbutton == \'true\'')
         f.bindAttribute( buttonsDiv, 'class', buttonsClasses,false)
 
@@ -46,6 +52,7 @@ module.exports = {
         }`
         f.addFor( link, 'model.buttons')
         f.bindAttribute( link, 'href', f.pathToUrl('item.buttonlink'))
+        f.bindAttribute( link, 'class', aClasses, false)
         f.mapRichField( link, "item.buttontext")
         f.addStyle( link, 'backgroundColor', 'item.buttoncolor')
         f.addStyle( link, 'borderColor', 'item.buttoncolor')

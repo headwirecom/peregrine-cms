@@ -126,6 +126,28 @@ import javax.inject.Named;
             }
           }
         },
+        "buttonsize": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Button Size",
+          "x-form-type": "materialselect",
+          "x-form-visible": "model.showbutton == 'true'",
+          "x-default": "default",
+          "properties": {
+            "default": {
+              "x-form-name": "Default",
+              "x-form-value": "default"
+            },
+            "large": {
+              "x-form-name": "Large",
+              "x-form-value": "large"
+            },
+            "small": {
+              "x-form-name": "Small",
+              "x-form-value": "small"
+            }
+          }
+        },
         "buttons": {
           "type": "string",
           "x-source": "inject",
@@ -150,7 +172,18 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Button Color",
-              "x-form-type": "color"
+              "x-form-type": "materialselect",
+              "x-default": "primary",
+              "properties": {
+                "primary": {
+                  "x-form-name": "Primary",
+                  "x-form-value": "primary"
+                },
+                "secondary": {
+                  "x-form-name": "Secondary",
+                  "x-form-value": "secondary"
+                }
+              }
             }
           }
         },
@@ -379,7 +412,12 @@ public class TeaserverticalModel extends AbstractComponent {
 	@Default(values ="center")
 	private String alignbuttons;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Size","x-form-type":"materialselect","x-form-visible":"model.showbutton == 'true'","x-default":"default","properties":{"default":{"x-form-name":"Default","x-form-value":"default"},"large":{"x-form-name":"Large","x-form-value":"large"},"small":{"x-form-name":"Small","x-form-value":"small"}}} */
+	@Inject
+	@Default(values ="default")
+	private String buttonsize;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"}}}}} */
 	@Inject
 	private List<IComponent> buttons;
 
@@ -505,7 +543,12 @@ public class TeaserverticalModel extends AbstractComponent {
 		return alignbuttons;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"color"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Button Size","x-form-type":"materialselect","x-form-visible":"model.showbutton == 'true'","x-default":"default","properties":{"default":{"x-form-name":"Default","x-form-value":"default"},"large":{"x-form-name":"Large","x-form-value":"large"},"small":{"x-form-name":"Small","x-form-value":"small"}}} */
+	public String getButtonsize() {
+		return buttonsize;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Buttons","x-form-type":"collection","x-form-visible":"model.showbutton == 'true'","properties":{"buttontext":{"type":"string","x-source":"inject","x-form-label":"Button Text","x-form-type":"text"},"buttonlink":{"type":"string","x-source":"inject","x-form-label":"Button Link","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"},"buttoncolor":{"type":"string","x-source":"inject","x-form-label":"Button Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"}}}}} */
 	public List<IComponent> getButtons() {
 		return buttons;
 	}
