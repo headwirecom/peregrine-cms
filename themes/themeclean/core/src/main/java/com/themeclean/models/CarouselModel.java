@@ -21,10 +21,88 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
-        "text": {
+        "interval": {
           "type": "string",
           "x-source": "inject",
-          "x-form-type": "texteditor"
+          "x-form-label": "Interval",
+          "x-form-type": "number",
+          "x-default": "5000"
+        },
+        "pause": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Pause",
+          "x-form-type": "text",
+          "x-default": "pause"
+        },
+        "ride": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Ride",
+          "x-form-type": "materialswitch",
+          "x-default": "true"
+        },
+        "indicators": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Indicators",
+          "x-form-type": "materialswitch",
+          "x-default": "true"
+        },
+        "controls": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Controls",
+          "x-form-type": "materialswitch",
+          "x-default": "true"
+        },
+        "wrap": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Wrap",
+          "x-form-type": "materialswitch",
+          "x-default": "true"
+        },
+        "keyboard": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Keyboard",
+          "x-form-type": "materialswitch",
+          "x-default": "true"
+        },
+        "slides": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Slides",
+          "x-form-fieldLabel": "heading",
+          "x-form-type": "collection",
+          "properties": {
+            "imagepath": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Source",
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
+            },
+            "heading": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Heading",
+              "x-form-type": "text"
+            },
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Text",
+              "x-form-type": "texteditor"
+            },
+            "alt": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Alt Text",
+              "x-form-type": "text"
+            }
+          }
         }
       }
     }
@@ -56,62 +134,89 @@ public class CarouselModel extends AbstractComponent {
     public CarouselModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-type":"texteditor"} */
-    @Inject @Default(values = "5000")
-    private String interval;
+    	/* {"type":"string","x-source":"inject","x-form-label":"Interval","x-form-type":"number","x-default":"5000"} */
+	@Inject
+	@Default(values ="5000")
+	private String interval;
 
-    @Inject @Default(values = "hover")
-    private String pause;
+	/* {"type":"string","x-source":"inject","x-form-label":"Pause","x-form-type":"text","x-default":"pause"} */
+	@Inject
+	@Default(values ="pause")
+	private String pause;
 
-    @Inject @Default(values = "true")
-    private String ride;
+	/* {"type":"string","x-source":"inject","x-form-label":"Ride","x-form-type":"materialswitch","x-default":"true"} */
+	@Inject
+	@Default(values ="true")
+	private String ride;
 
-    @Inject @Default(values = "true")
-    private String indicators;
+	/* {"type":"string","x-source":"inject","x-form-label":"Indicators","x-form-type":"materialswitch","x-default":"true"} */
+	@Inject
+	@Default(values ="true")
+	private String indicators;
 
-    @Inject @Default(values = "true")
-    private String controls;
+	/* {"type":"string","x-source":"inject","x-form-label":"Controls","x-form-type":"materialswitch","x-default":"true"} */
+	@Inject
+	@Default(values ="true")
+	private String controls;
 
-    @Inject @Default(values = "true")
-    private String wrap;
+	/* {"type":"string","x-source":"inject","x-form-label":"Wrap","x-form-type":"materialswitch","x-default":"true"} */
+	@Inject
+	@Default(values ="true")
+	private String wrap;
 
-    @Inject @Default(values = "true")
-    private String keyboard;
-    
-    @Inject
+	/* {"type":"string","x-source":"inject","x-form-label":"Keyboard","x-form-type":"materialswitch","x-default":"true"} */
+	@Inject
+	@Default(values ="true")
+	private String keyboard;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Slides","x-form-fieldLabel":"heading","x-form-type":"collection","properties":{"imagepath":{"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"},"heading":{"type":"string","x-source":"inject","x-form-label":"Image Heading","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Image Text","x-form-type":"texteditor"},"alt":{"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-type":"text"}}} */
+	@Inject
 	private List<IComponent> slides;
 
-    public String getInterval() {
-        return interval;
-    }
 
-    public String getPause() {
-        return pause;
-    }
+//GEN]
 
-    public String getRide() {
-        return ride;
-    }
+    //GEN[:GETTERS
+    	/* {"type":"string","x-source":"inject","x-form-label":"Interval","x-form-type":"number","x-default":"5000"} */
+	public String getInterval() {
+		return interval;
+	}
 
-    public String getControls() {
-        return controls;
-    }
+	/* {"type":"string","x-source":"inject","x-form-label":"Pause","x-form-type":"text","x-default":"pause"} */
+	public String getPause() {
+		return pause;
+	}
 
-    public String getIndicators() {
-        return indicators;
-    }
+	/* {"type":"string","x-source":"inject","x-form-label":"Ride","x-form-type":"materialswitch","x-default":"true"} */
+	public String getRide() {
+		return ride;
+	}
 
-    public String getWrap() {
-        return wrap;
-    }
+	/* {"type":"string","x-source":"inject","x-form-label":"Indicators","x-form-type":"materialswitch","x-default":"true"} */
+	public String getIndicators() {
+		return indicators;
+	}
 
-    public String getKeyboard() {
-        return keyboard;
-    }
+	/* {"type":"string","x-source":"inject","x-form-label":"Controls","x-form-type":"materialswitch","x-default":"true"} */
+	public String getControls() {
+		return controls;
+	}
 
-    public List<IComponent> getSlides() {
+	/* {"type":"string","x-source":"inject","x-form-label":"Wrap","x-form-type":"materialswitch","x-default":"true"} */
+	public String getWrap() {
+		return wrap;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Keyboard","x-form-type":"materialswitch","x-default":"true"} */
+	public String getKeyboard() {
+		return keyboard;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Slides","x-form-fieldLabel":"heading","x-form-type":"collection","properties":{"imagepath":{"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"},"heading":{"type":"string","x-source":"inject","x-form-label":"Image Heading","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Image Text","x-form-type":"texteditor"},"alt":{"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-type":"text"}}} */
+	public List<IComponent> getSlides() {
 		return slides;
 	}
+
 
 //GEN]
 
