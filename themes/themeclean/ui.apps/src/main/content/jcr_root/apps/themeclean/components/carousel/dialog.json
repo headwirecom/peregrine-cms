@@ -1,0 +1,69 @@
+{
+  "fields": [
+    {
+      "type": "input",
+      "label": "Interval",
+      "model": "interval"
+    },
+    {
+      "type": "input",
+      "label": "Pause",
+      "model": "pause"
+    },
+    {
+      "type": "materialswitch",
+      "label": "Ride",
+      "model": "ride"
+    },
+    {
+      "type": "materialswitch",
+      "label": "Indicators",
+      "model": "indicators"
+    },
+    {
+      "type": "materialswitch",
+      "label": "Controls",
+      "model": "controls"
+    },
+    {
+      "type": "materialswitch",
+      "label": "Wrap",
+      "model": "wrap"
+    },
+    {
+      "type": "materialswitch",
+      "label": "Keyboard",
+      "model": "keyboard"
+    },
+    {
+      "type": "collection",
+      "multifield": true,
+      "fields" : [
+        {
+          "type": "pathbrowser",
+      	  "browserRoot": "/content/assets",
+          "label": "Image Source",
+          "model": "imagePath"
+        },
+        {
+          "type": "input",
+          "label": "Image Heading",
+          "model": "heading"
+        },
+        {
+          "type": "input",
+          "label": "Image Text",
+          "model": "text"
+        },
+        {
+          "type": "input",
+          "label": "Alt Text",
+          "model": "alt"
+        }
+      ],
+      "placeholder": "slides",
+      "label": "Slides",
+      "model": "slides"
+    }
+  ]
+}

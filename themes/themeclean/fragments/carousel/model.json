@@ -1,0 +1,15 @@
+{
+  "definitions": {
+    "Carousel": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "text": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-type": "texteditor"
+        }
+      }
+    }
+  }
+}
