@@ -32,7 +32,13 @@
             'btn-lg': item.buttonsize === 'large',
             'btn-sm': item.buttonsize === 'small',
             'btn-primary': item.buttoncolor === 'primary',
-            'btn-secondary': item.buttoncolor === 'secondary'
+            'btn-secondary': item.buttoncolor === 'secondary',
+            'btn-success': item.buttoncolor === 'success',
+            'btn-danger': item.buttoncolor === 'danger',
+            'btn-warning': item.buttoncolor === 'warning',
+            'btn-info': item.buttoncolor === 'info',
+            'btn-light': item.buttoncolor === 'light',
+            'btn-dark': item.buttoncolor === 'dark'
         }" v-html="item.buttontext"></a>
           </div>
         </div>

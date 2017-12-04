@@ -22,10 +22,16 @@
         }">
         <a class="btn m-2" v-for="(item,i) in model.buttons" :key="i" v-bind:href="$helper.pathToUrl(item.buttonlink)"
         v-bind:class="{
-            'btn-lg': model.buttonsize === 'large',
-            'btn-sm': model.buttonsize === 'small',
+            'btn-lg': item.buttonsize === 'large',
+            'btn-sm': item.buttonsize === 'small',
             'btn-primary': item.buttoncolor === 'primary',
-            'btn-secondary': item.buttoncolor === 'secondary'
+            'btn-secondary': item.buttoncolor === 'secondary',
+            'btn-success': item.buttoncolor === 'success',
+            'btn-danger': item.buttoncolor === 'danger',
+            'btn-warning': item.buttoncolor === 'warning',
+            'btn-info': item.buttoncolor === 'info',
+            'btn-light': item.buttoncolor === 'light',
+            'btn-dark': item.buttoncolor === 'dark'
         }" v-html="item.buttontext" v-bind:style="`backgroundColor:${item.buttoncolor};borderColor:${item.buttoncolor};`"></a>
       </div>
       <div v-if="isEditAndEmpty">no content defined for component</div>
