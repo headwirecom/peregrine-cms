@@ -21,7 +21,8 @@
       "placeholder": "levels",
       "label": "Levels",
       "model": "levels",
-      "default": 1
+      "default": 1,
+      "min": 1
     }
   ]
 }

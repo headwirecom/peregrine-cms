@@ -13,6 +13,8 @@
     "logo": "/content/assets/themeclean/images/peregrine-logo.png",
     "logourl": "http://www.peregrine-cms.com",
     "logosize": "60",
+    "buttoncolor": "primary",
+    "buttonsize": "default",
     "links": [
       {
         "link": "/content/sites/themeclean",
@@ -28,8 +30,7 @@
     "buttons": [
       {
         "buttonlink": "/content/sites/themeclean",
-        "buttontext": "Try It Now",
-        "buttoncolor": "#149dcc"
+        "buttontext": "Try It Now"
       }
     ]
   }
