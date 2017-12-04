@@ -23,12 +23,14 @@
       {
         "buttonlink": "/content/sites/themeclean",
         "buttontext": "See More",
-        "buttoncolor": "#008040",
+        "buttoncolor": "primary",
+        "buttonsize": "default",
         "iconclass": ""
       },{
         "buttonlink": "/content/sites/themeclean",
         "buttontext": "About Us",
-        "buttoncolor": "#006040",
+        "buttoncolor": "primary",
+        "buttonsize": "default",
         "iconclass": ""
       }
     ]

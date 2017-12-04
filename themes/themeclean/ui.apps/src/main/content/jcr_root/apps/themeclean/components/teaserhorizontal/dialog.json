@@ -122,6 +122,27 @@
       "visible": "model.showbutton == 'true'"
     },
     {
+      "type": "material-select",
+      "values": [
+        {
+          "name": "Default",
+          "value": "default"
+        },
+        {
+          "name": "Large",
+          "value": "large"
+        },
+        {
+          "name": "Small",
+          "value": "small"
+        }
+      ],
+      "placeholder": "buttonsize",
+      "label": "Button Size",
+      "model": "buttonsize",
+      "visible": "model.showbutton == 'true'"
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [
@@ -144,8 +165,17 @@
           "model": "buttonlink"
         },
         {
-          "type": "input",
-          "inputType": "color",
+          "type": "material-select",
+          "values": [
+            {
+              "name": "Primary",
+              "value": "primary"
+            },
+            {
+              "name": "Secondary",
+              "value": "secondary"
+            }
+          ],
           "placeholder": "buttoncolor",
           "label": "Button Color",
           "model": "buttoncolor"
