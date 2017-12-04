@@ -23,7 +23,8 @@
           "x-source": "inject",
           "x-form-type": "number",
           "x-form-label": "Levels",
-          "x-form-default": 1
+          "x-form-default": 1,
+          "x-form-min": 1
         }
       }
     }
