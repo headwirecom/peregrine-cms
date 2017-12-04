@@ -12,6 +12,9 @@ import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -76,6 +79,13 @@ public class BreadcrumbModel extends AbstractComponent {
 		return level;
 	}
 	
+	
+//GEN]
+
+    //GEN[:CUSTOMGETTERS
+    //GEN]
+	private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbModel.class);
+	
 	public List<TextLink> links;
 	
 	/* Method to recursively get child page links, given a root page path */
@@ -106,7 +116,7 @@ public class BreadcrumbModel extends AbstractComponent {
 		    	getDeepLinks(resource.getParent());
 		    }
     	} catch(Exception e){
-			e.printStackTrace();
+    		LOG.error("getDeepLinks error: {}",e);
 		}
     	
     	return links;
@@ -121,7 +131,7 @@ public class BreadcrumbModel extends AbstractComponent {
 			ValueMap props = resourceResolver.getResource(resourcePath).adaptTo(ValueMap.class);
 			return props.get("jcr:title", "title not found");
 		} catch(Exception e){
-			e.printStackTrace();
+			LOG.error("getPageTitle error: {}",e);
 			return "title not found....";
 		}
 	}
@@ -143,11 +153,5 @@ public class BreadcrumbModel extends AbstractComponent {
 			return text;
 		}
 	}
-
-
-//GEN]
-
-    //GEN[:CUSTOMGETTERS
-    //GEN]
 
 }
