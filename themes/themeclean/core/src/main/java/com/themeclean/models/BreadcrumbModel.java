@@ -1,6 +1,5 @@
 package com.themeclean.models;
 
-
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import com.peregrine.nodetypes.models.Container;
@@ -65,8 +64,6 @@ import javax.inject.Named;
 public class BreadcrumbModel extends AbstractComponent {
 	
 	public BreadcrumbModel(Resource r) { super(r); }
-	
-	private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbModel.class);
 
     //GEN[:INJECT
     	/* {"type":"string","x-source":"inject","x-form-label":"Number Of Levels","x-form-type":"number"} */
@@ -75,29 +72,35 @@ public class BreadcrumbModel extends AbstractComponent {
 
 
 //GEN]
+
     //GEN[:GETTERS
     	/* {"type":"string","x-source":"inject","x-form-label":"Number Of Levels","x-form-type":"number"} */
 	public String getLevel() {
-		LOG.error("in getLevel");
 		return level;
 	}
+	
+	
+//GEN]
 
-	private List<IComponent> links;
+    //GEN[:CUSTOMGETTERS
+    //GEN]
+	private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbModel.class);
+	
+	public List<TextLink> links;
 	
 	/* Method to recursively get child page links, given a root page path */
-    public List<IComponent> getLinks(){
+    public List<TextLink> getLinks(){
     	
-    	LOG.error("in getLinks...");
-    	//LOG.error("level is: " + getLevel());
-    	links = new ArrayList<IComponent>();
+    	links = new ArrayList<TextLink>();
     	if(Integer.parseInt(getLevel()) > 0) {
     		return getDeepLinks(getResource());
     	} else {
     		return null;
     	}
+    	
     }
     
-    private List<IComponent> getDeepLinks(Resource resource){
+    private List<TextLink> getDeepLinks(Resource resource){
     	
     	try{
 			    		
@@ -105,18 +108,15 @@ public class BreadcrumbModel extends AbstractComponent {
 		    String resourceType = props.get("jcr:primaryType", "type not found");
 		    // we only care about per:page child
 		    if(resourceType.equals("per:Page")){
-			    TextlinkModel link = new TextlinkModel(resource);
-			    link.setLink(resource.getPath());
-			    link.setText(getPageTitle(resource.getPath()));
-			    links.add(0,(IComponent)link);
+			    TextLink link = new TextLink(resource.getPath(), getPageTitle(resource.getPath()));
+			    links.add(0,link);
 		    }
 		    // move on to its parent resource
 		    if(resource.getParent() != null && links.size() < Integer.parseInt(getLevel())) {
 		    	getDeepLinks(resource.getParent());
 		    }
     	} catch(Exception e){
-    		LOG.error("Exception: " + e);
-			//e.printStackTrace();
+    		LOG.error("getDeepLinks error: {}",e);
 		}
     	
     	return links;
@@ -131,16 +131,27 @@ public class BreadcrumbModel extends AbstractComponent {
 			ValueMap props = resourceResolver.getResource(resourcePath).adaptTo(ValueMap.class);
 			return props.get("jcr:title", "title not found");
 		} catch(Exception e){
-			LOG.error("Exception: " + e);
-			//e.printStackTrace();
+			LOG.error("getPageTitle error: {}",e);
 			return "title not found....";
 		}
 	}
     
-
-//GEN]
-
-    //GEN[:CUSTOMGETTERS
-    //GEN]
+	private class TextLink {
+		
+		public TextLink(String link, String text){
+			this.link = link;
+			this.text = text;
+		}
+		private String link;
+		private String text;
+		
+		public String getLink(){
+			return link;
+		}
+		
+		public String getText(){
+			return text;
+		}
+	}
 
 }
