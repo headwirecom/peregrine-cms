@@ -2,8 +2,8 @@ module.exports = {
     convert: function($, f) {
 
         let aClasses = `{
-            'btn-lg': item.buttonsize === 'large',
-            'btn-sm': item.buttonsize === 'small',
+            'btn-lg': model.buttonsize === 'large',
+            'btn-sm': model.buttonsize === 'small',
             'btn-primary': item.buttoncolor === 'primary',
             'btn-secondary': item.buttoncolor === 'secondary',
             'btn-success': item.buttoncolor === 'success',
