@@ -62,7 +62,6 @@ footer {
 }
 
 
-
 /* Peregrine CMS specific styles */
 .percms-text-large h1 { font-size: 90px;}
 .percms-text-large h2 { font-size: 62px;}
@@ -71,8 +70,6 @@ footer {
 .percms-text-large h5 { font-size: 28px;}
 .percms-text-large h6 { font-size: 24px;}
 .percms-text-large p { font-size: 21px;}
-
-
 
 .percms-btn-pager {
   font-size:18px;  
@@ -88,8 +85,7 @@ footer {
   position: absolute;
   bottom: 0;
 }
-
-.view-height {
+.percms-view-height {
   min-height: 100vh
 }
 
@@ -97,4 +93,12 @@ footer {
   .percms-w-sm-100{
     width: 100% !important;
   }
+}
+
+/* Bootstrap Specific */
+.carousel-inner {
+  height: 100%
+}
+.carousel-item {
+  height: 100%
 }
