@@ -6,6 +6,7 @@
       "placeholder": "height",
       "label": "Height",
       "model": "height",
+      "min": 0,
       "max": 100
     },
     {
@@ -105,6 +106,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
