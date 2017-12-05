@@ -92,6 +92,7 @@
       "placeholder": "textwidth",
       "label": "Text Width",
       "model": "textwidth",
+      "min": 0,
       "max": 100
     },
     {
@@ -119,6 +120,27 @@
       "placeholder": "buttonside",
       "label": "Button Side",
       "model": "buttonside",
+      "visible": "model.showbutton == 'true'"
+    },
+    {
+      "type": "material-select",
+      "values": [
+        {
+          "name": "Default",
+          "value": "default"
+        },
+        {
+          "name": "Large",
+          "value": "large"
+        },
+        {
+          "name": "Small",
+          "value": "small"
+        }
+      ],
+      "placeholder": "buttonsize",
+      "label": "Button Size",
+      "model": "buttonsize",
       "visible": "model.showbutton == 'true'"
     },
     {
@@ -286,6 +308,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
@@ -331,6 +354,7 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     },
     {
@@ -340,6 +364,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     }
   ]

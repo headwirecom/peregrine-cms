@@ -97,6 +97,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
@@ -142,6 +143,7 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     },
     {
@@ -151,6 +153,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     }
   ]

@@ -24,6 +24,7 @@
       "placeholder": "iconsize",
       "label": "Icon Size",
       "model": "iconsize",
+      "min": 0,
       "max": 150
     },
     {
