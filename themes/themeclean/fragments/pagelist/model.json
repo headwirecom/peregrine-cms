@@ -15,7 +15,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Include Root",
-          "x-form-type": "materialcheckbox",
+          "x-form-type": "materialswitch",
           "x-form-default": false
         },
         "levels": {

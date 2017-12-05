@@ -34,7 +34,7 @@ import java.util.List;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Include Root",
-          "x-form-type": "materialcheckbox",
+          "x-form-type": "materialswitch",
           "x-form-default": false
         },
         "levels": {
@@ -79,7 +79,7 @@ public class PagelistModel extends AbstractComponent {
 	@Inject
 	private String rootpage;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Include Root","x-form-type":"materialcheckbox","x-form-default":false} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Include Root","x-form-type":"materialswitch","x-form-default":false} */
 	@Inject
 	private String includeroot;
 
@@ -96,7 +96,7 @@ public class PagelistModel extends AbstractComponent {
 		return rootpage;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Include Root","x-form-type":"materialcheckbox","x-form-default":false} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Include Root","x-form-type":"materialswitch","x-form-default":false} */
 	public String getIncluderoot() {
 		return includeroot;
 	}
