@@ -10,11 +10,7 @@ describe('Peregrine sites page', function () {
 
     describe('Site Explorer', function() {
         let exampleSite
-        it('should display a list with 2 sites', function(){
-            Explorer.container.waitForVisible()
-            expect( Explorer.sites.length ).to.equal(2)
-        })
-
+        
         it('should have a site titled "example vuejs site"', function(){
             const sites = Explorer.sites
             const i = sites.findIndex( site => site.text.indexOf('example vuejs site') > -1 ) 
@@ -46,21 +42,22 @@ describe('Peregrine sites page', function () {
     })
 
     //Shared components for remaining test suites
-    let components, jumbotronDraggable, containerDraggable, rowDraggable, colDraggable
-    let containerComponent, jumbotronComponent
+    let components, jumbotronDraggable, imageDraggable, rowDraggable, colDraggable
+    let imageComponent, jumbotronComponent
 
     describe('Component Explorer', function() {
-        it('should contain components for jumobtron, container, row, col', function() {
+        it('should contain components for jumbotron, image, row, col', function() {
             components = ComponentExplorer.components
-            jumbotronDraggable    = components[5]
-            containerDraggable    = components[2]
+            
+            jumbotronDraggable    = components[2]
+            imageDraggable    = components[1]
             rowDraggable          = components[7]
-            colDraggable          = components[1]
+            colDraggable          = components[5]
 
-            expect(jumbotronDraggable.text).to.contain('jumbotron')
-            expect(containerDraggable.text).to.contain('container')
-            expect(rowDraggable.text).to.contain('row')
-            expect(colDraggable.text).to.contain('col')
+            expect(jumbotronDraggable.text).to.contain('Jumbotron')
+            expect(imageDraggable.text).to.contain('Image')
+            expect(rowDraggable.text).to.contain('Row')
+            expect(colDraggable.text).to.contain('Col')
         })
     })
 
