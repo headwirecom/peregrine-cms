@@ -8,7 +8,9 @@
       "model": "rootpage"
     },
     {
-      "type": "material-checkbox",
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
       "valueOn": "true",
       "valueOff": "false",
       "placeholder": "includeroot",
