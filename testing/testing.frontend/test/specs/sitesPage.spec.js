@@ -121,7 +121,7 @@ describe('Peregrine sites page', function () {
         it('should delete the jumbotron', function() {
             const jumbotronsBefore = ContentView.jumbotrons
             jumbotronComponent.clickAtLocation()
-            jumbotronComponent.deleteButton.waitForExist(4000);
+            jumbotronComponent.deleteButton.waitForExist(3000);
             jumbotronComponent.deleteButton.click()
             jumbotronComponent.deleteButton.waitForExist(3000, true);
             const jumbotronsAfter = ContentView.jumbotrons

@@ -21,11 +21,18 @@ describe('Peregrine objects page', function () {
         
         it('clicking example folder item should load all objects', function(){
         	exampleFolder.linkButton.click()
-        	//browser.pause(5000)
-            /*Workspace.container.waitForVisible() */
-            expect( browser.getUrl() ).to.contain('content/objects/example' )
-            /*expect( Workspace.container.isVisible() ).to.equal(true)*/
+        	expect( browser.getUrl() ).to.contain('content/objects/example' )
         }) 
+        
+        let exampleObject
+        
+        it('should have an object titled "allfields"', function(){
+        	Explorer.container.waitForVisible()
+            const objects = Explorer.objects
+            const i = objects.findIndex( object => object.text.indexOf('allfields') > -1 ) 
+            exampleObject = objects[i]
+            expect( exampleObject.text ).to.contain('allfields')
+        })
 
     })
     
