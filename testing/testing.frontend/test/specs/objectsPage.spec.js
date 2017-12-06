@@ -18,13 +18,14 @@ describe('Peregrine objects page', function () {
             exampleFolder = folders[i]
             expect( exampleFolder.text ).to.contain('example')
         })
-        /*
-        it('clicking edit item should load the page editor workspace', function(){
-            exampleSite.editButton.click()
-            Workspace.container.waitForVisible()
-            expect( browser.getUrl() ).to.contain('content/sites/example' )
-            expect( Workspace.container.isVisible() ).to.equal(true)
-        }) */
+        
+        it('clicking example folder item should load all objects', function(){
+        	exampleFolder.linkButton.click()
+        	//browser.pause(5000)
+            /*Workspace.container.waitForVisible() */
+            expect( browser.getUrl() ).to.contain('content/objects/example' )
+            /*expect( Workspace.container.isVisible() ).to.equal(true)*/
+        }) 
 
     })
     
