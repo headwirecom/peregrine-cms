@@ -1,5 +1,5 @@
 let objectsPage = require('../pages/Objects.page')
-let {Explorer, SubNav} = objectsPage
+let {Explorer, SubNav, AddObjectWizard} = objectsPage
 
 describe('Peregrine objects page', function () {
     it('should login', function() {
@@ -40,6 +40,13 @@ describe('Peregrine objects page', function () {
         	SubNav.container.waitForVisible()
         	expect( SubNav.container.isVisible() ).to.equal(true)
         })
+
+        it('clicking add object should navigate to add object wizard', function() {
+            SubNav.addObjectButton.click()
+            AddObjectWizard.container.waitForVisible()
+            expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
+        })
+
     })
     
 
