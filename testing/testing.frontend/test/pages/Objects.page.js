@@ -1,5 +1,6 @@
 const LoginPage = require('./Login.page');
 const Explorer = require('./components/Explorer');
+const SubNav = require('./components/SubNav');
 const Workspace = require('./components/Workspace');
 const EditorPanel = require('./components/EditorPanel');
 

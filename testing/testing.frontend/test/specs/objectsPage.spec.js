@@ -1,5 +1,5 @@
 let objectsPage = require('../pages/Objects.page')
-let {Explorer, Workspace, EditorPanel} = objectsPage
+let {Explorer, SubNav, Workspace, EditorPanel} = objectsPage
 let {ComponentExplorer, ContentView} = Workspace
 
 describe('Peregrine objects page', function () {
@@ -34,6 +34,19 @@ describe('Peregrine objects page', function () {
             expect( exampleObject.text ).to.contain('allfields')
         })
 
+    })
+    
+    describe('Add a new object', function() {
+        let addButton
+        
+    	it('should see add object button', function() {
+        	SubNav.container.waitForVisible()
+        	const buttons = SubNav.buttons
+        	console.log('buttons size....' + buttons.length)
+        	const i = buttons.findIndex( button => button.text.indexOf('add object') > -1 )
+        	addButton = buttons[i]
+        	expect( addButton.text ).to.contain('add object')
+        })
     })
     
 
