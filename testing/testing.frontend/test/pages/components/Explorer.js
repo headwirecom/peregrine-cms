@@ -5,6 +5,18 @@ class Explorer {
             return new Item(item);
         })
     }
+    get objects() {
+        const items = $$('.explorer-main > ul > li')
+        return items.map(item => {
+            return new Item(item);
+        })
+    }
+    get folders() {
+        const items = $$('.explorer-main > ul > li')
+        return items.map(item => {
+            return new Item(item);
+        })
+    }
     get container() { return $('.explorer-main') }
 }
 
