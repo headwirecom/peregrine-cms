@@ -1,17 +1,15 @@
 const LoginPage = require('./Login.page');
 const Explorer = require('./components/Explorer');
 const SubNav = require('./components/SubNav');
-const Workspace = require('./components/Workspace');
-const EditorPanel = require('./components/EditorPanel');
 
 
 class ObjectsPage extends LoginPage {
+    
 
     constructor() {
         super();
         this.Explorer = new Explorer();
-        this.Workspace = new Workspace();
-        this.EditorPanel = new EditorPanel();
+        this.SubNav = new SubNav();
     }
 
     open() {
