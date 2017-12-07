@@ -77,7 +77,7 @@ describe('Peregrine objects page', function () {
        let newObject
         
         it('clicking finish button to add this object', function() {
-        	AddObjectWizard.finishButton.scroll(0,3000)
+        	AddObjectWizard.finishButton.scroll(0,10000)
             AddObjectWizard.finishButton.click()
             Explorer.container.waitForVisible()
             const objects = Explorer.objects
