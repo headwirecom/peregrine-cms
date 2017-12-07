@@ -14,6 +14,7 @@ class Item {
     }
     get text()     { return this.container.$(`span > a`).getText()}
     get linkButton()    { return this.container.$(`span > a`) }
+    get classAttribute() {return this.container.getAttribute('class')}
 }
 
 module.exports = AddObjectWizard
