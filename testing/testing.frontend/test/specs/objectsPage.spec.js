@@ -62,11 +62,16 @@ describe('Peregrine objects page', function () {
             expect( exampleTemplate.classAttribute ).to.contain('grey lighten-2')
         })
         
-        it('clicking next button should go wizard to step 2', function() {
+        it('clicking next button should go wizard step 2', function() {
             AddObjectWizard.nextButton.click()
             AddObjectWizard.objectNameField.waitForVisible()
             expect( AddObjectWizard.objectNameField.isVisible() ).to.equal(true)
-            //expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
+        })
+        
+        it('clicking next button should go wizard step 3', function() {
+            AddObjectWizard.objectNameField.setValue('MyObject1')
+            AddObjectWizard.nextButton.click()
+            expect( AddObjectWizard.finishButton.isVisible() ).to.equal(true)
         })
 
     })

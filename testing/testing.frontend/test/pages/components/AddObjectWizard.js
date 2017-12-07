@@ -2,6 +2,13 @@ class AddObjectWizard {
   get nextButton(){
 	  return browser.element('.btn-next')
   }
+  get finishButton(){
+	  var button = browser.element('.btn-next')
+	  if(button.getText() == 'Finish')
+		  return button;
+	  else
+		  return null;
+  }
   get objectNameField(){
 	  return browser.element('#object-name')
   }
