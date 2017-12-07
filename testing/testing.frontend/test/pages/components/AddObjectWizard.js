@@ -1,11 +1,24 @@
 class AddObjectWizard {
-  get container() { return browser.element('.vue-form-wizard')}
+  get nextButton(){
+	  return browser.element('.btn-next')
+  }
+  get finishButton(){
+	  var button = browser.element('.btn-next')
+	  if(button.getText() == 'Finish')
+		  return button;
+	  else
+		  return null;
+  }
+  get objectNameField(){
+	  return browser.element('#object-name')
+  }
   get templates() {
       const items = $$('.wizard-tab-container > ul > li')
       return items.map(item => {
           return new Item(item);
       })
   } 
+  get container() { return browser.element('.vue-form-wizard')}
 }
 
 class Item {
@@ -14,6 +27,7 @@ class Item {
     }
     get text()     { return this.container.$(`span > a`).getText()}
     get linkButton()    { return this.container.$(`span > a`) }
+    get classAttribute() {return this.container.getAttribute('class')}
 }
 
 module.exports = AddObjectWizard
