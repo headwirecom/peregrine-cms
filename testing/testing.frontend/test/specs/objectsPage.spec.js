@@ -69,10 +69,23 @@ describe('Peregrine objects page', function () {
         })
         
         it('clicking next button should go wizard step 3', function() {
-            AddObjectWizard.objectNameField.setValue('MyObject1')
+            AddObjectWizard.objectNameField.setValue('myobject1')
             AddObjectWizard.nextButton.click()
             expect( AddObjectWizard.finishButton.isVisible() ).to.equal(true)
         })
+        
+        /*let newObject
+        
+        it('clicking finish button to add this object', function() {
+        	//browser.pause(10000)
+        	//AddObjectWizard.finishButton.scroll()
+            AddObjectWizard.finishButton.click()
+            Explorer.container.waitForVisible()
+            const objects = Explorer.objects
+            const i = objects.findIndex( object => object.text.indexOf('myobject1') > -1 ) 
+            newObject = objects[i]
+            expect( newObject.text ).to.contain('myobject1')
+        }) */
 
     })
     

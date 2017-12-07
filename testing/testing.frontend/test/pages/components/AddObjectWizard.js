@@ -3,7 +3,7 @@ class AddObjectWizard {
 	  return browser.element('.btn-next')
   }
   get finishButton(){
-	  var button = browser.element('.btn-next')
+	  const button = browser.element('.btn-next')
 	  if(button.getText() == 'Finish')
 		  return button;
 	  else
