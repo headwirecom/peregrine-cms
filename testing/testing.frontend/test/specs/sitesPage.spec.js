@@ -12,6 +12,7 @@ describe('Peregrine sites page', function () {
         let exampleSite
         
         it('should have a site titled "example vuejs site"', function(){
+        	Explorer.container.waitForVisible()
             const sites = Explorer.sites
             const i = sites.findIndex( site => site.text.indexOf('example vuejs site') > -1 ) 
             exampleSite = sites[i]
@@ -84,6 +85,8 @@ describe('Peregrine sites page', function () {
             jumbotronDraggable.dragToEditView( ContentView.dropTargets[0].center )
             jumbotronComponent = ContentView.jumbotrons[0]
             const jumbotronsAfter = ContentView.jumbotrons
+            //console.log('before 1:' + jumbotronsBefore)
+            //console.log('after 1:' + jumbotronsAfter)
             const diff = jumbotronsAfter.length - jumbotronsBefore.length
             expect(diff).to.equal(1)
         })
@@ -109,17 +112,23 @@ describe('Peregrine sites page', function () {
 
         it('should save and hide the editor', function() {
             EditorPanel.save.click()
+            EditorPanel.container.waitForExist(3000, true);
             expect( EditorPanel.container.isVisible() ).to.equal(false)
         })
     })
 
     describe('Delete jumbotron', function() {
         it('should delete the jumbotron', function() {
-            const jumbotronsBefore = ContentView.jumbotrons.length
+            const jumbotronsBefore = ContentView.jumbotrons
             jumbotronComponent.clickAtLocation()
+            jumbotronComponent.deleteButton.waitForExist(3000);
             jumbotronComponent.deleteButton.click()
-            const jumbotronsAfter = ContentView.jumbotrons.length
-            expect( jumbotronsBefore - jumbotronsAfter ).to.equal(1)
+            jumbotronComponent.deleteButton.waitForExist(3000, true);
+            const jumbotronsAfter = ContentView.jumbotrons
+            //console.log('before 2:' + jumbotronsBefore)
+            //console.log('after 2:' + jumbotronsAfter)
+            const diff = jumbotronsBefore.length - jumbotronsAfter.length
+            expect( diff ).to.equal(1)
         })
     })
 

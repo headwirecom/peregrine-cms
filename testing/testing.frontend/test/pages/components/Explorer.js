@@ -5,6 +5,18 @@ class Explorer {
             return new Item(item);
         })
     }
+    get objects() {
+        const items = $$('.explorer-main > ul > li')
+        return items.map(item => {
+            return new Item(item);
+        })
+    }
+    get folders() {
+        const items = $$('.explorer-main > ul > li')
+        return items.map(item => {
+            return new FolderItem(item);
+        })
+    }
     get container() { return $('.explorer-main') }
 }
 
@@ -16,4 +28,11 @@ class Item {
     get editButton()    { return this.container.$(`div > span:nth-child(1) > a`) }
 }
 
+class FolderItem {
+	constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.$(`span > a`).getText()}
+    get linkButton()    { return this.container.$(`span > a`) }
+}
 module.exports = Explorer
