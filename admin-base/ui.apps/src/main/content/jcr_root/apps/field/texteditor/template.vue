@@ -35,7 +35,28 @@
         data () {
             return {
                 config: {
-                    svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg'
+                    svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
+                    btns: [
+                        ['viewHTML','undo', 'redo','formatting',
+                        'strong', 'em', 'del', 'superscript', 'subscript',
+                        'link',
+                        'insertImage',
+                        'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
+                        'unorderedList', 'orderedList',
+                        'removeformat']
+                        // ['viewHTML'],
+                        // ['undo', 'redo'], // Only supported in Blink browsers
+                        // ['formatting'],
+                        // ['strong', 'em', 'del'],
+                        // ['superscript', 'subscript'],
+                        // ['link'],
+                        // ['insertImage'],
+                        // ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                        // ['unorderedList', 'orderedList'],
+                        // ['removeformat']
+                        // ['horizontalRule'],
+                        // ['fullscreen']
+                    ]
                 }
             }
         }
