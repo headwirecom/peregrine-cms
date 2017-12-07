@@ -41,7 +41,6 @@
         wrap: this.model.wrap === 'true',
         keyboard: this.model.keyboard === 'true'
       })
-      console.log(this.$refs)
     },
     computed: {
       name() {

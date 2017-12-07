@@ -36,7 +36,7 @@
     mounted() {
       $(this.$refs.pcmscarousel).carousel({
         ride: this.model.autoplay === 'true' ? 'carousel' : false,
-        interval: this.model.autoplay === 'true' ? parseInt(this.model.interval) * 1000 : 0,
+        interval: this.model.autoplay === 'true' ? parseInt(this.model.interval) * 1000: 0,
         pause: this.model.pause === 'true' ? 'hover' : false,
         wrap: this.model.wrap === 'true',
         keyboard: this.model.keyboard === 'true'
@@ -45,7 +45,7 @@
     computed: {
       name() {
           return this.model.path.split('/').slice(1).join('-').slice(4)
-     }
+      }
     }
   }
 </script>
