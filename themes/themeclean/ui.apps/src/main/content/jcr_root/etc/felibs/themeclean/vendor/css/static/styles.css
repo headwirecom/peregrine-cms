@@ -86,7 +86,12 @@ footer {
   bottom: 0;
 }
 .percms-view-height {
-  min-height: 100vh
+  min-height: 100vh;
+}
+.percms-carousel-image {
+  max-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
 }
 
 @media (max-width: 768px) {
@@ -96,9 +101,6 @@ footer {
 }
 
 /* Bootstrap Specific */
-.carousel-inner {
-  height: 100%
-}
-.carousel-item {
-  height: 100%
+.carousel-inner, .carousel-item, .carousel-item > .d-flex {
+  height: 100%;
 }

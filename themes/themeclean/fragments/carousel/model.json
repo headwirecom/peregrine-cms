@@ -4,24 +4,43 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "carouselheight": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Carousel Height",
+          "x-form-type": "range",
+          "x-default": 80,
+          "x-form-min": 50,
+          "x-form-max": 100
+        },
+        "autoplay": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Auto Play",
+          "x-form-type": "materialswitch"
+        },
         "interval": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Interval",
-          "x-form-type": "number",
-          "x-default": "5000"
+          "x-form-type": "range",
+          "x-form-visible": "model.autoplay == 'true'",
+          "x-default": 5,
+          "x-form-min": 1,
+          "x-form-max": 20
         },
         "pause": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Pause",
-          "x-form-type": "text",
-          "x-default": "pause"
+          "x-form-label": "Pause On Hover",
+          "x-form-type": "materialswitch",
+          "x-form-visible": "model.autoplay == 'true'",
+          "x-default": "false"
         },
-        "ride": {
+        "wrap": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Ride",
+          "x-form-label": "Wrap",
           "x-form-type": "materialswitch",
           "x-default": "true"
         },
@@ -36,13 +55,6 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Controls",
-          "x-form-type": "materialswitch",
-          "x-default": "true"
-        },
-        "wrap": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Wrap",
           "x-form-type": "materialswitch",
           "x-default": "true"
         },
@@ -84,8 +96,12 @@
 	          "x-source": "inject",
 	          "x-form-label": "Image Alt Text",
 	          "x-form-type": "text"
-	        }
+            }
           }
+        },
+        "bgref": {
+          "$ref": "fragments/block/model.json#/definitions/Block",
+          "x-form-type": "reference"
         }
       }
     }
