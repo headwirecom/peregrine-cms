@@ -5,11 +5,6 @@ module.exports = {
 
         f.addStyle( $, 'height', 'model.carouselheight', 'vh')
         f.bindAttribute($, "id", "name")
-        f.bindAttribute($, "data-ride", "model.autoplay === 'true' ? 'carousel' : 'false'")
-        f.bindAttribute($, "data-interval", "model.autoplay === 'true' ? 1000*model.interval : 'false'")
-        f.bindAttribute($, "data-pause", "model.autoplay === 'true' && model.pause === 'true' ? 'hover' : 'false'")
-        f.bindAttribute($, "data-wrap", "model.wrap === 'true'")
-        f.bindAttribute($, "data-keyboard", "model.keyboard === 'true'")
         
         let firstLi = $.find('li').first()
         f.addIf($.find('ol').first(), "model.indicators === 'true'")

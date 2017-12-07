@@ -1,10 +1,7 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="carousel slide" v-bind:style="`height:${model.carouselheight}vh;`"
-    v-bind:id="name" v-bind:data-ride="model.autoplay === 'true' ? 'carousel' : 'false'"
-    v-bind:data-interval="model.autoplay === 'true' ? 1000*model.interval : 'false'"
-    v-bind:data-pause="model.autoplay === 'true' &amp;&amp; model.pause === 'true' ? 'hover' : 'false'"
-    v-bind:data-wrap="model.wrap === 'true'" v-bind:data-keyboard="model.keyboard === 'true'">
+    <div class="carousel slide" ref="pcmscarousel" v-bind:style="`height:${model.carouselheight}vh;`"
+    v-bind:id="name">
       <ol class="carousel-indicators" v-if="model.indicators === 'true'">
         <li v-for="(item,i) in model.slides" :key="i" v-bind:data-target="`#${name}`"
         v-bind:data-slide-to="i" v-bind:class="{active: i === 0}"></li>
@@ -36,10 +33,19 @@
 <script>
   export default {
     props: ['model'],
+    mounted() {
+      $(this.$refs.pcmscarousel).carousel({
+        ride: this.model.autoplay === 'true' ? 'carousel' : false,
+        interval: this.model.autoplay === 'true' ? parseInt(this.model.interval) * 1000 : 0,
+        pause: this.model.pause === 'true' ? 'hover' : false,
+        wrap: this.model.wrap === 'true',
+        keyboard: this.model.keyboard === 'true'
+      })
+    },
     computed: {
       name() {
           return this.model.path.split('/').slice(1).join('-').slice(4)
-      }
+     }
     }
   }
 </script>
