@@ -26,6 +26,7 @@ class Item {
     }
     get text()     { return this.container.$(`span > a`).getText()}
     get editButton()    { return this.container.$(`div > span:nth-child(1) > a`) }
+    get deleteButton()   { return this.container.$(`div > span:nth-child(5) > a`) }
 }
 
 class FolderItem {

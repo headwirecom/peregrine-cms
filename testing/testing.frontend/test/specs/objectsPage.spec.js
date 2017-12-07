@@ -76,7 +76,7 @@ describe('Peregrine objects page', function () {
         
        let newObject
         
-        it('clicking finish button to add this object', function() {
+       it('clicking finish button to add this object', function() {
         	AddObjectWizard.finishButton.scroll(0,10000)
             AddObjectWizard.finishButton.click()
             Explorer.container.waitForVisible()
@@ -88,5 +88,26 @@ describe('Peregrine objects page', function () {
 
     })
     
+    describe('Delete an object', function() {
+    	
+    	let exampleObject
+    	
+    	it('find object to be deleted', function() {
+	    	Explorer.container.waitForVisible()
+	        const objects = Explorer.objects
+	        const i = objects.findIndex( object => object.text.indexOf('myobject1') > -1 )
+	        expect( i ).to.not.equal(-1)
+	        exampleObject = objects[i]
+	    })
+    	
+    	it('delete object', function() {
+    		exampleObject.deleteButton.click()
+    		browser.alertAccept();
+	    	Explorer.container.waitForVisible()
+	        const objects = Explorer.objects
+	        const i = objects.findIndex( object => object.text.indexOf('myobject1') > -1 )
+	        expect( i ).to.equal(-1)
+	    })
+    })
 
 })
