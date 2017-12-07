@@ -74,18 +74,17 @@ describe('Peregrine objects page', function () {
             expect( AddObjectWizard.finishButton.isVisible() ).to.equal(true)
         })
         
-        /*let newObject
+       let newObject
         
         it('clicking finish button to add this object', function() {
-        	//browser.pause(10000)
-        	//AddObjectWizard.finishButton.scroll()
+        	AddObjectWizard.finishButton.scroll(0,3000)
             AddObjectWizard.finishButton.click()
             Explorer.container.waitForVisible()
             const objects = Explorer.objects
             const i = objects.findIndex( object => object.text.indexOf('myobject1') > -1 ) 
             newObject = objects[i]
             expect( newObject.text ).to.contain('myobject1')
-        }) */
+        })
 
     })
     
