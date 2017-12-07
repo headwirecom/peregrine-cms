@@ -61,11 +61,13 @@ describe('Peregrine objects page', function () {
         	exampleTemplate.linkButton.click()
             expect( exampleTemplate.classAttribute ).to.contain('grey lighten-2')
         })
-        /*
-        it('clicking next button should take wizard to step 2', function() {
-            AddObjectWizard.container.waitForVisible()
-            expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
-        })*/
+        
+        it('clicking next button should go wizard to step 2', function() {
+            AddObjectWizard.nextButton.click()
+            AddObjectWizard.objectNameField.waitForVisible()
+            expect( AddObjectWizard.objectNameField.isVisible() ).to.equal(true)
+            //expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
+        })
 
     })
     

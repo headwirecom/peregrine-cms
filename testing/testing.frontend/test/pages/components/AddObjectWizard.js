@@ -1,11 +1,17 @@
 class AddObjectWizard {
-  get container() { return browser.element('.vue-form-wizard')}
+  get nextButton(){
+	  return browser.element('.btn-next')
+  }
+  get objectNameField(){
+	  return browser.element('#object-name')
+  }
   get templates() {
       const items = $$('.wizard-tab-container > ul > li')
       return items.map(item => {
           return new Item(item);
       })
   } 
+  get container() { return browser.element('.vue-form-wizard')}
 }
 
 class Item {
