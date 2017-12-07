@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="carousel slide" ref="pcmscarousel" v-bind:style="`height:${model.carouselheight}vh;`"
+    <div class="carousel slide w-100" ref="pcmscarousel" v-bind:style="`height:${model.carouselheight}vh;`"
     v-bind:id="name">
       <ol class="carousel-indicators" v-if="model.indicators === 'true'">
         <li v-for="(item,i) in model.slides" :key="i" v-bind:data-target="`#${name}`"

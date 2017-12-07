@@ -30,7 +30,7 @@
         computed: {          
           classes: function() {
             let classObject = {}
-            classObject['view-height'] = this.model.fullheight == 'true'
+            classObject['percms-view-height'] = this.model.fullheight == 'true'
             classObject[`elevation-${this.model.elevation}`] = this.model.elevation > 0
             return classObject      
           },

@@ -1,10 +1,10 @@
 {
   "title": "Carousel",
   "group": "Features",
-  "carouselheight": 50,
-  "toppadding": "0",
-  "bottompadding": "0",
-  "model": {
+  "model" : {
+    "carouselheight": 50,
+    "toppadding": 0,
+    "bottompadding": 0,
     "slides": [
       {
         "imagepath": "/content/assets/themeclean/images/background1.jpg",
