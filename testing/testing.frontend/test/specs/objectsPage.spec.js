@@ -100,7 +100,14 @@ describe('Peregrine objects page', function () {
 	        exampleObject = objects[i]
 	    })
     	
-    	
+    	it('delete object', function() {
+    		exampleObject.deleteButton.click()
+    		browser.alertAccept();
+	    	Explorer.container.waitForVisible()
+	        const objects = Explorer.objects
+	        const i = objects.findIndex( object => object.text.indexOf('myobject1') > -1 )
+	        expect( i ).to.equal(-1)
+	    })
     })
 
 })
