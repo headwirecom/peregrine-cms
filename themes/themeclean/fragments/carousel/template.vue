@@ -13,7 +13,7 @@
             v-bind:alt="item.alt">
           </div>
           <div class="percms-carousel-text p-3" v-if="item.heading || item.text"
-          v-bind:style="`background-color:${model.captionbg === 'true' ? 'rgba(0,0,0,0.4)' : ''};`">
+          v-bind:class="{'percms-caption-bg': model.captionbg === 'true'}">
             <h3 v-if="item.heading" v-html="item.heading"></h3>
             <p v-if="item.text" v-html="item.text"></p>
           </div>
@@ -21,11 +21,15 @@
       </div>
       <a role="button" data-slide="prev" class="carousel-control-prev" v-if="model.controls === 'true'"
       v-bind:href="`#${name}`">
-        <span class="carousel-control-prev-icon"></span>
+        <div v-bind:class="{'percms-caption-bg': model.captionbg === 'true'}">
+          <span class="carousel-control-prev-icon"></span>
+        </div>
       </a>
       <a role="button" data-slide="next" class="carousel-control-next" v-if="model.controls === 'true'"
       v-bind:href="`#${name}`">
-        <span class="carousel-control-next-icon"></span>
+        <div v-bind:class="{'percms-caption-bg': model.captionbg === 'true'}">
+          <span class="carousel-control-next-icon"></span>
+        </div>
       </a>
     </div>
   </themeclean-components-block>

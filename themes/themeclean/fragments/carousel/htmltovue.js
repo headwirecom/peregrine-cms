@@ -28,13 +28,15 @@ module.exports = {
         f.mapRichField(h3, "item.heading")
         f.addIf(p, "item.text")
         f.mapRichField(p, "item.text")
-        f.addStyle( slideCaption, 'background-color', "model.captionbg === 'true' ? 'rgba(0,0,0,0.4)' : ''")
+        f.bindAttribute( slideCaption, 'class', "{'percms-caption-bg': model.captionbg === 'true'}", false)
         
         let link1 = $.find('a').eq(0)
         let link2 = $.find('a').eq(1)
         f.addIf(link1, "model.controls === 'true'")
         f.bindAttribute(link1, "href", "`#${name}`")
+        f.bindAttribute( link1.find('div'), 'class', "{'percms-caption-bg': model.captionbg === 'true'}", false)
         f.addIf(link2, "model.controls === 'true'")
         f.bindAttribute(link2, "href", "`#${name}`")
+        f.bindAttribute( link2.find('div'), 'class', "{'percms-caption-bg': model.captionbg === 'true'}", false)
     }
 }

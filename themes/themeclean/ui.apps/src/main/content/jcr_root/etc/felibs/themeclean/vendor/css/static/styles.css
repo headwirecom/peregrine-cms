@@ -61,6 +61,10 @@ footer {
   z-index: 10
 }
 
+.percms-caption-bg {
+  background-color: rgba(0,0,0,0.40) 
+}
+
 
 /* Peregrine CMS specific styles */
 .percms-text-large h1 { font-size: 90px;}
@@ -117,4 +121,14 @@ footer {
 }
 .carousel-item {
   bottom: 5px;
+}
+.carousel-control-next-icon {
+  margin-left: 6px;
+}
+.carousel-control-next div, .carousel-control-prev div {
+  width: 30px;
+  height: 30px;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
 }
