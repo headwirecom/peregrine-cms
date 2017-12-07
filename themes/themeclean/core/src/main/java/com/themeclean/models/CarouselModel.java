@@ -82,6 +82,12 @@ import javax.inject.Named;
           "x-form-type": "materialswitch",
           "x-default": "true"
         },
+        "captionbg": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Caption Background",
+          "x-form-type": "materialswitch"
+        },
         "slides": {
           "type": "string",
           "x-source": "inject",
@@ -333,6 +339,10 @@ public class CarouselModel extends AbstractComponent {
 	@Default(values ="true")
 	private String keyboard;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Caption Background","x-form-type":"materialswitch"} */
+	@Inject
+	private String captionbg;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Slides","x-form-fieldLabel":"heading","x-form-type":"collection","properties":{"imagepath":{"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"},"heading":{"type":"string","x-source":"inject","x-form-label":"Image Heading","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Image Text","x-form-type":"texteditor"},"alt":{"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-type":"text"}}} */
 	@Inject
 	private List<IComponent> slides;
@@ -442,6 +452,11 @@ public class CarouselModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Keyboard","x-form-type":"materialswitch","x-default":"true"} */
 	public String getKeyboard() {
 		return keyboard;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Caption Background","x-form-type":"materialswitch"} */
+	public String getCaptionbg() {
+		return captionbg;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Slides","x-form-fieldLabel":"heading","x-form-type":"collection","properties":{"imagepath":{"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"},"heading":{"type":"string","x-source":"inject","x-form-label":"Image Heading","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Image Text","x-form-type":"texteditor"},"alt":{"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-type":"text"}}} */

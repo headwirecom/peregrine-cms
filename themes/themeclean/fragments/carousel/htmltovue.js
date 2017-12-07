@@ -15,7 +15,7 @@ module.exports = {
         
         let firstSlide = $.find('.carousel-item').first()
         let image = $.find('img').first()
-        let slideCaption = $.find('.carousel-caption').first()
+        let slideCaption = $.find('.percms-carousel-text').first()
         let h3 = $.find('h3').first()
         let p = $.find('p').first()
         f.addFor(firstSlide, 'model.slides')
@@ -28,6 +28,7 @@ module.exports = {
         f.mapRichField(h3, "item.heading")
         f.addIf(p, "item.text")
         f.mapRichField(p, "item.text")
+        f.addStyle( slideCaption, 'background-color', "model.captionbg === 'true' ? 'rgba(0,0,0,0.4)' : ''")
         
         let link1 = $.find('a').eq(0)
         let link2 = $.find('a').eq(1)

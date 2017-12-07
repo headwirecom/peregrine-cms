@@ -81,6 +81,16 @@
       "model": "keyboard"
     },
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "captionbg",
+      "label": "Caption Background",
+      "model": "captionbg"
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [

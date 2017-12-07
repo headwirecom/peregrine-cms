@@ -65,6 +65,12 @@
           "x-form-type": "materialswitch",
           "x-default": "true"
         },
+        "captionbg": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Caption Background",
+          "x-form-type": "materialswitch"
+        },
         "slides": {
           "type": "string",
           "x-source": "inject",
