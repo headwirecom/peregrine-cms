@@ -46,6 +46,26 @@ describe('Peregrine objects page', function () {
             AddObjectWizard.container.waitForVisible()
             expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
         })
+        
+        let exampleTemplate
+        
+        it('should see allfields in template list', function() {
+            AddObjectWizard.container.waitForVisible()
+            const templates = AddObjectWizard.templates
+            const i = templates.findIndex( template => template.text.indexOf('allfields') > -1 ) 
+            exampleTemplate = templates[i]
+            expect( exampleTemplate.text ).to.contain('allfields')
+        })
+        /*
+        it('selecting allfields template', function() {
+            AddObjectWizard.container.waitForVisible()
+            expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
+        })
+        
+        it('clicking next button should take wizard to step 2', function() {
+            AddObjectWizard.container.waitForVisible()
+            expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
+        })*/
 
     })
     
