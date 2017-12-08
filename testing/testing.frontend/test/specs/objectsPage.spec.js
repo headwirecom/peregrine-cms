@@ -88,6 +88,18 @@ describe('Peregrine objects page', function () {
 
     })
     
+    describe('Edit an object', function() {
+    	let exampleObject
+    	
+    	it('find object to edit', function() {
+	    	Explorer.container.waitForVisible()
+	        const objects = Explorer.objects
+	        const i = objects.findIndex( object => object.text.indexOf('myobject1') > -1 )
+	        expect( i ).to.not.equal(-1)
+	        exampleObject = objects[i]
+	    })
+    })
+    
     describe('Delete an object', function() {
     	
     	let exampleObject
