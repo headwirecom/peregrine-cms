@@ -25,12 +25,12 @@ describe('Peregrine objects page', function () {
         
         let exampleObject
         
-        it('should have an object titled "allfields"', function(){
+        it('should have an object titled "sample"', function(){
         	Explorer.container.waitForVisible()
             const objects = Explorer.objects
-            const i = objects.findIndex( object => object.text.indexOf('allfields') > -1 ) 
+            const i = objects.findIndex( object => object.text.indexOf('sample') > -1 ) 
             exampleObject = objects[i]
-            expect( exampleObject.text ).to.contain('allfields')
+            expect( exampleObject.text ).to.contain('sample')
         })
 
     })
@@ -49,15 +49,15 @@ describe('Peregrine objects page', function () {
         
         let exampleTemplate
         
-        it('should see allfields in template list', function() {
+        it('should see sample in template list', function() {
             AddObjectWizard.container.waitForVisible()
             const templates = AddObjectWizard.templates
-            const i = templates.findIndex( template => template.text.indexOf('allfields') > -1 ) 
+            const i = templates.findIndex( template => template.text.indexOf('sample') > -1 ) 
             exampleTemplate = templates[i]
-            expect( exampleTemplate.text ).to.contain('allfields')
+            expect( exampleTemplate.text ).to.contain('sample')
         })
         
-        it('selecting allfields template', function() {
+        it('selecting sample template', function() {
         	exampleTemplate.linkButton.click()
             expect( exampleTemplate.classAttribute ).to.contain('grey lighten-2')
         })
