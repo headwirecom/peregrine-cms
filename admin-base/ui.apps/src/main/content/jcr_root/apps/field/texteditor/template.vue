@@ -36,26 +36,32 @@
             return {
                 config: {
                     svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
+                    btnsDef: {
+                        formattingWithCode: {
+                            dropdown: ['p', 'quote', 'preformatted', 'h1', 'h2', 'h3', 'h4'],
+                            ico: 'p', // Apply formatting icon
+                            hasIcon: true
+                        }
+                    },
                     btns: [
-                        ['viewHTML','undo', 'redo','formatting',
-                        'strong', 'em', 'del', 'superscript', 'subscript',
+                        'viewHTML',
+                        'undo',
+                        'redo',
+                        'formattingWithCode',
+                        'strong',
+                        'em',
+                        'del',
+                        'superscript',
+                        'subscript',
                         'link',
                         'insertImage',
-                        'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
-                        'unorderedList', 'orderedList',
-                        'removeformat']
-                        // ['viewHTML'],
-                        // ['undo', 'redo'], // Only supported in Blink browsers
-                        // ['formatting'],
-                        // ['strong', 'em', 'del'],
-                        // ['superscript', 'subscript'],
-                        // ['link'],
-                        // ['insertImage'],
-                        // ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-                        // ['unorderedList', 'orderedList'],
-                        // ['removeformat']
-                        // ['horizontalRule'],
-                        // ['fullscreen']
+                        'justifyLeft',
+                        'justifyCenter',
+                        'justifyRight',
+                        'justifyFull',
+                        'unorderedList',
+                        'orderedList',
+                        'removeformat'
                     ]
                 }
             }
