@@ -189,6 +189,12 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "anchorname": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Anchor Name",
+              "x-form-type": "text"
+            },
             "colorscheme": {
               "type": "string",
               "x-source": "inject",
@@ -426,6 +432,10 @@ public class TabsModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> tabs;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	@Inject
+	private String anchorname;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	@Default(values ="")
@@ -566,6 +576,11 @@ public class TabsModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
 	public List<IComponent> getTabs() {
 		return tabs;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	public String getAnchorname() {
+		return anchorname;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */

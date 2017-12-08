@@ -34,6 +34,12 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "anchorname": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Anchor Name",
+              "x-form-type": "text"
+            },
             "colorscheme": {
               "type": "string",
               "x-source": "inject",
@@ -181,6 +187,10 @@ public class SpacerModel extends AbstractComponent {
 	@Inject
 	private String height;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	@Inject
+	private String anchorname;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	@Default(values ="")
@@ -235,6 +245,11 @@ public class SpacerModel extends AbstractComponent {
     	/* {"type":"string","x-source":"inject","x-form-label":"Height","x-form-type":"range","x-form-min":0,"x-form-max":100} */
 	public String getHeight() {
 		return height;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	public String getAnchorname() {
+		return anchorname;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */

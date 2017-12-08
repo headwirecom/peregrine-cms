@@ -149,6 +149,12 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "anchorname": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Anchor Name",
+              "x-form-type": "text"
+            },
             "colorscheme": {
               "type": "string",
               "x-source": "inject",
@@ -368,6 +374,10 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private List<IComponent> icons;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	@Inject
+	private String anchorname;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	@Default(values ="")
@@ -488,6 +498,11 @@ public class FooterModel extends AbstractComponent {
 	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	public List<IComponent> getIcons() {
 		return icons;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	public String getAnchorname() {
+		return anchorname;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
