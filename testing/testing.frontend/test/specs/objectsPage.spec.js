@@ -1,5 +1,5 @@
 let objectsPage = require('../pages/Objects.page')
-let {Explorer, SubNav, AddObjectWizard} = objectsPage
+let {Explorer, SubNav, AddObjectWizard, ObjectEditorPanel} = objectsPage
 
 describe('Peregrine objects page', function () {
     it('should login', function() {
@@ -98,6 +98,14 @@ describe('Peregrine objects page', function () {
 	        expect( i ).to.not.equal(-1)
 	        exampleObject = objects[i]
 	    })
+    	
+    	it('clicking edit item should load the object editor panel', function(){
+    		exampleObject.editButton.click()
+    		//browser.pause(5000)
+            ObjectEditorPanel.container.waitForVisible()
+            //expect( browser.getUrl() ).to.contain('content/sites/example' )
+            expect( ObjectEditorPanel.container.isVisible() ).to.equal(true)
+        })
     })
     
     describe('Delete an object', function() {
