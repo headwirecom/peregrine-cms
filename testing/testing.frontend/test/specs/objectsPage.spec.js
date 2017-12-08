@@ -113,6 +113,15 @@ describe('Peregrine objects page', function () {
     		expect( inputs[0].getValue() ).to.equal('first text')
     		ObjectEditorPanel.save.click()
         })
+    	
+    	let previewContainer
+    	
+    	it('field text gets saved', function(){
+    		previewContainer = ObjectEditorPanel.previewContainer
+    		expect( previewContainer.$('.form-group:nth-child(1) > .field-wrap > .wrapper > p').getText() ).to.equal('first text')
+    		//div.form-group:nth-child(1) > div:nth-child(2) > div:nth-child(1) > p:nth-child(1)
+    		
+        })
     })
     
     describe('Delete an object', function() {
