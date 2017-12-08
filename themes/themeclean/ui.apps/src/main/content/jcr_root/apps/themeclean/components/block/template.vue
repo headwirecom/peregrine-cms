@@ -23,8 +23,10 @@
         mounted() {
           // Add top margin to perApp to account for fixed header when sticky is true
           if( this.model.sticky === 'true' && !$peregrineApp.isAuthorMode()) {
-            const height = this.$refs.section.clientHeight
-            this.$refs.section.parentElement.style.marginTop = height + 'px';
+            if( this.$refs.section.style.position === 'fixed' ){
+              const height = this.$refs.section.clientHeight
+              this.$refs.section.parentElement.style.marginTop = height + 'px';
+            }
           }
         },
         computed: {          
@@ -50,6 +52,7 @@
             return sticky && !$peregrineApp.isAuthorMode() ?
             {
               position: 'fixed',
+              position: 'sticky',
               top: '0',
               width: '100%',
               zIndex: '1000'
