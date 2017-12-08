@@ -44,6 +44,12 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "anchorname": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Anchor Name",
+              "x-form-type": "text"
+            },
             "colorscheme": {
               "type": "string",
               "x-source": "inject",
@@ -227,6 +233,10 @@ public class ArticlepagerModel extends AbstractComponent {
 	@Inject
 	private String nextlabel;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	@Inject
+	private String anchorname;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	@Inject
 	@Default(values ="")
@@ -302,6 +312,11 @@ public class ArticlepagerModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Next Label","x-form-type":"text"} */
 	public String getNextlabel() {
 		return nextlabel;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	public String getAnchorname() {
+		return anchorname;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */

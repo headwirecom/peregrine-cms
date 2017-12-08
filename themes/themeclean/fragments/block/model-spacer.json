@@ -4,6 +4,12 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "anchorname": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Anchor Name",
+          "x-form-type": "text"
+        },
         "colorscheme" : {
           "type": "string",
           "x-source": "inject",

@@ -58,6 +58,13 @@
       "model": "textalign"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "anchorname",
+      "label": "Anchor Name",
+      "model": "anchorname"
+    },
+    {
       "type": "material-radios",
       "values": [
         {

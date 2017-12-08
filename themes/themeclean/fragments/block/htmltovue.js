@@ -2,6 +2,7 @@ module.exports = {
     convert: function($, f) {
         f.bindAttribute( $, 'class', '[classes, colors]', false)
         f.bindAttribute( $, 'style', '[styles, sticky]', false)
+        f.bindAttribute( $, 'id', 'model.anchorname', false)
         f.bindAttribute( $, 'data-per-path', 'model.path')
 
         f.addIf( $.find('div.embed-responsive').first(), "model.custombackground === 'true' && model.backgroundtype == 'video' && model.bgvideo" )
