@@ -101,10 +101,17 @@ describe('Peregrine objects page', function () {
     	
     	it('clicking edit item should load the object editor panel', function(){
     		exampleObject.editButton.click()
-    		//browser.pause(5000)
-            ObjectEditorPanel.container.waitForVisible()
-            //expect( browser.getUrl() ).to.contain('content/sites/example' )
+    		ObjectEditorPanel.container.waitForVisible()
             expect( ObjectEditorPanel.container.isVisible() ).to.equal(true)
+        })
+        
+        let inputs
+        
+        it('editing field: text', function(){
+    		inputs = ObjectEditorPanel.inputs
+    		inputs[0].setValue('first text')
+    		expect( inputs[0].getValue() ).to.equal('first text')
+    		ObjectEditorPanel.save.click()
         })
     })
     
