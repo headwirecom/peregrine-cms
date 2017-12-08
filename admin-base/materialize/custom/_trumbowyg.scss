@@ -154,15 +154,15 @@ $slow-transition-duration: 300ms !default;
     .trumbowyg-fullscreen-button svg {
       color: transparent;
     }
-    &:not(:empty)+.trumbowyg-button-group::before {
-      content: " ";
-      display: inline-block;
-      width: 1px;
-      background: darken($light-color, 7%);
-      margin: 0 5px;
-      height: 35px;
-      vertical-align: top;
-    }
+    // &:not(:empty)+.trumbowyg-button-group::before {
+    //   content: " ";
+    //   display: inline-block;
+    //   width: 1px;
+    //   background: darken($light-color, 7%);
+    //   margin: 0 5px;
+    //   height: 35px;
+    //   vertical-align: top;
+    // }
   }
   button {
     display: inline-block;
