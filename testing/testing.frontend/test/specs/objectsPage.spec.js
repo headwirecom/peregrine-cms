@@ -1,5 +1,5 @@
 let objectsPage = require('../pages/Objects.page')
-let {Explorer, SubNav, AddObjectWizard} = objectsPage
+let {Explorer, SubNav, AddObjectWizard, ObjectEditorPanel} = objectsPage
 
 describe('Peregrine objects page', function () {
     it('should login', function() {
@@ -25,12 +25,12 @@ describe('Peregrine objects page', function () {
         
         let exampleObject
         
-        it('should have an object titled "allfields"', function(){
+        it('should have an object titled "sample"', function(){
         	Explorer.container.waitForVisible()
             const objects = Explorer.objects
-            const i = objects.findIndex( object => object.text.indexOf('allfields') > -1 ) 
+            const i = objects.findIndex( object => object.text.indexOf('sample') > -1 ) 
             exampleObject = objects[i]
-            expect( exampleObject.text ).to.contain('allfields')
+            expect( exampleObject.text ).to.contain('sample')
         })
 
     })
@@ -49,15 +49,15 @@ describe('Peregrine objects page', function () {
         
         let exampleTemplate
         
-        it('should see allfields in template list', function() {
+        it('should see sample in template list', function() {
             AddObjectWizard.container.waitForVisible()
             const templates = AddObjectWizard.templates
-            const i = templates.findIndex( template => template.text.indexOf('allfields') > -1 ) 
+            const i = templates.findIndex( template => template.text.indexOf('sample') > -1 ) 
             exampleTemplate = templates[i]
-            expect( exampleTemplate.text ).to.contain('allfields')
+            expect( exampleTemplate.text ).to.contain('sample')
         })
         
-        it('selecting allfields template', function() {
+        it('selecting sample template', function() {
         	exampleTemplate.linkButton.click()
             expect( exampleTemplate.classAttribute ).to.contain('grey lighten-2')
         })
@@ -86,6 +86,42 @@ describe('Peregrine objects page', function () {
             expect( newObject.text ).to.contain('myobject1')
         })
 
+    })
+    
+    describe('Edit an object', function() {
+    	let exampleObject
+    	
+    	it('find object to edit', function() {
+	    	Explorer.container.waitForVisible()
+	        const objects = Explorer.objects
+	        const i = objects.findIndex( object => object.text.indexOf('myobject1') > -1 )
+	        expect( i ).to.not.equal(-1)
+	        exampleObject = objects[i]
+	    })
+    	
+    	it('clicking edit item should load the object editor panel', function(){
+    		exampleObject.editButton.click()
+    		ObjectEditorPanel.container.waitForVisible()
+            expect( ObjectEditorPanel.container.isVisible() ).to.equal(true)
+        })
+        
+        let inputs
+        
+        it('editing field: text', function(){
+    		inputs = ObjectEditorPanel.inputs
+    		inputs[0].setValue('first text')
+    		expect( inputs[0].getValue() ).to.equal('first text')
+    		ObjectEditorPanel.save.click()
+        })
+    	
+    	let previewContainer
+    	
+    	it('field text gets saved', function(){
+    		previewContainer = ObjectEditorPanel.previewContainer
+    		expect( previewContainer.$('.form-group:nth-child(1) > .field-wrap > .wrapper > p').getText() ).to.equal('first text')
+    		//div.form-group:nth-child(1) > div:nth-child(2) > div:nth-child(1) > p:nth-child(1)
+    		
+        })
     })
     
     describe('Delete an object', function() {
