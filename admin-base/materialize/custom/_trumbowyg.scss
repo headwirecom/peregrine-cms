@@ -9,7 +9,7 @@
  *         Website : alex-d.fr
  */
 
-$light-color: #ecf0f1 !default;
+$light-color: white !default;
 $dark-color: #222 !default;
 $modal-submit-color: #2ecc71 !default;
 $modal-reset-color: #EEE !default;
@@ -43,6 +43,7 @@ $slow-transition-duration: 300ms !default;
 .trumbowyg-editor {
   display: block;
   position: relative;
+  background-color: $light-color;
   border: 1px solid #DDD;
   width: 100%;
   min-height: 300px;
