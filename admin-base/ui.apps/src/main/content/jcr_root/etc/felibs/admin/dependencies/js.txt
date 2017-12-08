@@ -6,6 +6,7 @@ lodash.js
 moment.js
 isotope.js
 trumbowyg.js
+trumbowyg-pre.js
 vfg.js
 vue-trumbowyg.js
 vue-isotope.js

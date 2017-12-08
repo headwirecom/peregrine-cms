@@ -9,7 +9,7 @@
  *         Website : alex-d.fr
  */
 
-$light-color: #ecf0f1 !default;
+$light-color: white !default;
 $dark-color: #222 !default;
 $modal-submit-color: #2ecc71 !default;
 $modal-reset-color: #EEE !default;
@@ -43,6 +43,7 @@ $slow-transition-duration: 300ms !default;
 .trumbowyg-editor {
   display: block;
   position: relative;
+  background-color: $light-color;
   border: 1px solid #DDD;
   width: 100%;
   min-height: 300px;
@@ -148,31 +149,20 @@ $slow-transition-duration: 300ms !default;
   line-height: 10px;
   backface-visibility: hidden;
   z-index: 11;
-  &::after {
-    content: " ";
-    display: block;
-    position: absolute;
-    top: 36px;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    background: darken($light-color, 7%);
-  }
   .trumbowyg-button-group {
     display: inline-block;
     .trumbowyg-fullscreen-button svg {
       color: transparent;
     }
-    &:not(:empty)+.trumbowyg-button-group::before {
-      content: " ";
-      display: inline-block;
-      width: 1px;
-      background: darken($light-color, 7%);
-      margin: 0 5px;
-      height: 35px;
-      vertical-align: top;
-    }
+    // &:not(:empty)+.trumbowyg-button-group::before {
+    //   content: " ";
+    //   display: inline-block;
+    //   width: 1px;
+    //   background: darken($light-color, 7%);
+    //   margin: 0 5px;
+    //   height: 35px;
+    //   vertical-align: top;
+    // }
   }
   button {
     display: inline-block;
