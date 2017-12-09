@@ -27,6 +27,9 @@
 <script>
     export default {
         props: ['model'],
+        mounted() {
+          $('body').scrollspy({target:'.navbar'})
+        },
         computed: {
         	isEditAndEmpty() {
                 if(!$peregrineApp.isAuthorMode()) return false

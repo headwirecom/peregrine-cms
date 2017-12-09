@@ -132,3 +132,7 @@ footer {
   justify-content: center;
   align-items: center;
 }
+
+.nav-item > .active {
+  font-weight: bold;
+}

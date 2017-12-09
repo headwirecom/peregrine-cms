@@ -9,6 +9,5 @@ module.exports = {
         "{'text-dark' : model.colorscheme === 'light'," +
         "'text-light' : model.colorscheme === 'dark'}"
         f.bindAttribute($.find('a').first(), 'class', colorscheme, false)
-        f.addStyle( $.find('a').first(), 'font-weight', "$root.path === item.link ? 'bold': 'normal'")
     }
 }
