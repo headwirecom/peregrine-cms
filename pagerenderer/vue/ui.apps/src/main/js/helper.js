@@ -14,6 +14,7 @@ const helpers = {
         return true
     },
     pathToUrl(path) {
+        if( path[0] === '#') return path
         let absoluteUrl = new RegExp('^(?:[a-z]+:)?//', 'i');   //Matches absolute URLs
         let file = new RegExp(/\.\w+$/, 'i')                    //Matches URL ending with a file extension
         if( absoluteUrl.test(path) === false ) {
