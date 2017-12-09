@@ -6,8 +6,8 @@
   "placeholder": "name"
 },
   {
-    "type": "input",
-    "inputType": "text",
+    "type": "material-textarea",
+    "rows": 5,
     "label": "value",
     "model": "value",
     "placeholder": "value"
