@@ -106,6 +106,7 @@ describe('Peregrine objects page', function () {
         })
         
         let inputs
+        let textEditor
         
         it('editing field: text', function(){
     		inputs = ObjectEditorPanel.inputs
@@ -116,6 +117,12 @@ describe('Peregrine objects page', function () {
     	it('editing field: textarea', function(){
     		inputs[1].setValue('first textarea')
     		expect( inputs[1].getValue() ).to.equal('first textarea')
+    	})
+        
+        it('editing field: text editor', function(){
+        	textEditor = ObjectEditorPanel.textEditor
+        	textEditor.setValue('first text editor')
+        	expect( textEditor.getText() ).to.equal('first text editor')
     		ObjectEditorPanel.save.click()
         })
     	
@@ -127,9 +134,14 @@ describe('Peregrine objects page', function () {
     	})
     	
     	it('field textarea gets saved', function(){
-    		previewContainer = ObjectEditorPanel.previewContainer
+    		//previewContainer = ObjectEditorPanel.previewContainer
     		expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('first textarea')
     	})
+    	
+    	/*it('field text editor gets saved', function(){
+    		//previewContainer = ObjectEditorPanel.previewContainer
+    		expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('first text editor')
+    	})*/
     })
     
     describe('Delete an object', function() {
