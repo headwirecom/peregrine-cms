@@ -42,14 +42,14 @@
   },
   {
     "type": "pathbrowser",
-    "label": "page",
+    "label": "Page",
     "model": "pagePath",
     "browserRoot": "/content/sites",
     "placeholder": "select path"
   },
   {
     "type": "pathbrowser",
-    "label": "image",
+    "label": "Image",
     "model": "imagePath",
     "browserRoot": "/content/assets",
     "placeholder": "select path"
