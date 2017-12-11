@@ -126,8 +126,8 @@ describe('Peregrine objects page', function () {
     	})
         
         it('editing number field', function(){
-    		inputs[2].setValue('125')
-    		expect( inputs[2].getValue() ).to.equal('125')
+    		inputs[3].setValue('125')
+    		expect( inputs[3].getValue() ).to.equal('125')
     		ObjectEditorPanel.save.click()
     	})
     	
@@ -150,10 +150,7 @@ describe('Peregrine objects page', function () {
     	})*/
     	
     	it('number field saved', function(){
-    		console.log('number field is........' + previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p').getText())
-    		str = JSON.stringify(previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p'), null, 4); // (Optional) beautiful indented output.
-    		console.log(str); 
-    		expect( previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p').getText() ).to.equal(125)
+    		expect( previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p').getText() ).to.equal('125')
     	})
     })
     
