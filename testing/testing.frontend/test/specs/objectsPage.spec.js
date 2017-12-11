@@ -108,40 +108,53 @@ describe('Peregrine objects page', function () {
         let inputs
         let textEditor
         
-        it('editing field: text', function(){
+        it('editing text field', function(){
     		inputs = ObjectEditorPanel.inputs
     		inputs[0].setValue('first text')
     		expect( inputs[0].getValue() ).to.equal('first text')
     	})
     	
-    	it('editing field: textarea', function(){
+    	it('editing textarea', function(){
     		inputs[1].setValue('first textarea')
     		expect( inputs[1].getValue() ).to.equal('first textarea')
     	})
         
-        it('editing field: text editor', function(){
+        it('editing text editor', function(){
         	textEditor = ObjectEditorPanel.textEditor
         	textEditor.setValue('first text editor')
         	expect( textEditor.getText() ).to.equal('first text editor')
+    	})
+        
+        it('editing number field', function(){
+    		inputs[2].setValue('125')
+    		expect( inputs[2].getValue() ).to.equal('125')
     		ObjectEditorPanel.save.click()
-        })
+    	})
     	
+    	    	
     	let previewContainer
     	
-    	it('field text gets saved', function(){
+    	it('text field saved', function(){
     		previewContainer = ObjectEditorPanel.previewContainer
     		expect( previewContainer.$('.form-group:nth-child(1) > .field-wrap > .wrapper > p').getText() ).to.equal('first text')
     	})
     	
-    	it('field textarea gets saved', function(){
+    	it('textarea field saved', function(){
     		//previewContainer = ObjectEditorPanel.previewContainer
     		expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('first textarea')
     	})
     	
-    	/*it('field text editor gets saved', function(){
+    	/*it('text editor saved', function(){
     		//previewContainer = ObjectEditorPanel.previewContainer
     		expect( previewContainer.$('.form-group:nth-child(3) > .field-wrap > .wrapper > p').getText() ).to.equal('first text editor')
     	})*/
+    	
+    	it('number field saved', function(){
+    		console.log('number field is........' + previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p').getText())
+    		str = JSON.stringify(previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p'), null, 4); // (Optional) beautiful indented output.
+    		console.log(str); 
+    		expect( previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p').getText() ).to.equal(125)
+    	})
     })
     
     describe('Delete an object', function() {
