@@ -162,6 +162,14 @@ describe('Peregrine objects page', function () {
     	it('number field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p').getText() ).to.equal('125')
     	})
+    	
+    	it('url field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(5) > .field-wrap > .wrapper > p').getText() ).to.equal('http://www.peregrine-cms.com')
+    	})
+    	
+    	it('tel field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(6) > .field-wrap > .wrapper > p').getText() ).to.equal('9496009999')
+    	})
     })
     
     describe('Delete an object', function() {
