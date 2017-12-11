@@ -27,6 +27,20 @@
     "model": "number"
   },
   {
+    "type": "input",
+    "inputType": "url",
+    "placeholder": "url",
+    "label": "URL",
+    "model": "url"
+  },
+  {
+    "type": "input",
+    "inputType": "tel",
+    "placeholder": "tel",
+    "label": "Telephone",
+    "model": "tel"
+  },
+  {
     "type": "pathbrowser",
     "label": "page",
     "model": "pagePath",

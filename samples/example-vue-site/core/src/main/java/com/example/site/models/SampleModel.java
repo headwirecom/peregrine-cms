@@ -62,6 +62,12 @@ public class SampleModel extends AbstractComponent {
     
     @Inject
     private String number;
+    
+    @Inject
+    private String tel;
+    
+    @Inject
+    private String url;
 
     @Inject
     private String pagePath;
@@ -83,6 +89,14 @@ public class SampleModel extends AbstractComponent {
     
     public String getNumber() {
         return number;
+    }
+    
+    public String getTel() {
+        return tel;
+    }
+    
+    public String getUrl() {
+        return url;
     }
 
     public String getPagePath() {
