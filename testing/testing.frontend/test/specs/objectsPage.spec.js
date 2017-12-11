@@ -140,7 +140,7 @@ describe('Peregrine objects page', function () {
     	
     	/*it('field text editor gets saved', function(){
     		//previewContainer = ObjectEditorPanel.previewContainer
-    		expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('first text editor')
+    		expect( previewContainer.$('.form-group:nth-child(3) > .field-wrap > .wrapper > p').getText() ).to.equal('first text editor')
     	})*/
     })
     
