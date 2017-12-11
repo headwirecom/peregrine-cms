@@ -1,12 +1,13 @@
 <template>
-  <div v-bind:data-per-path="model.path">
-    <ol class="breadcrumb">
-      <li v-bind:class="i+1 === model.links.length ? 'breadcrumb-item active' : 'breadcrumb-item'" v-for="(item,i) in model.links" :key="i">
-        <a v-if="i+1 < model.links.length" v-bind:href="$helper.pathToUrl(item.link)">{{item.text}}</a>
-        <span v-if="i+1 === model.links.length" v-html="item.text"/>
-      </li>
-    </ol>
-  </div>
+  <themeclean-components-block v-bind:model="model">
+    <div class="col-12">
+      <span class="breadcrumb-item" v-for="(item,i) in model.links" :key="i"
+      v-bind:class="{active: i === model.links.length - 1}">
+        <a href="#" v-if="i + 1 &lt; model.links.length">{{item.text}}</a>
+        <span v-if="i+1 === model.links.length">{{item.text}}</span>
+      </span>
+    </div>
+  </themeclean-components-block>
 </template>
 
 <script>

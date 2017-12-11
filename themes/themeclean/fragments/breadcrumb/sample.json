@@ -2,6 +2,8 @@
   "title": "Breadcrumb",
   "group": ".Empty",
   "model": {
-    "level": "3"
+    "level": "3",
+    "toppadding": 10,
+    "bottompadding": 10
   }
 }

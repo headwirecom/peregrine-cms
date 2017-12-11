@@ -9,6 +9,10 @@
           "x-source": "inject",
           "x-form-label": "Number Of Levels",
           "x-form-type": "number"
+        },
+        "bgref": {
+          "$ref": "fragments/block/model-article.json#/definitions/Block",
+          "x-form-type": "reference"
         }
       }
     }
