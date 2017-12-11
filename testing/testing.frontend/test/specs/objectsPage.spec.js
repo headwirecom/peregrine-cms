@@ -128,6 +128,16 @@ describe('Peregrine objects page', function () {
         it('editing number field', function(){
     		inputs[3].setValue('125')
     		expect( inputs[3].getValue() ).to.equal('125')
+    	})
+    	
+    	it('editing url field', function(){
+    		inputs[4].setValue('http://www.peregrine-cms.com')
+    		expect( inputs[4].getValue() ).to.equal('http://www.peregrine-cms.com')
+    	})
+    	
+    	it('editing tel field', function(){
+    		inputs[5].setValue('9496009999')
+    		expect( inputs[5].getValue() ).to.equal('9496009999')
     		ObjectEditorPanel.save.click()
     	})
     	
