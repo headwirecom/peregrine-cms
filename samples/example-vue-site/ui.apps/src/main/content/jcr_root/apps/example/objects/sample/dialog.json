@@ -1,16 +1,30 @@
 { "fields":[{
   "type": "input",
   "inputType": "text",
-  "label": "name",
-  "model": "name",
-  "placeholder": "name"
-},
+  "label": "Text Field",
+  "model": "text",
+  "placeholder": "text"
+  },
   {
     "type": "material-textarea",
     "rows": 5,
-    "label": "value",
-    "model": "value",
-    "placeholder": "value"
+    "label": "Text Area",
+    "model": "textarea",
+    "placeholder": "text area"
+  },
+  {
+	"type": "texteditor",
+	"rows": 10,
+	"placeholder": "text editor",
+	"label": "Text Editor",
+	"model": "texteditor"
+  },
+  {
+    "type": "input",
+    "inputType": "number",
+    "placeholder": "number",
+    "label": "Number Field",
+    "model": "number"
   },
   {
     "type": "pathbrowser",

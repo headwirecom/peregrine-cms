@@ -52,10 +52,16 @@ public class SampleModel extends AbstractComponent {
     public SampleModel(Resource r) { super(r); }
 
     @Inject
-    private String value;
+    private String text;
 
     @Inject
-    private String name;
+    private String textarea;
+    
+    @Inject
+    private String texteditor;
+    
+    @Inject
+    private String number;
 
     @Inject
     private String pagePath;
@@ -63,12 +69,20 @@ public class SampleModel extends AbstractComponent {
     @Inject
     private String imagePath;
 
-    public String getValue() {
-        return value;
+    public String getText() {
+        return text;
     }
 
-    public String getName() {
-        return name;
+    public String getTextarea() {
+        return textarea;
+    }
+    
+    public String getTexteditor() {
+        return texteditor;
+    }
+    
+    public String getNumber() {
+        return number;
     }
 
     public String getPagePath() {
