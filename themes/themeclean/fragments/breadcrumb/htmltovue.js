@@ -9,6 +9,7 @@ module.exports = {
 
         let anchor = $.find('a')
         f.addIf( anchor, "i + 1 < model.links.length" )
+        f.bindAttribute( anchor, 'href', "item.link")
         f.mapField( anchor, "item.text")
 
         let spanInner = span.find('span')
