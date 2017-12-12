@@ -74,6 +74,9 @@ public class SampleModel extends AbstractComponent {
 
     @Inject
     private String imagePath;
+    
+    @Inject
+    private String checkbox;
 
     public String getText() {
         return text;
@@ -105,5 +108,9 @@ public class SampleModel extends AbstractComponent {
 
     public String getImagePath() {
         return imagePath;
+    }
+    
+    public String getCheckbox() {
+        return checkbox;
     }
 }

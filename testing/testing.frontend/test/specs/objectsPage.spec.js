@@ -89,6 +89,8 @@ describe('Peregrine objects page', function () {
     })
     
     describe('Edit an object', function() {
+    	
+	
     	let exampleObject
     	
     	it('find object to edit', function() {
@@ -104,7 +106,8 @@ describe('Peregrine objects page', function () {
     		ObjectEditorPanel.container.waitForVisible()
             expect( ObjectEditorPanel.container.isVisible() ).to.equal(true)
         })
-        
+    	
+    	
         let inputs
         let textEditor
         
@@ -138,10 +141,78 @@ describe('Peregrine objects page', function () {
     	it('editing tel field', function(){
     		inputs[5].setValue('9496009999')
     		expect( inputs[5].getValue() ).to.equal('9496009999')
+    	})
+    	
+    	let pathBrowserButtons
+    	let pathBrowserContainer
+    	
+    	it('open page path browser', function(){
+    		pathBrowserButtons = ObjectEditorPanel.pathBrowserButtons	
+    		pathBrowserContainer = ObjectEditorPanel.pathBrowserContainer
+    		
+    		// open up modal container
+    		pathBrowserButtons[0].click()
+    		pathBrowserContainer.waitForVisible()
+    		expect( pathBrowserContainer.isVisible() ).to.equal(true)
+		})
+    	
+    	let exampleSite
+    	
+    	it('should have a page named example in path browser', function(){
+    		
+    		const sites = ObjectEditorPanel.sites
+            const i = sites.findIndex( site => site.text.indexOf('example') > -1 ) 
+            exampleSite = sites[i]
+            expect( exampleSite.text ).to.contain('example')
+    		
+    	})
+    	
+    	it('select page named example', function(){
+    		
+    		exampleSite.label.click()
+    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/sites/example')
+    		ObjectEditorPanel.selectPathButton.click()
+    		// wait for 1 second till the animation ends
+    		browser.pause(1000)
+    		//ObjectEditorPanel.save.waitForVisible()
+    		//ObjectEditorPanel.save.click()
+    	})
+    	
+    	it('open asset path browser', function(){
+    		   		
+    		// open up modal container
+    		pathBrowserButtons[1].click()
+    		pathBrowserContainer.waitForVisible()
+    		expect( pathBrowserContainer.isVisible() ).to.equal(true)
+		})
+		
+		let exampleAsset
+    	
+    	it('should have an asset named peregrine-logo.png in path browser', function(){
+    		
+    		const sites = ObjectEditorPanel.sites
+            const i = sites.findIndex( site => site.text.indexOf('peregrine-logo.png') > -1 ) 
+            exampleAsset = sites[i]
+            expect( exampleAsset.text ).to.contain('peregrine-logo.png')
+    		
+    	})
+    	
+        it('select asset named peregrine-logo.png', function(){
+    		
+    		exampleAsset.label.click()
+    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/assets/example/images/peregrine-logo.png')
+    		ObjectEditorPanel.selectPathButton.click()
+    		// wait for 1 second till the animation ends
+    		browser.pause(1000)
+    		//ObjectEditorPanel.save.waitForVisible()
     		ObjectEditorPanel.save.click()
     	})
     	
-    	    	
+    	it('selecting checkbox field', function(){
+    		ObjectEditorPanel.checkbox.click()
+    		expect( ObjectEditorPanel.checkbox.isSelected() ).to.equal(true)
+    	})
+    	    	    	    	
     	let previewContainer
     	
     	it('text field saved', function(){
@@ -169,6 +240,14 @@ describe('Peregrine objects page', function () {
     	
     	it('tel field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(6) > .field-wrap > .wrapper > p').getText() ).to.equal('9496009999')
+    	})
+    	
+    	it('site path browser field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(7) > .field-wrap > .wrap > p').getText() ).to.equal('/content/sites/example')
+    	})
+    	
+    	it('asset path browser field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrap > p').getText() ).to.equal('/content/assets/example/images/peregrine-logo.png')
     	})
     })
     
