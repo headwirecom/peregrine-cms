@@ -208,6 +208,10 @@ describe('Peregrine objects page', function () {
     		ObjectEditorPanel.save.click()
     	})
     	
+    	it('selecting checkbox field', function(){
+    		ObjectEditorPanel.checkbox.click()
+    		expect( ObjectEditorPanel.checkbox.isSelected() ).to.equal(true)
+    	})
     	    	    	    	
     	let previewContainer
     	
