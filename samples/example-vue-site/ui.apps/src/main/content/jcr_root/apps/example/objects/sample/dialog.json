@@ -53,5 +53,13 @@
     "model": "imagePath",
     "browserRoot": "/content/assets/example/images",
     "placeholder": "select path"
+  },
+  {
+    "type": "material-checkbox",
+    "valueOn": "true",
+    "valueOff": "false",
+    "placeholder": "checkbox",
+    "label": "Checkbox",
+    "model": "checkbox"
   }
 ]}
