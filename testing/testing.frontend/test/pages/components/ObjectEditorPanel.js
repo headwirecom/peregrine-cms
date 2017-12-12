@@ -8,8 +8,11 @@ class ObjectEditorPanel {
     get pathBrowserButtons() {
     	return this.container.$$('.btn-flat')
     }
-    get checkbox() {
+    get checkboxLabel() {
         return this.container.$('.field-wrap label[for="checkbox"]')
+    }
+    get checkboxInput() {
+    	return this.container.$('.field-material-checkbox input').getValue()
     }
     // pathbrowser modal elements
     get sites() {

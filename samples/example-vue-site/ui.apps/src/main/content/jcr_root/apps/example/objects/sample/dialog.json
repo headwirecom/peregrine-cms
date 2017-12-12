@@ -61,5 +61,25 @@
     "placeholder": "checkbox",
     "label": "Checkbox",
     "model": "checkbox"
+  },
+  {
+    "type": "material-radios",
+    "values": [
+      {
+        "name": "Left",
+        "value": "left"
+      },
+      {
+        "name": "Center",
+        "value": "center"
+      },
+      {
+        "name": "Right",
+        "value": "right"
+      }
+    ],
+    "placeholder": "radio",
+    "label": "Radio Buttons",
+    "model": "radiobutton"
   }
 ]}

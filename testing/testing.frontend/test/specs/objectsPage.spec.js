@@ -209,8 +209,9 @@ describe('Peregrine objects page', function () {
     	})
     	
     	it('selecting checkbox field', function(){
-    		ObjectEditorPanel.checkbox.click()
-    		expect( ObjectEditorPanel.checkbox.isSelected() ).to.equal(true)
+    		ObjectEditorPanel.checkboxLabel.click()
+    		expect( ObjectEditorPanel.checkboxInput ).to.equal('on')
+    		ObjectEditorPanel.save.click()
     	})
     	    	    	    	
     	let previewContainer
@@ -248,6 +249,10 @@ describe('Peregrine objects page', function () {
     	
     	it('asset path browser field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrap > p').getText() ).to.equal('/content/assets/example/images/peregrine-logo.png')
+    	})
+    	
+    	it('checkbox field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(9) > .field-wrap > .wrap > p').getText() ).to.equal('true')
     	})
     })
     

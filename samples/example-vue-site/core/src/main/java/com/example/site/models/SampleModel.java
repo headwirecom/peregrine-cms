@@ -77,6 +77,9 @@ public class SampleModel extends AbstractComponent {
     
     @Inject
     private String checkbox;
+    
+    @Inject
+    private String radiobutton;
 
     public String getText() {
         return text;
@@ -112,5 +115,9 @@ public class SampleModel extends AbstractComponent {
     
     public String getCheckbox() {
         return checkbox;
+    }
+    
+    public String getRadiobutton() {
+        return radiobutton;
     }
 }
