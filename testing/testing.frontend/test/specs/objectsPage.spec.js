@@ -172,7 +172,37 @@ describe('Peregrine objects page', function () {
     		exampleSite.label.click()
     		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/sites/example')
     		ObjectEditorPanel.selectPathButton.click()
-    		// save editor panel
+    		// wait for 1 second till the animation ends
+    		browser.pause(1000)
+    		//ObjectEditorPanel.save.waitForVisible()
+    		//ObjectEditorPanel.save.click()
+    	})
+    	
+    	it('open asset path browser', function(){
+    		   		
+    		// open up modal container
+    		pathBrowserButtons[1].click()
+    		pathBrowserContainer.waitForVisible()
+    		expect( pathBrowserContainer.isVisible() ).to.equal(true)
+		})
+		
+		let exampleAsset
+    	
+    	it('should have an asset named peregrine-logo.png in path browser', function(){
+    		
+    		const sites = ObjectEditorPanel.sites
+            const i = sites.findIndex( site => site.text.indexOf('peregrine-logo.png') > -1 ) 
+            exampleAsset = sites[i]
+            expect( exampleAsset.text ).to.contain('peregrine-logo.png')
+    		
+    	})
+    	
+        it('select asset named peregrine-logo.png', function(){
+    		
+    		exampleAsset.label.click()
+    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/assets/example/images/peregrine-logo.png')
+    		ObjectEditorPanel.selectPathButton.click()
+    		// wait for 1 second till the animation ends
     		browser.pause(1000)
     		//ObjectEditorPanel.save.waitForVisible()
     		ObjectEditorPanel.save.click()
@@ -210,6 +240,10 @@ describe('Peregrine objects page', function () {
     	
     	it('site path browser field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(7) > .field-wrap > .wrap > p').getText() ).to.equal('/content/sites/example')
+    	})
+    	
+    	it('asset path browser field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrap > p').getText() ).to.equal('/content/assets/example/images/peregrine-logo.png')
     	})
     })
     
