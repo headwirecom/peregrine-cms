@@ -266,6 +266,10 @@ describe('Peregrine objects page', function () {
     	it('checkbox field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(9) > .field-wrap > .wrap > p').getText() ).to.equal('true')
     	})
+    	
+    	it('radio button field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(10) > .field-wrap > .wrap > p').getText() ).to.equal('Left')
+    	})
     })
     
     describe('Delete an object', function() {
