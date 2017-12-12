@@ -204,13 +204,25 @@ describe('Peregrine objects page', function () {
     		ObjectEditorPanel.selectPathButton.click()
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
-    		//ObjectEditorPanel.save.waitForVisible()
-    		// ObjectEditorPanel.save.click()
     	})
     	
     	it('selecting checkbox field', function(){
     		ObjectEditorPanel.checkboxLabel.click()
     		expect( ObjectEditorPanel.checkboxInput ).to.equal('on')
+    	})
+    	
+    	let exampleRadioButton
+    	
+    	it('should have a radio button with value left', function(){
+    		const buttons = ObjectEditorPanel.radioButtons
+    		const i = buttons.findIndex( button => button.text.indexOf('left') > -1 ) 
+            exampleRadioButton = buttons[i]
+            expect( exampleRadioButton.text ).to.contain('left')
+    	})
+    	
+    	it('selecting left from radio button list', function(){
+    		exampleRadioButton.label.click()
+    		expect( exampleRadioButton.container.getAttribute('class') ).to.equal('checked')
     		ObjectEditorPanel.save.click()
     	})
     	    	    	    	

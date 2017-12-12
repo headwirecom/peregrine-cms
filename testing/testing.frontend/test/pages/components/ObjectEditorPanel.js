@@ -14,6 +14,13 @@ class ObjectEditorPanel {
     get checkboxInput() {
     	return this.container.$('.field-material-checkbox input').getValue()
     }
+    get radioButtons() {
+    	const items = this.container.$$('.radio-list > li')
+        return items.map(item => {
+            return new RadioButton(item);
+        })
+    }
+    
     // pathbrowser modal elements
     get sites() {
         const items = this.pathBrowserContainer.$$('.modal-content > .col-browse > ul > li')
@@ -21,6 +28,7 @@ class ObjectEditorPanel {
             return new Item(item);
         })
     }
+    
     get selectedPath() {
     	return this.pathBrowserContainer.$('.modal-footer > .selected-path').getText()
     }
@@ -43,6 +51,14 @@ class Item {
         this.container = container;
     }
     get text()     { return this.container.$(`span`).getText()}
+    get label()    { return this.container.$(`label`)}
+}
+
+class RadioButton {
+    constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.$(`input`).getValue()}
     get label()    { return this.container.$(`label`)}
 }
 
