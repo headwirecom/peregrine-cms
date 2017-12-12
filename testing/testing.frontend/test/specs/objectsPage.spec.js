@@ -207,6 +207,10 @@ describe('Peregrine objects page', function () {
     	it('tel field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(6) > .field-wrap > .wrapper > p').getText() ).to.equal('9496009999')
     	})
+    	
+    	it('site path browser field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(7) > .field-wrap > .wrap > p').getText() ).to.equal('/content/sites/example')
+    	})
     })
     
     describe('Delete an object', function() {
