@@ -250,6 +250,10 @@ describe('Peregrine objects page', function () {
     	it('asset path browser field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrap > p').getText() ).to.equal('/content/assets/example/images/peregrine-logo.png')
     	})
+    	
+    	it('checkbox field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(9) > .field-wrap > .wrap > p').getText() ).to.equal('true')
+    	})
     })
     
     describe('Delete an object', function() {
