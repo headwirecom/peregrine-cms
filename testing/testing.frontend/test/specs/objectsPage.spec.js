@@ -205,7 +205,7 @@ describe('Peregrine objects page', function () {
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
     		//ObjectEditorPanel.save.waitForVisible()
-    		ObjectEditorPanel.save.click()
+    		// ObjectEditorPanel.save.click()
     	})
     	
     	it('selecting checkbox field', function(){

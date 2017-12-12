@@ -9,7 +9,7 @@ class ObjectEditorPanel {
     	return this.container.$$('.btn-flat')
     }
     get checkbox() {
-    	return this.container.$('fieldset:nth-child(1) > div.form-group:nth-child(9) > div:nth-child(2) > div:nth-child(1) > label:nth-child(2)')
+        return this.container.$('.field-wrap label[for="checkbox"]')
     }
     // pathbrowser modal elements
     get sites() {
