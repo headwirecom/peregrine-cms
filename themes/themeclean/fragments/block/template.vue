@@ -1,6 +1,7 @@
 <template>
   <section class="d-flex align-items-center" ref="section" v-bind:class="[classes, colors]"
-  v-bind:style="[styles, sticky]" v-bind:id="model.anchorname" v-bind:data-per-path="model.path">
+  v-bind:style="[styles, sticky]" v-bind:data-per-path="model.path">
+    <a class="percms-anchor" ref="anchor" v-bind:id="model.anchorname"></a>
     <div class="embed-responsive embed-responsive-16by9" v-if="model.custombackground === 'true' &amp;&amp; model.backgroundtype == 'video' &amp;&amp; model.bgvideo"
     v-bind:style="`position:${'absolute'};pointer-events:${'none'};`">
       <iframe class="embed-responsive-item" v-bind:src="model.bgvideo + '?autoplay=1&amp;loop=1&amp;controls=0&amp;mute=1'"></iframe>
@@ -28,6 +29,12 @@
               this.$refs.section.parentElement.style.marginTop = height + 'px';
             }
           }
+          //Offset height of anchor by height of the navbar and top padding
+          let navHeight = document.querySelector('nav').parentElement.parentElement.parentElement.clientHeight || 0
+          let offset = parseInt(this.model.toppadding) + navHeight 
+          this.$refs.anchor.style.top = `-${offset}px`
+          //Fix bootstrap scrollspy
+          this.$refs.anchor.style.height = `${offset}px`
         },
         computed: {          
           classes: function() {
