@@ -108,6 +108,11 @@ footer {
   padding-bottom: 20px;
   padding-top: 15px;
 }
+a.percms-anchor {
+  align-self: flex-start;
+  position: relative;
+  visibility: hidden;
+}
 
 @media (max-width: 768px) {
   .percms-w-sm-100{

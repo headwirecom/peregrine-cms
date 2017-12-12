@@ -30,11 +30,15 @@
             }
           }
           //Offset height of anchor by height of the navbar and top padding
-          let navHeight = document.querySelector('nav').parentElement.parentElement.parentElement.clientHeight || 0
-          let offset = parseInt(this.model.toppadding) + navHeight 
+          let navSection = document.querySelector('nav').parentElement.parentElement.parentElement
+          let navPosition = navSection.style.position
+          let navSticky = navPosition === "sticky" || navPosition === "fixed" 
+          let navOffset = navSticky ? navSection.clientHeight : 0
+
+          let offset = parseInt(this.model.toppadding) + navOffset 
           this.$refs.anchor.style.top = `-${offset}px`
           //Fix bootstrap scrollspy
-          this.$refs.anchor.style.height = `${offset}px`
+          this.$refs.anchor.style.height = `${this.$refs.section.clientHeight}px`
         },
         computed: {          
           classes: function() {
