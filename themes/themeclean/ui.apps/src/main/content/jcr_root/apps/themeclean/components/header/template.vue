@@ -29,6 +29,9 @@
         props: ['model'],
         mounted() {
           $('body').scrollspy({target:'.navbar'})
+          $('.nav-link').click( function(e) {
+            $('.navbar-collapse').collapse('hide')
+          })
         },
         computed: {
         	isEditAndEmpty() {
