@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from './logger.js'
-let log = LoggerFactory.logger('state').setFineLevel()
+let log = LoggerFactory.logger('state').setDebugLevel()
 
 function getClickable(node) {
     while(node.nodeName.toString() !== 'A') {
