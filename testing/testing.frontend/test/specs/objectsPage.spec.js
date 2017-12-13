@@ -232,7 +232,7 @@ describe('Peregrine objects page', function () {
     	
     	it('setting range field to 800', function(){
     		ObjectEditorPanel.rangeInput.selectorExecute( function(input){$( input ).val(800) })
-    		browser.pause(8000)
+    		//browser.pause(8000)
     		expect( ObjectEditorPanel.rangeInput.getValue() ).to.equal('800')
     		ObjectEditorPanel.save.click()
     	})
