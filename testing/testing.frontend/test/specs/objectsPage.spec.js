@@ -232,7 +232,6 @@ describe('Peregrine objects page', function () {
     	
     	it('setting range field to 800', function(){
     		ObjectEditorPanel.rangeInput.selectorExecute( function(input){$( input ).val(800) })
-    		//browser.pause(8000)
     		expect( ObjectEditorPanel.rangeInput.getValue() ).to.equal('800')
     		ObjectEditorPanel.save.click()
     	})
@@ -245,7 +244,6 @@ describe('Peregrine objects page', function () {
     	})
     	
     	it('textarea field saved', function(){
-    		//previewContainer = ObjectEditorPanel.previewContainer
     		expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('first textarea')
     	})
     	
@@ -285,6 +283,10 @@ describe('Peregrine objects page', function () {
     	it('material switch field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(11) > .field-wrap > .wrap > p').getText() ).to.equal('true')
     	})
+    	/*
+    	it('range field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(12) > .field-wrap > .wrapper > span > span').getText() ).to.equal('800')
+    	})*/
     })
     
     describe('Delete an object', function() {
