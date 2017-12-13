@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from './logger.js'
-let log = LoggerFactory.logger('state').setDebugLevel()
+let log = LoggerFactory.logger('state').setFineLevel()
 
 function getClickable(node) {
     while(node.nodeName.toString() !== 'A') {
@@ -44,15 +44,20 @@ window.onclick = function(ev) {
         var toUrl = node.href
         log.fine("onClick() - "+ toUrl);
         log.fine(toUrl, currentServer)
-        //Dont' load new content for an href on the same page
-        let currentUrl = window.location.href.replace(/\#\w+$/, '')
-        if(toUrl.startsWith( currentUrl ) && toUrl.match(/\#\w+$/)) return true;
-        if(toUrl.startsWith(currentServer)) {
-            ev.preventDefault()
-            var gotoPath = '/'+toUrl.slice(currentServer.length)
-            log.fine("gotoPath : " + gotoPath);
-            $peregrineApp.loadContent(gotoPath, false)
-            return false
+
+        if(toUrl.startsWith("#")) {
+            // do nothing, it's an internal page reference
+        } else {
+            //Dont' load new content for an href on the same page
+            let currentUrl = window.location.href.replace(/\#\w+$/, '')
+            if(toUrl.startsWith( currentUrl ) && toUrl.match(/\#\w+$/)) return true;
+            if(toUrl.startsWith(currentServer)) {
+                ev.preventDefault()
+                var gotoPath = '/'+toUrl.slice(currentServer.length)
+                log.fine("gotoPath : " + gotoPath);
+                $peregrineApp.loadContent(gotoPath, false)
+                return false
+            }
         }
     }
 }
