@@ -35,10 +35,10 @@
           let navSticky = navPosition === "sticky" || navPosition === "fixed" 
           let navOffset = navSticky ? navSection.clientHeight : 0
 
-          let offset = parseInt(this.model.toppadding) + navOffset 
-          this.$refs.anchor.style.top = `-${navOffset}px`
-          //Fix bootstrap scrollspy
-          this.$refs.anchor.style.height = `${this.$refs.section.clientHeight}px`
+          this.$refs.anchor.style.top = `0px`
+          this.$refs.anchor.style.marginTop = `-${navOffset}px`
+          this.$refs.anchor.style.paddingTop = `${navOffset}px`
+
         },
         computed: {          
           classes: function() {
