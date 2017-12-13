@@ -233,6 +233,30 @@ describe('Peregrine objects page', function () {
     	it('setting range field to 800', function(){
     		ObjectEditorPanel.rangeInput.selectorExecute( function(input){$( input ).val(800) })
     		expect( ObjectEditorPanel.rangeInput.getValue() ).to.equal('800')
+    	})
+    	
+    	let exampleMultiSelect
+    	let exampleOption
+    	
+    	it('should have an option Type 2 from Multi Select Field', function(){
+    		exampleMultiSelect = ObjectEditorPanel.multiSelect;
+    		exampleMultiSelect.selectButton.click()
+    		//browser.pause(1000)
+    		exampleMultiSelect.contentWrapper.waitForVisible()
+    		const options = exampleMultiSelect.items
+    		const i = options.findIndex( option => option.text.indexOf('Type 2') > -1 ) 
+    		exampleOption = options[i]
+    		expect( exampleOption.text ).to.contain('Type 2')
+    		
+    	})
+    	
+    	let exampleTag
+    	it('selecting Type 2 from Multi Select Field', function(){
+    		exampleTag = exampleMultiSelect.tag
+    		exampleOption.span.click()
+    		//browser.pause(1000)
+    		exampleTag.waitForVisible()
+    		expect( exampleTag.getText() ).to.equal('Type 2')
     		ObjectEditorPanel.save.click()
     	})
     	    	    	    	

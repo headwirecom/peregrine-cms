@@ -25,7 +25,10 @@ class ObjectEditorPanel {
     }
     get rangeInput() {
     	return this.container.$('.range-field input')
-    }        
+    }  
+    get multiSelect() {
+    	return new MultiSelect(this.container.$('.multiselect'))
+    }
     // pathbrowser modal elements
     get sites() {
         const items = this.pathBrowserContainer.$$('.modal-content > .col-browse > ul > li')
@@ -65,6 +68,29 @@ class RadioButton {
     }
     get text()     { return this.container.$(`input`).getValue()}
     get label()    { return this.container.$(`label`)}
+}
+
+class MultiSelect {
+	constructor(container){
+        this.container = container;
+    }
+	get selectButton() { return this.container.$('.multiselect__select')} 
+	get contentWrapper() { return this.container.$('.multiselect__content-wrapper')}
+	get tag() { return this.container.$('.multiselect__single')}
+	get items(){
+		const items = this.container.$$('ul > li')
+        return items.map(item => {
+            return new MultiSelectItem(item);
+        })
+	}
+}
+
+class MultiSelectItem {
+    constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.$('.multiselect__option > span').getText()}
+    get span()    { return this.container.$('.multiselect__option > span')}
 }
 
 module.exports = ObjectEditorPanel
