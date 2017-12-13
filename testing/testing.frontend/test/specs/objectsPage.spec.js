@@ -311,6 +311,10 @@ describe('Peregrine objects page', function () {
     	it('range field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(12) > .field-wrap > .wrapper > span > span').getText() ).to.equal('800')
     	})*/
+    	
+    	it('multi select field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(13) > .field-wrap > .wrap .multiselect__single').getText() ).to.equal('Type 2')
+    	})
     })
     
     describe('Delete an object', function() {
