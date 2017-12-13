@@ -23,9 +23,11 @@
   #L%
   -->
 <template>
-    <div class="wrapper">
-      <trumbowyg v-if="!schema.preview" :config="config" v-model="value"></trumbowyg>
-      <p v-else v-html="value"></p>
+    <div>
+        <div v-if="!schema.preview" class="wrapper">
+            <trumbowyg :config="config" v-model="value"></trumbowyg>
+        </div>
+        <p v-else v-html="value"></p>
     </div>
 </template>
 
@@ -50,7 +52,6 @@
                         'formattingWithCode',
                         'strong',
                         'em',
-                        'del',
                         'superscript',
                         'subscript',
                         'link',
