@@ -90,6 +90,12 @@ public class SampleModel extends AbstractComponent {
     @Inject
 	private String select;
     
+    @Inject
+	private String time;
+
+	@Inject
+	private String date;
+    
 
     public String getText() {
         return text;
@@ -141,5 +147,13 @@ public class SampleModel extends AbstractComponent {
     
     public String getSelect() {
 		return select;
+	}
+    
+    public String getTime() {
+		return time;
+	}
+
+	public String getDate() {
+		return date;
 	}
 }

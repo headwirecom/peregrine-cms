@@ -83,38 +83,50 @@
     "model": "radiobutton"
   },
   {
-      "type": "materialswitch",
-      "textOn": "yes",
-      "textOff": "no",
-      "valueOn": "true",
-      "valueOff": "false",
-      "placeholder": "Material Switch",
-      "label": "Material Switch",
-      "model": "materialswitch"
+    "type": "materialswitch",
+    "textOn": "yes",
+    "textOff": "no",
+    "valueOn": "true",
+    "valueOff": "false",
+    "placeholder": "Material Switch",
+    "label": "Material Switch",
+    "model": "materialswitch"
   },
   {
-      "type": "input",
-      "inputType": "range",
-      "placeholder": "range",
-      "label": "Range",
-      "model": "range",
-      "min": 1,
-      "max": 1000
+    "type": "input",
+    "inputType": "range",
+    "placeholder": "range",
+    "label": "Range",
+    "model": "range",
+    "min": 1,
+    "max": 1000
   },
   {
-      "type": "material-select",
-      "values": [
-        {
-          "name": "Type 1",
-          "value": "type1"
-        },
-        {
-          "name": "Type 2",
-          "value": "type2"
-        }
-      ],
-      "placeholder": "select",
-      "label": "Material Select",
-      "model": "select"
-    }
+  	"type": "material-select",
+    "values": [
+      {
+        "name": "Type 1",
+        "value": "type1"
+      },
+      {
+        "name": "Type 2",
+        "value": "type2"
+      }
+    ],
+    "placeholder": "select",
+    "label": "Material Select",
+    "model": "select"
+  },
+  {
+    "type": "material-timepicker",
+    "placeholder": "time",
+    "label": "Time",
+    "model": "time"
+  },
+  {
+    "type": "material-datepicker",
+    "placeholder": "date",
+    "label": "Date",
+    "model": "date"
+  }
 ]}
