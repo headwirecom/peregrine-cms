@@ -227,8 +227,13 @@ describe('Peregrine objects page', function () {
     	
     	it('setting materialswitch field to yes', function(){
     		ObjectEditorPanel.switchLabel.click()
-    		browser.pause(1000)
     		expect( ObjectEditorPanel.switchLabel.getText() ).to.equal('yes')
+    	})
+    	
+    	it('setting range field to 800', function(){
+    		ObjectEditorPanel.rangeInput.selectorExecute( function(input){input.value = 800} )
+    		browser.pause(8000)
+    		expect( ObjectEditorPanel.rangeInput.getValue() ).to.equal('800')
     		ObjectEditorPanel.save.click()
     	})
     	    	    	    	
@@ -275,6 +280,10 @@ describe('Peregrine objects page', function () {
     	
     	it('radio button field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(10) > .field-wrap > .wrap > p').getText() ).to.equal('Left')
+    	})
+    	
+    	it('material switch field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(11) > .field-wrap > .wrap > p').getText() ).to.equal('true')
     	})
     })
     

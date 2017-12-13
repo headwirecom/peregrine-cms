@@ -23,7 +23,9 @@ class ObjectEditorPanel {
     get switchLabel() {
     	return this.container.$('.field-wrap label[for="material-switch"]')
     }
-            
+    get rangeInput() {
+    	return this.container.$('.range-field input')
+    }        
     // pathbrowser modal elements
     get sites() {
         const items = this.pathBrowserContainer.$$('.modal-content > .col-browse > ul > li')
