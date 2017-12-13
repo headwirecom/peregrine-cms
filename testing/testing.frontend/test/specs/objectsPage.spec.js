@@ -223,6 +223,12 @@ describe('Peregrine objects page', function () {
     	it('selecting left from radio button list', function(){
     		exampleRadioButton.label.click()
     		expect( exampleRadioButton.container.getAttribute('class') ).to.equal('checked')
+    	})
+    	
+    	it('setting materialswitch field to yes', function(){
+    		ObjectEditorPanel.switchLabel.click()
+    		browser.pause(1000)
+    		expect( ObjectEditorPanel.switchLabel.getText() ).to.equal('yes')
     		ObjectEditorPanel.save.click()
     	})
     	    	    	    	
