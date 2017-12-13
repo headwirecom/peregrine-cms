@@ -37,8 +37,8 @@
 
           let offset = parseInt(this.model.toppadding) + navOffset 
           this.$refs.anchor.style.top = `-${offset}px`
-          //Fix bootstrap scrollspy
-          this.$refs.anchor.style.height = `${this.$refs.section.clientHeight}px`
+          // //Fix bootstrap scrollspy
+          // this.$refs.anchor.style.height = `${this.$refs.section.clientHeight}px`
         },
         computed: {          
           classes: function() {
