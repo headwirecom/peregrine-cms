@@ -20,7 +20,10 @@ class ObjectEditorPanel {
             return new RadioButton(item);
         })
     }
-    
+    get switchLabel() {
+    	return this.container.$('.field-wrap label[for="material-switch"]')
+    }
+            
     // pathbrowser modal elements
     get sites() {
         const items = this.pathBrowserContainer.$$('.modal-content > .col-browse > ul > li')

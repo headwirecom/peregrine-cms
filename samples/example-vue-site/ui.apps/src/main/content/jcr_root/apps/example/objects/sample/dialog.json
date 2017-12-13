@@ -81,5 +81,24 @@
     "placeholder": "radio",
     "label": "Radio Buttons",
     "model": "radiobutton"
+  },
+  {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "Material Switch",
+      "label": "Material Switch",
+      "model": "materialswitch"
+  },
+  {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "range",
+      "label": "Range",
+      "model": "range",
+      "min": 1,
+      "max": 1000
   }
 ]}

@@ -80,6 +80,13 @@ public class SampleModel extends AbstractComponent {
     
     @Inject
     private String radiobutton;
+    
+    @Inject
+    private String materialswitch;
+    
+    @Inject
+    private String range;
+    
 
     public String getText() {
         return text;
@@ -119,5 +126,13 @@ public class SampleModel extends AbstractComponent {
     
     public String getRadiobutton() {
         return radiobutton;
+    }
+    
+    public String getMaterialswitch() {
+        return materialswitch;
+    }
+    
+    public String getRange() {
+        return range;
     }
 }
