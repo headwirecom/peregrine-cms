@@ -100,5 +100,21 @@
       "model": "range",
       "min": 1,
       "max": 1000
-  }
+  },
+  {
+      "type": "material-select",
+      "values": [
+        {
+          "name": "Type 1",
+          "value": "type1"
+        },
+        {
+          "name": "Type 2",
+          "value": "type2"
+        }
+      ],
+      "placeholder": "select",
+      "label": "Material Select",
+      "model": "select"
+    }
 ]}

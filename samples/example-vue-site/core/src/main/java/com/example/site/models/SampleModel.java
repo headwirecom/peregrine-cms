@@ -87,6 +87,9 @@ public class SampleModel extends AbstractComponent {
     @Inject
     private String range;
     
+    @Inject
+	private String select;
+    
 
     public String getText() {
         return text;
@@ -135,4 +138,8 @@ public class SampleModel extends AbstractComponent {
     public String getRange() {
         return range;
     }
+    
+    public String getSelect() {
+		return select;
+	}
 }
