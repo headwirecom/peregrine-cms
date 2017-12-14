@@ -50,9 +50,9 @@ class ObjectEditorPanel {
         })
     }
     get days() {
-    	const items = this.datetimeBrowserContainer.$$('.vdatetime-popup__date-picker > div') .vdatetime-popup__date-picker
+    	const items = this.datetimeBrowserContainer.$$('.vdatetime-popup__date-picker > .vdatetime-popup__date-picker__item > span > span')
         return items.map(item => {
-            return new TimeItem(item);
+            return new DateItem(item);
         })
     }
     get monthSelector() {
@@ -130,6 +130,14 @@ class MultiSelectItem {
 }
 
 class TimeItem {
+    constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.getText()}
+    get div()    { return this.container}
+}
+
+class DateItem {
     constructor(container){
         this.container = container;
     }

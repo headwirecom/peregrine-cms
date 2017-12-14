@@ -263,7 +263,7 @@ describe('Peregrine objects page', function () {
     	it('clicking input field should open up time picker modal', function(){
     		exampleTimeInput = ObjectEditorPanel.timeInput
     		exampleTimeInput.click()
-    		exampleTimeModal = ObjectEditorPanel.timeBrowserContainer
+    		exampleTimeModal = ObjectEditorPanel.datetimeBrowserContainer
     		exampleTimeModal.waitForVisible()
     		expect( exampleTimeModal.isVisible() ).to.equal(true)
     	})
@@ -277,7 +277,7 @@ describe('Peregrine objects page', function () {
         })
     	
     	let exampleMinute
-    	it('should have a minnute select with value 30', function(){
+    	it('should have a minute select with value 30', function(){
     		const minutes = ObjectEditorPanel.minutes
     		const i = minutes.findIndex( minute => minute.text.indexOf('30') > -1 ) 
             exampleMinute = minutes[i]
@@ -293,9 +293,45 @@ describe('Peregrine objects page', function () {
     		exampleTimeInput.waitForVisible()
     		expect( exampleTimeInput.getValue() ).to.contain('08:30')
     		ObjectEditorPanel.save.waitForVisible()
+    	})
+    	
+    	let exampleDateInput
+    	let exampleDateModal
+    	it('clicking input field should open up date picker modal', function(){
+    		exampleDateInput = ObjectEditorPanel.dateInput
+    		exampleDateInput.click()
+    		exampleDateModal = ObjectEditorPanel.datetimeBrowserContainer
+    		exampleDateModal.waitForVisible()
+    		expect( exampleDateModal.isVisible() ).to.equal(true)
+    	})
+    	
+    	
+    	let exampleDay
+    	let exampleMonthSelector
+    	it('should have a day of 15 in previous month', function(){
+    		exampleMonthSelector = ObjectEditorPanel.monthSelector
+    		exampleMonthSelector.previousButton.click()
+    		const days = ObjectEditorPanel.days
+    		const i = days.findIndex( day => day.text.indexOf('15') > -1 ) 
+            exampleDay = days[i]
+            expect( exampleDay.text ).to.contain('15')
+        })
+    	
+    	let pickedMonthYear
+    	it('selecting day 15 of previous month in date picker modal', function(){
+    		exampleDay.div.click()
+    		pickedMonthYear = exampleMonthSelector.currentMonthYear
+    		//console.log('current month year:' + pickedMonthYear)
+    		ObjectEditorPanel.datetimeSaveButton.click()
+    		// wait for animation to end
+    		browser.pause(1000)
+    		exampleDateInput.waitForVisible()
+    		expect( exampleDateInput.getValue() ).to.contain('15')
+    		ObjectEditorPanel.save.waitForVisible()
     		ObjectEditorPanel.save.click()
     	})
-    	    	    	    	
+    	
+    	    	    	    	    	
     	let previewContainer
     	
     	it('text field saved', function(){
