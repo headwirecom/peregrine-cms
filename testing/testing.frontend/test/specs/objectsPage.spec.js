@@ -318,15 +318,15 @@ describe('Peregrine objects page', function () {
         })
     	
     	let pickedMonthYear
+    	let dateString
     	it('selecting day 15 of previous month in date picker modal', function(){
     		exampleDay.div.click()
-    		pickedMonthYear = exampleMonthSelector.currentMonthYear
-    		//console.log('current month year:' + pickedMonthYear)
+    		dateString = getDateString(exampleMonthSelector.currentMonthYear,'15')
     		ObjectEditorPanel.datetimeSaveButton.click()
     		// wait for animation to end
     		browser.pause(1000)
     		exampleDateInput.waitForVisible()
-    		expect( exampleDateInput.getValue() ).to.contain('15')
+    		expect( exampleDateInput.getValue() ).to.contain(dateString)
     		ObjectEditorPanel.save.waitForVisible()
     		ObjectEditorPanel.save.click()
     	})
@@ -390,6 +390,9 @@ describe('Peregrine objects page', function () {
     	it('time field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(14) > .field-wrap > .vdatetime > input').getValue() ).to.equal('08:30')
     	})
+    	it('date field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(15) > .field-wrap > .vdatetime > input').getValue() ).to.equal(dateString)
+    	})
     })
     
     describe('Delete an object', function() {
@@ -413,5 +416,26 @@ describe('Peregrine objects page', function () {
 	        expect( i ).to.equal(-1)
 	    })
     })
-
+    
+    function getDateString(monthYear, day) {
+		var months = [
+		    'January',
+		    'February',
+		    'March',
+		    'April',
+		    'May',
+		    'June',
+		    'July',
+		    'August',
+		    'September',
+		    'October',
+		    'November',
+		    'December'
+		  ];
+	      var Value = monthYear.split(" ")      
+		  var month = (months.indexOf(Value[0]) + 1)
+		  var year = Value[1]
+	      return year + '-' + month + '-' + day
+    }
 })
+
