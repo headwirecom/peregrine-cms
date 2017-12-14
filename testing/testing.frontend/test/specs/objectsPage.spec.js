@@ -288,7 +288,10 @@ describe('Peregrine objects page', function () {
     		exampleHour.div.click()
     		exampleMinute.div.click()
     		ObjectEditorPanel.timeSaveButton.click()
+    		// wait for animation to end
     		browser.pause(1000)
+    		exampleTimeInput.waitForVisible()
+    		expect( exampleTimeInput.getValue() ).to.contain('08:30')
     		ObjectEditorPanel.save.waitForVisible()
     		ObjectEditorPanel.save.click()
     	})
@@ -347,6 +350,9 @@ describe('Peregrine objects page', function () {
     	
     	it('multi select field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(13) > .field-wrap > .wrap .multiselect__single').getText() ).to.equal('Type 2')
+    	})
+    	it('time field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(14) > .field-wrap > .vdatetime > input').getValue() ).to.equal('08:30')
     	})
     })
     
