@@ -29,25 +29,37 @@ class ObjectEditorPanel {
     get multiSelect() {
     	return new MultiSelect(this.container.$('.multiselect'))
     }
-    
-    // date time modal elements //
     get timeInput() {
     	return this.container.$('.field-material-timepicker input')
     }
+    get dateInput() {
+    	return this.container.$('.field-material-datepicker input')
+    }
+    
+    // date time modal elements //
     get hours() {
-    	const items = this.timeBrowserContainer.$$('.vdatetime-popup__list-picker--half:nth-child(1) > div')
+    	const items = this.datetimeBrowserContainer.$$('.vdatetime-popup__list-picker--half:nth-child(1) > div')
         return items.map(item => {
             return new TimeItem(item);
         })
     }
     get minutes() {
-    	const items = this.timeBrowserContainer.$$('.vdatetime-popup__list-picker:nth-child(2) > div')
+    	const items = this.datetimeBrowserContainer.$$('.vdatetime-popup__list-picker:nth-child(2) > div')
         return items.map(item => {
             return new TimeItem(item);
         })
     }
-    get timeSaveButton() {
-    	return this.timeBrowserContainer.$('.vdatetime-popup__actions__button:nth-child(2)') 
+    get days() {
+    	const items = this.datetimeBrowserContainer.$$('.vdatetime-popup__date-picker > div') .vdatetime-popup__date-picker
+        return items.map(item => {
+            return new TimeItem(item);
+        })
+    }
+    get monthSelector() {
+    	return new MonthSelector(this.datetimeBrowserContainer.$('.vdatetime-popup__month-selector'))
+    }
+    get datetimeSaveButton() {
+    	return this.datetimeBrowserContainer.$('.vdatetime-popup__actions__button:nth-child(2)') 
     }
     // date time modal elements //
     
@@ -69,7 +81,7 @@ class ObjectEditorPanel {
     get pathBrowserContainer() {
     	return $('.modal-container')
     }
-    get timeBrowserContainer() {
+    get datetimeBrowserContainer() {
     	return $('.vdatetime-popup')
     }
     get previewContainer() { return $('.vfg-preview') }
@@ -123,6 +135,16 @@ class TimeItem {
     }
     get text()     { return this.container.getText()}
     get div()    { return this.container}
+}
+
+class MonthSelector {
+	constructor(container){
+        this.container = container;
+    }
+	get previousButton() { return this.container.$('.vdatetime-popup__month-selector__previous')} 
+	get currentMonthYear() { return this.container.$('.vdatetime-popup__month-selector__current').getText()} 
+	get nextButton() { return this.container.$('.vdatetime-popup__month-selector__next')} 
+
 }
 
 module.exports = ObjectEditorPanel

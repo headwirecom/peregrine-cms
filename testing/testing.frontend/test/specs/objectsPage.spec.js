@@ -287,7 +287,7 @@ describe('Peregrine objects page', function () {
     	it('selecting 08:30 in time picker modal', function(){
     		exampleHour.div.click()
     		exampleMinute.div.click()
-    		ObjectEditorPanel.timeSaveButton.click()
+    		ObjectEditorPanel.datetimeSaveButton.click()
     		// wait for animation to end
     		browser.pause(1000)
     		exampleTimeInput.waitForVisible()
