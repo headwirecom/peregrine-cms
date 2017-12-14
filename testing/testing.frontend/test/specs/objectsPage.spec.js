@@ -241,7 +241,6 @@ describe('Peregrine objects page', function () {
     	it('should have an option Type 2 from Multi Select Field', function(){
     		exampleMultiSelect = ObjectEditorPanel.multiSelect;
     		exampleMultiSelect.selectButton.click()
-    		//browser.pause(1000)
     		exampleMultiSelect.contentWrapper.waitForVisible()
     		const options = exampleMultiSelect.items
     		const i = options.findIndex( option => option.text.indexOf('Type 2') > -1 ) 
@@ -254,9 +253,43 @@ describe('Peregrine objects page', function () {
     	it('selecting Type 2 from Multi Select Field', function(){
     		exampleTag = exampleMultiSelect.tag
     		exampleOption.span.click()
-    		//browser.pause(1000)
     		exampleTag.waitForVisible()
     		expect( exampleTag.getText() ).to.equal('Type 2')
+    		//ObjectEditorPanel.save.click()
+    	})
+    	
+    	let exampleTimeInput
+    	let exampleTimeModal
+    	it('clicking input field should open up time picker modal', function(){
+    		exampleTimeInput = ObjectEditorPanel.timeInput
+    		exampleTimeInput.click()
+    		exampleTimeModal = ObjectEditorPanel.timeBrowserContainer
+    		exampleTimeModal.waitForVisible()
+    		expect( exampleTimeModal.isVisible() ).to.equal(true)
+    	})
+    	
+    	let exampleHour
+    	it('should have an hour select with value 08', function(){
+    		const hours = ObjectEditorPanel.hours
+    		const i = hours.findIndex( hour => hour.text.indexOf('08') > -1 ) 
+            exampleHour = hours[i]
+            expect( exampleHour.text ).to.contain('08')
+        })
+    	
+    	let exampleMinute
+    	it('should have a minnute select with value 30', function(){
+    		const minutes = ObjectEditorPanel.minutes
+    		const i = minutes.findIndex( minute => minute.text.indexOf('30') > -1 ) 
+            exampleMinute = minutes[i]
+            expect( exampleMinute.text ).to.contain('30')
+    	})
+    	
+    	it('selecting 08:30 in time picker modal', function(){
+    		exampleHour.div.click()
+    		exampleMinute.div.click()
+    		ObjectEditorPanel.timeSaveButton.click()
+    		browser.pause(1000)
+    		ObjectEditorPanel.save.waitForVisible()
     		ObjectEditorPanel.save.click()
     	})
     	    	    	    	

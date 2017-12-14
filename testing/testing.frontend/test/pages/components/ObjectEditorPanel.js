@@ -29,6 +29,28 @@ class ObjectEditorPanel {
     get multiSelect() {
     	return new MultiSelect(this.container.$('.multiselect'))
     }
+    
+    // date time modal elements //
+    get timeInput() {
+    	return this.container.$('.field-material-timepicker input')
+    }
+    get hours() {
+    	const items = this.timeBrowserContainer.$$('.vdatetime-popup__list-picker--half:nth-child(1) > div')
+        return items.map(item => {
+            return new TimeItem(item);
+        })
+    }
+    get minutes() {
+    	const items = this.timeBrowserContainer.$$('.vdatetime-popup__list-picker:nth-child(2) > div')
+        return items.map(item => {
+            return new TimeItem(item);
+        })
+    }
+    get timeSaveButton() {
+    	return this.timeBrowserContainer.$('.vdatetime-popup__actions__button:nth-child(2)') 
+    }
+    // date time modal elements //
+    
     // pathbrowser modal elements
     get sites() {
         const items = this.pathBrowserContainer.$$('.modal-content > .col-browse > ul > li')
@@ -36,7 +58,6 @@ class ObjectEditorPanel {
             return new Item(item);
         })
     }
-    
     get selectedPath() {
     	return this.pathBrowserContainer.$('.modal-footer > .selected-path').getText()
     }
@@ -47,6 +68,9 @@ class ObjectEditorPanel {
     
     get pathBrowserContainer() {
     	return $('.modal-container')
+    }
+    get timeBrowserContainer() {
+    	return $('.vdatetime-popup')
     }
     get previewContainer() { return $('.vfg-preview') }
     get container() { return $('.vue-form-generator')}
@@ -91,6 +115,14 @@ class MultiSelectItem {
     }
     get text()     { return this.container.$('.multiselect__option > span').getText()}
     get span()    { return this.container.$('.multiselect__option > span')}
+}
+
+class TimeItem {
+    constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.getText()}
+    get div()    { return this.container}
 }
 
 module.exports = ObjectEditorPanel
