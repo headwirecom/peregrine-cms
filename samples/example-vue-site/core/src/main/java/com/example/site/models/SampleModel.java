@@ -95,6 +95,9 @@ public class SampleModel extends AbstractComponent {
 
 	@Inject
 	private String date;
+	
+	@Inject
+	private String datetime;
     
 
     public String getText() {
@@ -155,5 +158,9 @@ public class SampleModel extends AbstractComponent {
 
 	public String getDate() {
 		return date;
+	}
+	
+	public String getDatetime() {
+		return datetime;
 	}
 }

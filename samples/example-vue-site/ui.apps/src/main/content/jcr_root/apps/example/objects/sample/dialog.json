@@ -128,5 +128,11 @@
     "placeholder": "date",
     "label": "Date",
     "model": "date"
+  },
+  {
+    "type": "material-datetime",
+    "placeholder": "datetime",
+    "label": "Date/Time",
+    "model": "datetime"
   }
 ]}
