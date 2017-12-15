@@ -81,6 +81,10 @@ class ObjectEditorPanel {
     }
     // pathbrowser modal elements
     
+    get collection() {
+    	return new Collection(this.container.$('.field-collection'))
+    }
+    
     get pathBrowserContainer() {
     	return $('.modal-container')
     }
@@ -157,5 +161,29 @@ class MonthSelector {
 	get nextButton() { return this.container.$('.vdatetime-popup__month-selector__next')} 
 
 }
+
+class Collection {
+    constructor(container){
+        this.container = container;
+    }
+    get addButton()     { return this.container.$('h5 > button')}
+    get items()    { 
+    	const items = this.container.$$('ul > li')
+        return items.map(item => {
+            return new CollectionItem(item);
+        })
+    }
+}
+
+class CollectionItem {
+    constructor(container){
+        this.container = container;
+    }
+    get title()   { return this.container.$('.field-input input')}
+    get text()    { return this.container.$('.field-texteditor .trumbowyg-editor')} 
+    get imageButton() {return this.container.$('.field-pathbrowser button') }
+    get image()   { return this.container.$('.field-pathbrowser input')}
+}
+
 
 module.exports = ObjectEditorPanel
