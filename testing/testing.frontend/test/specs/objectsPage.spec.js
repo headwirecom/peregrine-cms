@@ -400,9 +400,43 @@ describe('Peregrine objects page', function () {
     		browser.pause(1000)
     		datetimeInput.waitForVisible()
     		expect( datetimeInput.getValue() ).to.contain(datetimeString + ' 12:45')
-    		ObjectEditorPanel.save.waitForVisible()
+    		//ObjectEditorPanel.save.waitForVisible()
+    		//ObjectEditorPanel.save.click()
+    	})
+    	
+    	let exampleCollection
+    	it('clicking add button should add a collection', function(){
+    		exampleCollection = ObjectEditorPanel.collection
+    		exampleCollection.addButton.click()
+    		//exampleCollection.items.waitForVisible()
+    		expect( exampleCollection.items.length ).to.equal(1)
+    	})
+    	
+    	let exampleCollectionItem
+    	let browserContainer
+    	let asset
+    	it('authoring collection item', function(){
+    		exampleCollectionItem = exampleCollection.items[0]
+    		browserContainer = ObjectEditorPanel.pathBrowserContainer
+    		exampleCollectionItem.title.setValue('collection title')
+    		expect( exampleCollectionItem.title.getValue() ).to.equal('collection title')
+    		exampleCollectionItem.text.setValue('collection text')
+    		expect( exampleCollectionItem.text.getText() ).to.equal('collection text')
+    		exampleCollectionItem.imageButton.click()
+    		browserContainer.waitForVisible()
+    		const sites = ObjectEditorPanel.sites
+            const i = sites.findIndex( site => site.text.indexOf('peregrine-logo.png') > -1 ) 
+            asset = sites[i]
+    		asset.label.click()
+    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/assets/peregrine-logo.png')
+    		ObjectEditorPanel.selectPathButton.click()
+    		// wait for 1 second till the animation ends
+    		browser.pause(1000)
+    		
     		ObjectEditorPanel.save.click()
     	})
+    	
+    	
     	
     	    	    	    	    	
     	let previewContainer
