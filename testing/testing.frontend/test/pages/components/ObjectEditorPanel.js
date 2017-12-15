@@ -194,7 +194,7 @@ class Color {
         this.container = container;
     }
     get button()     { return this.container.$('input')}
-    get colorCode()  { return this.container.$('span').getText()}
+    get colorCode()  { return this.container.$('span')}
 }
 
 

@@ -432,11 +432,21 @@ describe('Peregrine objects page', function () {
     		ObjectEditorPanel.selectPathButton.click()
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
-    		
-    		ObjectEditorPanel.save.click()
     	})
     	
+    	let exampleColor
+    	it('clicking color button should open up color picker window', function(){
+    		exampleColor = ObjectEditorPanel.color
+    		exampleColor.button.click()
+    	})
     	
+    	it('setting color green on color field', function(){
+    		exampleColor.button.selectorExecute( function(input){$( input ).val('#008040') })         
+    		//exampleColor.colorCode.text('#008040')
+    		expect( exampleColor.button.getValue() ).to.equal('#008040')
+    		//expect( exampleColor.colorCode.getText() ).to.equal('#008040')
+    		ObjectEditorPanel.save.click()
+    	})
     	
     	    	    	    	    	
     	let previewContainer
