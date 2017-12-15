@@ -503,6 +503,11 @@ describe('Peregrine objects page', function () {
     	it('datetime field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(16) > .field-wrap > .vdatetime > input').getValue() ).to.equal(datetimeString + ' 12:45')
     	})
+    	it('collection field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-input p').getText() ).to.equal('collection title')
+    		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-texteditor p').getText() ).to.equal('collection text')
+    		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-pathbrowser p').getText() ).to.equal('/content/assets/peregrine-logo.png')
+    	})
     })
     
     describe('Delete an object', function() {
