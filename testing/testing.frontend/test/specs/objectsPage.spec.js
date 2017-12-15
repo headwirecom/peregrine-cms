@@ -143,6 +143,7 @@ describe('Peregrine objects page', function () {
     		expect( inputs[5].getValue() ).to.equal('9496009999')
     	})
     	
+    	// page path browser field testing
     	let pathBrowserButtons
     	let pathBrowserContainer
     	
@@ -178,6 +179,7 @@ describe('Peregrine objects page', function () {
     		//ObjectEditorPanel.save.click()
     	})
     	
+    	// asset path browser field testing
     	it('open asset path browser', function(){
     		   		
     		// open up modal container
@@ -211,6 +213,7 @@ describe('Peregrine objects page', function () {
     		expect( ObjectEditorPanel.checkboxInput ).to.equal('on')
     	})
     	
+    	// radio button testing
     	let exampleRadioButton
     	
     	it('should have a radio button with value left', function(){
@@ -225,16 +228,19 @@ describe('Peregrine objects page', function () {
     		expect( exampleRadioButton.container.getAttribute('class') ).to.equal('checked')
     	})
     	
+    	// material switch field testing
     	it('setting materialswitch field to yes', function(){
     		ObjectEditorPanel.switchLabel.click()
     		expect( ObjectEditorPanel.switchLabel.getText() ).to.equal('yes')
     	})
     	
+    	// range field testing
     	it('setting range field to 800', function(){
     		ObjectEditorPanel.rangeInput.selectorExecute( function(input){$( input ).val(800) })
     		expect( ObjectEditorPanel.rangeInput.getValue() ).to.equal('800')
     	})
     	
+    	// multiselect field testing
     	let exampleMultiSelect
     	let exampleOption
     	
@@ -258,6 +264,7 @@ describe('Peregrine objects page', function () {
     		//ObjectEditorPanel.save.click()
     	})
     	
+    	// time field testing
     	let exampleTimeInput
     	let exampleTimeModal
     	it('clicking input field should open up time picker modal', function(){
@@ -295,6 +302,7 @@ describe('Peregrine objects page', function () {
     		ObjectEditorPanel.save.waitForVisible()
     	})
     	
+    	// date field testing
     	let exampleDateInput
     	let exampleDateModal
     	it('clicking input field should open up date picker modal', function(){
@@ -317,7 +325,6 @@ describe('Peregrine objects page', function () {
             expect( exampleDay.text ).to.contain('15')
         })
     	
-    	let pickedMonthYear
     	let dateString
     	it('selecting day 15 of previous month in date picker modal', function(){
     		exampleDay.div.click()
@@ -327,6 +334,72 @@ describe('Peregrine objects page', function () {
     		browser.pause(1000)
     		exampleDateInput.waitForVisible()
     		expect( exampleDateInput.getValue() ).to.contain(dateString)
+    		//ObjectEditorPanel.save.waitForVisible()
+    		//ObjectEditorPanel.save.click()
+    	})
+    	
+    	// datetime field testing
+    	let datetimeInput
+    	let dateModal
+    	it('clicking input field should open up datetime picker modal', function(){
+    		datetimeInput = ObjectEditorPanel.datetimeInput
+    		datetimeInput.click()
+    		dateModal = ObjectEditorPanel.datetimeBrowserContainer
+    		dateModal.waitForVisible()
+    		expect( dateModal.isVisible() ).to.equal(true)
+    	})
+    	
+    	let day
+    	let monthSelector
+    	it('should have a day of 20 in next month', function(){
+    		monthSelector = ObjectEditorPanel.monthSelector
+    		monthSelector.nextButton.click()
+    		const days = ObjectEditorPanel.days
+    		const i = days.findIndex( day => day.text.indexOf('20') > -1 ) 
+            day = days[i]
+            expect( day.text ).to.contain('20')
+        })
+    	
+    	let datetimeString
+    	it('selecting day 20 of next month in date picker modal', function(){
+    		day.div.click()
+    		datetimeString = getDateString(monthSelector.currentMonthYear,'20')
+    		ObjectEditorPanel.datetimeSaveButton.click()
+    		// wait for animation to end
+    		browser.pause(1000)
+    	})
+    	
+    	let timeModal
+    	it('expecting time picker modal', function(){
+    		timeModal = ObjectEditorPanel.datetimeBrowserContainer
+    		timeModal.waitForVisible()
+    		expect( timeModal.isVisible() ).to.equal(true)
+    	})
+    	
+    	let hour
+    	it('should have an hour select with value 12', function(){
+    		const hours = ObjectEditorPanel.hours
+    		const i = hours.findIndex( hour => hour.text.indexOf('12') > -1 ) 
+            hour = hours[i]
+            expect( hour.text ).to.contain('12')
+        })
+    	
+    	let minute
+    	it('should have a minute select with value 45', function(){
+    		const minutes = ObjectEditorPanel.minutes
+    		const i = minutes.findIndex( minute => minute.text.indexOf('45') > -1 ) 
+            minute = minutes[i]
+            expect( minute.text ).to.contain('45')
+    	})
+    	
+    	it('selecting 12:45 in time picker modal', function(){
+    		hour.div.click()
+    		minute.div.click()
+    		ObjectEditorPanel.datetimeSaveButton.click()
+    		// wait for animation to end
+    		browser.pause(1000)
+    		datetimeInput.waitForVisible()
+    		expect( datetimeInput.getValue() ).to.contain(datetimeString + ' 12:45')
     		ObjectEditorPanel.save.waitForVisible()
     		ObjectEditorPanel.save.click()
     	})
@@ -434,6 +507,9 @@ describe('Peregrine objects page', function () {
 		  ];
 	      var Value = monthYear.split(" ")      
 		  var month = (months.indexOf(Value[0]) + 1)
+		  if(month < '10'){
+			  month = '0' + month
+		  }
 		  var year = Value[1]
 	      return year + '-' + month + '-' + day
     }

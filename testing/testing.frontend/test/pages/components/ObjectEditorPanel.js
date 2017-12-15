@@ -35,6 +35,9 @@ class ObjectEditorPanel {
     get dateInput() {
     	return this.container.$('.field-material-datepicker input')
     }
+    get datetimeInput() {
+    	return this.container.$('.field-material-datetime input')
+    }
     
     // date time modal elements //
     get hours() {
