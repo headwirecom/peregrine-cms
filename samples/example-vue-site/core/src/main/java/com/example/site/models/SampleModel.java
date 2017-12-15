@@ -102,6 +102,9 @@ public class SampleModel extends AbstractComponent {
 	
 	@Inject
 	private List<IComponent> cards;
+	
+	@Inject
+	private String color;
     
 
     public String getText() {
@@ -170,5 +173,9 @@ public class SampleModel extends AbstractComponent {
 	
 	public List<IComponent> getCards() {
 		return cards;
+	}
+	
+	public String getColor() {
+		return color;
 	}
 }

@@ -168,5 +168,12 @@
       "placeholder": "cards",
       "label": "Collections",
       "model": "cards"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "color",
+      "label": "Color",
+      "model": "color"
     }
 ]}
