@@ -466,6 +466,9 @@ describe('Peregrine objects page', function () {
     	it('date field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(15) > .field-wrap > .vdatetime > input').getValue() ).to.equal(dateString)
     	})
+    	it('datetime field saved', function(){
+    		expect( previewContainer.$('.form-group:nth-child(16) > .field-wrap > .vdatetime > input').getValue() ).to.equal(datetimeString + ' 12:45')
+    	})
     })
     
     describe('Delete an object', function() {
