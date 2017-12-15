@@ -83,6 +83,10 @@ class ObjectEditorPanel {
     
     get collection() {
     	return new Collection(this.container.$('.field-collection'))
+    } 
+    
+    get color() {
+    	return new Color(this.container.$('.form-group:nth-child(18)')) 
     }
     
     get pathBrowserContainer() {
@@ -183,6 +187,14 @@ class CollectionItem {
     get text()    { return this.container.$('.field-texteditor .trumbowyg-editor')} 
     get imageButton() {return this.container.$('.field-pathbrowser button') }
     get image()   { return this.container.$('.field-pathbrowser input')}
+}
+
+class Color {
+    constructor(container){
+        this.container = container;
+    }
+    get button()     { return this.container.$('input')}
+    get colorCode()  { return this.container.$('span').getText()}
 }
 
 
