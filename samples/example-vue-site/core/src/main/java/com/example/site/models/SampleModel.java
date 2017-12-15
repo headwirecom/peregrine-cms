@@ -33,6 +33,7 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
@@ -98,6 +99,9 @@ public class SampleModel extends AbstractComponent {
 	
 	@Inject
 	private String datetime;
+	
+	@Inject
+	private List<IComponent> cards;
     
 
     public String getText() {
@@ -162,5 +166,9 @@ public class SampleModel extends AbstractComponent {
 	
 	public String getDatetime() {
 		return datetime;
+	}
+	
+	public List<IComponent> getCards() {
+		return cards;
 	}
 }

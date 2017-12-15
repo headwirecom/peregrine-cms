@@ -134,5 +134,39 @@
     "placeholder": "datetime",
     "label": "Date/Time",
     "model": "datetime"
-  }
+  },
+  {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "title",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "title",
+          "label": "Title",
+          "model": "title"
+        },
+        {
+          "type": "texteditor",
+          "rows": 10,
+          "placeholder": "text",
+          "label": "Text",
+          "model": "text"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "image",
+          "label": "Image",
+          "model": "image"
+        }
+      ],
+      "placeholder": "cards",
+      "label": "Collections",
+      "model": "cards"
+    }
 ]}
