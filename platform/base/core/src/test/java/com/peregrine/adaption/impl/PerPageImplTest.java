@@ -3,6 +3,7 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.PerPage;
 import org.junit.Test;
 
+import static com.peregrine.adaption.impl.PerTestUtil.countIterable;
 import static com.peregrine.adaption.impl.PerTestUtil.createPage;
 import static org.junit.Assert.*;
 
@@ -10,6 +11,18 @@ import static org.junit.Assert.*;
  * Created by Andreas Schaefer on 6/21/17.
  */
 public class PerPageImplTest {
+
+    @Test
+    public void listChildren() throws Exception {
+        PerPage root = createPage(null, "root");
+        PerPage child = createPage(root, "child");
+        PerPage child1 = createPage(child, "child-1");
+        PerPage child2 = createPage(child, "child-2");
+        assertEquals("Only expected one child of root", 1, countIterable(root.listChildren()));
+        assertEquals("Only expected two grand children of child", 2, countIterable(child.listChildren()));
+        assertEquals("Did not expected any children of grand child 1", 0, countIterable(child1.listChildren()));
+        assertEquals("Did not expected any children of grand child 2", 0, countIterable(child2.listChildren()));
+    }
 
     @Test
     public void traverseNext() throws Exception {
