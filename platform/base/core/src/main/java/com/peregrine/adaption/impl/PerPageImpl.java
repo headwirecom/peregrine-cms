@@ -98,12 +98,17 @@ public class PerPageImpl
     private List<PerPage> getChildren(Filter<PerPage> filter, boolean deep) {
         List<PerPage> children = new ArrayList<PerPage>();
         for(Resource child: getResource().getChildren()) {
-            PerPage page = child.adaptTo(PerPage.class);
-            if(page != null) {
-                if(filter.include(page)) {
-                    children.add(page);
-                    if(deep) {
-                        children.addAll(getChildren(filter, deep));
+            // jcr:content nodes are converted to a PerPage of its parent so it is important to exclude them
+            // here otherwise the parent is added through the backdoor.
+            if(!JCR_CONTENT.equals(child.getName())) {
+                PerPage page = child.adaptTo(PerPage.class);
+                logger.info("Check Children, child resource: '{}', child page: '{}', child name: '{}'", child, page, page == null ? "null" : page.getName());
+                if(page != null) {
+                    if(filter.include(page)) {
+                        children.add(page);
+                        if(deep) {
+                            children.addAll(getChildren(filter, deep));
+                        }
                     }
                 }
             }
