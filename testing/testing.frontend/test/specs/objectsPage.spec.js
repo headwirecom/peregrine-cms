@@ -403,11 +403,17 @@ describe('Peregrine objects page', function () {
     	})
     	
     	let exampleCollection
-    	it('clicking add button should add a collection', function(){
+    	it('clicking add button should add a collection item', function(){
     		exampleCollection = ObjectEditorPanel.collection
     		exampleCollection.addButton.click()
     		//exampleCollection.items.waitForVisible()
     		expect( exampleCollection.items.length ).to.equal(1)
+    	})
+    	
+    	it('clicking delete button should remove a collection item', function(){
+    		exampleCollection.addButton.click()
+    		//exampleCollection.items.waitForVisible()
+    		expect( exampleCollection.items.length ).to.equal(2)
     	})
     	
     	let exampleCollectionItem
