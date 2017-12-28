@@ -175,8 +175,6 @@ describe('Peregrine objects page', function () {
     		ObjectEditorPanel.selectPathButton.click()
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
-    		//ObjectEditorPanel.save.waitForVisible()
-    		//ObjectEditorPanel.save.click()
     	})
     	
     	// asset path browser field testing
