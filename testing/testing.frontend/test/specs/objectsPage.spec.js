@@ -412,8 +412,11 @@ describe('Peregrine objects page', function () {
     	
     	it('clicking delete button should remove a collection item', function(){
     		exampleCollection.addButton.click()
-    		//exampleCollection.items.waitForVisible()
     		expect( exampleCollection.items.length ).to.equal(2)
+    		// now delete
+    		exampleCollection.items[1].deleteButton.waitForVisible()
+    		exampleCollection.items[1].deleteButton.click()
+    		expect( exampleCollection.items.length ).to.equal(1)
     	})
     	
     	let exampleCollectionItem
