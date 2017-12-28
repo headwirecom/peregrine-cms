@@ -424,6 +424,8 @@ describe('Peregrine objects page', function () {
     	let asset
     	it('authoring collection item', function(){
     		exampleCollectionItem = exampleCollection.items[0]
+    		exampleCollectionItem.header.waitForVisible()
+    		exampleCollectionItem.header.click()
     		browserContainer = ObjectEditorPanel.pathBrowserContainer
     		exampleCollectionItem.title.setValue('collection title')
     		expect( exampleCollectionItem.title.getValue() ).to.equal('collection title')

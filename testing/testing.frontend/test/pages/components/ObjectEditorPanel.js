@@ -188,6 +188,7 @@ class CollectionItem {
     get imageButton() {return this.container.$('.field-pathbrowser button') }
     get image()   { return this.container.$('.field-pathbrowser input')}
     get deleteButton() {return this.container.$('.delete-icon')}
+    get header() {return this.container.$('span')}
 }
 
 class Color {
