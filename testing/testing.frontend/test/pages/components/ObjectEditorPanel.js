@@ -172,7 +172,7 @@ class Collection {
     }
     get addButton()     { return this.container.$('h5 > button')}
     get items()    { 
-    	const items = this.container.$$('ul > li')
+    	const items = this.container.$$('ul > li:not(.deleted)')
         return items.map(item => {
             return new CollectionItem(item);
         })
@@ -187,6 +187,7 @@ class CollectionItem {
     get text()    { return this.container.$('.field-texteditor .trumbowyg-editor')} 
     get imageButton() {return this.container.$('.field-pathbrowser button') }
     get image()   { return this.container.$('.field-pathbrowser input')}
+    get deleteButton() {return this.container.$('.delete-icon')}
 }
 
 class Color {
