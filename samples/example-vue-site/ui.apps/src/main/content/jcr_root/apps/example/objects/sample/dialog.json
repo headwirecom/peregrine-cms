@@ -175,5 +175,17 @@
       "placeholder": "color",
       "label": "Color",
       "model": "color"
+    },
+    {
+      "type": "iconbrowser",
+      "placeholder": "icon",
+      "label": "Icon Chooser",
+      "model": "icon",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
     }
 ]}

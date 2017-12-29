@@ -105,6 +105,9 @@ public class SampleModel extends AbstractComponent {
 	
 	@Inject
 	private String color;
+	
+	@Inject
+	private String icon;
     
 
     public String getText() {
@@ -177,5 +180,9 @@ public class SampleModel extends AbstractComponent {
 	
 	public String getColor() {
 		return color;
+	}
+	
+	public String getIcon() {
+		return icon;
 	}
 }
