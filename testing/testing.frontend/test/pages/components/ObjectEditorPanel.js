@@ -89,6 +89,14 @@ class ObjectEditorPanel {
     	return new Color(this.container.$('.form-group:nth-child(18)')) 
     }
     
+    get iconBrowser() {
+    	return new IconBrowser(this.container.$('.field-iconbrowser'))
+    }
+    
+    get iconBrowserContainer() {
+    	return $('.modal-container')
+    }
+    
     get pathBrowserContainer() {
     	return $('.modal-container')
     }
@@ -197,6 +205,14 @@ class Color {
     }
     get button()     { return this.container.$('input')}
     get colorCode()  { return this.container.$('span')}
+}
+
+class IconBrowser {
+    constructor(container){
+        this.container = container;
+    }
+    get button()     { return this.container.$('button')}
+    get text()  { return this.container.$('input')}
 }
 
 
