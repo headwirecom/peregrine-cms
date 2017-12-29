@@ -556,6 +556,9 @@ describe('Peregrine objects page', function () {
     		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-texteditor p').getText() ).to.equal('collection text')
     		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-pathbrowser p').getText() ).to.equal('/content/assets/peregrine-logo.png')
     	})
+    	it('icon browser field saved', function(){   
+    		expect( previewContainer.$('.form-group:nth-child(19) > .field-wrap > .wrap p').getText() ).to.equal('add_shopping_cartmaterial:material-icons:add_shopping_cart')
+    	})
     })
     
     describe('Delete an object', function() {
