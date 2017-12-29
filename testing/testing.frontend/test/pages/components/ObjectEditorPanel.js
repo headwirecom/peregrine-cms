@@ -97,6 +97,21 @@ class ObjectEditorPanel {
     	return $('.modal-container')
     }
     
+    // iconbrowser modal elements
+    get icons() {
+        const items = this.iconBrowserContainer.$$('.modal-content > .col-browse > .item-icon > .item-content') 
+        return items.map(item => {
+            return new Icon(item);
+        })
+    }
+    get selectedIcon() {
+    	return this.iconBrowserContainer.$('.modal-footer > .selected-path > .material-icons').getText()
+    }
+    get selectIconButton() {
+    	return this.iconBrowserContainer.$('.modal-footer > button.modal-action:nth-child(3)') 
+    }
+    // iconbrowser modal elements
+    
     get pathBrowserContainer() {
     	return $('.modal-container')
     }
@@ -115,6 +130,13 @@ class Item {
     }
     get text()     { return this.container.$(`span`).getText()}
     get label()    { return this.container.$(`label`)}
+}
+
+class Icon {
+    constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.$(`span`).getText()}
 }
 
 class RadioButton {
