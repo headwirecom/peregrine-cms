@@ -137,6 +137,7 @@ class Icon {
         this.container = container;
     }
     get text()     { return this.container.$(`span`).getText()}
+    get label()    { return this.container.$(`i`)}
 }
 
 class RadioButton {

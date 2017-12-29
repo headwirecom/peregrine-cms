@@ -454,6 +454,35 @@ describe('Peregrine objects page', function () {
     		//exampleColor.colorCode.text('#008040')
     		expect( exampleColor.button.getValue() ).to.equal('#008040')
     		//expect( exampleColor.colorCode.getText() ).to.equal('#008040')
+    		
+    	})
+    	
+    	let exampleIconBrowser
+    	let exampleIconBrowserModal
+    	it('clicking Icon browser button should open up Icon Browser Modal', function(){
+    		exampleIconBrowser = ObjectEditorPanel.iconBrowser
+    		exampleIconBrowser.button.click()
+    		exampleIconBrowserModal = ObjectEditorPanel.iconBrowserContainer
+    		exampleIconBrowserModal.waitForVisible()
+    		expect( exampleIconBrowserModal.isVisible() ).to.equal(true)
+    	})
+    	
+        let exampleIcon
+    	
+    	it('should have an icon with name add_shopping_cart', function(){
+    		
+    		const icons = ObjectEditorPanel.icons
+            const i = icons.findIndex( icon => icon.text.indexOf('add_shopping_cart') > -1 ) 
+            exampleIcon = icons[i]
+            expect( exampleIcon.text ).to.contain('add_shopping_cart')
+        })
+    	
+    	it('select shopping cart icon', function(){
+    		exampleIcon.label.click()
+    		expect( ObjectEditorPanel.selectedIcon ).to.contain('add_shopping_cart')
+    		ObjectEditorPanel.selectIconButton.click()
+    		// wait for 1 second till the animation ends
+    		browser.pause(1000)
     		ObjectEditorPanel.save.click()
     	})
     	
