@@ -15,4 +15,4 @@ class AssetsPage extends LoginPage {
 }
 
 
-module.exports = new ObjectsPage();
+module.exports = new AssetsPage();
