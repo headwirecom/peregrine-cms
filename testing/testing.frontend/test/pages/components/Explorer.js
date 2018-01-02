@@ -11,6 +11,12 @@ class Explorer {
             return new Item(item);
         })
     }
+    get assets() {
+        const items = $$('.explorer-main > ul > li')
+        return items.map(item => {
+            return new AssetItem(item);
+        })
+    }
     get folders() {
         const items = $$('.explorer-main > ul > li')
         return items.map(item => {
@@ -30,6 +36,14 @@ class Item {
 }
 
 class FolderItem {
+	constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.$(`span > a`).getText()}
+    get linkButton()    { return this.container.$(`span > a`) }
+}
+
+class AssetItem {
 	constructor(container){
         this.container = container;
     }
