@@ -136,7 +136,16 @@ a.percms-anchor {
   justify-content: center;
   align-items: center;
 }
-
 .nav-item > .active {
   font-weight: bold;
+}
+
+.nav-pills > .nav-item > a:not(.active) {
+  background: transparent !important;
+}
+.nav-pills > .nav-item > a.active {
+  color: #fff !important;
+}
+.nav-pills > .nav-item > a.bg-light.active {
+  color:#343a40 !important;
 }
