@@ -18,6 +18,16 @@ describe('Peregrine assets page', function () {
             expect( exampleFolder.text ).to.contain('example')
         })
         
+        let exampleAsset
+        
+        it('should have an asset titled "peregrine-logo.png"', function(){
+        	Explorer.container.waitForVisible()
+            const assets = Explorer.assets
+            const i = assets.findIndex( asset => asset.text.indexOf('peregrine-logo.png') > -1 ) 
+            exampleAsset = assets[i]
+            expect( exampleAsset.text ).to.contain('peregrine-logo.png')
+        })
+        
     })
     
 })
