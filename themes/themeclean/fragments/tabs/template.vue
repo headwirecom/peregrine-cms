@@ -21,8 +21,19 @@
           <ul class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist">
             <li class="nav-item" v-for="(item,i) in model.tabs" :key="i">
               <a data-toggle="pill" role="tab" aria-expanded="true" v-bind:href="`#tab${_uid}${parseInt(i)+1}`"
-              v-bind:class="i == 0 ? 'nav-link active' : 'nav-link'"
-              v-bind:id="`tab-control-${_uid}${parseInt(i)+1}`" v-bind:aria-controls="`tab${_uid}${parseInt(i)+1}`"
+              v-bind:class="[
+            {'nav-link': true},
+            {'active': i == 0},
+            {'bg-primary': model.tabcolor === 'primary'},
+            {'bg-secondary': model.tabcolor === 'secondary'},
+            {'bg-success': model.tabcolor === 'success'},
+            {'bg-danger': model.tabcolor === 'danger'},
+            {'bg-warning': model.tabcolor === 'warning'},
+            {'bg-info': model.tabcolor === 'info'},
+            {'bg-light': model.tabcolor === 'light'},
+            {'bg-dark': model.tabcolor === 'dark'},
+            textClasses
+        ]" v-bind:id="`tab-control-${_uid}${parseInt(i)+1}`" v-bind:aria-controls="`tab${_uid}${parseInt(i)+1}`"
               v-html="item.title"></a>
             </li>
           </ul>
@@ -47,7 +58,10 @@
                 if(!$peregrineApp.isAuthorMode()) return false
                 //return !(this.model.tabs.length > 0)
                 return this.$helper.areAllEmpty(this.model.showtitle === 'true' && this.model.title, this.model.showsubtitle === 'true' && this.model.subtitle , this.model.tabs , this.model.showmedia === 'true')
-            }
+          },
+          textClasses() {
+            return `text-${this.model.tabcolor}`
+          }
         }
     }
 </script>

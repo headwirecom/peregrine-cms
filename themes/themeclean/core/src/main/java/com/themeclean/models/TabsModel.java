@@ -164,6 +164,47 @@ import javax.inject.Named;
             }
           }
         },
+        "tabcolor": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Tab Color",
+          "x-form-type": "materialselect",
+          "x-default": "primary",
+          "properties": {
+            "primary": {
+              "x-form-name": "Primary",
+              "x-form-value": "primary"
+            },
+            "secondary": {
+              "x-form-name": "Secondary",
+              "x-form-value": "secondary"
+            },
+            "success": {
+              "x-form-name": "Success",
+              "x-form-value": "success"
+            },
+            "danger": {
+              "x-form-name": "Danger",
+              "x-form-value": "danger"
+            },
+            "warning": {
+              "x-form-name": "Warning",
+              "x-form-value": "warning"
+            },
+            "info": {
+              "x-form-name": "Info",
+              "x-form-value": "info"
+            },
+            "light": {
+              "x-form-name": "Light",
+              "x-form-value": "light"
+            },
+            "dark": {
+              "x-form-name": "Dark",
+              "x-form-value": "dark"
+            }
+          }
+        },
         "tabs": {
           "type": "string",
           "x-source": "inject",
@@ -428,6 +469,11 @@ public class TabsModel extends AbstractComponent {
 	@Default(values ="100")
 	private String mediawidth;
 
+	/* {"type":"string","x-source":"inject","x-form-label":"Tab Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"},"success":{"x-form-name":"Success","x-form-value":"success"},"danger":{"x-form-name":"Danger","x-form-value":"danger"},"warning":{"x-form-name":"Warning","x-form-value":"warning"},"info":{"x-form-name":"Info","x-form-value":"info"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="primary")
+	private String tabcolor;
+
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
 	@Inject
 	private List<IComponent> tabs;
@@ -571,6 +617,11 @@ public class TabsModel extends AbstractComponent {
 	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-visible":"model.showmedia == 'true'","x-default":100,"x-form-min":10,"x-form-max":100} */
 	public String getMediawidth() {
 		return mediawidth;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Tab Color","x-form-type":"materialselect","x-default":"primary","properties":{"primary":{"x-form-name":"Primary","x-form-value":"primary"},"secondary":{"x-form-name":"Secondary","x-form-value":"secondary"},"success":{"x-form-name":"Success","x-form-value":"success"},"danger":{"x-form-name":"Danger","x-form-value":"danger"},"warning":{"x-form-name":"Warning","x-form-value":"warning"},"info":{"x-form-name":"Info","x-form-value":"info"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	public String getTabcolor() {
+		return tabcolor;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Tab Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Tab Text","x-form-type":"texteditor"}}} */
