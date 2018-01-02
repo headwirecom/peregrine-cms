@@ -1,6 +1,6 @@
 {
   "title": "Breadcrumb",
-  "group": ".Empty",
+  "group": "Chrome",
   "model": {
     "level": "3",
     "toppadding": 10,
