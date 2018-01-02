@@ -15,7 +15,6 @@ class ObjectsPage extends LoginPage {
 
     open() {
         super.open('content/admin/objects.html')
-        browser.execute( require('../drag-mock') )
     }
 }
 
