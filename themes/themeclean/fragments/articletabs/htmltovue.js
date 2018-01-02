@@ -4,11 +4,26 @@ module.exports = {
     	f.wrap($, 'themeclean-components-block')
         f.bindAttribute($.parent(),'model','model')
     	f.addFor($.find('li.nav-item').first(), 'model.tabs')
-    	f.bindAttribute($.find('a').first(), 'href', '`#tab${_uid}${parseInt(i)+1}`')
-    	f.bindAttribute($.find('a').first(), 'class', 'i == 0 ? \'btn nav-link active\' : \'btn nav-link\'')
-    	f.bindAttribute($.find('a').first(), 'id', '`tab-control-${_uid}${parseInt(i)+1}`')
-    	f.bindAttribute($.find('a').first(), 'aria-controls', '`tab${_uid}${parseInt(i)+1}`')
-    	f.mapRichField($.find('a').first(), "item.title")
+        let a = $.find('a').first()
+        let aClasses = `[
+			{'nav-link': true},
+			{'btn': true},
+            {'active': i == 0},
+            {'bg-primary': model.tabcolor === 'primary'},
+            {'bg-secondary': model.tabcolor === 'secondary'},
+            {'bg-success': model.tabcolor === 'success'},
+            {'bg-danger': model.tabcolor === 'danger'},
+            {'bg-warning': model.tabcolor === 'warning'},
+            {'bg-info': model.tabcolor === 'info'},
+            {'bg-light': model.tabcolor === 'light'},
+            {'bg-dark': model.tabcolor === 'dark'},
+            textClasses
+        ]`
+    	f.bindAttribute( a, 'href', '`#tab${_uid}${parseInt(i)+1}`')
+    	f.bindAttribute( a, 'class', aClasses)
+    	f.bindAttribute( a, 'id', '`tab-control-${_uid}${parseInt(i)+1}`')
+    	f.bindAttribute( a, 'aria-controls', '`tab${_uid}${parseInt(i)+1}`')
+    	f.mapRichField( a, "item.title")
     	
     	f.addFor($.find('div.tab-pane').first(), 'model.tabs')
     	f.bindAttribute($.find('div.tab-pane').first(), 'id', '`tab${_uid}${parseInt(i)+1}`')
