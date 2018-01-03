@@ -1,5 +1,5 @@
 let assetsPage = require('../pages/Assets.page')
-let {Explorer, SubNav, AssetPreviewPanel} = assetsPage
+let {Explorer, SubNav, AssetPreviewPanel, AssetEditorPanel} = assetsPage
 
 describe('Peregrine assets page', function () {
     it('should login', function() {
@@ -38,10 +38,10 @@ describe('Peregrine assets page', function () {
     
     describe('Edit Asset', function() {
     	
-    	it('clicking edit button should open up asset edit panel', function(){
-    		AssetPreviewPanel.editButton.click()
-    		AssetEditPanel.contentContainer.waitForVisible()
-            expect( AssetEditPanel.contentContainer.isVisible() ).to.equal(true)
+    	it('clicking edit button should open up asset editor panel', function(){
+    		AssetPreviewPanel.editButton.link.click()
+    		AssetEditorPanel.contentContainer.waitForVisible()
+            expect( AssetEditorPanel.contentContainer.isVisible() ).to.equal(true)
         })
     
     })
