@@ -28,6 +28,12 @@ describe('Peregrine assets page', function () {
             expect( exampleAsset.text ).to.contain('peregrine-logo.png')
         })
         
+        it('clicking asset item should open up asset preview panel', function(){
+        	exampleAsset.linkButton.click()
+        	AssetPreviewPanel.contentContainer.waitForVisible()
+            expect( AssetPreviewPanel.contentContainer.isVisible() ).to.equal(true)
+        }) 
+        
     })
     
 })
