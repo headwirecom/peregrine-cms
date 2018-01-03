@@ -1,5 +1,5 @@
 let assetsPage = require('../pages/Assets.page')
-let {Explorer, SubNav} = assetsPage
+let {Explorer, SubNav, AssetPreviewPanel} = assetsPage
 
 describe('Peregrine assets page', function () {
     it('should login', function() {
