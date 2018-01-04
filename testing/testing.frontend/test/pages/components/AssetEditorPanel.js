@@ -13,6 +13,8 @@ class AssetEditorPanel {
     }
 	get menuContainer() { return $('.explorer-preview-nav')} 
 	get contentContainer() { return $('.vue-form-generator')} 
+	get buttonContainer() { return $('.explorer-confirm-dialog')}
+    get save() {return this.buttonContainer.$('button[title="save object"]')}
 }
 
 module.exports = AssetEditorPanel
