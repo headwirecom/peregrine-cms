@@ -1,4 +1,13 @@
 class AssetEditorPanel {
+	get descriptionField() {
+		return this.inputs[5]
+	}
+	get tagField() {
+		return this.inputs[4]
+	}
+	get titleField() {
+		return this.inputs[1]
+	}
 	get inputs() {
         return $$('input,textarea')
     }
