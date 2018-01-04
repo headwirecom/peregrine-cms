@@ -1,6 +1,6 @@
 class AssetEditorPanel {
 	get descriptionField() {
-		return this.inputs[5]
+		return this.contentContainer.$('#description')
 	}
 	get tagField() {
 		return this.inputs[4]

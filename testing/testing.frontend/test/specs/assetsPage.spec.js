@@ -43,6 +43,13 @@ describe('Peregrine assets page', function () {
     		AssetEditorPanel.contentContainer.waitForVisible()
             expect( AssetEditorPanel.contentContainer.isVisible() ).to.equal(true)
         })
+        
+               
+        it('editing asset', function(){
+        	AssetEditorPanel.descriptionField.waitForVisible() 
+    		AssetEditorPanel.descriptionField.setValue('sample description')
+            
+        })
     
     })
     
