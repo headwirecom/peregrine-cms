@@ -69,13 +69,13 @@ describe('Peregrine assets page', function () {
     		expect( exampleOption.text ).to.contain('bear')
     	})
     	
-    	let exampleTag
     	it('selecting bear from Tag Field', function(){
-    		exampleTag = exampleTagField.tag
     		exampleOption.span.click()
-    		exampleTag.waitForVisible()
-    		expect( exampleTag.getText() ).to.equal('bear')
-    		//ObjectEditorPanel.save.click()
+    		//exampleTagField.tags.waitForVisible()
+    		const options = exampleTagField.tags
+    		const i = options.findIndex( option => option.getText().indexOf('bear') > -1 ) 
+    		expect( i ).to.equal(0)
+    		
     	})
         
         // save        

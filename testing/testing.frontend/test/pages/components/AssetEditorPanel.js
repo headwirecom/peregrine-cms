@@ -23,7 +23,7 @@ class MultiSelect {
     }
 	get selectButton() { return this.container.$('.multiselect__select')} 
 	get contentWrapper() { return this.container.$('.multiselect__content-wrapper')}
-	get tags() { return this.container.$$('.multiselect__tag')} 
+	get tags() { return this.container.$$('.multiselect__tag > span')} 
 	get items(){
 		const items = this.container.$$('ul > li')
         return items.map(item => {
