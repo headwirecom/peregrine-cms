@@ -2,11 +2,11 @@ class AssetEditorPanel {
 	get descriptionField() {
 		return this.contentContainer.$('#description')
 	}
+	get titleField() {
+		return this.contentContainer.$('#title')
+	}
 	get tagField() {
 		return this.inputs[4]
-	}
-	get titleField() {
-		return this.inputs[1]
 	}
 	get inputs() {
         return $$('input,textarea')

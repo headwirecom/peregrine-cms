@@ -51,6 +51,12 @@ describe('Peregrine assets page', function () {
     		expect( AssetEditorPanel.descriptionField.getValue() ).to.equal('sample description')
         })
         
+        it('editing title field', function(){
+        	AssetEditorPanel.titleField.waitForVisible() 
+    		AssetEditorPanel.titleField.setValue('sample-logo.png')
+    		expect( AssetEditorPanel.titleField.getValue() ).to.equal('sample-logo.png')
+        })
+        
         it('saving asset', function(){
         	AssetEditorPanel.save.waitForVisible() 
     		AssetEditorPanel.save.click()
