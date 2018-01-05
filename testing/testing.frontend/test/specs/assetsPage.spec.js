@@ -68,10 +68,16 @@ describe('Peregrine assets page', function () {
         let previewContainer
         
         // preview
-        it('description field saved', function(){
+        it('title field saved', function(){
         	previewContainer = AssetPreviewPanel.contentContainer
+        	expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('sample-logo.png')
+        })
+        
+        it('description field saved', function(){
         	expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrapper > p').getText() ).to.equal('sample description')
         })
+    	
+    	
     
     })
     
