@@ -57,19 +57,26 @@ describe('Peregrine assets page', function () {
         })
         
         let exampleTagField
-        
+        let exampleOption
         it('editing tag field', function(){
         	exampleTagField = AssetEditorPanel.tagField
-        	//exampleTagField.waitForVisible() 
-    		exampleTagField.selectButton.click()
+        	exampleTagField.selectButton.click()
     		exampleTagField.contentWrapper.waitForVisible()
     		expect( exampleTagField.contentWrapper.isVisible() ).to.equal(true)
-    		/*const options = exampleMultiSelect.items
-    		const i = options.findIndex( option => option.text.indexOf('Type 2') > -1 ) 
+    		const options = exampleTagField.items
+    		const i = options.findIndex( option => option.text.indexOf('bear') > -1 ) 
     		exampleOption = options[i]
-    		expect( exampleOption.text ).to.contain('Type 2')*/
-    		
-        })
+    		expect( exampleOption.text ).to.contain('bear')
+    	})
+    	
+    	let exampleTag
+    	it('selecting bear from Tag Field', function(){
+    		exampleTag = exampleTagField.tag
+    		exampleOption.span.click()
+    		exampleTag.waitForVisible()
+    		expect( exampleTag.getText() ).to.equal('bear')
+    		//ObjectEditorPanel.save.click()
+    	})
         
         // save        
         it('saving asset', function(){
