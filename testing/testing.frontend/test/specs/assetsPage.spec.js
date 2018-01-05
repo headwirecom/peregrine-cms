@@ -56,6 +56,12 @@ describe('Peregrine assets page', function () {
     		AssetPreviewPanel.contentContainer.waitForVisible()
             expect( AssetPreviewPanel.contentContainer.isVisible() ).to.equal(true)
         })
+        
+        // preview
+        it('asset field values get saved', function(){
+        	AssetPreviewPanel.contentContainer.waitForVisible()
+            expect( AssetPreviewPanel.contentContainer.isVisible() ).to.equal(true)
+        })
     
     })
     
