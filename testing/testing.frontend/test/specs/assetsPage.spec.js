@@ -45,9 +45,10 @@ describe('Peregrine assets page', function () {
         })
         
                
-        it('editing asset', function(){
+        it('editing description field', function(){
         	AssetEditorPanel.descriptionField.waitForVisible() 
     		AssetEditorPanel.descriptionField.setValue('sample description')
+    		expect( AssetEditorPanel.descriptionField.getValue() ).to.equal('sample description')
         })
         
         it('saving asset', function(){
