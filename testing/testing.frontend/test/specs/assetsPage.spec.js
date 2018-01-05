@@ -44,19 +44,34 @@ describe('Peregrine assets page', function () {
             expect( AssetEditorPanel.contentContainer.isVisible() ).to.equal(true)
         })
         
-               
-        it('editing description field', function(){
-        	AssetEditorPanel.descriptionField.waitForVisible() 
-    		AssetEditorPanel.descriptionField.setValue('sample description')
-    		expect( AssetEditorPanel.descriptionField.getValue() ).to.equal('sample description')
-        })
-        
         it('editing title field', function(){
         	AssetEditorPanel.titleField.waitForVisible() 
     		AssetEditorPanel.titleField.setValue('sample-logo.png')
     		expect( AssetEditorPanel.titleField.getValue() ).to.equal('sample-logo.png')
         })
         
+        it('editing description field', function(){
+        	AssetEditorPanel.descriptionField.waitForVisible() 
+    		AssetEditorPanel.descriptionField.setValue('sample description')
+    		expect( AssetEditorPanel.descriptionField.getValue() ).to.equal('sample description')
+        })
+        
+        let exampleTagField
+        
+        it('editing tag field', function(){
+        	exampleTagField = AssetEditorPanel.tagField
+        	//exampleTagField.waitForVisible() 
+    		exampleTagField.selectButton.click()
+    		exampleTagField.contentWrapper.waitForVisible()
+    		expect( exampleTagField.contentWrapper.isVisible() ).to.equal(true)
+    		/*const options = exampleMultiSelect.items
+    		const i = options.findIndex( option => option.text.indexOf('Type 2') > -1 ) 
+    		exampleOption = options[i]
+    		expect( exampleOption.text ).to.contain('Type 2')*/
+    		
+        })
+        
+        // save        
         it('saving asset', function(){
         	AssetEditorPanel.save.waitForVisible() 
     		AssetEditorPanel.save.click()
