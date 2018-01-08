@@ -34,6 +34,14 @@ describe('Peregrine assets page', function () {
             expect( AssetPreviewPanel.contentContainer.isVisible() ).to.equal(true)
         }) 
         
+    })  
+    
+    describe('Asset Uploading', function() {
+    	
+    	it('uploading sample asset to system', function(){
+    		browser.waitForExist('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)');
+            browser.chooseFile('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)', 'C:\\downloaded\\peregrine-logo2.png')
+        })
     })
     
     describe('Asset Editing', function() {
