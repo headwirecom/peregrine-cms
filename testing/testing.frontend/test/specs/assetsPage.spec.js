@@ -122,14 +122,14 @@ describe('Peregrine assets page', function () {
     		browser.alertText('logo.png')
     		browser.alertAccept()
     	})
-    	/*
+    	
     	it('should have an asset titled "logo.png"', function(){
         	Explorer.container.waitForVisible()
             const assets = Explorer.assets
             const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
             exampleAsset = assets[i]
             expect( exampleAsset.text ).to.contain('logo.png')
-        })*/
+        })
     	
     })
     
