@@ -7,6 +7,10 @@ class AssetPreviewPanel {
 		const i = this.menuButtons.findIndex( item => item.text.indexOf('list') > -1 ) 
 		return this.menuButtons[i]
 	}
+	get renameButton() {
+		const i = this.menuButtons.findIndex( item => item.title.indexOf('rename asset') > -1 ) 
+		return this.menuButtons[i]
+	}
 	get menuButtons() {
     	const items = this.menuContainer.$$('li > a')
         return items.map(item => {
@@ -25,6 +29,7 @@ class MenuButton {
     }
     get text()     { return this.container.$('i').getText()}
     get link()    { return this.container}
+    get title()   { return this.container.getAttribute('title')}
 }
 
 module.exports = AssetPreviewPanel

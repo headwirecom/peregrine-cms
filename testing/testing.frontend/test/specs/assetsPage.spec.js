@@ -114,5 +114,15 @@ describe('Peregrine assets page', function () {
     	
     })
     
+    describe('Asset Rename', function() {
+    	
+    	it('rename modal open up', function(){
+    		AssetPreviewPanel.renameButton.link.click()
+    		browser.pause(2000)
+    		
+        })
+    	
+    })
+    
 })
 
