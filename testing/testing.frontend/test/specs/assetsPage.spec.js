@@ -36,7 +36,7 @@ describe('Peregrine assets page', function () {
         
     })
     
-    describe('Edit Asset', function() {
+    describe('Asset Editing', function() {
     	
     	it('clicking edit button should open up asset editor panel', function(){
     		AssetPreviewPanel.editButton.link.click()
@@ -114,13 +114,22 @@ describe('Peregrine assets page', function () {
     	
     })
     
-    describe('Asset Rename', function() {
+    describe('Asset Renaming', function() {
     	
-    	it('rename modal open up', function(){
+    	it('rename dialog open up', function(){
     		AssetPreviewPanel.renameButton.link.click()
-    		browser.pause(2000)
-    		
-        })
+    		browser.pause(1000)
+    		browser.alertText('logo.png')
+    		browser.alertAccept()
+    	})
+    	/*
+    	it('should have an asset titled "logo.png"', function(){
+        	Explorer.container.waitForVisible()
+            const assets = Explorer.assets
+            const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
+            exampleAsset = assets[i]
+            expect( exampleAsset.text ).to.contain('logo.png')
+        })*/
     	
     })
     
