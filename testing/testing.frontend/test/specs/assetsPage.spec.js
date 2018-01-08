@@ -18,7 +18,19 @@ describe('Peregrine assets page', function () {
             expect( exampleFolder.text ).to.contain('example')
         })
         
-        let exampleAsset
+    })  
+    
+    describe('Asset Uploading', function() {
+    	
+    	it('uploading sample asset to system', function(){
+    		browser.waitForExist('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)');
+            browser.chooseFile('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)', 'C:\\downloaded\\peregrine-logo.png')
+        })
+    })
+    
+    describe('Asset Editing', function() {
+    	
+    	let exampleAsset
         
         it('should have an asset titled "peregrine-logo.png"', function(){
         	Explorer.container.waitForVisible()
@@ -33,18 +45,6 @@ describe('Peregrine assets page', function () {
         	AssetPreviewPanel.contentContainer.waitForVisible()
             expect( AssetPreviewPanel.contentContainer.isVisible() ).to.equal(true)
         }) 
-        
-    })  
-    
-    describe('Asset Uploading', function() {
-    	
-    	it('uploading sample asset to system', function(){
-    		browser.waitForExist('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)');
-            browser.chooseFile('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)', 'C:\\downloaded\\peregrine-logo2.png')
-        })
-    })
-    
-    describe('Asset Editing', function() {
     	
     	it('clicking edit button should open up asset editor panel', function(){
     		AssetPreviewPanel.editButton.link.click()
