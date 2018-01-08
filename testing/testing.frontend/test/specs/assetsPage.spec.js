@@ -126,7 +126,7 @@ describe('Peregrine assets page', function () {
     	let exampleAsset
     	
     	it('should have an asset titled "logo.png"', function(){
-        	Explorer.container.waitForVisible()
+    		Explorer.container.waitForVisible()
             const assets = Explorer.assets
             const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
             exampleAsset = assets[i]
@@ -141,6 +141,14 @@ describe('Peregrine assets page', function () {
         it('clicking delete button should delete asset', function(){
         	AssetPreviewPanel.deleteButton.link.click()
         }) 
+        
+        it('shouldn\'t have an asset titled "logo.png"', function(){
+        	Explorer.container.waitForVisible()
+            const assets = Explorer.assets
+            const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
+            console.log('i is: ' + i)
+            expect( i ).to.equal(-1)
+        })
     	
     })
     
