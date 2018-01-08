@@ -3,6 +3,10 @@ class AssetPreviewPanel {
 		const i = this.menuButtons.findIndex( item => item.text.indexOf('edit') > -1 ) 
 		return this.menuButtons[i]
 	}
+	get referenceButton() {
+		const i = this.menuButtons.findIndex( item => item.text.indexOf('list') > -1 ) 
+		return this.menuButtons[i]
+	}
 	get menuButtons() {
     	const items = this.menuContainer.$$('li > a')
         return items.map(item => {
@@ -11,6 +15,7 @@ class AssetPreviewPanel {
     }
 	get menuContainer() { return $('.explorer-preview-nav')} 
 	get contentContainer() { return $('.vue-form-generator')} 
+	get referenceContentContainer() {return $('.preview-asset')} 
 	
 }
 

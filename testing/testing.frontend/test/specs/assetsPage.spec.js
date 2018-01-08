@@ -7,7 +7,7 @@ describe('Peregrine assets page', function () {
         expect( browser.getUrl() ).to.contain('content/admin/assets.html')
     })
 
-     describe('Assets Explorer', function() {
+    describe('Assets Explorer', function() {
         let exampleFolder
         
         it('should have a folder titled "example"', function(){
@@ -84,7 +84,7 @@ describe('Peregrine assets page', function () {
     		AssetEditorPanel.save.click()
     		AssetPreviewPanel.contentContainer.waitForVisible()
             expect( AssetPreviewPanel.contentContainer.isVisible() ).to.equal(true)
-            browser.pause(3000)
+            browser.pause(2000)
         })
         
         let previewContainer
@@ -99,8 +99,19 @@ describe('Peregrine assets page', function () {
         	expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrapper > p').getText() ).to.equal('sample description')
         })
     	
-    	
+    })
     
+    describe('Asset References', function() {
+    	
+    	let referencePreviewContainer
+    	
+    	it('reference modal open up', function(){
+    		AssetPreviewPanel.referenceButton.link.click()
+    		referencePreviewContainer = AssetPreviewPanel.referenceContentContainer
+    		expect( referencePreviewContainer.$('.collection-header').getText() ).to.contain('referenced in')
+    		
+        })
+    	
     })
     
 })
