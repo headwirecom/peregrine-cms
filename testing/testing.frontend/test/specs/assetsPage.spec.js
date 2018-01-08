@@ -114,7 +114,7 @@ describe('Peregrine assets page', function () {
     	
     })
     
-    describe('Asset Renaming', function() {
+    describe('Asset Renaming and Deleting', function() {
     	
     	it('rename dialog open up', function(){
     		AssetPreviewPanel.renameButton.link.click()
@@ -122,6 +122,8 @@ describe('Peregrine assets page', function () {
     		browser.alertText('logo.png')
     		browser.alertAccept()
     	})
+    	
+    	let exampleAsset
     	
     	it('should have an asset titled "logo.png"', function(){
         	Explorer.container.waitForVisible()
@@ -131,7 +133,17 @@ describe('Peregrine assets page', function () {
             expect( exampleAsset.text ).to.contain('logo.png')
         })
     	
+    	it('clicking asset item should open up asset preview panel', function(){
+        	exampleAsset.linkButton.click()
+        	browser.pause(2000)
+        }) 
+        
+        it('clicking delete button should delete asset', function(){
+        	AssetPreviewPanel.deleteButton.link.click()
+        }) 
+    	
     })
     
+        
 })
 
