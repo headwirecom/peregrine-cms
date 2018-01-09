@@ -9,22 +9,23 @@ describe('Peregrine assets page', function () {
 
     describe('Assets Explorer', function() {
         let exampleFolder
-        
+        let folderName = 'example'
         it('should have a folder titled "example"', function(){
         	Explorer.container.waitForVisible()
             const folders = Explorer.folders
-            const i = folders.findIndex( folder => folder.text.indexOf('example') > -1 ) 
+            const i = folders.findIndex( folder => folder.text.indexOf(folderName) > -1 ) 
             exampleFolder = folders[i]
-            expect( exampleFolder.text ).to.contain('example')
+            expect( exampleFolder.text ).to.contain(folderName)
         })
         
     })  
     
     describe('Asset Uploading', function() {
-    	
+    	// we need that file existing
+    	let localAssetPath = 'C:\\downloaded\\peregrine-logo.png'
     	it('uploading sample asset to system', function(){
     		browser.waitForExist('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)');
-            browser.chooseFile('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)', 'C:\\downloaded\\peregrine-logo.png')
+            browser.chooseFile('.nav-content > span:nth-child(3) > a:nth-child(1) > label:nth-child(1) > input:nth-child(1)', localAssetPath)
         })
     })
     
