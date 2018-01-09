@@ -398,8 +398,6 @@ describe('Peregrine objects page', function () {
     		browser.pause(1000)
     		datetimeInput.waitForVisible()
     		expect( datetimeInput.getValue() ).to.contain(datetimeString + ' 12:45')
-    		//ObjectEditorPanel.save.waitForVisible()
-    		//ObjectEditorPanel.save.click()
     	})
     	
     	let exampleCollection
@@ -498,10 +496,10 @@ describe('Peregrine objects page', function () {
     		expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('first textarea')
     	})
     	
-    	/*it('text editor saved', function(){
+    	it('text editor saved', function(){
     		//previewContainer = ObjectEditorPanel.previewContainer
     		expect( previewContainer.$('.form-group:nth-child(3) > .field-wrap > .wrapper > p').getText() ).to.equal('first text editor')
-    	})*/
+    	})
     	
     	it('number field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(4) > .field-wrap > .wrapper > p').getText() ).to.equal('125')
