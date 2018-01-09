@@ -105,11 +105,11 @@ describe('Peregrine assets page', function () {
         // preview
         it('title field saved', function(){
         	previewContainer = AssetPreviewPanel.contentContainer
-        	expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('sample-logo.png')
+        	expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal(title)
         })
         
         it('description field saved', function(){
-        	expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrapper > p').getText() ).to.equal('sample description')
+        	expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrapper > p').getText() ).to.equal(description)
         })
     	
     })
@@ -129,10 +129,12 @@ describe('Peregrine assets page', function () {
     
     describe('Asset Renaming and Deleting', function() {
     	
+    	let assetNewName = 'logo.png'
+    		
     	it('rename dialog open up', function(){
     		AssetPreviewPanel.renameButton.link.click()
     		browser.pause(1000)
-    		browser.alertText('logo.png')
+    		browser.alertText(assetNewName)
     		browser.alertAccept()
     	})
     	
@@ -141,14 +143,14 @@ describe('Peregrine assets page', function () {
     	it('should have an asset titled "logo.png"', function(){
     		Explorer.container.waitForVisible()
             const assets = Explorer.assets
-            const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
+            const i = assets.findIndex( asset => asset.text.indexOf(assetNewName) > -1 ) 
             exampleAsset = assets[i]
-            expect( exampleAsset.text ).to.contain('logo.png')
+            expect( exampleAsset.text ).to.contain(assetNewName)
         })
     	
     	it('clicking asset item should open up asset preview panel', function(){
         	exampleAsset.linkButton.click()
-        	browser.pause(2000)
+        	browser.pause(1000)
         }) 
         
         it('clicking delete button should delete asset', function(){
@@ -158,8 +160,8 @@ describe('Peregrine assets page', function () {
         it('shouldn\'t have an asset titled "logo.png"', function(){
         	Explorer.container.waitForVisible()
             const assets = Explorer.assets
-            const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
-            console.log('i is: ' + i)
+            const i = assets.findIndex( asset => asset.text.indexOf(assetNewName) > -1 ) 
+            //console.log('i is: ' + i)
             expect( i ).to.equal(-1)
         })
     	
