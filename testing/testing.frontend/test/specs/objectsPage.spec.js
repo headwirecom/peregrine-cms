@@ -496,9 +496,9 @@ describe('Peregrine objects page', function () {
     		expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('first textarea')
     	})
     	
-    	it('text editor saved', function(){
+    	it('text editor saved', function(){ 
     		//previewContainer = ObjectEditorPanel.previewContainer
-    		expect( previewContainer.$('.form-group:nth-child(3) > .field-wrap > .wrapper > p').getText() ).to.equal('first text editor')
+    		expect( previewContainer.$('.form-group:nth-child(3) > .field-wrap > div > p').getText() ).to.equal('first text editor')
     	})
     	
     	it('number field saved', function(){
