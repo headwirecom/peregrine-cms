@@ -297,6 +297,7 @@
             },
             onMoveSelect() {
                 $perAdminApp.stateAction('moveAsset', { path: this.asset.path, to: this.selectedPath, type: 'child'})
+                $perAdminApp.stateAction('unselectAsset', { })
                 this.isOpen = false
             },
             setCurrentPath(path){
