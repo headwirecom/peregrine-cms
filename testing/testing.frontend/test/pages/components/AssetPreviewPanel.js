@@ -11,6 +11,10 @@ class AssetPreviewPanel {
 		const i = this.menuButtons.findIndex( item => item.title.indexOf('rename asset') > -1 ) 
 		return this.menuButtons[i]
 	}
+	get moveButton() {
+		const i = this.menuButtons.findIndex( item => item.title.indexOf('move asset') > -1 ) 
+		return this.menuButtons[i]
+	}
 	get deleteButton() {
 		const i = this.menuButtons.findIndex( item => item.title.indexOf('delete asset') > -1 ) 
 		return this.menuButtons[i]
