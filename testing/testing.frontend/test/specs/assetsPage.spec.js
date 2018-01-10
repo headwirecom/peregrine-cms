@@ -197,7 +197,12 @@ describe('Peregrine assets page', function () {
             expect( newAsset.text ).to.contain(assetNewName)
         })
         
-        /*
+        it('clicking asset item should open up asset preview panel', function(){
+        	newAsset.linkButton.click()
+        	AssetPreviewPanel.contentContainer.waitForVisible()
+            expect( AssetPreviewPanel.contentContainer.isVisible() ).to.equal(true)
+        }) 
+                
         it('clicking delete button should delete asset', function(){
         	AssetPreviewPanel.deleteButton.link.click()
         }) 
@@ -208,7 +213,7 @@ describe('Peregrine assets page', function () {
             const i = assets.findIndex( asset => asset.text.indexOf(assetNewName) > -1 ) 
             //console.log('i is: ' + i)
             expect( i ).to.equal(-1)
-        }) */
+        }) 
     	
     })
     
