@@ -160,6 +160,24 @@ describe('Peregrine assets page', function () {
         	pathBrowserContainer.waitForVisible()
     		expect( pathBrowserContainer.isVisible() ).to.equal(true)
         }) 
+    	
+    	let exampleFolder
+    	let folderName = 'example'
+    	it('should have an asset folder named example in path browser', function(){
+    		const assets = AssetPreviewPanel.assets
+            const i = assets.findIndex( asset => asset.text.indexOf(folderName) > -1 ) 
+            exampleFolder = assets[i]
+            expect( exampleFolder.text ).to.contain(folderName)
+    	})
+    	
+    	let folderPath = '/content/assets/example'
+    	it('select folder: example', function(){
+    		exampleFolder.label.click()
+    		expect( AssetPreviewPanel.selectedPath ).to.contain(folderPath)
+    		AssetPreviewPanel.selectPathButton.click()
+    		// wait for 1 second till the animation ends
+    		browser.pause(1000)
+    	})
         
         /*
         it('clicking delete button should delete asset', function(){
