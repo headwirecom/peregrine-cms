@@ -25,6 +25,9 @@ class AssetPreviewPanel {
             return new MenuButton(item);
         })
     }
+	get pathBrowserContainer() {
+    	return $('.modal-container')
+    }
 	get menuContainer() { return $('.explorer-preview-nav')} 
 	get contentContainer() { return $('.vue-form-generator')} 
 	get referenceContentContainer() {return $('.preview-asset')} 

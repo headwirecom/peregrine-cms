@@ -127,7 +127,7 @@ describe('Peregrine assets page', function () {
     	
     })
     
-    describe('Asset Renaming and Deleting', function() {
+    describe('Asset Renaming, Moving and Deleting', function() {
     	
     	let assetNewName = 'logo.png'
     		
@@ -153,6 +153,15 @@ describe('Peregrine assets page', function () {
         	browser.pause(1000)
         }) 
         
+        let pathBrowserContainer
+        it('clicking move button should open up path browser modal', function(){
+        	pathBrowserContainer = AssetPreviewPanel.pathBrowserContainer
+        	AssetPreviewPanel.moveButton.link.click()
+        	pathBrowserContainer.waitForVisible()
+    		expect( pathBrowserContainer.isVisible() ).to.equal(true)
+        }) 
+        
+        /*
         it('clicking delete button should delete asset', function(){
         	AssetPreviewPanel.deleteButton.link.click()
         }) 
@@ -163,7 +172,7 @@ describe('Peregrine assets page', function () {
             const i = assets.findIndex( asset => asset.text.indexOf(assetNewName) > -1 ) 
             //console.log('i is: ' + i)
             expect( i ).to.equal(-1)
-        })
+        }) */
     	
     })
     
