@@ -178,6 +178,24 @@ describe('Peregrine assets page', function () {
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
     	})
+    	
+    	let newFolder
+    	let newAsset
+        it('clicking example folder', function(){
+        	Explorer.container.waitForVisible()
+            const folders = Explorer.folders
+            const i = folders.findIndex( folder => folder.text.indexOf(folderName) > -1 ) 
+            newFolder = folders[i]
+            expect( newFolder.text ).to.contain(folderName)
+        })
+    	
+    	it('asset logo.png should have been moved to this new location', function(){
+        	newFolder.linkButton.click()
+            const assets = Explorer.assets
+            const i = assets.findIndex( asset => asset.text.indexOf(assetNewName) > -1 ) 
+            newAsset = assets[i]
+            expect( newAsset.text ).to.contain(assetNewName)
+        })
         
         /*
         it('clicking delete button should delete asset', function(){
