@@ -32,13 +32,14 @@ describe('Peregrine assets page', function () {
     describe('Asset Editing', function() {
     	
     	let exampleAsset
+    	let assetName = 'peregrine-logo.png'
         
         it('should have an asset titled "peregrine-logo.png"', function(){
         	Explorer.container.waitForVisible()
             const assets = Explorer.assets
-            const i = assets.findIndex( asset => asset.text.indexOf('peregrine-logo.png') > -1 ) 
+            const i = assets.findIndex( asset => asset.text.indexOf(assetName) > -1 ) 
             exampleAsset = assets[i]
-            expect( exampleAsset.text ).to.contain('peregrine-logo.png')
+            expect( exampleAsset.text ).to.contain(assetName)
         })
         
         it('clicking asset item should open up asset preview panel', function(){
@@ -53,36 +54,39 @@ describe('Peregrine assets page', function () {
             expect( AssetEditorPanel.contentContainer.isVisible() ).to.equal(true)
         })
         
+        let title = 'sample-logo.png'
         it('editing title field', function(){
         	AssetEditorPanel.titleField.waitForVisible() 
-    		AssetEditorPanel.titleField.setValue('sample-logo.png')
-    		expect( AssetEditorPanel.titleField.getValue() ).to.equal('sample-logo.png')
+    		AssetEditorPanel.titleField.setValue(title)
+    		expect( AssetEditorPanel.titleField.getValue() ).to.equal(title)
         })
         
+        let description = 'sample description'
         it('editing description field', function(){
         	AssetEditorPanel.descriptionField.waitForVisible() 
-    		AssetEditorPanel.descriptionField.setValue('sample description')
-    		expect( AssetEditorPanel.descriptionField.getValue() ).to.equal('sample description')
+    		AssetEditorPanel.descriptionField.setValue(description)
+    		expect( AssetEditorPanel.descriptionField.getValue() ).to.equal(description)
         })
         
         let exampleTagField
         let exampleOption
+        let tag = 'bear'
         it('editing tag field', function(){
         	exampleTagField = AssetEditorPanel.tagField
         	exampleTagField.selectButton.click()
     		exampleTagField.contentWrapper.waitForVisible()
     		expect( exampleTagField.contentWrapper.isVisible() ).to.equal(true)
     		const options = exampleTagField.items
-    		const i = options.findIndex( option => option.text.indexOf('bear') > -1 ) 
+    		const i = options.findIndex( option => option.text.indexOf(tag) > -1 ) 
     		exampleOption = options[i]
-    		expect( exampleOption.text ).to.contain('bear')
+    		expect( exampleOption.text ).to.contain(tag)
     	})
     	
     	it('selecting bear from Tag Field', function(){
     		exampleOption.span.click()
     		//exampleTagField.tags.waitForVisible()
     		const options = exampleTagField.tags
-    		const i = options.findIndex( option => option.getText().indexOf('bear') > -1 ) 
+    		const i = options.findIndex( option => option.getText().indexOf(tag) > -1 ) 
     		expect( i ).to.equal(0)
     		
     	})
@@ -101,11 +105,11 @@ describe('Peregrine assets page', function () {
         // preview
         it('title field saved', function(){
         	previewContainer = AssetPreviewPanel.contentContainer
-        	expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal('sample-logo.png')
+        	expect( previewContainer.$('.form-group:nth-child(2) > .field-wrap > .wrapper > p').getText() ).to.equal(title)
         })
         
         it('description field saved', function(){
-        	expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrapper > p').getText() ).to.equal('sample description')
+        	expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrapper > p').getText() ).to.equal(description)
         })
     	
     })
@@ -125,10 +129,12 @@ describe('Peregrine assets page', function () {
     
     describe('Asset Renaming and Deleting', function() {
     	
+    	let assetNewName = 'logo.png'
+    		
     	it('rename dialog open up', function(){
     		AssetPreviewPanel.renameButton.link.click()
     		browser.pause(1000)
-    		browser.alertText('logo.png')
+    		browser.alertText(assetNewName)
     		browser.alertAccept()
     	})
     	
@@ -137,14 +143,14 @@ describe('Peregrine assets page', function () {
     	it('should have an asset titled "logo.png"', function(){
     		Explorer.container.waitForVisible()
             const assets = Explorer.assets
-            const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
+            const i = assets.findIndex( asset => asset.text.indexOf(assetNewName) > -1 ) 
             exampleAsset = assets[i]
-            expect( exampleAsset.text ).to.contain('logo.png')
+            expect( exampleAsset.text ).to.contain(assetNewName)
         })
     	
     	it('clicking asset item should open up asset preview panel', function(){
         	exampleAsset.linkButton.click()
-        	browser.pause(2000)
+        	browser.pause(1000)
         }) 
         
         it('clicking delete button should delete asset', function(){
@@ -154,8 +160,8 @@ describe('Peregrine assets page', function () {
         it('shouldn\'t have an asset titled "logo.png"', function(){
         	Explorer.container.waitForVisible()
             const assets = Explorer.assets
-            const i = assets.findIndex( asset => asset.text.indexOf('logo.png') > -1 ) 
-            console.log('i is: ' + i)
+            const i = assets.findIndex( asset => asset.text.indexOf(assetNewName) > -1 ) 
+            //console.log('i is: ' + i)
             expect( i ).to.equal(-1)
         })
     	
