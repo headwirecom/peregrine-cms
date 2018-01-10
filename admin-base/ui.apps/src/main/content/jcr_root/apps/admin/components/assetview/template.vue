@@ -296,7 +296,7 @@
                 this.isOpen = false
             },
             onMoveSelect() {
-                $perAdminApp.stateAction('moveObject', { path: this.asset.path, to: this.selectedPath, type: 'child'})
+                $perAdminApp.stateAction('moveAsset', { path: this.asset.path, to: this.selectedPath, type: 'child'})
                 this.isOpen = false
             },
             setCurrentPath(path){
