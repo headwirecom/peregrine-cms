@@ -25,6 +25,22 @@ class AssetPreviewPanel {
             return new MenuButton(item);
         })
     }
+	
+	// pathbrowser modal elements
+    get assets() {
+        const items = this.pathBrowserContainer.$$('.modal-content > .col-browse > ul > li')
+        return items.map(item => {
+            return new Item(item);
+        })
+    }
+    get selectedPath() {
+    	return this.pathBrowserContainer.$('.modal-footer > .selected-path').getText()
+    }
+    get selectPathButton() {
+    	return this.pathBrowserContainer.$('.modal-footer > button.modal-action:nth-child(3)')
+    }
+    // pathbrowser modal elements
+	
 	get pathBrowserContainer() {
     	return $('.modal-container')
     }
@@ -32,6 +48,14 @@ class AssetPreviewPanel {
 	get contentContainer() { return $('.vue-form-generator')} 
 	get referenceContentContainer() {return $('.preview-asset')} 
 	
+}
+
+class Item {
+    constructor(container){
+        this.container = container;
+    }
+    get text()     { return this.container.$(`span`).getText()}
+    get label()    { return this.container.$(`label`)}
 }
 
 class MenuButton {
