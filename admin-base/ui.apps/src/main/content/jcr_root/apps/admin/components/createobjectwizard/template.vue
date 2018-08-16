@@ -116,8 +116,11 @@
                 }
                 return objects
             }
-        }
-        ,
+        },
+        created: function() {
+            //By default select the first item in the list;
+            this.selectItem(null, this.objects[0].path)
+        },
         methods: {
             findAllowedObjects(path) {
 
