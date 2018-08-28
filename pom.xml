@@ -45,20 +45,19 @@
         <org.apache.sling.commons.mime.version>2.1.10</org.apache.sling.commons.mime.version>
         <org.apache.sling.settings.version>1.3.8</org.apache.sling.settings.version>
         <org.apache.sling.commons.osgi.version>2.4.0</org.apache.sling.commons.osgi.version>
-        <org.apache.sling.models.api.version>1.3.4</org.apache.sling.models.api.version>
+        <org.apache.sling.models.api.version>1.3.6</org.apache.sling.models.api.version>
         <org.apache.sling.engine.version>2.6.12</org.apache.sling.engine.version>
         <org.apache.sling.scripting.sightly.compiler.java.version>1.0.18</org.apache.sling.scripting.sightly.compiler.java.version>
-        <org.apache.sling.servlet-helpers.version>1.1.8</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.3.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
 
         <!-- Third Party Dependencies Versions -->
         <jackrabbit.version>2.14.4</jackrabbit.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-lang3.version>3.7</commons-lang3.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <com.fasterxml.jackson.version>2.8.7</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.9.3</com.fasterxml.jackson.version>
         <guava.version>15.0</guava.version>
         <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version>
         <metadata-extractor.version>2.10.1</metadata-extractor.version>
@@ -71,7 +70,7 @@
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
         <org.apache.sling.junit.core.version>1.0.14</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>1.0.0</org.apache.sling.testing.clients.version>
-        <org.apache.sling.junit.teleporter.version>1.0.16</org.apache.sling.junit.teleporter.version>
+        <org.apache.sling.junit.teleporter.version>1.0.6</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
@@ -481,12 +480,6 @@
                 <version>${org.apache.sling.scripting.sightly.compiler.java.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.servlet-helpers</artifactId>
-                <version>${org.apache.sling.servlet-helpers.version}</version>
-            </dependency>
-
 
             <!-- Support -->
             <dependency>
@@ -589,6 +582,11 @@
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.commons.testing</artifactId>
+                <version>${org.apache.sling.commons.testing.version}</version>
             </dependency>
 
             <!-- IT Tests Support -->
@@ -878,7 +876,6 @@
         <module>pagerenderer/vue</module>
         <module>admin-base</module>
         <module>samples/example-vue-site</module>
-        <module>themes/themeclean</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
         <module>tooling/maven/archetypes/project</module>
