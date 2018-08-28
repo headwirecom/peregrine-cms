@@ -23,4 +23,4 @@
 
 [artifacts startLevel=20]
     org.apache.sling/org.apache.sling.distribution.api/0.3.1-SNAPSHOT
-    org.apache.sling/org.apache.sling.distribution.core/0.2.9-SNAPSHOT
+    org.apache.sling/org.apache.sling.distribution.core/0.2.11-SNAPSHOT
