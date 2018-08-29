@@ -22,7 +22,7 @@
 
     <groupId>com.peregrine-cms</groupId>
     <artifactId>com.peregrine-cms.sling.launchpad</artifactId>
-    <version>10</version>
+    <version>11-SNAPSHOT</version>
     <packaging>slingstart</packaging>
 
     <name>Apache Sling Launchpad Application Builder for Peregrine CMS</name>
