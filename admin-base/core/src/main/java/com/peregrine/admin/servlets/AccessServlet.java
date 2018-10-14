@@ -26,11 +26,11 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.osgi.service.component.annotations.Component;
-
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 import java.io.IOException;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
@@ -60,8 +60,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class AccessServlet extends AbstractBaseServlet {
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
-        return new RedirectResponse("/system/sling/info.sessionInfo.json");
+    protected Response handleRequest(Request request) throws IOException, ServletException {
+        RequestDispatcherOptions rdOtions = new RequestDispatcherOptions();
+        request.getRequest().getRequestDispatcher("/system/sling/info.sessionInfo.json", rdOtions).forward(request.getRequest(), request.getResponse());
+        return null;
     }
 }
 
