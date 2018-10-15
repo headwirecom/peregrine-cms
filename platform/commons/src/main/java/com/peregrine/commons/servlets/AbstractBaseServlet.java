@@ -540,6 +540,7 @@ public abstract class AbstractBaseServlet
     {
         private Resource resource;
         private RequestDispatcherOptions requestDispatcherOptions;
+        private String path;
 
         /**
          * Creates a Forward Response
@@ -556,9 +557,25 @@ public abstract class AbstractBaseServlet
             this.requestDispatcherOptions = requestDispatcherOptions;
         }
 
+        /**
+         * Creates a Forward Response by path in case one needs to forward to a servlet path
+         * servlet @param path to be forwarded to
+         * @param requestDispatcherOptions Request Dispatcher Options
+         * @throws IllegalArgumentException If the resource to be forwarded to is null
+         */
+        public ForwardResponse(String path, RequestDispatcherOptions requestDispatcherOptions){
+            super(DIRECT);
+            this.path = path;
+            this.requestDispatcherOptions = requestDispatcherOptions;
+        }
+
         @Override
         public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
-            request.getRequestDispatcher(resource, requestDispatcherOptions).forward(request, response);
+            if(resource != null){
+                request.getRequestDispatcher(resource, requestDispatcherOptions).forward(request, response);
+            } else if (path != null){
+                request.getRequestDispatcher(path, requestDispatcherOptions).forward(request, response);
+            }
         }
 
         @Override

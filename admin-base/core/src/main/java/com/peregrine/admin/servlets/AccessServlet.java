@@ -62,8 +62,7 @@ public class AccessServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException, ServletException {
         RequestDispatcherOptions rdOtions = new RequestDispatcherOptions();
-        request.getRequest().getRequestDispatcher("/system/sling/info.sessionInfo.json", rdOtions).forward(request.getRequest(), request.getResponse());
-        return null;
+        return new ForwardResponse("/system/sling/info.sessionInfo.json", rdOtions);
     }
 }
 
