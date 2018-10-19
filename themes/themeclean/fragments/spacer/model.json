@@ -1,0 +1,22 @@
+{
+  "definitions": {
+    "Spacer": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "height": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Height",
+          "x-form-type": "range",
+          "x-form-min": 0,
+          "x-form-max": 100 
+        },
+        "bgref": {
+          "$ref": "fragments/block/model-spacer.json#/definitions/Block",
+          "x-form-type": "reference"
+        }
+      }
+    }
+  }
+}

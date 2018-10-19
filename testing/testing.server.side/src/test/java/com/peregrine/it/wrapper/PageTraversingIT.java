@@ -3,7 +3,6 @@ package com.peregrine.it.wrapper;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -15,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * These tests ensure the proper traversing of a page tree using the PerPage
@@ -70,6 +71,41 @@ public class PageTraversingIT
             ok = true;
         }
         assertTrue("No Children found in /content", ok);
+    }
+
+    /** Test the forward traversing of a Page Tree **/
+    @Test
+    public void testPageListChildren() throws Exception {
+        ResourceResolver resourceResolver = null;
+        logger.info("Start Test Page List Children");
+        try {
+            resourceResolver = getResourceResolver();
+            // Create a Pages to test PerPage.listChildren()
+            AdminResourceHandler resourceManagement = teleporter.getService(AdminResourceHandler.class);
+            String testFolderPath = ROOT_PATH + "/test-plc";
+            Resource testFolder = createFolderStructure(resourceResolver, resourceManagement, testFolderPath);
+
+            String rootPageName = "root";
+            Resource root = createChildPage(resourceManagement, testFolder, rootPageName);
+            // Create child structure
+            Resource child1 = createChildPage(resourceManagement, root, "child-1");
+            Resource child2 = createChildPage(resourceManagement, root, "child-2");
+            Resource child11 = createChildPage(resourceManagement, child1, "child-11");
+            Resource child12 = createChildPage(resourceManagement, child1, "child-12");
+            Resource child13 = createChildPage(resourceManagement, child1, "child-13");
+
+            PerPage rootPage = root.adaptTo(PerPage.class);
+            PerPage child1Page = child1.adaptTo(PerPage.class);
+            PerPage child2Page = child2.adaptTo(PerPage.class);
+            assertEquals("Root must contain 2 and only 2 children", 2, countIterable(rootPage.listChildren()));
+            assertEquals("Child 1 must contain 3 and only 3 children", 3, countIterable(child1Page.listChildren()));
+            assertEquals("Child 2 must contain no children", 0, countIterable(child2Page.listChildren()));
+        } finally {
+            logger.info("Ended Test Page List Children");
+            if(resourceResolver != null) {
+                resourceResolver.close();
+            }
+        }
     }
 
     /** Test the forward traversing of a Page Tree **/
@@ -322,6 +358,14 @@ public class PageTraversingIT
             parent = folderResource;
         }
         return parent;
+    }
+
+    private int countIterable(Iterable<PerPage> iterable) {
+        int answer = 0;
+        for(PerPage page: iterable) {
+            answer++;
+        }
+        return answer;
     }
 
     @Override

@@ -42,6 +42,7 @@
         folder otherwise they wipe all installed bundles.
     -->
     <filter root="/content/sites/example"/>
+    <filter root="/content/assets/example"/>
     <filter root="/content/objects/example"/>
     <filter root="/content/templates/example"/>
     <filter root="/conf/sites/example"/>

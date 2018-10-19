@@ -1,0 +1,24 @@
+{
+  "title": "Carousel",
+  "group": "Features",
+  "model" : {
+    "carouselheight": 50,
+    "toppadding": 0,
+    "bottompadding": 0,
+    "slides": [
+      {
+        "imagepath": "/content/assets/themeclean/images/background1.jpg",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+        "heading": "Slide One"
+      },{
+        "imagepath": "/content/assets/themeclean/images/background2.jpg",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+        "heading": "Slide Two"
+      },{
+        "imagepath": "/content/assets/themeclean/images/background3.jpg",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+        "heading": "Slide Three"
+      }
+    ]
+  }
+}

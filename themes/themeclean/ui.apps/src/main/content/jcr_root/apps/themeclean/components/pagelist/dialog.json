@@ -1,0 +1,30 @@
+{
+  "fields": [
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/sites",
+      "placeholder": "rootpage",
+      "label": "Root Page",
+      "model": "rootpage"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "includeroot",
+      "label": "Include Root",
+      "model": "includeroot"
+    },
+    {
+      "type": "input",
+      "inputType": "number",
+      "placeholder": "levels",
+      "label": "Levels",
+      "model": "levels",
+      "default": 1,
+      "min": 1
+    }
+  ]
+}

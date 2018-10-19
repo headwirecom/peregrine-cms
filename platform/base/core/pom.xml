@@ -52,6 +52,7 @@
                         <Export-Package>
                             com.peregrine.adaption,
                             com.peregrine.nodetypes.*,
+                            com.peregrine.intra,
                             com.peregrine.render,
                             com.peregrine.rendition,
                             com.peregrine.replication,
@@ -160,6 +161,16 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.engine</artifactId>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.sling</groupId>-->
+            <!--<artifactId>org.apache.sling.commons.testing</artifactId>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.servlet-helpers</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>

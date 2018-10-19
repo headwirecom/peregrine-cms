@@ -594,6 +594,23 @@ class PerAdminImpl {
         })
     }
 
+    saveAssetProperties(node) {
+        return new Promise( (resolve, reject) => {
+            let formData = new FormData()
+            // convert to a new object
+            let nodeData = JSON.parse(JSON.stringify(node))
+            stripNulls(nodeData)
+            delete nodeData['jcr:created']
+            delete nodeData['jcr:createdBy']
+            delete nodeData['jcr:lastModified']
+            delete nodeData['jcr:lastModifiedBy']
+            formData.append('content', json(nodeData))
+
+            updateWithForm('/admin/updateResource.json'+ node.path, formData)
+                .then( () => resolve() )
+        })
+    }
+
     insertNodeAt(path, component, drop, variation) {
         logger.fine(arguments)
         return new Promise( (resolve, reject) => {
@@ -606,7 +623,9 @@ class PerAdminImpl {
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
-                })
+                }).catch(error => {
+                resolve( {} )
+            })
         })
     }
 
@@ -619,7 +638,9 @@ class PerAdminImpl {
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( (data) => {
                     resolve(data)
-                })
+                }).catch(error => {
+                resolve( {} )
+            })
         })
     }
 

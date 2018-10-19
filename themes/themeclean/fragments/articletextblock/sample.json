@@ -1,0 +1,12 @@
+{
+  "title": "Article Text Block",
+  "default": true,
+  "group": "Article",
+  "model": {
+    "toppadding": "0",
+    "bottompadding": "0",
+    "textcolor": "#000000",
+    "bgcolor": "#ffffff",
+    "text": "<p>Vestibulum vel volutpat enim, vel euismod tortor. Pellentesque sed dignissim est. Curabitur lacinia elit nec tortor tincidunt, et laoreet libero gravida. Aenean sodales, est id commodo rhoncus, dui orci mollis quam, quis tincidunt orci metus sit amet quam. Aenean ac egestas elit. Aenean nec vehicula lectus.</p>"
+  }
+}

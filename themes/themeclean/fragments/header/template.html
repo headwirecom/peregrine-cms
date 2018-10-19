@@ -1,0 +1,26 @@
+<nav class="navbar align-items-center navbar-light w-100">
+  <h1>Configure Header</h1>
+  <!-- Logo -->
+  <span class="navbar-logo">
+   <a href="http://www.peregrine-cms.com">
+    <img class="menu-logo" src="/assets/images/logo2.png" alt="logo" style="height: 3.8rem">
+   </a>
+  </span>
+
+  <!-- Hamburger toggle button -->
+  <button class="navbar-toggler navbar-toggler-right" data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false"
+    aria-controls="collapseExample">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Collapsible Menu -->
+  <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+    
+    <div class="textlink text-right"></div>
+
+    <div class="menubutton"></div>
+  
+  </div>
+  <div v-if="isEditAndEmpty">no content defined for component</div>
+
+</nav>

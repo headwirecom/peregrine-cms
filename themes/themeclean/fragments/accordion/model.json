@@ -4,22 +4,61 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "toggletype": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Collapse Style",
+          "x-form-type": "materialradio",
+          "x-default": "accordion",
+          "properties": {
+            "toggle": {
+              "x-form-name": "Toggle",
+              "x-form-value": "toggle"
+            },
+            "accordion": {
+              "x-form-name": "Accordion",
+              "x-form-value": "accordion"
+            }
+          }
+        },
         "showtitle": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Show title",
+          "x-form-label": "Show Title",
           "x-form-type": "materialswitch"
         },
         "title": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
           "x-form-type": "text"
         },
-        "tabs": {
+        "mediaref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/mediavisible/model.json#/definitions/Mediavisible"
+        },
+        "mediaposition": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Tabs",
+          "x-form-label": "Media Position",
+          "x-form-type": "materialradio",
+          "x-form-visible": "model.showmedia == 'true'",
+          "x-default": "before",
+          "properties": {
+		    "type1": {
+		      "x-form-name": "Before Content",
+		      "x-form-value": "before"
+		    },"type2": {
+		      "x-form-name": "After Content",
+		      "x-form-value": "after"
+		    }
+  		  }
+        },
+        "accordiontoggle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Accordion/Toggle",
           "x-form-type": "collection",
           "properties": {
             "title": {
@@ -32,13 +71,13 @@
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Text",
-          	  "x-form-type": "texteditor"
+              "x-form-type": "texteditor"
             }
           }
         },
         "bgref": {
-          "$ref": "fragments/block/model.json#/definitions/Block",
-          "x-form-type": "reference"
+            "x-form-type": "reference",
+        	"$ref": "fragments/block/model.json#/definitions/Block"
         }
       }
     }

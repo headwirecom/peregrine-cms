@@ -1,0 +1,37 @@
+{
+  "title": "Teaser Primary",
+  "group": "Features",
+  "model": {
+    "showtitle": "true",
+    "showsubtitle": "false",
+    "showtext": "true",
+    "showbutton": "true",
+    "isprimary": "true",
+    "fullheight": "true",
+    "custombackground": "true",
+    "backgroundtype": "image",
+    "bgimage": "/content/assets/themeclean/images/meeting_room.jpg",
+    "overlay":"true",
+    "overlaycolor": "#ffffff",
+    "overlayopacity": "70", 
+    "bottompadding": "30",
+    "toppadding": "30",
+    "text": "<p>Eligendi fugit asperiores et. Corrupti voluptatum quasi sit. Adipisci ut voluptatem necessitatibus cumque aspernatur.</p>",
+    "subtitle": "Molestiae alias et inventore voluptas",
+    "buttonsize": "large",
+    "title": "Peregrine blocks",
+    "buttons": [
+      {
+        "buttonlink": "/content/sites/themeclean",
+        "buttontext": "See More",
+        "buttoncolor": "primary",
+        "iconclass": ""
+      },{
+        "buttonlink": "/content/sites/themeclean",
+        "buttontext": "About Us",
+        "buttoncolor": "primary",
+        "iconclass": ""
+      }
+    ]
+  }
+}

@@ -1,11 +1,22 @@
 {
   "fields": [
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "iconcustomcolor",
+      "label": "Custom Icons Color",
+      "model": "iconcustomcolor"
+    },
+    {
       "type": "input",
       "inputType": "color",
       "placeholder": "iconcolor",
       "label": "Icon Color",
-      "model": "iconcolor"
+      "model": "iconcolor",
+      "visible": "model.iconcustomcolor == 'true'"
     },
     {
       "type": "input",
@@ -13,6 +24,7 @@
       "placeholder": "iconsize",
       "label": "Icon Size",
       "model": "iconsize",
+      "min": 0,
       "max": 150
     },
     {

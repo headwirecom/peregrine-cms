@@ -21,18 +21,33 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "showlogo": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Show Logo",
+          "x-form-type": "materialswitch"
+        },
         "logo": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Logo",
           "x-form-type": "pathbrowser",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-browserRoot": "/content/assets"
+        },
+        "logoalttext": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Logo Alt Text",
+          "x-form-visible": "model.showlogo == 'true'",
+          "x-form-type": "text"
         },
         "logourl": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Logo Url",
           "x-form-type": "pathbrowser",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-browserRoot": "/content/sites"
         },
         "logosize": {
@@ -40,32 +55,30 @@ import javax.inject.Named;
           "x-source": "inject",
           "x-form-label": "Logo Size",
           "x-form-type": "range",
+          "x-form-visible": "model.showlogo == 'true'",
           "x-form-min": 1,
-          "x-form-max": 10
+          "x-form-max": 300
         },
-        "title1": {
+        "columns": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Column 1 Title ",
-          "x-form-type": "text"
-        },
-        "text1": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Column 1 Text",
-          "x-form-type": "texteditor"
-        },
-        "title2": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Column 2 Title",
-          "x-form-type": "text"
-        },
-        "text2": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Column 2 Text",
-          "x-form-type": "texteditor"
+          "x-form-label": "Columns",
+          "x-form-type": "collection",
+          "x-form-multifield": "true",
+          "properties": {
+            "title": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Title",
+              "x-form-type": "text"
+            },
+            "text": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Text",
+              "x-form-type": "texteditor"
+            }
+          }
         },
         "copyright": {
           "type": "string",
@@ -73,50 +86,23 @@ import javax.inject.Named;
           "x-form-label": "Copyright Text",
           "x-form-type": "text"
         },
-        "linksref": {
-          "x-form-type": "reference",
-          "type": "object",
-          "x-type": "component",
-          "properties": {
-            "title": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Links Section Title",
-              "x-form-type": "text"
-            },
-            "links": {
-              "type": "object",
-              "x-source": "inject",
-              "x-form-type": "collection",
-              "x-form-label": "Links",
-              "properties": {
-                "text": {
-                  "type": "string",
-                  "x-source": "inject",
-                  "x-form-label": "Link Text",
-                  "x-form-type": "text"
-                },
-                "link": {
-                  "type": "string",
-                  "x-source": "inject",
-                  "x-form-label": "Link Url",
-                  "x-form-type": "pathbrowser",
-                  "x-form-browserRoot": "/content/sites"
-                }
-              }
-            }
-          }
-        },
         "socialref": {
           "x-form-type": "reference",
           "type": "object",
           "x-type": "component",
           "properties": {
+            "iconcustomcolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Custom Icons Color",
+              "x-form-type": "materialswitch"
+            },
             "iconcolor": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Icon Color",
               "x-default": "#000000",
+              "x-form-visible": "model.iconcustomcolor == 'true'",
               "x-form-type": "color"
             },
             "iconsize": {
@@ -124,7 +110,7 @@ import javax.inject.Named;
               "x-source": "inject",
               "x-form-label": "Icon Size",
               "x-form-type": "range",
-              "x-default": "30",
+              "x-default": "25",
               "x-form-min": 0,
               "x-form-max": 150
             },
@@ -163,16 +149,22 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "anchorname": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Anchor Name",
+              "x-form-type": "text"
+            },
             "colorscheme": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Block Color Scheme",
               "x-form-type": "materialradio",
-              "x-default": "light",
+              "x-default": "",
               "properties": {
                 "none": {
                   "x-form-name": "None",
-                  "x-form-value": "none"
+                  "x-form-value": ""
                 },
                 "light": {
                   "x-form-name": "Light",
@@ -292,7 +284,7 @@ import javax.inject.Named;
               "x-form-label": "Top Padding",
               "x-form-type": "range",
               "x-form-min": 0,
-              "x-form-max": 120,
+              "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
             },
             "bottompadding": {
@@ -336,63 +328,59 @@ public class FooterModel extends AbstractComponent {
     public FooterModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Show Logo","x-form-type":"materialswitch"} */
+	@Inject
+	private String showlogo;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/assets"} */
 	@Inject
 	private String logo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Alt Text","x-form-visible":"model.showlogo == 'true'","x-form-type":"text"} */
+	@Inject
+	private String logoalttext;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */
 	@Inject
 	private String logourl;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-min":1,"x-form-max":10} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-visible":"model.showlogo == 'true'","x-form-min":1,"x-form-max":300} */
 	@Inject
 	private String logosize;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 1 Title ","x-form-type":"text"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Columns","x-form-type":"collection","x-form-multifield":"true","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"}}} */
 	@Inject
-	private String title1;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 1 Text","x-form-type":"texteditor"} */
-	@Inject
-	private String text1;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 2 Title","x-form-type":"text"} */
-	@Inject
-	private String title2;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 2 Text","x-form-type":"texteditor"} */
-	@Inject
-	private String text2;
+	private List<IComponent> columns;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Copyright Text","x-form-type":"text"} */
 	@Inject
 	private String copyright;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Links Section Title","x-form-type":"text"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Icons Color","x-form-type":"materialswitch"} */
 	@Inject
-	private String title;
+	private String iconcustomcolor;
 
-	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
-	@Inject
-	private List<IComponent> links;
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-visible":"model.iconcustomcolor == 'true'","x-form-type":"color"} */
 	@Inject
 	@Default(values ="#000000")
 	private String iconcolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"30","x-form-min":0,"x-form-max":150} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"25","x-form-min":0,"x-form-max":150} */
 	@Inject
-	@Default(values ="30")
+	@Default(values ="25")
 	private String iconsize;
 
 	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
 	@Inject
 	private List<IComponent> icons;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
 	@Inject
-	@Default(values ="light")
+	private String anchorname;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="")
 	private String colorscheme;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch","x-default":"false"} */
@@ -445,7 +433,7 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String fullheight;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
@@ -457,39 +445,34 @@ public class FooterModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Show Logo","x-form-type":"materialswitch"} */
+	public String getShowlogo() {
+		return showlogo;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/assets"} */
 	public String getLogo() {
 		return logo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Alt Text","x-form-visible":"model.showlogo == 'true'","x-form-type":"text"} */
+	public String getLogoalttext() {
+		return logoalttext;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */
 	public String getLogourl() {
 		return logourl;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-min":1,"x-form-max":10} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Size","x-form-type":"range","x-form-visible":"model.showlogo == 'true'","x-form-min":1,"x-form-max":300} */
 	public String getLogosize() {
 		return logosize;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 1 Title ","x-form-type":"text"} */
-	public String getTitle1() {
-		return title1;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 1 Text","x-form-type":"texteditor"} */
-	public String getText1() {
-		return text1;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 2 Title","x-form-type":"text"} */
-	public String getTitle2() {
-		return title2;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Column 2 Text","x-form-type":"texteditor"} */
-	public String getText2() {
-		return text2;
+	/* {"type":"string","x-source":"inject","x-form-label":"Columns","x-form-type":"collection","x-form-multifield":"true","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"}}} */
+	public List<IComponent> getColumns() {
+		return columns;
 	}
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Copyright Text","x-form-type":"text"} */
@@ -497,22 +480,17 @@ public class FooterModel extends AbstractComponent {
 		return copyright;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Links Section Title","x-form-type":"text"} */
-	public String getTitle() {
-		return title;
+	/* {"type":"string","x-source":"inject","x-form-label":"Custom Icons Color","x-form-type":"materialswitch"} */
+	public String getIconcustomcolor() {
+		return iconcustomcolor;
 	}
 
-	/* {"type":"object","x-source":"inject","x-form-type":"collection","x-form-label":"Links","properties":{"text":{"type":"string","x-source":"inject","x-form-label":"Link Text","x-form-type":"text"},"link":{"type":"string","x-source":"inject","x-form-label":"Link Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
-	public List<IComponent> getLinks() {
-		return links;
-	}
-
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-type":"color"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-default":"#000000","x-form-visible":"model.iconcustomcolor == 'true'","x-form-type":"color"} */
 	public String getIconcolor() {
 		return iconcolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"30","x-form-min":0,"x-form-max":150} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"25","x-form-min":0,"x-form-max":150} */
 	public String getIconsize() {
 		return iconsize;
 	}
@@ -522,7 +500,12 @@ public class FooterModel extends AbstractComponent {
 		return icons;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	public String getAnchorname() {
+		return anchorname;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}
@@ -582,7 +565,7 @@ public class FooterModel extends AbstractComponent {
 		return fullheight;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}

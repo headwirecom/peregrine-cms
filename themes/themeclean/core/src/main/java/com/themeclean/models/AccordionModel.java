@@ -21,22 +21,156 @@ import javax.inject.Named;
       "type": "object",
       "x-type": "component",
       "properties": {
+        "toggletype": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Collapse Style",
+          "x-form-type": "materialradio",
+          "x-default": "accordion",
+          "properties": {
+            "toggle": {
+              "x-form-name": "Toggle",
+              "x-form-value": "toggle"
+            },
+            "accordion": {
+              "x-form-name": "Accordion",
+              "x-form-value": "accordion"
+            }
+          }
+        },
         "showtitle": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Show title",
+          "x-form-label": "Show Title",
           "x-form-type": "materialswitch"
         },
         "title": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Title",
+          "x-form-visible": "model.showtitle == 'true'",
           "x-form-type": "text"
         },
-        "tabs": {
+        "mediaref": {
+          "x-form-type": "reference",
+          "type": "object",
+          "x-type": "component",
+          "properties": {
+            "showmedia": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Show Media",
+              "x-form-type": "materialswitch"
+            },
+            "mediatype": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Media type",
+              "x-form-visible": "model.showmedia == 'true'",
+              "x-form-type": "materialradio",
+              "properties": {
+                "image": {
+                  "x-form-name": "Image",
+                  "x-form-value": "image"
+                },
+                "video": {
+                  "x-form-name": "Video",
+                  "x-form-value": "video"
+                },
+                "icon": {
+                  "x-form-name": "Icon",
+                  "x-form-value": "icon"
+                }
+              }
+            },
+            "mediaicon": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Chooser",
+              "x-form-type": "iconbrowser",
+              "x-form-hint": "Select an icon.",
+              "x-form-validator": "required",
+              "x-form-visible": "model.mediatype == 'icon' and model.showmedia == 'true'",
+              "x-form-families": [
+                "material",
+                "font awesome"
+              ]
+            },
+            "mediaiconsize": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Size",
+              "x-form-type": "range",
+              "x-form-visible": "model.mediatype == 'icon' and model.showmedia == 'true'",
+              "x-default": 50,
+              "x-form-min": 1,
+              "x-form-max": 1000
+            },
+            "mediaiconcolor": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Icon Color",
+              "x-form-type": "color",
+              "x-form-visible": "model.mediatype == 'icon' and model.showmedia == 'true'",
+              "x-default": "#000000"
+            },
+            "imagesrc": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Source",
+              "x-form-visible": "model.mediatype == 'image' and model.showmedia == 'true'",
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
+            },
+            "imagealttext": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Image Alt Text",
+              "x-form-visible": "model.mediatype == 'image' and model.showmedia == 'true'",
+              "x-form-type": "text"
+            },
+            "videosrc": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Video Source",
+              "x-form-visible": "model.mediatype == 'video' and model.showmedia == 'true'",
+              "x-form-type": "pathbrowser",
+              "x-form-browserRoot": "/content/assets"
+            },
+            "mediawidth": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Width",
+              "x-form-type": "range",
+              "x-form-visible": "model.showmedia == 'true'",
+              "x-default": 100,
+              "x-form-min": 10,
+              "x-form-max": 100
+            }
+          }
+        },
+        "mediaposition": {
           "type": "string",
           "x-source": "inject",
-          "x-form-label": "Tabs",
+          "x-form-label": "Media Position",
+          "x-form-type": "materialradio",
+          "x-form-visible": "model.showmedia == 'true'",
+          "x-default": "before",
+          "properties": {
+            "type1": {
+              "x-form-name": "Before Content",
+              "x-form-value": "before"
+            },
+            "type2": {
+              "x-form-name": "After Content",
+              "x-form-value": "after"
+            }
+          }
+        },
+        "accordiontoggle": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Accordion/Toggle",
           "x-form-type": "collection",
           "properties": {
             "title": {
@@ -58,16 +192,22 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "anchorname": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Anchor Name",
+              "x-form-type": "text"
+            },
             "colorscheme": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Block Color Scheme",
               "x-form-type": "materialradio",
-              "x-default": "light",
+              "x-default": "",
               "properties": {
                 "none": {
                   "x-form-name": "None",
-                  "x-form-value": "none"
+                  "x-form-value": ""
                 },
                 "light": {
                   "x-form-name": "Light",
@@ -187,7 +327,7 @@ import javax.inject.Named;
               "x-form-label": "Top Padding",
               "x-form-type": "range",
               "x-form-min": 0,
-              "x-form-max": 120,
+              "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
             },
             "bottompadding": {
@@ -231,21 +371,74 @@ public class AccordionModel extends AbstractComponent {
     public AccordionModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Show title","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","x-default":"accordion","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
+	@Inject
+	@Default(values ="accordion")
+	private String toggletype;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	@Inject
 	private String showtitle;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-visible":"model.showtitle == 'true'","x-form-type":"text"} */
 	@Inject
 	private String title;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Media","x-form-type":"materialswitch"} */
 	@Inject
-	private List<IComponent> tabs;
+	private String showmedia;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"video":{"x-form-name":"Video","x-form-value":"video"},"icon":{"x-form-name":"Icon","x-form-value":"icon"}}} */
 	@Inject
-	@Default(values ="light")
+	private String mediatype;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-validator":"required","x-form-visible":"model.mediatype == 'icon' and model.showmedia == 'true'","x-form-families":["material","font awesome"]} */
+	@Inject
+	private String mediaicon;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-form-visible":"model.mediatype == 'icon' and model.showmedia == 'true'","x-default":50,"x-form-min":1,"x-form-max":1000} */
+	@Inject
+	@Default(values ="50")
+	private String mediaiconsize;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-form-type":"color","x-form-visible":"model.mediatype == 'icon' and model.showmedia == 'true'","x-default":"#000000"} */
+	@Inject
+	@Default(values ="#000000")
+	private String mediaiconcolor;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	@Inject
+	private String imagesrc;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"text"} */
+	@Inject
+	private String imagealttext;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	@Inject
+	private String videosrc;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-visible":"model.showmedia == 'true'","x-default":100,"x-form-min":10,"x-form-max":100} */
+	@Inject
+	@Default(values ="100")
+	private String mediawidth;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-form-visible":"model.showmedia == 'true'","x-default":"before","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
+	@Inject
+	@Default(values ="before")
+	private String mediaposition;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Accordion/Toggle","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"}}} */
+	@Inject
+	private List<IComponent> accordiontoggle;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	@Inject
+	private String anchorname;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="")
 	private String colorscheme;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch","x-default":"false"} */
@@ -298,7 +491,7 @@ public class AccordionModel extends AbstractComponent {
 	@Inject
 	private String fullheight;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
@@ -310,22 +503,82 @@ public class AccordionModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Show title","x-form-type":"materialswitch"} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Collapse Style","x-form-type":"materialradio","x-default":"accordion","properties":{"toggle":{"x-form-name":"Toggle","x-form-value":"toggle"},"accordion":{"x-form-name":"Accordion","x-form-value":"accordion"}}} */
+	public String getToggletype() {
+		return toggletype;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Title","x-form-type":"materialswitch"} */
 	public String getShowtitle() {
 		return showtitle;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Title","x-form-visible":"model.showtitle == 'true'","x-form-type":"text"} */
 	public String getTitle() {
 		return title;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Tabs","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"}}} */
-	public List<IComponent> getTabs() {
-		return tabs;
+	/* {"type":"string","x-source":"inject","x-form-label":"Show Media","x-form-type":"materialswitch"} */
+	public String getShowmedia() {
+		return showmedia;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Media type","x-form-visible":"model.showmedia == 'true'","x-form-type":"materialradio","properties":{"image":{"x-form-name":"Image","x-form-value":"image"},"video":{"x-form-name":"Video","x-form-value":"video"},"icon":{"x-form-name":"Icon","x-form-value":"icon"}}} */
+	public String getMediatype() {
+		return mediatype;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-validator":"required","x-form-visible":"model.mediatype == 'icon' and model.showmedia == 'true'","x-form-families":["material","font awesome"]} */
+	public String getMediaicon() {
+		return mediaicon;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-form-visible":"model.mediatype == 'icon' and model.showmedia == 'true'","x-default":50,"x-form-min":1,"x-form-max":1000} */
+	public String getMediaiconsize() {
+		return mediaiconsize;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Color","x-form-type":"color","x-form-visible":"model.mediatype == 'icon' and model.showmedia == 'true'","x-default":"#000000"} */
+	public String getMediaiconcolor() {
+		return mediaiconcolor;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Source","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	public String getImagesrc() {
+		return imagesrc;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Image Alt Text","x-form-visible":"model.mediatype == 'image' and model.showmedia == 'true'","x-form-type":"text"} */
+	public String getImagealttext() {
+		return imagealttext;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Video Source","x-form-visible":"model.mediatype == 'video' and model.showmedia == 'true'","x-form-type":"pathbrowser","x-form-browserRoot":"/content/assets"} */
+	public String getVideosrc() {
+		return videosrc;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-form-visible":"model.showmedia == 'true'","x-default":100,"x-form-min":10,"x-form-max":100} */
+	public String getMediawidth() {
+		return mediawidth;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Media Position","x-form-type":"materialradio","x-form-visible":"model.showmedia == 'true'","x-default":"before","properties":{"type1":{"x-form-name":"Before Content","x-form-value":"before"},"type2":{"x-form-name":"After Content","x-form-value":"after"}}} */
+	public String getMediaposition() {
+		return mediaposition;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Accordion/Toggle","x-form-type":"collection","properties":{"title":{"type":"string","x-source":"inject","x-form-label":"Title","x-form-type":"text"},"text":{"type":"string","x-source":"inject","x-form-label":"Text","x-form-type":"texteditor"}}} */
+	public List<IComponent> getAccordiontoggle() {
+		return accordiontoggle;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	public String getAnchorname() {
+		return anchorname;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}
@@ -385,7 +638,7 @@ public class AccordionModel extends AbstractComponent {
 		return fullheight;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}

@@ -471,7 +471,7 @@ public abstract class AbstractBaseServlet
     public static class TextResponse
         extends Response {
 
-        private StringBuffer content;
+        private StringBuffer content = new StringBuffer();
         private String mimeType = TEXT_MIME_TYPE;
 
         public TextResponse(String type) {

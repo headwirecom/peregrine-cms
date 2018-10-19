@@ -1,0 +1,8 @@
+{
+  "title": "Article Two Column no default values",
+  "group": "Empty",
+  "model": {
+      "textleft": "<p><br></p>",
+      "textright": "<p><br></p>"
+  }
+}

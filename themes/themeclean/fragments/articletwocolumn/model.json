@@ -1,0 +1,26 @@
+{
+  "definitions": {
+    "Articletwocolumn": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "textleft": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Left Column",
+          "x-form-type": "texteditor"
+        },
+        "textright": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Right Column",
+          "x-form-type": "texteditor"
+        },
+        "bgref": {
+          "$ref": "fragments/block/model-article.json#/definitions/Block",
+          "x-form-type": "reference"
+        }
+      }
+    }
+  }
+}

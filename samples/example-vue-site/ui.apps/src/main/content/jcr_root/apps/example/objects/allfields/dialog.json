@@ -181,7 +181,7 @@
       "trackBy": "name",
       "label": "name",
       "searchable": false,
-      "clearOnSelect": true,
+      "clearOnSelect": false,
       "closeOnSelect": false,
       "taggable": true,
       "deselectLabel": "×",
@@ -204,16 +204,8 @@
     "label": "Select",
     "model": "language",
     "selectOptions": {
-      "multiple": false,
-      "trackBy": "name",
-      "label": "name",
-      "searchable": false,
-      "taggable": false,
-      "deselectLabel": "×",
-      "placeholder":"Select language",
-      "clearOnSelect": true,
-      "closeOnSelect": true,
-      "allowEmpty": true
+      "name": "name",
+      "value": "value"
     },
     "values": [
       { "name": "English", "value": "en"},

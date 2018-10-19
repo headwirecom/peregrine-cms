@@ -1,7 +1,8 @@
 <template>
   <section class="d-flex align-items-center" ref="section" v-bind:class="[classes, colors]"
   v-bind:style="[styles, sticky]" v-bind:data-per-path="model.path">
-    <div class="embed-responsive embed-responsive-16by9" v-if="model.backgroundtype == 'video' &amp;&amp; model.bgvideo"
+    <a class="percms-anchor" ref="anchor" v-bind:id="model.anchorname"></a>
+    <div class="embed-responsive embed-responsive-16by9" v-if="model.custombackground === 'true' &amp;&amp; model.backgroundtype == 'video' &amp;&amp; model.bgvideo"
     v-bind:style="`position:${'absolute'};pointer-events:${'none'};`">
       <iframe class="embed-responsive-item" v-bind:src="model.bgvideo + '?autoplay=1&amp;loop=1&amp;controls=0&amp;mute=1'"></iframe>
     </div>
@@ -23,20 +24,32 @@
         mounted() {
           // Add top margin to perApp to account for fixed header when sticky is true
           if( this.model.sticky === 'true' && !$peregrineApp.isAuthorMode()) {
-            const height = this.$refs.section.clientHeight
-            this.$refs.section.parentElement.style.marginTop = height + 'px';
+            if( this.$refs.section.style.position === 'fixed' ){
+              const height = this.$refs.section.clientHeight
+              this.$refs.section.parentElement.style.marginTop = height + 'px';
+            }
           }
+          //Offset height of anchor by height of the navbar and top padding
+          let navSection = document.querySelector('nav').parentElement.parentElement.parentElement
+          let navPosition = navSection.style.position
+          let navSticky = navPosition === "sticky" || navPosition === "fixed" 
+          let navOffset = navSticky ? navSection.clientHeight : 0
+
+          this.$refs.anchor.style.top = `0px`
+          this.$refs.anchor.style.marginTop = `-${navOffset}px`
+          this.$refs.anchor.style.paddingTop = `${navOffset}px`
+
         },
         computed: {          
           classes: function() {
             let classObject = {}
-            classObject['view-height'] = this.model.fullheight == 'true'
+            classObject['percms-view-height'] = this.model.fullheight == 'true'
             classObject[`elevation-${this.model.elevation}`] = this.model.elevation > 0
             return classObject      
           },
           colors: function() {
             let classes = {}
-            if( this.model.colorscheme === 'none' ) return classes
+            if( this.model.colorscheme === '' ) return classes
             if( this.model.custombackground === 'false' ) {
               classes['bg-dark'] = this.model.colorscheme === 'dark'
               classes['bg-light'] = this.model.colorscheme === 'light'
@@ -50,6 +63,7 @@
             return sticky && !$peregrineApp.isAuthorMode() ?
             {
               position: 'fixed',
+              position: 'sticky',
               top: '0',
               width: '100%',
               zIndex: '1000'

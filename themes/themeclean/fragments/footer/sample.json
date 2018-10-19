@@ -1,44 +1,50 @@
 {
   "title": "Footer",
-  "group": "General",
+  "group": "Chrome",
   "model": {
     "backgroundtype": "color",
     "bgcolor": "#eeeeee",
     "bottompadding": "0",
     "toppadding": "30",
+    "colorscheme": "light",
+    "showlogo": "true",
     "logo": "/content/assets/themeclean/images/peregrine-logo.png",
     "logourl": "http://www.peregrine-cms.com",
-    "logosize": "6",
+    "logosize": "60",
     "copyright": "Copyright 2017 Peregrine - All Rights Reserved",
-    "title": "Help Links",
-    "title1": "Address",
-    "text1": "1234 Street Name&lt;br&gt;City, AA 99999",
-    "title2": "Contacts",
-    "text2": "Email: support@headwire.com&lt;br&gt;Phone: +1 (0) 000 0000 001&lt;br&gt;Fax: +1 (0) 000 0000 002",
-    "links": [
+    "columns": [
       {
-        "link": "/content/sites/themeclean",
-        "text": "Website Builder"
+        "title": "",
+        "text": ""
+      },
+      {
+        "title": "Contact",
+        "text": "<p>email@email.com<br>1-800-888-8888</p>"
       },{
-        "link": "/content/sites/themeclean",
-        "text": "For Windows"
-      },{
-        "link": "/content/sites/themeclean",
-        "text": "For Mac"
+        "title": "Location",
+        "text": "<p>1234 S Pointe Drive, Laguna Hills, CA 92653</p>"
       }
     ],
     "icons": [
       {
-        "url": "/content/sites/themeclean",
-        "icon": ":material-icons:face"
+        "url": "https://www.facebook.com/",
+        "icon": "fontAwesome:fa fa-facebook:"
       },
       {
-        "url": "/content/sites/themeclean",
-        "icon": ":material-icons:favorite"
+        "url": "https://twitter.com/",
+        "icon": "fontAwesome:fa fa-twitter:"
       },
       {
-        "url": "/content/sites/themeclean",
-        "icon": ":material-icons:account_balance"
+        "url": "https://www.instagram.com/",
+        "icon": "fontAwesome:fa fa-instagram:"
+      },
+      {
+        "url": "https://www.pinterest.com/",
+        "icon": "fontAwesome:fa fa-pinterest-p:"
+      },
+      {
+        "url": "https://www.youtube.com/",
+        "icon": "fontAwesome:fa fa-youtube-play:"
       }
     ]
   }

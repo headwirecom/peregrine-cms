@@ -1,29 +1,191 @@
 { "fields":[{
   "type": "input",
   "inputType": "text",
-  "label": "name",
-  "model": "name",
-  "placeholder": "name"
-},
+  "label": "Text Field",
+  "model": "text",
+  "placeholder": "text"
+  },
+  {
+    "type": "material-textarea",
+    "rows": 5,
+    "label": "Text Area",
+    "model": "textarea",
+    "placeholder": "text area"
+  },
+  {
+	"type": "texteditor",
+	"rows": 10,
+	"placeholder": "text editor",
+	"label": "Text Editor",
+	"model": "texteditor"
+  },
   {
     "type": "input",
-    "inputType": "text",
-    "label": "value",
-    "model": "value",
-    "placeholder": "value"
+    "inputType": "number",
+    "placeholder": "number",
+    "label": "Number Field",
+    "model": "number"
+  },
+  {
+    "type": "input",
+    "inputType": "url",
+    "placeholder": "url",
+    "label": "URL",
+    "model": "url"
+  },
+  {
+    "type": "input",
+    "inputType": "tel",
+    "placeholder": "tel",
+    "label": "Telephone",
+    "model": "tel"
   },
   {
     "type": "pathbrowser",
-    "label": "page",
+    "label": "Page",
     "model": "pagePath",
     "browserRoot": "/content/sites",
     "placeholder": "select path"
   },
   {
     "type": "pathbrowser",
-    "label": "image",
+    "label": "Image",
     "model": "imagePath",
-    "browserRoot": "/content/assets",
+    "browserRoot": "/content/assets/example/images",
     "placeholder": "select path"
-  }
+  },
+  {
+    "type": "material-checkbox",
+    "valueOn": "true",
+    "valueOff": "false",
+    "placeholder": "checkbox",
+    "label": "Checkbox",
+    "model": "checkbox"
+  },
+  {
+    "type": "material-radios",
+    "values": [
+      {
+        "name": "Left",
+        "value": "left"
+      },
+      {
+        "name": "Center",
+        "value": "center"
+      },
+      {
+        "name": "Right",
+        "value": "right"
+      }
+    ],
+    "placeholder": "radio",
+    "label": "Radio Buttons",
+    "model": "radiobutton"
+  },
+  {
+    "type": "materialswitch",
+    "textOn": "yes",
+    "textOff": "no",
+    "valueOn": "true",
+    "valueOff": "false",
+    "placeholder": "Material Switch",
+    "label": "Material Switch",
+    "model": "materialswitch"
+  },
+  {
+    "type": "input",
+    "inputType": "range",
+    "placeholder": "range",
+    "label": "Range",
+    "model": "range",
+    "min": 1,
+    "max": 1000
+  },
+  {
+  	"type": "material-select",
+    "values": [
+      {
+        "name": "Type 1",
+        "value": "type1"
+      },
+      {
+        "name": "Type 2",
+        "value": "type2"
+      }
+    ],
+    "placeholder": "select",
+    "label": "Material Select",
+    "model": "select"
+  },
+  {
+    "type": "material-timepicker",
+    "placeholder": "time",
+    "label": "Time",
+    "model": "time"
+  },
+  {
+    "type": "material-datepicker",
+    "placeholder": "date",
+    "label": "Date",
+    "model": "date"
+  },
+  {
+    "type": "material-datetime",
+    "placeholder": "datetime",
+    "label": "Date/Time",
+    "model": "datetime"
+  },
+  {
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "title",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "title",
+          "label": "Title",
+          "model": "title"
+        },
+        {
+          "type": "texteditor",
+          "rows": 10,
+          "placeholder": "text",
+          "label": "Text",
+          "model": "text"
+        },
+        {
+          "type": "pathbrowser",
+          "browserRoot": "/content/assets",
+          "placeholder": "image",
+          "label": "Image",
+          "model": "image"
+        }
+      ],
+      "placeholder": "cards",
+      "label": "Collections",
+      "model": "cards"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "color",
+      "label": "Color",
+      "model": "color"
+    },
+    {
+      "type": "iconbrowser",
+      "placeholder": "icon",
+      "label": "Icon Chooser",
+      "model": "icon",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
+    }
 ]}

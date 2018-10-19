@@ -27,11 +27,18 @@ import javax.inject.Named;
           "x-form-label": "Text",
           "x-form-type": "texteditor"
         },
+        "blockquote": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Block Quote",
+          "x-form-type": "materialswitch",
+          "x-default": "false"
+        },
         "linewidth": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Line Width",
-          "x-form-visible": "",
+          "x-form-visible": "model.blockquote == 'false'",
           "x-form-type": "range",
           "x-form-min": 10,
           "x-form-max": 100
@@ -41,16 +48,22 @@ import javax.inject.Named;
           "type": "object",
           "x-type": "component",
           "properties": {
+            "anchorname": {
+              "type": "string",
+              "x-source": "inject",
+              "x-form-label": "Anchor Name",
+              "x-form-type": "text"
+            },
             "colorscheme": {
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Block Color Scheme",
               "x-form-type": "materialradio",
-              "x-default": "light",
+              "x-default": "",
               "properties": {
                 "none": {
                   "x-form-name": "None",
-                  "x-form-value": "none"
+                  "x-form-value": ""
                 },
                 "light": {
                   "x-form-name": "Light",
@@ -206,13 +219,22 @@ public class ArticlequoteModel extends AbstractComponent {
 	@Inject
 	private String text;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"","x-form-type":"range","x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Quote","x-form-type":"materialswitch","x-default":"false"} */
+	@Inject
+	@Default(values ="false")
+	private String blockquote;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"model.blockquote == 'false'","x-form-type":"range","x-form-min":10,"x-form-max":100} */
 	@Inject
 	private String linewidth;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
 	@Inject
-	@Default(values ="light")
+	private String anchorname;
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	@Inject
+	@Default(values ="")
 	private String colorscheme;
 
 	/* {"type":"string","x-source":"inject","x-form-label":"Custom Background","x-form-type":"materialswitch","x-default":"false"} */
@@ -274,12 +296,22 @@ public class ArticlequoteModel extends AbstractComponent {
 		return text;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"","x-form-type":"range","x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Quote","x-form-type":"materialswitch","x-default":"false"} */
+	public String getBlockquote() {
+		return blockquote;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Line Width","x-form-visible":"model.blockquote == 'false'","x-form-type":"range","x-form-min":10,"x-form-max":100} */
 	public String getLinewidth() {
 		return linewidth;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"light","properties":{"none":{"x-form-name":"None","x-form-value":"none"},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Anchor Name","x-form-type":"text"} */
+	public String getAnchorname() {
+		return anchorname;
+	}
+
+	/* {"type":"string","x-source":"inject","x-form-label":"Block Color Scheme","x-form-type":"materialradio","x-default":"","properties":{"none":{"x-form-name":"None","x-form-value":""},"light":{"x-form-name":"Light","x-form-value":"light"},"dark":{"x-form-name":"Dark","x-form-value":"dark"}}} */
 	public String getColorscheme() {
 		return colorscheme;
 	}

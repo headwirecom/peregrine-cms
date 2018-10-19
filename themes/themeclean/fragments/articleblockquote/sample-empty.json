@@ -1,7 +1,0 @@
-{
-  "title": "Article Block Quote no default values",
-  "group": "Empty",
-  "model": {
-     "text":"<p><br></p>"
-  }
-}

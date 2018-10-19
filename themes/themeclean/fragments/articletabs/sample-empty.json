@@ -1,0 +1,9 @@
+{
+  "title": "Article Tabs no default values",
+  "group": "Empty",
+  "model": {
+    "tabs": [
+      
+    ]
+  }
+}

@@ -182,6 +182,10 @@ class PerApi {
         return impl.saveObjectEdit(path, node)
     }
 
+    saveAssetProperties(node) {
+        return impl.saveAssetProperties(node)
+    }
+
     insertNodeAt(path, component, drop, variation) {
         return impl.insertNodeAt(path, component, drop, variation)
     }

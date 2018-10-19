@@ -10,6 +10,10 @@
         {
           "name": "Video",
           "value": "video"
+        },
+        {
+          "name": "Icon",
+          "value": "icon"
         }
       ],
       "placeholder": "mediatype",
@@ -17,11 +21,50 @@
       "model": "mediatype"
     },
     {
+      "type": "iconbrowser",
+      "placeholder": "mediaicon",
+      "label": "Icon Chooser",
+      "model": "mediaicon",
+      "visible": "model.mediatype == 'icon'",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediaiconsize",
+      "label": "Icon Size",
+      "model": "mediaiconsize",
+      "visible": "model.mediatype == 'icon'",
+      "min": 1,
+      "max": 1000
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "mediaiconcolor",
+      "label": "Icon Color",
+      "model": "mediaiconcolor",
+      "visible": "model.mediatype == 'icon'"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
       "placeholder": "imagesrc",
       "label": "Image Source",
       "model": "imagesrc",
+      "visible": "model.mediatype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "mediaalttext",
+      "label": "Media Alt Text",
+      "model": "mediaalttext",
       "visible": "model.mediatype == 'image'"
     },
     {
@@ -44,16 +87,16 @@
     {
       "type": "input",
       "inputType": "text",
-      "placeholder": "mediacaption",
-      "label": "Caption",
-      "model": "mediacaption"
+      "placeholder": "anchorname",
+      "label": "Anchor Name",
+      "model": "anchorname"
     },
     {
       "type": "material-radios",
       "values": [
         {
           "name": "None",
-          "value": "none"
+          "value": ""
         },
         {
           "name": "Light",
@@ -145,6 +188,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
@@ -190,7 +234,8 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "min": 0,
+      "max": 150
     },
     {
       "type": "input",
@@ -199,6 +244,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     }
   ]

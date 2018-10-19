@@ -1,6 +1,6 @@
 {
   "title": "Image",
-  "group": "Media",
+  "group": "Features",
   "model": {
     "mediatype": "image",
     "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",

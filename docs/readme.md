@@ -54,4 +54,4 @@ to override it like `mvn clean install -P installAEM -Dsling.port=4503`
 
 ### License
 
-Apach-2.0
+Apache-2.0
