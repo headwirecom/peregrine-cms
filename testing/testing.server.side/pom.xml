@@ -155,54 +155,125 @@
                             <portNames>
                                 <!-- used port name must be stored in property because it must be used for the base url -->
                                 <portName>http.port</portName>
+                                <portName>sling.control.port</portName>
                             </portNames>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Taken from Apache Sling Module: org.apache.sling.scripting.sightly.testing -->
             <plugin>
-                <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
                 <groupId>org.apache.sling</groupId>
                 <artifactId>slingstart-maven-plugin</artifactId>
-                <version>1.7.6</version>
+                <version>1.7.16</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
-                        <id>prepare-launchpad-package</id>
+                        <id>default-prepare-package</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>prepare-package</goal>
                         </goals>
+                        <configuration>
+                            <usePomDependencies>true</usePomDependencies>
+                            <servers>
+                                <server>
+                                    <port>${http.port}</port>
+                                    <controlPort>${sling.control.port}</controlPort>
+                                    <runmode>oak_tar</runmode>
+                                    <contextPath />
+                                    <debug />
+                                </server>
+                            </servers>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>build-launchpad-package</id>
+                        <id>default-attach-slingfeature</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-slingfeature</goal>
+                        </goals>
+                        <configuration>
+                            <usePomDependencies>true</usePomDependencies>
+                            <servers>
+                                <server>
+                                    <port>${http.port}</port>
+                                    <controlPort>${sling.control.port}</controlPort>
+                                    <runmode>oak_tar</runmode>
+                                    <contextPath />
+                                    <debug />
+                                </server>
+                            </servers>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-package</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>package</goal>
                         </goals>
+                        <configuration>
+                            <usePomDependencies>true</usePomDependencies>
+                            <servers>
+                                <server>
+                                    <port>${http.port}</port>
+                                    <controlPort>${sling.control.port}</controlPort>
+                                    <runmode>oak_tar</runmode>
+                                    <contextPath />
+                                    <debug />
+                                </server>
+                            </servers>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>start-container-before-IT</id>
+                        <id>start-container</id>
                         <goals>
                             <goal>start</goal>
                         </goals>
+                        <configuration>
+                            <usePomDependencies>true</usePomDependencies>
+                            <servers>
+                                <server>
+                                    <port>${http.port}</port>
+                                    <controlPort>${sling.control.port}</controlPort>
+                                    <runmode>oak_tar</runmode>
+                                    <contextPath />
+                                    <debug />
+                                </server>
+                            </servers>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>stop-container-after-IT</id>
+                        <id>stop-container</id>
                         <goals>
                             <goal>stop</goal>
                         </goals>
                         <configuration>
+                            <usePomDependencies>true</usePomDependencies>
+                            <servers>
+                                <server>
+                                    <port>${http.port}</port>
+                                    <controlPort>${sling.control.port}</controlPort>
+                                    <runmode>oak_tar</runmode>
+                                    <contextPath />
+                                    <debug />
+                                </server>
+                            </servers>
                             <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
                             <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
                         </configuration>
                     </execution>
-
                 </executions>
                 <configuration>
+                    <usePomDependencies>true</usePomDependencies>
                     <servers>
                         <server>
-                            <id>singleinstance</id>
                             <port>${http.port}</port>
-                            <vmOpts>${sling.vm.options}</vmOpts>
+                            <controlPort>${sling.control.port}</controlPort>
+                            <runmode>oak_tar</runmode>
+                            <contextPath />
+                            <debug />
                         </server>
                     </servers>
                 </configuration>
