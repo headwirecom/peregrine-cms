@@ -3,6 +3,7 @@ package com.peregrine.it.wrapper;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -14,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Iterator;
+//import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+//import static org.junit.Assert.fail;
 
 /**
  * These tests ensure the proper traversing of a page tree using the PerPage

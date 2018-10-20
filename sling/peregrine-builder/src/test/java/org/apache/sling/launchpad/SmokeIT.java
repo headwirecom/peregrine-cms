@@ -29,15 +29,20 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.felix.utils.json.JSONParser;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -52,14 +57,29 @@ public class SmokeIT {
 
     @ClassRule
     public static LaunchpadReadyRule LAUNCHPAD = new LaunchpadReadyRule(LAUNCHPAD_PORT);
+    private HttpClientContext httpClientContext;
 
-    private CloseableHttpClient newClient() {
+    @Before
+    public void prepareHttpContext() {
 
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         UsernamePasswordCredentials creds = new UsernamePasswordCredentials("admin", "admin");
         credsProvider.setCredentials(new AuthScope("localhost", LAUNCHPAD_PORT), creds);
 
-        return HttpClientBuilder.create().setDefaultCredentialsProvider(credsProvider).build();
+        BasicAuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(new HttpHost("localhost", LAUNCHPAD_PORT, "http"), basicAuth);
+
+        httpClientContext = HttpClientContext.create();
+        httpClientContext.setCredentialsProvider(credsProvider);
+        httpClientContext.setAuthCache(authCache);
+    }
+
+    private CloseableHttpClient newClient() {
+
+        return HttpClientBuilder.create()
+                .setDefaultCredentialsProvider(httpClientContext.getCredentialsProvider())
+                .build();
     }
 
     @Test
@@ -69,7 +89,9 @@ public class SmokeIT {
 
             HttpGet get = new HttpGet("http://localhost:" + LAUNCHPAD_PORT + "/system/console/bundles.json");
 
-            try ( CloseableHttpResponse response = client.execute(get) ) {
+            // pass the context to ensure preemptive basic auth is used
+            // https://hc.apache.org/httpcomponents-client-ga/tutorial/html/authentication.html
+            try ( CloseableHttpResponse response = client.execute(get, httpClientContext) ) {
 
                 if ( response.getStatusLine().getStatusCode() != 200 ) {
                     fail("Unexpected status line " + response.getStatusLine());
@@ -126,7 +148,7 @@ public class SmokeIT {
     public void ensureRepositoryIsStarted() throws Exception {
         try ( CloseableHttpClient client = newClient() ) {
 
-            HttpGet get = new HttpGet("http://localhost:" + LAUNCHPAD_PORT + "/server/default/jcr:root");
+            HttpGet get = new HttpGet("http://localhost:" + LAUNCHPAD_PORT + "/server/default/jcr:root/content");
 
             try ( CloseableHttpResponse response = client.execute(get) ) {
 
@@ -147,7 +169,7 @@ public class SmokeIT {
 
                 Node nameAttr = attrs.getNamedItemNS("http://www.jcp.org/jcr/sv/1.0", "name");
                 assertThat("no 'name' attribute found", nameAttr, notNullValue());
-                assertThat("Invalid name attribute value", nameAttr.getNodeValue(), equalTo("jcr:root"));
+                assertThat("Invalid name attribute value", nameAttr.getNodeValue(), equalTo("content"));
             }
         }
     }
