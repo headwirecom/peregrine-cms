@@ -28,6 +28,7 @@ package com.peregrine.admin.replication.impl;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -37,6 +38,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.util.StringUtils;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import com.peregrine.render.RenderService;
@@ -127,6 +129,19 @@ public class RemoteS3SystemReplicationService
             required = true
         )
         String awsRegionName();
+
+        @AttributeDefinition(
+            name = "AWS Endpoint",
+            description = "AWS protocol with hostname",
+            required = false
+        )
+        String awsEndpoint();
+        @AttributeDefinition(
+            name = "AWS Path Style Access",
+            description = "AWS path style access for bucket",
+            required = false
+        )
+        boolean awsPathStyleAccess();
         @AttributeDefinition(
             name = "AWS Bucket Name",
             description = "Name of the AWS S3 Bucket",
@@ -169,6 +184,8 @@ public class RemoteS3SystemReplicationService
     private String awsAccessKey;
     private String awsSecretKey;
     private String awsRegionName;
+    private String awsEndpoint;
+    private boolean awsPathStyleAccess;
 
     private void setup(BundleContext context, Configuration configuration) {
         log.trace("Create Remote S3 Replication Service with Name: '{}'", configuration.name());
@@ -207,6 +224,8 @@ public class RemoteS3SystemReplicationService
         awsAccessKey = configuration.awsAccessKey();
         awsSecretKey = configuration.awsSecretKey();
         awsRegionName = configuration.awsRegionName();
+        awsEndpoint = configuration.awsEndpoint();
+        awsPathStyleAccess = configuration.awsPathStyleAccess();
 
         region = null;
         try {
@@ -250,31 +269,72 @@ public class RemoteS3SystemReplicationService
 
     private boolean connectS3() {
         boolean answer = false;
+        
+        if(log.isDebugEnabled())
+        {
+	        log.debug("AWS Endpoint = {}", awsEndpoint);
+	        log.debug("AWS Path Style Access = {}", awsPathStyleAccess);
+        }
+        
         try {
-            s3 = AmazonS3ClientBuilder.standard()
-                .withCredentials(
-                    new AWSCredentialsProvider() {
-                        @Override
-                        public AWSCredentials getCredentials() {
-                            return new AWSCredentials() {
-                                @Override
-                                public String getAWSAccessKeyId() {
-                                    return awsAccessKey;
-                                }
+            if(!StringUtils.isNullOrEmpty(awsEndpoint))
+            {
+                s3 = AmazonS3ClientBuilder.standard()
+                    .withCredentials(
+                        new AWSCredentialsProvider() {
+                            @Override
+                            public AWSCredentials getCredentials() {
+                                return new AWSCredentials() {
+                                    @Override
+                                    public String getAWSAccessKeyId() {
+                                        return awsAccessKey;
+                                    }
 
-                                @Override
-                                public String getAWSSecretKey() {
-                                    return awsSecretKey;
-                                }
-                            };
-                        }
+                                    @Override
+                                    public String getAWSSecretKey() {
+                                        return awsSecretKey;
+                                    }
+                                };
+                            }
 
-                        @Override
-                        public void refresh() {
-                        }
-                    })
-                .withRegion(region)
-                .build();
+                            @Override
+                            public void refresh() {
+                            }
+                        })
+                    .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(awsEndpoint, awsRegionName)
+                    )
+                    .withPathStyleAccessEnabled(awsPathStyleAccess)
+                    .build();
+            }
+            else
+            {
+                s3 = AmazonS3ClientBuilder.standard()
+                    .withCredentials(
+                        new AWSCredentialsProvider() {
+                            @Override
+                            public AWSCredentials getCredentials() {
+                                return new AWSCredentials() {
+                                    @Override
+                                    public String getAWSAccessKeyId() {
+                                        return awsAccessKey;
+                                    }
+
+                                    @Override
+                                    public String getAWSSecretKey() {
+                                        return awsSecretKey;
+                                    }
+                                };
+                            }
+
+                            @Override
+                            public void refresh() {
+                            }
+                        })
+                    .withRegion(region)
+                    .withPathStyleAccessEnabled(awsPathStyleAccess)
+                    .build();
+            }
             answer = true;
         } catch(SdkClientException e) {
             log.error("Login to S3 failed", e);
