@@ -4,11 +4,18 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "iconcustomcolor": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Custom Icons Color",
+          "x-form-type": "materialswitch"
+        },
         "iconcolor": {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Icon Color",
           "x-default": "#000000",
+          "x-form-visible": "model.iconcustomcolor == 'true'",
           "x-form-type": "color"
         },
         "iconsize": {
@@ -16,7 +23,7 @@
           "x-source": "inject",
           "x-form-label": "Icon Size",
           "x-form-type": "range",
-          "x-default": "30",
+          "x-default": "25",
           "x-form-min": 0,
           "x-form-max": 150
         },

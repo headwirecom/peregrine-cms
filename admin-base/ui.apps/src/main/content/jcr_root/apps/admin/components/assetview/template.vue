@@ -134,6 +134,20 @@
             <span>no asset selected</span>
             <i class="material-icons">info</i>
         </div>
+
+        <admin-components-pathbrowser 
+            v-if="isOpen"
+            :isOpen="isOpen" 
+            :browserRoot="browserRoot" 
+            :browserType="'page'" 
+            :currentPath="currentPath" 
+            :selectedPath="selectedPath" 
+            :setCurrentPath="setCurrentPath"
+            :setSelectedPath="setSelectedPath"
+            :onCancel="onMoveCancel"
+            :onSelect="onMoveSelect">
+        </admin-components-pathbrowser>
+
     </div>
 </template>
 
@@ -142,6 +156,10 @@
         props: ['model'],
         data: function() {
             return {
+                isOpen: false,
+                browserRoot: '/content/assets',
+                currentPath: '/content/assets',
+                selectedPath: null,
                 edit: false,
                 references: false,
                 valid: true,
@@ -274,31 +292,27 @@
             deleteAsset() {
                 $perAdminApp.stateAction('deleteAsset', this.asset.path)
             },
+            onMoveCancel(){
+                this.isOpen = false
+            },
+            onMoveSelect() {
+                $perAdminApp.stateAction('moveAsset', { path: this.asset.path, to: this.selectedPath, type: 'child'})
+                $perAdminApp.stateAction('unselectAsset', { })
+                this.isOpen = false
+            },
+            setCurrentPath(path){
+                this.currentPath = path
+            },
+            setSelectedPath(path){
+                this.selectedPath = path
+            },
             moveAsset() {
-                const root = '/content/assets'
-                const type = 'folder'
-                const assetPath = this.asset.path
-                const selectedPath = assetPath.substr(0, assetPath.lastIndexOf('/'))
-                let currentPath
-                // is selectedPath the root dir?
-                selectedPath === root 
-                    ? currentPath = selectedPath
-                    : currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
-                const initModalState = {
-                    root: root,
-                    type: type,
-                    current: currentPath,
-                    selected: selectedPath
-                }
-                const options = {
-                    complete: () => {
-                        const newPath = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
-                        $perAdminApp.stateAction('moveAsset', { path: assetPath, to: newPath, type: 'child'})
-                        $perAdminApp.getNodeFromView('/state/tools').assets = newPath
-                        $perAdminApp.getNodeFromView('/state/tools').asset = null
-                    }
-                }
-                $perAdminApp.pathBrowser(initModalState, options)
+                $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
+                    .then( () => {
+                        this.isOpen = true
+                    }).catch( (err) => {
+                        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+                    })
             },
             onEdit() {
                 this.edit = true

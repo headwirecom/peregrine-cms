@@ -3,7 +3,8 @@ class EditorPanel {
         return $$('input,textarea')
     }
     get container() { return $('.editor-panel-content')}
-    get save() {return this.container.$('button[title="save"]')}
+    get buttonContainer() { return $('.editor-panel-buttons')}
+    get save() {return this.buttonContainer.$('button[title="save"]')}
 }
 
 module.exports = EditorPanel

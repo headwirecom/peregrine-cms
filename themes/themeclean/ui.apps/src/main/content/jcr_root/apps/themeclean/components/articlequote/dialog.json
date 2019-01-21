@@ -8,20 +8,38 @@
       "model": "text"
     },
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "blockquote",
+      "label": "Block Quote",
+      "model": "blockquote"
+    },
+    {
       "type": "input",
       "inputType": "range",
       "placeholder": "linewidth",
       "label": "Line Width",
       "model": "linewidth",
+      "visible": "model.blockquote == 'false'",
       "min": 10,
       "max": 100
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "anchorname",
+      "label": "Anchor Name",
+      "model": "anchorname"
     },
     {
       "type": "material-radios",
       "values": [
         {
           "name": "None",
-          "value": "none"
+          "value": ""
         },
         {
           "name": "Light",
@@ -113,6 +131,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
@@ -138,6 +157,7 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 120
     },
     {
@@ -147,6 +167,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 120
     }
   ]

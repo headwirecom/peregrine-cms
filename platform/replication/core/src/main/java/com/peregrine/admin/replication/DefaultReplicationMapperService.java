@@ -211,7 +211,7 @@ public class DefaultReplicationMapperService
     /**
      * This class contains the configuration properties parsed from the Service Configurations
      */
-    private static class DefaultReplicationConfig {
+    static class DefaultReplicationConfig {
         public static final String REPLICATION_SERVICE_NAME_CANNOT_BE_NULL = "Replication Service Name cannot be null for mapping";
         public static final String REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL = "Replication Path (for non default) Name cannot be null for mapping";
         private String serviceName;
@@ -238,7 +238,26 @@ public class DefaultReplicationMapperService
          * @return True if this resource should be handled with the given replication
          */
         public boolean isHandled(Resource resource) {
-            return path == null || resource.getPath().startsWith(path);
+            // If the config path does not end in a slash we must make sure that either the resource
+            // path is the same or that the next character is a slash otherwise folders starting the
+            // same will match but they should not (/test/one should not match /test/one-1)
+            boolean answer = false;
+            String resourcePath = resource.getPath();
+            if(path != null && !path.endsWith("/")) {
+                if(resourcePath.startsWith(path)) {
+                    if(resourcePath.equals(path)) {
+                        answer = true;
+                    } else {
+                        char next = resourcePath.charAt(path.length());
+                        answer = next == '/';
+                    }
+                } else {
+                    answer = false;
+                }
+            } else {
+                answer = path == null || resource.getPath().startsWith(path);
+            }
+            return answer;
         }
 
         /** @return the Replication Service Name **/

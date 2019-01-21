@@ -1,18 +1,38 @@
 {
   "fields": [
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showlogo",
+      "label": "Show Logo",
+      "model": "showlogo"
+    },
+    {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
       "placeholder": "logo",
       "label": "Logo",
-      "model": "logo"
+      "model": "logo",
+      "visible": "model.showlogo == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "logoalttext",
+      "label": "Logo Alt Text",
+      "model": "logoalttext",
+      "visible": "model.showlogo == 'true'"
     },
     {
       "type": "pathbrowser",
       "browserRoot": "/content/sites",
       "placeholder": "logourl",
       "label": "Logo Url",
-      "model": "logourl"
+      "model": "logourl",
+      "visible": "model.showlogo == 'true'"
     },
     {
       "type": "input",
@@ -20,36 +40,36 @@
       "placeholder": "logosize",
       "label": "Logo Size",
       "model": "logosize",
+      "visible": "model.showlogo == 'true'",
       "min": 1,
-      "max": 10
+      "max": 300
     },
     {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "title1",
-      "label": "Column 1 Title ",
-      "model": "title1"
-    },
-    {
-      "type": "texteditor",
-      "rows": 10,
-      "placeholder": "text1",
-      "label": "Column 1 Text",
-      "model": "text1"
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "title2",
-      "label": "Column 2 Title",
-      "model": "title2"
-    },
-    {
-      "type": "texteditor",
-      "rows": 10,
-      "placeholder": "text2",
-      "label": "Column 2 Text",
-      "model": "text2"
+      "type": "collection",
+      "multifield": true,
+      "fieldLabel": [
+        "title",
+        "value"
+      ],
+      "fields": [
+        {
+          "type": "input",
+          "inputType": "text",
+          "placeholder": "title",
+          "label": "Title",
+          "model": "title"
+        },
+        {
+          "type": "texteditor",
+          "rows": 10,
+          "placeholder": "text",
+          "label": "Text",
+          "model": "text"
+        }
+      ],
+      "placeholder": "columns",
+      "label": "Columns",
+      "model": "columns"
     },
     {
       "type": "input",
@@ -59,45 +79,22 @@
       "model": "copyright"
     },
     {
-      "type": "input",
-      "inputType": "text",
-      "placeholder": "title",
-      "label": "Links Section Title",
-      "model": "title"
-    },
-    {
-      "type": "collection",
-      "multifield": true,
-      "fieldLabel": [
-        "text",
-        "value"
-      ],
-      "fields": [
-        {
-          "type": "input",
-          "inputType": "text",
-          "placeholder": "text",
-          "label": "Link Text",
-          "model": "text"
-        },
-        {
-          "type": "pathbrowser",
-          "browserRoot": "/content/sites",
-          "placeholder": "link",
-          "label": "Link Url",
-          "model": "link"
-        }
-      ],
-      "placeholder": "links",
-      "label": "Links",
-      "model": "links"
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "iconcustomcolor",
+      "label": "Custom Icons Color",
+      "model": "iconcustomcolor"
     },
     {
       "type": "input",
       "inputType": "color",
       "placeholder": "iconcolor",
       "label": "Icon Color",
-      "model": "iconcolor"
+      "model": "iconcolor",
+      "visible": "model.iconcustomcolor == 'true'"
     },
     {
       "type": "input",
@@ -105,6 +102,7 @@
       "placeholder": "iconsize",
       "label": "Icon Size",
       "model": "iconsize",
+      "min": 0,
       "max": 150
     },
     {
@@ -141,11 +139,18 @@
       "model": "icons"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "anchorname",
+      "label": "Anchor Name",
+      "model": "anchorname"
+    },
+    {
       "type": "material-radios",
       "values": [
         {
           "name": "None",
-          "value": "none"
+          "value": ""
         },
         {
           "name": "Light",
@@ -237,6 +242,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
@@ -282,7 +288,8 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "min": 0,
+      "max": 150
     },
     {
       "type": "input",
@@ -291,6 +298,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     }
   ]

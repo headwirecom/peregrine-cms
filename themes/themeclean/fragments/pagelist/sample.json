@@ -1,0 +1,8 @@
+{
+  "title": "Page List",
+  "group": "Features",
+  "model": {
+    "rootpage": "/content/sites/themeclean",
+    "levels": 2
+  }
+}

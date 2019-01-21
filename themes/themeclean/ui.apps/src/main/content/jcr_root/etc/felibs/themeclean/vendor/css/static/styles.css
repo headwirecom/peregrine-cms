@@ -1,6 +1,6 @@
 /* General Styling */
 body {
-  font-size: 21px;
+  font-size: 18px;
   line-height: 1.58;
   letter-spacing: -.003em;
 }
@@ -18,14 +18,21 @@ h3 {
   line-height: 1.22;
   letter-spacing: -.012em;
 }
-blockquote{
+blockquote {
   font-style: italic;
+}
+nav a {
+  font-size: 18px;
+}
+footer {
+  font-size: 18px;
 }
 .article {
   font-size: 18px;
 }
 
 /* Helpers */
+/* ====================== */
 
 /* Drop Shadow Helpers */
 .elevation-1 {
@@ -54,7 +61,27 @@ blockquote{
   z-index: 10
 }
 
+.percms-caption-bg {
+  background-color: rgba(0,0,0,0.40) 
+}
 
+
+/* Peregrine CMS specific styles */
+.percms-text-large h1 { font-size: 90px;}
+.percms-text-large h2 { font-size: 62px;}
+.percms-text-large h3 { font-size: 42px;}
+.percms-text-large h4 { font-size: 32px;}
+.percms-text-large h5 { font-size: 28px;}
+.percms-text-large h6 { font-size: 24px;}
+.percms-text-large p { font-size: 21px;}
+
+.percms-btn-pager {
+  font-size:18px;  
+}
+.percms-blockquote {
+  border-left: 5px solid;
+  padding: 5px 0;
+}
 .percms-caption {
   position: relative;
 }
@@ -62,19 +89,63 @@ blockquote{
   position: absolute;
   bottom: 0;
 }
-
-.view-height {
-  min-height: 100vh
+.percms-view-height {
+  min-height: 100vh;
 }
-
-.percms-image-wrap img, .percms-image-wrap iframe{
+.percms-carousel-image {
+  max-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+.percms-carousel-text {
+  position: absolute;
+  bottom: 0;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 20px;
+  padding-top: 15px;
+}
+a.percms-anchor {
+  position: absolute;
+  visibility: hidden;
 }
 
 @media (max-width: 768px) {
-
-  .percms-image-wrap {
-    min-width: 100%;
+  .percms-w-sm-100{
+    width: 100% !important;
   }
+}
 
+/* Bootstrap Specific */
+.carousel-inner, .carousel-item, .carousel-item > .d-flex {
+  height: 100%;
+}
+.carousel-item {
+  bottom: 5px;
+}
+.carousel-control-next-icon {
+  margin-left: 6px;
+}
+.carousel-control-next div, .carousel-control-prev div {
+  width: 30px;
+  height: 30px;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+}
+.nav-item > .active {
+  font-weight: bold;
+}
+
+.nav-pills > .nav-item > a:not(.active) {
+  background: transparent !important;
+}
+.nav-pills > .nav-item > a.active {
+  color: #fff !important;
+}
+.nav-pills > .nav-item > a.bg-light.active {
+  color:#343a40 !important;
 }

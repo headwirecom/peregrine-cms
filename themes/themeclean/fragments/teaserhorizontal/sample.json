@@ -1,0 +1,37 @@
+{
+  "title": "Teaser Horizontal",
+  "group": "Features",
+  "model": {
+    "aligncontent": "left",
+    "showtitle": "true",
+    "showsubtitle": "true",
+    "showtext": "true",
+    "showbutton": "true",
+    "fullheight": "false",
+    "textwidth": "60",
+    "backgroundtype": "color",
+    "bgcolor": "#ffffff",
+    "gradient": "true",
+    "color2": "#c0c0c0",
+    "bottompadding": "30",
+    "toppadding": "30",
+    "text": "<p>Eligendi fugit asperiores et. Corrupti voluptatum quasi sit. Adipisci ut voluptatem necessitatibus cumque aspernatur.</p>",
+    "isprimary": "false",
+    "subtitle": "Molestiae alias et inventore voluptas",
+    "title": "Peregrine blocks",
+    "buttonsize": "default",
+    "buttons": [
+      {
+        "buttonlink": "/content/sites/themeclean",
+        "buttontext": "See More",
+        "buttoncolor": "primary",
+        "iconclass": ""
+      },{
+        "buttonlink": "/content/sites/themeclean",
+        "buttontext": "About Us",
+        "buttoncolor": "primary",
+        "iconclass": ""
+      }
+    ]
+  }
+}

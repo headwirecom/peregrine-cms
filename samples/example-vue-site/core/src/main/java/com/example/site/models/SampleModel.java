@@ -33,6 +33,7 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
@@ -52,23 +53,85 @@ public class SampleModel extends AbstractComponent {
     public SampleModel(Resource r) { super(r); }
 
     @Inject
-    private String value;
+    private String text;
 
     @Inject
-    private String name;
+    private String textarea;
+    
+    @Inject
+    private String texteditor;
+    
+    @Inject
+    private String number;
+    
+    @Inject
+    private String tel;
+    
+    @Inject
+    private String url;
 
     @Inject
     private String pagePath;
 
     @Inject
     private String imagePath;
+    
+    @Inject
+    private String checkbox;
+    
+    @Inject
+    private String radiobutton;
+    
+    @Inject
+    private String materialswitch;
+    
+    @Inject
+    private String range;
+    
+    @Inject
+	private String select;
+    
+    @Inject
+	private String time;
 
-    public String getValue() {
-        return value;
+	@Inject
+	private String date;
+	
+	@Inject
+	private String datetime;
+	
+	@Inject
+	private List<IComponent> cards;
+	
+	@Inject
+	private String color;
+	
+	@Inject
+	private String icon;
+    
+
+    public String getText() {
+        return text;
     }
 
-    public String getName() {
-        return name;
+    public String getTextarea() {
+        return textarea;
+    }
+    
+    public String getTexteditor() {
+        return texteditor;
+    }
+    
+    public String getNumber() {
+        return number;
+    }
+    
+    public String getTel() {
+        return tel;
+    }
+    
+    public String getUrl() {
+        return url;
     }
 
     public String getPagePath() {
@@ -78,4 +141,48 @@ public class SampleModel extends AbstractComponent {
     public String getImagePath() {
         return imagePath;
     }
+    
+    public String getCheckbox() {
+        return checkbox;
+    }
+    
+    public String getRadiobutton() {
+        return radiobutton;
+    }
+    
+    public String getMaterialswitch() {
+        return materialswitch;
+    }
+    
+    public String getRange() {
+        return range;
+    }
+    
+    public String getSelect() {
+		return select;
+	}
+    
+    public String getTime() {
+		return time;
+	}
+
+	public String getDate() {
+		return date;
+	}
+	
+	public String getDatetime() {
+		return datetime;
+	}
+	
+	public List<IComponent> getCards() {
+		return cards;
+	}
+	
+	public String getColor() {
+		return color;
+	}
+	
+	public String getIcon() {
+		return icon;
+	}
 }

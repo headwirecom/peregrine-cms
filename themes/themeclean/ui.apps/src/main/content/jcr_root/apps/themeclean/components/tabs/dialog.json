@@ -1,6 +1,196 @@
 {
   "fields": [
     {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showtitle",
+      "label": "Show Title",
+      "model": "showtitle"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "title",
+      "label": "Title",
+      "model": "title",
+      "visible": "model.showtitle == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showsubtitle",
+      "label": "Show Subtitle",
+      "model": "showsubtitle"
+    },
+    {
+      "type": "material-textarea",
+      "rows": 3,
+      "max": 500,
+      "placeholder": "subtitle",
+      "label": "Subtitle",
+      "model": "subtitle",
+      "visible": "model.showsubtitle == 'true'"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Before Content",
+          "value": "before"
+        },
+        {
+          "name": "After Content",
+          "value": "after"
+        }
+      ],
+      "placeholder": "mediaposition",
+      "label": "Media Position",
+      "model": "mediaposition",
+      "visible": "model.showmedia == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "showmedia",
+      "label": "Show Media",
+      "model": "showmedia"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Video",
+          "value": "video"
+        },
+        {
+          "name": "Icon",
+          "value": "icon"
+        }
+      ],
+      "placeholder": "mediatype",
+      "label": "Media type",
+      "model": "mediatype",
+      "visible": "model.showmedia == 'true'"
+    },
+    {
+      "type": "iconbrowser",
+      "placeholder": "mediaicon",
+      "label": "Icon Chooser",
+      "model": "mediaicon",
+      "visible": "model.mediatype == 'icon' and model.showmedia == 'true'",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediaiconsize",
+      "label": "Icon Size",
+      "model": "mediaiconsize",
+      "visible": "model.mediatype == 'icon' and model.showmedia == 'true'",
+      "min": 1,
+      "max": 1000
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "mediaiconcolor",
+      "label": "Icon Color",
+      "model": "mediaiconcolor",
+      "visible": "model.mediatype == 'icon' and model.showmedia == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "imagesrc",
+      "label": "Image Source",
+      "model": "imagesrc",
+      "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "imagealttext",
+      "label": "Image Alt Text",
+      "model": "imagealttext",
+      "visible": "model.mediatype == 'image' and model.showmedia == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "videosrc",
+      "label": "Video Source",
+      "model": "videosrc",
+      "visible": "model.mediatype == 'video' and model.showmedia == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediawidth",
+      "label": "Width",
+      "model": "mediawidth",
+      "visible": "model.showmedia == 'true'",
+      "min": 10,
+      "max": 100
+    },
+    {
+      "type": "material-select",
+      "values": [
+        {
+          "name": "Primary",
+          "value": "primary"
+        },
+        {
+          "name": "Secondary",
+          "value": "secondary"
+        },
+        {
+          "name": "Success",
+          "value": "success"
+        },
+        {
+          "name": "Danger",
+          "value": "danger"
+        },
+        {
+          "name": "Warning",
+          "value": "warning"
+        },
+        {
+          "name": "Info",
+          "value": "info"
+        },
+        {
+          "name": "Light",
+          "value": "light"
+        },
+        {
+          "name": "Dark",
+          "value": "dark"
+        }
+      ],
+      "placeholder": "tabcolor",
+      "label": "Tab Color",
+      "model": "tabcolor"
+    },
+    {
       "type": "collection",
       "multifield": true,
       "fieldLabel": [
@@ -28,11 +218,18 @@
       "model": "tabs"
     },
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "anchorname",
+      "label": "Anchor Name",
+      "model": "anchorname"
+    },
+    {
       "type": "material-radios",
       "values": [
         {
           "name": "None",
-          "value": "none"
+          "value": ""
         },
         {
           "name": "Light",
@@ -124,6 +321,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
@@ -169,7 +367,8 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "min": 0,
+      "max": 150
     },
     {
       "type": "input",
@@ -178,6 +377,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     }
   ]

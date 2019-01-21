@@ -33,6 +33,11 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
+import com.peregrine.intra.IntraSlingCaller;
+
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
+
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODE;
 import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -66,9 +71,26 @@ public class NodeServlet extends AbstractBaseServlet {
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    @SuppressWarnings("unused")
+    private IntraSlingCaller intraSlingCaller;
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
+	 // Load that content internally  and return as JSon Content. If it fails redirect
+        try {
+            byte[] response = intraSlingCaller.call(
+                intraSlingCaller.createContext()
+                    .setResourceResolver(request.getRequest().getResourceResolver())
+                    .setPath(path)
+                    .setExtension(DATA_JSON_EXTENSION)
+            );
+            return new TextResponse(JSON, JSON_MIME_TYPE)
+                .write(new String(response));
+        } catch(IntraSlingCaller.CallException e) {
+            logger.warn("Internal call failed", e);
+        }
         return new RedirectResponse(path + DATA_JSON_EXTENSION);
     }
 }

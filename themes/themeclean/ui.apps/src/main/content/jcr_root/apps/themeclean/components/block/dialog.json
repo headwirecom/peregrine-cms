@@ -1,11 +1,18 @@
 {
   "fields": [
     {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "anchorname",
+      "label": "Anchor Name",
+      "model": "anchorname"
+    },
+    {
       "type": "material-radios",
       "values": [
         {
           "name": "None",
-          "value": "none"
+          "value": ""
         },
         {
           "name": "Light",
@@ -97,6 +104,7 @@
       "label": "Overlay opacity",
       "model": "overlayopacity",
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
       "max": 100
     },
     {
@@ -142,7 +150,8 @@
       "label": "Top Padding",
       "model": "toppadding",
       "visible": "model.fullheight != 'true'",
-      "max": 120
+      "min": 0,
+      "max": 150
     },
     {
       "type": "input",
@@ -151,6 +160,7 @@
       "label": "Bottom Padding",
       "model": "bottompadding",
       "visible": "model.fullheight != 'true'",
+      "min": 0,
       "max": 150
     }
   ]

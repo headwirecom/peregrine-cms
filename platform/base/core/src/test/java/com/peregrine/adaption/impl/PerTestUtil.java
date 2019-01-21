@@ -47,9 +47,12 @@ public class PerTestUtil {
         addRandomChildren(pageResource, 0, 2);
         Resource pageContent = createResource(pageResource, JCR_CONTENT, PAGE_CONTENT_TYPE);
         addRandomChildren(pageResource, 0, 2);
+        PerPage pageContentPage = new PerPageImpl(pageContent);
+        when(pageContent.adaptTo(PerPage.class)).thenReturn(pageContentPage);
         Resource pageContentChild = createResource(pageContent, name + "-content-child", "test");
-
-        return new PerPageImpl(pageResource);
+        PerPage answer = new PerPageImpl(pageResource);
+        when(pageResource.adaptTo(PerPage.class)).thenReturn(answer);
+        return answer;
     }
 
     public static void addRandomChildren(Resource parent, int min, int max) {
@@ -57,6 +60,14 @@ public class PerTestUtil {
         for(int i = 0; i < loop; i++) {
             createResource(parent, "random-child-" + i, "gugus-" + i);
         }
+    }
+
+    public static int countIterable(Iterable iterable) {
+        int answer = 0;
+        for(Object item: iterable) {
+            answer++;
+        }
+        return answer;
     }
 
 }

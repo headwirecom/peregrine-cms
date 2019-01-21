@@ -28,7 +28,7 @@
         <input
           :id="getFieldID(schema)"
           type="text"
-          :value="value"
+          :value="sanitizedValue"
           :disabled="disabled"
           :maxlength="schema.max"
           :placeholder="schema.placeholder"
@@ -37,7 +37,7 @@
         <button v-on:click.stop.prevent="browse" class="btn-flat">
           <i class="material-icons">insert_drive_file</i>
         </button>
-        <img v-if="isImage(value)" :src="value" />
+        <img v-if="isImage(value)" :src="sanitizedValue" />
         <admin-components-pathbrowser 
             v-if="isOpen"
             :isOpen="isOpen" 
@@ -70,6 +70,16 @@
                 withLinkTab: true
             }
         },
+        computed: {
+			sanitizedValue: {
+				get () {
+      		        return this.value ? this.value : ''
+				},
+				set (newValue) {
+					this.value = newValue
+				}
+			}
+		},
         methods: {
             onCancel(){
                 this.isOpen = false

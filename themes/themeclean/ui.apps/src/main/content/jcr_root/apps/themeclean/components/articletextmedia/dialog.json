@@ -1,0 +1,254 @@
+{
+  "fields": [
+    {
+      "type": "texteditor",
+      "rows": 10,
+      "placeholder": "text",
+      "label": "Text",
+      "model": "text"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Before Content",
+          "value": "before"
+        },
+        {
+          "name": "After Content",
+          "value": "after"
+        }
+      ],
+      "placeholder": "mediaposition",
+      "label": "Media Position",
+      "model": "mediaposition"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Video",
+          "value": "video"
+        },
+        {
+          "name": "Icon",
+          "value": "icon"
+        }
+      ],
+      "placeholder": "mediatype",
+      "label": "Media type",
+      "model": "mediatype"
+    },
+    {
+      "type": "iconbrowser",
+      "placeholder": "mediaicon",
+      "label": "Icon Chooser",
+      "model": "mediaicon",
+      "visible": "model.mediatype == 'icon'",
+      "hint": "Select an icon.",
+      "validator": "required",
+      "families": [
+        "material",
+        "font awesome"
+      ]
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediaiconsize",
+      "label": "Icon Size",
+      "model": "mediaiconsize",
+      "visible": "model.mediatype == 'icon'",
+      "min": 1,
+      "max": 1000
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "mediaiconcolor",
+      "label": "Icon Color",
+      "model": "mediaiconcolor",
+      "visible": "model.mediatype == 'icon'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "imagesrc",
+      "label": "Image Source",
+      "model": "imagesrc",
+      "visible": "model.mediatype == 'image'"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "mediaalttext",
+      "label": "Media Alt Text",
+      "model": "mediaalttext",
+      "visible": "model.mediatype == 'image'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "videosrc",
+      "label": "Video Source",
+      "model": "videosrc",
+      "visible": "model.mediatype == 'video'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "mediawidth",
+      "label": "Width",
+      "model": "mediawidth",
+      "min": 10,
+      "max": 100
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "placeholder": "anchorname",
+      "label": "Anchor Name",
+      "model": "anchorname"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "None",
+          "value": ""
+        },
+        {
+          "name": "Light",
+          "value": "light"
+        },
+        {
+          "name": "Dark",
+          "value": "dark"
+        }
+      ],
+      "placeholder": "colorscheme",
+      "label": "Block Color Scheme",
+      "model": "colorscheme"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "custombackground",
+      "label": "Custom Background",
+      "model": "custombackground"
+    },
+    {
+      "type": "material-radios",
+      "values": [
+        {
+          "name": "Color",
+          "value": "color"
+        },
+        {
+          "name": "Gradient",
+          "value": "gradient"
+        },
+        {
+          "name": "Image",
+          "value": "image"
+        },
+        {
+          "name": "Video",
+          "value": "video"
+        }
+      ],
+      "placeholder": "backgroundtype",
+      "label": "Background Type",
+      "model": "backgroundtype",
+      "visible": "model.custombackground == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "bgvideo",
+      "label": "Background Video",
+      "model": "bgvideo",
+      "visible": "model.backgroundtype == 'video' and model.custombackground == 'true'"
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "placeholder": "bgimage",
+      "label": "Background Image",
+      "model": "bgimage",
+      "visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
+    },
+    {
+      "type": "materialswitch",
+      "textOn": "yes",
+      "textOff": "no",
+      "valueOn": "true",
+      "valueOff": "false",
+      "placeholder": "overlay",
+      "label": "Overlay",
+      "model": "overlay",
+      "visible": "model.backgroundtype == 'image' and model.custombackground == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "overlaycolor",
+      "label": "Overlay Color",
+      "model": "overlaycolor",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "overlayopacity",
+      "label": "Overlay opacity",
+      "model": "overlayopacity",
+      "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
+      "min": 0,
+      "max": 100
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "bgcolor",
+      "label": "Background Color",
+      "model": "bgcolor",
+      "visible": "(model.backgroundtype == 'color' or model.backgroundtype == 'gradient') and model.custombackground == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "color",
+      "placeholder": "color2",
+      "label": "Color 2",
+      "model": "color2",
+      "visible": "model.backgroundtype == 'gradient' and model.custombackground == 'true'"
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "toppadding",
+      "label": "Top Padding",
+      "model": "toppadding",
+      "visible": "model.fullheight != 'true'",
+      "min": 0,
+      "max": 120
+    },
+    {
+      "type": "input",
+      "inputType": "range",
+      "placeholder": "bottompadding",
+      "label": "Bottom Padding",
+      "model": "bottompadding",
+      "visible": "model.fullheight != 'true'",
+      "min": 0,
+      "max": 120
+    }
+  ]
+}

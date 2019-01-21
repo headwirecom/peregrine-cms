@@ -28,7 +28,7 @@
         <input
           :id="getFieldID(schema)"
           type="text"
-          :value="value"
+          :value="sanitizedValue"
           :disabled="disabled"
           :maxlength="schema.max"
           :placeholder="schema.placeholder"
@@ -67,9 +67,19 @@
                 }
             }
         },
+        computed: {
+			sanitizedValue: {
+				get () {
+      		        return this.value ? this.value : ''
+				},
+				set (newValue) {
+					this.value = newValue
+				}
+			}
+		},
         created () {
             // set initial state from value
-            this.selectedIcon = this.getIconFromValue(this.value)
+            this.selectedIcon = this.getIconFromValue(this.sanitizedValue)
             // create families array from schema
             this.families = this.schema.families.map(family => {
                 return {
@@ -79,9 +89,9 @@
             })
         },
         watch: {
-            value (newValue) {
+            sanitizedValue (newSanitizedValue) {
                 // keep selectedIcon synced with value (if valid)
-                this.selectedIcon = this.getIconFromValue(newValue)
+                this.selectedIcon = this.getIconFromValue(newSanitizedValue)
             }
         },
         methods: {

@@ -26,12 +26,16 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.intra.IntraSlingCaller;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -59,8 +63,26 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class AccessServlet extends AbstractBaseServlet {
 
+    @Reference
+    @SuppressWarnings("unused")
+    private IntraSlingCaller intraSlingCaller;
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
+        // Load that content internally  and return as JSon Content. If it fails redirect
+        try {
+            byte[] response = intraSlingCaller.call(
+                intraSlingCaller.createContext()
+                    .setResourceResolver(request.getRequest().getResourceResolver())
+                    .setPath("/system/sling/info")
+                    .setSelectors("sessionInfo")
+                    .setExtension("json")
+            );
+            return new TextResponse(JSON, JSON_MIME_TYPE)
+                .write(new String(response));
+        } catch(IntraSlingCaller.CallException e) {
+            logger.warn("Internal call failed", e);
+        }
         return new RedirectResponse("/system/sling/info.sessionInfo.json");
     }
 }

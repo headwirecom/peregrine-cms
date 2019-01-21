@@ -10,12 +10,9 @@ describe('Peregrine sites page', function () {
 
     describe('Site Explorer', function() {
         let exampleSite
-        it('should display a list with 2 sites', function(){
-            Explorer.container.waitForVisible()
-            expect( Explorer.sites.length ).to.equal(2)
-        })
-
+        
         it('should have a site titled "example vuejs site"', function(){
+        	Explorer.container.waitForVisible()
             const sites = Explorer.sites
             const i = sites.findIndex( site => site.text.indexOf('example vuejs site') > -1 ) 
             exampleSite = sites[i]
@@ -46,21 +43,22 @@ describe('Peregrine sites page', function () {
     })
 
     //Shared components for remaining test suites
-    let components, jumbotronDraggable, containerDraggable, rowDraggable, colDraggable
-    let containerComponent, jumbotronComponent
+    let components, jumbotronDraggable, imageDraggable, rowDraggable, colDraggable
+    let imageComponent, jumbotronComponent
 
     describe('Component Explorer', function() {
-        it('should contain components for jumobtron, container, row, col', function() {
+        it('should contain components for jumbotron, image, row, col', function() {
             components = ComponentExplorer.components
-            jumbotronDraggable    = components[5]
-            containerDraggable    = components[2]
+            
+            jumbotronDraggable    = components[2]
+            imageDraggable    = components[1]
             rowDraggable          = components[7]
-            colDraggable          = components[1]
+            colDraggable          = components[5]
 
-            expect(jumbotronDraggable.text).to.contain('jumbotron')
-            expect(containerDraggable.text).to.contain('container')
-            expect(rowDraggable.text).to.contain('row')
-            expect(colDraggable.text).to.contain('col')
+            expect(jumbotronDraggable.text).to.contain('Jumbotron')
+            expect(imageDraggable.text).to.contain('Image')
+            expect(rowDraggable.text).to.contain('Row')
+            expect(colDraggable.text).to.contain('Col')
         })
     })
 
@@ -87,6 +85,8 @@ describe('Peregrine sites page', function () {
             jumbotronDraggable.dragToEditView( ContentView.dropTargets[0].center )
             jumbotronComponent = ContentView.jumbotrons[0]
             const jumbotronsAfter = ContentView.jumbotrons
+            //console.log('before 1:' + jumbotronsBefore)
+            //console.log('after 1:' + jumbotronsAfter)
             const diff = jumbotronsAfter.length - jumbotronsBefore.length
             expect(diff).to.equal(1)
         })
@@ -112,17 +112,23 @@ describe('Peregrine sites page', function () {
 
         it('should save and hide the editor', function() {
             EditorPanel.save.click()
+            EditorPanel.container.waitForExist(3000, true);
             expect( EditorPanel.container.isVisible() ).to.equal(false)
         })
     })
 
     describe('Delete jumbotron', function() {
         it('should delete the jumbotron', function() {
-            const jumbotronsBefore = ContentView.jumbotrons.length
+            const jumbotronsBefore = ContentView.jumbotrons
             jumbotronComponent.clickAtLocation()
+            jumbotronComponent.deleteButton.waitForExist(3000);
             jumbotronComponent.deleteButton.click()
-            const jumbotronsAfter = ContentView.jumbotrons.length
-            expect( jumbotronsBefore - jumbotronsAfter ).to.equal(1)
+            jumbotronComponent.deleteButton.waitForExist(3000, true);
+            const jumbotronsAfter = ContentView.jumbotrons
+            //console.log('before 2:' + jumbotronsBefore)
+            //console.log('after 2:' + jumbotronsAfter)
+            const diff = jumbotronsBefore.length - jumbotronsAfter.length
+            expect( diff ).to.equal(1)
         })
     })
 

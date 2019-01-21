@@ -1,0 +1,14 @@
+{
+  "title": "Article Text Media",
+  "group": "Article",
+  "model": {
+    "mediatype": "image",
+    "mediaposition": "before",
+    "imagesrc": "/content/assets/themeclean/images/yosemite.jpg",
+    "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
+    "mediawidth": "50",
+    "toppadding": "0",
+    "bottompadding": "0",
+    "text": "<p>Dolorem aut qui eligendi atque corporis. Necessitatibus deleniti rerum vel modi consequatur necessitatibus. Accusamus voluptas dolorum debitis doloribus. Esse ea qui dolor quae. Est numquam maiores rem odit. Suscipit ut voluptatum sed et harum.</p>"
+  }
+}

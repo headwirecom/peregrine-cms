@@ -1,0 +1,39 @@
+{
+  "definitions": {
+    "Articletextmedia": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "text": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Text",
+          "x-form-type": "texteditor"
+        },
+        "mediaposition": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Media Position",
+          "x-form-type": "materialradio",
+          "properties": {
+		    "type1": {
+		      "x-form-name": "Before Content",
+		      "x-form-value": "before"
+		    },"type2": {
+		      "x-form-name": "After Content",
+		      "x-form-value": "after"
+		    }
+  		  }
+        },
+        "mediaref": {
+          "x-form-type": "reference",
+        	"$ref": "fragments/media/model.json#/definitions/Media"
+        },
+        "bgref": {
+          "x-form-type": "reference",
+        	"$ref": "fragments/block/model-article.json#/definitions/Block"
+        }
+      }
+    }
+  }
+}

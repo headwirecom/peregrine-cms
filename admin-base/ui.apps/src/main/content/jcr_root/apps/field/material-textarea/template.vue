@@ -5,7 +5,7 @@
 				ref="textarea"
 				class="form-control materialize-textarea" 
 				v-model="value" 
-				v-bind:style="{minHeight: `${schema.rows}em`, maxHeight: `${schema.rows}em`}"
+				v-bind:style="{minHeight: `${1.1 * schema.rows + 2.2}em`, maxHeight: `${1.1 * schema.rows + 2.2}em`}"
 				:id="getFieldID(schema)" 
 				:disabled="disabled" 
 				:maxlength="schema.max" 
@@ -23,12 +23,12 @@
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
 		mounted() {
-			$(this.$refs.textarea).trigger('autoresize');
+			// $(this.$refs.textarea).trigger('autoresize');
 		},
 		updated() {
-			if( document.activeElement != this.$refs.textarea ){
-				$(this.$refs.textarea).trigger('autoresize');
-			}
+			// if( document.activeElement != this.$refs.textarea ){
+			// 	$(this.$refs.textarea).trigger('autoresize');
+			// }
 		}
 	}
 </script>

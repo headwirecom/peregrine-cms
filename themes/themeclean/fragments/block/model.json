@@ -4,16 +4,22 @@
       "type": "object",
       "x-type": "component",
       "properties": {
+        "anchorname": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Anchor Name",
+          "x-form-type": "text"
+        },
         "colorscheme" : {
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Block Color Scheme",
           "x-form-type": "materialradio",
-          "x-default": "light",
+          "x-default": "",
           "properties": {
             "none": {
               "x-form-name": "None",
-              "x-form-value": "none"
+              "x-form-value": ""
             },
             "light": {
               "x-form-name": "Light",
@@ -130,7 +136,7 @@
           "x-form-label": "Top Padding",
           "x-form-type": "range",
           "x-form-min": 0,
-          "x-form-max": 120,
+          "x-form-max": 150,
           "x-form-visible": "model.fullheight != 'true'"
         },
         "bottompadding": {

@@ -23,161 +23,49 @@
   #L%
   -->
 <template>
-    <div class="wrapper">
-      <template v-if="!schema.preview">
-        <div tabindex="-1" ref="quilltoolbar">
-            <select tabindex="-1" class="ql-header">
-                <option value="1"></option>
-                <option value="2"></option>
-                <option value="3"></option>
-                <option value="4"></option>
-                <option value="5"></option>
-                <option selected></option>
-            </select>
-            <button tabindex="-1" class="ql-bold"></button>
-            <button tabindex="-1" class="ql-italic"></button>
-            <button tabindex="-1" class="ql-underline"></button>
-            <button tabindex="-1" class="ql-link"></button>
-            <button tabindex="-1" class="ql-list" value="ordered"></button>
-            <button tabindex="-1" class="ql-list" value="bullet"></button>
-            <button tabindex="-1" class="ql-script" value="sub"></button>
-            <button tabindex="-1" class="ql-script" value="super"></button>
-            <button tabindex="-1" class="ql-indent" value="-1"></button>
-            <button tabindex="-1" class="ql-indent" value="+1"></button>
-            <select tabindex="-1" class="ql-color" value="[]"></select>
-            <select tabindex="-1" class="ql-background"></select>
-            <button tabindex="-1" class="ql-code-block"></button>
-            <button tabindex="-1" class="ql-clean"></button>
+    <div>
+        <div v-if="!schema.preview" class="wrapper">
+            <trumbowyg :config="config" v-model="value"></trumbowyg>
         </div>
-        <div ref="quilleditor"></div>
-      </template>
-      <p v-else v-html="value"></p>
+        <p v-else v-html="value"></p>
     </div>
 </template>
 
 <script>
-    function toQuill(value) {
-//        let ret = ''
-//        for(let i = 0; i < value.length; i++) {
-//            ret += value.charAt(i)
-//            if(ret.endsWith('<br>')) {
-//                ret = ret.slice(0,ret.length -4) + '</p><p>'
-//            } else if(ret.endsWith('</p><p>')) {
-//                ret = ret  + '<br></p><p>'
-//            }
-//        }
-//        return ret
-        return value
-    }
-
-    function fromQuill(value) {
-//        let ret = ''
-//        let skip = false
-//        for(let i = 0; i < value.length; i++) {
-//            ret += value.charAt(i)
-//            if(ret.endsWith('</p><p>')  && value.slice(i+1, i+5) !== '<br>' && !ret.endsWith('<br></p><p>') && !skip) {
-//                // console.log(value.slice(i+1, i+5))
-//                ret = ret.slice(0,ret.length -7) + '<br>'
-//            } else if(ret.endsWith('</p><p><br></p><p>')) {
-//                ret = ret.slice(0,ret.length -11)
-//                skip = true
-//            } else {
-//                skip = false
-//            }
-//        }
-//        return ret
-        return value
-    }
-
     export default {
         mixins: [ VueFormGenerator.abstractField ],
-        mounted() {
-            if(!this.schema.preview) this.initialize()
-        },
-        beforeDestroy() {
-            this.quill = null
-        },
-        watch: {
-            value(newVal, oldVal) {
-                newVal = toQuill(newVal)
-                if(newVal != this.$refs.quilleditor.children[0].innerHTML) {
-                    this.$refs.quilleditor.children[0].innerHTML = newVal
-                }
-            }
-        },
-        methods: {
-            initialize() {
-                this.$refs.quilleditor.innerHTML = toQuill(this.value ? this.value : '')
-                this.quill = new Quill(this.$refs.quilleditor, {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: this.$refs.quilltoolbar
-                    }            
-                })
-                const toolbar = this.quill.getModule('toolbar')
-                toolbar.addHandler('link', (value) => { 
-                  this.showPathBrowser(this.getSelectedPath())
-                })
-                this.quill.on('text-change', (delta, oldDelta, source) => {
-                    this.value = fromQuill(this.$refs.quilleditor.children[0].innerHTML)
-                })
-            },
-            getSelectedPath(){
-                var range = this.quill.getSelection()
-                if (range && !range.length == 0) {
-                    var selectedText = this.quill.getText(range.index, range.length)
-                    // find link with text as value
-                    var linkNodes = document.querySelectorAll('.ql-editor > p > a')
-                    // find link with selected text (selectedText)
-                    let len = linkNodes.length
-                    for(let i=0; i<len; i++){
-                        let node = linkNodes[i]
-                        if(node.textContent === selectedText) {
-                            // is this an external link?
-                            // TODO: better way to determin internal vs external links
-                            return ['localhost', 'headwire'].indexOf(node.hostname) >= 0
-                                ? node.pathname
-                                : node.href
+        data () {
+            return {
+                config: {
+                    svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
+                    btnsDef: {
+                        formattingWithCode: {
+                            dropdown: ['p', 'quote', 'preformatted', 'h1', 'h2', 'h3', 'h4'],
+                            ico: 'p', // Apply formatting icon
+                            hasIcon: true
                         }
-                    }
+                    },
+                    btns: [
+                        'viewHTML',
+                        'undo',
+                        'redo',
+                        'formattingWithCode',
+                        'strong',
+                        'em',
+                        'superscript',
+                        'subscript',
+                        'link',
+                        'insertImage',
+                        'justifyLeft',
+                        'justifyCenter',
+                        'justifyRight',
+                        'justifyFull',
+                        'unorderedList',
+                        'orderedList',
+                        'removeformat'
+                    ]
                 }
-                return false
-            }, 
-            showPathBrowser(selectedPath) {
-                let root = '/content/sites'
-                let currentPath
-                // is selectedPath an internal or external link?
-                if(selectedPath && selectedPath.startsWith('/content/')){
-                    // selectedPath is internal link
-                    currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
-                } else {
-                    // selectedPath is external link
-                    currentPath = root
-                }
-                const initModalState = {
-                    root: root,
-                    type: 'link',
-                    current: currentPath,
-                    selected: selectedPath
-                }
-                const options = {
-                    complete: this.setLinkValue
-                }
-                console.log('initModalState: ', initModalState)
-                $perAdminApp.pathBrowser(initModalState, options)
-            },
-            setLinkValue(){
-                const newValue = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
-                newValue 
-                    ? this.quill.format('link', newValue) 
-                    : this.quill.format('link', false)
             }
         }
     }
 </script>
-
-<style>
-    .ql-container {
-        background-color: white;
-    }
-</style>

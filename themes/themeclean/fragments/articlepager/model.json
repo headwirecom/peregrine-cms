@@ -1,0 +1,26 @@
+{
+  "definitions": {
+    "Articlepager": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "prevlabel": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Previous Label",
+          "x-form-type": "text"
+        },
+        "nextlabel": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Next Label",
+          "x-form-type": "text"
+        },
+        "bgref": {
+            "x-form-type": "reference",
+        	"$ref": "fragments/block/model.json#/definitions/Block"
+        }
+      }
+    }
+  }
+}
