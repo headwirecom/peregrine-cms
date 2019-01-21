@@ -58,7 +58,8 @@
                             com.peregrine.replication,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
-                            com.peregrine.commons.util
+                            com.peregrine.commons.util,
+                            com.peregrine.commons.servlets
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.nodetypes.models</Sling-Model-Packages>
