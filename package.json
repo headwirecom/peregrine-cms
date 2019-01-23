@@ -11,6 +11,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "camelcase": "^5.0.0",
     "fs-extra": "^7.0.1",
     "jsdoc": "^3.5.3",
     "jsdoc-vue": "^1.0.0",
