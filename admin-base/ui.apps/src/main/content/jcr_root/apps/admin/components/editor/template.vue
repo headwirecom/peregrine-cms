@@ -33,11 +33,13 @@
         </div>
         <div class="editor-panel-buttons">
             <button class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
-                <i class="material-icons">delete</button>
+                <i class="material-icons"/>delete
+            </button>
             <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
-                <i class="material-icons">close</button>
+                <i class="material-icons"/>close
+            </button>
             <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
-                <i class="material-icons">check</i>
+                <i class="material-icons"/>check
             </button>
         </div>
     </div>
