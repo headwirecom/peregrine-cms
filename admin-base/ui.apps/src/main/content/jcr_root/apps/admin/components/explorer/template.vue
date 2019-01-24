@@ -39,7 +39,7 @@
                     class="collection-item">
                     <admin-components-action
                             v-bind:model="{
-                            target: ndivl,
+                            target: null,
                             command: 'selectParent',
                             tooltipTitle: $i18n('select parent')
                         }"><i class="material-icons">folder</i> ..
