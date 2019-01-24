@@ -17,6 +17,8 @@
     <description>Peregrine CMS Root POM. It contains the plugin and dependencies definitions and profiles</description>
 
     <properties>
+        <node.version>v10.15.0</node.version>
+
         <sling.host>localhost</sling.host>
         <sling.port>8080</sling.port>
         <sling.user>admin</sling.user>
@@ -93,6 +95,39 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>nodepath</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <installDirectory>${nodepath}</installDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -874,6 +909,7 @@
     </distributionManagement>
 
     <modules>
+        <module>buildscripts</module>
         <module>platform</module>
         <module>pagerenderer/vue</module>
         <module>admin-base</module>
@@ -883,5 +919,12 @@
         <!--<module>autodocs</module>-->
         <module>tooling/maven/archetypes/project</module>
     </modules>
+
+    <repositories>
+        <repository>
+            <id>mvnrepository-repository</id>
+            <url>http://myrepo.net/repo</url>
+        </repository>
+    </repositories>
 
 </project>
