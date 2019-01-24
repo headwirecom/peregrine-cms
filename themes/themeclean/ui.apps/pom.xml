@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ui.apps</artifactId>
+    <artifactId>themeclean-ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>themeclean - UI Apps</name>
@@ -44,6 +44,10 @@
         to add them to that profile and include here
         as dependencies.
     </description>
+
+    <properties>
+        <nodepath>../../../</nodepath>
+    </properties>
 
     <dependencies>
         <dependency>
