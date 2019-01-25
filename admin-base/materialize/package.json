@@ -10,7 +10,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "fs-extra": "^2.1.2",
+    "fs-extra": "^7.0.1",
     "node-sass": "^4.5.2"
   }
 }

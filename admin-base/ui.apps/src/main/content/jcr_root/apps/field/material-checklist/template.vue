@@ -64,6 +64,7 @@
     <ul v-if="schema.preview" class="preview-list">
       <li v-for="item in items" v-if="isItemChecked(item)" class="preview-item">{{ getItemName(item) }}</li>
     </ul>
+    </div>
 </template>
 
 <script>

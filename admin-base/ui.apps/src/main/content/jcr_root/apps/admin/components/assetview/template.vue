@@ -72,6 +72,7 @@
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onReferences">
                         <i class="material-icons">list</i>
+                    </a>
                 </li>
             </ul>
             <template v-if="!edit && !references">

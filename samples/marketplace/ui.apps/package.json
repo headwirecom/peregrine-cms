@@ -10,10 +10,10 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "fs-extra": "^3.0.0",
-    "rollup": "^0.41.6",
-    "rollup-plugin-buble": "^0.15.0",
-    "rollup-plugin-vue": "^2.3.1",
+    "fs-extra": "^7.0.1",
+    "rollup": "^1.1.2",
+    "rollup-plugin-buble": "^0.19.6",
+    "rollup-plugin-vue": "^4.6.1",
     "vue": "^2.2.6"
   }
 }

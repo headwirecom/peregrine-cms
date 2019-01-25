@@ -28,7 +28,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>themeclean-core</artifactId>
     <packaging>bundle</packaging>
 
     <name>themeclean - Core</name>

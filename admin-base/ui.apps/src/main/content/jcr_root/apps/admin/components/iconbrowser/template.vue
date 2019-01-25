@@ -54,8 +54,9 @@
                 
             <div class="modal-content"> 
                 <div class="col-browse">                    
-                    <template v-if="icons && icons.length > 0" v-for="(icon, index) in icons" :key="index">
-                        <div 
+                    <template v-if="icons && icons.length > 0" v-for="(icon, index) in icons">
+                        <div  
+                            :key="index"
                             v-if="searchFilter(icon)"
                             :class="isSelected(icon) ? 'item-icon selected' : 'item-icon'"
                             v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
@@ -85,6 +86,7 @@
         </div>
         </div>
 </div>
+</transition>
 </template>
 
 <script>
