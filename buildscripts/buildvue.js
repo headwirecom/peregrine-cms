@@ -50,7 +50,7 @@ function compileComponent(file){
 
   // compile the Vue component and give us a .js and .css
   rollup.rollup({
-    entry: `${basePath}${file}`,
+    input: `${basePath}${file}`,
     plugins: [
       vue({
         compileTemplate: true,
@@ -62,8 +62,8 @@ function compileComponent(file){
 
     bundle.write({
       format: 'iife',
-      moduleName: moduleName,
-      dest: `${distBasePath}/js/${nameCamelCase}.js`,
+      name: moduleName,
+      file:`${distBasePath}/js/${nameCamelCase}.js`,
       globals: {
         tools: 'tools',
           log: 'log'

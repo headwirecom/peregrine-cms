@@ -118,7 +118,7 @@
                                 </li>
                             </template>
                         </ul>
-                        <p v-else class="flow-text">{{getEmptyText()}}</li>
+                        <p v-else class="flow-text">{{getEmptyText()}}</p>
                     </template>
                     <template v-if="tab === 'cards' && !search">
                         <nav class="modal-content-nav clearfix">
