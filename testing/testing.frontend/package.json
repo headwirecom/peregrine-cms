@@ -4,14 +4,14 @@
   "description": "",
   "main": "test.js",
   "devDependencies": {
-    "chai": "^4.1.1",
+    "chai": "^4.2.0",
     "drag-mock": "^1.4.0",
     "html-dnd": "^1.2.0",
-    "selenium-standalone": "^6.8.0",
-    "wdio-mocha-framework": "^0.5.11",
-    "wdio-selenium-standalone-service": "0.0.9",
-    "wdio-spec-reporter": "^0.1.2",
-    "webdriverio": "^4.8.0"
+    "selenium-standalone": "^6.15.4",
+    "wdio-mocha-framework": "^0.6.4",
+    "wdio-selenium-standalone-service": "^0.0.12",
+    "wdio-spec-reporter": "^0.1.5",
+    "webdriverio": "^5.4.3"
   },
   "scripts": {
     "test": "wdio wdio.conf.js",
@@ -21,6 +21,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wdio": "^1.0.3"
+    "wdio": "^3.0.0"
   }
 }

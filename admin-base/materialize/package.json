@@ -11,6 +11,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "fs-extra": "^7.0.1",
-    "node-sass": "^4.5.2"
+    "node-sass": "^4.11.0"
   }
 }
