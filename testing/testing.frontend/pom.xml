@@ -208,7 +208,6 @@
                                 </goals>
                                 <configuration>
                                     <nodeVersion>v10.15.0</nodeVersion>
-                            <npmVersion>6.7.0</npmVersion>
                                 </configuration>
                             </execution>
 
@@ -428,7 +427,6 @@
                                 </goals>
                                 <configuration>
                                     <nodeVersion>v10.15.0</nodeVersion>
-                            <npmVersion>6.7.0</npmVersion>
                                 </configuration>
                             </execution>
 

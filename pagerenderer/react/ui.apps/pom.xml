@@ -101,7 +101,6 @@
                     </goals>
                     <configuration>
                         <nodeVersion>v8.1.3</nodeVersion>
-                            <npmVersion>6.7.0</npmVersion>
                     </configuration>
                 </execution>
 
