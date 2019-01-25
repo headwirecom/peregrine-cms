@@ -52,7 +52,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>themeclean-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
