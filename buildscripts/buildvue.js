@@ -5,6 +5,7 @@ const rollup    = require( 'rollup' )
 const path      = require('path')
 const vue       = require('rollup-plugin-vue')
 const buble     = require('rollup-plugin-buble')
+const commonjs  = require('rollup-plugin-commonjs')
 const camelcase = require('camelcase')
 
 console.log('=== building vue files ========================================')
@@ -56,7 +57,8 @@ function compileComponent(file){
         compileTemplate: true,
         css: `${distBasePath}/css/${nameCamelCase}.css`
       }),
-      buble()
+      buble(),
+      commonjs()
     ]
   }).then( function(bundle) {
 
