@@ -73,7 +73,7 @@
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
         <org.apache.sling.junit.core.version>1.0.14</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>1.0.0</org.apache.sling.testing.clients.version>
-        <org.apache.sling.junit.teleporter.version>1.0.17-SNAPSHOT</org.apache.sling.junit.teleporter.version>
+        <org.apache.sling.junit.teleporter.version>1.0.18</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
