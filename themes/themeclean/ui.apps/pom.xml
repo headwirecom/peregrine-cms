@@ -29,7 +29,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ui.apps</artifactId>
+    <artifactId>themeclean-ui.apps</artifactId>
     <packaging>content-package</packaging>
 
     <name>themeclean - UI Apps</name>
@@ -45,10 +45,14 @@
         as dependencies.
     </description>
 
+    <properties>
+        <nodepath>../../../</nodepath>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>themeclean-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -92,6 +96,9 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
+                <configuration>
+                    <installDirectory>${nodepath}</installDirectory>
+                </configuration> 
                 <version>1.4</version>
 
                 <executions>
@@ -101,7 +108,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v6.10.2</nodeVersion>
+                            <nodeVersion>v10.15.0</nodeVersion>
                         </configuration>
                     </execution>
 
@@ -144,7 +151,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>core</artifactId>
+                                    <artifactId>themeclean-core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>

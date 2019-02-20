@@ -24,7 +24,7 @@
   -->
 <template>
     <span v-if="extensions">
-        <component v-for="extension in extensions" v-bind:is="extension" v-bind:model="model"></component>
+        <component v-for="(extension, key) in extensions" v-bind:key="key" v-bind:is="extension" v-bind:model="model"></component>
     </span>
 </template>
 
