@@ -1,27 +1,27 @@
-const fs        = require('fs-extra')
+const fs = require('fs')
 const path = require('path');
-console.log('=== copying node_modules dependencies ========================================')
+console.log('=== copying node_modules dependencies ========================================');
 
 //Find depencies in node_modules and copy them to target
 
-var basePath = './src/main/content/jcr_root'
-var felibsPath = '/etc/felibs/admin/dependencies'
-var distFelibsPath = './target/classes/etc/felibs/admin/dependencies'
+var basePath = './src/main/content/jcr_root';
+var felibsPath = '/etc/felibs/admin/dependencies';
+var distFelibsPath = './target/classes/etc/felibs/admin/dependencies';
 
 
 const lines = fs.readFileSync(basePath + felibsPath + '/node_modules.txt', 'utf-8')
-    .split('\n')
+    .split(/\r?\n/)
     .filter(Boolean);
 
-for( const dep of lines ) {
+for( let dep of lines ) {
   let copyTarget; 
-  let modulePath = `node_modules/${dep}`
+  let modulePath = `node_modules/${dep}`;
 
   //If given a file
   if (fs.lstatSync(modulePath).isFile()) {
     copyTarget = modulePath;
   }
-  //If given a directory
+  //If given a directory attempt to find module
   else {
     const file = fs.readFileSync(`${modulePath}/package.json`);
     const package = JSON.parse(file);
