@@ -1,23 +1,23 @@
 <template>
-
-	<vue-form-generator :schema="{...schema,...rangeSchema}" :model="{value}"></vue-form-generator>
-
+	<p class="range-field">
+		<input
+			type="range"
+			v-model="value"
+			:id="getFieldID(schema)"
+			:class="schema.fieldClasses"
+			:disabled="schema.disabled || schema.preview"
+			:alt="schema.alt"
+			:max="schema.max"
+			:min="schema.min"
+			:name="schema.inputName"
+			:required="schema.required"
+			:step="schema.step"
+		/>
+	</p>
 </template>
 
 <script>	
 	export default {
 		mixins: [ VueFormGenerator.abstractField ],
-		data: function (){
-			return {
-				rangeSchema: {
-            fields: [{
-                type: "input",
-								inputType: "range",
-								debounceFormatTimeout: 0
-            }]
-				},
-				value: parseInt(this.value)
-			}
-		}
 	}
 </script>
