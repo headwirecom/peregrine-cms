@@ -25,7 +25,7 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Carousel Height",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-default": 80,
           "x-form-min": 50,
           "x-form-max": 100
@@ -40,7 +40,7 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Interval",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-visible": "model.autoplay == 'true'",
           "x-default": 5,
           "x-form-min": 1,
@@ -222,7 +222,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Overlay opacity",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 100,
               "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
@@ -260,7 +260,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Top Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
@@ -269,7 +269,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Bottom Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
@@ -306,7 +306,7 @@ public class CarouselModel extends AbstractComponent {
     public CarouselModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Carousel Height","x-form-type":"range","x-default":80,"x-form-min":50,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Carousel Height","x-form-type":"materialrange","x-default":80,"x-form-min":50,"x-form-max":100} */
 	@Inject
 	@Default(values ="80")
 	private String carouselheight;
@@ -315,7 +315,7 @@ public class CarouselModel extends AbstractComponent {
 	@Inject
 	private String autoplay;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Interval","x-form-type":"range","x-form-visible":"model.autoplay == 'true'","x-default":5,"x-form-min":1,"x-form-max":20} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Interval","x-form-type":"materialrange","x-form-visible":"model.autoplay == 'true'","x-default":5,"x-form-min":1,"x-form-max":20} */
 	@Inject
 	@Default(values ="5")
 	private String interval;
@@ -389,7 +389,7 @@ public class CarouselModel extends AbstractComponent {
 	@Default(values ="#ffffff")
 	private String overlaycolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	@Inject
 	@Default(values ="50")
 	private String overlayopacity;
@@ -412,11 +412,11 @@ public class CarouselModel extends AbstractComponent {
 	@Inject
 	private String fullheight;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String bottompadding;
 
@@ -424,7 +424,7 @@ public class CarouselModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Carousel Height","x-form-type":"range","x-default":80,"x-form-min":50,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Carousel Height","x-form-type":"materialrange","x-default":80,"x-form-min":50,"x-form-max":100} */
 	public String getCarouselheight() {
 		return carouselheight;
 	}
@@ -434,7 +434,7 @@ public class CarouselModel extends AbstractComponent {
 		return autoplay;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Interval","x-form-type":"range","x-form-visible":"model.autoplay == 'true'","x-default":5,"x-form-min":1,"x-form-max":20} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Interval","x-form-type":"materialrange","x-form-visible":"model.autoplay == 'true'","x-default":5,"x-form-min":1,"x-form-max":20} */
 	public String getInterval() {
 		return interval;
 	}
@@ -514,7 +514,7 @@ public class CarouselModel extends AbstractComponent {
 		return overlaycolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	public String getOverlayopacity() {
 		return overlayopacity;
 	}
@@ -539,12 +539,12 @@ public class CarouselModel extends AbstractComponent {
 		return fullheight;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getBottompadding() {
 		return bottompadding;
 	}

@@ -22,7 +22,7 @@
           "x-source": "inject",
           "x-form-label": "Line Width",
           "x-form-visible": "model.blockquote == 'false'",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-min": 10,
           "x-form-max": 100
         },
