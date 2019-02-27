@@ -38,7 +38,7 @@
                             v-for="item in themes"
                             v-on:click.stop.prevent="selectTheme(null, item.name)"
                             v-bind:class="isSelected(item.name) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name }">{{item.name}}</admin-components-action>
+                            <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name, title: item.name }"></admin-components-action>
                         </li>
                     </ul>
                     <div v-if="!formmodel.templatePath" class="errors">
