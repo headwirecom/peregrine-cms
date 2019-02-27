@@ -38,7 +38,7 @@
                             v-for="template in templates"
                             v-on:click.stop.prevent="selectTemplate(null, template.path)"
                             v-bind:class="isSelected(template.path) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path }">{{template.name}}</admin-components-action>
+                            <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
                         </li>
                     </ul>
                     <div v-if="!formmodel.templatePath" class="errors">
