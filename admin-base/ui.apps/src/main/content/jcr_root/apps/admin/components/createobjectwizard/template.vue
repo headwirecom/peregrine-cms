@@ -31,7 +31,7 @@
                     v-for="item in objects"
                     v-on:click.stop.prevent="selectItem(null, item.path)"
                     v-bind:class="isSelected(item.path) ? 'grey lighten-2' : ''">
-                    <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path }">{{item.name}}</admin-components-action>
+                    <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path, title: item.name }"></admin-components-action>
                 </li>
             </ul>
             <div v-if="!formmodel.templatePath">please select an object</div>

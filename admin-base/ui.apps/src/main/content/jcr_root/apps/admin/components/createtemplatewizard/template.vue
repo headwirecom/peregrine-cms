@@ -38,7 +38,7 @@
                             v-for="component in components"
                             v-on:click.stop.prevent="selectComponent(null, component.path)"
                             v-bind:class="isSelected(component.path) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectComponent', target: component.path }">{{component.name}}</admin-components-action>
+                            <admin-components-action v-bind:model="{ command: 'selectComponent', target: component.path, title: component.name }"></admin-components-action>
                         </li>
                     </ul>
                     <div v-if="!formmodel.component" class="errors">
@@ -102,7 +102,6 @@
                 siteRootParts[1] = 'apps'
                 siteRootParts[2] = siteRootParts[3]
                 const siteRoot = siteRootParts.slice(0,3).join('/')
-                console.log(siteRoot)
                 return templates.filter( (item) => item.path.startsWith(siteRoot) && (
                     item.name === 'page' || item.templateComponent
                 ))
@@ -135,6 +134,9 @@
                 const siteName = path.split('/')[3]
                 const component = this.formmodel.component.substring(this.formmodel.component.indexOf('/',1)+1)
                 $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component })
+            },
+            leaveTabOne: function() {
+                return !(!this.formmodel.component)
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
