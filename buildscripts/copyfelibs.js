@@ -44,7 +44,8 @@ for( let dep of lines ) {
 
   //Update js.txt
   const jsTxt = distFelibsPath + '/js.txt';
-  fs.appendFileSync(jsTxt, filename + '\n');
+  const cssTxt = distFelibsPath + '/css.txt';
+  fs.appendFileSync( /.css$/.test(modulePath) ? cssTxt : jsTxt, filename + '\n');
 
   console.log(`Copying\t${copyTarget} \nto\t${distFelibsPath}/${filename}\n`)
 
