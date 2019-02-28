@@ -1,6 +1,11 @@
 .vue-form-generator {
     margin: 0;
     box-sizing: border-box;
+
+    .field-wrap > * {
+        width: 100%;
+    }
+
     fieldset {
         border: 0;
         padding: 0;
@@ -55,6 +60,10 @@
             .field-wrap {
                 input {
                     margin: 0;
+                }
+                button {
+                    margin: 0;
+                    padding: 0;
                 }
             }
             &.field-input {
@@ -114,6 +123,7 @@
                         width: calc(100% - 3rem);
                         + .btn-flat {
                             width: 3rem;
+                            margin: 0;
                             height: 3rem;
                             border: 1px solid color("blue-grey", "lighten-4");
                             border-left: 0;
