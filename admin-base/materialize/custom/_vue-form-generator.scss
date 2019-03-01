@@ -2,6 +2,7 @@
 
     input:not([type]),
     input[type=text]:not(.browser-default),
+    input[type=color]:not(.browser-default),
     input[type=password]:not(.browser-default),
     input[type=email]:not(.browser-default),
     input[type=url]:not(.browser-default),
@@ -16,6 +17,7 @@
         // Disabled input style
         &:disabled,
         &[readonly="readonly"] {
+            pointer-events: none;
             padding: 0;
             color: black;
             background: none;
@@ -35,8 +37,16 @@
         border: 0;
     }
 
+    .field-wrap {
+        margin: 5px 0px;
+    }
+
     .field-wrap > * {
         width: 100%;
+    }
+
+    .field-group {
+        margin-bottom: 15px;
     }
 
     fieldset {
@@ -489,26 +499,16 @@
                 }
             }
             &.field-collection {
-                padding: 1.5rem 0 0;
-                margin: 0;
-                clear: both;
                 .wrap {
-                    h5 {
-                        color: color("blue-grey", "base");
-                        font-size: 1.25rem;
-                        .btn-floating {
-                            width: 30px;
-                            height: 30px;
-                            line-height: 30px;
-                            margin-left: 0.75rem;
-                            background-color: color("blue-grey", "darken-1");
-                            .material-icons {
-                                line-height: 30px;
-                            }
+                    .btn-add-item {
+                        width: 100%;
+
+                        &:hover {
+                            background-color: color("blue-grey", "lighten-4");
                         }
                     }
                     .collapsible {
-                        margin: 0 -0.75rem 1.5rem;
+                        margin: 0.5rem -0.75rem 1.5rem;
                         box-shadow: none;
                         border: none;
                         clear: both;
