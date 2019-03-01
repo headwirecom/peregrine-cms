@@ -1,5 +1,5 @@
 <template>
-	<p class="range-field">
+	<p v-if="!schema.preview" class="range-field">
 		<input
 			type="range"
 			v-model="value"
@@ -14,6 +14,7 @@
 			:step="schema.step"
 		/>
 	</p>
+	<div v-else>{{value}}</div>
 </template>
 
 <script>	
