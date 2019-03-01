@@ -24,12 +24,7 @@
   -->
 <template>
 	<div class="wrap">
-		<div>
-      <label>{{schema.title}} </label>
-      <button type="button" class="waves-effect waves-light btn-floating" v-on:click="onAddItem">
-        <i class="material-icons">add</i>
-      </button>
-    </div>
+    <label>{{schema.title}} </label>
     <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'singlefield'" ref="collapsible">
         <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)"> {{item._opDelete}}
             <div 
@@ -60,11 +55,14 @@
               </div>
             </transition>
         </li>
+        <button type="button" class="btn-flat btn-add-item" v-on:click="onAddItem">
+          <i class="material-icons">add</i>
+        </button>
     </ul>
     <ul v-else class="collection">
       <template v-for="(item,i) in value">
 
-        <ul v-if="typeof item === 'object'" class="collection z-depth-1" :key="item[name]">
+        <ul v-if="typeof item === 'object'" class="collection z-depth-1" :key="item.name">
           <vue-form-generator
             v-if="schema.multifield" 
             class="collection-item"
