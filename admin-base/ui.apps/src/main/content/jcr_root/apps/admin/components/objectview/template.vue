@@ -67,29 +67,33 @@
             </ul>
             <template v-if="(edit === false || edit === undefined) && schema !== undefined">
                 <template v-if="currentObject.data && schema">
-                    <vue-form-generator 
-                            class="vfg-preview"
-                            v-on:validated = "onValidated"
-                            v-bind:schema  = "readOnlySchema"
-                            v-bind:model   = "currentObject.data"
-                            v-bind:options = "formOptions">
-                    </vue-form-generator>
-                </template>
-    <!--
-                <div class="row" v-for="field in schema.fields">
-                    <template v-if="!field.fields">
-                        <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{get(currentObject.data,field.model)}}</div>
-                    </template>
-                    <template v-else>
-                        <div class="col s12"><b>{{field.title}}</b></div>
-                        <div class="row" v-for="item in currentObject.data[field.model]">
-                            <div v-for="child in field.fields">
-                                <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{get(item,child.model)}}</div>
+                    <div class="vue-form-generator">
+                        <fieldset>
+                            <div class="form-group field-input" v-for="field in schema.fields">
+
+                                <label>{{field.label||field.title}}</label>
+
+                                <ul v-if="field.type === 'collection'" class="collection">
+                                    <li v-if="typeof item === 'object'" class="card-panel" v-for="item in currentObject.data[field.model]">
+                                        <div v-for="subfield in field.fields">
+                                            <label>{{subfield.label}}:</label>
+                                            <span>{{get(item,subfield.model)}}</span>
+                                        </div>
+
+                                    </li>
+                                    <li class="collection-item" v-else>
+                                        {{item}}
+                                    </li>
+                                </ul>
+
+                                <div v-else>{{currentObject.data[field.model]}}</div>
+
                             </div>
-                        </div>
-                    </template>
-                </div>
-    -->
+                        </fieldset>
+                    </div>
+    
+   
+                </template>
             </template>
 
             <template v-if="edit && currentObject.data && schema">
