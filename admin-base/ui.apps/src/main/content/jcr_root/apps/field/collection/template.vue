@@ -24,12 +24,12 @@
   -->
 <template>
 	<div class="wrap">
-		<h5>
-      {{schema.title}} 
+		<div>
+      <label>{{schema.title}} </label>
       <button type="button" class="waves-effect waves-light btn-floating" v-on:click="onAddItem">
         <i class="material-icons">add</i>
       </button>
-    </h5>
+    </div>
     <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'singlefield'" ref="collapsible">
         <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)"> {{item._opDelete}}
             <div 
@@ -61,21 +61,21 @@
             </transition>
         </li>
     </ul>
-    <ol v-else class="preview-list clearfix">
-      <li v-for="(item, index) in value" class="preview-item">
-        <vue-form-generator
-          v-if="schema.multifield" 
-          class="multifield"
-          :schema="schema"
-          :model="prepModel(item, schema)"></vue-form-generator>
-        <vue-form-generator
-          v-else 
-          class="singlefield"
-          :schema="getSchemaForIndex(schema, index)"
-          :model="value">
-        </vue-form-generator>
-      </li>
-    </ol>
+    <ul v-else class="collection">
+      <template v-for="(item,i) in value">
+
+        <ul v-if="typeof item === 'object'" class="collection z-depth-1" :key="item[name]">
+          <vue-form-generator
+            v-if="schema.multifield" 
+            class="collection-item"
+            :schema="schema"
+            :model="prepModel(item, schema)"></vue-form-generator>
+        </ul>
+
+        <li v-else class="collection-item" :key="item+i">{{item}}</li>
+
+      </template>
+    </ul>
 	</div>
 </template>
 

@@ -1,6 +1,39 @@
+.vue-form-generator.vfg-preview {
+
+    input:not([type]),
+    input[type=text]:not(.browser-default),
+    input[type=password]:not(.browser-default),
+    input[type=email]:not(.browser-default),
+    input[type=url]:not(.browser-default),
+    input[type=time]:not(.browser-default),
+    input[type=date]:not(.browser-default),
+    input[type=datetime]:not(.browser-default),
+    input[type=datetime-local]:not(.browser-default),
+    input[type=tel]:not(.browser-default),
+    input[type=number]:not(.browser-default),
+    input[type=search]:not(.browser-default),
+    textarea.materialize-textarea {
+        // Disabled input style
+        &:disabled,
+        &[readonly="readonly"] {
+            padding: 0;
+            color: black;
+            background: none;
+            border: none;
+        }
+        .field-wrap {
+            border: 0;
+        }
+    }
+}
+
 .vue-form-generator {
     margin: 0;
     box-sizing: border-box;
+
+    .collection {
+        border: 0;
+    }
 
     .field-wrap > * {
         width: 100%;
