@@ -10,7 +10,7 @@
         </div>
         <div class="col-12 col-md pb-3 pb-md-0" v-for="(item,i) in model.columns"
         :key="i">
-          <h5 class="" v-if="item.title !== ''">{{item.title}}</h5>
+          <h5 class v-if="item.title !== ''">{{item.title}}</h5>
           <div v-if="item.text !== ''" v-html="item.text"></div>
         </div>
       </div>

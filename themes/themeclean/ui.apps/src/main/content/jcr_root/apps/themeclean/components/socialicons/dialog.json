@@ -19,8 +19,7 @@
       "visible": "model.iconcustomcolor == 'true'"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "iconsize",
       "label": "Icon Size",
       "model": "iconsize",
