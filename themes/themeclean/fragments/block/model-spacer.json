@@ -96,7 +96,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Overlay opacity",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-min": 0,
           "x-form-max": 100,
           "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",

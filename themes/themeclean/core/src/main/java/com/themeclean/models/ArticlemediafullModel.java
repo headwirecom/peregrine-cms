@@ -63,7 +63,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Icon Size",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-visible": "model.mediatype == 'icon'",
               "x-default": 50,
               "x-form-min": 1,
@@ -104,7 +104,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Width",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-default": 100,
               "x-form-min": 10,
               "x-form-max": 100
@@ -211,7 +211,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Overlay opacity",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 100,
               "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
@@ -237,7 +237,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Top Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 120,
               "x-form-visible": "model.fullheight != 'true'"
@@ -246,7 +246,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Bottom Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 120,
               "x-form-visible": "model.fullheight != 'true'"
@@ -291,7 +291,7 @@ public class ArticlemediafullModel extends AbstractComponent {
 	@Inject
 	private String mediaicon;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-form-visible":"model.mediatype == 'icon'","x-default":50,"x-form-min":1,"x-form-max":1000} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"materialrange","x-form-visible":"model.mediatype == 'icon'","x-default":50,"x-form-min":1,"x-form-max":1000} */
 	@Inject
 	@Default(values ="50")
 	private String mediaiconsize;
@@ -313,7 +313,7 @@ public class ArticlemediafullModel extends AbstractComponent {
 	@Inject
 	private String videosrc;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-default":100,"x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"materialrange","x-default":100,"x-form-min":10,"x-form-max":100} */
 	@Inject
 	@Default(values ="100")
 	private String mediawidth;
@@ -354,7 +354,7 @@ public class ArticlemediafullModel extends AbstractComponent {
 	@Default(values ="#ffffff")
 	private String overlaycolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	@Inject
 	@Default(values ="50")
 	private String overlayopacity;
@@ -369,11 +369,11 @@ public class ArticlemediafullModel extends AbstractComponent {
 	@Default(values ="#c0c0c0")
 	private String color2;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String bottompadding;
 
@@ -391,7 +391,7 @@ public class ArticlemediafullModel extends AbstractComponent {
 		return mediaicon;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-form-visible":"model.mediatype == 'icon'","x-default":50,"x-form-min":1,"x-form-max":1000} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"materialrange","x-form-visible":"model.mediatype == 'icon'","x-default":50,"x-form-min":1,"x-form-max":1000} */
 	public String getMediaiconsize() {
 		return mediaiconsize;
 	}
@@ -416,7 +416,7 @@ public class ArticlemediafullModel extends AbstractComponent {
 		return videosrc;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"range","x-default":100,"x-form-min":10,"x-form-max":100} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Width","x-form-type":"materialrange","x-default":100,"x-form-min":10,"x-form-max":100} */
 	public String getMediawidth() {
 		return mediawidth;
 	}
@@ -461,7 +461,7 @@ public class ArticlemediafullModel extends AbstractComponent {
 		return overlaycolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	public String getOverlayopacity() {
 		return overlayopacity;
 	}
@@ -476,12 +476,12 @@ public class ArticlemediafullModel extends AbstractComponent {
 		return color2;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getBottompadding() {
 		return bottompadding;
 	}

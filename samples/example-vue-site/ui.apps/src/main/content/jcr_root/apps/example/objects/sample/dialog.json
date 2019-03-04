@@ -93,8 +93,7 @@
     "model": "materialswitch"
   },
   {
-    "type": "input",
-    "inputType": "range",
+    "type": "material-range",
     "placeholder": "range",
     "label": "Range",
     "model": "range",
