@@ -14,8 +14,8 @@
       :clear-on-select="false"
       :close-on-select="false"
       :placeholder="placeholder"
-      :allow-empty="allowEmpty"
-      :show-labels="false">
+      :show-labels="false"
+			@remove="removeOption">
     </vue-multiselect>
 	</div>
 
@@ -28,16 +28,12 @@
 <script>	
 	export default {
 		mixins: [ VueFormGenerator.abstractField ], 
-
 		computed: {
 			placeholder () {
 				if(this.schema.selectOptions && this.schema.selectOptions.placeholder){
 					return this.schema.selectOptions.placeholder
 				}
 				return 'Nothing selected'
-			},
-			allowEmpty () {
-				return this.schema.required ? false : true
 			},
 			trackBy () {
 				if(this.schema.selectOptions && this.schema.selectOptions.value){
@@ -56,33 +52,18 @@
 					return this.schema.selectOptions.deselectLabel
 				}
 				return ''
-			},
-			modelFromValue: {
-				get () {
-					// will catch falsy, null or undefined
-					if(this.value && this.value != null){
-						// if model is a string, convert to object with name and value
-						if(typeof this.value === 'string'){ 
-							return this.schema.values.filter(item => item.value === this.value)[0]     
-						} else {
-							return this.value
-						}
-					} else {
-						return ''
-					}
-				},
-				set (newValue) {
-					if(newValue && newValue != null){
-						this.value = newValue[this.trackBy]
-					} else {
-						this.value = ''
-					}
-				}
 			}
 		},
+
 		methods: {
-			customLabel(label) {
-				return typeof label === 'object' ? label.name: label
+			removeOption: function(removedOption, id) {
+				if( "jcr:primaryType"  in removedOption ) {
+					let _deleted = $perAdminApp.getNodeFromView("/state/tools/object/_deleted");
+					let copy = JSON.parse(JSON.stringify(removedOption));
+					copy._opDelete = true;
+					if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];
+					_deleted[this.schema.model].push(copy)
+				}
 			}
 		}
 	};
