@@ -956,7 +956,11 @@ public class AdminResourceHandlerService
             Object value = entry.getValue();
             if(value instanceof Map) {
                 Map childProperties = (Map) value;
-                Resource child = resource.getChild(name);
+                String childPath = (String) childProperties.get(PATH); 
+                Resource child = resource.getResourceResolver().getResource(childPath);
+                if(child == null) child = resource.getChild(name);
+
+
                 // If child is missing then create it
                 if(child == null) {
                     Object val = childProperties.get(SLING_RESOURCE_TYPE);
