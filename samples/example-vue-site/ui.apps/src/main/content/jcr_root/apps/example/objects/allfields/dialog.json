@@ -182,11 +182,10 @@
     "selectOptions": {
       "trackBy": "name",
       "label": "name",
-      "searchable": false,
-      "clearOnSelect": false,
+      "searchable": true,
       "closeOnSelect": false,
       "taggable": true,
-      "deselectLabel": "×",
+      "deselectLabel": "x",
       "placeholder":"Select author"
     },
     "values": [
