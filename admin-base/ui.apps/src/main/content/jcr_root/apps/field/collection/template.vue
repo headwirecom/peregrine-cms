@@ -38,10 +38,9 @@
               v-on:click.stop.prevent="onSetActiveItem(index)">
                 <i class="material-icons">drag_handle</i>
                 <span v-if="schema.multifield">{{itemName(item, index)}}</span> 
-                <vue-form-generator
+                <input
                   v-else
-                  :schema="getSchemaForIndex(schema, index)"
-                  :model="value"></vue-form-generator>
+                  v-model="value[index]">
                 <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
             </div>
             <transition
