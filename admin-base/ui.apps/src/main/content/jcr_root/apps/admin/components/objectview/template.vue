@@ -75,21 +75,6 @@
                             v-bind:options = "formOptions">
                     </vue-form-generator>
                 </template>
-    <!--
-                <div class="row" v-for="field in schema.fields">
-                    <template v-if="!field.fields">
-                        <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{get(currentObject.data,field.model)}}</div>
-                    </template>
-                    <template v-else>
-                        <div class="col s12"><b>{{field.title}}</b></div>
-                        <div class="row" v-for="item in currentObject.data[field.model]">
-                            <div v-for="child in field.fields">
-                                <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{get(item,child.model)}}</div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-    -->
             </template>
 
             <template v-if="edit && currentObject.data && schema">
@@ -129,9 +114,11 @@
                 const roSchema = JSON.parse(JSON.stringify(this.schema))
                 roSchema.fields.forEach( (field) => {
                     field.preview = true
+                    field.readonly = true
                     if(field.fields) {
                         field.fields.forEach( (field) => {
                             field.preview = true
+                            field.readonly = true
                         })
                     }
                 })

@@ -1,6 +1,54 @@
+.vue-form-generator.vfg-preview {
+
+    input:not([type]),
+    input[type=text]:not(.browser-default),
+    input[type=color]:not(.browser-default),
+    input[type=password]:not(.browser-default),
+    input[type=email]:not(.browser-default),
+    input[type=url]:not(.browser-default),
+    input[type=time]:not(.browser-default),
+    input[type=date]:not(.browser-default),
+    input[type=datetime]:not(.browser-default),
+    input[type=datetime-local]:not(.browser-default),
+    input[type=tel]:not(.browser-default),
+    input[type=number]:not(.browser-default),
+    input[type=search]:not(.browser-default),
+    textarea.materialize-textarea {
+        // Disabled input style
+        &:disabled,
+        &[readonly="readonly"] {
+            pointer-events: none;
+            padding: 0;
+            color: black;
+            background: none;
+            border: none;
+        }
+        .field-wrap {
+            border: 0;
+        }
+    }
+}
+
 .vue-form-generator {
     margin: 0;
     box-sizing: border-box;
+
+    .collection {
+        border: 0;
+    }
+
+    .field-wrap {
+        margin: 5px 0px;
+    }
+
+    .field-wrap > * {
+        width: 100%;
+    }
+
+    .field-group {
+        margin-bottom: 15px;
+    }
+
     fieldset {
         border: 0;
         padding: 0;
@@ -55,6 +103,10 @@
             .field-wrap {
                 input {
                     margin: 0;
+                }
+                button {
+                    margin: 0;
+                    padding: 0;
                 }
             }
             &.field-input {
@@ -114,6 +166,7 @@
                         width: calc(100% - 3rem);
                         + .btn-flat {
                             width: 3rem;
+                            margin: 0;
                             height: 3rem;
                             border: 1px solid color("blue-grey", "lighten-4");
                             border-left: 0;
@@ -446,26 +499,16 @@
                 }
             }
             &.field-collection {
-                padding: 1.5rem 0 0;
-                margin: 0;
-                clear: both;
                 .wrap {
-                    h5 {
-                        color: color("blue-grey", "base");
-                        font-size: 1.25rem;
-                        .btn-floating {
-                            width: 30px;
-                            height: 30px;
-                            line-height: 30px;
-                            margin-left: 0.75rem;
-                            background-color: color("blue-grey", "darken-1");
-                            .material-icons {
-                                line-height: 30px;
-                            }
+                    .btn-add-item {
+                        width: 100%;
+
+                        &:hover {
+                            background-color: color("blue-grey", "lighten-4");
                         }
                     }
                     .collapsible {
-                        margin: 0 -0.75rem 1.5rem;
+                        margin: 0.5rem -0.75rem 1.5rem;
                         box-shadow: none;
                         border: none;
                         clear: both;

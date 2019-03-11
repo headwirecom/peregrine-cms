@@ -39,13 +39,14 @@
       :allow-empty="allowEmpty"
       :show-labels="false">
     </multiselect>
+
     <template v-else>
-      <ol v-if="schema.selectOptions.multiple" class="preview-items">
-        <li v-for="item in value" class="preview-item">
+      <ul v-if="schema.selectOptions.multiple" class="collection">
+        <li v-for="item in value" class="collection-item">
           <label>Name:</label> {{item[label]}} <br>
           <label>Value:</label> {{item[trackBy]}}
         </li>
-      </ol>
+      </ul>
       <p v-else class="preview-item">{{value}}</p>
     </template>
   </div>
