@@ -11,9 +11,9 @@
 		</multiselect>
 	</div>
 
-	<div v-else>
-		<div v-for="item in value" class="chip">{{item.name || item}}</div>
-	</div>
+	<ul v-else class="collection">
+		<div v-for="item in value" class="collection-item">{{item.name || item}}</div>
+	</ul>
 
 </template>
 

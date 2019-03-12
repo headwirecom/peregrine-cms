@@ -23,6 +23,7 @@
     "jsdoc": "^3.5.5",
     "jsdoc-vue": "^1.0.0",
     "lodash": "^4.17.11",
+    "luxon": "^1.11.3",
     "marked": "^0.6.0",
     "material-design-icons": "^3.0.1",
     "materialize-css": "^0.100.2",
@@ -42,6 +43,7 @@
     "vue-template-compiler": "^2.5.22",
     "vue-trumbowyg": "^3.4.1",
     "vueisotope": "^3.1.2",
+    "weekstart": "^1.0.0",
     "xml-escape": "^1.1.0"
   },
   "devDependencies": {

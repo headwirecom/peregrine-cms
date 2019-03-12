@@ -39,7 +39,7 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Icon Size",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-default": "25",
           "x-form-min": 0,
           "x-form-max": 150
@@ -111,7 +111,7 @@ public class SocialiconsModel extends AbstractComponent {
 	@Default(values ="#000000")
 	private String iconcolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"25","x-form-min":0,"x-form-max":150} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"materialrange","x-default":"25","x-form-min":0,"x-form-max":150} */
 	@Inject
 	@Default(values ="25")
 	private String iconsize;
@@ -134,7 +134,7 @@ public class SocialiconsModel extends AbstractComponent {
 		return iconcolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"range","x-default":"25","x-form-min":0,"x-form-max":150} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Icon Size","x-form-type":"materialrange","x-default":"25","x-form-min":0,"x-form-max":150} */
 	public String getIconsize() {
 		return iconsize;
 	}

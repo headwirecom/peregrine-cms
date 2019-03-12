@@ -27,6 +27,7 @@
     "fields" : [
       {
         "type": "input",
+        "inputType": "text",
         "label": "Key",
         "model": "singleKey"
       }
@@ -41,25 +42,27 @@
     "fields" : [
       {
         "type": "input",
+        "inputType": "text",
         "label": "Key",
         "model": "key"
       },
       {
         "type": "input",
+        "inputType": "text",
         "label": "Value",
         "model": "value"
       }
     ]
   },
   {    
-    "type": "input",
-    "inputType": "range",
+    "type": "material-range",
     "label": "Range field",
     "model": "rangefield",
     "placeholder": "0 - 100",
     "hint": "This is the materialize range field.",
     "min": 10,
     "max": 100,
+    "value": 50,
     "required": true,
     "validator": "required"
   }, 

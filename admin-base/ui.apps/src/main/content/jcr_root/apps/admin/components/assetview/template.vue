@@ -258,10 +258,11 @@
                 if(!this.schema) return {}
                 const roSchema = JSON.parse(JSON.stringify(this.schema))
                 roSchema.fields.forEach( (field) => {
-                    field.preview = true
+                    field.readonly = true
                     if(field.fields) {
                         field.fields.forEach( (field) => {
                             field.preview = true
+                            field.readonly = true
                         })
                     }
                 })

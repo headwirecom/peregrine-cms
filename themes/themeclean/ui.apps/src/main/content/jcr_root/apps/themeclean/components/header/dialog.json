@@ -22,8 +22,7 @@
       "model": "logourl"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "logosize",
       "label": "Logo Size",
       "model": "logosize",
@@ -41,8 +40,7 @@
       "model": "collapsed"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "elevation",
       "label": "Elevation",
       "model": "elevation",
@@ -271,8 +269,7 @@
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "overlayopacity",
       "label": "Overlay opacity",
       "model": "overlayopacity",
@@ -317,8 +314,7 @@
       "model": "fullheight"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "toppadding",
       "label": "Top Padding",
       "model": "toppadding",
@@ -327,8 +323,7 @@
       "max": 150
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "bottompadding",
       "label": "Bottom Padding",
       "model": "bottompadding",

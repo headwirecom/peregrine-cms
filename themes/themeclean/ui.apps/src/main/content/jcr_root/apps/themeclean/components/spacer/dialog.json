@@ -1,8 +1,7 @@
 {
   "fields": [
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "height",
       "label": "Height",
       "model": "height",
@@ -107,8 +106,7 @@
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "overlayopacity",
       "label": "Overlay opacity",
       "model": "overlayopacity",
