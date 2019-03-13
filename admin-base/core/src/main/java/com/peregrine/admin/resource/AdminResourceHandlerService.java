@@ -1079,13 +1079,16 @@ public class AdminResourceHandlerService
                         newChildProperties.put(childPropertyKey + "", incomingItemProperties.get(childPropertyKey));
                     }
                 } else {
-                    if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME) && "true".equals(incomingItemProperties.get(DELETION_PROPERTY_NAME))) {
-                        try {
-                            logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
-                            resource.getResourceResolver().delete(resourceListItem);
-                            continue;
-                        } catch(PersistenceException e) {
-                            throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
+                    if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)) {
+                        Object value = incomingItemProperties.get(DELETION_PROPERTY_NAME);
+                        if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
+                            try {
+                                logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
+                                resource.getResourceResolver().delete(resourceListItem);
+                                continue;
+                            } catch(PersistenceException e) {
+                                throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
+                            }
                         }
                     }
                     updateResourceTree(resourceListItem, incomingItemProperties);
