@@ -23,7 +23,7 @@
 		methods: {
 			removeOption: function(removedOption, id) {
 				if( "jcr:primaryType"  in removedOption ) {
-					let _deleted = $perAdminApp.getNodeFromView("/state/tools/object/_deleted");
+					let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
 					let copy = JSON.parse(JSON.stringify(removedOption));
 					copy._opDelete = true;
 					if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];

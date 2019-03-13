@@ -109,7 +109,7 @@
     export default {
         props: ['model'],
         updated: function() {
-            let stateTools = $perAdminApp.getNodeFromView("/state/tools/object");
+            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
             stateTools._deleted = {};
         },
         computed: {

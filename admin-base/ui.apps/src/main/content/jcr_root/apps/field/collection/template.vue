@@ -41,7 +41,7 @@
                 <input
                   v-else
                   v-model="value[index]">
-                <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
+                <i class="material-icons delete-icon" v-on:click="onRemoveItem(item, index)">delete</i>
             </div>
             <transition
               v-on:enter="enter"
@@ -155,16 +155,17 @@
         this.$forceUpdate()
       },
       onRemoveItem(item, index){
-        if(!this.schema.multifield){
-          this.value.splice(index, 1)
-        } else {
-          if(index === this.activeItem) this.activeItem = null
-          item._opDelete = true
-          let modelItem = this.value[index]
-          modelItem._opDelete = true
-          this.$set(this.value, index, modelItem)
+        this.value.splice(index, 1)
+        if( "jcr:primaryType"  in item ) {
+          let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+          let copy = JSON.parse(JSON.stringify(item));
+          copy._opDelete = true;
+          if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];
+          _deleted[this.schema.model].push(copy)
         }
-        this.$forceUpdate()
+        if(index === this.activeItem) this.activeItem = null
+
+        // this.$forceUpdate()
       },
       onSetActiveItem(index){
         if(!this.schema.multifield) return
