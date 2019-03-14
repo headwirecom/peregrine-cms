@@ -48,7 +48,7 @@
             <vue-form-generator :model="formmodel"
                                 :schema="objectSchema"
                                 :options="formOptions"
-                                ref="nameTab">
+                                ref="verifyTab">
 
             </vue-form-generator>
         </tab-content>
