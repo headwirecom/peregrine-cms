@@ -34,15 +34,15 @@
             v-on:dragover  = "onDragOver"
             v-on:drop.prevent = "onDrop">
             <div class="editview-container" ref="editviewContainer">
-                <div 
+                <div
                     v-bind:class   = "editableClass"
-                    ref            = "editable" 
+                    ref            = "editable"
                     id             = "editable"
-                    :draggable     = "selectedComponentDragable"
+                    :draggable     = "enableEditableFeatures"
                     v-on:dragstart = "onDragStart"
                     v-on:touchstart = "onEditableTouchStart"
                     v-on:touchend  = "onEditableTouchEnd">
-                    <div v-if="enableTools" class="editable-actions">
+                    <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
                                 <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
@@ -80,8 +80,6 @@ export default {
             /* is this a touch device */
             this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
             this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-            console.log('isTouch? ', this.isTouch)
-            console.log('isIOS? ', this.isIOS)
             if(this.isTouch){
                 /* selected components are not immediatly draggable on touch devices */
                 this.selectedComponentDragable = false
@@ -139,7 +137,7 @@ export default {
         viewModeClass: function() {
             return this.viewMode
         },
-        enableTools: function() {
+        enableEditableFeatures: function() {
             var targetEl = this.selectedComponent
             if(targetEl == null || targetEl === undefined) return false
             const path = targetEl.getAttribute('data-per-path')
@@ -252,7 +250,6 @@ export default {
                 /* ios device, use scroll alternative */
                 this.$nextTick(function() {
                     editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
-                    //editview.contentWindow.document.body.style.top = `-${this.scrollTop}px` 
                 })
             } else {
                 /* is not IOS device, scroll normally */
@@ -442,23 +439,37 @@ export default {
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
             var targetEl = this.getTargetEl(ev)
+            var targetPath = targetEl.getAttribute('data-per-path');
             var componentPath = ev.dataTransfer.getData('text')
             if(typeof targetEl === 'undefined' || targetEl === null){
                 return false
             }
-            if(targetEl.getAttribute('data-per-path') === componentPath) {
+            if(targetPath === componentPath) {
                 ev.dataTransfer.clearData('text')
-                return false 
+                return false
             }
+
             var view = $perAdminApp.getView()
-            var payload = { 
-                pagePath : view.pageView.path, 
-                path: targetEl.getAttribute('data-per-path'), 
-                component: componentPath, 
-                drop: this.dropPosition 
+            var payload = {
+                pagePath : view.pageView.path,
+                path: targetEl.getAttribute('data-per-path'),
+                component: componentPath,
+                drop: this.dropPosition
             }
             var addOrMove
-            componentPath.includes('/components/') ? addOrMove = 'addComponentToPath' : addOrMove = 'moveComponentToPath'
+            if(componentPath.includes('/components/')) {
+                addOrMove = 'addComponentToPath';
+            } else {
+                addOrMove = 'moveComponentToPath';
+                var targetNode = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetPath)
+                if((!targetNode) || (targetNode.fromTemplate)) {
+                    $perAdminApp.notifyUser('template component', 'You cannot drag a component into a template section', {
+                        complete: this.removeEditOverlay
+                    })
+                    return false;
+                }
+            }
+
             $perAdminApp.stateAction(addOrMove, payload)
             ev.dataTransfer.clearData('text')
         },
