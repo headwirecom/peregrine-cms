@@ -809,6 +809,12 @@ public class AdminResourceHandlerService
     }
 
     private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName) {
+        // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
+        // while child assets will use the name from the source; otherwise every asset has the same name
+        copyChildResources(source, deep, target, fromName, toName, 0);
+    }
+
+    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName, int depth) {
         logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
         for(Resource child: source.getChildren()) {
             logger.trace("Child handling started: '{}'", child.getPath());
@@ -843,11 +849,14 @@ public class AdminResourceHandlerService
                     }
                 }
                 Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
+                if(depth > 0) {
+                    toName = (String) newProperties.get(JCR_TITLE);
+                }
                 updateTitle(childTarget, toName);
                 logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
                 // Copy grandchildren
                 if(deep) {
-                    copyChildResources(child, true, childTarget, fromName, toName);
+                    copyChildResources(child, true, childTarget, fromName, toName, depth + 1);
                 }
             } catch(PersistenceException e) {
                 logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
