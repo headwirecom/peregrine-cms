@@ -156,16 +156,16 @@
       },
       onRemoveItem(item, index){
         this.value.splice(index, 1)
-        if( "jcr:primaryType"  in item ) {
-          let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
-          let copy = JSON.parse(JSON.stringify(item));
-          copy._opDelete = true;
-          if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];
-          _deleted[this.schema.model].push(copy)
+        if( this.schema.multifield ) {
+          if( "path"  in item ) {
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let copy = JSON.parse(JSON.stringify(item));
+            copy._opDelete = true;
+            if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];
+            _deleted[this.schema.model].push(copy)
+          }
+          this.activeItem = null
         }
-        if(index === this.activeItem) this.activeItem = null
-
-        // this.$forceUpdate()
       },
       onSetActiveItem(index){
         if(!this.schema.multifield) return
