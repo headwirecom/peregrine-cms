@@ -41,8 +41,8 @@
                             <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name, title: item.name }"></admin-components-action>
                         </li>
                     </ul>
-                    <div v-if="!formmodel.templatePath" class="errors">
-                        <span track-by="index">selection required</span>
+                    <div v-if="formErrors.unselectedThemeError" class="errors">
+                        <span track-by="index">Selection required</span>
                     </div>
                 </div>
             </fieldset>
@@ -73,6 +73,9 @@
         data:
             function() {
                 return {
+                    formErrors: {
+                        unselectedThemeError: false
+                    },
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
@@ -124,8 +127,9 @@
         ,
         methods: {
             selectTheme: function(me, target){
-                if(me === null) me = this
-                me.formmodel.templatePath = target
+                if(me === null) me = this;
+                me.formmodel.templatePath = target;
+                this.validateTabOne();
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
@@ -133,12 +137,17 @@
             onComplete: function() {
                 $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name })
             },
+            validateTabOne: function() {
+                this.formErrors.unselectedThemeError = ('' === ''+this.formmodel.templatePath);
+
+                return !this.formErrors.unselectedThemeError;
+            },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
 //                    $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
                 }
 
-                return ! ('' === ''+this.formmodel.templatePath)
+                return this.validateTabOne();
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
