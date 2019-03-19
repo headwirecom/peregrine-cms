@@ -41,7 +41,7 @@
                             <admin-components-action v-bind:model="{ command: 'selectComponent', target: component.path, title: component.name }"></admin-components-action>
                         </li>
                     </ul>
-                    <div v-if="!formmodel.component" class="errors">
+                    <div v-if="formErrors.unselectedComponentError" class="errors">
                         <span track-by="index">selection required</span>
                     </div>
                 </div>
@@ -70,6 +70,9 @@
                 const path = $perAdminApp.getNodeFromView('/state/tools/templates')
                 const siteName = path.split('/')[3]
                 return {
+                    formErrors: {
+                        unselectedComponentError: false
+                    },
                     formmodel: {
                         path: path,
                         name: '',
@@ -111,7 +114,8 @@
         methods: {
             selectComponent: function(me, target){
                 if(me === null) me = this
-                me.formmodel.component = target
+                me.formmodel.component = target;
+                this.validateTabOne();
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
@@ -135,8 +139,17 @@
                 const component = this.formmodel.component.substring(this.formmodel.component.indexOf('/',1)+1)
                 $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component })
             },
-            leaveTabOne: function() {
+            validateTabOne: function() {
+                this.formErrors.unselectedComponentError = (!this.formmodel.component);
+
+
                 return !(!this.formmodel.component)
+
+
+                return !this.formErrors.unselectedComponentError;
+            },
+            leaveTabOne: function() {
+                return this.validateTabOne();
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
