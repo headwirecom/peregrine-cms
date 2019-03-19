@@ -142,10 +142,6 @@
             validateTabOne: function() {
                 this.formErrors.unselectedComponentError = (!this.formmodel.component);
 
-
-                return !(!this.formmodel.component)
-
-
                 return !this.formErrors.unselectedComponentError;
             },
             leaveTabOne: function() {
