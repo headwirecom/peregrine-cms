@@ -98,6 +98,10 @@
                 }
 
         },
+        created: function() {
+            //By default select the first item in the list;
+            this.selectComponent(this, this.components[0].path);
+        },
         computed: {
             components: function() {
                 const templates = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
@@ -115,7 +119,8 @@
             selectComponent: function(me, target){
                 if(me === null) me = this
                 me.formmodel.component = target;
-                this.validateTabOne();
+
+                this.validateTabOne(me);
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
@@ -139,13 +144,13 @@
                 const component = this.formmodel.component.substring(this.formmodel.component.indexOf('/',1)+1)
                 $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component })
             },
-            validateTabOne: function() {
-                this.formErrors.unselectedComponentError = (!this.formmodel.component);
+            validateTabOne: function(me) {
+                me.formErrors.unselectedComponentError = (!me.formmodel.component);
 
-                return !this.formErrors.unselectedComponentError;
+                return !me.formErrors.unselectedComponentError;
             },
             leaveTabOne: function() {
-                return this.validateTabOne();
+                return this.validateTabOne(this);
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()

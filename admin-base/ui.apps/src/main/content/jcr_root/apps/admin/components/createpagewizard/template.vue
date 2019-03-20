@@ -104,6 +104,10 @@
 
         }
         ,
+        created: function() {
+            //By default select the first item in the list;
+            this.selectTemplate(this, this.templates[0].path);
+        },
         computed: {
             pageSchema: function() {
                 if(this.formmodel.templatePath !== '') {
@@ -129,7 +133,7 @@
             selectTemplate: function(me, target){
                 if(me === null) me = this
                 me.formmodel.templatePath = target
-                this.validateTabOne();
+                this.validateTabOne(me);
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
@@ -137,17 +141,17 @@
             onComplete: function() {
                 $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
             },
-            validateTabOne: function() {
-                this.formErrors.unselectedTemplateError = ('' === ''+this.formmodel.templatePath);
+            validateTabOne: function(me) {
+                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath);
 
-                return !this.formErrors.unselectedTemplateError;
+                return !me.formErrors.unselectedTemplateError;
             },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
                     $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
                 }
 
-                return this.validateTabOne();
+                return this.validateTabOne(this);
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {

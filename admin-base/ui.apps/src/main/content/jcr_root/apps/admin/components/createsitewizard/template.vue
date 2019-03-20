@@ -102,8 +102,11 @@
                     }
                 }
 
-        }
-        ,
+        },
+        created: function() {
+            //By default select the first item in the list;
+            this.selectTheme(this, this.themes[0].name);
+        },
         computed: {
             pageSchema: function() {
 //                console.log('getting schema')
@@ -123,13 +126,12 @@
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 return themes.filter( (item) => item.name.startsWith('theme'))
             }
-        }
-        ,
+        },
         methods: {
             selectTheme: function(me, target){
                 if(me === null) me = this;
                 me.formmodel.templatePath = target;
-                this.validateTabOne();
+                this.validateTabOne(me);
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
@@ -137,17 +139,17 @@
             onComplete: function() {
                 $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name })
             },
-            validateTabOne: function() {
-                this.formErrors.unselectedThemeError = ('' === ''+this.formmodel.templatePath);
+            validateTabOne: function(me) {
+                me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);
 
-                return !this.formErrors.unselectedThemeError;
+                return !me.formErrors.unselectedThemeError;
             },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
 //                    $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
                 }
 
-                return this.validateTabOne();
+                return this.validateTabOne(this);
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
