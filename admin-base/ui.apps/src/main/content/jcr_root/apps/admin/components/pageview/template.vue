@@ -146,6 +146,7 @@
         },
         data: function() {
             return {
+                valid: true,
                 options: {
                     validateAfterLoad: true,
                     validateAfterChanged: true,

@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -41,14 +41,14 @@
                             <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
                         </li>
                     </ul>
-                    <div v-if="!formmodel.templatePath" class="errors">
+                    <div v-if="formErrors.unselectedTemplateError" class="errors">
                         <span track-by="index">selection required</span>
                     </div>
                 </div>
             </fieldset>
         </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
-            <vue-form-generator 
+            <vue-form-generator
               :model   ="formmodel"
               :schema  ="nameSchema"
               :options ="formOptions"
@@ -73,6 +73,9 @@
         data:
             function() {
                 return {
+                    formErrors: {
+                        unselectedTemplateError: false
+                    },
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
@@ -101,6 +104,10 @@
 
         }
         ,
+        created: function() {
+            //By default select the first item in the list;
+            this.selectTemplate(this, this.templates[0].path);
+        },
         computed: {
             pageSchema: function() {
                 if(this.formmodel.templatePath !== '') {
@@ -126,6 +133,7 @@
             selectTemplate: function(me, target){
                 if(me === null) me = this
                 me.formmodel.templatePath = target
+                this.validateTabOne(me);
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
@@ -133,12 +141,17 @@
             onComplete: function() {
                 $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
             },
+            validateTabOne: function(me) {
+                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath);
+
+                return !me.formErrors.unselectedTemplateError;
+            },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
                     $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
                 }
 
-                return ! ('' === ''+this.formmodel.templatePath)
+                return this.validateTabOne(this);
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
