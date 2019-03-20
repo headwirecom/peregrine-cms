@@ -96,12 +96,13 @@
       },
       methods: {
         onOk(e) {
-            let data = this.dataModel;
+            let data = JSON.parse(JSON.stringify(this.dataModel));
             let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
 
-            //Find child nodes with subchildren for our edited object
+            //Merge _deleted child items back into the object that we need to save.
+            //Loop through the model for this object/page/asset and find objects that have children
             for ( const key in data) {
-                //If node (or deleted node) is an array of objects then we have a child node
+                //If data[key] or deleted[key] is an array of objects
                 if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
                     ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
 
@@ -125,7 +126,7 @@
 
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('savePageEdit', { data: view.pageView.path, path: view.state.editor.path } )
+            $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } )
         },
         onCancel(e) {
             var view = $perAdminApp.getView()
