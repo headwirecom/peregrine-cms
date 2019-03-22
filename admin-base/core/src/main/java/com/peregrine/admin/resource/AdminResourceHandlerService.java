@@ -849,10 +849,8 @@ public class AdminResourceHandlerService
                     }
                 }
                 Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
-                if(depth > 0) {
-                    toName = (String) newProperties.get(JCR_TITLE);
-                }
-                updateTitle(childTarget, toName);
+                updateTitle(childTarget, (((depth > 0) && (newProperties.get(JCR_TITLE) != null)) ?  (String) newProperties.get(JCR_TITLE) : toName));
+
                 logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
                 // Copy grandchildren
                 if(deep) {
