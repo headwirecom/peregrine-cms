@@ -24,9 +24,10 @@
   -->
 <template>
   <div class="wrap">
-    <multiselect 
+    <vue-multiselect 
       v-if="!schema.preview"
       v-model="modelFromValue" 
+      :multiple="false"
       :track-by="trackBy"
       :label="label"
       :deselectLabel="deselectLabel"
@@ -38,17 +39,9 @@
       :placeholder="placeholder"
       :allow-empty="allowEmpty"
       :show-labels="false">
-    </multiselect>
+    </vue-multiselect>
 
-    <template v-else>
-      <ul v-if="schema.selectOptions.multiple" class="collection">
-        <li v-for="item in value" class="collection-item">
-          <label>Name:</label> {{item[label]}} <br>
-          <label>Value:</label> {{item[trackBy]}}
-        </li>
-      </ul>
-      <p v-else class="preview-item">{{value}}</p>
-    </template>
+    <p v-else class="preview-item">{{value}}</p>
   </div>
 </template>
 

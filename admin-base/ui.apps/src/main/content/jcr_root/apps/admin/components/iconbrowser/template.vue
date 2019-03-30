@@ -29,7 +29,7 @@
         <div class="pathbrowser iconbrowser modal-container" v-on:click.stop.prevent="onPrevent">
             <header class="iconbrowser-header">
                 <div class="iconbrowser-options">  
-                    <multiselect 
+                    <vue-multiselect 
                         v-model="selectedFamily"
                         deselect-label=""
                         track-by="name"
@@ -38,7 +38,7 @@
                         :options="iconFamilies"
                         :searchable="true"
                         :allow-empty="false">
-                    </multiselect>                              
+                    </vue-multiselect>                              
                 </div>
                 <div class="iconbrowser-filter">
                     <input placeholder="search by icon name"  type="search" v-model="search">

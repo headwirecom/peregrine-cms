@@ -32,8 +32,7 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    let nodeToSave = me.findNodeFromPath(view.pageView.page, target.path)
-    me.getApi().savePageEdit(view.pageView.path, nodeToSave).then( () => {
+    me.getApi().savePageEdit(view.pageView.path, target.data).then( () => {
         delete view.state.editor;
         set(view, '/state/editorVisible', false)
         if(view.pageView.page.serverSide) {
