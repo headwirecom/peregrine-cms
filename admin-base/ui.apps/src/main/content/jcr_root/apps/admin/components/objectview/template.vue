@@ -108,6 +108,10 @@
 <script>
     export default {
         props: ['model'],
+        updated: function() {
+            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
+            stateTools._deleted = {};
+        },
         computed: {
             readOnlySchema() {
                 if(!this.schema) return {}
@@ -126,7 +130,8 @@
 
             },
           currentObject: function () {
-            return $perAdminApp.getNodeFromView("/state/tools/object")
+            let data = $perAdminApp.getNodeFromView("/state/tools/object");
+            return data;
           }, 
           schema: function () {
             if(!this.currentObject || !this.currentObject.data) return
@@ -168,9 +173,35 @@
               Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
           },
           onOk: function() {
-              // should store the current node
-              $perAdminApp.stateAction('saveObjectEdit', { data: this.currentObject.data, path: this.currentObject.show })
-              $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
+            let {data,show} = this.currentObject;
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+
+            //Find child nodes with subchildren for our edited object
+            for ( const key in data) {
+                //If node (or deleted node) is an array of objects then we have a child node
+                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
+                    ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+
+                    let node = data[key];
+
+                    //loop through children
+                    let targetNode = {}
+                    //Insert deleted children
+                    for ( const j in _deleted[key]) {
+                        const deleted = _deleted[key][j]
+                        targetNode[deleted.name] = deleted;
+                    }
+                    //Insert children
+                    for ( const i in node ) {
+                        const child = node[i]
+                        targetNode[child.name] = child;
+                    }
+                    data[key] = targetNode;
+                }
+            }
+
+                $perAdminApp.stateAction('saveObjectEdit', { data: data, path: show })
+                $perAdminApp.stateAction('selectObject', { selected: show })
           },
           onCancel: function() {
             $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
