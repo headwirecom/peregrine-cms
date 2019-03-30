@@ -211,6 +211,7 @@
             }
         }
         this.value.splice(new_index, 0, this.value.splice(old_index, 1)[0]);
+        this.$forceUpdate();
       },
       // animations with Velocity.js
       enter: function (el, done) {
