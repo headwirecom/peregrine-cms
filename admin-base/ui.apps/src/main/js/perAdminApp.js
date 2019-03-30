@@ -617,6 +617,15 @@ function loadi18nImpl() {
 }
 
 /**
+ * helper function to call the backend every minute to keep the session alive
+ */
+function sessionKeepAlive() {
+    setInterval(function() {
+        api.populateUser();
+    },1000 * 60);
+}
+
+/**
  * @exports PerAdminApp
  * @namespace PerAdminApp
  *
@@ -634,6 +643,7 @@ var PerAdminApp = {
     init(perAdminAppView) {
         view = perAdminAppView
         api = new PeregrineApi(new PerAdminImpl(PerAdminApp))
+        sessionKeepAlive();
     },
 
     /**
