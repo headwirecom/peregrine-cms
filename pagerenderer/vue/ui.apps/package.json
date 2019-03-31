@@ -1,7 +1,12 @@
 {
   "name": "pcms-pagerender-vue",
   "version": "1.0.0",
-  "description": "",
+  "description": "base render infrastructure for vue based sites",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/headwirecom/peregrine-cms.git",
+    "directory": "pagerenderer/vue/ui.apps"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
