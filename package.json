@@ -1,14 +1,14 @@
 {
   "name": "pcms",
   "version": "1.0.0",
-  "description": "",
+  "description": "parent package.json for peregrine-cms, used for building documentation",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node ./node_modules/rollup/bin/rollup -c && node ./buildscripts/buildvue.js admin && node src/main/buildjs/mdtopage.js",
     "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json"
   },
-  "author": "",
+  "author": "headwire.com, Inc",
   "license": "Apache-2.0",
   "dependencies": {
     "camelcase": "^5.0.0",
