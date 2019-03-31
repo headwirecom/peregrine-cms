@@ -175,19 +175,17 @@
     ]
   },
   {
-    "type": "material-select",
+    "type": "material-multiselect",
     "label": "Multiselect",
     "placeholder": "Select a language",
     "model": "author",
     "selectOptions": {
-      "multiple": true,
       "trackBy": "name",
       "label": "name",
-      "searchable": false,
-      "clearOnSelect": false,
+      "searchable": true,
       "closeOnSelect": false,
       "taggable": true,
-      "deselectLabel": "×",
+      "deselectLabel": "x",
       "placeholder":"Select author"
     },
     "values": [

@@ -38,11 +38,10 @@
               v-on:click.stop.prevent="onSetActiveItem(index)">
                 <i class="material-icons">drag_handle</i>
                 <span v-if="schema.multifield">{{itemName(item, index)}}</span> 
-                <vue-form-generator
+                <input
                   v-else
-                  :schema="getSchemaForIndex(schema, index)"
-                  :model="value"></vue-form-generator>
-                <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
+                  v-model="value[index]">
+                <i class="material-icons delete-icon" v-on:click="onRemoveItem(item, index)">delete</i>
             </div>
             <transition
               v-on:enter="enter"
@@ -156,16 +155,17 @@
         this.$forceUpdate()
       },
       onRemoveItem(item, index){
-        if(!this.schema.multifield){
-          this.value.splice(index, 1)
-        } else {
-          if(index === this.activeItem) this.activeItem = null
-          item._opDelete = true
-          let modelItem = this.value[index]
-          modelItem._opDelete = true
-          this.$set(this.value, index, modelItem)
+        this.value.splice(index, 1)
+        if( this.schema.multifield ) {
+          if( "path"  in item ) {
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let copy = JSON.parse(JSON.stringify(item));
+            copy._opDelete = true;
+            if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];
+            _deleted[this.schema.model].push(copy)
+          }
+          this.activeItem = null
         }
-        this.$forceUpdate()
       },
       onSetActiveItem(index){
         if(!this.schema.multifield) return
@@ -211,6 +211,7 @@
             }
         }
         this.value.splice(new_index, 0, this.value.splice(old_index, 1)[0]);
+        this.$forceUpdate();
       },
       // animations with Velocity.js
       enter: function (el, done) {
