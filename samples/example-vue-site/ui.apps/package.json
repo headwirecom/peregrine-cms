@@ -1,14 +1,19 @@
 {
-  "name": "modeltest",
+  "name": "exampleVueSite",
   "version": "1.0.0",
-  "description": "",
+  "description": "an example vue site built with peregrine cms",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/headwirecom/peregrine-cms.git",
+    "directory": "samples/example-vue-site/ui.apps"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node ../../../buildscripts/buildvue.js examplesite"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "fs-extra": "^7.0.1",
     "rollup": "^1.1.2",

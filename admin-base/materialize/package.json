@@ -1,7 +1,12 @@
 {
   "name": "materialize",
   "version": "1.0.0",
-  "description": "",
+  "description": "customized materialize build for peregrine cms admin console",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/headwirecom/peregrine-cms.git",
+    "directory": "admin-base/materialize"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
