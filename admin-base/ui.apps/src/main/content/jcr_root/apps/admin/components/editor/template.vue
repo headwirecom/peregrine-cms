@@ -24,7 +24,7 @@
   -->
 <template>
     <div class="editor-panel" ref="editorPanel">
-        <div class="editor-panel-content">
+        <div class="editor-panel-content" v-if="schema !== undefined && dataModel !== undefined">
             <span class="panel-title">Editor</span>
             <span v-if="title"> - {{title}}</span>
             <div v-if="!hasSchema">this component does not have a dialog defined</div>
