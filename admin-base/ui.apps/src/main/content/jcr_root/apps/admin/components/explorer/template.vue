@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -45,19 +45,20 @@
                         }"><i class="material-icons">folder</i> ..
                     </admin-components-action>
                 </li>
-                <li 
-                    v-for ="(child,i) in children" 
+                <li
+                    v-for ="(child,i) in children"
                     v-bind:key="i"
-                    v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"                    
-                    draggable ="true" 
+                    v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
+                    draggable ="true"
                     v-on:dragstart ="onDragRowStart(child,$event)"
                     v-on:drag      ="onDragRow"
                     v-on:dragend   ="onDragRowEnd(child,$event)"
                     v-on:dragenter.stop.prevent ="onDragEnterRow"
                     v-on:dragover.stop.prevent  ="onDragOverRow"
-                    v-on:dragleave.stop.prevent ="onDragLeaveRow" 
+                    v-on:dragleave.stop.prevent ="onDragLeaveRow"
                     v-on:drop.prevent      ="onDropRow(child, $event)"
                     v-on:click.stop.prevent="selectItem(child)">
+                    <admin-components-draghandle/>
                     <admin-components-action
                         v-bind:model="{
                             target: child,
@@ -70,8 +71,8 @@
 
                     <div class="secondary-content">
                         <admin-components-action v-if="editable(child)"
-                            v-bind:model="{ 
-                                target: child.path, 
+                            v-bind:model="{
+                                target: child.path,
                                 command: 'editPage',
                                 tooltipTitle: `edit '${child.title || child.name}'`
                             }">
@@ -97,7 +98,7 @@
                         </admin-components-action>
 
                         <span v-if="viewable(child)">
-                            <a 
+                            <a
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
@@ -144,8 +145,8 @@
             </div>
             <div class="progress-text">{{uploadProgress}}%</div>
             <div class="file-upload-action">
-                <button 
-                    type="button" 
+                <button
+                    type="button"
                     class="btn"
                     v-on:click="onDoneFileUpload">ok</button>
             </div>
@@ -252,13 +253,14 @@
             },
             /* row drag events */
             onDragRowStart(item, ev){
+                ev.srcElement.classList.add("dragging");
                 ev.dataTransfer.setData('text', item.path)
                 if(this.isDraggingFile){ this.isDraggingFile = false }
                 this.isDraggingUiEl = true
             },
 
             onDragRow(ev){
-
+                ev.srcElement.classList.remove("dragging");
             },
 
             onDragRowEnd(item, ev){
@@ -312,7 +314,7 @@
                     $perAdminApp.stateAction(action, {
                         path: ev.dataTransfer.getData("text"),
                         to: item.path,
-                        type: this.dropType 
+                        type: this.dropType
                     })
                 }
             },
@@ -331,7 +333,7 @@
 
             onDragLeaveExplorer(ev){
                 /* hide upload overlay */
-                /* TODO: fix upload unexpectedly closing 
+                /* TODO: fix upload unexpectedly closing
                 if(this.isDraggingFile){
                     this.isDraggingFile = false
                 }
@@ -350,23 +352,23 @@
 
             /* file upload */
             uploadFile(files) {
-              $perAdminApp.stateAction('uploadFiles', { 
-                path: $perAdminApp.getView().state.tools.assets, 
+              $perAdminApp.stateAction('uploadFiles', {
+                path: $perAdminApp.getView().state.tools.assets,
                 files: files,
                 cb: this.setUploadProgress
-              })    
+              })
             },
 
             setUploadProgress(percentCompleted){
-              this.uploadProgress = percentCompleted 
+              this.uploadProgress = percentCompleted
             },
-            
+
             onDoneFileUpload(){
                 this.isFileUploadVisible = false
                 this.uploadProgress = 0
             },
 
-            
+
             isSelected: function(child) {
                 if(this.model.selectionFrom && child) {
                     return $perAdminApp.getNodeFromViewOrNull(this.model.selectionFrom) === child.path
