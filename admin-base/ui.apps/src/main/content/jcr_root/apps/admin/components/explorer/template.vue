@@ -42,7 +42,7 @@
                             target: null,
                             command: 'selectParent',
                             tooltipTitle: $i18n('select parent')
-                        }"><i class="material-icons">folder</i> ..
+                        }"><i class="material-icons">folder_open</i> ..
                     </admin-components-action>
                 </li>
                 <li
@@ -56,10 +56,29 @@
                     v-on:dragenter.stop.prevent ="onDragEnterRow"
                     v-on:dragover.stop.prevent  ="onDragOverRow"
                     v-on:dragleave.stop.prevent ="onDragLeaveRow"
-                    v-on:drop.prevent      ="onDropRow(child, $event)"
-                    v-on:click.stop.prevent="selectItem(child)">
+                    v-on:drop.prevent      ="onDropRow(child, $event)">
+
                     <admin-components-draghandle/>
-                    <admin-components-action
+
+                    <admin-components-action v-if="editable(child)"
+                                             v-bind:model="{
+                                target: child,
+                                command: 'selectPath',
+                                tooltipTitle: `select '${child.title || child.name}'`
+                            }">
+                        <span v-if="hasChildren(child)" v-bind:data-count="child.childCount" class="numChildren">
+                        </span><i class="material-icons">folder</i>
+                    </admin-components-action>
+
+                    <admin-components-action v-if="editable(child)"
+                        v-bind:model="{
+                            target: child.path,
+                            command: 'editPage',
+                            tooltipTitle: `edit '${child.title || child.name}'`
+                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
+                    </admin-components-action>
+
+                    <admin-components-action v-if="!editable(child)"
                         v-bind:model="{
                             target: child,
                             command: 'selectPath',
@@ -287,7 +306,6 @@
             },
 
             onDropRow(item, ev, type) {
-                console.log('this.isSites: ', this.isSites)
                 if(this.isDraggingUiEl){
                     ev.target.classList.remove('drop-after','drop-before')
                     /* reorder row logic */
@@ -377,6 +395,9 @@
                 }
                 return false
 
+            },
+            hasChildren: function(child) {
+                return child && child.childCount && child.childCount > 0;
             },
             editable: function(child) {
                 return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0

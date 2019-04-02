@@ -35,6 +35,22 @@
 								cursor: grabbing;
 							}
 						}
+						> span > a > span.numChildren:after {
+							position: absolute;
+							top: 14%;
+							left: 5%;
+							content: attr(data-count);
+							font-size: xx-small;
+							color: white;
+							padding: 0.6em;
+							border-radius: 50%;
+							line-height: 0.75em;
+							background: color("blue-grey","lighten-1");
+							text-align: center;
+							min-width: 2em;
+							font-weight: bold;
+							opacity: 0.8;
+						}
 						> span > a {
 							color: color("blue-grey", "darken-2");
 							&:hover,
@@ -73,10 +89,10 @@
 					    background-color: color("blue-grey", "lighten-5");
 						}
 						&.drop-after {
-							border-bottom: 1px solid color("orange", "lighten-3") !important;
+							border-bottom: 1px solid color("orange", "lighten-2") !important;
 						}
 						&.drop-before {
-							border-top: 1px solid color("orange", "lighten-3") !important;
+							border-top: 1px solid color("orange", "lighten-2") !important;
 							margin-top: -1px;
 						}
 						.secondary-content {

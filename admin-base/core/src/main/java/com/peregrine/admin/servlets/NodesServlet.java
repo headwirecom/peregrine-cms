@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -39,6 +40,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Locale;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
@@ -112,7 +114,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Resource res = rs.getResource(path);
         json.writeAttribute(NAME,res.getName());
         json.writeAttribute(PATH,res.getPath());
-        writeProperties(res, json);
+        writeProperties(res, json, false);
         json.writeArray(CHILDREN);
         Iterable<Resource> children = res.getChildren();
         for(Resource child : children) {
@@ -125,7 +127,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeObject();
                     json.writeAttribute(NAME,child.getName());
                     json.writeAttribute(PATH,child.getPath());
-                    writeProperties(child, json);
+                    writeProperties(child, json, true);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                         String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
                         json.writeAttribute(MIME_TYPE, mimeType);
@@ -156,7 +158,7 @@ public class NodesServlet extends AbstractBaseServlet {
         json.writeClose();
     }
 
-    private void writeProperties(Resource resource, JsonResponse json) throws IOException {
+    private void writeProperties(Resource resource, JsonResponse json, boolean withChildCount) throws IOException {
         ValueMap properties = resource.getValueMap();
         writeIfFound(json, JCR_PRIMARY_TYPE, properties, RESOURCE_TYPE);
         writeIfFound(json, JCR_CREATED, properties);
@@ -165,6 +167,12 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
         writeIfFound(json, ALLOWED_OBJECTS, properties);
+
+        // Counting children is not a fast operation so we'll only do that on leaf nodes, which is
+        // the only place we care about them
+        if(withChildCount) {
+            json.writeAttribute(CHILD_COUNT, getChildCount(resource));
+        }
 
         // For the Replication data we need to obtain the content properties. If not found
         // then we try with the resoure's properties for non jcr:content nodes
@@ -180,6 +188,17 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             json.writeAttribute(REPLICATION_STATUS, status);
         }
+    }
+
+    private int getChildCount(Resource resource) {
+        // Only way to get the child count it to count them directly
+        int numChildren = 0;
+        for(Resource child : resource.getChildren()) {
+            if(!JCR_CONTENT.equals(child.getName())) {
+                numChildren++;
+            }
+        }
+        return numChildren;
     }
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
