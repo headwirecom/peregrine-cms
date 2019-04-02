@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,36 +29,31 @@
           v-bind:model = "getChildByPath('contentview')">
         </component>
 
-        <admin-components-action v-if="!state.rightPanelVisible" v-bind:model="{
-            classes: 'show-right-panel',
-            target: 'rightPanelVisible',
-            command: 'showHide',
-            tooltipTitle: 'show components panel'
-            }"><i class="material-icons">keyboard_arrow_left</i>
+        <admin-components-action
+                v-if="true || !state.rightPanelVisible"
+                v-bind:class="state.rightPanelVisible ? 'hide-right-panel' : 'show-right-panel'"
+                v-bind:model="{
+                classes: '',
+                target: 'rightPanelVisible',
+                command: 'showHide',
+                tooltipTitle: 'show components panel'
+            }"><i class="material-icons">{{state.rightPanelVisible ? 'keyboard_arrow_right' : 'keyboard_arrow_left'}}</i>
         </admin-components-action>
 
         <aside v-bind:class="`right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
-            <admin-components-action v-if="!state.editorVisible" v-bind:model="{
-                classes: 'hide-right-panel',
-                target: 'rightPanelVisible',
-                command: 'showHide',
-                tooltipTitle: 'hide components panel'
-            }">
-                <i class="material-icons">highlight_off</i>
-            </admin-components-action>
-            
-            <button 
+
+            <button
               v-if="state.editorVisible && isFullscreen"
-              type="button" 
-              class="toggle-fullscreen" 
+              type="button"
+              class="toggle-fullscreen"
               title="exit fullscreen"
               v-on:click.prevent="onEditorExitFullscreen">
               <i class="material-icons">fullscreen_exit</i>
             </button>
-            <button 
+            <button
               v-if="state.editorVisible && !isFullscreen"
-              type="button" 
-              class="toggle-fullscreen" 
+              type="button"
+              class="toggle-fullscreen"
               title="enter fullscreen"
               v-on:click.prevent="onEditorFullscreen">
               <i class="material-icons">fullscreen</i>

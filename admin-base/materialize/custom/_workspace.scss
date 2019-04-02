@@ -192,6 +192,21 @@
 			font-size: 40px;
 		}
 	}
+	.hide-right-panel {
+		background-color: color("blue-grey", "lighten-5");
+		width: 2rem;
+		height: 40px;
+		position: absolute;
+		z-index: 1;
+		right: 300px;
+		top: 1rem;
+		border: 1px solid color("blue-grey", "lighten-4");
+		.material-icons {
+			position: relative;
+			font-size: 40px;
+			left: -.25rem;
+		}
+	}
 	.right-panel {
 		vertical-align: top;
 		display: inline-block;
@@ -206,17 +221,7 @@
 		z-index: 0;
 		background-color: color("blue-grey", "lighten-5");
 		border-left: 1px solid color("blue-grey", "lighten-4");
-		.hide-right-panel {
-			position: absolute;
-			right: 1rem;
-			top: 1rem;
-			opacity: 0;
-			transition: opacity .1s ease-in-out;
-			.material-icons {
-				font-size: 30px;
-				color: color("blue-grey", "lighten-1");
-			}
-		}
+
 		.toggle-fullscreen {
 			position: absolute;
 			right: 1rem;
