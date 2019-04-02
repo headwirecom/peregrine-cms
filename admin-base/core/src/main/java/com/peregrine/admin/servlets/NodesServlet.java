@@ -127,7 +127,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeObject();
                     json.writeAttribute(NAME,child.getName());
                     json.writeAttribute(PATH,child.getPath());
-                    writeProperties(child, json, true);
+                    writeProperties(child, json, false);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                         String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
                         json.writeAttribute(MIME_TYPE, mimeType);
