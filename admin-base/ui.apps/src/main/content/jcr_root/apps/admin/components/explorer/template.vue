@@ -74,6 +74,8 @@
                         v-bind:model="{
                             target: child.path,
                             command: 'editPage',
+                            dblClickTarget: child,
+                            dblClickCommand: 'selectPath',
                             tooltipTitle: `edit '${child.title || child.name}'`
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
