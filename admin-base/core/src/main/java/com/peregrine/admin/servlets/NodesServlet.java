@@ -114,7 +114,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Resource res = rs.getResource(path);
         json.writeAttribute(NAME,res.getName());
         json.writeAttribute(PATH,res.getPath());
-        writeProperties(res, json, false);
+        writeProperties(res, json);
         json.writeArray(CHILDREN);
         Iterable<Resource> children = res.getChildren();
         for(Resource child : children) {
@@ -127,7 +127,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeObject();
                     json.writeAttribute(NAME,child.getName());
                     json.writeAttribute(PATH,child.getPath());
-                    writeProperties(child, json, false);
+                    writeProperties(child, json);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                         String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
                         json.writeAttribute(MIME_TYPE, mimeType);
@@ -158,7 +158,7 @@ public class NodesServlet extends AbstractBaseServlet {
         json.writeClose();
     }
 
-    private void writeProperties(Resource resource, JsonResponse json, boolean withChildCount) throws IOException {
+    private void writeProperties(Resource resource, JsonResponse json) throws IOException {
         ValueMap properties = resource.getValueMap();
         writeIfFound(json, JCR_PRIMARY_TYPE, properties, RESOURCE_TYPE);
         writeIfFound(json, JCR_CREATED, properties);
