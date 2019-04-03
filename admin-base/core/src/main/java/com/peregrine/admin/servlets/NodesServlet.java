@@ -168,12 +168,6 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
         writeIfFound(json, ALLOWED_OBJECTS, properties);
 
-        // Counting children is not a fast operation so we'll only do that on leaf nodes, which is
-        // the only place we care about them
-        if(withChildCount) {
-            json.writeAttribute(CHILD_COUNT, getChildCount(resource));
-        }
-
         // For the Replication data we need to obtain the content properties. If not found
         // then we try with the resoure's properties for non jcr:content nodes
         ValueMap replicationProperties = getProperties(resource);
@@ -188,17 +182,6 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             json.writeAttribute(REPLICATION_STATUS, status);
         }
-    }
-
-    private int getChildCount(Resource resource) {
-        // Only way to get the child count it to count them directly
-        int numChildren = 0;
-        for(Resource child : resource.getChildren()) {
-            if(!JCR_CONTENT.equals(child.getName())) {
-                numChildren++;
-            }
-        }
-        return numChildren;
     }
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {

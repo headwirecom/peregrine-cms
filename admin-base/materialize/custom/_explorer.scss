@@ -35,22 +35,6 @@
 								cursor: grabbing;
 							}
 						}
-						> span > a > span.numChildren:after {
-							position: absolute;
-							top: 14%;
-							left: 5%;
-							content: attr(data-count);
-							font-size: xx-small;
-							color: white;
-							padding: 0.6em;
-							border-radius: 50%;
-							line-height: 0.75em;
-							background: color("blue-grey","lighten-1");
-							text-align: center;
-							min-width: 2em;
-							font-weight: bold;
-							opacity: 0.8;
-						}
 						> span > a {
 							color: color("blue-grey", "darken-2");
 							&:hover,

@@ -66,7 +66,6 @@
                                 command: 'selectPath',
                                 tooltipTitle: `select '${child.title || child.name}'`
                             }">
-                        <span v-if="hasChildren(child)" v-bind:data-count="child.childCount" class="numChildren">
                         </span><i class="material-icons">folder</i>
                     </admin-components-action>
 
