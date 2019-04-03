@@ -176,29 +176,12 @@
 
 		}
 	}
-	.show-right-panel {
-		background-color: color("blue-grey", "lighten-5");
-		width: 2rem; 
-		height: 40px; 
-		position: absolute;
-		z-index: 1;
-		right: 0;
-		top: 1rem;
-		border: 1px solid color("blue-grey", "lighten-4");
-		border-right: 0;
-		.material-icons {
-			position: relative;
-			left: -.25rem;
-			font-size: 40px;
-		}
-	}
-	.hide-right-panel {
+	%right-panel-toggle {
 		background-color: color("blue-grey", "lighten-5");
 		width: 2rem;
 		height: 40px;
 		position: absolute;
 		z-index: 1;
-		right: 300px;
 		top: 1rem;
 		border: 1px solid color("blue-grey", "lighten-4");
 		.material-icons {
@@ -206,6 +189,16 @@
 			font-size: 40px;
 			left: -.25rem;
 		}
+	}
+	.show-right-panel {
+		@extend %right-panel-toggle;
+		right: 0;
+		transition:left 1s linear;
+	}
+	.hide-right-panel {
+		@extend %right-panel-toggle;
+		right: 300px;
+		transition:left 1s linear;
 	}
 	.right-panel {
 		vertical-align: top;
