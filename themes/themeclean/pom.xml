@@ -285,7 +285,7 @@
             <!-- OSGi Dependencies -->
             <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
+                <artifactId>osgi.core</artifactId>
                 <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
@@ -312,12 +312,12 @@
                 <scope>provided</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.compendium</artifactId>
-                <version>4.2.0</version>
-                <scope>provided</scope>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.osgi</groupId>-->
+                <!--<artifactId>org.osgi.compendium</artifactId>-->
+                <!--<version>4.2.0</version>-->
+                <!--<scope>provided</scope>-->
+            <!--</dependency>-->
 
             <!-- Web Application API -->
             <dependency>

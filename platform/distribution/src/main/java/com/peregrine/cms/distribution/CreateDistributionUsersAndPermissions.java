@@ -1,22 +1,20 @@
 package com.peregrine.cms.distribution;
 
 import com.peregrine.commons.util.AbstractUserAndPermissionsService;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
 
 import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.commons.jackrabbit.authorization.AccessControlUtils;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.jcr.Session;
 import javax.jcr.security.Privilege;
 
 import java.security.Principal;
-
-import static javax.jcr.security.Privilege.JCR_ALL;
 
 /**
  * Creates the System User for the Sling Distribution

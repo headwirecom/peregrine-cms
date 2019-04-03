@@ -1,22 +1,66 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
+<!DOCTYPE project [
+        <!ELEMENT project (modelVersion|parent|artifactId|packaging|name|description|properties|dependencies|build|profiles)*>
+        <!ATTLIST project
+                xmlns CDATA #REQUIRED
+                xmlns:xsi CDATA #REQUIRED
+                xsi:schemaLocation CDATA #REQUIRED>
+        <!ELEMENT modelVersion (#PCDATA)>
+        <!ELEMENT parent (groupId|artifactId|version|relativePath)*>
+        <!ELEMENT groupId (#PCDATA)>
+        <!ELEMENT artifactId (#PCDATA)>
+        <!ELEMENT version (#PCDATA)>
+        <!ELEMENT relativePath (#PCDATA)>
+        <!ELEMENT packaging (#PCDATA)>
+        <!ELEMENT name (#PCDATA)>
+        <!ELEMENT description (#PCDATA)>
+        <!ELEMENT properties (targetServiceUrl)*>
+        <!ELEMENT targetServiceUrl (#PCDATA)>
+        <!ELEMENT dependencies (dependency)*>
+        <!ELEMENT dependency (groupId|artifactId|version|scope)*>
+        <!ELEMENT scope (#PCDATA)>
+        <!ELEMENT build (resources|plugins)*>
+        <!ELEMENT resources (resource)*>
+        <!ELEMENT resource (directory|targetPath|excludes)*>
+        <!ELEMENT directory (#PCDATA)>
+        <!ELEMENT targetPath (#PCDATA)>
+        <!ELEMENT excludes (exclude)*>
+        <!ELEMENT exclude (#PCDATA)>
+        <!ELEMENT plugins (plugin)*>
+        <!ELEMENT plugin (groupId|artifactId|executions|configuration|version|extensions)*>
+        <!ELEMENT executions (execution)*>
+        <!ELEMENT execution (id|goals|phase|configuration)*>
+        <!ELEMENT id (#PCDATA)>
+        <!ELEMENT goals (goal)*>
+        <!ELEMENT goal (#PCDATA)>
+        <!ELEMENT phase (#PCDATA)>
+        <!ELEMENT configuration (portNames|licenseName|licenseResolver|excludes|shouldBlockUntilKeyIsPressed|servers|systemPropertyVariables|userId|password|failOnMissingEmbed|serviceURL|packageFiles|bundleFileName)*>
+        <!ELEMENT portNames (portName)*>
+        <!ELEMENT portName (#PCDATA)>
+        <!ELEMENT licenseName (#PCDATA)>
+        <!ELEMENT licenseResolver (#PCDATA)>
+        <!ELEMENT profiles (profile)*>
+        <!ELEMENT profile (id|build)*>
+        <!ELEMENT extensions (#PCDATA)>
+        <!ELEMENT shouldBlockUntilKeyIsPressed (#PCDATA)>
+        <!ELEMENT servers (server)*>
+        <!ELEMENT server (id|port|vmOpts|runmode)*>
+        <!ELEMENT port (#PCDATA)>
+        <!ELEMENT vmOpts (#PCDATA)>
+        <!ELEMENT runmode (#PCDATA)>
+        <!ELEMENT systemPropertyVariables (launchpad.http.port|IT.expected.bundles.count|launchpad.http.server.url)*>
+        <!ELEMENT launchpad.http.port (#PCDATA)>
+        <!ELEMENT IT.expected.bundles.count (#PCDATA)>
+        <!ELEMENT launchpad.http.server.url (#PCDATA)>
+        <!ELEMENT userId (#PCDATA)>
+        <!ELEMENT password (#PCDATA)>
+        <!ELEMENT failOnMissingEmbed (#PCDATA)>
+        <!ELEMENT serviceURL (#PCDATA)>
+        <!ELEMENT packageFiles (packageFile)*>
+        <!ELEMENT packageFile (groupId|artifactId|version|type)*>
+        <!ELEMENT type (#PCDATA)>
+        <!ELEMENT bundleFileName (#PCDATA)>
+        ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -411,6 +455,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>Java11Options</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <properties>
+                <sling.vm.options>--add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED --add-opens=java.xml/com.sun.org.apache.xerces.internal.dom=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED -Dnashorn.args=--no-deprecation-warning -XX:+UseParallelGC</sling.vm.options>
+            </properties>
         </profile>
     </profiles>
 </project>
