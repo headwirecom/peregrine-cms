@@ -38,7 +38,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Icon Size",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-visible": "model.mediatype == 'icon'",
           "x-default": 50,
           "x-form-min": 1,
@@ -79,7 +79,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Width",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-default": 100,
           "x-form-min": 10,
           "x-form-max": 100

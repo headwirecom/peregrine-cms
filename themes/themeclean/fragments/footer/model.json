@@ -37,7 +37,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Logo Size",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-visible": "model.showlogo == 'true'",
           "x-form-min": 1,
           "x-form-max": 300 

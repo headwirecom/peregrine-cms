@@ -38,10 +38,10 @@
                             v-for="component in components"
                             v-on:click.stop.prevent="selectComponent(null, component.path)"
                             v-bind:class="isSelected(component.path) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectComponent', target: component.path }">{{component.name}}</admin-components-action>
+                            <admin-components-action v-bind:model="{ command: 'selectComponent', target: component.path, title: component.name }"></admin-components-action>
                         </li>
                     </ul>
-                    <div v-if="!formmodel.component" class="errors">
+                    <div v-if="formErrors.unselectedComponentError" class="errors">
                         <span track-by="index">selection required</span>
                     </div>
                 </div>
@@ -70,6 +70,9 @@
                 const path = $perAdminApp.getNodeFromView('/state/tools/templates')
                 const siteName = path.split('/')[3]
                 return {
+                    formErrors: {
+                        unselectedComponentError: false
+                    },
                     formmodel: {
                         path: path,
                         name: '',
@@ -95,6 +98,10 @@
                 }
 
         },
+        created: function() {
+            //By default select the first item in the list;
+            this.selectComponent(this, this.components[0].path);
+        },
         computed: {
             components: function() {
                 const templates = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
@@ -102,7 +109,6 @@
                 siteRootParts[1] = 'apps'
                 siteRootParts[2] = siteRootParts[3]
                 const siteRoot = siteRootParts.slice(0,3).join('/')
-                console.log(siteRoot)
                 return templates.filter( (item) => item.path.startsWith(siteRoot) && (
                     item.name === 'page' || item.templateComponent
                 ))
@@ -112,7 +118,9 @@
         methods: {
             selectComponent: function(me, target){
                 if(me === null) me = this
-                me.formmodel.component = target
+                me.formmodel.component = target;
+
+                this.validateTabOne(me);
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
@@ -135,6 +143,14 @@
                 const siteName = path.split('/')[3]
                 const component = this.formmodel.component.substring(this.formmodel.component.indexOf('/',1)+1)
                 $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component })
+            },
+            validateTabOne: function(me) {
+                me.formErrors.unselectedComponentError = (!me.formmodel.component);
+
+                return !me.formErrors.unselectedComponentError;
+            },
+            leaveTabOne: function() {
+                return this.validateTabOne(this);
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()

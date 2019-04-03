@@ -12,8 +12,8 @@
             'text-right': model.aligncontent === 'right',
             'percms-text-large': model.isprimary === 'true'
         }" v-bind:style="`width:${model.textwidth}%;`">
-          <h2 class="" v-if="model.showtitle === 'true'" v-html="model.title"></h2>
-          <h4 class="" v-if="model.showsubtitle === 'true'" v-html="model.subtitle"></h4>
+          <h2 class v-if="model.showtitle === 'true'" v-html="model.title"></h2>
+          <h4 class v-if="model.showsubtitle === 'true'" v-html="model.subtitle"></h4>
           <p v-if="model.showtext === 'true'" v-html="model.text"></p>
         </div>
       </div>

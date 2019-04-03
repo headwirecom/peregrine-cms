@@ -1,8 +1,7 @@
 {
   "fields": [
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "carouselheight",
       "label": "Carousel Height",
       "model": "carouselheight",
@@ -20,8 +19,7 @@
       "model": "autoplay"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "interval",
       "label": "Interval",
       "model": "interval",
@@ -229,8 +227,7 @@
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "overlayopacity",
       "label": "Overlay opacity",
       "model": "overlayopacity",
@@ -275,8 +272,7 @@
       "model": "fullheight"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "toppadding",
       "label": "Top Padding",
       "model": "toppadding",
@@ -285,8 +281,7 @@
       "max": 150
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "bottompadding",
       "label": "Bottom Padding",
       "model": "bottompadding",

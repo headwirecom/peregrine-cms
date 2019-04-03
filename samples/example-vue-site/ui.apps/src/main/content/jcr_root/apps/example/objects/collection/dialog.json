@@ -7,11 +7,13 @@
     "fields" : [
       {
         "type": "input",
+        "inputType": "text",
         "label": "Key",
         "model": "key"
       },
       {
         "type": "input",
+        "inputType": "text",
         "label": "Value",
         "model": "value"
       }
@@ -26,6 +28,7 @@
     "fields" : [
       {
         "type": "input",
+        "inputType": "text",
         "label": "Key",
         "model": "key"
       }

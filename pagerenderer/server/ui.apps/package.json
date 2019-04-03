@@ -1,7 +1,12 @@
 {
   "name": "modeltest",
   "version": "1.0.0",
-  "description": "",
+  "description": "base render infrastructure for server rendered sites",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/headwirecom/peregrine-cms.git",
+    "directory": "pagerenderer/server/ui.apps"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

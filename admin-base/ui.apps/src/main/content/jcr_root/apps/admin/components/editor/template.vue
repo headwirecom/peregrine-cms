@@ -24,7 +24,7 @@
   -->
 <template>
     <div class="editor-panel" ref="editorPanel">
-        <div class="editor-panel-content">
+        <div class="editor-panel-content" v-if="schema !== undefined && dataModel !== undefined">
             <span class="panel-title">Editor</span>
             <span v-if="title"> - {{title}}</span>
             <div v-if="!hasSchema">this component does not have a dialog defined</div>
@@ -48,6 +48,10 @@
 <script>
     export default {
       props: ['model'],
+    updated: function() {
+        let stateTools = $perAdminApp.getNodeFromView("/state/tools");
+        stateTools._deleted = {};
+    },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
       },
@@ -92,9 +96,37 @@
       },
       methods: {
         onOk(e) {
+            let data = JSON.parse(JSON.stringify(this.dataModel));
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+
+            //Merge _deleted child items back into the object that we need to save.
+            //Loop through the model for this object/page/asset and find objects that have children
+            for ( const key in data) {
+                //If data[key] or deleted[key] is an array of objects
+                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
+                    ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+
+                    let node = data[key];
+
+                    //Use an object to easily merge back in deleted nodes
+                    let targetNode = {}
+                    //Insert deleted children
+                    for ( const j in _deleted[key]) {
+                        const deleted = _deleted[key][j]
+                        targetNode[deleted.name] = deleted;
+                    }
+                    //Insert children
+                    for ( const i in node ) {
+                        const child = node[i]
+                        targetNode[child.name] = child;
+                    }
+                    data[key] = Object.values(targetNode);
+                }
+            }
+
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
+            $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } )
         },
         onCancel(e) {
             var view = $perAdminApp.getView()

@@ -809,6 +809,12 @@ public class AdminResourceHandlerService
     }
 
     private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName) {
+        // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
+        // while child assets will use the name from the source; otherwise every asset has the same name
+        copyChildResources(source, deep, target, fromName, toName, 0);
+    }
+
+    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName, int depth) {
         logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
         for(Resource child: source.getChildren()) {
             logger.trace("Child handling started: '{}'", child.getPath());
@@ -843,11 +849,12 @@ public class AdminResourceHandlerService
                     }
                 }
                 Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
-                updateTitle(childTarget, toName);
+                updateTitle(childTarget, (((depth > 0) && (newProperties.get(JCR_TITLE) != null)) ?  (String) newProperties.get(JCR_TITLE) : toName));
+
                 logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
                 // Copy grandchildren
                 if(deep) {
-                    copyChildResources(child, true, childTarget, fromName, toName);
+                    copyChildResources(child, true, childTarget, fromName, toName, depth + 1);
                 }
             } catch(PersistenceException e) {
                 logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
@@ -956,7 +963,11 @@ public class AdminResourceHandlerService
             Object value = entry.getValue();
             if(value instanceof Map) {
                 Map childProperties = (Map) value;
-                Resource child = resource.getChild(name);
+                String childPath = (String) childProperties.get(PATH); 
+                Resource child = resource.getResourceResolver().getResource(childPath);
+                if(child == null) child = resource.getChild(name);
+
+
                 // If child is missing then create it
                 if(child == null) {
                     Object val = childProperties.get(SLING_RESOURCE_TYPE);
@@ -1075,13 +1086,16 @@ public class AdminResourceHandlerService
                         newChildProperties.put(childPropertyKey + "", incomingItemProperties.get(childPropertyKey));
                     }
                 } else {
-                    if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME) && "true".equals(incomingItemProperties.get(DELETION_PROPERTY_NAME))) {
-                        try {
-                            logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
-                            resource.getResourceResolver().delete(resourceListItem);
-                            continue;
-                        } catch(PersistenceException e) {
-                            throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
+                    if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)) {
+                        Object value = incomingItemProperties.get(DELETION_PROPERTY_NAME);
+                        if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
+                            try {
+                                logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
+                                resource.getResourceResolver().delete(resourceListItem);
+                                continue;
+                            } catch(PersistenceException e) {
+                                throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
+                            }
                         }
                     }
                     updateResourceTree(resourceListItem, incomingItemProperties);
