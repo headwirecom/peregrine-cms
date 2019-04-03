@@ -45,35 +45,53 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-                <!-- As QDox is trying to inspect/load the classes
-                     we have to add a slf4j implementation to the
-                     class path of the plugin - we usually use
-                     a static field for the logger and during class
-                     loading this field requires an slf4j implementation!
-                 -->
-                <dependencies>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                        <version>1.5.2</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>generate-scr-scrdescriptor</id>
-                        <goals>
-                            <goal>scr</goal>
-                        </goals>
-                        <configuration>
-                            <strictMode>true</strictMode>
-                            <properties>
-                                <service.vendor>headwire.com inc</service.vendor>
-                            </properties>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
+                        <Sling-Model-Packages>com.peregrine.nodetypes.models</Sling-Model-Packages>
+                        <_dsannotations>*</_dsannotations>
+                        <_metatypeannotations>*</_metatypeannotations>
+                        <_removeheaders>
+                            Embed-Dependency,
+                            Private-Package,
+                            Include-Resource
+                        </_removeheaders>
+                    </instructions>
+                </configuration>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.felix</groupId>-->
+                <!--<artifactId>maven-scr-plugin</artifactId>-->
+                <!--&lt;!&ndash; As QDox is trying to inspect/load the classes-->
+                     <!--we have to add a slf4j implementation to the-->
+                     <!--class path of the plugin - we usually use-->
+                     <!--a static field for the logger and during class-->
+                     <!--loading this field requires an slf4j implementation!-->
+                 <!--&ndash;&gt;-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.slf4j</groupId>-->
+                        <!--<artifactId>slf4j-simple</artifactId>-->
+                        <!--<version>1.5.2</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>generate-scr-scrdescriptor</id>-->
+                        <!--<goals>-->
+                            <!--<goal>scr</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<strictMode>true</strictMode>-->
+                            <!--<properties>-->
+                                <!--<service.vendor>headwire.com inc</service.vendor>-->
+                            <!--</properties>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>maven-sling-plugin</artifactId>
@@ -110,14 +128,24 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
+            <artifactId>osgi.core</artifactId>
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
+            <artifactId>osgi.annotation</artifactId>
+            <!--<scope>provided</scope>-->
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+            <!--<scope>compile</scope>-->
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.osgi</groupId>-->
+            <!--<artifactId>org.osgi.compendium</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
@@ -151,18 +179,18 @@
         </dependency>
 
         <!-- Note: we do not use Felix SCR Annotations anymore so we keep this here for Sling Distributions -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-            <version>1.9.12</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>biz.aQute</groupId>
-            <artifactId>bndlib</artifactId>
-            <version>1.50.0</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.felix</groupId>-->
+            <!--<artifactId>org.apache.felix.scr.annotations</artifactId>-->
+            <!--<version>1.9.12</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>biz.aQute</groupId>-->
+            <!--<artifactId>bndlib</artifactId>-->
+            <!--<version>1.50.0</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
     <profiles>
