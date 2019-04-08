@@ -30,7 +30,6 @@
         </component>
 
         <admin-components-action
-                v-if="true || !state.rightPanelVisible"
                 v-bind:class="state.rightPanelVisible ? 'hide-right-panel' : 'show-right-panel'"
                 v-bind:model="{
                 classes: '',
