@@ -1,11 +1,9 @@
 package com.peregrine.admin.resource;
 
-import com.peregrine.transform.ImageContext;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import java.io.InputStream;
 import java.util.Map;
 

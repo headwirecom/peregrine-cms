@@ -43,7 +43,7 @@ let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
 
 import PeregrineApi from './api'
 import PerAdminImpl from './apiImpl'
-import {makePathInfo, pagePathToDataPath, set, get} from './utils'
+import {makePathInfo, pagePathToDataPath, set, get, sanitizeNodeName} from './utils'
 
 import StateActions from './stateActions'
 
@@ -920,8 +920,11 @@ var PerAdminApp = {
 
     beforeStateAction(fun) {
         beforeStateActionImpl(fun)
-    }
+    },
 
+    getSanitizedNodeName(name) {
+        return sanitizeNodeName(name);
+    }
 }
 
 export default PerAdminApp

@@ -153,13 +153,17 @@
 
                 return this.validateTabOne(this);
             },
+            sanitizeNodeName(name) {
+                return $perAdminApp.getSanitizedNodeName(name);
+            },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
                     return ['name is required']
                 } else {
                     const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
+
                     for(let i = 0; i < folder.children.length; i++) {
-                        if(folder.children[i].name === value) {
+                        if(this.sanitizeNodeName(folder.children[i].name) === this.sanitizeNodeName(value)) {
                             return ['name aready in use']
                         }
                     }

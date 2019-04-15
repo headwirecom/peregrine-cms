@@ -27,7 +27,7 @@
 import { LoggerFactory } from './logger'
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
-import { stripNulls} from './utils'
+import { stripNulls, UTF8FormData} from './utils'
 
 const API_BASE = '/perapi'
 const postConfig = {
@@ -354,9 +354,10 @@ class PerAdminImpl {
 
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('name', name)
+            let data = new UTF8FormData()
+            data.append('name', name);
             data.append('templatePath', templatePath)
+
             updateWithForm('/admin/createPage.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
