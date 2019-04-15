@@ -354,7 +354,7 @@ class PerAdminImpl {
 
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            let data = new UTF8FormData()
+            let data = new UTF8FormData();
             data.append('name', name);
             data.append('templatePath', templatePath)
 
@@ -476,7 +476,7 @@ class PerAdminImpl {
 
     createTemplate(parentPath, name, component) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData();
             data.append('name', name)
             data.append('component', component)
             updateWithForm('/admin/createTemplate.json'+parentPath, data)

@@ -30,7 +30,7 @@ let log = LoggerFactory.logger('createPage').setLevelDebug()
 export default function(me, target) {
     log.fine(target)
     var api = me.getApi()
-    api.createPage(target.parent, target.name, target.template).then( (a1, a2, a3) => {
+    api.createPage(target.parent, target.name, target.template).then( () => {
         target.data.path = '/jcr:content';
         // This has been persisted, so the node name may have changed from what we pass in.
         // Probably would be better if this were read from the server response instead.
