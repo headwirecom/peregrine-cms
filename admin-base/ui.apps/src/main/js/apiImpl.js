@@ -487,7 +487,7 @@ class PerAdminImpl {
 
     createFolder(parentPath, name) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData()
             data.append('name', name)
             updateWithForm('/admin/createFolder.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )

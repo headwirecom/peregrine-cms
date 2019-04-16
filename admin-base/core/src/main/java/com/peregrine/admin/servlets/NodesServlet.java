@@ -134,7 +134,7 @@ public class NodesServlet extends AbstractBaseServlet {
                         writeJcrContent(child, json);
                     }
 
-                    if(isPrimaryType(child, OBJECT_PRIMARY_TYPE)) {
+                    if(isPrimaryType(child, OBJECT_PRIMARY_TYPE, ASSET_PRIMARY_TYPE, SLING_ORDERED_FOLDER)) {
                         String title = child.getValueMap().get(JCR_TITLE, String.class);
                         json.writeAttribute(TITLE, title);
                     }
