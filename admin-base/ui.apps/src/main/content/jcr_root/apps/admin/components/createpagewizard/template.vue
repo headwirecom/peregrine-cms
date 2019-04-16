@@ -171,7 +171,7 @@
                 }
             },
             leaveTabTwo: function() {
-                return this.$refs.nameTab.validate()
+                return (this.nameAvailable(this.formmodel.name).length == 0) && this.$refs.nameTab.validate();
             }
 
         }
