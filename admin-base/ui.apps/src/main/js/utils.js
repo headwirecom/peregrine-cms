@@ -140,7 +140,7 @@ export function sanitizeNodeName(name) {
     // Here we String.prototype.normalize to normalize characters with diacritics to combined chars,
     // then call replace with the correct Unicode block to remove those combining characters (i.e., ń -> n, Ä -> A)
     // Lastly, any remaining characters that are not valid in URLs are removed
-    return name.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^0-9a-zA-Z$\-_.+!]/g,"-");
+    return name.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^0-9a-zA-Z-_]/g,"-");
 }
 
 

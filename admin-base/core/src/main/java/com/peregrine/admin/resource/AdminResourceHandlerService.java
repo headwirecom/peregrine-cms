@@ -116,7 +116,7 @@ public class AdminResourceHandlerService
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
     public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
 
-    private static final Pattern URL_UNSAFE_CHARACTERS_PATTERN = Pattern.compile("[^0-9a-zA-Z$\\-_.+!]");
+    private static final Pattern URL_UNSAFE_CHARACTERS_PATTERN = Pattern.compile("[^0-9a-zA-Z\\-_]");
     private static final Pattern COMBINED_UNICODE_CHARACTER_PATTERN = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
 
     static {

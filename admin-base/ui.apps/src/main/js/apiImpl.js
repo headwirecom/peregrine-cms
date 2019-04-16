@@ -343,7 +343,7 @@ class PerAdminImpl {
 
     createSite(fromName, toName) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData()
             data.append('fromSite', fromName)
             data.append('toSite', toName)
             updateWithForm('/admin/createSite.json', data)
