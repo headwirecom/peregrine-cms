@@ -366,7 +366,7 @@ class PerAdminImpl {
 
     createObject(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData();
             data.append('name', name)
             data.append('templatePath', templatePath)
             updateWithForm('/admin/createObject.json'+parentPath, data)
