@@ -27,6 +27,8 @@ package com.peregrine.nodetypes.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.nodetypes.merge.PageMerge;
+
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Optional;
 import org.slf4j.Logger;
@@ -46,8 +48,6 @@ public class AbstractComponent implements IComponent {
 
 	// private static final Logger LOG = LoggerFactory.getLogger(AbstractComponent.class);
 
-    private static ThreadLocal<Resource> rootResource = new ThreadLocal<>();
-
     private final Resource resource;
 
     @Inject @Optional
@@ -55,11 +55,6 @@ public class AbstractComponent implements IComponent {
 
     public AbstractComponent(Resource resource) {
         this.resource = resource;
-
-
-        if(rootResource.get() == null) {
-//            rootResource.set(resource);
-        }
     }
 
     public Resource getResource() {
@@ -67,7 +62,7 @@ public class AbstractComponent implements IComponent {
     }
 
     public Resource getRootResource() {
-        return rootResource.get();
+        return PageMerge.getRenderContext().getRequest().getResource();
     }
 
     public String getPath() {

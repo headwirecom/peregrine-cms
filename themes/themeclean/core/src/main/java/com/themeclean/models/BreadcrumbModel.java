@@ -1,5 +1,6 @@
 package com.themeclean.models;
 
+import com.peregrine.nodetypes.merge.PageMerge;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 
@@ -355,7 +356,9 @@ public class BreadcrumbModel extends AbstractComponent {
       
     	links = new ArrayList<TextLink>();
     	if(Integer.parseInt(getLevel()) > 0) {
-    		return getDeepLinks(getResource());
+        Resource page = getRootResource();
+        LOG.debug("page: {}", page);
+    		return getDeepLinks(page != null ? page : getResource());
     	} else {
     		return null;
     	}
