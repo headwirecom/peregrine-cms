@@ -11,7 +11,8 @@
       </span>
       <!-- Hamburger toggle button -->
       <button class="navbar-toggler navbar-toggler-right" data-toggle="collapse"
-      data-target="#navbarSupportedContent" aria-expanded="false" aria-controls="collapseExample">
+      data-target="#navbarSupportedContent" aria-expanded="false" aria-controls="navbarSupportedContent"
+      aria-label="navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <!-- Collapsible Menu -->
