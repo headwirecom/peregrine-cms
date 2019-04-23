@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="col-12 col-md-8">
+    <div class="col-12 col-md-10">
       <!-- Tab List -->
       <ul class="nav nav-pills d-flex justify-content-center" id="myTab" role="tablist">
         <li class="nav-item" v-for="(item,i) in model.tabs" :key="i">

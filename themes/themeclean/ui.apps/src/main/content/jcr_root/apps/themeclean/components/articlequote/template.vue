@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="col-12 col-md-8 article">
+    <div class="col-12 col-md-10 article">
       <hr class="line" v-if="model.blockquote == 'false'" v-bind:class="{
             'border-secondary': model.colorscheme === '',
             'border-dark' : model.colorscheme === 'light',

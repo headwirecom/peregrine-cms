@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="article col-12 col-md-8">
+    <div class="article col-12 col-md-10">
       <div v-html="model.text"></div>
       <div v-if="isEditAndEmpty">no content defined for component</div>
     </div>

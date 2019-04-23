@@ -1,6 +1,6 @@
 <template>
   <themeclean-components-block v-bind:model="model">
-    <div class="d-flex justify-content-between col-12 col-md-8">
+    <div class="d-flex justify-content-between col-12 col-md-10">
       <div class="perIsEditAndEmpty" v-if="isEditAndEmpty">no content defined for component</div>
       <a class="btn btn-sm percms-btn-pager"
       v-bind:href="$helper.pathToUrl(model.previous)" v-bind:class="{
