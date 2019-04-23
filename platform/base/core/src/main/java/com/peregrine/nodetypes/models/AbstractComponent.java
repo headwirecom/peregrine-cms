@@ -58,7 +58,7 @@ public class AbstractComponent implements IComponent {
 
 
         if(rootResource.get() == null) {
-            rootResource.set(resource);
+//            rootResource.set(resource);
         }
     }
 

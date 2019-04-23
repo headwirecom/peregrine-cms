@@ -396,6 +396,7 @@ public class ArticlepagerModel extends AbstractComponent {
     //GEN]
 	public String getPrevious() {
       Resource res = getCurrentPage(getRootResource());
+      LOG.info("resource: ",res);
       if(res == null) res = getCurrentPage(getResource());
       PerPage page = res.adaptTo(PerPage.class);
       if(page == null) return "not adaptable";
@@ -413,7 +414,7 @@ public class ArticlepagerModel extends AbstractComponent {
   }
   
   private Resource getCurrentPage(Resource resource) {
-    LOG.info(resource.toString());
+    if(resource == null) { return null; }
     String resourceType = null;
     try{
       

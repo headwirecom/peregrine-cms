@@ -355,7 +355,7 @@ public class BreadcrumbModel extends AbstractComponent {
       
     	links = new ArrayList<TextLink>();
     	if(Integer.parseInt(getLevel()) > 0) {
-    		return getDeepLinks(getRootResource());
+    		return getDeepLinks(getResource());
     	} else {
     		return null;
     	}
