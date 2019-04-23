@@ -395,38 +395,44 @@ public class ArticlepagerModel extends AbstractComponent {
     //GEN[:CUSTOMGETTERS
     //GEN]
 	public String getPrevious() {
-        PerPage page = getCurrentPage(getResource()).adaptTo(PerPage.class);
-        if(page == null) return "not adaptable";
-        PerPage prev = page.getPrevious();
-        return prev != null ? prev.getPath(): "unknown";
+      Resource res = getCurrentPage(getRootResource());
+      if(res == null) res = getCurrentPage(getResource());
+      PerPage page = res.adaptTo(PerPage.class);
+      if(page == null) return "not adaptable";
+      PerPage prev = page.getPrevious();
+      return prev != null ? prev.getPath(): "unknown";
     }
 
-    public String getNext() {
-        PerPage page = getCurrentPage(getResource()).adaptTo(PerPage.class);
-        if(page == null) return "not adaptable";
-        PerPage next = page.getNext();
-        return next != null ? next.getPath(): "unknown";
+  public String getNext() {
+    Resource res = getCurrentPage(getRootResource());
+    if(res == null) res = getCurrentPage(getResource());
+    PerPage page = res.adaptTo(PerPage.class);
+    if(page == null) return "not adaptable";
+    PerPage next = page.getNext();
+    return next != null ? next.getPath(): "unknown";
+  }
+  
+  private Resource getCurrentPage(Resource resource) {
+    LOG.info(resource.toString());
+    String resourceType = null;
+    try{
+      
+      ValueMap props = resource.adaptTo(ValueMap.class);
+      resourceType = props.get("jcr:primaryType", "type not found");
+      LOG.debug("resource type is: " + resourceType + "  path is:" + resource.getPath());
+      // we only care about per:page node
+      if("per:Page".equals(resourceType)) {
+        LOG.debug("returned resource type is: " + resourceType + "  path is:" + resource.getPath());
+        return resource;
+      }
+      else {
+        if(resource.getParent() != null) {
+          return getCurrentPage(resource.getParent());
+        }
+      }
+    } catch(Exception e){
+        LOG.error("Exception: " + e);
     }
-    
-    private Resource getCurrentPage(Resource resource) {
-    	String resourceType = null;
-    	try{
-    		
-    		ValueMap props = resource.adaptTo(ValueMap.class);
-		    resourceType = props.get("jcr:primaryType", "type not found");
-		    LOG.debug("resource type is: " + resourceType + "  path is:" + resource.getPath());
-		    // we only care about per:page node
-		    if("per:Page".equals(resourceType)) {
-		    	LOG.debug("returned resource type is: " + resourceType + "  path is:" + resource.getPath());
-		    	return resource;
-		    }
-		    else {
-		    	return getCurrentPage(resource.getParent());
-		    }
-		} catch(Exception e){
-    		LOG.error("Exception: " + e);
-    		return null;
-		}
-    	
-    }
+    return null;
+  }
 }

@@ -29,6 +29,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -42,6 +44,10 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
  */
 public class AbstractComponent implements IComponent {
 
+	// private static final Logger LOG = LoggerFactory.getLogger(AbstractComponent.class);
+
+    private static ThreadLocal<Resource> rootResource = new ThreadLocal<>();
+
     private final Resource resource;
 
     @Inject @Optional
@@ -49,10 +55,19 @@ public class AbstractComponent implements IComponent {
 
     public AbstractComponent(Resource resource) {
         this.resource = resource;
+
+
+        if(rootResource.get() == null) {
+            rootResource.set(resource);
+        }
     }
 
     public Resource getResource() {
         return resource;
+    }
+
+    public Resource getRootResource() {
+        return rootResource.get();
     }
 
     public String getPath() {
