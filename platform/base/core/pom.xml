@@ -70,6 +70,9 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
+                        <Sling-Initial-Content>
+                            SLING-INF/jcr_root;overwriteProperties:=true
+                        </Sling-Initial-Content>
 
                         <Sling-Namespaces>
                             per=http://www.peregrine-cms.com/jcr/cms/1.0
