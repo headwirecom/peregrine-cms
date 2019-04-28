@@ -49,7 +49,6 @@ import StateActions from './stateActions'
 
 import { SUFFIX_PARAM_SEPARATOR } from "./constants"
 
-
 /**
  * registers a pop state listener for the adminui to track back/forward button and loads
  * the correct screen accordingly
@@ -109,6 +108,26 @@ let OSBrowser = null
  * @type {Array}
  */
 const extensions = []
+
+function emitEvent(name, data) {
+    // Create the event.
+    var event = document.createEvent('Event')
+
+    // Define that the event name is 'build'.
+    event.initEvent('per-'+name, true, true, data)
+
+    // target can be any Element or other EventTarget.
+    window.dispatchEvent(event)
+    logger.fine('event', 'per-'+name, 'dispatched');
+}
+
+function emitErrorEvent(name, data) {
+    emitEvent('error-'+name, data);
+}
+
+function emitSuccessEvent(name,data) {
+    emitEvent('success-'+name, data);
+}
 
 /**
  * dynamic component initializer\ - this function takes a name of a component and tries to
@@ -330,6 +349,7 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                                 view.adminPage = view.adminPageStaged
                                 view.status = 'loaded';
                             }
+                            emitSuccessEvent('loaded', dataUrl)
 
                             delete view.adminPageStaged
 
@@ -402,9 +422,11 @@ function actionImpl(component, command, target) {
         if(component.$parent === component.$root) {
             if(!findActionInTree(component.$root, command, target)) {
                 logger.error('action', command, 'not found, ignored, traget was', target)
+                emitErrorEvent('action', { command: command, target: target });
             }
         } else {
             actionImpl(component.$parent, command, target)
+            emitSuccessEvent('action', { command: command, target: target });
         }
     }
 }

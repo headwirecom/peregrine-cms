@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-    <span>
+    <span v-bind:data-per-id="(model.component ? model.component : '') + ':'+ model.command + ':' + title">
         <a 
             v-if                    = "!model.type"
             v-bind:href             = "model.target +'.html'"
