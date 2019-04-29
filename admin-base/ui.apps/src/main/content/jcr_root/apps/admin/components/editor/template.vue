@@ -97,7 +97,7 @@
       methods: {
         onOk(e) {
             let data = JSON.parse(JSON.stringify(this.dataModel));
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
 
             //Merge _deleted child items back into the object that we need to save.
             //Loop through the model for this object/page/asset and find objects that have children
