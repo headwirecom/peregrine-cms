@@ -1,0 +1,15 @@
+{
+  "tags": {
+	"allowUnkownTags": true
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "target/site/jsdoc"
+  },
+  "plugins": ["node_modules/jsdoc-svelte", "plugins/markdown"],
+  "source": {
+    "include": ["src/main/js", "src/main/content/jcr_root/apps", "./readme.md", "./package.json"],
+    "includePattern": "\\.(svelte|js|md)$"
+
+  }
+}
