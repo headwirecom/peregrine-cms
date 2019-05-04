@@ -31,8 +31,8 @@
             jcr:primaryType="per:PageContent"
             sling:resourceType="pagerender/svelte/structure/page"
             jcr:title="peregrine cms"
-            siteCSS="[/etc/felibs/pagerender-svelte/bootstrap/css/bootstrap.min.css]"
-            siteJS="[/etc/felibs/pagerender-svelte/jquery/jquery.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js,/etc/felibs/pagerender-svelte/bootstrap/js/bootstrap.min.js]">
+            siteCSS="[]"
+            siteJS="[]">
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/svelte/structure/container">
 

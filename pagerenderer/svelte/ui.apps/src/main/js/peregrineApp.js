@@ -32,6 +32,10 @@ import merge from './merge.js'
 import { pagePathToDataPath, componentNameToVarName } from './util.js'
 import {Logger} from "./logger";
 
+function addComponent(name, windowVar) {
+    console.log('adding component', name)
+//    Svelte.component(name, windowVar)
+}
 
 let view
 let loadedComponents = []
@@ -118,12 +122,15 @@ function set(node, path, value) {
 
 function initPeregrineApp() {
 
-    Svelte.use(experiences)
-    Svelte.use(helper)
+    // todo: how to get this done with svelte
+    // Svelte.use(experiences)
+    // Svelte.use(helper)
 
-    perSvelteApp = new Svelte({
-        el: '#peregrine-app',
-        data: getPerView()
+    console.log(getPerView())
+    perSvelteApp = new cmpPagerenderSvelteStructurePage({
+        target: document.getElementById('peregrine-app'),
+        // props: { model: getPerView() }
+        props: { model: getPerView().page }
     });
 }
 
@@ -149,7 +156,7 @@ function loadComponentImpl(name) {
 
         var varName = componentNameToVarName(name)
         if(window[varName]) {
-            Svelte.component(name, window[varName])
+            addComponent(name, window[varName])
         }
         // if we are in edit mode push the component to the perAdminApp as well
         if(window.parent.$perAdminApp && !window.parent[varName]) {
@@ -267,7 +274,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
 function loadContentImpl(path, firstTime, fromPopState) {
 
-    console.log(path)
+    log.debug('loading path',path)
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
@@ -275,24 +282,7 @@ function loadContentImpl(path, firstTime, fromPopState) {
     getPerView().status = undefined;
     axios.get(dataUrl).then(function (response) {
         log.fine('got data for', path)
-
-        // if(response.data.template) {
-        //
-        //     var pageData = response.data
-        //
-        //     axios.get(response.data.template+'.data.json').then(function(response) {
-        //
-        //         var templateData = response.data
-        //         var mergedData = merge(templateData, pageData)
-        //         //merging nav, footer and content together with pageData
-        //         processLoadedContent(mergedData, path, firstTime, fromPopState)
-        //     }).catch(function(error) {
-        //         log.error("error getting %s %j", dataUrl, error);
-        //     })
-        // } else {
         processLoadedContent(response.data, path, firstTime, fromPopState)
-        // }
-
     }).catch(function(error) {
         log.error("error getting %s %j", dataUrl, error);
     });
@@ -334,7 +324,12 @@ var peregrineApp = {
 
     getView: function() {
        return getPerView()
+    },
+
+    resolveComponent: function(component) {
+        return window[componentNameToVarName(component)];
     }
+
 
 }
 

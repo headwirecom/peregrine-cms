@@ -30,9 +30,6 @@
 <body>
 <sly data-sly-include="tracker-bodystart.html"></sly>
 <div id="peregrine-app">
-    <span v-cloak>
-        <component v-bind:is="page.component" v-bind:model="page"></component>
-    </span>
 </div>
 
 <sly data-sly-list="${helper.model.siteJS}">

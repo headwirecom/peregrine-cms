@@ -10,22 +10,28 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "#node ./node_modules/rollup/bin/rollup -c && #node ../../../buildscripts/buildsvelte.js pagerender-svelte && #node src/main/buildjs/mdtopage.js",
-    "site": "#node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json"
+    "build": "node ./node_modules/rollup/bin/rollup -c && node src/main/buildjs/buildsvelte.js pagerender-svelte",
+    "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.2.1",
+    "camelcase": "^5.3.1",
     "fs-extra": "^7.0.1",
     "jquery": "^3.3.1",
     "jsdoc": "^3.5.5",
-    "marked": "^0.6.0",
+    "marked": "^0.6.2",
     "popper.js": "^1.15.0",
     "request": "^2.88.0",
-    "rollup": "^1.1.2",
+    "rollup": "^1.11.2",
     "rollup-plugin-buble": "^0.19.6",
+    "rollup-plugin-commonjs": "^9.3.4",
+    "rollup-plugin-node-resolve": "^4.2.3",
+    "rollup-plugin-svelte": "^5.0.3",
+    "svelte": "^3.1.0",
+    "svelte-cli": "^3.0.0",
     "xml-escape": "^1.1.0"
   }
 }
