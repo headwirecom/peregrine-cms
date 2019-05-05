@@ -42,6 +42,11 @@ let loadedComponents = []
 
 let perSvelteApp = null
 
+/**
+ * disects a path into its parts
+ * 
+ * @returns Object { path, suffix, suffixParams, hash }
+ */
 function makePathInfo(path) {
 
     let hash = ''
@@ -72,6 +77,13 @@ function makePathInfo(path) {
     return ret
 }
 
+/**
+ * from a given node get the value at path or value if not defined. Path is deliminated by `/`
+ * 
+ * @param {Object} node 
+ * @param {String} path 
+ * @param {Any} value 
+ */
 function get(node, path, value) {
 
     var svelte = perSvelteApp
@@ -80,7 +92,7 @@ function get(node, path, value) {
         var segment = path.pop()
         if(!node[segment]) {
             if(svelte) {
-                Svelte.set(node, segment, {})
+                // svelte.set(node, segment, {})
             } else {
                 node[segment] = {}
             }
@@ -89,14 +101,24 @@ function get(node, path, value) {
     }
     if(value && !node[path[0]]) {
         if(svelte) {
-            Svelte.set(node, path[0], value)
+            // Svelte.set(node, path[0], value)
         } else {
             node[path[0]] = value
         }
     }
+    if(svelte) {
+        svelte.refresh();
+    }
     return node[path[0]]
 }
 
+/**
+ * from a given node set the value at the given path. Path is deliminated by `/`
+ * 
+ * @param {Object} node 
+ * @param {String} path 
+ * @param {Any} value 
+ */
 function set(node, path, value) {
 
     var svelte = perSvelteApp
@@ -105,7 +127,7 @@ function set(node, path, value) {
         var segment = path.pop()
         if(!node[segment]) {
             if(svelte) {
-                Svelte.set(node, segment, {})
+                // Svelte.set(node, segment, {})
             } else {
                 node[segment] = {}
             }
@@ -113,23 +135,27 @@ function set(node, path, value) {
         node = node[segment]
     }
     if(svelte) {
-        Svelte.set(node, path[0], value)
+//        Svelte.set(node, path[0], value)
     }
     else {
         node[path[0]] = value
     }
+    if(svelte) {
+        svelte.refresh();
+    }
 }
 
+/** init the peregrine app 
+ * 
+ */
 function initPeregrineApp() {
 
     // todo: how to get this done with svelte
     // Svelte.use(experiences)
     // Svelte.use(helper)
 
-    console.log(getPerView())
     perSvelteApp = new cmpPagerenderSvelteStructurePage({
         target: document.getElementById('peregrine-app'),
-        // props: { model: getPerView() }
         props: { model: getPerView().page }
     });
 }
@@ -238,6 +264,10 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
             initPeregrineApp();
         }
 
+        if(perSvelteApp) {
+            perSvelteApp.refresh(getPerView().page);
+        }
+
         if(document.location !== path && !fromPopState) {
             log.fine("PUSHSTATE : " + path);
             document.title = getPerView().page.title
@@ -274,7 +304,6 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
 function loadContentImpl(path, firstTime, fromPopState) {
 
-    log.debug('loading path',path)
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
