@@ -33,8 +33,8 @@ import { pagePathToDataPath, componentNameToVarName } from './util.js'
 import {Logger} from "./logger";
 
 function addComponent(name, windowVar) {
-    console.log('adding component', name)
-//    Svelte.component(name, windowVar)
+    // console.log('adding component', name)
+    // Svelte.component(name, windowVar)
 }
 
 let view
