@@ -1,0 +1,36 @@
+{
+  "id": "${project.groupId}:${project.artifactId}:slingosgifeature:composum_composum-console:${project.version}",
+  "variables":{
+    "composum.version":"1.9.2"
+  },
+  "bundles":[
+    {
+      "id":"com.composum.sling.core:composum-sling-core-commons:1.9.2",
+      "start-level":"20"
+    },
+    {
+      "id":"com.composum.sling.core:composum-sling-core-config:1.9.2",
+      "start-level":"20"
+    },
+    {
+      "id":"com.composum.sling.core:composum-sling-core-console:1.9.2",
+      "start-level":"20"
+    },
+    {
+      "id":"com.composum.sling.core:composum-sling-core-jslibs:1.9.2",
+      "start-level":"20"
+    },
+    {
+      "id":"com.composum.sling.core:composum-sling-package-manager:1.9.2",
+      "start-level":"20"
+    },
+    {
+      "id":"com.composum.sling.core:composum-sling-user-management:1.9.2",
+      "start-level":"20"
+    },
+    {
+      "id":"org.apache.jackrabbit.vault:org.apache.jackrabbit.vault:3.2.4",
+      "start-level":"20"
+    }
+  ]
+}

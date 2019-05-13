@@ -1,0 +1,11 @@
+{
+  "id": "${project.groupId}:${project.artifactId}:slingosgifeature:sling_packageinit:${project.version}",
+  "variables":{
+  },
+  "bundles":[
+    {
+      "id":"org.apache.sling:org.apache.sling.jcr.packageinit:0.0.1-SNAPSHOT",
+      "start-level":"10"
+    }
+  ]
+}

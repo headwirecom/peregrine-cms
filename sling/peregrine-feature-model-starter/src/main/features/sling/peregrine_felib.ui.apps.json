@@ -1,0 +1,13 @@
+{
+  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:felib.ui.apps:${project.version}",
+  "description":"JCR Package for the Peregrine CMS Felib module.",
+  "bundles":[
+    {
+      "id":"com.peregrine-cms:felib.core:1.0-SNAPSHOT",
+      "start-order":"20"
+    }
+  ],
+  "content-packages:ARTIFACTS|true":[
+    "com.peregrine-cms:felib.ui.apps:zip:cp2fm-converted:1.0-SNAPSHOT"
+  ]
+}

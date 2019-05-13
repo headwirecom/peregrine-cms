@@ -1,0 +1,13 @@
+{
+  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:themeclean-ui.apps:${project.version}",
+  "description":"This is an empty JCR Package where the JCR Content\n        can be deployed with.\n\n        This module is deployed with the\n        Profile \"autoInstallPackage\" which deploys both\n        this JCR Package as well as the core \"OSGi Bundle\".\n        If you add more modules to your project then you need\n        to add them to that profile and include here\n        as dependencies.",
+  "bundles":[
+    {
+      "id":"com.themeclean:themeclean-core:1.0-SNAPSHOT",
+      "start-order":"20"
+    }
+  ],
+  "content-packages:ARTIFACTS|true":[
+    "themeclean:themeclean-ui.apps:zip:cp2fm-converted:1.0-SNAPSHOT"
+  ]
+}

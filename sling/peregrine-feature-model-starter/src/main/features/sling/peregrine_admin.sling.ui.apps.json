@@ -1,0 +1,7 @@
+{
+  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:admin.sling.ui.apps:${project.version}",
+  "description":"This JCR Package provides UI files for Admin on Sling.",
+  "content-packages:ARTIFACTS|true":[
+    "com.peregrine-cms:admin.sling.ui.apps:zip:cp2fm-converted:1.0-SNAPSHOT"
+  ]
+}

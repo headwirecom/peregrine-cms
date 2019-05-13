@@ -1,0 +1,15 @@
+{
+  "id": "${project.groupId}:${project.artifactId}:slingosgifeature:standalone:${project.version}",
+  "bundles":[
+    {
+      "id":"org.apache.felix:org.apache.felix.http.jetty:4.0.6",
+      "run-modes":":standalone",
+      "start-level":"5"
+    },
+    {
+      "id":"org.apache.felix:org.apache.felix.http.servlet-api:1.1.2",
+      "run-modes":":standalone",
+      "start-level":"5"
+    }
+  ]
+}

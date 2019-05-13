@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>com.peregrine-cms</groupId>
+      <artifactId>parent</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>com.peregrine-cms.featuremodel.starter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Feature model of Peregrine CMS / Sling 11</name>
+    <packaging>slingosgifeature</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>slingfeature-maven-plugin</artifactId>
+                <version>1.0.1-SNAPSHOT</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>aggregate-base-feature</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>aggregate-features</goal>
+                        </goals>
+                        <configuration>
+                            <aggregates>
+                                <aggregate>
+                                    <classifier>example-runtime</classifier>
+                                    <filesInclude>sling/*.json</filesInclude>
+                                    <markAsComplete>true</markAsComplete>
+                                    <frameworkPropertiesOverrides>
+                                        <!-- Framework property overrides go here -->
+                                        <org.osgi.framework.bootdelegation>javax.*</org.osgi.framework.bootdelegation>
+                                    </frameworkPropertiesOverrides>
+                                </aggregate>
+                            </aggregates>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify-analyze</id>
+                        <phase>process-resources</phase>
+                        <goals><goal>analyse-features</goal></goals>
+                        <configuration>
+                            <framework>
+                                <groupId>org.apache.felix</groupId>
+                                <artifactId>org.apache.felix.framework</artifactId>
+                                <version>6.0.1</version>
+                            </framework>
+                            <scans>
+                                <scan>
+                                    <includeClassifier>example-runtime</includeClassifier>
+                                    <includeTasks>
+                                        <includeTask>bundle-packages</includeTask>
+                                    </includeTasks>
+                                </scan>
+                            </scans>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>readme.md</exclude>
+                        <exclude>launcher/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

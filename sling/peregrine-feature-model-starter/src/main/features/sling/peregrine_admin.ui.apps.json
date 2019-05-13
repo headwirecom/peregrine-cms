@@ -1,0 +1,78 @@
+{
+  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:admin.ui.apps:${project.version}",
+  "description":"This JCR Package provides the Admin UI for Peregrine CMS\n        but also installs the Admin Bundle.",
+  "bundles":[
+    {
+      "id":"com.peregrine-cms:admin.core:1.0-SNAPSHOT",
+      "start-order":"20"
+    }
+  ],
+  "configurations":{
+    "com.peregrine.admin.replication.impl.DistributionReplicationService~remote":{
+      "name":"remote",
+      "description":"Replication Service that is replication to another Peregrine CMS Server using Sling's Forward Distribution",
+      "agentName":"publish"
+    },
+    "com.peregrine.admin.replication.impl.ImageMetadataSelectorService~pngIhdr":{
+      "json":"true",
+      "category":"png-ihdr",
+      "included":"false"
+    },
+    "com.peregrine.admin.replication.impl.LocalReplicationService~local":{
+      "name":"local",
+      "description":"Replication Service that copies the resources to another folder within the same Peregrine CMS instance",
+      "localMapping":"/content=/live"
+    },
+    "com.peregrine.admin.replication.DefaultReplicationMapperService~simple":{
+      "defaultMapping":"localFS",
+      "name":"defaultRepl",
+      "pathMapping":[
+        "local:path=/content/assets"
+      ],
+      "description":"Replication Service that is replicating resources based on its path by one or more predefined Replication Services"
+    },
+    "com.peregrine.admin.replication.impl.ImageMetadataSelectorService~iccProfile":{
+      "mapping":[
+        " primary_platform=platform",
+        " profile_connection_space=connectionSpace",
+        " profile_date_time=dateAndTime",
+        " profile_description=description",
+        " profile_size=size "
+      ],
+      "imageDirectory":"icc_profile",
+      "json":"false",
+      "selection":[
+        " signature",
+        " version",
+        " device_manufacturer",
+        " class",
+        " color_space",
+        " copyright",
+        " tag_count "
+      ],
+      "category":"icc-profile",
+      "included":"true"
+    },
+    "com.peregrine.admin.replication.impl.LocalFileSystemReplicationService~local":{
+      "creationStrategy":"1",
+      "exportExtensions":[
+        "data.json=per:Page|per:Template",
+        "infinity.json=per:Object",
+        "html=per:Page|per:Template",
+        "*~raw=nt:file"
+      ],
+      "name":"localFS",
+      "mandatoryRenditions":"thumbnail.png",
+      "targetFolder":"${sling.home}/staticreplication",
+      "description":"Replication Service that is replicating the resources to a File / Folder on the local machine by rendering it using Sling"
+    },
+    "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionEventHandler":{
+      "user.mapping":[
+        "com.peregrine.cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user"
+      ]
+    }
+  },
+  "content-packages:ARTIFACTS|true":[
+    "com.peregrine-cms:admin.ui.apps:zip:cp2fm-converted:1.0-SNAPSHOT"
+  ]
+}
