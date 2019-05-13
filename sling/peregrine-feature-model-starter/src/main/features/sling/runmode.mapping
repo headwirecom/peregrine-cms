@@ -1,0 +1,6 @@
+#File edited by the Apache Sling Content Package to Sling Feature converter
+#Wed May 08 00:33:56 UTC 2019
+dev=base.ui.apps-dev.json
+it=base.ui.apps-it.json
+exmaple=admin.ui.apps-exmaple.json
+(default)=base.ui.apps.json,admin.ui.apps.json,example-vue.ui.apps.json,admin.sling.ui.apps.json,node-js.ui.apps.script.json,themeclean-ui.apps.json,admin.ui.materialize.json,felib.ui.apps.json,node-js.ui.apps.json,pagerender-vue.ui.apps.json

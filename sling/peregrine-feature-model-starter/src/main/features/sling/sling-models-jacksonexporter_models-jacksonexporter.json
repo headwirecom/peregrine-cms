@@ -1,0 +1,24 @@
+{
+  "id": "${project.groupId}:${project.artifactId}:slingosgifeature:sling-models-jacksonexporter_models-jacksonexporter:${project.version}",
+  "variables":{
+    "jackson.version":"2.9.7"
+  },
+  "bundles":[
+    {
+      "id":"com.fasterxml.jackson.core:jackson-annotations:2.9.7",
+      "start-level":"20"
+    },
+    {
+      "id":"com.fasterxml.jackson.core:jackson-core:2.9.7",
+      "start-level":"20"
+    },
+    {
+      "id":"com.fasterxml.jackson.core:jackson-databind:2.9.7",
+      "start-level":"20"
+    },
+    {
+      "id":"org.apache.sling:org.apache.sling.models.jacksonexporter:1.0.8",
+      "start-level":"20"
+    }
+  ]
+}

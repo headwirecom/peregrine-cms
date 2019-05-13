@@ -1,0 +1,34 @@
+{
+  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:node-js.ui.apps:${project.version}",
+  "description":"This content package does provide:\n        - configuration for the service user and logging\n        - permission folder for NPM Package Manager\n        - Sling Node J2V8 wrapper script for loading scripts in CRX\n        - example scripts\n        - Swagger UI to illustrate and showcase NPM Package Manager\n        - Service User for OSGi Services",
+  "bundles":[
+    {
+      "id":"com.peregrine-cms:node-js.core:1.0-SNAPSHOT",
+      "start-order":"20"
+    }
+  ],
+  "configurations":{
+    "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~nodejs":{
+      "user.mapping":[
+        "com.peregrine-cms.nodejs:nodejs-service=nodejs-service-user",
+        "com.peregrine-cms.nodejs.scripts:nodejs-service=nodejs-service-user",
+        "com.peregrine-cms.nodejs.j2v8:nodejs-service=nodejs-service-user"
+      ]
+    }
+  },
+  "content-packages:ARTIFACTS|true":[
+    "com.peregrine-cms:node-js.ui.apps:zip:cp2fm-converted:1.0-SNAPSHOT"
+  ],
+  "repoinit:TEXT|true":[
+    "create path (sling:Folder) /apps",
+    "create path (sling:Folder) /apps/nodejs",
+    "create path (sling:Folder) /apps/nodejs/permission",
+    "create path (sling:Folder) /apps/nodejs/permission/list",
+    "create path (sling:Folder) /apps/nodejs/permission/modify",
+    "create service user nodejs-service-user",
+    "set ACL for everyone",
+    "deny jcr:read on /apps/nodejs/permission/list",
+    "deny jcr:read on /apps/nodejs/permission/modify",
+    "end"
+  ]
+}
