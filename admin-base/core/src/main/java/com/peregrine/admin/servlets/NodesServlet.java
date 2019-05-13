@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -136,7 +136,7 @@ public class NodesServlet extends AbstractBaseServlet {
                                 if(key.equals(JCR_TITLE)) {
                                     String title = content.getValueMap().get(JCR_TITLE, String.class);
                                     json.writeAttribute(TITLE, title);
-                                } else {
+                                } else if(!key.equals(TITLE)){
                                     if(key.indexOf(":") < 0) {
                                         json.writeAttribute(key, content.getValueMap().get(key, String.class));
                                     }
