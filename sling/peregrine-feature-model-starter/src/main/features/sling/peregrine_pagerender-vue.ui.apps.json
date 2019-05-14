@@ -1,5 +1,5 @@
 {
-  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:pagerenderer-vue.ui.apps:${project.version}",
+  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:pagerender-vue.ui.apps:${project.version}",
   "description":"JCR Package containing Page Render Vue JS content\n        and it service bundle.",
   "bundles":[
     {

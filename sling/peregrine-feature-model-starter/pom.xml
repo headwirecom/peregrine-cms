@@ -34,7 +34,7 @@ under the License.
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>slingfeature-maven-plugin</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <version>1.0.2</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -82,6 +82,7 @@ under the License.
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
+                <version>0.13</version>
                 <configuration>
                     <excludes>
                         <exclude>readme.md</exclude>

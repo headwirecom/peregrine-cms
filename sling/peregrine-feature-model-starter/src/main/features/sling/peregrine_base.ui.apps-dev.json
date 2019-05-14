@@ -1,5 +1,5 @@
 {
-  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:base.ui.apps-dev:${project.version}",
+  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:base.ui.apps-dev-dev:${project.version}",
   "configurations":{
     "org.apache.sling.commons.log.LogManager.factory.config~peregrine":{
       "org.apache.sling.commons.log.pattern":"{0,date,yyyy-MM-dd HH:mm:ss.SSS} {4} [{3}] {5}",
