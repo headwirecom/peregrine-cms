@@ -31,12 +31,14 @@ function doConversion {
     # Call the CP 2 FM Converter
     # -X: verbose
     # -m: merge configs with same ID
+    # -i: overwrites the Model Id. Need to escape the dollar sign with \ and to add the package name
+    #     use the {{}} escape
     ./bin/cp2sf \
         -X \
         -m \
         -a $fmOut \
         -b 20 \
-        -i "com.peregrine-cms:com.peregrine-cms.featuremodel.starter:slingosgifeature:1.0-SNAPSHOT" \
+        -i "\${project.groupId}:\${project.artifactId}:slingosgifeature:\${{filename}}:\${project.version}" \
         -o $fmOut \
         $packages
 }

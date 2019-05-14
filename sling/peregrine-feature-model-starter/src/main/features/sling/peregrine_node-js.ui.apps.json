@@ -20,15 +20,6 @@
     "com.peregrine-cms:node-js.ui.apps:zip:cp2fm-converted:1.0-SNAPSHOT"
   ],
   "repoinit:TEXT|true":[
-    "create path (sling:Folder) /apps",
-    "create path (sling:Folder) /apps/nodejs",
-    "create path (sling:Folder) /apps/nodejs/permission",
-    "create path (sling:Folder) /apps/nodejs/permission/list",
-    "create path (sling:Folder) /apps/nodejs/permission/modify",
-    "create service user nodejs-service-user",
-    "set ACL for everyone",
-    "deny jcr:read on /apps/nodejs/permission/list",
-    "deny jcr:read on /apps/nodejs/permission/modify",
-    "end"
+    "create service user nodejs-service-user"
   ]
 }
