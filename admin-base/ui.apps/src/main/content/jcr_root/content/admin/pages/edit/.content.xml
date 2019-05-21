@@ -65,6 +65,14 @@
                                       stateFrom="/state/tools/workspace/view"
                                       command="editPreview"
                                       icon="tablet"/>
+                  <laptop jcr:primaryType="nt:unstructured"
+                          sling:resourceType="admin/components/action"
+                          target="laptop"
+                          type="icon"
+                          title="laptop"
+                          stateFrom="/state/tools/workspace/view"
+                          command="editPreview"
+                          icon="laptop_mac"/>
                     <desktop jcr:primaryType="nt:unstructured"
                              sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
                              stateFrom="/state/tools/workspace/view" stateFromDefault="true"

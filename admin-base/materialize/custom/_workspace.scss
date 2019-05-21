@@ -178,6 +178,20 @@
 				position: absolute;
 			}
 		}
+		&.laptop {
+			#editviewoverlay {
+				width: 1366px;
+				z-index: 1;
+				left: calc(50% - 683px);
+			}
+
+			#editview {
+				width: 1366px;
+				box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+				left: calc(50% - 683px);
+				position: absolute;
+			}
+		}
 		&.desktop {
 			#editview {
 				width: 100%;
