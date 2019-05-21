@@ -45,10 +45,26 @@
                             sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile"
                             stateFrom="/state/tools/workspace/view"
                             command="editPreview" icon="phone_android"/>
+                    <mobile-landscape jcr:primaryType="nt:unstructured"
+                                      sling:resourceType="admin/components/action"
+                                      target="mobile-landscape"
+                                      type="icon"
+                                      title="mobile-landscape"
+                                      stateFrom="/state/tools/workspace/view"
+                                      command="editPreview"
+                                      icon="stay_current_landscape"/>
                     <tablet jcr:primaryType="nt:unstructured"
                             sling:resourceType="admin/components/action" target="tablet" type="icon" title="tablet"
                             stateFrom="/state/tools/workspace/view"
                             command="editPreview" icon="tablet_android"/>
+                    <tablet-landscape jcr:primaryType="nt:unstructured"
+                                      sling:resourceType="admin/components/action"
+                                      target="tablet-landscape"
+                                      type="icon"
+                                      title="tablet-landscape"
+                                      stateFrom="/state/tools/workspace/view"
+                                      command="editPreview"
+                                      icon="tablet"/>
                     <desktop jcr:primaryType="nt:unstructured"
                              sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
                              stateFrom="/state/tools/workspace/view" stateFromDefault="true"
