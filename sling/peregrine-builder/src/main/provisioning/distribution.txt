@@ -24,3 +24,4 @@
 [artifacts startLevel=20]
     org.apache.sling/org.apache.sling.distribution.api/0.3.0
     org.apache.sling/org.apache.sling.distribution.core/0.4.0
+    org.apache.sling/org.apache.sling.distribution.sample/0.1.6
