@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+maxretry=10
 retry=0
 ./installpackage.sh $1 $2
 status=$?

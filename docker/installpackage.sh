@@ -3,7 +3,7 @@ maxretry=10
 echo 
 echo "installing package $2"
 echo "check if sling is up and running, using a max of $maxretry retries"
-sleep 5
+sleep 10
 
 status=$(curl -s $1/system/console/bundles.json | jq ".s[3:5]" -c)
 retry=0
@@ -21,7 +21,7 @@ done
 
 curl -f -s -F file=@"$2" -F name="package" -F force=true -F install=true "$1/bin/cpm/package.service.html"
 
-sleep 5
+sleep 10
 echo "waiting for system to be fully up and running"
 status=$(curl -s $1/system/console/bundles.json | jq ".s[3:5]" -c)
 retry=0
