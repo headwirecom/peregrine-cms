@@ -72,12 +72,7 @@
         </ul>
       </div>
     </div>
-    <div class="sub-nav-wrapper" v-if="hasSubNavWrapper">
       <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-      </template>
-    </div>
-      <template v-for="child in model.children" v-if="!hasSubNavWrapper">
         <component v-bind:is="child.component" v-bind:model="child"></component>
       </template>
 </nav>
@@ -104,9 +99,6 @@ export default {
                 return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
             }
         },
-        hasSubNavWrapper () {
-          return this.model.subNavWrapper;
-        }
     },
     methods: {
         onSelectLang ({name}) {
@@ -119,15 +111,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-  div.sub-nav-wrapper {
-    text-align: center;
-    position: relative;
-    line-height: normal;
-  }
-
-  div.sub-nav-wrapper div{
-    display: inline-block;
-  }
-</style>

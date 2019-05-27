@@ -75,15 +75,8 @@ import static com.peregrine.admin.util.AdminConstants.NAV_COMPONENT_PATH;
 public class NavModel
     extends Container {
 
-    @Inject
-    private boolean subNavWrapper;
-
     public NavModel(Resource r) {
         super(r);
-    }
-
-    public boolean getSubNavWrapper() {
-        return subNavWrapper;
     }
 
     //GEN[:INJECT

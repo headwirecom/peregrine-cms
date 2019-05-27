@@ -37,7 +37,7 @@
             loaders="[populatePageView:/pageView/path,populateComponents:/pageView/path,setInitialPageEditorState:/]"
     >
             <nav jcr:primaryType="nt:unstructured"
-                 sling:resourceType="admin/components/nav" subNavWrapper="true">
+                 sling:resourceType="admin/components/nav">
 
                 <subnav jcr:primaryType="nt:unstructured"
                   sling:resourceType="admin/components/subnav" classes="navcenter">

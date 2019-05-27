@@ -10,10 +10,6 @@
 				"path": {
 					"type": "string",
 					"source": "ignore"
-				},
-				"subNAvWrapper": {
-					"type": "boolean",
-					"source": "inject"
 				}
 			}
 		}
