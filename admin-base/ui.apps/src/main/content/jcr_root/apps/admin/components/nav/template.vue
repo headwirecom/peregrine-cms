@@ -27,8 +27,8 @@
     <div class="nav-wrapper blue-grey darken-3">
       <div class="col s12">
         <div class="brand-logo">
-          <admin-components-action 
-            v-bind:model="{ 
+          <admin-components-action
+            v-bind:model="{
               command: 'selectPath', 
               target: '/content/admin',
               classes: 'peregrine-logo',
@@ -72,10 +72,14 @@
         </ul>
       </div>
     </div>
-    <template v-for="child in model.children">
+    <div class="sub-nav-wrapper" v-if="hasSubNavWrapper">
+      <template v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-
+      </template>
+    </div>
+      <template v-for="child in model.children" v-if="!hasSubNavWrapper">
+        <component v-bind:is="child.component" v-bind:model="child"></component>
+      </template>
 </nav>
 </template>
 
@@ -99,6 +103,9 @@ export default {
             if($perAdminApp.getView()) {
                 return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
             }
+        },
+        hasSubNavWrapper () {
+          return this.model.subNavWrapper;
         }
     },
     methods: {
@@ -112,3 +119,15 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+  div.sub-nav-wrapper {
+    text-align: center;
+    position: relative;
+    line-height: normal;
+  }
+
+  div.sub-nav-wrapper div{
+    display: inline-block;
+  }
+</style>

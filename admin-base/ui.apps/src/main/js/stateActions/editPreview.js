@@ -29,18 +29,25 @@ import { set } from '../utils'
 
 export default function(me, target) {
 
-    log.fine(target)
+    log.fine(target);
 
-    let view = me.getView()
+    let view = me.getView();
+
     if(target === 'preview') {
         if(view.state.tools.workspace.preview === 'preview') {
-            set(view, '/state/tools/workspace/preview', '')
+            set(view, '/state/tools/workspace/preview', '');
             set(view, '/pageView/view', view.state.tools.workspace.view)
         } else {
-            set(view, '/state/tools/workspace/preview', target)
+            set(view, '/state/tools/workspace/preview', target);
             set(view, '/pageView/view', target)
         }
+    } else if (target === 'hide-containers'){
+        if(view.state.tools.workspace.hideContainers === 'hide-containers') {
+            set(view, '/state/tools/workspace/hideContainers', '');
+        } else {
+            set(view, '/state/tools/workspace/hideContainers', target);
+        }
     } else {
-        set(view, '/state/tools/workspace/view', target)
+        set(view, '/state/tools/workspace/view', target);
     }
 }

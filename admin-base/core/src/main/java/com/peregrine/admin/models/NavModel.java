@@ -27,6 +27,7 @@ package com.peregrine.admin.models;
 
 import com.peregrine.nodetypes.models.Container;
 import com.peregrine.nodetypes.models.IComponent;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
@@ -74,8 +75,15 @@ import static com.peregrine.admin.util.AdminConstants.NAV_COMPONENT_PATH;
 public class NavModel
     extends Container {
 
+    @Inject
+    private boolean subNavWrapper;
+
     public NavModel(Resource r) {
         super(r);
+    }
+
+    public boolean getSubNavWrapper() {
+        return subNavWrapper;
     }
 
     //GEN[:INJECT

@@ -349,9 +349,13 @@ export default {
         onClickOverlay: function(e) {
             if(!e) return
             var targetEl = this.getTargetEl(e)
+            let view = $perAdminApp.getView();
             if(targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                if (this.isContainer(targetEl)) {
+                    if (view.state.tools.workspace.hideContainers === 'hide-containers') return;
+                }
                 if(node.fromTemplate) {
                     $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
                         complete: this.removeEditOverlay
@@ -384,7 +388,11 @@ export default {
             if(!e || this.isTouch) return
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
+            let view = $perAdminApp.getView();
             if(targetEl) {
+                if (this.isContainer(targetEl)) {
+                    if (view.state.tools.workspace.hideContainers === 'hide-containers') return;
+                }
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
@@ -458,6 +466,12 @@ export default {
                 drop: this.dropPosition
             }
             var addOrMove
+
+            if (view.state.tools.workspace.hideContainersDragging) {
+                Vue.set(view.state.tools.workspace, 'hideContainers', 'hide-containers');
+                Vue.set(view.state.tools.workspace, 'hideContainersDragging', false);
+            }
+
             if(componentPath.includes('/components/')) {
                 addOrMove = 'addComponentToPath';
             } else {
@@ -543,6 +557,31 @@ export default {
         refreshEditor(me, target) {
             console.log('refresh editor')
             me.$refs['editview'].contentWindow.location.reload();
+        },
+        isContainer(el) {
+            if (el && el.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+
+            let subEl = el.firstElementChild;
+
+            if (!subEl) {
+                return false;
+            }
+
+            while (!subEl.getAttribute('data-per-path')) {
+                subEl = subEl.firstElementChild;
+
+                if (!subEl) {
+                    return false;
+                }
+            }
+
+            if (subEl.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+
+            return false;
         }
     }
 }

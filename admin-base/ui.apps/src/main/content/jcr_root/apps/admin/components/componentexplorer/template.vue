@@ -166,6 +166,13 @@
                     } else {
                         ev.dataTransfer.setData('text', component.path)
                     }
+
+                    let view = $perAdminApp.getView();
+
+                    if (view.state.tools.workspace.hideContainers === 'hide-containers') {
+                        Vue.set(view.state.tools.workspace, 'hideContainers', '');
+                        Vue.set(view.state.tools.workspace, 'hideContainersDragging', true);
+                    }
                 }
             }
         }
