@@ -354,7 +354,7 @@ export default {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if (this.isContainer(targetEl)) {
-                    if (view.state.tools.workspace.hideContainers === 'hide-containers') return;
+                    if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') return;
                 }
                 if(node.fromTemplate) {
                     $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
@@ -391,7 +391,7 @@ export default {
             let view = $perAdminApp.getView();
             if(targetEl) {
                 if (this.isContainer(targetEl)) {
-                    if (view.state.tools.workspace.hideContainers === 'hide-containers') return;
+                    if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') return;
                 }
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
@@ -467,9 +467,9 @@ export default {
             }
             var addOrMove
 
-            if (view.state.tools.workspace.hideContainersDragging) {
-                Vue.set(view.state.tools.workspace, 'hideContainers', 'hide-containers');
-                Vue.set(view.state.tools.workspace, 'hideContainersDragging', false);
+            if (view.state.tools.workspace.dragging) {
+                Vue.set(view.state.tools.workspace, 'ignoreContainers', 'ignore-containers');
+                Vue.set(view.state.tools.workspace, 'dragging', false);
             }
 
             if(componentPath.includes('/components/')) {

@@ -45,11 +45,11 @@ export default function(me, target) {
             set(view, '/state/tools/workspace/preview', target);
             set(view, '/pageView/view', target)
         }
-    } else if (target === 'hide-containers'){
-        if(view.state.tools.workspace.hideContainers === 'hide-containers') {
-            set(view, '/state/tools/workspace/hideContainers', '');
+    } else if (target === 'ignore-containers'){
+        if(view.state.tools.workspace.ignoreContainers === 'ignore-containers') {
+            set(view, '/state/tools/workspace/ignoreContainers', '');
         } else {
-            set(view, '/state/tools/workspace/hideContainers', target);
+            set(view, '/state/tools/workspace/ignoreContainers', target);
         }
     } else {
         set(view, '/state/tools/workspace/view', target);

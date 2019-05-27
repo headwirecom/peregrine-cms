@@ -169,9 +169,9 @@
 
                     let view = $perAdminApp.getView();
 
-                    if (view.state.tools.workspace.hideContainers === 'hide-containers') {
-                        Vue.set(view.state.tools.workspace, 'hideContainers', '');
-                        Vue.set(view.state.tools.workspace, 'hideContainersDragging', true);
+                    if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') {
+                        Vue.set(view.state.tools.workspace, 'ignoreContainers', '');
+                        Vue.set(view.state.tools.workspace, 'dragging', true);
                     }
                 }
             }
