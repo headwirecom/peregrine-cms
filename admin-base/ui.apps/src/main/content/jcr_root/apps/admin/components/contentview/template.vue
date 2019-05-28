@@ -132,6 +132,7 @@ export default {
             } else {
                 ret = 'desktop' + (previewMode ? ' ' + previewMode : '' )
             }
+            console.log(ret);
             return ret
         },
         viewModeClass: function() {
@@ -466,11 +467,6 @@ export default {
                 drop: this.dropPosition
             }
             var addOrMove
-
-            if (view.state.tools.workspace.dragging) {
-                Vue.set(view.state.tools.workspace, 'ignoreContainers', 'ignore-containers');
-                Vue.set(view.state.tools.workspace, 'dragging', false);
-            }
 
             if(componentPath.includes('/components/')) {
                 addOrMove = 'addComponentToPath';

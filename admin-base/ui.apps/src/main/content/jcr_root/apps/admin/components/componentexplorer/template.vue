@@ -38,7 +38,8 @@
                             <li
                                 class="collection-item"
                                 v-for="component in group"
-                                v-on:dragstart="onDragStart(component, $event)" 
+                                v-on:dragstart="onDragStart(component, $event)"
+                                v-on:dragend="onDragEnd(component, $event)"
                                 draggable="true">
                                 <div>
                                     <i class="material-icons">drag_handle</i>
@@ -166,13 +167,19 @@
                     } else {
                         ev.dataTransfer.setData('text', component.path)
                     }
-
                     let view = $perAdminApp.getView();
-
                     if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') {
-                        Vue.set(view.state.tools.workspace, 'ignoreContainers', '');
-                        Vue.set(view.state.tools.workspace, 'dragging', true);
+                        Vue.set(view.state.tools.workspace, 'ignoreContainers', 'on-hold');
+                        Vue.set(view.pageView, 'view', view.state.tools.workspace.view);
                     }
+                }
+            },
+            onDragEnd: function(component, ev) {
+                let view = $perAdminApp.getView();
+                if (view.state.tools.workspace.ignoreContainers === 'on-hold') {
+                    Vue.set(view.state.tools.workspace, 'ignoreContainers', 'ignore-containers');
+                    Vue.set(view.pageView, 'view', 'ignore-containers');
+
                 }
             }
         }
