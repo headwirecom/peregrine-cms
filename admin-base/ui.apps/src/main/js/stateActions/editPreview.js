@@ -33,10 +33,6 @@ export default function(me, target) {
 
     let view = me.getView();
 
-    if (!view.state.tools.workspace) {
-        set(view, '/state/tools/workspace', {});
-    }
-
     if(target === 'preview') {
         if(view.state.tools.workspace.preview === 'preview') {
             set(view, '/state/tools/workspace/preview', '');
