@@ -76,6 +76,7 @@
         <component v-bind:is="child.component" v-bind:model="child"></component>
       </template>
 </nav>
+
 </template>
 
 <script>
@@ -98,7 +99,7 @@ export default {
             if($perAdminApp.getView()) {
                 return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
             }
-        },
+        }
     },
     methods: {
         onSelectLang ({name}) {

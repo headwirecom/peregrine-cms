@@ -28,11 +28,8 @@ let log = LoggerFactory.logger('editPreview').setLevelDebug()
 import { set } from '../utils'
 
 export default function(me, target) {
-
     log.fine(target);
-
     let view = me.getView();
-
     if(target === 'preview') {
         if(view.state.tools.workspace.preview === 'preview') {
             set(view, '/state/tools/workspace/preview', '');

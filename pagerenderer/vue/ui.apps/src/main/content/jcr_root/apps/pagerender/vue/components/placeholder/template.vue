@@ -38,9 +38,6 @@
 <script>
 export default {
     props: ['model'],
-    mounted: function() {
-        console.log(this.$root.view);
-    },
     computed: {
         isEditMode: function() {
             if(window.parent) {

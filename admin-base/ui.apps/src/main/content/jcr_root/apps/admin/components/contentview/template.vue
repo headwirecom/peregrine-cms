@@ -132,7 +132,6 @@ export default {
             } else {
                 ret = 'desktop' + (previewMode ? ' ' + previewMode : '' )
             }
-            console.log(ret);
             return ret
         },
         viewModeClass: function() {
@@ -467,7 +466,6 @@ export default {
                 drop: this.dropPosition
             }
             var addOrMove
-
             if(componentPath.includes('/components/')) {
                 addOrMove = 'addComponentToPath';
             } else {
@@ -558,25 +556,19 @@ export default {
             if (el && el.getAttribute('data-per-droptarget')) {
                 return true;
             }
-
             let subEl = el.firstElementChild;
-
             if (!subEl) {
                 return false;
             }
-
             while (!subEl.getAttribute('data-per-path')) {
                 subEl = subEl.firstElementChild;
-
                 if (!subEl) {
                     return false;
                 }
             }
-
             if (subEl.getAttribute('data-per-droptarget')) {
                 return true;
             }
-
             return false;
         }
     }

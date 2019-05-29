@@ -69,7 +69,6 @@
 
             <workspace jcr:primaryType="nt:unstructured"
                      sling:resourceType="admin/components/workspace">
-v
                         <contentview jcr:primaryType="nt:unstructured"
                                    sling:resourceType="admin/components/contentview" text="content"/>
 
