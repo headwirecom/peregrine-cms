@@ -512,7 +512,6 @@
             },
             editPage: function(me, target) {
                 const path = me.pt.path
-                let view = $perAdminApp.getView();
                 if(path.startsWith('/content/templates')) {
                     $perAdminApp.stateAction('editTemplate', target )
                 } else if(path.startsWith('/content/objects')) {

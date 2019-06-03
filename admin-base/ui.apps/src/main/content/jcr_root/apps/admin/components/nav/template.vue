@@ -76,7 +76,6 @@
         <component v-bind:is="child.component" v-bind:model="child"></component>
       </template>
 </nav>
-
 </template>
 
 <script>
