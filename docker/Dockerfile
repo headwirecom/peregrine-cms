@@ -13,6 +13,7 @@ RUN apt update -q \
 ENV PATH "/usr/local/lib/nodejs/node-v10.15.3-linux-x64/bin:$PATH"
 
 COPY files/* /app/binaries/
+COPY healthcheck.sh .
 COPY installpackage.sh .
 COPY installpackageretry.sh .
 
@@ -45,5 +46,8 @@ RUN npx percli server start author \
     && rm -rf binaries
 
 ENTRYPOINT npx percli server start && tail -qF sling/logs/*
+
+HEALTHCHECK --interval=15s --retries=20 \
+  CMD /app/healthcheck.sh
 
 EXPOSE 8080
