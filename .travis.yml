@@ -2,7 +2,6 @@ branches:
   only:
   - master
   - develop
-  - feature/docker
 
 services:
 - docker
@@ -42,8 +41,3 @@ deploy:
   script: docker push ${DOCKER_IMAGE}:${branch}
   on:
     branch: develop
-  # Feature branch
-  provider: script
-  script: docker push ${DOCKER_IMAGE}:${branch}
-  on:
-    branch: feature/docker
