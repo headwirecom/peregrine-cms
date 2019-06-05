@@ -29,7 +29,7 @@
         <div class="pathbrowser iconbrowser modal-container" v-on:click.stop.prevent="onPrevent">
             <header class="iconbrowser-header">
                 <div class="iconbrowser-options">  
-                    <multiselect 
+                    <vue-multiselect 
                         v-model="selectedFamily"
                         deselect-label=""
                         track-by="name"
@@ -38,7 +38,7 @@
                         :options="iconFamilies"
                         :searchable="true"
                         :allow-empty="false">
-                    </multiselect>                              
+                    </vue-multiselect>                              
                 </div>
                 <div class="iconbrowser-filter">
                     <input placeholder="search by icon name"  type="search" v-model="search">
@@ -54,8 +54,9 @@
                 
             <div class="modal-content"> 
                 <div class="col-browse">                    
-                    <template v-if="icons && icons.length > 0" v-for="(icon, index) in icons" :key="index">
-                        <div 
+                    <template v-if="icons && icons.length > 0" v-for="(icon, index) in icons">
+                        <div  
+                            :key="index"
                             v-if="searchFilter(icon)"
                             :class="isSelected(icon) ? 'item-icon selected' : 'item-icon'"
                             v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
@@ -85,6 +86,7 @@
         </div>
         </div>
 </div>
+</transition>
 </template>
 
 <script>

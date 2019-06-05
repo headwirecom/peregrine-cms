@@ -139,7 +139,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Overlay opacity",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 100,
               "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
@@ -177,7 +177,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Top Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
@@ -186,7 +186,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Bottom Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 150,
               "x-form-visible": "model.fullheight != 'true'"
@@ -269,7 +269,7 @@ public class ArticlepagerModel extends AbstractComponent {
 	@Default(values ="#ffffff")
 	private String overlaycolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	@Inject
 	@Default(values ="50")
 	private String overlayopacity;
@@ -292,11 +292,11 @@ public class ArticlepagerModel extends AbstractComponent {
 	@Inject
 	private String fullheight;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String bottompadding;
 
@@ -354,7 +354,7 @@ public class ArticlepagerModel extends AbstractComponent {
 		return overlaycolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	public String getOverlayopacity() {
 		return overlayopacity;
 	}
@@ -379,12 +379,12 @@ public class ArticlepagerModel extends AbstractComponent {
 		return fullheight;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":150,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getBottompadding() {
 		return bottompadding;
 	}
@@ -395,38 +395,45 @@ public class ArticlepagerModel extends AbstractComponent {
     //GEN[:CUSTOMGETTERS
     //GEN]
 	public String getPrevious() {
-        PerPage page = getCurrentPage(getResource()).adaptTo(PerPage.class);
-        if(page == null) return "not adaptable";
-        PerPage prev = page.getPrevious();
-        return prev != null ? prev.getPath(): "unknown";
+      Resource res = getCurrentPage(getRootResource());
+      LOG.debug("resource: {}",res);
+      if(res == null) res = getCurrentPage(getResource());
+      PerPage page = res.adaptTo(PerPage.class);
+      if(page == null) return "not adaptable";
+      PerPage prev = page.getPrevious();
+      return prev != null ? prev.getPath(): "unknown";
     }
 
-    public String getNext() {
-        PerPage page = getCurrentPage(getResource()).adaptTo(PerPage.class);
-        if(page == null) return "not adaptable";
-        PerPage next = page.getNext();
-        return next != null ? next.getPath(): "unknown";
+  public String getNext() {
+    Resource res = getCurrentPage(getRootResource());
+    if(res == null) res = getCurrentPage(getResource());
+    PerPage page = res.adaptTo(PerPage.class);
+    if(page == null) return "not adaptable";
+    PerPage next = page.getNext();
+    return next != null ? next.getPath(): "unknown";
+  }
+  
+  private Resource getCurrentPage(Resource resource) {
+    if(resource == null) { return null; }
+    String resourceType = null;
+    try{
+      
+      ValueMap props = resource.adaptTo(ValueMap.class);
+      resourceType = props.get("jcr:primaryType", "type not found");
+      LOG.debug("resource type is: " + resourceType + "  path is:" + resource.getPath());
+      // we only care about per:page node
+      if("per:Page".equals(resourceType)) {
+        LOG.debug("returned resource type is: " + resourceType + "  path is:" + resource.getPath());
+        return resource;
+      }
+      else {
+        if(resource.getParent() != null) {
+          return getCurrentPage(resource.getParent());
+        }
+      }
+    } catch(Exception e){
+        LOG.error("Exception: " + e);
     }
-    
-    private Resource getCurrentPage(Resource resource) {
-    	String resourceType = null;
-    	try{
-    		
-    		ValueMap props = resource.adaptTo(ValueMap.class);
-		    resourceType = props.get("jcr:primaryType", "type not found");
-		    LOG.debug("resource type is: " + resourceType + "  path is:" + resource.getPath());
-		    // we only care about per:page node
-		    if("per:Page".equals(resourceType)) {
-		    	LOG.debug("returned resource type is: " + resourceType + "  path is:" + resource.getPath());
-		    	return resource;
-		    }
-		    else {
-		    	return getCurrentPage(resource.getParent());
-		    }
-		} catch(Exception e){
-    		LOG.error("Exception: " + e);
-    		return null;
-		}
-    	
-    }
+    return null;
+  }
 }

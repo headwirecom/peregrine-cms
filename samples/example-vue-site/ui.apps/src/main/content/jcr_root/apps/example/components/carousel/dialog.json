@@ -1,12 +1,12 @@
 {
   "fields": [
     {
-      "type": "input",
+      "type": "materialswitch",
       "label": "Interval",
       "model": "interval"
     },
     {
-      "type": "input",
+      "type": "materialswitch",
       "label": "Pause",
       "model": "pause"
     },
@@ -49,16 +49,19 @@
         },
         {
           "type": "input",
+          "inputType": "text",
           "label": "Image Heading",
           "model": "heading"
         },
         {
           "type": "input",
+          "inputType": "text",
           "label": "Image Text",
           "model": "text"
         },
         {
           "type": "input",
+          "inputType": "text",
           "label": "Alt Text",
           "model": "alt"
         }

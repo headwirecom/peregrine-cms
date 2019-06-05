@@ -75,21 +75,6 @@
                             v-bind:options = "formOptions">
                     </vue-form-generator>
                 </template>
-    <!--
-                <div class="row" v-for="field in schema.fields">
-                    <template v-if="!field.fields">
-                        <div class="col s4"><b>{{field.label}}:</b></div><div class="col s8">{{get(currentObject.data,field.model)}}</div>
-                    </template>
-                    <template v-else>
-                        <div class="col s12"><b>{{field.title}}</b></div>
-                        <div class="row" v-for="item in currentObject.data[field.model]">
-                            <div v-for="child in field.fields">
-                                <div class="col s4"><b>{{child.label}}:</b></div><div class="col s8">{{get(item,child.model)}}</div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-    -->
             </template>
 
             <template v-if="edit && currentObject.data && schema">
@@ -123,15 +108,21 @@
 <script>
     export default {
         props: ['model'],
+        updated: function() {
+            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
+            stateTools._deleted = {};
+        },
         computed: {
             readOnlySchema() {
                 if(!this.schema) return {}
                 const roSchema = JSON.parse(JSON.stringify(this.schema))
                 roSchema.fields.forEach( (field) => {
                     field.preview = true
+                    field.readonly = true
                     if(field.fields) {
                         field.fields.forEach( (field) => {
                             field.preview = true
+                            field.readonly = true
                         })
                     }
                 })
@@ -139,7 +130,8 @@
 
             },
           currentObject: function () {
-            return $perAdminApp.getNodeFromView("/state/tools/object")
+            let data = $perAdminApp.getNodeFromView("/state/tools/object");
+            return data;
           }, 
           schema: function () {
             if(!this.currentObject || !this.currentObject.data) return
@@ -181,9 +173,35 @@
               Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true)
           },
           onOk: function() {
-              // should store the current node
-              $perAdminApp.stateAction('saveObjectEdit', { data: this.currentObject.data, path: this.currentObject.show })
-              $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })
+            let {data,show} = this.currentObject;
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+
+            //Find child nodes with subchildren for our edited object
+            for ( const key in data) {
+                //If node (or deleted node) is an array of objects then we have a child node
+                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
+                    ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+
+                    let node = data[key];
+
+                    //loop through children
+                    let targetNode = {}
+                    //Insert deleted children
+                    for ( const j in _deleted[key]) {
+                        const deleted = _deleted[key][j]
+                        targetNode[deleted.name] = deleted;
+                    }
+                    //Insert children
+                    for ( const i in node ) {
+                        const child = node[i]
+                        targetNode[child.name] = child;
+                    }
+                    data[key] = targetNode;
+                }
+            }
+
+                $perAdminApp.stateAction('saveObjectEdit', { data: data, path: show })
+                $perAdminApp.stateAction('selectObject', { selected: show })
           },
           onCancel: function() {
             $perAdminApp.stateAction('selectObject', { selected: this.currentObject.show })

@@ -28,7 +28,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Logo Size",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-default": 50,
           "x-form-min": 1,
           "x-form-max": 300 
@@ -44,7 +44,7 @@
           "x-source": "inject",
           "x-form-label": "Elevation",
           "x-form-visible": "",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-default": 0,
           "x-form-min": 0,
           "x-form-max": 5

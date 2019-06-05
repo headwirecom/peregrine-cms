@@ -57,7 +57,7 @@
                 <a title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
             </li>
             <li>
-                 <multiselect
+                 <vue-multiselect
                     :value="language"
                     deselect-label=""
                     track-by="name"
@@ -67,7 +67,7 @@
                     :searchable="false"
                     :allow-empty="false"
                     @select="onSelectLang"
-                 ></multiselect>
+                 ></vue-multiselect>
             </li>
         </ul>
       </div>

@@ -72,6 +72,7 @@
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onReferences">
                         <i class="material-icons">list</i>
+                    </a>
                 </li>
             </ul>
             <template v-if="!edit && !references">
@@ -257,10 +258,11 @@
                 if(!this.schema) return {}
                 const roSchema = JSON.parse(JSON.stringify(this.schema))
                 roSchema.fields.forEach( (field) => {
-                    field.preview = true
+                    field.readonly = true
                     if(field.fields) {
                         field.fields.forEach( (field) => {
                             field.preview = true
+                            field.readonly = true
                         })
                     }
                 })

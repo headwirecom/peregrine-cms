@@ -24,12 +24,7 @@
   -->
 <template>
 	<div class="wrap">
-		<h5>
-      {{schema.title}} 
-      <button type="button" class="waves-effect waves-light btn-floating" v-on:click="onAddItem">
-        <i class="material-icons">add</i>
-      </button>
-    </h5>
+    <label>{{schema.title}} </label>
     <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'singlefield'" ref="collapsible">
         <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)"> {{item._opDelete}}
             <div 
@@ -43,11 +38,10 @@
               v-on:click.stop.prevent="onSetActiveItem(index)">
                 <i class="material-icons">drag_handle</i>
                 <span v-if="schema.multifield">{{itemName(item, index)}}</span> 
-                <vue-form-generator
+                <input
                   v-else
-                  :schema="getSchemaForIndex(schema, index)"
-                  :model="value"></vue-form-generator>
-                <i class="material-icons delete-icon" v-on:click.stop.prevent="onRemoveItem(item, index)">delete</i>
+                  v-model="value[index]">
+                <i class="material-icons delete-icon" v-on:click="onRemoveItem(item, index)">delete</i>
             </div>
             <transition
               v-on:enter="enter"
@@ -60,22 +54,25 @@
               </div>
             </transition>
         </li>
+        <button type="button" class="btn-flat btn-add-item" v-on:click="onAddItem">
+          <i class="material-icons">add</i>
+        </button>
     </ul>
-    <ol v-else class="preview-list clearfix">
-      <li v-for="(item, index) in value" class="preview-item">
-        <vue-form-generator
-          v-if="schema.multifield" 
-          class="multifield"
-          :schema="schema"
-          :model="prepModel(item, schema)"></vue-form-generator>
-        <vue-form-generator
-          v-else 
-          class="singlefield"
-          :schema="getSchemaForIndex(schema, index)"
-          :model="value">
-        </vue-form-generator>
-      </li>
-    </ol>
+    <ul v-else class="collection">
+      <template v-for="(item,i) in value">
+
+        <ul v-if="typeof item === 'object'" class="collection z-depth-1" :key="item.name">
+          <vue-form-generator
+            v-if="schema.multifield" 
+            class="collection-item"
+            :schema="schema"
+            :model="prepModel(item, schema)"></vue-form-generator>
+        </ul>
+
+        <li v-else class="collection-item" :key="item+i">{{item}}</li>
+
+      </template>
+    </ul>
 	</div>
 </template>
 
@@ -158,16 +155,17 @@
         this.$forceUpdate()
       },
       onRemoveItem(item, index){
-        if(!this.schema.multifield){
-          this.value.splice(index, 1)
-        } else {
-          if(index === this.activeItem) this.activeItem = null
-          item._opDelete = true
-          let modelItem = this.value[index]
-          modelItem._opDelete = true
-          this.$set(this.value, index, modelItem)
+        this.value.splice(index, 1)
+        if( this.schema.multifield ) {
+          if( "path"  in item ) {
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let copy = JSON.parse(JSON.stringify(item));
+            copy._opDelete = true;
+            if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];
+            _deleted[this.schema.model].push(copy)
+          }
+          this.activeItem = null
         }
-        this.$forceUpdate()
       },
       onSetActiveItem(index){
         if(!this.schema.multifield) return
@@ -213,6 +211,7 @@
             }
         }
         this.value.splice(new_index, 0, this.value.splice(old_index, 1)[0]);
+        this.$forceUpdate();
       },
       // animations with Velocity.js
       enter: function (el, done) {

@@ -25,7 +25,7 @@ import javax.inject.Named;
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Height",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-min": 0,
           "x-form-max": 100
         },
@@ -129,7 +129,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Overlay opacity",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 100,
               "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
@@ -183,7 +183,7 @@ public class SpacerModel extends AbstractComponent {
     public SpacerModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-label":"Height","x-form-type":"range","x-form-min":0,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Height","x-form-type":"materialrange","x-form-min":0,"x-form-max":100} */
 	@Inject
 	private String height;
 
@@ -223,7 +223,7 @@ public class SpacerModel extends AbstractComponent {
 	@Default(values ="#ffffff")
 	private String overlaycolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	@Inject
 	@Default(values ="50")
 	private String overlayopacity;
@@ -242,7 +242,7 @@ public class SpacerModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-label":"Height","x-form-type":"range","x-form-min":0,"x-form-max":100} */
+    	/* {"type":"string","x-source":"inject","x-form-label":"Height","x-form-type":"materialrange","x-form-min":0,"x-form-max":100} */
 	public String getHeight() {
 		return height;
 	}
@@ -287,7 +287,7 @@ public class SpacerModel extends AbstractComponent {
 		return overlaycolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	public String getOverlayopacity() {
 		return overlayopacity;
 	}

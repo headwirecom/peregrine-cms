@@ -9,6 +9,7 @@
       "fields" : [
         {
           "type": "input",
+          "inputType": "text",
           "label": "locator",
           "model": "locator"
         },
@@ -22,11 +23,13 @@
     },
     {
       "type": "input",
+      "inputType": "text",
       "label": "Selector",
       "model": "selector"
     },
     {
       "type": "input",
+      "inputType": "text",
       "label": "anchor",
       "model": "anchor"
     }

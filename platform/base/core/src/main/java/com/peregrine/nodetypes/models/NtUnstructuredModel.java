@@ -5,14 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.Exporter;
 
 import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
 
 @Model(adaptables = Resource.class,
        resourceType = {NT_UNSTRUCTURED},
        adapters = IComponent.class)
+@Exporter(name = JACKSON,
+        extensions = JSON)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class NtUnstructuredModel
     extends Container {

@@ -8,7 +8,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Height",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-min": 0,
           "x-form-max": 100 
         },

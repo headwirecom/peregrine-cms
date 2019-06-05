@@ -49,7 +49,7 @@ function compileComponent(file){
 
     // compile the React component and give us a .js
     rollup.rollup({
-        entry: `${basePath}${file}`,
+        input: `${basePath}${file}`,
         plugins: [
             resolve(),
             babel({
@@ -65,16 +65,16 @@ function compileComponent(file){
 
         bundle.write({
             format: 'iife',
-            moduleName: moduleName,
-            dest: `${distBasePath}/js/${nameCamelCase}.js`
+            name: moduleName,
+            file:`${distBasePath}/js/${nameCamelCase}.js`
         }).then( function() {
             updateIndexFiles()
         })
         // alternate method for bundle.write
         // var result = bundle.generate({
         //   format: 'iife',
-        //   moduleName: moduleName,
-        //   dest: `./dist/${name}.js`
+        //   name: moduleName,
+        //   file:`./dist/${name}.js`
         // })
         // fs.writeFile(`dist/${name}.js`, result.code, 'utf8', function(err) {
         //   if(err){ console.log('err: ', err) }

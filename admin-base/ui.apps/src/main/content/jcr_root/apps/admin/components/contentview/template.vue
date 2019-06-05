@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,10 +23,10 @@
   #L%
   -->
 <template>
-    <div 
-        v-bind:class  ="`peregrine-content-view ${viewModeClass}`" 
+    <div
+        v-bind:class  ="`peregrine-content-view ${viewModeClass}`"
         v-on:mouseout = "leftOverlayArea">
-        <div 
+        <div
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
             v-on:scroll    = "onScrollOverlay"
@@ -34,15 +34,15 @@
             v-on:dragover  = "onDragOver"
             v-on:drop.prevent = "onDrop">
             <div class="editview-container" ref="editviewContainer">
-                <div 
+                <div
                     v-bind:class   = "editableClass"
-                    ref            = "editable" 
+                    ref            = "editable"
                     id             = "editable"
-                    :draggable     = "selectedComponentDragable"
+                    :draggable     = "enableEditableFeatures"
                     v-on:dragstart = "onDragStart"
                     v-on:touchstart = "onEditableTouchStart"
                     v-on:touchend  = "onEditableTouchEnd">
-                    <div v-if="enableTools" class="editable-actions">
+                    <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
                                 <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
@@ -67,8 +67,8 @@
         <iframe
             v-on:load    = "onIframeLoaded"
             ref          = "editview"
-            id           = "editview" 
-            v-bind:src   = "pagePath" 
+            id           = "editview"
+            v-bind:src   = "pagePath"
             frameborder  = "0"></iframe>
     </div>
 </template>
@@ -80,8 +80,6 @@ export default {
             /* is this a touch device */
             this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
             this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-            console.log('isTouch? ', this.isTouch)
-            console.log('isIOS? ', this.isIOS)
             if(this.isTouch){
                 /* selected components are not immediatly draggable on touch devices */
                 this.selectedComponentDragable = false
@@ -139,7 +137,7 @@ export default {
         viewModeClass: function() {
             return this.viewMode
         },
-        enableTools: function() {
+        enableEditableFeatures: function() {
             var targetEl = this.selectedComponent
             if(targetEl == null || targetEl === undefined) return false
             const path = targetEl.getAttribute('data-per-path')
@@ -159,12 +157,12 @@ export default {
             /* check no field is currently in focus */
             if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
                 return false
-            } else { 
+            } else {
                 var ctrlKey = 17
                 var cmdKey = 91
                 if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                    this.ctrlDown = true   
-                } 
+                    this.ctrlDown = true
+                }
                 if(this.selectedComponent !== null){
                     var cKey = 67
                     var vKey = 86
@@ -189,7 +187,7 @@ export default {
                 var cmdKey = 91
                 if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
                     this.ctrlDown = false
-                } 
+                }
             }
         },
 
@@ -252,7 +250,6 @@ export default {
                 /* ios device, use scroll alternative */
                 this.$nextTick(function() {
                     editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
-                    //editview.contentWindow.document.body.style.top = `-${this.scrollTop}px` 
                 })
             } else {
                 /* is not IOS device, scroll normally */
@@ -397,7 +394,7 @@ export default {
             }
         },
 
-        /* Drag and Drop ===========================        
+        /* Drag and Drop ===========================
         ============================================ */
         onDragStart(ev) {
             if(this.selectedComponent === null)return
@@ -442,23 +439,38 @@ export default {
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
             var targetEl = this.getTargetEl(ev)
-            var componentPath = ev.dataTransfer.getData('text')
             if(typeof targetEl === 'undefined' || targetEl === null){
                 return false
             }
-            if(targetEl.getAttribute('data-per-path') === componentPath) {
+            var targetPath = targetEl.getAttribute('data-per-path');
+            var componentPath = ev.dataTransfer.getData('text')
+
+            if(targetPath === componentPath) {
                 ev.dataTransfer.clearData('text')
-                return false 
+                return false
             }
+
             var view = $perAdminApp.getView()
-            var payload = { 
-                pagePath : view.pageView.path, 
-                path: targetEl.getAttribute('data-per-path'), 
-                component: componentPath, 
-                drop: this.dropPosition 
+            var payload = {
+                pagePath : view.pageView.path,
+                path: targetEl.getAttribute('data-per-path'),
+                component: componentPath,
+                drop: this.dropPosition
             }
             var addOrMove
-            componentPath.includes('/components/') ? addOrMove = 'addComponentToPath' : addOrMove = 'moveComponentToPath'
+            if(componentPath.includes('/components/')) {
+                addOrMove = 'addComponentToPath';
+            } else {
+                addOrMove = 'moveComponentToPath';
+                var targetNode = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetPath)
+                if((!targetNode) || (targetNode.fromTemplate)) {
+                    $perAdminApp.notifyUser('template component', 'You cannot drag a component into a template section', {
+                        complete: this.removeEditOverlay
+                    })
+                    return false;
+                }
+            }
+
             $perAdminApp.stateAction(addOrMove, payload)
             ev.dataTransfer.clearData('text')
         },
@@ -466,7 +478,7 @@ export default {
         /* Editable methods ========================
         ============================================ */
         onEditableTouchStart: function(ev){
-            this.editableTimer = setTimeout(this.onLongTouchOverlay, 800) 
+            this.editableTimer = setTimeout(this.onLongTouchOverlay, 800)
         },
         onEditableTouchEnd: function(ev){
             clearTimeout(this.editableTimer)
@@ -498,9 +510,9 @@ export default {
             var targetEl = this.selectedComponent
             var view = $perAdminApp.getView()
             var pagePath = view.pageView.path
-            var payload = { 
-                pagePath: view.pageView.path, 
-                path: targetEl.getAttribute('data-per-path') 
+            var payload = {
+                pagePath: view.pageView.path,
+                path: targetEl.getAttribute('data-per-path')
             }
             $perAdminApp.stateAction('deletePageNode',  payload)
             this.editableClass = null
@@ -520,10 +532,10 @@ export default {
             var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
             var dropPosition
             isDropTarget ? dropPosition = 'into' : dropPosition = 'after'
-            var payload = { 
-                pagePath: view.pageView.path, 
+            var payload = {
+                pagePath: view.pageView.path,
                 data: nodeFromClipboard,
-                path: targetEl.getAttribute('data-per-path'), 
+                path: targetEl.getAttribute('data-per-path'),
                 drop: dropPosition
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
@@ -535,4 +547,4 @@ export default {
     }
 }
 </script>
-        
+

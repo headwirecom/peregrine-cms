@@ -1,8 +1,8 @@
 package com.themeclean.models;
 
+import com.peregrine.nodetypes.merge.PageMerge;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.Container;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -11,16 +11,13 @@ import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /*
     //GEN[:DATA
@@ -136,7 +133,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Overlay opacity",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 100,
               "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
@@ -162,7 +159,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Top Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 120,
               "x-form-visible": "model.fullheight != 'true'"
@@ -171,7 +168,7 @@ import javax.inject.Named;
               "type": "string",
               "x-source": "inject",
               "x-form-label": "Bottom Padding",
-              "x-form-type": "range",
+              "x-form-type": "materialrange",
               "x-form-min": 0,
               "x-form-max": 120,
               "x-form-visible": "model.fullheight != 'true'"
@@ -204,7 +201,7 @@ import javax.inject.Named;
 
 //GEN]
 public class BreadcrumbModel extends AbstractComponent {
-	
+  
 	public BreadcrumbModel(Resource r) { super(r); }
 
     //GEN[:INJECT
@@ -248,7 +245,7 @@ public class BreadcrumbModel extends AbstractComponent {
 	@Default(values ="#ffffff")
 	private String overlaycolor;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	@Inject
 	@Default(values ="50")
 	private String overlayopacity;
@@ -263,11 +260,11 @@ public class BreadcrumbModel extends AbstractComponent {
 	@Default(values ="#c0c0c0")
 	private String color2;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String toppadding;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	@Inject
 	private String bottompadding;
 
@@ -320,7 +317,7 @@ public class BreadcrumbModel extends AbstractComponent {
 		return overlaycolor;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"range","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Overlay opacity","x-form-type":"materialrange","x-form-min":0,"x-form-max":100,"x-form-visible":"model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'","x-default":"50"} */
 	public String getOverlayopacity() {
 		return overlayopacity;
 	}
@@ -335,12 +332,12 @@ public class BreadcrumbModel extends AbstractComponent {
 		return color2;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Top Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getToppadding() {
 		return toppadding;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"range","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Bottom Padding","x-form-type":"materialrange","x-form-min":0,"x-form-max":120,"x-form-visible":"model.fullheight != 'true'"} */
 	public String getBottompadding() {
 		return bottompadding;
 	}
@@ -356,10 +353,12 @@ public class BreadcrumbModel extends AbstractComponent {
 	
 	/* Method to recursively get child page links, given a root page path */
     public List<TextLink> getLinks(){
-    	
+      
     	links = new ArrayList<TextLink>();
     	if(Integer.parseInt(getLevel()) > 0) {
-    		return getDeepLinks(getResource());
+        Resource page = getRootResource();
+        LOG.debug("page: {}", page);
+    		return getDeepLinks(page != null ? page : getResource());
     	} else {
     		return null;
     	}
@@ -367,7 +366,7 @@ public class BreadcrumbModel extends AbstractComponent {
     }
     
     private List<TextLink> getDeepLinks(Resource resource){
-    	
+
     	try{
 			    		
     		ValueMap props = resource.adaptTo(ValueMap.class);

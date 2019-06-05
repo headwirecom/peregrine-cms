@@ -22,7 +22,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Icon Size",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-default": "25",
           "x-form-min": 0,
           "x-form-max": 150

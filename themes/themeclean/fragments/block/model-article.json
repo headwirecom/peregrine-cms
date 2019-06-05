@@ -96,7 +96,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Overlay opacity",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-min": 0,
           "x-form-max": 100,
           "x-form-visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'",
@@ -122,7 +122,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Top Padding",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-min": 0,
           "x-form-max": 120,
           "x-form-visible": "model.fullheight != 'true'"
@@ -131,7 +131,7 @@
           "type": "string",
           "x-source": "inject",
           "x-form-label": "Bottom Padding",
-          "x-form-type": "range",
+          "x-form-type": "materialrange",
           "x-form-min": 0,
           "x-form-max": 120,
           "x-form-visible": "model.fullheight != 'true'"

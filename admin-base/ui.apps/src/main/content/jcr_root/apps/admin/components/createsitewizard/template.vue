@@ -38,11 +38,11 @@
                             v-for="item in themes"
                             v-on:click.stop.prevent="selectTheme(null, item.name)"
                             v-bind:class="isSelected(item.name) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name }">{{item.name}}</admin-components-action>
+                            <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name, title: item.name }"></admin-components-action>
                         </li>
                     </ul>
-                    <div v-if="!formmodel.templatePath" class="errors">
-                        <span track-by="index">selection required</span>
+                    <div v-if="formErrors.unselectedThemeError" class="errors">
+                        <span track-by="index">Selection required</span>
                     </div>
                 </div>
             </fieldset>
@@ -73,6 +73,9 @@
         data:
             function() {
                 return {
+                    formErrors: {
+                        unselectedThemeError: false
+                    },
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
@@ -99,8 +102,11 @@
                     }
                 }
 
-        }
-        ,
+        },
+        created: function() {
+            //By default select the first item in the list;
+            this.selectTheme(this, this.themes[0].name);
+        },
         computed: {
             pageSchema: function() {
 //                console.log('getting schema')
@@ -120,12 +126,12 @@
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 return themes.filter( (item) => item.name.startsWith('theme'))
             }
-        }
-        ,
+        },
         methods: {
             selectTheme: function(me, target){
-                if(me === null) me = this
-                me.formmodel.templatePath = target
+                if(me === null) me = this;
+                me.formmodel.templatePath = target;
+                this.validateTabOne(me);
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
@@ -133,12 +139,17 @@
             onComplete: function() {
                 $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name })
             },
+            validateTabOne: function(me) {
+                me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);
+
+                return !me.formErrors.unselectedThemeError;
+            },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
 //                    $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
                 }
 
-                return ! ('' === ''+this.formmodel.templatePath)
+                return this.validateTabOne(this);
             },
             nameAvailable(value) {
                 if(!value || value.length === 0) {

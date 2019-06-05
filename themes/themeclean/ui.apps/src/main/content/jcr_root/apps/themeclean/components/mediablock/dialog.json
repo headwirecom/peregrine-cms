@@ -34,8 +34,7 @@
       ]
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "mediaiconsize",
       "label": "Icon Size",
       "model": "mediaiconsize",
@@ -76,8 +75,7 @@
       "visible": "model.mediatype == 'video'"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "mediawidth",
       "label": "Width",
       "model": "mediawidth",
@@ -182,8 +180,7 @@
       "visible": "model.overlay == 'true' and model.backgroundtype == 'image' and model.custombackground == 'true'"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "overlayopacity",
       "label": "Overlay opacity",
       "model": "overlayopacity",
@@ -228,8 +225,7 @@
       "model": "fullheight"
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "toppadding",
       "label": "Top Padding",
       "model": "toppadding",
@@ -238,8 +234,7 @@
       "max": 150
     },
     {
-      "type": "input",
-      "inputType": "range",
+      "type": "material-range",
       "placeholder": "bottompadding",
       "label": "Bottom Padding",
       "model": "bottompadding",

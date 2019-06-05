@@ -35,6 +35,9 @@ public interface IComponent {
     @JsonIgnore
     Resource getResource();
 
+    @JsonIgnore
+    Resource getRootResource();
+
     List<IComponent> getChildren();
 
 }
