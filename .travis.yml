@@ -32,5 +32,18 @@ before_deploy:
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${tag}"
 
 deploy:
+  # Stable release
   provider: script
-  script: docker push ${DOCKER_IMAGE}:latest && docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:${branch}
+  script: docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:${branch}
+  on:
+    branch: master
+  # Development release
+  provider: script
+  script: docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:${branch}
+  on:
+    branch: develop
+  # Feature branch
+  provider: script
+  script: docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:${branch}
+  on:
+    branch: feature/docker
