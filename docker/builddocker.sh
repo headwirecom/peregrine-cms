@@ -5,5 +5,5 @@ if [ "$1" != "skipMaven" ]; then
   cd docker
 fi
 ./fetchfiles.sh
-docker build --tag=gastongonzalez/peregrine-cms .
+docker build --tag=peregrinecms/peregrine-cms .
 

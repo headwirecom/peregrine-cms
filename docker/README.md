@@ -1,19 +1,19 @@
 # Peregrine Docker Image
 
-[![Build Status](https://travis-ci.com/GastonGonzalez/peregrine-cms.svg?branch=master)](https://travis-ci.com/GastonGonzalez/peregrine-cms)
+[![Build Status](https://travis-ci.org/headwirecom/peregrine-cms.svg?branch=develop)](https://travis-ci.org/headwirecom/peregrine-cms)
 
-A prebuilt Peregrine Docker image is available on [Docker Hub](https://cloud.docker.com/repository/docker/reusr1/peregrine-cms).
+A prebuilt Peregrine Docker image is available on [Docker Hub](https://cloud.docker.com/repository/docker/peregrinecms/peregrine-cms).
 
 
 # Running Peregrine in Docker
 
 1. Pull down the Docker image.
 
-        $ docker pull reusr1/peregrine-cms:develop
+        $ docker pull peregrinecms/peregrine-cms:develop
 
 2. Run the container.
 
-        $ docker run -it --rm -p 8080:8080 reusr1/peregrine-cms:develop
+        $ docker run -it -p 8080:8080 peregrinecms/peregrine-cms:develop
 
 3. Open a browser and visit http://localhost:8080. Login with `admin` / ` admin`.
 

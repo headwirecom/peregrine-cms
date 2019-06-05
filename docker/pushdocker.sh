@@ -1,5 +1,5 @@
 #!/bin/bash
 
 imageid=$(docker images peregrine-cms:latest --format {{.ID}})
-docker tag $imageid reusr1/peregrine-cms:develop
-docker push reusr1/peregrine-cms
+docker tag $imageid peregrinecms/peregrine-cms:develop
+docker push peregrinecms/peregrine-cms
