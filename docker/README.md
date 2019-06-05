@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/headwirecom/peregrine-cms.svg?branch=develop)](https://travis-ci.org/headwirecom/peregrine-cms)
 
-A prebuilt Peregrine Docker image is available on [Docker Hub](https://cloud.docker.com/u/peregrinecms/repository/docker/peregrinecms/peregrine-cms).
+A prebuilt Peregrine Docker image is available on [Docker Hub](https://hub.docker.com/r/peregrinecms/peregrine-cms).
 
 
 # Running Peregrine in Docker
