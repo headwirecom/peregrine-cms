@@ -1,5 +1,7 @@
 # Peregrine Docker Image
 
+[![Build Status](https://travis-ci.com/GastonGonzalez/peregrine-cms.svg?branch=master)](https://travis-ci.com/GastonGonzalez/peregrine-cms)
+
 A prebuilt Peregrine Docker image is available on [Docker Hub](https://cloud.docker.com/repository/docker/reusr1/peregrine-cms).
 
 

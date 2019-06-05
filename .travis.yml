@@ -1,4 +1,33 @@
-language: java
 branches:
   only:
   - feature/docker
+
+services:
+- docker
+
+env:
+  global:
+  - DOCKER_IMAGE=gastongonzalez/peregrine-cms
+  - DOCKER_USERNAME=gastongonzalez
+  matrix:
+    secure: L0t0w3Og3DR2GgACNcBHu2XMped2uzsdOpwOCEeanesS1ZIbf6xd0hqyHrREgZZNxoBjOnOC6m89voqQGXRyMceqOcjfhwEBUajT9Yef1yKMF8grsgWkh/hJNQVvED+8fMxWiJ6SaFAWMMGAWQItibO1AiZQHppZXhg+SwAC6Cgq09PIQqqv4J57zHuduPrMTLOLTL/YyHWishB/rJ/17SBneyvTe3VADZKS8yZafz21IlzAqEQCRdAjdlwfSvI5OG2Aitp80D6Cuy2vggi7O5WpNv1f6RL80XfkelfVgpQixT0yoGGoKVlBr1ucWAclv7bGIpxlH6Zi4WsD6B3UfsUZeH2B3CLBbwcSo7sDZ4rVm/dVMuQxl8K6jBjsBFgzbxlyDE0G+SOIZsvcOWYJzyMbAgRWRaZGC73Jjz3Km6o+u2LIQnhvJGTOEG3oBu1LlFWrcmTD7N5nByAd8VyIQz5J7F5Fj+ChTBoFvpAUbKEICDAxjNY+c8lzu1tn//KKUfJ9mwHaC5p1lSYxKqW+SIVIl4AIu/Uzfkqx/Vq7h4Su1Ai3kZf96vM3mwy0G/jcIjQkkPaJbX1bXIsIbWPcnw2hsLXAmCstce97DTmHwxFgEj5ltUQ2w9Uv83gm/p/6bjVOmbSRfpT1reQEdKm6EqBmhvLoLRW20SuBPzRCGaE=
+
+before_script:
+- version="$(awk '$2 == "APP_VERSION" { print $3; exit }' Dockerfile)"
+
+script:
+- cd docker && ./builddocker.sh
+
+after_script:
+- docker images
+
+before_deploy:
+- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${version}"
+
+deploy:
+  provider: script
+  script: docker push ${DOCKER_IMAGE}:latest && docker push ${DOCKER_IMAGE}:${version}
+  on:
+    branch: feature/docker

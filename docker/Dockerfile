@@ -1,5 +1,7 @@
 FROM adoptopenjdk/openjdk8:latest
 
+ENV APP_VERSION 1.0.0
+
 WORKDIR /app
 
 RUN apt update -q \
