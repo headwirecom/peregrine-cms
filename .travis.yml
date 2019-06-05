@@ -10,7 +10,9 @@ env:
   matrix:
   - secure: q5FzGXZ5/BfSY7BsoMFfGPjnIjdwP/OV8TN7Uk62IpmBBv5u/SR47FFP+DxM+rIONkK7Owe3IfC2D5miy3e5eOdyrGAqXmGwxOMbJrVnPA8qKw2nG9xqStn1krReIa53D3iE3bOIV0hgHqmChrTa5l6K0nKRX5wTadsDmi99mT/xI6yEFnd6JoinASNz6eYSOygkiQ2UeWKNQdNHKmwrLz4jj5Qy6RTDiX2AXvaeXshWY4rJ6ZekBQsTD5Q2YUxswpDfFZNW2NZj2/J85eYMP1ntWGtN/Xyteciu7oEGLJXf8JpH4nhmbjEsj9vbUeYC8bKJ345OwrLGWom1+68RYmhUqdrnATf3vQ4HRZfm2AwoG/74fW9tc4JTP/SO+aOJiX6RysY6y8+Doix34vg0TONSZBPzbqWZILj8c0DyGBYH3vw4IPpVwjNk8Xsa6CtYNTzzKkdVwXMFamii9UAV7UW4WQLA3z4CwwLhuuxvrWitVzWnVg54wGSR9yMR/21wMuAKh2ZC2l1Zf2yJMcLaE3jKuojhkI6rssajOrl38d6g34F7ejdQtTeqlVVMDcp0bifllPhJrMmhSRYyOcTX5S6kDVaSm/jb95afi0B5+emKKTgUE0Oi0JU91mEDGc2J5LO/A1Fjp4OwGsmjSmGwHgaFIGvGKfQRiVpNEKCNUEI=
 before_script:
+- branch="$(git branch | grep '*' | awk '{print $2}' | tr '/' '-')"
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
+- tag="${branch}-${version}"
 script:
 - cd docker && ./builddocker.sh
 after_script:
@@ -18,9 +20,9 @@ after_script:
 before_deploy:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${version}"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${tag}"
 deploy:
   provider: script
-  script: docker push ${DOCKER_IMAGE}:latest && docker push ${DOCKER_IMAGE}:${version}
+  script: docker push ${DOCKER_IMAGE}:latest && docker push ${DOCKER_IMAGE}:${tag}
   on:
     branch: feature/docker

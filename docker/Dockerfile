@@ -1,6 +1,6 @@
 FROM adoptopenjdk/openjdk8:latest
 
-ENV APP_VERSION 1.0.0
+ENV APP_VERSION 1.0.0-snapshot
 
 WORKDIR /app
 
