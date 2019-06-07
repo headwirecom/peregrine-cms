@@ -21,5 +21,9 @@ export default {
 		}),
 		commonjs(),
 		vue(),
-		buble({ objectAssign: "Object.assign", transforms: { forOf: false }}) ],
+		buble({
+			objectAssign: "Object.assign",
+			transforms: { forOf: false },
+			exclude: ['node_modules/vue/dist/**']
+		}) ],
 }

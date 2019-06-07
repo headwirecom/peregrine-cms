@@ -25,79 +25,8 @@
 import { LoggerFactory } from './logger.js'
 import experiences from './experiences.js'
 import helper from './helper.js'
+import mdbvue from './mdbvueLoader';
 
-import {
-    mdbAccordion,
-    mdbAccordionPane,
-    mdbBadge,
-    mdbBreadcrumb,
-    mdbBreadcrumbItem,
-    mdbBtn,
-    mdbBtnGroup,
-    mdbCard,
-    mdbCardAvatar,
-    mdbCardUp,
-    mdbCardBody,
-    mdbCardFooter,
-    mdbCardHeader,
-    mdbCardImage,
-    mdbCardText,
-    mdbCardTitle,
-    mdbCardGroup,
-    mdbCarousel,
-    mdbCarouselCaption,
-    mdbCarouselControl,
-    mdbCarouselIndicator,
-    mdbCarouselIndicators,
-    mdbCarouselInner,
-    mdbCarouselItem,
-    mdbLineChart,
-    mdbRadarChart,
-    mdbBarChart,
-    mdbPolarChart,
-    mdbPieChart,
-    mdbDoughnutChart,
-    mdbBubbleChart,
-    mdbScatterChart,
-    mdbHorizontalBarChart,
-    mdbCollapse,
-    mdbCol,
-    mdbContainer,
-    mdbDatatable,
-    mdbDropdown,
-    mdbDropdownItem,
-    mdbDropdownMenu,
-    mdbDropdownToggle,
-    mdbEdgeHeader,
-    mdbIcon,
-    mdbFooter,
-    mdbJumbotron,
-    mdbListGroup,
-    mdbListGroupItem,
-    mdbInput,
-    mdbMask,
-    mdbTextarea,
-    mdbMedia,
-    mdbMediaBody,
-    mdbMediaImage,
-    mdbNavbar,
-    mdbNavItem,
-    mdbNavbarBrand,
-    mdbNavbarNav,
-    mdbNavbarToggler,
-    mdbPageItem,
-    mdbPageNav,
-    mdbPagination,
-    mdbPopover,
-    mdbProgress,
-    mdbRow,
-    mdbTbl,
-    mdbTblBody,
-    mdbTblHead,
-    mdbTooltip,
-    mdbView,
-    mdbFormInline
-} from 'mdbvue';
 
 let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 import state from './state.js'
@@ -194,73 +123,7 @@ function initPeregrineApp() {
     Vue.use(experiences)
     Vue.use(helper)
 
-    Vue.component( 'mdb-accordion', mdbAccordion );
-    Vue.component( 'mdb-accordion-pane', mdbAccordionPane );
-    Vue.component( 'mdb-badge', mdbBadge );
-    Vue.component( 'mdb-breadcrumb', mdbBreadcrumb );
-    Vue.component( 'mdb-breadcrumb-item', mdbBreadcrumbItem);
-    Vue.component( 'mdb-btn', mdbBtn );
-    Vue.component( 'mdb-btn-group', mdbBtnGroup );
-    Vue.component( 'mdb-card', mdbCard );
-    Vue.component( 'mdb-card-avatar', mdbCardAvatar );
-    Vue.component( 'mdb-card-up', mdbCardUp );
-    Vue.component( 'mdb-card-body', mdbCardBody );
-    Vue.component( 'mdb-card-footer', mdbCardFooter );
-    Vue.component( 'mdb-card-header', mdbCardHeader );
-    Vue.component( 'mdb-card-image', mdbCardImage );
-    Vue.component( 'mdb-card-text', mdbCardText );
-    Vue.component( 'mdb-card-title', mdbCardTitle );
-    Vue.component( 'mdb-card-group', mdbCardGroup );
-    Vue.component( 'mdb-carousel', mdbCarousel );
-    Vue.component( 'mdb-carousel-item', mdbCarouselItem );
-    Vue.component( 'mdb-carousel-caption', mdbCarouselCaption );
-    Vue.component( 'mdb-carousel-indicator', mdbCarouselIndicator );
-    Vue.component( 'mdb-carousel-indicators', mdbCarouselIndicators );
-    Vue.component( 'mdb-carousel-control', mdbCarouselControl );
-    Vue.component( 'mdb-carousel-inner', mdbCarouselInner);
-    Vue.component( 'mdb-line-chart', mdbLineChart );
-    Vue.component( 'mdb-radar-chart', mdbRadarChart );
-    Vue.component( 'mdb-bar-chart', mdbBarChart );
-    Vue.component( 'mdb-polar-chart', mdbPolarChart );
-    Vue.component( 'mdb-pie-chart', mdbPieChart );
-    Vue.component( 'mdb-doughnut-chart', mdbDoughnutChart);
-    Vue.component( 'mdb-bubble-chart', mdbBubbleChart );
-    Vue.component( 'mdb-scatter-chart', mdbScatterChart );
-    Vue.component( 'mdb-horizontal-bar-chart', mdbHorizontalBarChart );
-    Vue.component( 'mdb-collapse', mdbCollapse );
-    Vue.component( 'mdb-col', mdbCol );
-    Vue.component( 'mdb-container', mdbContainer );
-    Vue.component( 'mdb-datatable', mdbDatatable );
-    Vue.component( 'mdb-dropdown', mdbDropdown );
-    Vue.component( 'mdb-dropdown-item', mdbDropdownItem );
-    Vue.component( 'mdb-dropdown-menu', mdbDropdownMenu );
-    Vue.component( 'mdb-dropdown-toggle', mdbDropdownToggle );
-    Vue.component( 'mdb-edge-header', mdbEdgeHeader );
-    Vue.component( 'mdb-icon', mdbIcon );
-    Vue.component( 'mdb-footer', mdbFooter );
-    Vue.component( 'mdb-jumbotron', mdbJumbotron );
-    Vue.component( 'mdb-list-group', mdbListGroup );
-    Vue.component( 'mdb-list-group-item', mdbListGroupItem );
-    Vue.component( 'mdb-input', mdbInput );
-    Vue.component( 'mdb-mask', mdbMask );
-    Vue.component( 'mdb-textarea', mdbTextarea );
-    Vue.component( 'mdb-media', mdbMedia );
-    Vue.component( 'mdb-media-body', mdbMediaBody );
-    Vue.component( 'mdb-media-image', mdbMediaImage );
-    Vue.component( 'mdb-navbar', mdbNavbar );
-    Vue.component( 'mdb-navbar-brand', mdbNavbarBrand );
-    Vue.component( 'mdb-navbar-nav', mdbNavbarNav );
-    Vue.component( 'mdb-navbar-toggler', mdbNavbarToggler );
-    Vue.component( 'mdb-nav-item', mdbNavItem );
-    Vue.component( 'mdb-page-item', mdbPageItem );
-    Vue.component( 'mdb-page-nav', mdbPageNav );
-    Vue.component( 'mdb-pagination', mdbPagination );
-    Vue.component( 'mdb-popover', mdbPopover );
-    Vue.component( 'mdb-progress', mdbProgress );
-    Vue.component( 'mdb-row', mdbRow );
-
-    Vue.component( 'mdb-view', mdbView );
-    Vue.component( 'mdb-form-in-line', mdbFormInline );
+    mdbvue.load( Vue );
 
     perVueApp = new Vue({
         el: '#peregrine-app',
