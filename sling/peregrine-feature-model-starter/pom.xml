@@ -34,12 +34,14 @@ under the License.
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>slingfeature-maven-plugin</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3-SNAPSHOT</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <features>target/fm</features>
+                </configuration>
                 <executions>
                     <execution>
                         <id>aggregate-base-feature</id>
-                        <phase>generate-resources</phase>
                         <goals>
                             <goal>aggregate-features</goal>
                         </goals>
@@ -47,20 +49,22 @@ under the License.
                             <aggregates>
                                 <aggregate>
                                     <classifier>example-runtime</classifier>
-                                    <filesInclude>sling/*.json</filesInclude>
-                                    <markAsComplete>true</markAsComplete>
-                                    <frameworkPropertiesOverrides>
-                                        <!-- Framework property overrides go here -->
-                                        <org.osgi.framework.bootdelegation>javax.*</org.osgi.framework.bootdelegation>
-                                    </frameworkPropertiesOverrides>
+                                    <filesInclude>**/*.json</filesInclude>
                                 </aggregate>
                             </aggregates>
                         </configuration>
                     </execution>
                     <execution>
+                        <id>attach-base-feature</id>
+                        <goals>
+                            <goal>attach-features</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>verify-analyze</id>
-                        <phase>process-resources</phase>
-                        <goals><goal>analyse-features</goal></goals>
+                        <goals>
+                            <goal>analyse-features</goal>
+                        </goals>
                         <configuration>
                             <framework>
                                 <groupId>org.apache.felix</groupId>
