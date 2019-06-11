@@ -5,8 +5,17 @@
 #
 
 baseDir=`pwd`
-peregrineHome=$baseDir/../../..
-fmConfigOut=$baseDir/fm.out
+folderName=`basename $baseDir`
+if [ "$folderName" == "bin" ]; then
+    baseDir=$baseDir/..
+fi
+echo "Convert Peregrine, base dir: $baseDir"
+
+peregrineHome=$baseDir/../..
+peregrineConversionDir=$baseDir/peregrine-conversion
+peregrineConversionBinDir=$peregrineConversionDir/bin
+peregrineConversionLibDir=$peregrineConversionDir/lib
+fmConfigOut=$peregrineConversionDir/fm.out
 
 function doConversion {
     name=$1
@@ -33,7 +42,7 @@ function doConversion {
     # -m: merge configs with same ID
     # -i: overwrites the Model Id. Need to escape the dollar sign with \ and to add the package name
     #     use the {{}} escape
-    ./bin/cp2sf \
+    sh $peregrineConversionBinDir/cp2sf \
         -X \
         -m \
         -a $fmOut \
@@ -44,6 +53,16 @@ function doConversion {
 }
 
 # Create Output Folders if not there yet
+if [ ! -d $peregrineConversionDir ]; then
+    mkdir $peregrineConversionDir
+fi
+
+unzip $SFCPC_HOME/target/org.apache.sling.feature.cpconverter-*.zip -d $peregrineConversionDir
+cp -R $peregrineConversionDir/org.apache.sling.feature.cpconverter*/bin $peregrineConversionBinDir
+cp -R $peregrineConversionDir/org.apache.sling.feature.cpconverter*/lib $peregrineConversionLibDir
+rm -rf $peregrineConversionDir/org.apache.sling.feature.cpconverter*
+
+
 if [ ! -d $fmConfigOut ]; then
     mkdir $fmConfigOut
 fi
