@@ -4,7 +4,7 @@
 # Script goes to the given folder, converts the package to Feature model
 #
 
-baseDir=`pwd`
+baseDir=`pwd`/..
 slingDevHome=$1
 conversionDir=$baseDir/peregrine-conversion
 conversionBinDir=$conversionDir/bin

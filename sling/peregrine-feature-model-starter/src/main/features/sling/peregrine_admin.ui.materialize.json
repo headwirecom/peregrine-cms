@@ -1,7 +1,0 @@
-{
-  "id":"${project.groupId}:${project.artifactId}:slingosgifeature:admin.ui.materialize:${project.version}",
-  "description":"JCR Package for Peregrine CMS providing support for Materialize.",
-  "content-packages:ARTIFACTS|true":[
-    "com.peregrine-cms:admin.ui.materialize:zip:cp2fm-converted:1.0-SNAPSHOT"
-  ]
-}

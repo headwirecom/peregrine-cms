@@ -1,5 +1,5 @@
 {
-  "id": "${project.groupId}:${project.artifactId}:slingosgifeature:sling_packageinit:${project.version}",
+  "id":"${project.groupId}:${project.artifactId}:slingfeature:sling_packageinit:${project.version}",
   "variables":{
   },
   "bundles":[

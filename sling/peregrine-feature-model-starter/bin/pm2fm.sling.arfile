@@ -1,0 +1,36 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with this
+# work for additional information regarding copyright ownership. The ASF
+# licenses this file to You under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+# argfile to convert Sling Provisioning Model to Feature Model for Peregrine
+
+# Set the Model Id parts and add the name as classifier
+-g "\${project.groupId}"
+-v "\${project.version}"
+-n "\${project.artifactId}"
+# Override any existing version number
+-V
+# Delete Provisioning Model Name to avoid duplicates
+-D
+# Add Launchpad Framework Properties to make bundles with Java dependencies activate
+-a "launchpad:felix.systempackages.substitution=true"
+-a "launchpad:felix.systempackages.calculate.uses=true"
+# Exclude Lauchpad Installer (provided by the feature launcher) and Repository
+# Initializer as this is embedded in the configuration file
+-e "org.apache.sling.launchpad.installer"
+-e "org.apache.sling.jcr.repoinit.impl.RepositoryInitializer"
+# This is a build for the standalone OAK Segment Node Store which needs
+# these two runmodes but we dropped all others like :webapp or oak_mongo
+-r "oak_tar"
+-r ":standalone"
