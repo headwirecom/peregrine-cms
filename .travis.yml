@@ -38,6 +38,6 @@ deploy:
     branch: master
   # Development release
   provider: script
-  script: docker push ${DOCKER_IMAGE}:${branch}
+  script: docker push ${DOCKER_IMAGE}:${branch} && push ${DOCKER_IMAGE}:latest
   on:
     branch: develop
