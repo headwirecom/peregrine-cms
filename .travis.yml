@@ -33,11 +33,11 @@ before_deploy:
 deploy:
   # Stable release
   provider: script
-  script: docker push ${DOCKER_IMAGE}:${tag} && push ${DOCKER_IMAGE}:latest
+  script: docker push ${DOCKER_IMAGE}:${tag}
   on:
     branch: master
   # Development release
   provider: script
-  script: docker push ${DOCKER_IMAGE}:${branch} && push ${DOCKER_IMAGE}:latest
+  script: docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
   on:
     branch: develop
