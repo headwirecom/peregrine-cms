@@ -69,6 +69,11 @@
             </resource>
 
             <resource>
+              <directory>${basedir}/node_modules/mdbvue/build/css</directory>
+              <targetPath>etc/felibs/pagerender-vue/mdbvue/css</targetPath>
+            </resource>
+
+            <resource>
                 <directory>${basedir}/node_modules/jquery/dist</directory>
                 <targetPath>etc/felibs/pagerender-vue/jquery</targetPath>
             </resource>
@@ -116,7 +121,7 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <configuration>
                     <installDirectory>${nodepath}</installDirectory>
-                </configuration> 
+                </configuration>
                 <executions>
                     <execution>
                         <id>install node and npm</id>
