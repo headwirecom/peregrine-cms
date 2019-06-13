@@ -25,8 +25,7 @@
 import { LoggerFactory } from './logger.js'
 import experiences from './experiences.js'
 import helper from './helper.js'
-import mdbvue from './mdbvueLoader';
-
+import mdbvue from './mdbvueLoaderFree';
 
 let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 import state from './state.js'
