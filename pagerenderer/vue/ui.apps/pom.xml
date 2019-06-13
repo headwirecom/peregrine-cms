@@ -79,8 +79,8 @@
             </resource>
 
             <resource>
-                <directory>${basedir}/node_modules/@fortawesome/fontawesome-free/css</directory>
-                <targetPath>etc/felibs/pagerender-vue/fontawesome-free/css</targetPath>
+                <directory>${basedir}/node_modules/@fortawesome/fontawesome-free/</directory>
+                <targetPath>etc/felibs/pagerender-vue/fontawesome-free/</targetPath>
             </resource>
 
             <resource>
