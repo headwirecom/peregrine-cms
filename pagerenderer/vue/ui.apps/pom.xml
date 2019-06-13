@@ -69,8 +69,8 @@
             </resource>
 
             <resource>
-                <directory>${basedir}/node_modules/mdbvue/build/css</directory>
-                <targetPath>etc/felibs/pagerender-vue/mdbvue/css</targetPath>
+                <directory>${basedir}/node_modules/mdbvue/</directory>
+                <targetPath>etc/felibs/pagerender-vue/mdbvue/</targetPath>
             </resource>
 
             <resource>
