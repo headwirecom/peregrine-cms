@@ -16,6 +16,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.9.0",
     "axios": "^0.18.0",
     "bootstrap": "^4.2.1",
     "fs-extra": "^7.0.1",
