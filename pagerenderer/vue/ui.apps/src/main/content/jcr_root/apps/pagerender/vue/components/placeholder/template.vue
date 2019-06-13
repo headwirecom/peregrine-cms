@@ -23,14 +23,8 @@
   #L%
   -->
 <template>
-    <div v-if="isEditMode"
-         style="border: 1px solid #c0c0c0; clear: both; padding: 4px; margin: 4px; text-align: center; width: 100%;"
-         v-on:allowDrop="allowDrop"
-         v-on:drop="drop"
-         v-bind:data-per-path="model.path"
-         data-per-droptarget="true"
-         v-bind:data-per-location="model.location"
-         v-bind:class="{'from-template': isFromTemplate}">
+    <div v-if="isEditMode" style="border: 1px solid #c0c0c0; clear: both; padding: 4px; margin: 4px; text-align: center; width: 100%;"
+        v-on:allowDrop="allowDrop" v-on:drop="drop" v-bind:data-per-path="model.path" data-per-droptarget="true" v-bind:data-per-location="model.location">
         {{componentName}}
     </div>
 </template>
@@ -52,18 +46,6 @@ export default {
             if(this.model.location === 'before') post = ' start'
             if(this.model.location === 'after') post = ' end'
             return this.model.component.split('-').pop() + post
-        },
-        isFromTemplate: function() {
-            if(window.parent) {
-                let $perAdminApp = window.parent.$perAdminApp;
-                if(window.parent.$perAdminApp && window.parent !== window) {
-                    let page = $perAdminApp.getView().pageView.page;
-                    let path = this.model.path;
-                    let node = $perAdminApp.findNodeFromPath(page, path);
-                    return node.fromTemplate;
-                }
-            }
-            return false
         }
     },
     methods: {
@@ -79,10 +61,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-    div.from-template {
-        font-size: 12px;
-        font-style: italic;
-        border-style: dashed !important;
-    }
-</style>
