@@ -13,9 +13,9 @@ package com.peregrine.pagerender.vue.models;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,7 +25,10 @@ package com.peregrine.pagerender.vue.models;
  * #L%
  */
 
+import com.peregrine.nodetypes.merge.PageMerge;
+import com.peregrine.nodetypes.merge.RenderContext;
 import com.peregrine.nodetypes.models.IComponent;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
@@ -43,6 +46,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SCHEME;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
@@ -96,6 +100,10 @@ public class PageModel
     private String[] domains;
 
     @Inject
+    @Named(SCHEME)
+    private String scheme;
+
+    @Inject
     @Named(TEMPLATE)
     @Optional
     private String template;
@@ -132,7 +140,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(SITE_CSS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getSiteCSS();
                 }
@@ -146,7 +154,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(DOMAINS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getDomains();
                 }
@@ -155,7 +163,22 @@ public class PageModel
         return domains;
     }
 
-    private PageModel getTamplatePageModel() {
+    public String getScheme() {
+        if (scheme == null) {
+            String httpScheme = (String) getInheritedProperty(SCHEME);
+            if (httpScheme != null) {
+                this.scheme = httpScheme;
+                return httpScheme;
+            } else {
+                RenderContext rx = PageMerge.getRenderContext();
+                SlingHttpServletRequest request = rx.getRequest();
+                return request.getScheme() == null ? request.getScheme() : "http://";
+            }
+        }
+        return scheme;
+    }
+
+    private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
@@ -179,7 +202,7 @@ public class PageModel
         if(siteJS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_JS);
             if(value != null && value.length != 0) return value;
-            PageModel templatePageModel = getTamplatePageModel();
+            PageModel templatePageModel = getTemplatePageModel();
             if(templatePageModel != null) {
                 return templatePageModel.getSiteJS();
             }
@@ -223,6 +246,9 @@ public class PageModel
     }
 
     public String getDescription() {
+        if (description == null) {
+            return "sample description";
+        }
         return description;
     }
 }

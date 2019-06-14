@@ -13,9 +13,9 @@ package com.peregrine.adaption.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -41,6 +41,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SCHEME;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
@@ -138,6 +139,11 @@ public class PerPageImpl
             answer = pageManager.getPage(templatePath);
         }
         return answer;
+    }
+
+    @Override
+    public String getScheme() {
+        return getContentProperty(SCHEME, String.class);
     }
 
     @Override

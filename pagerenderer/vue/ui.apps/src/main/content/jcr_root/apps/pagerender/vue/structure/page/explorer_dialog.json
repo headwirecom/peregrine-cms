@@ -61,14 +61,21 @@
       "closeOnSelect": false,
       "taggable": true
     },
-    "valuesFrom": "/content/objects/tags.infinity.json"
+    "valuesFrom": "/content/objects/blog/authors.infinity.json"
   },
   {
     "type": "material-textarea",
     "inputType": "text",
-    "model": "description",
+    "x-model": "description",
     "label": "Description",
     "rows": 10,
     "placeholder": "enter a description for this page"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "x-model": "scheme",
+    "label": "HTTP Scheme",
+    "placeholder": "https://"
   }
 ]}
