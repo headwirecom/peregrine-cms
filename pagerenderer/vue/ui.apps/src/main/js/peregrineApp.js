@@ -310,6 +310,15 @@ function isAuthorModeImpl() {
 
 }
 
+function getAdminAppNodeImpl(path) {
+    log.fine('getAdminAppState: ' + path)
+
+    if(window && window.parent && window.parent.$perAdminApp) {
+        return window.parent.$perAdminApp.getNodeFromViewOrNull(path)
+    }
+    return null
+}
+
 var peregrineApp = {
 
     registerView: function(view) {
@@ -337,8 +346,11 @@ var peregrineApp = {
 
     getView: function() {
        return getPerView()
-    }
+    },
 
+    getAdminAppNode(path) {
+       return getAdminAppNodeImpl(path);
+    }
 }
 
 /**
