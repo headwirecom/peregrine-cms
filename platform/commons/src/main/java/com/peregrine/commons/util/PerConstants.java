@@ -94,8 +94,6 @@ public class PerConstants {
     public static final String CONTENT = "content";
     public static final String TITLE = "title";
 
-    public static final String SCHEME = "scheme";
-
     public static final String PAGE = "page";
     public static final String DROP = "drop";
     public static final String JACKSON = "jackson";

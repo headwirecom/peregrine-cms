@@ -51,9 +51,6 @@ public interface PerPage
     /** @return Template Page of this page if there is a template and is a page otherwise null **/
     public PerPage getTemplate();
 
-    public String getScheme();
-
-
     /** @return
      * The next Page which is the fist found (pre-order):
      * - first child if there are any children

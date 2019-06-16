@@ -46,7 +46,6 @@ import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SCHEME;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
@@ -66,6 +65,8 @@ public class PageModel
     public static final String DOMAINS = "domains";
     public static final String SITE_JS = "siteJS";
     public static final String TEMPLATE = "template";
+
+    public static final String SCHEME = "scheme";
 
     public PageModel(Resource r) {
         super(r);
@@ -140,7 +141,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(SITE_CSS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTemplatePageModel();
+                PageModel templatePageModel = getTamplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getSiteCSS();
                 }
@@ -154,7 +155,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(DOMAINS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTemplatePageModel();
+                PageModel templatePageModel = getTamplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getDomains();
                 }
@@ -178,7 +179,7 @@ public class PageModel
         return scheme;
     }
 
-    private PageModel getTemplatePageModel() {
+    private PageModel getTamplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
@@ -202,7 +203,7 @@ public class PageModel
         if(siteJS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_JS);
             if(value != null && value.length != 0) return value;
-            PageModel templatePageModel = getTemplatePageModel();
+            PageModel templatePageModel = getTamplatePageModel();
             if(templatePageModel != null) {
                 return templatePageModel.getSiteJS();
             }
@@ -246,9 +247,6 @@ public class PageModel
     }
 
     public String getDescription() {
-        if (description == null) {
-            return "sample description";
-        }
         return description;
     }
 }
