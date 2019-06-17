@@ -319,6 +319,15 @@ function getAdminAppNodeImpl(path) {
     return null
 }
 
+function getAdminAppNodeImpl(path) {
+    log.fine('getAdminAppState: ' + path)
+
+    if(window && window.parent && window.parent.$perAdminApp) {
+        return window.parent.$perAdminApp.getNodeFromViewOrNull(path)
+    }
+    return null
+}
+
 var peregrineApp = {
 
     registerView: function(view) {
