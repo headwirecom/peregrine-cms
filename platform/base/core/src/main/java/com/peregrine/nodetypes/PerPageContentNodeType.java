@@ -1,25 +1,15 @@
 package com.peregrine.nodetypes;
 
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE;
-import static com.peregrine.commons.util.PerConstants.SLING_VANITY_PATH;
-
-import com.peregrine.nodetypes.builder.GenericBuilder;
-import com.peregrine.nodetypes.builder.NodeType;
-import com.peregrine.nodetypes.builder.NodeTypeBuilder;
-import com.peregrine.nodetypes.builder.Parent;
-import java.util.Map;
+import com.peregrine.nodetypes.builder.Class3;
+import com.peregrine.nodetypes.builder.NodeTypeDefinitionWrapper;
 import javax.jcr.LoginException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeTypeManager;
-import javax.jcr.nodetype.NodeTypeTemplate;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.api.SlingRepository;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -37,79 +27,48 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true)
 public class PerPageContentNodeType extends AbstractNodeType {
 
-  private static final String[] perPageContentSupertypes =
-      new String[]{NT_UNSTRUCTURED, SLING_RESOURCE, SLING_VANITY_PATH, PER_REPLICATION};
-
-//  @Reference
-//  private ResourceResolverFactory resourceResolverFactory;
+  @Reference
+  SlingRepository slingRepository;
 
   @Reference
-  private SlingRepository slingRepository;
+  ResourceResolverFactory resourceResolverFactory;
 
-  private Session session;
-  private NodeTypeManager nodeTypeManager;
+  @Override
+  public SlingRepository getSlingRepository() {
+    return slingRepository;
+  }
+
+  @Override
+  public ResourceResolverFactory getResourceResolverFactory() {
+    return resourceResolverFactory;
+  }
+
+  @Override
+  protected void registerNodeType() throws RepositoryException {
+
+  }
 
   @Activate
-  protected void activate(Map<String, Object> properties) {
+  public void activate() throws Exception {
+    Session session = null;
     try {
       session = slingRepository.loginAdministrative(null);
-      nodeTypeManager = session.getWorkspace().getNodeTypeManager();
+      NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
 
-
-//      Person value = GenericBuilder.of(Person::new)
-//          .with(Person::setName, "Otto")
-//          .with(Person::setAge, 5)
-//          .build();
-
-      NodeTypeBuilder nodetype = NodeTypeBuilder.newBuilder()
-          .witName("")
-          .withAbstract("")
-          .withMixin("")
+      NodeTypeDefinitionWrapper nodetype = new NodeTypeDefinitionWrapper.Builder<>()
+          .withName("per:Component")
           .build();
+
+
+
+
+
 
     } catch (LoginException e) {
       log.error("Could not get session.", e);
     } catch (RepositoryException e) {
       log.error("Could not get session.", e);
     }
-  }
-
-  @Deactivate
-  protected void deactivate(ComponentContext ctx) {
-    if (session != null && session.isLive()) {
-      session.logout();
-      session = null;
-    }
-  }
-
-
-
-
-
-
-
-
-
-  @Override
-  public Session getSession() {
-    return session;
-  }
-
-  @Override
-  public NodeTypeManager getNodeTypeManager() {
-    return nodeTypeManager;
-  }
-
-  @Override
-  protected void registerNodeType() throws RepositoryException {
-
-    NodeTypeTemplate type = new AbstractNodeType().Builder()
-        .createNodeType()
-        .setPropertyDefinition()
-        .setNodeDefinition()
-        .build();
-
-
   }
 
   private static String getCanonicalLink(final String resourcePath) {
