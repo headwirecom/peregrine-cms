@@ -7,6 +7,13 @@
     "placeholder": "brand name"
   },
   {
+    "type": "pathbrowser",
+    "browserRoot": "/content/assets",
+    "placeholder": "icon location",
+    "label": "Site Icons Location",
+    "model": "siteIcons"
+  },
+  {
     "type": "collection",
     "title": "Site JS Files",
     "model": "siteJS",
