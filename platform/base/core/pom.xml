@@ -248,6 +248,10 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
         </dependency>
+      <dependency>
+        <groupId>org.apache.sling</groupId>
+        <artifactId>org.apache.sling.jcr.api</artifactId>
+      </dependency>
 
     </dependencies>
 

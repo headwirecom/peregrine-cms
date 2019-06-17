@@ -1,4 +1,4 @@
-{ "fields":[
+{ "fields": [
   {
     "type": "input",
     "inputType": "text",
@@ -70,12 +70,5 @@
     "label": "Description",
     "rows": 10,
     "placeholder": "enter a description for this page"
-  },
-  {
-    "type": "input",
-    "inputType": "text",
-    "model": "scheme",
-    "label": "HTTP Scheme",
-    "placeholder": "https://"
   }
 ]}
