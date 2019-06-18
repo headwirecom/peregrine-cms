@@ -8,12 +8,6 @@ import java.util.Locale;
  * Created by Andreas Schaefer on 6/19/17.
  */
 public class PerConstants {
-    public static final String ADMIN_NAME = "admin";
-    public static final String ADMIN_PASSWORD = "admin";
-
-    public static final String PEREGRINE_NAMESPACE_PREFIX = "per";
-    public static final String PEREGRINE_NAMESPACE_URI = "http://www.peregrine-cms.com/jcr/cms/1.0";
-
     public static final String JCR_CONTENT = "jcr:content";
     public static final String JCR_DATA = "jcr:data";
     public static final String NT_FOLDER = "nt:folder";
@@ -37,6 +31,7 @@ public class PerConstants {
     public static final String COMPONENT_PRIMARY_TYPE = "per:Component";
     public static final String PAGE_PRIMARY_TYPE = "per:Page";
     public static final String PAGE_CONTENT_TYPE = "per:PageContent";
+    public static final String PAGE_PROPERTIES = "per:PageProperties";
     public static final String ASSET_PRIMARY_TYPE = "per:Asset";
     public static final String ASSET_CONTENT_TYPE = "per:AssetContent";
     public static final String OBJECT_PRIMARY_TYPE = "per:Object";
