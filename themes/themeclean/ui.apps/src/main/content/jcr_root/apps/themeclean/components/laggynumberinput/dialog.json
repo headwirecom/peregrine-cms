@@ -1,0 +1,13 @@
+{
+  "fields": [
+    {
+      "type": "input",
+      "inputType": "number",
+      "placeholder": "radius",
+      "label": "radius",
+      "model": "radius",
+      "min": 1,
+      "max": 250
+    }
+  ]
+}
