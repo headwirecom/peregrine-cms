@@ -37,18 +37,37 @@
     </pages>
     <assets jcr:primaryType="nt:unstructured" jcr:title="Assets" sling:resourceType="admin/components/iconaction"
             jcr:description="peregrine asset management"
-            action="/content/admin/assets"/>
+            action="/content/admin/assets">
+        <experiences jcr:primaryType="nt:unstructured">
+            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Assets" description="Peregrine Assets Verwaltung"/>
+        </experiences>
+    </assets>
     <objects jcr:primaryType="nt:unstructured" jcr:title="Objects" sling:resourceType="admin/components/iconaction"
               jcr:description="edit and manage objects (common content data for all sites)"
-              action="/content/admin/objects"/>
+              action="/content/admin/objects">
+        <experiences jcr:primaryType="nt:unstructured">
+            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Objekte" description="Objekte bearbeiten und verwalten (gemeinsamer Inhalt für alle Seiten)"/>
+        </experiences>
+    </objects>
     <templates jcr:primaryType="nt:unstructured" jcr:title="Templates" sling:resourceType="admin/components/iconaction"
                jcr:description="edit and manage templates"
-               action="/content/admin/templates"/>
+               action="/content/admin/templates">
+        <experiences jcr:primaryType="nt:unstructured">
+            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Template" description="Templates bearbeiten und verwalten"/>
+        </experiences>
+    </templates>
     <config jcr:primaryType="nt:unstructured" jcr:title="Configuration" sling:resourceType="admin/components/iconaction"
                jcr:description="configuration management"
-               action="/content/admin/config"/>
+               action="/content/admin/config">
+      <experiences jcr:primaryType="nt:unstructured">
+        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Konfiguration" description="Konfigurationsverwaltung"/>
+      </experiences>
+    </config>
     <docs jcr:primaryType="nt:unstructured" jcr:title="Documentation" sling:resourceType="admin/components/iconaction"
-            jcr:description="view the peregrine documentation"
-            action="/content/admin/docs"/>
-    <config/>
+          jcr:description="view the peregrine documentation"
+          action="/content/admin/docs">
+        <experiences jcr:primaryType="nt:unstructured">
+            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Dokumentation" description="Peregrine Dokumentation anschauen"/>
+        </experiences>
+    </docs>
 </jcr:root>
