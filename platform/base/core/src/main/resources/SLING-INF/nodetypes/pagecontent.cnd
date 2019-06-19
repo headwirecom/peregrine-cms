@@ -27,4 +27,4 @@
 [per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath, per:Replication
   orderable
 
-- excludeFromNavigation(boolean)='false' mandatory autocreated
+- excludeFromNavigation(String)="false" mandatory autocreated
