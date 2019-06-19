@@ -17,14 +17,12 @@ public class NodeDefinitionTemplateFactory {
   protected static final class NodeDefinitionTemplateBuilder extends
       NodeDefinitionBuilder<NodeDefinitionTemplate, NodeDefinitionTemplateBuilder> {
 
-    private final NodeTypeTemplateBuilder ntd;
     private final NodeDefinitionTemplate template;
     private final List<String> requiredPrimaryTypes = new ArrayList<String>();
 
     NodeDefinitionTemplateBuilder(NodeTypeManager nodeTypeManager)
         throws UnsupportedRepositoryOperationException, RepositoryException {
       super();
-      this.ntd = ntd; // TODO:
       this.template = nodeTypeManager.createNodeDefinitionTemplate();
     }
 

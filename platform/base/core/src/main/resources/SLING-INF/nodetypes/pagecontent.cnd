@@ -24,6 +24,10 @@
  */
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-[per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath, per:Replication, per:PageProperties
+[per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath, per:Replication
   orderable
+  - protocol (string) = 'https://' mandatory autocreated
+  - hostname (string) = 'www.example.com' mandatory autocreated
+  - canonicalLink (string) = 'Canonical link element' mandatory autocreated
+  - excludeFromNavigation (boolean) = 'false' mandatory autocreated
 

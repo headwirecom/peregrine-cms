@@ -1,84 +1,133 @@
 package com.peregrine.nodetypes;
 
-import static com.peregrine.commons.util.PerConstants.PAGE_PROPERTIES;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 
-import com.peregrine.nodetypes.builder.NodeTypeTemplateFactory;
-import javax.jcr.LoginException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.nodetype.NodeTypeManager;
-import javax.jcr.nodetype.NodeTypeTemplate;
-import org.apache.sling.jcr.api.SlingRepository;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.resource.filter.ResourcePredicates;
+import org.apache.sling.resource.filter.ResourceStream;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Creating mixin NodeType called per:PageProperties to add additional properties to
- * 'per:PageContent' nodetype
- *
- * <p> [per:PageProperties]
- * <p>  mixin
- * <p>  - protocol(string) = 'https://' mandatory autocreate
- * <p>  - hostname(string) = 'www.example.com' mandatory autocreate
- * <p>  - canonicalLink(string) = {@link #getCanonicalLink(String)}' mandatory autocreate
- * <p>  - excludeFromNavigation(boolean) = 'false' mandatory autocreate
- */
-@Component
-public class PagePropertiesNodeType extends AbstractNodeType {
+@Component(immediate = true)
+public class PagePropertiesNodeType {
+
+  private static final Logger log = LoggerFactory.getLogger(PagePropertiesNodeType.class);
+  private static final String SITES_ROOT_PATH = "/content/sites";
+
+  private Resource resource;
 
   @Reference
-  SlingRepository slingRepository;
+  ResourcePredicates resourceFilter;
 
-  private Session session;
+  @Reference
+  ResourceResolverFactory resourceResolverFactory;
 
   @Activate
-  protected void activate(ComponentContext context) throws Exception {
+  public void activate(ComponentContext context) {
+    ResourceResolver resourceResolver = null;
     try {
-      session = slingRepository.loginAdministrative(null);
-      registerNodeType(session);
+      resourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
 
-    } catch (LoginException e) {
-      log.error("Failed to login as default 'admin'");
-    } catch (RepositoryException e) {
-      log.error("Could not return a session to the given workspace.", e);
-    }
-  }
+//      Resource rootResource = resourceResolver.getResource(resourcePath);
+//      ResourceFilterStream resourceStream = rootResource.adaptTo(ResourceFilterStream.class);
+//      resourceStream
+//          .setBranchSelector("[" + JCR_PRIMARY_TYPE + "] is '" + PAGE_PRIMARY_TYPE + "'")
+//          .setChildSelector("[" + JCR_CONTENT + "/" + JCR_PRIMARY_TYPE + "] is '" + PAGE_CONTENT_TYPE + "'")
+//          .stream()
+//          .forEach(r -> {
+//            log.info(r.getPath());
+//          });
 
-  @Deactivate
-  protected void deactivate(ComponentContext componentContext) {
-    if (session != null) {
-      session.logout();
-      session = null;
-    }
-  }
+      resource = resourceResolver.getResource(SITES_ROOT_PATH);
 
-  @Override
-  protected void registerNodeType(Session session) throws RepositoryException {
-    try {
-      NodeTypeManager manager = session.getWorkspace().getNodeTypeManager();
+      String query = new StringBuilder()
+          .append("[" + JCR_PRIMARY_TYPE + "] is '" + PAGE_PRIMARY_TYPE + "'")
+          .append(" and ")
+          .append("[" + JCR_CONTENT + "/" + JCR_PRIMARY_TYPE + "] is '" + PAGE_CONTENT_TYPE + "'")
+          .toString();
+      List<Resource> resources = handle(SITES_ROOT_PATH, query);
 
-      NodeTypeTemplate template = (NodeTypeTemplate) NodeTypeTemplateFactory
-          .newNodeTypeDefinitionBuilder(session)
-          .setName(PAGE_PROPERTIES)
-          .setAbstract(false)
-          .setMixin(true)
-          .setQueryable(false)
-          .setOrderableChildNodes(true)
-          .build();
+      resources.forEach(res -> {
 
-      log.info("Registered NodeType: " + template.getName());
-      manager.registerNodeType(template, true);
 
-    } catch (RepositoryException e) {
+//        ModifiableValueMap map = res.adaptTo(ModifiableValueMap.class);
+//        map.put("canonical_link", res.getPath());
+//        try {
+//          res.getResourceResolver().commit();
+//        } catch (PersistenceException e) {
+//          log.error(e.getMessage());
+//        }
+        log.info("Page -> " + res.getPath() + "  |  " + res.getName());
+
+        ModifiableValueMap map = res.getResourceResolver().getResource(res, "jcr:content").adaptTo(ModifiableValueMap.class);
+        map.put("canonicalLink", res.getPath());
+        try {
+          res.getResourceResolver().getResource(res, "jcr:content").getResourceResolver().commit();
+        } catch (PersistenceException e) {
+          e.printStackTrace();
+        }
+        log.info("Content -> " + res.getResourceResolver().getResource(res, "jcr:content").getPath() + "  |  " + res.getResourceResolver().getResource(res, "jcr:content").getName());
+      });
+
+    } catch (Exception e) {
       log.error(e.getMessage());
+    } finally {
+      resourceResolver.close();
     }
-    session.save();
   }
 
-  private static String getCanonicalLink(final String resourcePath) {
-    return "https://www.example.com";
+//  public String getPagePath(final String resourcePath) {
+//    ResourceResolver resourceResolver = null;
+//    try {
+//      resourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
+//      final PerPageManager pageManager = factory.getAdapter(resourceResolver, PerPageManager.class);
+//      final PerPage containingPage = pageManager.getPage(resourcePath);
+//      if (containingPage != null) {
+//        return containingPage.getPath();
+//      }
+//    } catch (LoginException e) {
+//      log.error("Can not obtain resource resolver: '{}'", e.getMessage());
+//    } finally {
+//      if (resourceResolver != null) {
+//        resourceResolver.close();
+//      }
+//    }
+//    return null;
+//  }
+
+  private List<Resource> handle(String path, String filter) {
+    return new ResourceStream(resource)
+        .stream(r -> true)
+        .filter(resourceFilter.parse(filter))
+        .collect(Collectors.toList());
   }
+
+//  private static void traverseChildren(Resource parent) {
+//    for (Resource child : parent.getChildren()) {
+//      String perPage = PAGE_PRIMARY_TYPE;
+//      if (perPage.equals(child.getResourceType())) {
+//        log.info(child.getPath());
+////        Resource jcrContent = child.getChild(JCR_CONTENT);
+////        Map<String, String> perPageContent = new HashMap<>();
+////
+////        if (jcrContent != null && perPageContent.equals(jcrContent.getValueMap(JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE)) {
+////          log.info(r.getPath());
+////        }
+//      }
+//      traverseChildren(child);
+//    }
+//  }
 }

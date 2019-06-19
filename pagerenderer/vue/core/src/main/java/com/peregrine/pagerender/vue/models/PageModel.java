@@ -25,10 +25,17 @@ package com.peregrine.pagerender.vue.models;
  * #L%
  */
 
-import com.peregrine.nodetypes.merge.PageMerge;
-import com.peregrine.nodetypes.merge.RenderContext;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
+
 import com.peregrine.nodetypes.models.IComponent;
-import org.apache.sling.api.SlingHttpServletRequest;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
@@ -38,215 +45,245 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.factory.ModelFactory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
-
 /**
  * Created by rr on 12/2/2016.
  */
 @Model(adaptables = Resource.class,
-       resourceType = {PR_VUE_COMPONENT_PAGE_TYPE},
-       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-       adapters = IComponent.class)
+    resourceType = {PR_VUE_COMPONENT_PAGE_TYPE},
+    defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+    adapters = IComponent.class)
 @Exporter(name = JACKSON,
-          extensions = JSON)
+    extensions = JSON)
 public class PageModel
     extends Container {
 
-    public static final String SITE_CSS = "siteCSS";
-    public static final String DOMAINS = "domains";
-    public static final String SITE_JS = "siteJS";
-    public static final String TEMPLATE = "template";
+  public static final String SITE_CSS = "siteCSS";
+  public static final String DOMAINS = "domains";
+  public static final String SITE_JS = "siteJS";
+  public static final String TEMPLATE = "template";
 
-    public static final String SCHEME = "scheme";
+  public static final String PROTOCOL = "protocol";
+  public static final String HOSTNAME = "hostname";
+  public static final String CANONICAL_LINK = "canonicalLink";
+  public static final String EXCLUDE_FROM_NAVIGATION = "excludeFromNavigation";
 
-    public PageModel(Resource r) {
-        super(r);
-    }
+  public PageModel(Resource r) {
+    super(r);
+  }
 
-    public Resource getParentContent(Resource res) {
-        Resource page = res.getParent();
-        if(page != null) {
-            Resource parentPage = page.getParent();
-            if(parentPage != null) {
-                if(PAGE_PRIMARY_TYPE.equals(parentPage.getResourceType())) {
-                    Resource child = parentPage.getChild(JCR_CONTENT);
-                    return child;
-                }
-            }
+  public Resource getParentContent(Resource res) {
+    Resource page = res.getParent();
+    if (page != null) {
+      Resource parentPage = page.getParent();
+      if (parentPage != null) {
+        if (PAGE_PRIMARY_TYPE.equals(parentPage.getResourceType())) {
+          Resource child = parentPage.getChild(JCR_CONTENT);
+          return child;
         }
-        return null;
+      }
     }
+    return null;
+  }
 
-    @Inject private ModelFactory modelFactory;
+  @Inject
+  private ModelFactory modelFactory;
 
-    @Inject
-    @Optional
-    private String[] siteCSS;
+  @Inject
+  @Optional
+  private String[] siteCSS;
 
-    @Inject
-    @Optional
-    private String[] siteJS;
+  @Inject
+  @Optional
+  private String[] siteJS;
 
-    @Inject
-    @Optional
-    private String[] domains;
+  @Inject
+  @Optional
+  private String[] domains;
 
-    @Inject
-    @Named(SCHEME)
-    private String scheme;
+  @Inject
+  @Named(PROTOCOL)
+  private String protocol;
 
-    @Inject
-    @Named(TEMPLATE)
-    @Optional
-    private String template;
+  @Inject
+  @Named(HOSTNAME)
+  private String hostname;
 
-    @Inject
-    @Named(JCR_TITLE)
-    @Optional
-    private String title;
+  @Inject
+  @Named(CANONICAL_LINK)
+  private String canonicalLink;
 
-    @Inject private String dataFrom;
+  @Inject
+  @Named(EXCLUDE_FROM_NAVIGATION)
+  private boolean excludeFromNavigation;
 
-    @Inject private String dataDefault;
+  @Inject
+  @Named(TEMPLATE)
+  @Optional
+  private String template;
 
-    @Inject private String[] loaders;
+  @Inject
+  @Named(JCR_TITLE)
+  @Optional
+  private String title;
 
-    @Inject private String[] suffixToParameter;
+  @Inject
+  private String dataFrom;
 
-    @Inject private String tags;
+  @Inject
+  private String dataDefault;
 
-    @Inject private String description;
+  @Inject
+  private String[] loaders;
 
-    public String getSiteRoot() {
-        String path = getPagePath();
-        String[] segments = path.split(SLASH);
-        return String.join(SLASH, segments[0], segments[1], segments[2], segments[3]);
-    }
+  @Inject
+  private String[] suffixToParameter;
 
-    public String getPagePath() {
-        return getResource().getParent().getPath();
-    }
+  @Inject
+  private String tags;
 
-    public String[] getSiteCSS() {
-        if(siteCSS == null) {
-            String[] value = (String[]) getInheritedProperty(SITE_CSS);
-            if(value != null && value.length != 0) return value;
-            if(getTemplate() != null) {
-                PageModel templatePageModel = getTemplatePageModel();
-                if(templatePageModel != null) {
-                    return templatePageModel.getSiteCSS();
-                }
-            }
+  @Inject
+  private String description;
+
+  public String getSiteRoot() {
+    String path = getPagePath();
+    String[] segments = path.split(SLASH);
+    return String.join(SLASH, segments[0], segments[1], segments[2], segments[3]);
+  }
+
+  public String getPagePath() {
+    return getResource().getParent().getPath();
+  }
+
+  public String[] getSiteCSS() {
+    if (siteCSS == null) {
+      String[] value = (String[]) getInheritedProperty(SITE_CSS);
+      if (value != null && value.length != 0) {
+        return value;
+      }
+      if (getTemplate() != null) {
+        PageModel templatePageModel = getTemplatePageModel();
+        if (templatePageModel != null) {
+          return templatePageModel.getSiteCSS();
         }
-        return siteCSS;
+      }
     }
+    return siteCSS;
+  }
 
-    public String[] getDomains() {
-        if(domains == null) {
-            String[] value = (String[]) getInheritedProperty(DOMAINS);
-            if(value != null && value.length != 0) return value;
-            if(getTemplate() != null) {
-                PageModel templatePageModel = getTemplatePageModel();
-                if(templatePageModel != null) {
-                    return templatePageModel.getDomains();
-                }
-            }
+  public String[] getDomains() {
+    if (domains == null) {
+      String[] value = (String[]) getInheritedProperty(DOMAINS);
+      if (value != null && value.length != 0) {
+        return value;
+      }
+      if (getTemplate() != null) {
+        PageModel templatePageModel = getTemplatePageModel();
+        if (templatePageModel != null) {
+          return templatePageModel.getDomains();
         }
-        return domains;
+      }
     }
+    return domains;
+  }
 
-    public String getScheme() {
-        if (scheme == null) {
-            String httpScheme = (String) getInheritedProperty(SCHEME);
-            if (httpScheme != null) {
-                this.scheme = httpScheme;
-                return httpScheme;
-            } else {
-                RenderContext rx = PageMerge.getRenderContext();
-                SlingHttpServletRequest request = rx.getRequest();
-                return request.getScheme() == null ? request.getScheme() : "http://";
-            }
-        }
-        return scheme;
+  public String getProtocol() {
+    if (protocol == null || protocol.equals("")) {
+      return "test protocol";
     }
+    return canonicalLink;
+  }
 
-    private PageModel getTemplatePageModel() {
-        String template = getTemplate();
-        if(template == null) return null;
-        Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
-        return (PageModel) modelFactory.getModelFromResource(templateResource);
+  public String getHostname() {
+    if (hostname == null || hostname.equals("")) {
+      return "test hostname";
     }
+    return hostname;
+  }
 
-    private Object getInheritedProperty(String propertyName) {
-        Resource parentContent = getParentContent(getResource());
-        while(parentContent != null) {
-            ValueMap props = ResourceUtil.getValueMap(parentContent);
-            Object value = props.get(propertyName);
-            if(value != null) {
-                return value;
-            }
-            parentContent = getParentContent(parentContent);
-        }
-        return null;
+  public String getCanonicalLink() {
+    if (canonicalLink == null || canonicalLink.equals("")) {
+      return "test link";
     }
+    return canonicalLink;
+  }
 
-    public String[] getSiteJS() {
-        if(siteJS == null) {
-            String[] value = (String[]) getInheritedProperty(SITE_JS);
-            if(value != null && value.length != 0) return value;
-            PageModel templatePageModel = getTemplatePageModel();
-            if(templatePageModel != null) {
-                return templatePageModel.getSiteJS();
-            }
-        }
-        return siteJS;
-    }
+  public boolean isExcludeFromNavigation() {
+    return excludeFromNavigation;
+  }
 
-    public String getTemplate() {
-        if(template == null) {
-            String value = (String) getInheritedProperty(TEMPLATE);
-            if(value != null) {
-                this.template = template;
-                return value;
-            }
-        }
-        return template;
+  private PageModel getTemplatePageModel() {
+    String template = getTemplate();
+    if (template == null) {
+      return null;
     }
+    Resource templateResource = getResource().getResourceResolver()
+        .getResource(getTemplate() + SLASH + JCR_CONTENT);
+    return (PageModel) modelFactory.getModelFromResource(templateResource);
+  }
 
-    public String getTitle() {
-        return title;
+  private Object getInheritedProperty(String propertyName) {
+    Resource parentContent = getParentContent(getResource());
+    while (parentContent != null) {
+      ValueMap props = ResourceUtil.getValueMap(parentContent);
+      Object value = props.get(propertyName);
+      if (value != null) {
+        return value;
+      }
+      parentContent = getParentContent(parentContent);
     }
+    return null;
+  }
 
-    public String getDataFrom() {
-        return dataFrom;
+  public String[] getSiteJS() {
+    if (siteJS == null) {
+      String[] value = (String[]) getInheritedProperty(SITE_JS);
+      if (value != null && value.length != 0) {
+        return value;
+      }
+      PageModel templatePageModel = getTemplatePageModel();
+      if (templatePageModel != null) {
+        return templatePageModel.getSiteJS();
+      }
     }
+    return siteJS;
+  }
 
-    public String getDataDefault() {
-        return dataDefault;
+  public String getTemplate() {
+    if (template == null) {
+      String value = (String) getInheritedProperty(TEMPLATE);
+      if (value != null) {
+        this.template = template;
+        return value;
+      }
     }
+    return template;
+  }
 
-    public String[] getLoaders() {
-        return loaders;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public String[] getSuffixToParameter() {
-        return suffixToParameter;
-    }
+  public String getDataFrom() {
+    return dataFrom;
+  }
 
-    public String getTags() {
-        return tags;
-    }
+  public String getDataDefault() {
+    return dataDefault;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String[] getLoaders() {
+    return loaders;
+  }
+
+  public String[] getSuffixToParameter() {
+    return suffixToParameter;
+  }
+
+  public String getTags() {
+    return tags;
+  }
+
+  public String getDescription() {
+    return description;
+  }
 }
