@@ -69,13 +69,18 @@
             </resource>
 
             <resource>
-                <directory>${basedir}/node_modules/mdbvue/build/css</directory>
-                <targetPath>etc/felibs/pagerender-vue/mdbvue/css</targetPath>
+                <directory>${basedir}/node_modules/mdbvue/</directory>
+                <targetPath>etc/felibs/pagerender-vue/mdbvue/</targetPath>
             </resource>
 
             <resource>
                 <directory>${basedir}/node_modules/bootstrap-css-only/css</directory>
                 <targetPath>etc/felibs/pagerender-vue/bootstrap/css</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/@fortawesome/fontawesome-free/</directory>
+                <targetPath>etc/felibs/pagerender-vue/fontawesome-free/</targetPath>
             </resource>
 
             <resource>
