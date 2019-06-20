@@ -11,7 +11,7 @@ The vlt sync command can be used to automatically synchronize files between your
 
 ## Installation
 
-1. Download [vault-cli-3.2.8-bin.zip](http://repo1.maven.org/maven2/org/apache/jackrabbit/vault/vault-cli/3.2.8/vault-cli-3.1.8-bin.zip) 
+1. Download [vault-cli-3.2.8-bin.zip](http://repo1.maven.org/maven2/org/apache/jackrabbit/vault/vault-cli/3.2.8/vault-cli-3.2.8-bin.zip) 
 2. Extract downloaded file somewhere on your local file system.
 3. Add bin sub-directory in the extracted folder to your PATH environment variable.
 4. Make sure Peregrine CMS is running.
