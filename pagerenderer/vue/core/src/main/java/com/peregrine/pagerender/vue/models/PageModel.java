@@ -139,7 +139,7 @@ public class PageModel
             if(getTemplate() != null) {
                 PageModel templatePageModel = getTamplatePageModel();
                 if(templatePageModel != null) {
-                    return templatePageModel.getSiteCSS();
+                    return templatePageModel.getPrefetchDNS();
                 }
             }
         }
