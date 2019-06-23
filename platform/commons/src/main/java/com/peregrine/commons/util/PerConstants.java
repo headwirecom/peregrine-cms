@@ -17,8 +17,6 @@ public class PerConstants {
     public static final String JCR_MIME_TYPE = "jcr:mimeType";
     public static final String JCR_PRIMARY_TYPE = "jcr:primaryType";
     public static final String JCR_UUID = "jcr:uuid";
-    public static final String SLING_RESOURCE = "sling:Resource";
-    public static final String SLING_VANITY_PATH = "sling:VanityPath";
     public static final String SLING_RESOURCE_TYPE = "sling:resourceType";
     public static final String SLING_RESOURCE_SUPER_TYPE = "sling:resourceSuperType";
     public static final String SLING_FOLDER = "sling:Folder";
@@ -31,7 +29,6 @@ public class PerConstants {
     public static final String COMPONENT_PRIMARY_TYPE = "per:Component";
     public static final String PAGE_PRIMARY_TYPE = "per:Page";
     public static final String PAGE_CONTENT_TYPE = "per:PageContent";
-    public static final String PAGE_PROPERTIES = "per:PageProperties";
     public static final String ASSET_PRIMARY_TYPE = "per:Asset";
     public static final String ASSET_CONTENT_TYPE = "per:AssetContent";
     public static final String OBJECT_PRIMARY_TYPE = "per:Object";

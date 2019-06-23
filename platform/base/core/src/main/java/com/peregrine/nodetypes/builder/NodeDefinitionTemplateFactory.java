@@ -1,6 +1,5 @@
 package com.peregrine.nodetypes.builder;
 
-import com.peregrine.nodetypes.builder.NodeTypeTemplateFactory.NodeTypeTemplateBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
@@ -40,7 +39,6 @@ public class NodeDefinitionTemplateFactory {
       template.setRequiredPrimaryTypeNames(
           requiredPrimaryTypes.toArray(new String[requiredPrimaryTypes.size()]));
       template.setSameNameSiblings(super.allowSns);
-
 
       return template;
     }
