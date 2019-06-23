@@ -131,7 +131,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(SITE_CSS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getSiteCSS();
                 }
@@ -145,7 +145,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(DOMAINS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getDomains();
                 }
@@ -154,7 +154,7 @@ public class PageModel
         return domains;
     }
 
-    private PageModel getTamplatePageModel() {
+    private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
@@ -178,7 +178,7 @@ public class PageModel
         if(siteJS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_JS);
             if(value != null && value.length != 0) return value;
-            PageModel templatePageModel = getTamplatePageModel();
+            PageModel templatePageModel = getTemplatePageModel();
             if(templatePageModel != null) {
                 return templatePageModel.getSiteJS();
             }
