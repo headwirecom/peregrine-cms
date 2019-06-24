@@ -95,7 +95,8 @@
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/action"
                     target="/content/sites/democontent/jcr%3Acontent.xml"
-                    type="icon"
+                    type="download"
+                    filename="democontent.xml"
                     title="export-page"
                     icon="import_export"
                   />
