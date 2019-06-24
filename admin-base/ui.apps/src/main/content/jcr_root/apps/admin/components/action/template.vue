@@ -48,7 +48,7 @@
         <a
             v-if                    = "model.type === 'download'"
             v-bind:title            = "title"
-            v-bind:href             = "model.target"
+            v-bind:href             = "'/bin/cpm/nodes/source.xml/' + model.target"
             v-bind:download         = "model.filename"
             target                  = "_blank"
             class                   = "btn-floating waves-effect waves-light"
