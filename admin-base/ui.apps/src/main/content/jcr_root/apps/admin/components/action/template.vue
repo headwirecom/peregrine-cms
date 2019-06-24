@@ -49,7 +49,7 @@
             v-if                    = "model.type === 'download'"
             v-bind:title            = "title"
             v-bind:href             = "model.target"
-            download
+            v-bind:download                = "model.filename"
             target                  = "_blank"
             class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
