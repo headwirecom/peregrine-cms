@@ -63,6 +63,7 @@ public class PageModel
     public static final String SITE_JS = "siteJS";
     public static final String TEMPLATE = "template";
 
+
     public PageModel(Resource r) {
         super(r);
     }
@@ -99,7 +100,6 @@ public class PageModel
     @Named(TEMPLATE)
     @Optional
     private String template;
-
     @Inject
     @Named(JCR_TITLE)
     @Optional

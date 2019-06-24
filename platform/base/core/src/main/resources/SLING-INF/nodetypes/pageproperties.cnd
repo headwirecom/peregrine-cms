@@ -28,8 +28,7 @@
 // Mixin node type for additional page properties
 [per:PageProperties]
     mixin
-  - protocol (string) = 'https://' autocreated
-  - hostname (string) = 'www.example.com' autocreated
-  - canonicalLink (uri) = 'https://www.example.com/content/sites/example.html' autocreated
-  - excludeFromNavigation (boolean) = 'false' autocreated
-
+  - protocol (string)
+  - hostname (string)
+  - canonicalLink (string)
+  - excludeFromNavigation (boolean)

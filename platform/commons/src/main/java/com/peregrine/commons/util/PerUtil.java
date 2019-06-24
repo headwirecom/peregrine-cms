@@ -13,9 +13,9 @@ package com.peregrine.commons.util;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,6 +27,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
+import javax.jcr.Node;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -213,6 +214,26 @@ public class PerUtil {
         }
         return answer;
     }
+
+  /**
+   * Takes resource and resource type return the parent resource based on the given type
+   *
+   * @param resource The resource to get the parent from
+   * @param resourceType ResourceType of the resource to be found
+   * @return A resource of provided resourceType otherwise null
+   */
+  public static Resource findParentAs(Resource resource, String resourceType) {
+    try {
+      Node parentNode = resource.adaptTo(Node.class);
+      return (resourceType != null && !resourceType.isEmpty() && !ResourceUtil
+          .isNonExistingResource(resource) && (resource.isResourceType(resourceType) || parentNode
+          .getPrimaryNodeType().isNodeType(resourceType))) ? resource
+          : findParentAs(resource.getParent(), resourceType);
+    } catch (Exception e) {
+      LOG.error(e.getMessage());
+    }
+    return null;
+  }
 
     /**
      * Provides the relative path of a resource to a given root

@@ -75,17 +75,17 @@
                         </Sling-Namespaces>
 
                         <Sling-Nodetypes>
-                            SLING-INF/nodetypes/asset.cnd,
-                            SLING-INF/nodetypes/pagecontent.cnd,
                             SLING-INF/nodetypes/pageproperties.cnd,
-                            SLING-INF/nodetypes/page.cnd,
+                            SLING-INF/nodetypes/replication.cnd,
+                            SLING-INF/nodetypes/asset.cnd,
                             SLING-INF/nodetypes/component.cnd,
+                            SLING-INF/nodetypes/extension.cnd,
                             SLING-INF/nodetypes/felib.cnd,
                             SLING-INF/nodetypes/npmpackageconfig.cnd,
                             SLING-INF/nodetypes/object.cnd,
-                            SLING-INF/nodetypes/replication.cnd,
                             SLING-INF/nodetypes/objectdefinition.cnd,
-                            SLING-INF/nodetypes/extension.cnd
+                            SLING-INF/nodetypes/page.cnd,
+                            SLING-INF/nodetypes/pagecontent.cnd
                         </Sling-Nodetypes>
 
                     </instructions>
