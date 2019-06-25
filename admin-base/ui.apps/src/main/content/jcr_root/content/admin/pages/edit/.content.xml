@@ -88,21 +88,20 @@
                       sling:resourceType="admin/components/action" target="preview" type="icon" title="preview"
                       stateFrom="/state/tools/workspace/preview"
                       command="editPreview" icon="visibility"/>
-
-                  <separator jcr:primaryType="nt:unstructured"
+                    <separator2 jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/separator"/>
-                  <dropdown jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/dropdown"
-                    title="Export">
-                    <export-btn
-                      jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/action"
-                      target="pageView/path"
-                      type="download"
-                      filename="democontent.xml"
-                      title="export-page"
-                      icon="import_export"
-                    />
+                    <dropdown jcr:primaryType="nt:unstructured"
+                      sling:resourceType="admin/components/dropdown"
+                      title="Export">
+                      <export-btn
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="admin/components/action"
+                        target="pageView/path"
+                        type="download"
+                        filename="democontent.xml"
+                        title="export-page"
+                        icon="import_export"
+                      />
                   </dropdown>
                 </subnav>
             </nav>
