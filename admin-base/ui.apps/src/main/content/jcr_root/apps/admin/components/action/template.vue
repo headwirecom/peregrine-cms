@@ -53,7 +53,7 @@
             target                  = "_blank"
             class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
-            <i class="fas fa-download" v-bind:class="isSelected ? 'actionSelected' : ''">
+            <i class="fa fa-download" v-bind:class="isSelected ? 'actionSelected' : ''">
                 {{model.icon ? model.icon : model.title}}
                 <slot></slot>
             </i>
