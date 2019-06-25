@@ -137,15 +137,8 @@ public class PageEventHandlerService implements ResourceChangeListener {
         .filter(resourceFilter.parse(query.toString()))
         .collect(Collectors.toList());
     children.forEach(res -> {
-
       log.info(res.getPath());
       handleProperties(res, true);
-
-      ValueMap properties = PerUtil.getProperties(res);
-      for (Object key : properties.keySet()) {
-        Object value = properties.get(key);
-        log.info("Properties -->  { " + key + " : " + value + " }");
-      }
     });
   }
 
