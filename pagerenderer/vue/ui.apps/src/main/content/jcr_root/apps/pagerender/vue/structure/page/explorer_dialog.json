@@ -80,8 +80,8 @@
       "value": "value"
     },
     "values": [
-      { "name": "https://", "value": "https://"},
-      { "name": "http://", "value": "http://"}
+      { "name": "https://", "value": "https://" },
+      { "name": "http://", "value": "http://" }
     ],
     "hint": "The name of the scheme used to make the request."
   },
@@ -94,7 +94,7 @@
       "value": "value"
     },
     "values": [
-      { "name": "www.example.com", "value": "www.example.com"}
+      { "name": "www.example.com", "value": "www.example.com" }
     ],
     "hint": "The host name of the server to which the request is sent."
   },

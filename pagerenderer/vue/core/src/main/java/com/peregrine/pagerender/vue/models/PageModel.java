@@ -141,7 +141,7 @@ public class PageModel extends Container {
 
     @Inject
     @Named(EXCLUDE_FROM_NAVIGATION)
-    private String excludeFromNavigation;
+    private boolean excludeFromNavigation;
 
     public String getSiteRoot() {
         String path = getPagePath();
@@ -264,7 +264,7 @@ public class PageModel extends Container {
         return canonicalLink;
     }
 
-    public String getExcludeFromNavigation() {
+    public boolean isExcludeFromNavigation() {
         return excludeFromNavigation;
     }
 }
