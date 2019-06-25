@@ -91,15 +91,19 @@
 
                   <separator jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/separator"/>
-                  <export-btn
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/action"
-                    target="pageView/path"
-                    type="download"
-                    filename="democontent.xml"
-                    title="export-page"
-                    icon="import_export"
-                  />
+                  <dropdown jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/dropdown"
+                    title="Export">
+                    <export-btn
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="admin/components/action"
+                      target="pageView/path"
+                      type="download"
+                      filename="democontent.xml"
+                      title="export-page"
+                      icon="import_export"
+                    />
+                  </dropdown>
                 </subnav>
             </nav>
 
