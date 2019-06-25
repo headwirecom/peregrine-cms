@@ -53,6 +53,7 @@
             target                  = "_blank"
             class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
+          {{ model.title }}
           <slot></slot>
         </a>
     </span>
