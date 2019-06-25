@@ -94,7 +94,7 @@
                   <export-btn
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/action"
-                    target="/pageView/path"
+                    target="pageView/path"
                     type="download"
                     filename="democontent.xml"
                     title="export-page"
