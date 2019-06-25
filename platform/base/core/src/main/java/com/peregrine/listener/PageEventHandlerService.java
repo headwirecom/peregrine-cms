@@ -31,7 +31,6 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.resource.filter.ResourcePredicates;
@@ -39,9 +38,6 @@ import org.apache.sling.resource.filter.ResourceStream;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,22 +57,9 @@ public class PageEventHandlerService implements ResourceChangeListener {
 
   private static final Logger log = LoggerFactory.getLogger(PageEventHandlerService.class);
 
+  @Reference
+  @SuppressWarnings("unused")
   private ResourceResolverFactory factory;
-
-  @Reference(
-      cardinality = ReferenceCardinality.MULTIPLE,
-      policy = ReferencePolicy.DYNAMIC,
-      policyOption = ReferencePolicyOption.GREEDY
-  )
-  void bindResourceResolverFactory(ResourceResolverFactory factory) {
-    log.trace("Bind ResourceResolverFactory: '{}'", factory);
-    this.factory = factory;
-  }
-
-  void unbindResourceResolverFactory(ResourceResolverFactory factory) {
-    log.trace("Unbind ResourceResolverFactory: '{}'", factory);
-    this.factory = null;
-  }
 
   @Reference
   private ResourcePredicates resourceFilter;
@@ -87,17 +70,19 @@ public class PageEventHandlerService implements ResourceChangeListener {
   @Override
   public void onChange(final List<ResourceChange> changes) {
     if (changes != null) {
-      try (ResourceResolver resolver = PerUtil.loginService(factory, RESOURCE_CHANGE_LISTENER);) {
-        changes.parallelStream().forEach(change -> {
+      for (ResourceChange change : changes) {
+        log.trace("Resource Change: '{}'", change);
 
-          log.trace("Resource Change: '{}'", change);
+        try (ResourceResolver resolver = PerUtil.loginService(factory, RESOURCE_CHANGE_LISTENER)) {
           Resource resource = PerUtil.getResource(resolver, change.getPath());
           String primaryType = PerUtil.getPrimaryType(resource);
 
           switch (change.getType()) {
             case ADDED:
               log.debug("Change Type ADDED: {}", change);
-              if (PAGE_PRIMARY_TYPE.equals(primaryType)) handlePages(resource);
+              if (PAGE_PRIMARY_TYPE.equals(primaryType)) {
+                handlePages(resource);
+              }
               break;
 
             case CHANGED:
@@ -111,11 +96,11 @@ public class PageEventHandlerService implements ResourceChangeListener {
 
             default:
           }
-        });
-      } catch (LoginException e) {
-        log.error("Exception allocating resource resolver", e);
-      } catch (RuntimeException e) {
-        log.error("Unexpected Exception: '{}'", e.getMessage());
+        } catch (LoginException e) {
+          log.error("Exception allocating resource resolver", e);
+        } catch (RuntimeException e) {
+          log.error("Unexpected Exception: '{}'", e.getMessage());
+        }
       }
     }
   }
@@ -154,17 +139,23 @@ public class PageEventHandlerService implements ResourceChangeListener {
     try {
       ModifiableValueMap props = PerUtil.getModifiableProperties(resource, goToJcrContent);
 
-      if (!props.containsKey(PROTOCOL) || Objects.isNull(props.get(PROTOCOL)) || props.get(PROTOCOL).toString().isEmpty()) {
+      if (!props.containsKey(PROTOCOL) || Objects.isNull(props.get(PROTOCOL)) || props
+          .get(PROTOCOL)
+          .toString().isEmpty()) {
         props.put(PROTOCOL, DEFAULT_PROTOCOL);
       }
-      if (!props.containsKey(HOSTNAME) || Objects.isNull(props.get(HOSTNAME)) || props.get(HOSTNAME).toString().isEmpty()) {
+      if (!props.containsKey(HOSTNAME) || Objects.isNull(props.get(HOSTNAME)) || props
+          .get(HOSTNAME)
+          .toString().isEmpty()) {
         props.put(HOSTNAME, DEFAULT_HOSTNAME);
       }
       props.put(CANONICAL_LINK_ELEMENT, externalizer.buildExternalizedLink(
-          goToJcrContent ? resource.getResourceResolver() : resource.getParent().getResourceResolver(),
+          goToJcrContent ? resource.getResourceResolver()
+              : resource.getParent().getResourceResolver(),
           goToJcrContent ? resource.getPath() : resource.getParent().getPath()) + ".html"
       );
-      if (!props.containsKey(EXCLUDE_FROM_NAVIGATION) || props.get(EXCLUDE_FROM_NAVIGATION) == null) {
+      if (!props.containsKey(EXCLUDE_FROM_NAVIGATION)
+          || props.get(EXCLUDE_FROM_NAVIGATION) == null) {
         props.put(EXCLUDE_FROM_NAVIGATION, false);
       }
 
