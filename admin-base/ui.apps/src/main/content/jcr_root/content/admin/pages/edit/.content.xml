@@ -90,6 +90,20 @@
                       command="editPreview" icon="visibility"/>
                     <separator2 jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/separator"/>
+                  <democontent
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/action"
+                    target="/bin/cpm/nodes/source.xml/content/sites/democontent/jcr:content.xml"
+                    type="download"
+                    filename="democontent.xml"
+                    title="export democontent"/>
+                  <metaprocdeutsch
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/action"
+                    target="/bin/cpm/nodes/source.xml/content/sites/metaprocdeutsch/jcr:content.xml"
+                    type="download"
+                    filename="metaprocdeutsch.xml"
+                    title="export metaprocdeutsch"/>
                     <dropdown jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/dropdown"
                       title="Export">
