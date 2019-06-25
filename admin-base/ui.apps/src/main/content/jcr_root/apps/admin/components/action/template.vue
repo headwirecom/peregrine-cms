@@ -48,15 +48,12 @@
         <a
             v-if                    = "model.type === 'download'"
             v-bind:title            = "title"
-            v-bind:href             = "'/bin/cpm/nodes/source.xml/' + $perAdminApp.getView()"
+            v-bind:href             = "model.target"
             v-bind:download         = "model.filename"
             target                  = "_blank"
             class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
-            <i class="material-icons" v-bind:class="isSelected ? 'actionSelected' : ''">
-                {{model.icon ? model.icon : model.title}}
-                <slot></slot>
-            </i>
+          <slot></slot>
         </a>
     </span>
 </template>

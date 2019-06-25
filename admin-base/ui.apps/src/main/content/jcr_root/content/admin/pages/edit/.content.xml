@@ -93,14 +93,21 @@
                     <dropdown jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/dropdown"
                       title="Export">
-                      <export-btn
+                      <export-democontent
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="admin/components/action"
-                        target="pageView/path"
+                        target="/bin/cpm/nodes/source.xml/content/sites/democontent/jcr:content.xml"
                         type="download"
                         filename="democontent.xml"
                         title="export-page"
-                        icon="import_export"
+                      />
+                      <export-metaprocdeutsch
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="admin/components/action"
+                        target="/bin/cpm/nodes/source.xml/content/sites/metaprocdeutsch/jcr:content.xml"
+                        type="download"
+                        filename="metaprocdeutsch.xml"
+                        title="export-page"
                       />
                   </dropdown>
                 </subnav>
