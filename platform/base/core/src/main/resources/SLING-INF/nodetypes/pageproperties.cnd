@@ -28,7 +28,7 @@
 // Mixin node type for additional page properties
 [per:PageProperties]
     mixin
-  - protocol (string)
-  - hostname (string)
-  - canonicalLink (string)
-  - excludeFromNavigation (boolean)
+  - protocol (string) = '' autocreated
+  - hostname (string) = '' autocreated
+  - canonicalLink (string) = '' autocreated
+  - excludeFromNavigation (boolean) = 'false' autocreated

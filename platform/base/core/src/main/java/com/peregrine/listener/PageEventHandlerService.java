@@ -23,6 +23,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.seo.UrlExternalizer;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -153,15 +154,15 @@ public class PageEventHandlerService implements ResourceChangeListener {
     try {
       ModifiableValueMap props = PerUtil.getModifiableProperties(resource, goToJcrContent);
 
-      if (!props.containsKey(PROTOCOL) || props.get(PROTOCOL) == null || props.get(PROTOCOL).toString().isEmpty()) {
+      if (!props.containsKey(PROTOCOL) || Objects.isNull(props.get(PROTOCOL)) || props.get(PROTOCOL).toString().isEmpty()) {
         props.put(PROTOCOL, DEFAULT_PROTOCOL);
       }
-      if (!props.containsKey(HOSTNAME) || props.get(HOSTNAME) == null || props.get(HOSTNAME).toString().isEmpty()) {
+      if (!props.containsKey(HOSTNAME) || Objects.isNull(props.get(HOSTNAME)) || props.get(HOSTNAME).toString().isEmpty()) {
         props.put(HOSTNAME, DEFAULT_HOSTNAME);
       }
       props.put(CANONICAL_LINK_ELEMENT, externalizer.buildExternalizedLink(
           goToJcrContent ? resource.getResourceResolver() : resource.getParent().getResourceResolver(),
-          goToJcrContent ? resource.getPath() : PerUtil.findParentAs(resource, PAGE_PRIMARY_TYPE).getPath()) + ".html"
+          goToJcrContent ? resource.getPath() : resource.getParent().getPath()) + ".html"
       );
       if (!props.containsKey(EXCLUDE_FROM_NAVIGATION) || props.get(EXCLUDE_FROM_NAVIGATION) == null) {
         props.put(EXCLUDE_FROM_NAVIGATION, false);
