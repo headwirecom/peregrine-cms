@@ -93,17 +93,15 @@
                   <democontent
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/action"
-                    target="/bin/cpm/nodes/source.xml/content/sites/democontent/jcr:content.xml"
+                    target="/bin/cpm/nodes/source.xml/content/sites/democontent/jcr:content"
                     type="download"
-                    filename="democontent.xml"
-                    title="fas fa-download"/>
+                    title="download democontent"/>
                   <metaprocdeutsch
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/action"
-                    target="/bin/cpm/nodes/source.xml/content/sites/metaprocdeutsch/jcr:content.xml"
+                    target="/bin/cpm/nodes/source.xml/content/sites/metaprocdeutsch/jcr:content"
                     type="download"
-                    filename="metaprocdeutsch.xml"
-                    title="fas fa-download"/>
+                    title="download democontent"/>
                 </subnav>
             </nav>
 
