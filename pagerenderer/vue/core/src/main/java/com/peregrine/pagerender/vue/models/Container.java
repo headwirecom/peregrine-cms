@@ -44,9 +44,9 @@ import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_
 /**
  * Created by rr on 12/2/2016.
  */
-@Model(adaptables = Resource.class, resourceType = {
-    PR_VUE_COMPONENT_CONTAINER_TYPE
-}, adapters = IComponent.class)
+@Model(adaptables = Resource.class,
+       resourceType = {PR_VUE_COMPONENT_CONTAINER_TYPE},
+       adapters = IComponent.class)
 @Exporter(name = JACKSON,
           extensions = JSON)
 public class Container extends AbstractComponent {
@@ -64,5 +64,4 @@ public class Container extends AbstractComponent {
     public List<IComponent> getChildren() {
         return children;
     }
-
 }

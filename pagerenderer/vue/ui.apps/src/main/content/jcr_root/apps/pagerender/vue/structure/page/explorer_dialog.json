@@ -94,7 +94,7 @@
       "value": "value"
     },
     "values": [
-      { "name": "www.localhost:8080.com", "value": "www.example.com"}
+      { "name": "www.example.com", "value": "www.example.com"}
     ],
     "hint": "The host name of the server to which the request is sent."
   },

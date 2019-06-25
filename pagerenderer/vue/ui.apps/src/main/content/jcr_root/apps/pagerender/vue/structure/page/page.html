@@ -10,6 +10,8 @@
     <title>${resource.jcr:title}</title>
 
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
+    <link rel="canonical" href="${helper.model.canonicalLink}">
+
     <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
 
     <sly data-sly-include="tracker-head.html"></sly>
@@ -24,8 +26,6 @@
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
             document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
     </script>
-
-
 </head>
 <body>
 <sly data-sly-include="tracker-bodystart.html"></sly>

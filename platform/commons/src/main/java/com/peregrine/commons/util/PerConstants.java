@@ -109,6 +109,10 @@ public class PerConstants {
     public static final String DEPENDENCIES = "dependencies";
 
     public static final String DEFAULT_PROTOCOL = "http://";
-    public static final String DEFAULT_HOSTNAME = "www.localhost:8080";
+    public static final String DEFAULT_HOSTNAME = "www.example.com";
+
+    public static final String STANDALONE = "local";
+    public static final String AUTHOR_RUN_MODE = "author";
+    public static final String PUBLISH_RUN_MODE = "publish";
 }
 

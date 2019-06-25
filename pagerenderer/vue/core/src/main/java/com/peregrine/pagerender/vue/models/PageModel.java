@@ -13,9 +13,9 @@ package com.peregrine.pagerender.vue.models;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -38,11 +38,15 @@ import org.apache.sling.models.factory.ModelFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static com.peregrine.commons.util.PerConstants.CANONICAL_LINK_ELEMENT;
+import static com.peregrine.commons.util.PerConstants.EXCLUDE_FROM_NAVIGATION;
+import static com.peregrine.commons.util.PerConstants.HOSTNAME;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PROTOCOL;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
@@ -55,14 +59,12 @@ import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_
        adapters = IComponent.class)
 @Exporter(name = JACKSON,
           extensions = JSON)
-public class PageModel
-    extends Container {
+public class PageModel extends Container {
 
     public static final String SITE_CSS = "siteCSS";
-    public static final String DOMAINS = "domains";
     public static final String SITE_JS = "siteJS";
+    public static final String DOMAINS = "domains";
     public static final String TEMPLATE = "template";
-
 
     public PageModel(Resource r) {
         super(r);
@@ -82,7 +84,8 @@ public class PageModel
         return null;
     }
 
-    @Inject private ModelFactory modelFactory;
+    @Inject
+    private ModelFactory modelFactory;
 
     @Inject
     @Optional
@@ -100,22 +103,45 @@ public class PageModel
     @Named(TEMPLATE)
     @Optional
     private String template;
+
     @Inject
     @Named(JCR_TITLE)
     @Optional
     private String title;
 
-    @Inject private String dataFrom;
+    @Inject
+    private String dataFrom;
 
-    @Inject private String dataDefault;
+    @Inject
+    private String dataDefault;
 
-    @Inject private String[] loaders;
+    @Inject
+    private String[] loaders;
 
-    @Inject private String[] suffixToParameter;
+    @Inject
+    private String[] suffixToParameter;
 
-    @Inject private String tags;
+    @Inject
+    private String tags;
 
-    @Inject private String description;
+    @Inject
+    private String description;
+
+    @Inject
+    @Named(PROTOCOL)
+    private String protocol;
+
+    @Inject
+    @Named(HOSTNAME)
+    private String hostname;
+
+    @Inject
+    @Named(CANONICAL_LINK_ELEMENT)
+    private String canonicalLink;
+
+    @Inject
+    @Named(EXCLUDE_FROM_NAVIGATION)
+    private String excludeFromNavigation;
 
     public String getSiteRoot() {
         String path = getPagePath();
@@ -141,6 +167,18 @@ public class PageModel
         return siteCSS;
     }
 
+    public String[] getSiteJS() {
+        if(siteJS == null) {
+            String[] value = (String[]) getInheritedProperty(SITE_JS);
+            if(value != null && value.length != 0) return value;
+            PageModel templatePageModel = getTemplatePageModel();
+            if(templatePageModel != null) {
+                return templatePageModel.getSiteJS();
+            }
+        }
+        return siteJS;
+    }
+
     public String[] getDomains() {
         if(domains == null) {
             String[] value = (String[]) getInheritedProperty(DOMAINS);
@@ -153,6 +191,17 @@ public class PageModel
             }
         }
         return domains;
+    }
+
+    public String getTemplate() {
+        if(template == null) {
+            String value = (String) getInheritedProperty(TEMPLATE);
+            if(value != null) {
+                this.template = template;
+                return value;
+            }
+        }
+        return template;
     }
 
     private PageModel getTemplatePageModel() {
@@ -173,29 +222,6 @@ public class PageModel
             parentContent = getParentContent(parentContent);
         }
         return null;
-    }
-
-    public String[] getSiteJS() {
-        if(siteJS == null) {
-            String[] value = (String[]) getInheritedProperty(SITE_JS);
-            if(value != null && value.length != 0) return value;
-            PageModel templatePageModel = getTemplatePageModel();
-            if(templatePageModel != null) {
-                return templatePageModel.getSiteJS();
-            }
-        }
-        return siteJS;
-    }
-
-    public String getTemplate() {
-        if(template == null) {
-            String value = (String) getInheritedProperty(TEMPLATE);
-            if(value != null) {
-                this.template = template;
-                return value;
-            }
-        }
-        return template;
     }
 
     public String getTitle() {
@@ -224,5 +250,21 @@ public class PageModel
 
     public String getDescription() {
         return description;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public String getCanonicalLink() {
+        return canonicalLink;
+    }
+
+    public String getExcludeFromNavigation() {
+        return excludeFromNavigation;
     }
 }

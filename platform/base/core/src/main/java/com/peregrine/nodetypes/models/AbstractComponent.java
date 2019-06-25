@@ -13,9 +13,9 @@ package com.peregrine.nodetypes.models;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -31,8 +31,6 @@ import com.peregrine.nodetypes.merge.PageMerge;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -46,11 +44,10 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
  */
 public class AbstractComponent implements IComponent {
 
-	// private static final Logger LOG = LoggerFactory.getLogger(AbstractComponent.class);
-
     private final Resource resource;
 
-    @Inject @Optional
+    @Inject
+    @Optional
     private List<IComponent> experiences;
 
     public AbstractComponent(Resource resource) {
@@ -88,5 +85,4 @@ public class AbstractComponent implements IComponent {
     public List<IComponent> getExperiences() {
         return experiences;
     }
-
 }

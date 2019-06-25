@@ -21,6 +21,7 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.seo.UrlExternalizer;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.sling.api.resource.LoginException;
@@ -59,7 +60,7 @@ public class PageEventHandlerService implements ResourceChangeListener {
 
   private static final Logger log = LoggerFactory.getLogger(PageEventHandlerService.class);
 
-  private ResourceResolverFactory resourceResolverFactory;
+  private ResourceResolverFactory factory;
 
   @Reference(
       cardinality = ReferenceCardinality.MULTIPLE,
@@ -68,59 +69,52 @@ public class PageEventHandlerService implements ResourceChangeListener {
   )
   void bindResourceResolverFactory(ResourceResolverFactory factory) {
     log.trace("Bind ResourceResolverFactory: '{}'", factory);
-    this.resourceResolverFactory = factory;
+    this.factory = factory;
   }
 
   void unbindResourceResolverFactory(ResourceResolverFactory factory) {
     log.trace("Unbind ResourceResolverFactory: '{}'", factory);
-    this.resourceResolverFactory = null;
+    this.factory = null;
   }
 
   @Reference
   private ResourcePredicates resourceFilter;
 
+  @Reference
+  private UrlExternalizer externalizer;
+
   @Override
   public void onChange(final List<ResourceChange> changes) {
     if (changes != null) {
-      for (ResourceChange change : changes) {
-        log.trace("Resource Change: '{}'", change);
-        ResourceResolver resourceResolver = null;
+      try (ResourceResolver resolver = PerUtil.loginService(factory, RESOURCE_CHANGE_LISTENER);) {
+        changes.parallelStream().forEach(change -> {
 
-        try {
-          resourceResolver = PerUtil
-              .loginService(resourceResolverFactory, RESOURCE_CHANGE_LISTENER);
-          Resource resource = PerUtil.getResource(resourceResolver, change.getPath());
+          log.trace("Resource Change: '{}'", change);
+          Resource resource = PerUtil.getResource(resolver, change.getPath());
           String primaryType = PerUtil.getPrimaryType(resource);
+
           switch (change.getType()) {
             case ADDED:
               log.debug("Change Type ADDED: {}", change);
-              if (PAGE_PRIMARY_TYPE.equals(primaryType)) {
-                handlePages(resource);
-              }
+              if (PAGE_PRIMARY_TYPE.equals(primaryType)) handlePages(resource);
               break;
+
             case CHANGED:
               log.debug("Change Type CHANGED: {}", change);
-              try {
-                handleProperties(resource, PAGE_PRIMARY_TYPE.equals(primaryType));
-              } catch (PersistenceException e) {
-                log.error("Error: '{}', At Resource Path: '{}', Property Name: '{}'",
-                    e.getMessage(), e.getResourcePath(), e.getPropertyName());
-              }
+              handleProperties(resource, PAGE_PRIMARY_TYPE.equals(primaryType));
               break;
+
             case REMOVED:
               log.debug("Change Type REMOVED: {}", change);
               break;
+
             default:
           }
-        } catch (LoginException e) {
-          log.error("Exception allocating resource resolver", e);
-        } catch (RuntimeException e) {
-          log.error("Unexpected Exception: '{}'", e.getMessage());
-        } finally {
-          if (resourceResolver != null) {
-            resourceResolver.close();
-          }
-        }
+        });
+      } catch (LoginException e) {
+        log.error("Exception allocating resource resolver", e);
+      } catch (RuntimeException e) {
+        log.error("Unexpected Exception: '{}'", e.getMessage());
       }
     }
   }
@@ -143,13 +137,10 @@ public class PageEventHandlerService implements ResourceChangeListener {
         .filter(resourceFilter.parse(query.toString()))
         .collect(Collectors.toList());
     children.forEach(res -> {
+
       log.info(res.getPath());
-      try {
-        handleProperties(res, true);
-      } catch (PersistenceException e) {
-        log.error("Error: '{}', At Resource Path: '{}', Property Name: '{}'",
-            e.getMessage(), e.getResourcePath(), e.getPropertyName());
-      }
+      handleProperties(res, true);
+
       ValueMap properties = PerUtil.getProperties(res);
       for (Object key : properties.keySet()) {
         Object value = properties.get(key);
@@ -165,35 +156,32 @@ public class PageEventHandlerService implements ResourceChangeListener {
    * @param goToJcrContent If true then if the given resource is not the JCR Content it will look
    * that one up
    */
-  private static void handleProperties(Resource resource, boolean goToJcrContent)
-      throws PersistenceException {
-    ModifiableValueMap props = PerUtil.getModifiableProperties(resource, goToJcrContent);
+  private void handleProperties(Resource resource, boolean goToJcrContent) {
+    try {
+      ModifiableValueMap props = PerUtil.getModifiableProperties(resource, goToJcrContent);
 
-    if (!props.containsKey(PROTOCOL) || props.get(PROTOCOL) == null || ""
-        .equals(props.get(PROTOCOL).toString())) {
-      props.put(PROTOCOL, DEFAULT_PROTOCOL);
-    }
+      if (!props.containsKey(PROTOCOL) || props.get(PROTOCOL) == null || props.get(PROTOCOL).toString().isEmpty()) {
+        props.put(PROTOCOL, DEFAULT_PROTOCOL);
+      }
+      if (!props.containsKey(HOSTNAME) || props.get(HOSTNAME) == null || props.get(HOSTNAME).toString().isEmpty()) {
+        props.put(HOSTNAME, DEFAULT_HOSTNAME);
+      }
+      props.put(CANONICAL_LINK_ELEMENT, externalizer.buildExternalizedLink(
+          goToJcrContent ? resource.getResourceResolver() : resource.getParent().getResourceResolver(),
+          goToJcrContent ? resource.getPath() : PerUtil.findParentAs(resource, PAGE_PRIMARY_TYPE).getPath()) + ".html"
+      );
+      if (!props.containsKey(EXCLUDE_FROM_NAVIGATION) || props.get(EXCLUDE_FROM_NAVIGATION) == null) {
+        props.put(EXCLUDE_FROM_NAVIGATION, false);
+      }
 
-    if (!props.containsKey(HOSTNAME) || props.get(HOSTNAME) == null || ""
-        .equals(props.get(HOSTNAME).toString())) {
-      props.put(HOSTNAME, DEFAULT_HOSTNAME);
-    }
-
-    if (goToJcrContent) {
-      props.put(CANONICAL_LINK_ELEMENT, resource.getPath());
-    } else {
-      props
-          .put(CANONICAL_LINK_ELEMENT, PerUtil.findParentAs(resource, PAGE_PRIMARY_TYPE).getPath());
-    }
-
-    if (!props.containsKey(EXCLUDE_FROM_NAVIGATION) || props.get(EXCLUDE_FROM_NAVIGATION) == null) {
-      props.put(EXCLUDE_FROM_NAVIGATION, false);
-    }
-
-    if (goToJcrContent) {
-      resource.getChild(JCR_CONTENT).getResourceResolver().commit();
-    } else {
-      resource.getResourceResolver().commit();
+      if (goToJcrContent) {
+        resource.getChild(JCR_CONTENT).getResourceResolver().commit();
+      } else {
+        resource.getResourceResolver().commit();
+      }
+    } catch (PersistenceException e) {
+      log.error("Error: '{}', At Resource Path: '{}', Property Name: '{}'",
+          e.getMessage(), e.getResourcePath(), e.getPropertyName());
     }
   }
 }

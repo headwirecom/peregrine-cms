@@ -150,6 +150,11 @@
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
+        </dependency>
     </dependencies>
 
     <profiles>

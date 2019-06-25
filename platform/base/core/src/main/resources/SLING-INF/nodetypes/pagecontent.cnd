@@ -26,3 +26,4 @@
 
 [per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath, per:Replication, per:PageProperties
   orderable
+
