@@ -49,12 +49,14 @@
             v-if                    = "model.type === 'download'"
             v-bind:title            = "title"
             v-bind:href             = "model.target"
-            v-bind:download         = "model.filename"
+            download
             target                  = "_blank"
             class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
-          {{ model.title }}
-          <slot></slot>
+            <i class="material-icons" v-bind:class="isSelected ? 'actionSelected' : ''">
+                {{model.icon ? model.icon : model.title}}
+                <slot></slot>
+            </i>
         </a>
     </span>
 </template>
