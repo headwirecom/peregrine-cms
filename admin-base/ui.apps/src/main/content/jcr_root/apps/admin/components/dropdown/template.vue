@@ -3,7 +3,7 @@
     <button class="dropbtn">{{model.title}}
       <i class="fa fa-caret-down"></i>
     </button>
-    <div class="dropdown-content">
+    <div class="dropdown-content" v-bind:data-per-path="model.path">
       <template v-for="child in model.children">
         <div v-bind:is="child.component" v-bind:model="child"></div>
       </template>
@@ -19,7 +19,6 @@
 <style scoped>
   /* The dropdown container */
   .dropdown {
-    float: left;
     overflow: hidden;
   }
 
@@ -37,6 +36,7 @@
 
   /* Add a red background color to navbar links on hover */
   .navbar a:hover, .dropdown:hover .dropbtn {
+    background-color:white;
   }
 
   /* Dropdown content (hidden by default) */
