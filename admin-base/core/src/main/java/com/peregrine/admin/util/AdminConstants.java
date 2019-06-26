@@ -10,6 +10,7 @@ public class AdminConstants {
     public static final String CONTENT_EXPLORER_COMPONENT_PATH = "admin/components/componentexplorer";
     public static final String CREATE_OBJECT_WIZARD_COMPONENT_PATH = "admin/components/createobjectwizard";
     public static final String DEBUGGER_COMPONENT_PATH = "admin/components/debugger";
+    public static final String DROPDOWN_COMPONENT_PATH = "admin/components/dropdown";
     public static final String EXPLORER_COMPONENT_PATH = "admin/components/explorer";
     public static final String EXTENSION_COMPONENT_PATH = "admin/components/extensions";
     public static final String ICON_ACTION_COMPONENT_PATH = "admin/components/iconaction";
