@@ -27,8 +27,8 @@
     <div class="nav-wrapper blue-grey darken-3">
       <div class="col s12">
         <div class="brand-logo">
-          <admin-components-action 
-            v-bind:model="{ 
+          <admin-components-action
+            v-bind:model="{
               command: 'selectPath', 
               target: '/content/admin',
               classes: 'peregrine-logo',
@@ -72,10 +72,9 @@
         </ul>
       </div>
     </div>
-    <template v-for="child in model.children">
+      <template v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-
+      </template>
 </nav>
 </template>
 
