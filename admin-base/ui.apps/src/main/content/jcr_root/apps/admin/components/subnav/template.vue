@@ -32,7 +32,8 @@
             v-bind:model="{
               command: 'selectPath',
               target: '/bin/cpm/nodes/source.xml' + $root.$data.pageView.path + '/jcr:content',
-              title: 'Export Module',
+              tooltipTitle: 'Export Module',
+              title: 'Export',
               type: 'download'
             }"
         ></admin-components-action>
