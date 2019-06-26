@@ -49,6 +49,7 @@
             v-if                    = "model.type === 'download'"
             v-bind:title            = "title"
             v-bind:href             = "model.target"
+            download
             target                  = "_blank"
             class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
@@ -56,17 +57,6 @@
                 <slot></slot>
             </i>
             {{model.title}}
-        </a>
-        <a
-            v-if                    = "model.type === 'download-text'"
-            v-bind:title            = "title"
-            v-bind:href             = "model.target"
-            download                = ""
-            target                  = "_blank"
-            v-on:click.stop.prevent = "onClick"
-            v-bind:class            = "model.classes">
-            {{ model.title }}
-            <slot></slot>
         </a>
     </span>
 </template>
