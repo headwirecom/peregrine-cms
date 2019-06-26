@@ -27,7 +27,7 @@
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
-        <admin-components-seperator/>
+        <admin-components-separator/>
         <admin-components-action
             v-bind:model="{
               command: 'selectPath',
