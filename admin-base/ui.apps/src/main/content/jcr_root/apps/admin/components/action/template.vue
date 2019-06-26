@@ -55,6 +55,7 @@
             <i class="fa fa-download" v-bind:class="isSelected ? 'actionSelected' : ''">
                 <slot></slot>
             </i>
+            {{model.title}}
         </a>
         <a
             v-if                    = "model.type === 'download-text'"

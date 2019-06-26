@@ -46,14 +46,6 @@
               }"></admin-components-action>
                 </template>
             </template>
-          <admin-components-action
-            v-bind:model="{
-              command: 'selectPath',
-              target: '/bin/cpm/nodes/source.xml' + $root.$data.pageView.path,
-              title: 'Export Module',
-              type: 'download'
-            }"
-          ></admin-components-action>
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
             <li v-if="this.$root.$data.state">
