@@ -27,11 +27,11 @@
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
-        <admin-components-separator/>
+        <admin-components-separator></admin-components-separator>
         <admin-components-action
             v-bind:model="{
               command: 'selectPath',
-              target: '/bin/cpm/nodes/source.xml' + $root.$data.pageView.path + '/jcr:content',
+              target: $root.$data.pageView.path + '/jcr:content.xml',
               tooltipTitle: 'Export Module',
               title: 'Export',
               type: 'download'
