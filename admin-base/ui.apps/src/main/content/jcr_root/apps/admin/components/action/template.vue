@@ -60,7 +60,7 @@
         <a
             v-if                    = "model.type === 'download-text'"
             v-bind:title            = "title"
-            v-bind:href             = "model.target"
+            v-bind:href             = "'data:application/xml;charset=utf=8;' + model.target"
             target                  = "_blank"
             v-on:click.stop.prevent = "onClick"
             v-bind:class            = "model.classes">
