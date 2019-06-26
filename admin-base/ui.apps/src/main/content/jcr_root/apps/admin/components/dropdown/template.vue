@@ -23,6 +23,7 @@
     overflow: hidden;
     display: inline-block;
     vertical-align: middle;
+    height: 40px;
   }
 
   /* Dropdown button */
@@ -31,10 +32,10 @@
     border: none;
     outline: none;
     color: white;
-    padding: 14px 16px;
     background-color: inherit;
     font-family: inherit; /* Important for vertical align on mobile phones */
     margin: 0; /* Important for vertical align on mobile phones */
+    height: inherit;
   }
 
   /* Add a red background color to navbar links on hover */
