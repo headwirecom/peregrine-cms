@@ -61,7 +61,7 @@
             v-if                    = "model.type === 'download-text'"
             v-bind:title            = "title"
             v-bind:href             = "model.target"
-            download
+            download                = ""
             target                  = "_blank"
             v-on:click.stop.prevent = "onClick"
             v-bind:class            = "model.classes">
