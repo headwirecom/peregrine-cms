@@ -2,6 +2,7 @@
   <div class="drpdwn" v-bind:data-per-path="model.path">
     <button class="drpbtn">{{model.title}}
       <i class="fa fa-caret-down"></i>
+      Dropdown
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
@@ -20,6 +21,8 @@
   /* The dropdown container */
   .drpdwn {
     overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
   }
 
   /* Dropdown button */
@@ -62,6 +65,10 @@
   /* Add a grey background color to dropdown links on hover */
   .drpdwn-content a:hover {
     background-color: #ddd;
+  }
+
+  i {
+    height: auto;
   }
 
   /* Show the dropdown menu on hover */
