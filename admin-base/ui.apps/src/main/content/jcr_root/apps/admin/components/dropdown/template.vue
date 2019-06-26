@@ -1,9 +1,9 @@
 <template>
-  <div class="dropdown" v-bind:data-per-path="model.path">
-    <button class="dropbtn">{{model.title}}
+  <div class="drpdwn" v-bind:data-per-path="model.path">
+    <button class="drpbtn">{{model.title}}
       <i class="fa fa-caret-down"></i>
     </button>
-    <div class="dropdown-content" >
+    <div class="drpdwn-content" >
       <template v-for="child in model.children">
         <div v-bind:is="child.component" v-bind:model="child"></div>
       </template>
@@ -18,12 +18,12 @@
 
 <style scoped>
   /* The dropdown container */
-  .dropdown {
+  .drpdwn {
     overflow: hidden;
   }
 
   /* Dropdown button */
-  .dropdown .dropbtn {
+  .drpdwn .drpbtn {
     font-size: 16px;
     border: none;
     outline: none;
@@ -40,7 +40,7 @@
   }
 
   /* Dropdown content (hidden by default) */
-  .dropdown-content {
+  .drpdwn-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -50,7 +50,7 @@
   }
 
   /* Links inside the dropdown */
-  .dropdown-content a {
+  .drpdwn-content a {
     float: none;
     color: black;
     padding: 12px 16px;
@@ -60,12 +60,12 @@
   }
 
   /* Add a grey background color to dropdown links on hover */
-  .dropdown-content a:hover {
+  .drpdwn-content a:hover {
     background-color: #ddd;
   }
 
   /* Show the dropdown menu on hover */
-  .dropdown:hover .dropdown-content {
+  .drpdwn:hover .drpdwn-content {
     display: block;
   }
 </style>
