@@ -1,9 +1,9 @@
 <template>
-  <div class="dropdown">
+  <div class="dropdown" v-bind:data-per-path="model.path">
     <button class="dropbtn">{{model.title}}
       <i class="fa fa-caret-down"></i>
     </button>
-    <div class="dropdown-content" v-bind:data-per-path="model.path">
+    <div class="dropdown-content" >
       <template v-for="child in model.children">
         <div v-bind:is="child.component" v-bind:model="child"></div>
       </template>
