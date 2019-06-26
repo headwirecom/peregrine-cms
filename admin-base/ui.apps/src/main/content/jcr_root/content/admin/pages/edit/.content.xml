@@ -102,6 +102,22 @@
                     target="/bin/cpm/nodes/source.xml/content/sites/metaprocdeutsch/jcr:content"
                     type="download"
                     title="download democontent"/>
+                  <separator3 jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/separator"/>
+                  <export-dropdown jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/dropdown">
+                    <jcr:content
+                      jcr:primaryType="nt:unstructured">
+
+                      <export-democontent
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="admin/components/action"
+                        target="/bin/cpm/nodes/source.xml/content/sites/democontent/jcr:content"
+                        type="download"
+                        title="download democontent"/>
+                    </jcr:content>
+
+                  </export-dropdown>
                 </subnav>
             </nav>
 

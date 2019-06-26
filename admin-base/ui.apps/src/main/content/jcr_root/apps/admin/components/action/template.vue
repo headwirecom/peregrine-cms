@@ -56,6 +56,16 @@
                 <slot></slot>
             </i>
         </a>
+        <a
+            v-if                    = "model.type === 'download-text'"
+            v-bind:title            = "title"
+            v-bind:href             = "model.target"
+            target                  = "_blank"
+            v-on:click.stop.prevent = "onClick"
+            v-bind:class            = "model.classes">
+            {{ model.title }}
+            <slot></slot>
+        </a>
     </span>
 </template>
 
