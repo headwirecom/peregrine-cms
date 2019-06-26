@@ -59,7 +59,7 @@
         <a
             v-if                    = "model.type === 'download-text'"
             v-bind:title            = "title"
-            v-bind:href             = "'/bin/cpm/nodes/source.xml' + getPath()"
+            v-bind:href             = "model.target"
             target                  = "_blank"
             v-on:click.stop.prevent = "onClick"
             v-bind:class            = "model.classes">
@@ -150,11 +150,6 @@
         }
     },
     methods: {
-
-        getPath: function(){
-          console.log( this.$root.$data.pageView.path );
-          return this.$root.$data.pageView.path;
-        },
         /**
          *  triggers the action specified by the model
          *

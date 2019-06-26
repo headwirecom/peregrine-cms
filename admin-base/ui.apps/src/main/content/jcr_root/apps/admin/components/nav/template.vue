@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,7 +29,7 @@
         <div class="brand-logo">
           <admin-components-action
             v-bind:model="{
-              command: 'selectPath', 
+              command: 'selectPath',
               target: '/content/admin',
               classes: 'peregrine-logo',
               tooltipTitle: 'home'
@@ -46,6 +46,14 @@
               }"></admin-components-action>
                 </template>
             </template>
+          <admin-components-action
+            v-bind:model="{
+              command: 'selectPath',
+              target: '/bin/cpm/nodes/source.xml' + $root.$data.pageView.path,
+              title: 'Export Module',
+              type: 'download'
+            }"
+          ></admin-components-action>
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
             <li v-if="this.$root.$data.state">

@@ -88,13 +88,6 @@
                       sling:resourceType="admin/components/action" target="preview" type="icon" title="preview"
                       stateFrom="/state/tools/workspace/preview"
                       command="editPreview" icon="visibility"/>
-                    <separator2 jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/separator"/>
-                  <democontent
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/action"
-                    type="download"
-                    title="export page as xml"/>
                 </subnav>
             </nav>
 
