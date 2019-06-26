@@ -28,5 +28,11 @@ public class DropdownModel extends Container {
 
   public DropdownModel(Resource r) { super(r); }
 
+  @Inject
+  private String title;
+
+  public String getTitle() {
+    return title;
+  }
 }
 
