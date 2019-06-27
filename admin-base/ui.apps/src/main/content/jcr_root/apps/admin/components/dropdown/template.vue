@@ -5,15 +5,26 @@
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
-        <div v-bind:is="child.component" v-bind:model="child"></div>
+        <div v-bind:is="child.component" v-bind:model="child" v-bind:icon="child.icon" v-on:click="onClick"></div>
       </template>
     </div>
   </div>
 </template>
 <script>
   export default {
-    props: ['model']
+    props: ['model'],
+    data: function() {
+      return {
+
+      };
+    },
+    methods: {
+      onClick: function (e) {
+        this.model.icon = this.model.child.icon
+      }
+    }
   }
+
 </script>
 
 <style scoped>
@@ -67,12 +78,12 @@
     background-color: #ddd;
   }
 
-  i {
-    height: auto;
-  }
-
   /* Show the dropdown menu on hover */
   .drpdwn:hover .drpdwn-content {
     display: block;
+  }
+
+  nav i.material-icons {
+    line-height: 40px;
   }
 </style>
