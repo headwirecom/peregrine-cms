@@ -31,6 +31,7 @@
         <admin-components-action
             v-bind:model="{
               command: 'selectPath',
+              download: $root.$data.pageView.path.split('/').reverse()[0],
               target: $root.$data.pageView.path + '/jcr:content.xml',
               tooltipTitle: 'Export Module',
               title: 'Export',
