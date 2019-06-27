@@ -1,7 +1,9 @@
 <template>
   <div class="drpdwn" v-bind:data-per-path="model.path">
     <button class="drpbtn">
-      <i class="material-icons">{{icon}}</i>
+      <a title="screen-dropdown" class="btn-floating waves-effect waves-light">
+        <i class="material-icons">{{icon}}</i>
+      </a>
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
@@ -16,7 +18,7 @@
     computed:{
       icon: function(){
         let currentState = $perAdminApp.getNodeFromViewOrNull("/state/tools/workspace/view")
-        let foundicon = "phone_android";
+        let foundicon = this.model.icon;
 
         this.model.children.forEach( function(child){
           if (child.target === currentState){
@@ -60,9 +62,7 @@
   .drpdwn-content {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
     max-width: 40px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
 
@@ -81,6 +81,10 @@
     background-color: #ddd;
   }
 
+  .drpdwn-content span {
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  }
+
   /* Show the dropdown menu on hover */
   .drpdwn:hover .drpdwn-content {
     display: block;
@@ -88,5 +92,9 @@
 
   nav i.material-icons {
     line-height: 40px;
+  }
+
+  nav i{
+    line-height: inherit;
   }
 </style>
