@@ -1,8 +1,7 @@
 <template>
-  <div class="drpdwn" v-bind:data-per-path="model.path">
-    <button class="drpbtn">{{model.title}}
-      <i class="fa fa-caret-down"></i>
-      Dropdown
+  <div class="drpdwn" v-bind:data-per-path="model.path" v-bind:icon="model.defaulticon">
+    <button class="drpbtn">
+      <i class="material-icons">model.icon</i>
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
