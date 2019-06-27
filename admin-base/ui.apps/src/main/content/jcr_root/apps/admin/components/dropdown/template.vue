@@ -1,7 +1,7 @@
 <template>
   <div class="drpdwn" v-bind:data-per-path="model.path">
     <button class="drpbtn">
-      <i class="material-icons">{{Icon}}</i>
+      <i class="material-icons">{{icon}}</i>
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
@@ -13,8 +13,8 @@
 <script>
   export default {
     props: ['model'],
-    methods:{
-      Icon: function(){
+    computed:{
+      icon: function(){
         let currentState = $perAdminApp.getNodeFromViewOrNull("/state/tools/workspace/view")
         switch(currentState){
           case "mobile": return "phone_android"
