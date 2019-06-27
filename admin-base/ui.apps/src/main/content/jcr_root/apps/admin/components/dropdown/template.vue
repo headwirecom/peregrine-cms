@@ -5,7 +5,7 @@
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
-        <div v-bind:is="child.component" v-bind:model="child" v-on:click="onClick(child.icon)"></div>
+        <div v-bind:is="child.component" v-bind:model="child" v-on:click="onClick(child.component.icon)"></div>
       </template>
     </div>
   </div>
@@ -15,7 +15,7 @@
     props: ['model'],
     methods: {
       onClick: function ( child_icon ) {
-        model.icon = child_icon
+        this.model.icon = child_icon
       }
     }
   }
