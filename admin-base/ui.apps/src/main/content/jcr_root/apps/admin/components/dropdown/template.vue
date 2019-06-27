@@ -15,7 +15,6 @@
     props: ['model'],
     methods: {
       onClick: function ( child_icon ) {
-        this.
         model.icon = child_icon
       }
     }
