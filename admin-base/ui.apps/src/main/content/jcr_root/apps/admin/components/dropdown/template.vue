@@ -13,14 +13,9 @@
 <script>
   export default {
     props: ['model'],
-    data: function() {
-      return {
-
-      };
-    },
     methods: {
       onClick: function (e) {
-        this.model.icon = this.model.child.icon
+        this.model.icon = model.icon
       }
     }
   }
