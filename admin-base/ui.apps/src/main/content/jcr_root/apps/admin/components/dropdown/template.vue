@@ -5,7 +5,11 @@
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
-        <div v-bind:is="child.component" v-bind:model="child" v-on:click="icon=phone_android"></div>
+        <template v-if="child.className==drpdwn-content">
+          <template v-for="child in child.children">
+            <div v-bind:is="child.component" v-bind:model="child" v-on:click="icon=child.icon"></div>
+          </template>
+        </template>
       </template>
     </div>
   </div>
