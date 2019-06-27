@@ -55,6 +55,7 @@ public class PerConstants {
     public static final String SLASH = "/";
     public static final String DASH = "-";
 
+    public static final String XML_MIME_TYPE = "application/xml";
     public static final String JSON_MIME_TYPE = "application/json";
     public static final String HTML_MIME_TYPE = "text/html";
     public static final String DATA_JSON_EXTENSION = ".data.json";
@@ -99,19 +100,24 @@ public class PerConstants {
     public static final String DROP = "drop";
     public static final String JACKSON = "jackson";
     public static final String JSON = "json";
+    public static final String XML = "xml";
 
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
     public static final String DEPENDENCIES = "dependencies";
 
     public static final String PROTOCOL = "protocol";
-    public static final String DEFAULT_PROTOCOL = "https://";
-
     public static final String HOSTNAME = "hostname";
-    public static final String DEFAULT_HOSTNAME = "www.metaproc.com";
-
     public static final String CANONICAL_LINK_ELEMENT = "canonicalLink";
     public static final String HIDE_IN_NAVIGATION = "hideInNav";
+    public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
+    public static final String CHANGE_FREQ = "changefreq";
+    public static final String PRIORITY = "priority";
+
+    public static final String DEFAULT_PROTOCOL = "https://";
+    public static final String DEFAULT_HOSTNAME = "www.metaproc.com";
+    public static final String DEFAULT_CHANGEFREQ = "weekly";
+    public static final double DEFAULT_PRIORITY = 0.5;
 
     public static final String STANDALONE = "local";
     public static final String AUTHOR_RUN_MODE = "author";
