@@ -1,11 +1,11 @@
 <template>
   <div class="drpdwn" v-bind:data-per-path="model.path">
     <button class="drpbtn">
-      <i class="material-icons">{{icon}}</i>
+      <i class="material-icons">{{Icon}}</i>
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
-        <div v-bind:is="child.component" v-bind:model="child" v-on:click="changeIcon(this.child.icon)"></div>
+        <component v-bind:is="child.component" v-bind:model="child"></component>
       </template>
     </div>
   </div>
@@ -13,15 +13,24 @@
 <script>
   export default {
     props: ['model'],
-    data() {
-      return {
-        icon: this.model.icon
-      }
-    },
-    methods: {
-      changeIcon: function( icon_id ){
-        console.log( "Hello World! %s", icon_id );
-        this.icon = icon_id;
+    methods:{
+      Icon: function(){
+        let currentState = $perAdminApp.getNodeFromViewOrNull("/state/tools/workspace/view")
+        switch(currentState){
+          case "mobile": return "phone_android"
+            break
+          case "mobile-landscape" : return "stay_current_landscape"
+            break
+          case "tablet" : return "tablet_android"
+            break
+          case "tablet-landscape" : return "tablet"
+            break
+          case "laptop" : return "laptop_mac"
+            break
+          case "desktop" : return "desktop_mac"
+            break
+          default : return "phone_android"
+        }
       }
     }
   }
