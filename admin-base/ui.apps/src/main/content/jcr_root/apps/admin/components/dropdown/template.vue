@@ -1,11 +1,11 @@
 <template>
-  <div class="drpdwn" v-bind:data-per-path="model.path" v-bind:icon="model.icon">
+  <div class="drpdwn" v-bind:data-per-path="model.path">
     <button class="drpbtn">
       <i class="material-icons">{{model.icon}}</i>
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
-        <div v-bind:is="child.component" v-bind:model="child" v-bind:icon="child.icon" v-on:click="onClick"></div>
+        <div v-bind:is="child.component" v-bind:model="child" v-on:click="onClick(child.icon)"></div>
       </template>
     </div>
   </div>
@@ -14,8 +14,9 @@
   export default {
     props: ['model'],
     methods: {
-      onClick: function (e) {
-        this.model.icon = e.icon
+      onClick: function ( child_icon ) {
+        this.
+        model.icon = child_icon
       }
     }
   }
