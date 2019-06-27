@@ -468,6 +468,9 @@
             viewPage: function(me, target) {
                 alert(target)
             },
+            addSite: function(me, target) {
+                $perAdminApp.stateAction('createSiteWizard', '/content/sites')
+            },
             addPage: function(me, target) {
                 if(me.pt.path === '/content/sites') {
                     $perAdminApp.stateAction('createSiteWizard', me.pt.path)
