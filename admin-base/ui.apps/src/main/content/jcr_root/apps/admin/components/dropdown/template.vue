@@ -16,19 +16,20 @@
     computed:{
       icon: function(){
         let currentState = $perAdminApp.getNodeFromViewOrNull("/state/tools/workspace/view")
+        let foundicon = "phone_android";
         console.log(this.model.children);
         console.log("currentState: %s", currentState);
+
         this.model.children.forEach( function(child){
           console.log("child.target: %s", child.target);
           console.log("== : %s", currentState == child.target );
           console.log("=== : %s", currentState === child.target );
           if (child.target === currentState){
             console.log(child.icon);
-            return child.icon;
-          } else {
-            return "phone_android"
+            foundicon = child.icon;
           }
         });
+        return foundicon
       }
     }
   }
