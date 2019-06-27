@@ -16,6 +16,7 @@
     computed:{
       icon: function(){
         let currentState = $perAdminApp.getNodeFromViewOrNull("/state/tools/workspace/view")
+        console.log($perAdminApp.getNodeFromViewOrNull("/state/tools/workspace"))
         switch(currentState){
           case "mobile": return "phone_android"
             break
