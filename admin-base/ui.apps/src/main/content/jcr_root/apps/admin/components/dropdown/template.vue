@@ -16,22 +16,13 @@
     computed:{
       icon: function(){
         let currentState = $perAdminApp.getNodeFromViewOrNull("/state/tools/workspace/view")
-        console.log($perAdminApp.getNodeFromViewOrNull("/state/tools/workspace"))
-        switch(currentState){
-          case "mobile": return "phone_android"
-            break
-          case "mobile-landscape" : return "stay_current_landscape"
-            break
-          case "tablet" : return "tablet_android"
-            break
-          case "tablet-landscape" : return "tablet"
-            break
-          case "laptop" : return "laptop_mac"
-            break
-          case "desktop" : return "desktop_mac"
-            break
-          default : return "phone_android"
-        }
+        this.model.children.forEach( function(child){
+          if (child.target === currentState){
+            return child.icon
+          } else {
+            return "phone_android"
+          }
+        });
       }
     }
   }
@@ -69,7 +60,7 @@
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 160px;
+    max-width: 40px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
