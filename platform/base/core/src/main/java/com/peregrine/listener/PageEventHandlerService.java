@@ -1,15 +1,11 @@
 package com.peregrine.listener;
 
 import static com.peregrine.commons.util.PerConstants.CANONICAL_LINK_ELEMENT;
-import static com.peregrine.commons.util.PerConstants.DEFAULT_HOSTNAME;
-import static com.peregrine.commons.util.PerConstants.DEFAULT_PROTOCOL;
-import static com.peregrine.commons.util.PerConstants.HIDE_IN_NAVIGATION;
-import static com.peregrine.commons.util.PerConstants.HOSTNAME;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PROTOCOL;
+import static com.peregrine.commons.util.PerConstants.PAGE_PROPERTIES;
 import static com.peregrine.commons.util.PerConstants.RESOURCE_CHANGE_LISTENER;
 import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -21,8 +17,8 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.seo.UrlExternalizer;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
@@ -69,11 +65,9 @@ public class PageEventHandlerService implements ResourceChangeListener {
     if (changes != null) {
       for (ResourceChange change : changes) {
         log.trace("Resource Change: '{}'", change);
-
         try (ResourceResolver resolver = PerUtil.loginService(factory, RESOURCE_CHANGE_LISTENER)) {
           Resource resource = PerUtil.getResource(resolver, change.getPath());
           String primaryType = PerUtil.getPrimaryType(resource);
-
           switch (change.getType()) {
             case ADDED:
               log.debug("Change Type ADDED: {}", change);
@@ -81,16 +75,13 @@ public class PageEventHandlerService implements ResourceChangeListener {
                 handlePages(resource);
               }
               break;
-
             case CHANGED:
               log.debug("Change Type CHANGED: {}", change);
               handleProperties(resource, PAGE_PRIMARY_TYPE.equals(primaryType));
               break;
-
             case REMOVED:
               log.debug("Change Type REMOVED: {}", change);
               break;
-
             default:
           }
         } catch (LoginException e) {
@@ -115,14 +106,13 @@ public class PageEventHandlerService implements ResourceChangeListener {
         .append(" and ")
         .append("[" + JCR_CONTENT + "/" + JCR_PRIMARY_TYPE + "] is '" + PAGE_CONTENT_TYPE + "'");
 
-    List<Resource> children = new ResourceStream(page)
+    new ResourceStream(page)
         .stream(r -> true)
         .filter(resourceFilter.parse(query.toString()))
-        .collect(Collectors.toList());
-    children.forEach(res -> {
-      log.info(res.getPath());
-      handleProperties(res, true);
-    });
+        .forEach(res -> {
+          log.info(res.getPath());
+          handleProperties(res, true);
+        });
   }
 
   /**
@@ -135,34 +125,19 @@ public class PageEventHandlerService implements ResourceChangeListener {
   private void handleProperties(Resource resource, boolean goToJcrContent) {
     try {
       ModifiableValueMap props = PerUtil.getModifiableProperties(resource, goToJcrContent);
-
-      if (!props.containsKey(PROTOCOL) || Objects.isNull(props.get(PROTOCOL)) || props
-          .get(PROTOCOL)
-          .toString().isEmpty()) {
-        props.put(PROTOCOL, DEFAULT_PROTOCOL);
-      }
-
-      if (!props.containsKey(HOSTNAME) || Objects.isNull(props.get(HOSTNAME)) || props
-          .get(HOSTNAME)
-          .toString().isEmpty()) {
-        props.put(HOSTNAME, DEFAULT_HOSTNAME);
-      }
-
-      if (!props.containsKey(CANONICAL_LINK_ELEMENT) || Objects
-          .isNull(props.get(CANONICAL_LINK_ELEMENT)) || props.get(CANONICAL_LINK_ELEMENT).toString()
-          .isEmpty()) {
-        props.put(CANONICAL_LINK_ELEMENT, externalizer.buildExternalizedLink(
-            goToJcrContent ? resource.getResourceResolver()
-                : resource.getParent().getResourceResolver(),
-            goToJcrContent ? resource.getPath() : resource.getParent().getPath()) + ".html"
-        );
-      }
-
-      if (!props.containsKey(HIDE_IN_NAVIGATION)
-          || props.get(HIDE_IN_NAVIGATION) == null) {
-        props.put(HIDE_IN_NAVIGATION, false);
-      }
-
+      PAGE_PROPERTIES.forEach(pair -> {
+        if (!props.containsKey(pair.getLeft()) || props.get(pair.getKey()).toString().isEmpty()) {
+          props.put(pair.getKey(), pair.getValue());
+        }
+        if (pair.getLeft().equals(CANONICAL_LINK_ELEMENT)) {
+          Consumer<? super Pair<String, ?>> canonical = dict -> props.put(dict.getKey(),
+              externalizer.buildExternalizedLink(
+                  goToJcrContent ? resource.getResourceResolver()
+                      : resource.getParent().getResourceResolver(),
+                  goToJcrContent ? resource.getPath() : resource.getParent().getPath()) + ".html");
+          canonical.accept(pair);
+        }
+      });
       if (goToJcrContent) {
         resource.getChild(JCR_CONTENT).getResourceResolver().commit();
       } else {

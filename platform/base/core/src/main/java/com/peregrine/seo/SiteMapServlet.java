@@ -1,9 +1,14 @@
 package com.peregrine.seo;
 
-import static com.peregrine.commons.util.PerConstants.CHANGE_FREQ;
-import static com.peregrine.commons.util.PerConstants.DEFAULT_CHANGEFREQ;
-import static com.peregrine.commons.util.PerConstants.DEFAULT_PRIORITY;
+//import static com.peregrine.commons.util.PerConstants.CHANGE_FREQ;
+//import static com.peregrine.commons.util.PerConstants.DEFAULT_CHANGEFREQ;
+//import static com.peregrine.commons.util.PerConstants.DEFAULT_PRIORITY
+
 import static com.peregrine.commons.util.PerConstants.EXCLUDE_FROM_SITEMAP;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PRIORITY;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
@@ -14,6 +19,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 
+import com.peregrine.adaption.Filter;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
 import java.io.IOException;
@@ -27,8 +33,11 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.resource.filter.ResourcePredicates;
+import org.apache.sling.resource.filter.ResourceStream;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -46,6 +55,9 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
 
   private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd");
   private static final String NS = "http://www.sitemaps.org/schemas/sitemap/0.9";
+
+  @Reference
+  private ResourcePredicates resourceFilter;
 
   @Reference
   private UrlExternalizer urlExternalizer;
@@ -68,15 +80,23 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
       stream.writeStartElement("", "urlset", NS);
       stream.writeNamespace("", NS);
 
-      // first do the current page
-      write(page, stream, resolver);
+      StringBuilder query = new StringBuilder();
+      query.append("[" + JCR_PRIMARY_TYPE + "] is '" + PAGE_PRIMARY_TYPE + "'")
+          .append(" and ")
+          .append("[" + JCR_CONTENT + "/" + JCR_PRIMARY_TYPE + "] is '" + PAGE_CONTENT_TYPE + "'");
 
-      for (Iterator<PerPage> children = page.listChildren().iterator(); children.hasNext();) {
-        write(children.next(), stream, resolver);
-      }
+      new ResourceStream(page.adaptTo(Resource.class))
+          .stream(r -> true)
+          .filter(resourceFilter.parse(query.toString()))
+          .forEach(res -> {
+            try {
+              write(res.adaptTo(PerPage.class), stream, resolver);
+            } catch (XMLStreamException e) {
+              e.printStackTrace();
+            }
+          });
 
       stream.writeEndElement();
-
       stream.writeEndDocument();
     } catch (XMLStreamException e) {
       throw new IOException(e);
@@ -98,9 +118,9 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     if (cal != null) {
       writeElement(stream, "lastmod", DATE_FORMAT.format(cal));
     }
-    writeElement(stream, "changefreq", page.getContentProperty(CHANGE_FREQ, DEFAULT_CHANGEFREQ));
+    writeElement(stream, "changefreq", page.getContentProperty("changefreq", "weekly"));
     writeElement(stream, "priority",
-        page.getContentProperty(PRIORITY, String.valueOf(DEFAULT_PRIORITY)));
+        page.getContentProperty(PRIORITY, String.valueOf(0.5)));
 
     stream.writeEndElement();
   }
