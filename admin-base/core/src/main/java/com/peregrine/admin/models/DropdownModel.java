@@ -31,8 +31,14 @@ public class DropdownModel extends Container {
   @Inject
   private String title;
 
+  @Inject String icon;
+
   public String getTitle() {
     return title;
+  }
+
+  public String getIcon() {
+    return icon;
   }
 }
 

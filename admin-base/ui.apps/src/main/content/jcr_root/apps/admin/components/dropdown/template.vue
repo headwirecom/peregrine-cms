@@ -1,5 +1,5 @@
 <template>
-  <div class="drpdwn" v-bind:data-per-path="model.path" v-bind:icon="model.defaulticon">
+  <div class="drpdwn" v-bind:data-per-path="model.path" v-bind:icon="model.icon">
     <button class="drpbtn">
       <i class="material-icons">{{model.icon}}</i>
     </button>
