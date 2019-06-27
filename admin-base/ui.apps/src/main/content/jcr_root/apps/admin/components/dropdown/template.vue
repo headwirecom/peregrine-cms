@@ -5,7 +5,7 @@
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
-        <div v-bind:is="child.component" v-bind:model="child" v-on:click="icon=phone_android"></div>
+        <div v-bind:is="child.component" v-bind:model="child" v-on:click="changeIcon(this.child.icon)"></div>
       </template>
     </div>
   </div>
@@ -16,6 +16,12 @@
     data() {
       return {
         icon: this.model.icon
+      }
+    },
+    methods: {
+      changeIcon: function( icon_id ){
+        console.log( "Hello World! %s", icon_id );
+        this.icon = icon_id;
       }
     }
   }
