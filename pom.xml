@@ -42,6 +42,7 @@
         <slf4j.version>1.7.25</slf4j.version>
 
         <!-- Sling Dependencies Versions -->
+        <org.apache.sling.resource.filter.version>1.0.0</org.apache.sling.resource.filter.version>
         <org.apache.sling.api.version>2.16.4</org.apache.sling.api.version>
         <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
         <org.apache.sling.commons.mime.version>2.1.10</org.apache.sling.commons.mime.version>
