@@ -1,7 +1,7 @@
 <template>
   <div class="drpdwn" v-bind:data-per-path="model.path" v-bind:icon="model.defaulticon">
     <button class="drpbtn">
-      <i class="material-icons">model.icon</i>
+      <i class="material-icons">{{model.icon}}</i>
     </button>
     <div class="drpdwn-content" >
       <template v-for="child in model.children">
