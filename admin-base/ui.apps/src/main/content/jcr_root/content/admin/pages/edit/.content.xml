@@ -44,46 +44,6 @@
 
                   <screen-dropdown jcr:primaryType="nt:unstructured"
                     sling:resourceType="admin/components/dropdown" icon="desktop_mac">
-                    <mobile jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile"
-                      stateFrom="/state/tools/workspace/view"
-                      command="editPreview" icon="phone_android">
-                      <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Mobil"/>
-                      </experiences>
-                    </mobile>
-                    <mobile-landscape jcr:primaryType="nt:unstructured"
-                                      sling:resourceType="admin/components/action"
-                                      target="mobile-landscape"
-                                      type="icon"
-                                      title="mobile-landscape"
-                                      stateFrom="/state/tools/workspace/view"
-                                      command="editPreview"
-                                      icon="stay_current_landscape"/>
-                    <tablet jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/action" target="tablet" type="icon" title="tablet"
-                      stateFrom="/state/tools/workspace/view"
-                      command="editPreview" icon="tablet_android">
-                      <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Tablet"/>
-                      </experiences>
-                    </tablet>
-                    <tablet-landscape jcr:primaryType="nt:unstructured"
-                                      sling:resourceType="admin/components/action"
-                                      target="tablet-landscape"
-                                      type="icon"
-                                      title="tablet-landscape"
-                                      stateFrom="/state/tools/workspace/view"
-                                      command="editPreview"
-                                      icon="tablet"/>
-                  <laptop jcr:primaryType="nt:unstructured"
-                          sling:resourceType="admin/components/action"
-                          target="laptop"
-                          type="icon"
-                          title="laptop"
-                          stateFrom="/state/tools/workspace/view"
-                          command="editPreview"
-                          icon="laptop_mac"/>
                     <desktop jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
                       stateFrom="/state/tools/workspace/view" stateFromDefault="true"
@@ -92,6 +52,46 @@
                         <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Desktop"/>
                       </experiences>
                     </desktop>
+                    <laptop jcr:primaryType="nt:unstructured"
+                      sling:resourceType="admin/components/action"
+                      target="laptop"
+                      type="icon"
+                      title="laptop"
+                      stateFrom="/state/tools/workspace/view"
+                      command="editPreview"
+                      icon="laptop_mac"/>
+                    <tablet-landscape jcr:primaryType="nt:unstructured"
+                      sling:resourceType="admin/components/action"
+                      target="tablet-landscape"
+                      type="icon"
+                      title="tablet-landscape"
+                      stateFrom="/state/tools/workspace/view"
+                      command="editPreview"
+                      icon="tablet"/>
+                    <tablet jcr:primaryType="nt:unstructured"
+                      sling:resourceType="admin/components/action" target="tablet" type="icon" title="tablet"
+                      stateFrom="/state/tools/workspace/view"
+                      command="editPreview" icon="tablet_android">
+                      <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Tablet"/>
+                      </experiences>
+                    </tablet>
+                    <mobile-landscape jcr:primaryType="nt:unstructured"
+                      sling:resourceType="admin/components/action"
+                      target="mobile-landscape"
+                      type="icon"
+                      title="mobile-landscape"
+                      stateFrom="/state/tools/workspace/view"
+                      command="editPreview"
+                      icon="stay_current_landscape"/>
+                    <mobile jcr:primaryType="nt:unstructured"
+                      sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile"
+                      stateFrom="/state/tools/workspace/view"
+                      command="editPreview" icon="phone_android">
+                      <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Mobil"/>
+                      </experiences>
+                    </mobile>
                   </screen-dropdown>
                     <separator jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/separator"/>
