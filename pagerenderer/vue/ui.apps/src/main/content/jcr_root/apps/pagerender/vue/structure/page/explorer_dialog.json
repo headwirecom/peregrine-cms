@@ -103,7 +103,7 @@
     "inputType": "text",
     "label": "Canonical Link",
     "model": "canonicalLink",
-    "readonly": true,
+    "x-model": "canonicalLink",
     "placeholder": "canonical link element"
   },
   {

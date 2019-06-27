@@ -14,11 +14,9 @@ import static com.peregrine.commons.util.PerConstants.RESOURCE_CHANGE_LISTENER;
 import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.apache.sling.api.resource.observation.ResourceChangeListener.CHANGES;
 import static org.apache.sling.api.resource.observation.ResourceChangeListener.PATHS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.seo.UrlExternalizer;
@@ -143,16 +141,23 @@ public class PageEventHandlerService implements ResourceChangeListener {
           .toString().isEmpty()) {
         props.put(PROTOCOL, DEFAULT_PROTOCOL);
       }
+
       if (!props.containsKey(HOSTNAME) || Objects.isNull(props.get(HOSTNAME)) || props
           .get(HOSTNAME)
           .toString().isEmpty()) {
         props.put(HOSTNAME, DEFAULT_HOSTNAME);
       }
-      props.put(CANONICAL_LINK_ELEMENT, externalizer.buildExternalizedLink(
-          goToJcrContent ? resource.getResourceResolver()
-              : resource.getParent().getResourceResolver(),
-          goToJcrContent ? resource.getPath() : resource.getParent().getPath()) + ".html"
-      );
+
+      if (!props.containsKey(CANONICAL_LINK_ELEMENT) || Objects
+          .isNull(props.get(CANONICAL_LINK_ELEMENT)) || props.get(CANONICAL_LINK_ELEMENT).toString()
+          .isEmpty()) {
+        props.put(CANONICAL_LINK_ELEMENT, externalizer.buildExternalizedLink(
+            goToJcrContent ? resource.getResourceResolver()
+                : resource.getParent().getResourceResolver(),
+            goToJcrContent ? resource.getPath() : resource.getParent().getPath()) + ".html"
+        );
+      }
+
       if (!props.containsKey(HIDE_IN_NAVIGATION)
           || props.get(HIDE_IN_NAVIGATION) == null) {
         props.put(HIDE_IN_NAVIGATION, false);
