@@ -15,7 +15,7 @@
     props: ['model'],
     methods: {
       onClick: function (e) {
-        this.model.icon = model.icon
+        this.model.icon = e.icon
       }
     }
   }
