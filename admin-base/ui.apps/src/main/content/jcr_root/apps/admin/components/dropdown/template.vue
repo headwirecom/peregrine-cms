@@ -13,8 +13,10 @@
 <script>
   export default {
     props: ['model'],
-    data: {
-      icon : model.icon
+    data() {
+      return {
+        icon: model.icon
+      }
     },
     methods: {
       onClick: function ( child_icon ) {
