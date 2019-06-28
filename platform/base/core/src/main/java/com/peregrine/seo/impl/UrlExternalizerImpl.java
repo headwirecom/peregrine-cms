@@ -102,7 +102,7 @@ public class UrlExternalizerImpl implements UrlExternalizer {
     }
     actualPath = mangleNamespaces(actualPath);
     if (request != null) {
-      actualPath = StringUtils.defaultString(request.getContextPath()) + actualPath; //NOPMD
+      actualPath = StringUtils.defaultString(request.getContextPath()) + actualPath;
     }
     try {
       actualPath = URLEncoder.encode(actualPath, "UTF-8");

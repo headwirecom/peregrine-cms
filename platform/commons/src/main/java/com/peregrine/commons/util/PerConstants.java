@@ -106,6 +106,7 @@ public class PerConstants {
   public static final String JACKSON = "jackson";
   public static final String JSON = "json";
   public static final String XML = "xml";
+  public static final String HTML = "html";
 
   public static final String FROM_SITE_NAME = "fromSite";
   public static final String TO_SITE_NAME = "toSite";
@@ -130,7 +131,10 @@ public class PerConstants {
           Pair.of(HIDE_IN_NAVIGATION, false),
           Pair.of(EXCLUDE_FROM_SITEMAP, false),
           Pair.of(CHANGE_FREQUENCY, "weekly"),
-          Pair.of(PRIORITY, 0.5))
+          Pair.of(PRIORITY, "0.5"))
       .collect(Collectors.toCollection(ArrayList::new));
+
+  public static final String SITEMAP_SERVLET_PATH = "perapi/admin/sitemap";
+  public static final String SITEMAPINDEX_SERVLET_PATH = "perapi/admin/sitemapindex";
 }
 
