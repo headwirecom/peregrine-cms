@@ -69,7 +69,7 @@
   }
 
   /* Set line-height for icons inside the navigation bar */
+  nav [class^="mdi-"], nav [class*="mdi-"],
   nav i.material-icons {
-    line-height: 40px;
-  }
+    line-height: 40px; }
 </style>
