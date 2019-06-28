@@ -63,6 +63,7 @@
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   }
 
+  /* Set line-height for icons inside the navigation bar */
   .material-icons {
     line-height: 40px;
   }
@@ -70,10 +71,5 @@
   /* Show the dropdown menu on hover */
   .drpdwn:hover .drpdwn-content {
     display: block;
-  }
-
-  /* Set line-height for icons inside the navigation bar */
-  nav i.material-icons {
-    line-height: 40px;
   }
 </style>
