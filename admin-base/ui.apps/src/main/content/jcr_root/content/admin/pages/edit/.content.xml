@@ -43,7 +43,7 @@
                   sling:resourceType="admin/components/subnav" classes="navcenter">
 
                   <screen-dropdown jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/dropdown" icon="desktop_mac">
+                    sling:resourceType="admin/components/materialicondropdown" icon="desktop_mac">
                     <desktop jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
                       stateFrom="/state/tools/workspace/view" stateFromDefault="true"
