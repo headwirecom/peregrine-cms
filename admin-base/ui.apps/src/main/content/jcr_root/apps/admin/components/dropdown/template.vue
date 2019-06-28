@@ -62,7 +62,7 @@
   .drpdwn-content {
     display: none;
     position: absolute;
-    max-width: 40px;
+    max-width: 54px;
     z-index: 1;
   }
 
