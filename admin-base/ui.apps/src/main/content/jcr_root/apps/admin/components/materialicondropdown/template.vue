@@ -70,15 +70,6 @@
 
   /* Set line-height for icons inside the navigation bar */
   nav i.material-icons {
-    line-height: inherit;
-  }
-
-  /* Inherit lineheight for the icons inside the navigation bar for alignment purposes */
-  nav i{
-    line-height: inherit;
-  }
-
-  nav{
-    line-height: inherit;
+    line-height: 40px;
   }
 </style>
