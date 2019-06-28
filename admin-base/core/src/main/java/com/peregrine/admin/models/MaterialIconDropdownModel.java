@@ -9,24 +9,24 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 
-import static com.peregrine.admin.util.AdminConstants.DROPDOWN_COMPONENT_PATH;
+import static com.peregrine.admin.util.AdminConstants.MATERIAL_ICON_DROPDOWN_COMPONENT_PATH;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
 
 
 @Model(
     adaptables = Resource.class,
-    resourceType = DROPDOWN_COMPONENT_PATH,
+    resourceType = MATERIAL_ICON_DROPDOWN_COMPONENT_PATH,
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     adapters = IComponent.class
 )
 @Exporter(name = JACKSON,
     extensions = JSON)
 
-public class DropdownModel extends Container {
+public class MaterialIconDropdownModel extends Container {
 
 
-  public DropdownModel(Resource r) { super(r); }
+  public MaterialIconDropdownModel(Resource r) { super(r); }
 
   @Inject
   private String title;
