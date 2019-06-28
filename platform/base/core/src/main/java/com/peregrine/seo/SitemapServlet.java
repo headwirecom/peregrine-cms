@@ -1,6 +1,7 @@
 package com.peregrine.seo;
 
 import static com.peregrine.commons.util.PerConstants.CHANGE_FREQUENCY;
+import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.EXCLUDE_FROM_SITEMAP;
 import static com.peregrine.commons.util.PerConstants.HTML;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
@@ -31,6 +32,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.resource.filter.ResourcePredicates;
 import org.apache.sling.resource.filter.ResourceStream;
@@ -114,10 +116,9 @@ public final class SitemapServlet extends SlingAllMethodsServlet {
     stream.writeStartElement(NS, "url");
     writeElement(stream, "loc",
         urlExternalizer.buildExternalizedLink(resolver, String.format("%s.html", page.getPath())));
-    Calendar cal = page.getLastModified();
-    if (cal != null) {
-      writeElement(stream, "lastmod", DATE_FORMAT.format(cal));
-    }
+    Calendar cal = page.getLastModified() != null ?
+        page.getLastModified() : ResourceUtil.getValueMap(page.adaptTo(Resource.class)).get(CREATED, Calendar.getInstance());
+    writeElement(stream, "lastmod", DATE_FORMAT.format(cal));
     writeElement(stream, CHANGE_FREQUENCY, page.getContentProperty(CHANGE_FREQUENCY, "weekly"));
     writeElement(stream, PRIORITY, page.getContentProperty(PRIORITY, "0.5"));
     stream.writeEndElement();
