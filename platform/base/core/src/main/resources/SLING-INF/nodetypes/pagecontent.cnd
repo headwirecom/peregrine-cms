@@ -26,4 +26,7 @@
 
 [per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath, per:Replication
   orderable
+  - protocol (string) = 'https://' autocreated
+  - hostname (string) = 'www.metaproc.com' autocreated
+  - canonicalLink (string) = '' autocreated
   - hideInNav (boolean) = 'false' autocreated
