@@ -135,6 +135,5 @@ public class PerConstants {
       .collect(Collectors.toCollection(ArrayList::new));
 
   public static final String SITEMAP_SERVLET_PATH = "perapi/admin/sitemap";
-  public static final String SITEMAPINDEX_SERVLET_PATH = "perapi/admin/sitemapindex";
 }
 
