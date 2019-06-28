@@ -67,6 +67,10 @@
     line-height: 40px !important;
   }
 
+  .material-icons {
+    line-height: 40px;
+  }
+
   /* Show the dropdown menu on hover */
   .drpdwn:hover .drpdwn-content {
     display: block;
