@@ -24,11 +24,11 @@
   -->
 <template>
     <div class="pathfield">
-        <template v-for="item in pathSegments">
+        <template v-for="(item, index) in pathSegments">
             /&nbsp;<admin-components-action
                 v-bind:model="{
                     target: { path: item.path },
-                    title: item.name,
+                    title: (index == 0)? $i18n(item.name) : item.name,
                     command: 'selectPathInNav'
                 }"></admin-components-action>&nbsp;
         </template>
