@@ -85,6 +85,10 @@
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   }
 
+  .drpdwn-content span i {
+    line-height: inherit;
+  }
+
   /* Show the dropdown menu on hover */
   .drpdwn:hover .drpdwn-content {
     display: block;
