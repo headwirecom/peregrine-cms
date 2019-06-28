@@ -33,7 +33,7 @@
             classes: 'show-right-panel',
             target: 'rightPanelVisible',
             command: 'showHide',
-            tooltipTitle: $i18n('show components panel')
+            tooltipTitle: 'show components panel'
             }"><i class="material-icons">keyboard_arrow_left</i>
         </admin-components-action>
 
@@ -42,7 +42,7 @@
                 classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
                 command: 'showHide',
-                tooltipTitle: $i18n('hide components panel')
+                tooltipTitle: 'hide components panel'
             }">
                 <i class="material-icons">highlight_off</i>
             </admin-components-action>
@@ -59,7 +59,7 @@
               v-if="state.editorVisible && !isFullscreen"
               type="button" 
               class="toggle-fullscreen" 
-              v-bind:title="$i18n('enter fullscreen')"
+              title="enter fullscreen"
               v-on:click.prevent="onEditorFullscreen">
               <i class="material-icons">fullscreen</i>
             </button>

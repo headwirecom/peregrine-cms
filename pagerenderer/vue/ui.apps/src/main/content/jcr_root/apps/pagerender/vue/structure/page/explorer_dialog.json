@@ -70,46 +70,5 @@
     "label": "Description",
     "rows": 10,
     "placeholder": "enter a description for this page"
-  },
-  {
-    "type": "material-select",
-    "label": "Protocol",
-    "model": "protocol",
-    "selectOptions": {
-      "name": "name",
-      "value": "value"
-    },
-    "values": [
-      { "name": "https://", "value": "https://" },
-      { "name": "http://", "value": "http://" }
-    ],
-    "hint": "The name of the scheme used to make the request."
-  },
-  {
-    "type": "material-select",
-    "label": "Hostname",
-    "model": "hostname",
-    "selectOptions": {
-      "name": "name",
-      "value": "value"
-    },
-    "values": [
-      { "name": "www.metaproc.com", "value": "www.metaproc.com" }
-    ],
-    "hint": "The host name of the server to which the request is sent."
-  },
-  {
-    "type": "input",
-    "inputType": "text",
-    "label": "Canonical Link",
-    "model": "canonicalLink",
-    "x-model": "canonicalLink",
-    "placeholder": "canonical link element"
-  },
-  {
-    "type": "material-checkbox",
-    "label": "Exclude from Navigation",
-    "model": "hideInNav",
-    "hint": "This is to indicate whether the page should be exclude from navigation."
   }
 ]}
