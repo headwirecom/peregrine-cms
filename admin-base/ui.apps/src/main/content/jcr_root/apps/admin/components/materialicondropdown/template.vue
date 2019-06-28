@@ -43,19 +43,11 @@
 
   /* Dropdown button */
   .drpdwn .drpbtn {
-    font-size: 16px;
     border: none;
     outline: none;
-    color: white;
     background-color: inherit;
-    font-family: inherit; /* Important for vertical align on mobile phones */
     margin: 0; /* Important for vertical align on mobile phones */
     height: inherit;
-  }
-
-  /* Add a red background color to navbar links on hover */
-  .navbar a:hover, .dropdown:hover .dropbtn {
-    background-color:white;
   }
 
   /* Dropdown content (hidden by default) */
@@ -66,25 +58,12 @@
     z-index: 1;
   }
 
-  /* Links inside the dropdown */
-  .drpdwn-content a {
-    float: none;
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-  }
-
-  /* Add a grey background color to dropdown links on hover */
-  .drpdwn-content a:hover {
-    background-color: #ddd;
-  }
-
+  /* Add shadow to dropdown content items*/
   .drpdwn-content span {
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   }
 
+  /* Inherit line-height for the icons of the dropdown items for alignment purposes */
   .drpdwn-content span i {
     line-height: inherit;
   }
@@ -94,10 +73,12 @@
     display: block;
   }
 
+  /* Set line-height for icons inside the navigation bar */
   nav i.material-icons {
     line-height: 40px;
   }
 
+  /* Inherit lineheight for the icons inside the navigation bar for alignment purposes */
   nav i{
     line-height: inherit;
   }
