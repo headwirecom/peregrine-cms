@@ -64,7 +64,7 @@
   }
 
   .drpdwn-content span a i {
-    line-height: 40px; !important;
+    line-height: 40px !important;
   }
 
   /* Show the dropdown menu on hover */
