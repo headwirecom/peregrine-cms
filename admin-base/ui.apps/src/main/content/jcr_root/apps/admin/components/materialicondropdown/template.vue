@@ -64,7 +64,7 @@
   }
 
   /* Inherit line-height for the icons of the dropdown items for alignment purposes */
-  .drpdwn-content span i {
+  .drpdwn-content span a i {
     line-height: inherit;
   }
 
