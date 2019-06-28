@@ -27,12 +27,12 @@
     <div class="nav-wrapper blue-grey darken-3">
       <div class="col s12">
         <div class="brand-logo">
-          <admin-components-action
-            v-bind:model="{
+          <admin-components-action 
+            v-bind:model="{ 
               command: 'selectPath', 
               target: '/content/admin',
               classes: 'peregrine-logo',
-              tooltipTitle: $i18n('home')
+              tooltipTitle: 'home'
             }">
             <admin-components-logo></admin-components-logo>
           </admin-components-action>
@@ -41,7 +41,7 @@
                     <admin-components-action
                             v-bind:model="{
                 command: 'selectPath',
-                title: $i18n(item.title),
+                title: item.title,
                 target: item.path
               }"></admin-components-action>
                 </template>
@@ -49,12 +49,12 @@
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
             <li v-if="this.$root.$data.state">
-                <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
+                <a title="logout" href="/system/sling/logout?resource=/index.html">
                     {{this.$root.$data.state.user}}
                 </a>
             </li>
             <li v-if="help">
-                <a v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
+                <a title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
             </li>
             <li>
                  <vue-multiselect
@@ -72,9 +72,10 @@
         </ul>
       </div>
     </div>
-      <template v-for="child in model.children">
+    <template v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
-      </template>
+    </template>
+
 </nav>
 </template>
 

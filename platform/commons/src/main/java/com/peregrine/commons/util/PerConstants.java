@@ -47,7 +47,6 @@ public class PerConstants {
     public static final String CHILD_COUNT = "childCount";
 
     public static final String DISTRIBUTION_SUB_SERVICE = "peregrine-distribution-sub-service";
-    public static final String RESOURCE_CHANGE_LISTENER = "metaproc-resource-change-listener";
 
     public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     public static final Locale ECMA_DATE_FORMAT_LOCALE = Locale.US;
@@ -103,18 +102,5 @@ public class PerConstants {
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
     public static final String DEPENDENCIES = "dependencies";
-
-    public static final String PROTOCOL = "protocol";
-    public static final String DEFAULT_PROTOCOL = "https://";
-
-    public static final String HOSTNAME = "hostname";
-    public static final String DEFAULT_HOSTNAME = "www.metaproc.com";
-
-    public static final String CANONICAL_LINK_ELEMENT = "canonicalLink";
-    public static final String HIDE_IN_NAVIGATION = "hideInNav";
-
-    public static final String STANDALONE = "local";
-    public static final String AUTHOR_RUN_MODE = "author";
-    public static final String PUBLISH_RUN_MODE = "publish";
 }
 
