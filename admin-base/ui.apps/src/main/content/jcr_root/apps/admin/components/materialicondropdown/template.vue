@@ -35,7 +35,6 @@
 <style scoped>
   /* The dropdown container */
   .drpdwn {
-    overflow: hidden;
     display: inline-block;
     vertical-align: middle;
     height: 40px;
@@ -56,15 +55,12 @@
     position: absolute;
     max-width: 54px;
     z-index: 1;
+    padding-top: 1px;
   }
 
   /* Add shadow to dropdown content items*/
   .drpdwn-content span {
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  }
-
-  .drpdwn-content span a i {
-    line-height: 40px !important;
   }
 
   .material-icons {
