@@ -63,11 +63,6 @@
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   }
 
-  /* Inherit line-height for the icons of the dropdown items for alignment purposes */
-  .drpdwn-content span a i {
-    line-height: inherit;
-  }
-
   /* Show the dropdown menu on hover */
   .drpdwn:hover .drpdwn-content {
     display: block;
@@ -75,11 +70,15 @@
 
   /* Set line-height for icons inside the navigation bar */
   nav i.material-icons {
-    line-height: 40px;
+    line-height: inherit;
   }
 
   /* Inherit lineheight for the icons inside the navigation bar for alignment purposes */
   nav i{
+    line-height: inherit;
+  }
+
+  nav{
     line-height: inherit;
   }
 </style>
