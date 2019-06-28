@@ -25,7 +25,7 @@
             foundicon = child.icon;
           }
         });
-        return foundicon
+        return foundicon;
       }
     }
   }
@@ -41,7 +41,7 @@
   }
 
   /* Dropdown button */
-  .drpdwn .drpbtn {
+  .drpbtn {
     border: none;
     outline: none;
     background-color: inherit;

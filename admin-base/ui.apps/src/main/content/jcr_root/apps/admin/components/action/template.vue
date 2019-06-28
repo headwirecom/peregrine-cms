@@ -175,8 +175,8 @@
 
 <style scoped>
     .actionSelected {
-        background-color: white !important;
-        color: #37474f !important;
+        background-color: white;
+        color: #37474f;
     }
 
     .material-icons {
