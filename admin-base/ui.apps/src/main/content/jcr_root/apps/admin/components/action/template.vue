@@ -178,4 +178,8 @@
         background-color: white !important;
         color: #37474f !important;
     }
+
+    .material-icons {
+        line-height: 40px;
+    }
 </style>
