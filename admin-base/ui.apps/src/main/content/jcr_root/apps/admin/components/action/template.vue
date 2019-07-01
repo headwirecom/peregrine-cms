@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,7 +24,7 @@
   -->
 <template>
     <span>
-        <a 
+        <a
             v-if                    = "!model.type"
             v-bind:href             = "model.target +'.html'"
             v-bind:title            = "title"
@@ -33,17 +33,30 @@
             {{model.title}}
             <slot></slot>
         </a>
-        <a 
-            v-if                    = "model.type === 'icon'" 
+        <a
+            v-if                    = "model.type === 'icon'"
             v-bind:title            = "title"
-            v-bind:href             = "model.target" 
-            v-on:click.stop.prevent = "action" 
-            class                   = "btn-floating waves-effect waves-light" 
+            v-bind:href             = "model.target"
+            v-on:click.stop.prevent = "action"
+            class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
             <i class="material-icons" v-bind:class="isSelected ? 'actionSelected' : ''">
                 {{model.icon ? model.icon : model.title}}
                 <slot></slot>
             </i>
+        </a>
+        <a
+            v-if                    = "model.type === 'download'"
+            v-bind:title            = "title"
+            v-bind:href             = "model.target"
+            v-bind:download         = "model.download"
+            target                  = "_blank"
+            class                   = "btn-floating waves-effect waves-light"
+            v-bind:class            = "model.classes">
+            <i class="fa fa-download" v-bind:class="isSelected ? 'actionSelected' : ''">
+                <slot></slot>
+            </i>
+            {{model.title}}
         </a>
     </span>
 </template>
@@ -139,7 +152,6 @@
         }
     },
     methods: {
-
         /**
          *  triggers the action specified by the model
          *
