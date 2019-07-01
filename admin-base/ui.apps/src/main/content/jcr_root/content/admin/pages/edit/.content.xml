@@ -41,6 +41,8 @@
 
                 <subnav jcr:primaryType="nt:unstructured"
                      sling:resourceType="admin/components/subnav" classes="navcenter">
+                  <screen-dropdown jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/materialicondropdown" icon="desktop_mac">
                     <mobile jcr:primaryType="nt:unstructured"
                             sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile"
                             stateFrom="/state/tools/workspace/view"
@@ -53,6 +55,7 @@
                              sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
                              stateFrom="/state/tools/workspace/view" stateFromDefault="true"
                              command="editPreview" icon="desktop_mac"/>
+                  </screen-dropdown>
                     <preview jcr:primaryType="nt:unstructured"
                              sling:resourceType="admin/components/action" target="preview" type="icon" title="preview"
                              stateFrom="/state/tools/workspace/preview"
