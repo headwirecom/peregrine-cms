@@ -939,11 +939,4 @@
         <module>tooling/maven/archetypes/project</module>
     </modules>
 
-    <repositories>
-        <repository>
-            <id>mvnrepository-repository</id>
-            <url>http://myrepo.net/repo</url>
-        </repository>
-    </repositories>
-
 </project>

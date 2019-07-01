@@ -25,13 +25,17 @@
 import { LoggerFactory } from '../logger'
 let log = LoggerFactory.logger('editPreview').setLevelDebug()
 
-import { set } from '../utils'
+import { set, get } from '../utils'
 
 export default function(me, target) {
+
     log.fine(target);
+    if(!target) target = 'preview';
+
     let view = me.getView();
     if(target === 'preview') {
-        if(view.state.tools.workspace.preview === 'preview') {
+        const current = get(view, '/state/tools/workspace/preview', '');
+        if(current === 'preview') {
             set(view, '/state/tools/workspace/preview', '');
             if (view.state.tools.workspace.ignoreContainers === 'on-hold') {
                 set(view, '/state/tools/workspace/ignoreContainers', 'ignore-containers');
