@@ -117,7 +117,8 @@ public final class SitemapServlet extends SlingAllMethodsServlet {
     writeElement(stream, "loc",
         urlExternalizer.buildExternalizedLink(resolver, String.format("%s.html", page.getPath())));
     Calendar cal = page.getLastModified() != null ?
-        page.getLastModified() : ResourceUtil.getValueMap(page.adaptTo(Resource.class)).get(CREATED, Calendar.getInstance());
+        page.getLastModified() : ResourceUtil.getValueMap(page.adaptTo(Resource.class))
+        .get(CREATED, Calendar.getInstance());
     writeElement(stream, "lastmod", DATE_FORMAT.format(cal));
     writeElement(stream, CHANGE_FREQUENCY, page.getContentProperty(CHANGE_FREQUENCY, "weekly"));
     writeElement(stream, PRIORITY, page.getContentProperty(PRIORITY, "0.5"));
