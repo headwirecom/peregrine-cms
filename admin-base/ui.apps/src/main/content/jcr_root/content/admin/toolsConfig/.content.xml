@@ -38,9 +38,5 @@
                 -->
     <querytool jcr:primaryType="nt:unstructured" jcr:title="JCR Query Tool" sling:resourceType="admin/components/iconaction"
             jcr:description="for developers, query the jcr repository"
-            action="/content/admin/config/querytool">
-        <experiences jcr:primaryType="nt:unstructured">
-            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="JCR Abfrage Tool" description="Für Entwickler, frage das jcr Repository ab"/>
-        </experiences>
-    </querytool>
+            action="/content/admin/config/querytool"/>
 </jcr:root>

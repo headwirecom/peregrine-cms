@@ -228,7 +228,7 @@
                     </dl>
                 </template>
                 <div v-else class="no-asset-selected">
-                    <span>{{ $i18n('no asset selected') }}</span>
+                    <span>no asset selected</span>
                     <i class="material-icons">info</i>
                 </div>
             </div>
