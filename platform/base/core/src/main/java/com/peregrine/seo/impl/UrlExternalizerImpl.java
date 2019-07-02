@@ -1,8 +1,6 @@
 package com.peregrine.seo.impl;
 
-
 import static com.peregrine.commons.util.PerConstants.AUTHOR_RUN_MODE;
-import static com.peregrine.commons.util.PerConstants.DEFAULT_PROTOCOL;
 import static com.peregrine.commons.util.PerConstants.PUBLISH_RUN_MODE;
 import static com.peregrine.commons.util.PerConstants.STANDALONE;
 
@@ -104,7 +102,7 @@ public class UrlExternalizerImpl implements UrlExternalizer {
     }
     actualPath = mangleNamespaces(actualPath);
     if (request != null) {
-      actualPath = StringUtils.defaultString(request.getContextPath()) + actualPath; //NOPMD
+      actualPath = StringUtils.defaultString(request.getContextPath()) + actualPath;
     }
     try {
       actualPath = URLEncoder.encode(actualPath, "UTF-8");
@@ -215,7 +213,7 @@ public class UrlExternalizerImpl implements UrlExternalizer {
         try {
           String d = var1.substring(var1.indexOf(32) + 1);
           if (!d.contains("://")) {
-            d = DEFAULT_PROTOCOL + d;
+            d = "http://" + d;
           }
           domains.put(n, URI.create(d));
         } catch (Exception e) {
