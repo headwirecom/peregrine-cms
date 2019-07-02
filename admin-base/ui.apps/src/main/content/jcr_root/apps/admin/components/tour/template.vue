@@ -36,8 +36,8 @@
                 <div ref="tourText" v-html="text" class="card-content">
                 </div>
                 <div class="card-action">
-                    <button v-on:click="onPrevious" class="btn">{{ $i18n('prev') }}</button>
-                    <button v-on:click="onNext" class="btn">{{ $i18n('next') }}</button>
+                    <button v-on:click="onPrevious" class="btn">prev</button>
+                    <button v-on:click="onNext" class="btn">next</button>
                 </div>
             </div>
         </div>
@@ -160,17 +160,12 @@
                 const el = this.model.children[this.index].selector ? 
                     root.querySelector(this.model.children[this.index].selector) : root;
                 if(el !== null) {
-                    let child = this.model.children[this.index];
                     const rect = el.getBoundingClientRect()
                     this.left = rect.left
                     this.top = rect.top
                     this.width = rect.width
                     this.height = rect.height
-                    if (child.experiences) {
-                        this.text = this.$exp(child, 'text', child.text);
-                    } else {
-                        this.text = child.text
-                    }
+                    this.text = this.model.children[this.index].text
                 }
             },
             onNext() {

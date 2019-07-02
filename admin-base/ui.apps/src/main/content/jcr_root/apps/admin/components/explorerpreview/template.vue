@@ -3,7 +3,7 @@
 	  <button 
 	    type="button" 
 	    class="toggle-fullscreen waves-effect waves-light"  
-			:title="$i18n(isFullscreen ? 'exit fullscreen' : 'enter fullscreen')"
+			:title="isFullscreen ? 'exit fullscreen' : 'enter fullscreen'"
 	    v-on:click.prevent="isFullscreen ? onPreviewExitFullscreen() : onPreviewFullscreen()">
 	    <i class="material-icons">{{ isFullscreen ? 'fullscreen_exit': 'fullscreen'}}</i>
 	  </button>

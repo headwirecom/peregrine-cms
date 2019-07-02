@@ -41,7 +41,7 @@
                             v-bind:model="{
                             target: null,
                             command: 'selectParent',
-                            tooltipTitle: $i18n('back to parent directory')
+                            tooltipTitle: $i18n('select parent')
                         }"><i class="material-icons">folder_open</i> ..
                     </admin-components-action>
                 </li>
@@ -64,9 +64,9 @@
                                              v-bind:model="{
                                 target: child,
                                 command: 'selectPath',
-                                tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
+                                tooltipTitle: `select '${child.title || child.name}'`
                             }">
-                        <i class="material-icons">folder</i>
+                        </span><i class="material-icons">folder</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
@@ -75,7 +75,7 @@
                             command: 'editPage',
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
-                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                            tooltipTitle: `edit '${child.title || child.name}'`
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
@@ -83,7 +83,7 @@
                         v-bind:model="{
                             target: child,
                             command: 'selectPath',
-                            tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
+                            tooltipTitle: `select '${child.title || child.name}'`
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
@@ -94,7 +94,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'editPage',
-                                tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                                tooltipTitle: `edit '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
@@ -103,7 +103,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'replicate',
-                                tooltipTitle: `${$i18n('replicate')} '${child.title || child.name}'`
+                                tooltipTitle: `replicate '${child.title || child.name}'`
                             }">
                             <i class="material-icons" v-bind:class="replicatedClass(child)">public</i>
                         </admin-components-action>
@@ -112,7 +112,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'showInfo',
-                                tooltipTitle: `'${child.title || child.name}' ${$i18n('info')}`
+                                tooltipTitle: `'${child.title || child.name}' info`
                             }">
                             <i class="material-icons">info</i>
                         </admin-components-action>
@@ -122,7 +122,7 @@
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
-                                v-bind:title="`${$i18n('view')} '${child.title || child.name}' ${$i18n('in new tab')}`"
+                                v-bind:title="`view '${child.title || child.name}' in new tab`"
                                 >
                                 <i class="material-icons">visibility</i>
                             </a>
@@ -132,7 +132,7 @@
                             v-bind:model="{
                                 target: child,
                                 command: 'deletePage',
-                                tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
+                                tooltipTitle: `delete '${child.title || child.name}'`
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
@@ -141,10 +141,11 @@
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.startsWith('/content/assets')">
-                    {{ $i18n('This folder is empty') }}, {{ $i18n('use the navigation bar to add an asset or drag and drop an asset from the file system onto the browser') }}.
+                    This folder is empty, use the navigation bar to add an asset or drag and drop an asset
+                    from the file system onto the browser.
                 </div>
                 <div v-else>
-                    {{ $i18n('This folder is empty') }}, {{ $i18n('use the navigation bar to add content') }}...
+                    This folder is empty, use the navigation bar to add content...
                 </div>
             </div>
 

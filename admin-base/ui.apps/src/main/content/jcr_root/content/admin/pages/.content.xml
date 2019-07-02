@@ -47,11 +47,7 @@
                         sling:resourceType="admin/components/extensions"
                         id="admin.pages.subnav"/>
                 <add jcr:primaryType="nt:unstructured"
-                         sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Seite hinzufügen"/>
-                    </experiences>
-                </add>
+                         sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add"/>
             </subnav>
         </nav>
 
@@ -76,47 +72,32 @@
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
                     text="Welcome to the page explorer, where you can manage pages within your site."
-                    anchor="top right">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wilkommen im Page-Erkunder, wo du die Seiten deiner Webseite verwalten kannst."/>
-                    </experiences>
-                </item1>
+                    anchor="top right"
+                />
                 <item2 
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
                     text="Select a site here"
-                    selector=".explorer-main">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wähle hier eine Seite aus"/>
-                    </experiences>
-                </item2>
+                    selector=".explorer-main"
+                />
                 <item3 
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
                     text="This box displays relevant information for a site"
-                    selector=".explorer-preview">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Diese Box zeigt die relevanten Informationen einer Seite an"/>
-                    </experiences>
-                </item3>
+                    selector=".explorer-preview"
+                />
                 <item4 
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
                     text="Access that information by clicking here"
-                    selector=".explorer-main > ul > li:nth-child(1) > div > span:nth-child(3)">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Greife auf diese Informationen zu indem du hier klickst"/>
-                    </experiences>
-                </item4>
+                    selector=".explorer-main > ul > li:nth-child(1) > div > span:nth-child(3)"
+                />
                 <item5 
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
                     text="Have fun!"
-                    anchor="left">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Viel Spaß!"/>
-                    </experiences>
-                </item5>
+                    anchor="left"
+                />
             </tour>
     </jcr:content>
 </jcr:root>

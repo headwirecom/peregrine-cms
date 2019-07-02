@@ -28,7 +28,7 @@
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('rename asset')"
+                        title="rename asset"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameAsset">
                         <admin-components-iconrename></admin-components-iconrename>
@@ -36,7 +36,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('move asset')"
+                        title="move asset"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="moveAsset">
                         <i class="material-icons">compare_arrows</i>
@@ -44,7 +44,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('delete asset')"
+                        title="delete asset"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="deleteAsset">
                         <i class="material-icons">delete</i>
@@ -53,14 +53,14 @@
                 <li>
                     <a  v-if="!edit"
                         href="#!"
-                        v-bind:title="$i18n('edit')"
+                        title="edit"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
                     </a>
                     <a  v-else
                         href="#!"
-                        v-bind:title="$i18n('edit')"
+                        title="edit"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onCancel">
                         <i class="material-icons">info</i>
@@ -68,7 +68,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('references')"
+                        title="references"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onReferences">
                         <i class="material-icons">list</i>
@@ -101,7 +101,7 @@
                 <div class="explorer-confirm-dialog">
                     <button 
                         type="button"
-                        v-bind:title="$i18n('save page properties')"
+                        title="save page properties"
                         v-bind:disabled="!valid"
                         class="btn btn-raised waves-effect waves-light right"
                         v-on:click.stop.prevent="onOk">
@@ -132,7 +132,7 @@
 
         </template>
         <div v-else class="explorer-preview-empty">
-            <span>{{ $i18n('no asset selected') }}</span>
+            <span>no asset selected</span>
             <i class="material-icons">info</i>
         </div>
 
@@ -180,47 +180,47 @@
                             "type": "input",
                             "inputType": "text",
                             "model": "name",
-                            "label": this.$i18n("Name"),
+                            "label": "Name",
                             "readonly": true,
-                            "placeholder": this.$i18n("page name")
+                            "placeholder": "page name"
                         },
                         {
                             "type": "input",
                             "inputType": "text",
                             "model": "title",
                             "x-model": "jcr:title",
-                            "label": this.$i18n("Title"),
-                            "placeholder": this.$i18n("asset title")
+                            "label": "Title",
+                            "placeholder": "asset title"
                         },
                         {
                             "type": "material-datetime",
                             "model": "created",
-                            "label": this.$i18n("Created"),
+                            "label": "Created",
                             "readonly": true,
-                            "placeholder": this.$i18n("created")
+                            "placeholder": "created"
                         },
                         {
                             "type": "input",
                             "inputType": "text",
                             "model": "createdBy",
-                            "label": this.$i18n("Created By"),
+                            "label": "Created By",
                             "readonly": true,
-                            "placeholder": this.$i18n("created by")
+                            "placeholder": "created by"
                         },
                         {
                             "type": "material-datetime",
                             "model": "lastModified",
-                            "label": this.$i18n("Last Modified"),
+                            "label": "Last Modified",
                             "readonly": true,
-                            "placeholder":  this.$i18n("last modified")
+                            "placeholder": "lastModified"
                         },
                         {
                             "type": "input",
                             "inputType": "text",
                             "model": "lastModifiedBy",
-                            "label": this.$i18n("Last Modified By"),
+                            "label": "Last Modified By",
                             "readonly": true,
-                            "placeholder": this.$i18n("last Modified By")
+                            "placeholder": "lastModifiedBy"
                         },
                         {
                             "type": "material-multiselect",
@@ -243,9 +243,9 @@
                             "type": "material-textarea",
                             "inputType": "text",
                             "model": "description",
-                            "label": this.$i18n("Description"),
+                            "label": "Description",
                             "rows": 10,
-                            "placeholder": this.$i18n("enter a description for this asset")
+                            "placeholder": "enter a description for this asset"
                         }
                     ]}
 

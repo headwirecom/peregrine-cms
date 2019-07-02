@@ -133,18 +133,8 @@
          *
          */
         title() {
-            if(this.model.tooltipTitle) {
-                if (this.model.experiences) {
-                    return this.$exp(this.model, 'tooltipTitle', this.model.tooltipTitle);
-                }
-                return this.model.tooltipTitle;
-            }
-            if(this.model.title) {
-                if (this.model.experiences) {
-                    return this.$exp(this.model, 'title', this.model.title);
-                }
-                return this.model.title
-            }
+            if(this.model.tooltipTitle) return this.model.tooltipTitle
+            if(this.model.title) return this.model.title
             /* eslint-disable no-console */
             console.error('missing alt', this.model.command, this.model.path)
             /* eslint-enable no-console */

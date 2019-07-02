@@ -24,11 +24,11 @@
   -->
 <template>
     <div class="component-explorer">
-        <span class="panel-title">{{ $i18n('Components') }}</span>
-            <input type="text" v-model="state.filter" v-bind:placeholder="$i18n('Filter components')" tabindex="1" autofocus/>
+        <span class="panel-title">Components</span>
+            <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
             <select class="browser-default" v-model="state.group">
-                <option value="">{{ $i18n('All Groups') }}</option>
-                <option v-for="(group, key) in allGroups" v-bind:value="key">{{ key }}</option>
+                <option value="">All Groups</option>
+                <option v-for="(group, key) in allGroups" v-bind:value="key">{{key}}</option>
             </select>
             <ul>
                 <li 
@@ -38,8 +38,7 @@
                             <li
                                 class="collection-item"
                                 v-for="component in group"
-                                v-on:dragstart="onDragStart(component, $event)"
-                                v-on:dragend="onDragEnd(component, $event)"
+                                v-on:dragstart="onDragStart(component, $event)" 
                                 draggable="true">
                                 <div>
                                     <i class="material-icons">drag_handle</i>
@@ -167,19 +166,6 @@
                     } else {
                         ev.dataTransfer.setData('text', component.path)
                     }
-                    let view = $perAdminApp.getView();
-                    if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') {
-                        Vue.set(view.state.tools.workspace, 'ignoreContainers', 'on-hold');
-                        Vue.set(view.pageView, 'view', view.state.tools.workspace.view);
-                    }
-                }
-            },
-            onDragEnd: function(component, ev) {
-                let view = $perAdminApp.getView();
-                if (view.state.tools.workspace.ignoreContainers === 'on-hold') {
-                    Vue.set(view.state.tools.workspace, 'ignoreContainers', 'ignore-containers');
-                    Vue.set(view.pageView, 'view', 'ignore-containers');
-
                 }
             }
         }
