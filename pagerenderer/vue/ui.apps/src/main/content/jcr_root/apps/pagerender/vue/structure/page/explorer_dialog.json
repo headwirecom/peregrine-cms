@@ -70,5 +70,31 @@
     "label": "Description",
     "rows": 10,
     "placeholder": "enter a description for this page"
+  },
+  {
+    "type": "collection",
+    "multifield": true,
+    "fieldLabel": [
+      "property",
+      "value"
+    ],
+    "fields": [
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "og:title",
+        "label": "meta property",
+        "model": "property"
+      },
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "title",
+        "label": "meta content",
+        "model": "content"
+      }
+    ],
+    "label": "Meta Properties",
+    "model": "metaproperties"
   }
 ]}
