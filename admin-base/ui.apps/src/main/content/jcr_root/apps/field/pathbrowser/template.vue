@@ -89,7 +89,6 @@
             onSelect() {
                 this.value = this.selectedPath
                 this.isOpen = false
-                console.log(this.value, this.selectedPath)
             },
             setCurrentPath(path){
                 this.currentPath = path
