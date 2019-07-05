@@ -57,7 +57,7 @@
 </template>
 
 <script>
-    import {PathBrowser} from '../../../../../js/constants';
+    import {PathBrowser} from "../../../../../js/constants";
 
     export default {
         props: ['model'],
@@ -89,6 +89,7 @@
             onSelect() {
                 this.value = this.selectedPath
                 this.isOpen = false
+                console.log(this.value, this.selectedPath)
             },
             setCurrentPath(path){
                 this.currentPath = path

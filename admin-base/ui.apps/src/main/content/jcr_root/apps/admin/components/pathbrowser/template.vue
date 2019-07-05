@@ -337,7 +337,7 @@
 </template>
 
 <script>
-    import {PathBrowser} from '../../../../../../js/constants';
+    import {PathBrowser} from "../../../../../../js/constants";
 
     export default {
         props: [
