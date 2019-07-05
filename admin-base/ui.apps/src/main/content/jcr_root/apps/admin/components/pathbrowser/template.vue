@@ -48,7 +48,7 @@
                     :style="`transform: translateX(${tabIndicatorPosition}px)`">
                 </li>
             </ul>
-            <div v-if="!isTypeImage" class="pathbrowser-filter" :style="`width: calc(100% - ${searchTabOffset}px)`">
+            <div class="pathbrowser-filter" :style="`width: calc(100% - ${searchTabOffset}px)`">
                 <input placeholder="search"  type="text" v-model="search">
             </div>
             <div class="modal-content">
@@ -66,7 +66,7 @@
                             <tr v-if="searchFilter(item)"
                                 v-for="item in nodes.children"
                                 :class="isSelected(item.path) ? 'selected' : ''">
-                                <td class="search-radio">
+                                <td v-if="!isTypeImage || isImage(item)" class="search-radio">
                                     <input type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                     <label v-on:click.stop.prevent="selectItem(item)"></label>
                                 </td>
