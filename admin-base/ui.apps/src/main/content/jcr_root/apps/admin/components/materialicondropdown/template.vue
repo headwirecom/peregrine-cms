@@ -54,7 +54,6 @@
     display: none;
     position: absolute;
     max-width: 54px;
-    z-index: 1000;
     padding-top: 1px;
   }
 
