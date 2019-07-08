@@ -238,7 +238,31 @@ class PerAdminImpl {
         })
     }
 
+
     populateComponentDefinitionFromNode(path) {
+        const flattenHierarchy= function(to, data, prefix = '') {
+            try {
+                for(var key in data) {
+                    if(data[key]['jcr:title']) {
+                        const nodeName = key
+                        const val = data[key].path + '/' + nodeName
+                        let name = data[key].name
+                        if(!name) {
+                            name = data[key]['jcr:title']
+                        }
+                        to.values.push({ value: val, name: prefix + name })
+                        for(let children in data[key]) {
+                            if(typeof data[key][children] === 'object' && data[key][children]['jcr:primaryType'] === 'per:Object') {
+                                flattenHierarchy(to, data[key], name +'/')
+                            }                        
+                        }
+                    } 
+                }
+            } catch(error) {
+                console.error(error)
+            }
+        }
+
         return new Promise( (resolve, reject) => {
             var name;
             fetch('/admin/componentDefinition.json'+path)
@@ -256,17 +280,7 @@ class PerAdminImpl {
                             if(from) {
                                 data.model.fields[i].values = []
                                 let promise = axios.get(from).then( (response) => {
-                                    for(var key in response.data) {
-                                        if(response.data[key]['jcr:title']) {
-                                            const nodeName = key
-                                            const val = from.replace('.infinity.json', '/'+nodeName)
-                                            let name = response.data[key].name
-                                            if(!name) {
-                                                name = response.data[key]['jcr:title']
-                                            }
-                                            data.model.fields[i].values.push({ value: val, name: name })
-                                        }
-                                    }
+                                    flattenHierarchy(data.model.fields[i], response.data)
                                 }).catch( (error) => {
                                     logger.error('missing node', data.model.fields[i].valuesFrom, 'for list population in dialog', error)
                                 })
