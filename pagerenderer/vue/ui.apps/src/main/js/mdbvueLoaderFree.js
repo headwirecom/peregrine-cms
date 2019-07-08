@@ -93,9 +93,12 @@ import {
   mdbClassMixin,
   animateOnScroll
 } from 'mdbvue';
+//>-CUSTOM-COMPONENTS-IMPORT-<//
 
 const mdbvue = {
   load: function (Vue) {
+
+    //>-CUSTOM-COMPONENTS-<//
 
     Vue.component('mdb-accordion', mdbAccordion);
     Vue.component('mdb-accordion-pane', mdbAccordionPane);
