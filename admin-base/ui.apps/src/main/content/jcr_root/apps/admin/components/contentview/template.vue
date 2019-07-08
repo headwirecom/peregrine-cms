@@ -499,10 +499,14 @@ export default {
                 editable.style.width  = targetBox.width + 'px'
                 editable.style.height = targetBox.height + 'px'
 
-                var path = this.selectedComponent.getAttribute('data-per-path')
-                var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
-                if(node.fromTemplate) {
-                    editable.style['border-color'] = 'orange'
+                if(this.selectedComponent) {
+                    var path = this.selectedComponent.getAttribute('data-per-path')
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    if(node.fromTemplate) {
+                        editable.style['border-color'] = 'orange'
+                    } else {
+                        editable.style['border-color'] = ''
+                    }
                 } else {
                     editable.style['border-color'] = ''
                 }
