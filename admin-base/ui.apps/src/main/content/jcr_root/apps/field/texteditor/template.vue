@@ -79,18 +79,18 @@
                 return !btnsDef || this.isObjectAndNotEmpty(btnsDef)
             },
             config() {
-              let cfg = this.default.config
-              let btns = this.schema.config.btns
-
-              if (btns && this.isValidBtns) {
-                  cfg.btns = btns
-                  let btnsDef = this.schema.config.btnsDef
-
-                  if (btnsDef && this.isValidBtnsDef) {
-                      cfg.btnsDef = btnsDef
-                  }
-              }
-              return cfg;
+                let cfg = this.default.config
+                if (this.schema.config) {
+                    let btns = this.schema.config.btns
+                    if (btns && this.isValidBtns) {
+                        cfg.btns = btns
+                        let btnsDef = this.schema.config.btnsDef
+                        if (btnsDef && this.isValidBtnsDef) {
+                            cfg.btnsDef = btnsDef
+                        }
+                    }
+                }
+                return cfg;
             }
         },
         methods: {
