@@ -438,7 +438,7 @@
                 return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(item.mimeType) >= 0
             },
             isImageExtension(item) {
-                return item.path.match(/.(jpg|jpeg|png|gif)$/i)
+                return item.path.match(/.(jpg|jpeg|png|gif|svg)$/i)
             },
             getFileIcon(){
                 return 'insert_drive_file'
