@@ -237,6 +237,7 @@
     {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
+      "browserType": "image",
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
