@@ -66,7 +66,7 @@
                             <tr v-if="searchFilter(item)"
                                 v-for="item in nodes.children"
                                 :class="isSelected(item.path) ? 'selected' : ''">
-                                <td v-if="!isTypeImage || isImage(item)" class="search-radio">
+                                <td v-if="isSelectable(item)" class="search-radio">
                                     <input type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                     <label v-on:click.stop.prevent="selectItem(item)"></label>
                                 </td>
@@ -90,7 +90,7 @@
                                     </template>
                                     <template v-else>
                                         <input
-                                            v-if="!isTypeImage"
+                                            v-if="!isBrowserTypeImage"
                                             type="radio"
                                             class="with-gap"
                                             :checked="isSelected(currentPath)"/>
@@ -104,8 +104,7 @@
                                 <li v-if="isFolder(item)"
                                     v-on:click.stop.prevent="navigateFolder(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
-                                    <label> isImage: {{ isImage(item) }}</label>
-                                    <template v-if="!isTypeImage">
+                                    <template v-if="!isBrowserTypeImage">
                                         <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                         <label v-on:click.stop.prevent="selectItem(item)"></label>
                                     </template>
@@ -115,13 +114,12 @@
                                 <li v-if="isFile(item) && isFileAllowed()"
                                     v-on:click.stop.prevent="selectItem(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
-                                    <label> isImage: {{ isImage(item) }}</label>
-                                    <template v-if="!isTypeImage || isImage(item)">
+                                    <template v-if="isSelectable(item)">
                                         <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                         <label></label>
                                     </template>
                                     <i class="material-icons">image</i>
-                                    <span>{{item.name}} - item: {{ item }}</span>
+                                    <span>{{item.name}}</span>
                                 </li>
                             </template>
                         </ul>
@@ -141,7 +139,7 @@
                                     </template>
                                     <template v-else>
                                         <input
-                                            v-if="!isTypeImage"
+                                            v-if="!isBrowserTypeImage"
                                             type="radio"
                                             class="with-gap"
                                             :checked="isSelected(currentPath)" />
@@ -238,7 +236,7 @@
                                         class="item-folder"
                                         v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
                                         v-on:click.stop.prevent="navigateFolder(item)">
-                                            <div v-if="!isTypeImage || isImage(item)" class="item-select">
+                                            <div v-if="isSelectable(item)" class="item-select">
                                                 <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                                 <label v-on:click.stop.prevent="selectItem(item)"></label>
                                             </div>
@@ -287,7 +285,7 @@
                                 placeholder="https://"
                                 :value="selectedPath"
                                 @input="selectLink" />
-                            <template v-if="!isTypeImage">
+                            <template v-if="!isBrowserTypeImage">
                                 <input type="checkbox" id="newWindow" />
                                 <label for="newWindow">Open in new window?</label>
                             </template>
@@ -428,7 +426,7 @@
                     return 144
                 }
             },
-            isTypeImage() {
+            isBrowserTypeImage() {
               return this.isType(PathBrowser.Type.IMAGE)
             }
         },
@@ -438,6 +436,9 @@
             },
             isImage(item){
                 return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(item.mimeType) >= 0
+            },
+            isImageExtension(item) {
+                return item.path.match(/.(jpg|jpeg|png|gif)$/i)
             },
             getFileIcon(){
                 return 'insert_drive_file'
@@ -537,11 +538,10 @@
                     })
             },
             selectItem(item) {
-                if (this.isTypeImage && !this.isImage(item)) {
-                    return
+                if (this.isSelectable(item)) {
+                    this.previewType = 'selected'
+                    this.setSelectedPath(item.path)
                 }
-                this.previewType = 'selected'
-                this.setSelectedPath(item.path)
             },
             selectLink(ev){
                 // TODO: add link preview
@@ -551,6 +551,14 @@
             },
             isType(browserType) {
                 return this.browserType === browserType
+            },
+            isSelectable(item) {
+                if (!this.isBrowserTypeImage) {
+                  return true
+                } else if (this.isImage(item) || this.isImageExtension(item)) {
+                  return true
+                }
+                return false
             }
         }
     }
