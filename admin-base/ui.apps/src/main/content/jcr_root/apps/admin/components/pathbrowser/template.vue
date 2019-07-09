@@ -104,6 +104,7 @@
                                 <li v-if="isFolder(item)"
                                     v-on:click.stop.prevent="navigateFolder(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
+                                    <label> isImage: {{ isImage(item) }}</label>
                                     <template v-if="!isTypeImage">
                                         <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                         <label v-on:click.stop.prevent="selectItem(item)"></label>
@@ -114,12 +115,13 @@
                                 <li v-if="isFile(item) && isFileAllowed()"
                                     v-on:click.stop.prevent="selectItem(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
-                                    <template v-if="!isTypeImage || (isTypeImage && isImage(item))">
+                                    <label> isImage: {{ isImage(item) }}</label>
+                                    <template v-if="!isTypeImage || isImage(item)">
                                         <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                         <label></label>
                                     </template>
                                     <i class="material-icons">image</i>
-                                    <span>{{item.name}}</span>
+                                    <span>{{item.name}} - isImage: {{ isImage(image) }}</span>
                                 </li>
                             </template>
                         </ul>

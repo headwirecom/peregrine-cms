@@ -53,6 +53,7 @@
     {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
+      "browserType": "image",
       "placeholder": "imagesrc",
       "label": "Image Source",
       "model": "imagesrc",
