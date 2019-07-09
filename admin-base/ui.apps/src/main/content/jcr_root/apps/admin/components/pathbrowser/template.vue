@@ -121,7 +121,7 @@
                                         <label></label>
                                     </template>
                                     <i class="material-icons">image</i>
-                                    <span>{{item.name}} - isImage: {{ isImage(item) }}</span>
+                                    <span>{{item.name}} - item: {{ item }}</span>
                                 </li>
                             </template>
                         </ul>
