@@ -24,7 +24,7 @@
   -->
 <template>
     <div>
-        <div v-if="!schema.preview" class="wrapper">
+        <div v-if="!schema.preview" class="wrapper wysiwygeditor">
             <trumbowyg :config="config" v-model="value"></trumbowyg>
         </div>
         <p v-else v-html="value"></p>
@@ -38,6 +38,7 @@
             return {
                 config: {
                     svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
+                    resetCss: true, 
                     btnsDef: {
                         formattingWithCode: {
                             dropdown: ['p', 'quote', 'preformatted', 'h1', 'h2', 'h3', 'h4'],

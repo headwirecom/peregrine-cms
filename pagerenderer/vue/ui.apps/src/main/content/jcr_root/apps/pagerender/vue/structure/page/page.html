@@ -26,6 +26,7 @@
             document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
     </script>
 
+    <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>
 
 </head>
 
@@ -48,7 +49,7 @@
 <script>
     var $perView = { view: 'preview' };
     $peregrineApp.registerView($perView)
-    $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
+    $peregrineApp.loadContentFrom("perPage", "${resource.parent.path @ context='unsafe'}.html", true)
 </script>
 <sly data-sly-include=serviceworker.html"></sly>
 <sly data-sly-include=tracker-bodyend.html"></sly>
