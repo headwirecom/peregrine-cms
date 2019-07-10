@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -60,6 +60,7 @@ import createObject from './stateActions/createObject'
 import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
+import unselectPage from './stateActions/unselectPage'
 import deleteAsset from './stateActions/deleteAsset'
 import renameAsset from './stateActions/renameAsset'
 import moveAsset from './stateActions/moveAsset'
@@ -109,6 +110,7 @@ actions['createObjectWizard'] = createObjectWizard
 actions['selectAsset'] = selectAsset
 actions['showPageInfo'] = showPageInfo
 actions['unselectAsset'] = unselectAsset
+actions['unselectPage'] = unselectPage
 actions['deleteAsset'] = deleteAsset
 actions['renameAsset'] = renameAsset
 actions['moveAsset'] = moveAsset
