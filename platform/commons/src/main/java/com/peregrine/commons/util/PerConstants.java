@@ -93,6 +93,8 @@ public class PerConstants {
     public static final String PARENT_PATH = "parentPath";
     public static final String CONTENT = "content";
     public static final String TITLE = "title";
+    public static final String TAGS = "tags";
+    public static final String METAPROPERTIES = "metaproperties";
 
     public static final String PAGE = "page";
     public static final String DROP = "drop";
