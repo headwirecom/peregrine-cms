@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -32,7 +32,7 @@ function bringUpEditor(me, view, target) {
 
     let checksum = ''
 
-    me.beforeStateAction( function(name) {
+    me.beforeStateAction( function(name, actionTarget) {
         if(name !== 'savePageEdit') {
             // if there was no change skip asking to save
             if(checksum === JSON.stringify(me.getNodeFromView('/pageView/page'))) {
@@ -41,7 +41,7 @@ function bringUpEditor(me, view, target) {
             const yes = confirm('save edit?')
             if(yes) {
                 const currentObject = me.getNodeFromView("/state/tools/object")
-                me.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path})
+                me.stateAction('savePageEdit', { data: actionTarget.data, pagePath: view.pageView.path, path: view.state.editor.path})
             }
         }
         return true

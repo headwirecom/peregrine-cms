@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -95,7 +95,7 @@
           }
       },
       methods: {
-        onOk(e) {
+        getMergedData() {
             let data = JSON.parse(JSON.stringify(this.dataModel));
             let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
 
@@ -103,7 +103,7 @@
             //Loop through the model for this object/page/asset and find objects that have children
             for ( const key in data) {
                 //If data[key] or deleted[key] is an array of objects
-                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
+                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') ||
                     ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
 
                     let node = data[key];
@@ -123,15 +123,22 @@
                     data[key] = Object.values(targetNode);
                 }
             }
+            return data;
+        },
+        onOk(e) {
+            let data = this.getMergedData();
 
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } )
         },
         onCancel(e) {
+            // in case the user chooses to save on cancel
+            let data = this.getMergedData();
+
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
+            $perAdminApp.stateAction('cancelPageEdit', { data: data, pagePath: view.pageView.path, path: view.state.editor.path } )
         },
         onDelete(e) {
             var view = $perAdminApp.getView()

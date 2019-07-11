@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -421,11 +421,11 @@ function beforeStateActionImpl(fun) {
     beforeStateActions.push(fun)
 }
 
-function runBeforeStateActions(name) {
+function runBeforeStateActions(name, target) {
     // execute all before state actions
     if(beforeStateActions.length > 0) {
         for(let i = 0; i < beforeStateActions.length; i++) {
-            let ret = beforeStateActions[i](name)
+            let ret = beforeStateActions[i](name, target)
             if(!ret) return false
         }
     }
@@ -444,7 +444,7 @@ function runBeforeStateActions(name) {
  */
 function stateActionImpl(name, target) {
 
-    if(!runBeforeStateActions(name)) return
+    if(!runBeforeStateActions(name, target)) return
 
     try {
         const stateAction = StateActions(name)
