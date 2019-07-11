@@ -27,7 +27,7 @@
 import { LoggerFactory } from './logger'
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
-import { stripNulls} from './utils'
+import { stripNulls, UTF8FormData} from './utils'
 
 const API_BASE = '/perapi'
 const postConfig = {
@@ -343,7 +343,7 @@ class PerAdminImpl {
 
     createSite(fromName, toName) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData()
             data.append('fromSite', fromName)
             data.append('toSite', toName)
             updateWithForm('/admin/createSite.json', data)
@@ -354,9 +354,10 @@ class PerAdminImpl {
 
     createPage(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('name', name)
+            let data = new UTF8FormData();
+            data.append('name', name);
             data.append('templatePath', templatePath)
+
             updateWithForm('/admin/createPage.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
@@ -365,7 +366,7 @@ class PerAdminImpl {
 
     createObject(parentPath, name, templatePath) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData();
             data.append('name', name)
             data.append('templatePath', templatePath)
             updateWithForm('/admin/createObject.json'+parentPath, data)
@@ -475,7 +476,7 @@ class PerAdminImpl {
 
     createTemplate(parentPath, name, component) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData();
             data.append('name', name)
             data.append('component', component)
             updateWithForm('/admin/createTemplate.json'+parentPath, data)
@@ -486,7 +487,7 @@ class PerAdminImpl {
 
     createFolder(parentPath, name) {
         return new Promise( (resolve, reject) => {
-            let data = new FormData()
+            let data = new UTF8FormData()
             data.append('name', name)
             updateWithForm('/admin/createFolder.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )

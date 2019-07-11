@@ -117,6 +117,7 @@ public class NodesServlet extends AbstractBaseServlet {
         for(Resource child : children) {
             if(fullPath.startsWith(child.getPath())) {
                 json.writeObject();
+                writeJcrContent(child, json);
                 convertResource(json, rs, segments, pos+1, fullPath);
                 json.writeClose();
             } else {
@@ -130,29 +131,43 @@ public class NodesServlet extends AbstractBaseServlet {
                         json.writeAttribute(MIME_TYPE, mimeType);
                     }
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
-                        Resource content = child.getChild(JCR_CONTENT);
-                        if(content != null) {
-                            for (String key: content.getValueMap().keySet()) {
-                                if(key.equals(JCR_TITLE)) {
-                                    String title = content.getValueMap().get(JCR_TITLE, String.class);
-                                    json.writeAttribute(TITLE, title);
-                                } else {
-                                    if(key.indexOf(":") < 0) {
-                                        json.writeAttribute(key, content.getValueMap().get(key, String.class));
-                                    }
-                                }
-                            }
-                            String component = PerUtil.getComponentNameFromResource(content);
-                            json.writeAttribute(COMPONENT, component);
-                        } else {
-                            logger.debug("No Content Child found for: '{}'", child.getPath());
-                        }
+                        writeJcrContent(child, json);
                     }
+
+                    if(isPrimaryType(child, OBJECT_PRIMARY_TYPE, ASSET_PRIMARY_TYPE, SLING_ORDERED_FOLDER)) {
+                        String title = child.getValueMap().get(JCR_TITLE, String.class);
+                        json.writeAttribute(TITLE, title);
+                    }
+
                     json.writeClose();
                 }
             }
         }
         json.writeClose();
+    }
+
+    private void writeJcrContent(Resource resource, JsonResponse json) throws IOException {
+        Resource content = resource.getChild(JCR_CONTENT);
+
+        if(content != null) {
+            for (String key: content.getValueMap().keySet()) {
+                if(key.equals(JCR_TITLE)) {
+                    String title = content.getValueMap().get(JCR_TITLE, String.class);
+                    json.writeAttribute(TITLE, title);
+                } else if(key.equals(NAME)) {
+                    String title = content.getValueMap().get(NAME, String.class);
+                    json.writeAttribute(DISPLAY_NAME, title);
+                } else {
+                    if(key.indexOf(":") < 0) {
+                        json.writeAttribute(key, content.getValueMap().get(key, String.class));
+                    }
+                }
+            }
+            String component = PerUtil.getComponentNameFromResource(content);
+            json.writeAttribute(COMPONENT, component);
+        } else {
+            logger.debug("No Content Child found for: '{}'", resource.getPath());
+        }
     }
 
     private void writeProperties(Resource resource, JsonResponse json) throws IOException {
