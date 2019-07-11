@@ -548,6 +548,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             populateView('/state', 'editorVisible', false)
             populateView('/state', 'rightPanelVisible', true)
+            populateView('/state', 'editor', {})
             resolve()
         })
     }
