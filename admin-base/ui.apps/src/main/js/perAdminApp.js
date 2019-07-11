@@ -215,6 +215,16 @@ function initPeregrineApp() {
         view.state = JSON.parse(state)
         view.admin = JSON.parse(admin)
 
+        // issue #81: since we do not store the pageView.view in the session we need to apply it here to the correct node
+        if(view.pageView && view.state && view.state.tools && view.state.tools.workspace) {
+            if(view.state.tools.workspace.preview === 'preview') {
+                view.pageView.view = 'preview'
+            } else {
+                view.pageView.view = view.state.tools.workspace.view ? view.state.tools.workspace.view : 'desktop';
+            }
+        }
+        // /issue #81
+
         // make i18n and language selection survive session storage
         view.state.language = lang
         view.admin.i18n = i18nData

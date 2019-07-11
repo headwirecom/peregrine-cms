@@ -299,7 +299,9 @@ class PerAdminImpl {
     populatePageView(path) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/readNode.json'+path)
-                .then( (data) => populateView('/pageView', 'page', data) )
+                .then( (data) => {
+                    populateView('/pageView', 'page', data)
+                 })
                 .then( () => resolve() )
         })
     }
