@@ -423,6 +423,7 @@ function beforeStateActionImpl(fun) {
 
 function runBeforeStateActions(name) {
     // execute all before state actions
+    console.log(beforeStateActions);
     if(beforeStateActions.length > 0) {
         for(let i = 0; i < beforeStateActions.length; i++) {
             let ret = beforeStateActions[i](name)
