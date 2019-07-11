@@ -61,6 +61,7 @@ import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
 import unselectPage from './stateActions/unselectPage'
+import unselectTemplate from './stateActions/unselectTemplate'
 import deleteAsset from './stateActions/deleteAsset'
 import renameAsset from './stateActions/renameAsset'
 import moveAsset from './stateActions/moveAsset'
@@ -111,6 +112,7 @@ actions['selectAsset'] = selectAsset
 actions['showPageInfo'] = showPageInfo
 actions['unselectAsset'] = unselectAsset
 actions['unselectPage'] = unselectPage
+actions['unselectTemplate'] = unselectTemplate
 actions['deleteAsset'] = deleteAsset
 actions['renameAsset'] = renameAsset
 actions['moveAsset'] = moveAsset
