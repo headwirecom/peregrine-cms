@@ -1,7 +1,6 @@
 package com.peregrine.commons.util;
 
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 /**
  * Commonly used Constants in Peregrine
@@ -87,7 +86,6 @@ public class PerConstants {
     public static final String VARIATIONS = "__variations";
     public static final String STATUS = "status";
     public static final String TEMPLATE_PATH = "templatePath";
-    public static final String DISPLAY_NAME = "displayName";
     public static final String SOURCE_PATH = "sourcePath";
     public static final String CREATED = "created";
     public static final String DELETED = "deleted";
