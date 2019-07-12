@@ -272,6 +272,7 @@
             nodes() {
                 let view = $perAdminApp.getView()
                 let nodes = view.admin.pathBrowser
+                console.log('view.admin: ', view.admin)
                 if(nodes && this.path) {
                     let nodesFromPath = $perAdminApp.findNodeFromPath(nodes, this.path)
                     console.log('nodesFromPath: ', nodesFromPath)
@@ -280,6 +281,7 @@
                 return {}
             },
             list(){
+                console.log('list: ', this.nodes.children)
                 return this.nodes.children || []
             }
         },
