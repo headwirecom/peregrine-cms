@@ -543,16 +543,16 @@ public class PerUtil {
     /**
      * Check if the given resource has that Primary Type
      * @param resource Resource to be checked. It will test this resource and not go down to JCR Content
-     * @param primaryType Primary Type to test. If null or empty this method returns false
-     * @return true if the resource contains a Primary Type that matches the given value
+     * @param primaryTypes Primary Types to test. If null or empty this method returns false
+     * @return true if the resource contains a Primary Type that matches one of the given values
      */
-    public static boolean isPrimaryType(Resource resource, String primaryType) {
-        String answer = null;
+    public static boolean isPrimaryType(Resource resource, String... primaryTypes) {
+        String primaryResourceType = null;
         if(resource != null) {
             ValueMap properties = getProperties(resource, false);
-            answer = properties.get(JCR_PRIMARY_TYPE, String.class);
+            primaryResourceType = properties.get(JCR_PRIMARY_TYPE, String.class);
         }
-        return answer != null && answer.equals(primaryType);
+        return primaryResourceType != null && Arrays.asList(primaryTypes).contains(primaryResourceType);
     }
 
     /**

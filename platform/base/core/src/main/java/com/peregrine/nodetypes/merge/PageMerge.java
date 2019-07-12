@@ -88,6 +88,16 @@ public class PageMerge implements Use {
         return toJSON(getMerged(res));
     }
 
+    public String getMergedForScript() {
+        log.debug("merge on {}", request.getResource().getPath());
+        Resource res = request.getResource();
+        if(res.getName().equals(JCR_CONTENT)) {
+            res = res.getParent();
+        }
+        String merged = toJSON(getMerged(res));
+        return merged.replaceAll("</script>", "<\\\\/script>");
+    }
+
     public Map getMerged(Resource resource) {
         log.debug("getMerge({})", resource.getPath());
         try {

@@ -34,6 +34,7 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -50,10 +51,7 @@ import static com.peregrine.commons.util.PerUtil.isPrimaryType;
  *
  * Created by Andreas Schaefer on 6/4/17.
  */
-public class PerPageImpl
-    extends PerBaseImpl
-    implements PerPage
-{
+public class PerPageImpl extends PerBaseImpl implements PerPage {
     private static final AllFilter allFilter = new AllFilter();
 
     /** Reference to the Page Manager **/
@@ -91,22 +89,25 @@ public class PerPageImpl
 
     /**
      * Obtains a List of Page that matches the given Filter
+     * 
      * @param filter Filter instance to select the desired pages
-     * @param deep If true the search goes deep
+     * @param deep   If true the search goes deep
      * @return List of pages which can be empty but never null
      */
     private List<PerPage> getChildren(Filter<PerPage> filter, boolean deep) {
         List<PerPage> children = new ArrayList<PerPage>();
-        for(Resource child: getResource().getChildren()) {
-            // jcr:content nodes are converted to a PerPage of its parent so it is important to exclude them
+        for (Resource child : getResource().getChildren()) {
+            // jcr:content nodes are converted to a PerPage of its parent so it is important
+            // to exclude them
             // here otherwise the parent is added through the backdoor.
-            if(!JCR_CONTENT.equals(child.getName())) {
+            if (!JCR_CONTENT.equals(child.getName())) {
                 PerPage page = child.adaptTo(PerPage.class);
-                logger.info("Check Children, child resource: '{}', child page: '{}', child name: '{}'", child, page, page == null ? "null" : page.getName());
-                if(page != null) {
-                    if(filter.include(page)) {
+                logger.info("Check Children, child resource: '{}', child page: '{}', child name: '{}'", child, page,
+                        page == null ? "null" : page.getName());
+                if (page != null) {
+                    if (filter.include(page)) {
                         children.add(page);
-                        if(deep) {
+                        if (deep) {
                             children.addAll(getChildren(filter, deep));
                         }
                     }
@@ -125,16 +126,14 @@ public class PerPageImpl
     @Override
     public PerPage getParent() {
         Resource parent = getResource().getParent();
-        return parent != null ?
-            parent.adaptTo(PerPage.class) :
-            null;
+        return parent != null ? parent.adaptTo(PerPage.class) : null;
     }
 
     @Override
     public PerPage getTemplate() {
         PerPage answer = null;
         String templatePath = getContentProperty(TEMPLATE, String.class);
-        if(templatePath != null) {
+        if (templatePath != null) {
             answer = pageManager.getPage(templatePath);
         }
         return answer;
@@ -142,7 +141,7 @@ public class PerPageImpl
 
     @Override
     public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
-        if(type.equals(PerPageManager.class)) {
+        if (type.equals(PerPageManager.class)) {
             return (AdapterType) pageManager;
         } else {
             return super.adaptTo(type);
@@ -156,8 +155,8 @@ public class PerPageImpl
     }
 
     /*
-     * Pre-Order means that a direct child is returned first whereas
-     * Post-Order means that first the furthers child is returned first
+     * Pre-Order means that a direct child is returned first whereas Post-Order
+     * means that first the furthers child is returned first
      *
      * Pre-Order: first child, sibling or parent sibling
      *
@@ -165,16 +164,16 @@ public class PerPageImpl
      */
     private PerPage findNext(Resource resource, boolean preOrder) {
         PerPage answer = findNextChildPage(resource, null);
-        if(answer == null) {
+        if (answer == null) {
             Resource parent = resource.getParent();
             Resource child = resource;
-            while(parent != null) {
+            while (parent != null) {
                 // Find any sibling in the parent this is after the this resource's path
                 answer = findNextChildPage(parent, child);
-                if(answer == null) {
+                if (answer == null) {
                     child = parent;
                     parent = parent.getParent();
-                    if(!isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
+                    if (!isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
                         // The search ends at the first non-page node
                         break;
                     }
@@ -188,26 +187,30 @@ public class PerPageImpl
 
     /**
      * Looks for a child page of the given resource
+     * 
      * @param resource Parent Resource to search for a page
-     * @param after If not null the returned page is the one that comes after that resource
-     *              There is not test that this is a child resource of the given resource
-     *              but if not it might lead to undesired effects
+     * @param after    If not null the returned page is the one that comes after
+     *                 that resource There is not test that this is a child resource
+     *                 of the given resource but if not it might lead to undesired
+     *                 effects
      * @return The next child page if found otherwise null
      */
     private PerPage findNextChildPage(Resource resource, Resource after) {
         PerPage answer = null;
         boolean found = (after == null);
-        for(Resource child: resource.getChildren()) {
+        for (Resource child : resource.getChildren()) {
             // JCR Content nodes will not yield a page -> ignore
-            if(child.getName().equals(JCR_CONTENT)) { continue; }
-            if(found) {
-                if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
+            if (child.getName().equals(JCR_CONTENT)) {
+                continue;
+            }
+            if (found) {
+                if (isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                     answer = new PerPageImpl(child);
                     break;
                 }
             } else {
                 // 'found' can only be false if after is not null
-                if(child.getName().equals(after.getName())) {
+                if (child.getName().equals(after.getName())) {
                     found = true;
                 }
             }
@@ -236,36 +239,72 @@ public class PerPageImpl
         properties.put(JCR_LAST_MODIFIED, now);
     }
 
+    private Resource getLastChild(Resource res) {
+        Iterable<Resource> children = res.getChildren();
+        Resource answer = null;
+        for(Resource child: children) {
+            if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
+                answer = child;
+            }
+        }
+        return answer;
+    }
+
+
     /**
-     * Finds the previous page in the page tree of the given page resource.
-     * This will traverse the tree from right to left and bottom to top. Going
-     * from one resource to the a previous one means we go to the bottom most
-     * node and traverse back up.
+     * Finds the previous page in the page tree of the given page resource. This
+     * will traverse the tree from right to left and bottom to top. Going from one
+     * resource to the a previous one means we go to the bottom most node and
+     * traverse back up.
      *
      * @param resource Starting Page Resource
      * @return Previous Page Wrapper Object if found
      */
     private PerPage findPrevious(Resource resource) {
-        PerPage answer = findPreviousChildPage(resource, null);
-        if(answer == null) {
-            Resource parent = resource.getParent();
-            Resource child = resource;
-            while(parent != null) {
-                // Find any sibling in the parent this is before the this resource's path
-                answer = findPreviousChildPage(parent, child);
-                if(answer == null) {
-                    child = parent;
-                    parent = parent.getParent();
-                    if(!isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
-                        // The search ends at the first non-page node
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }}
+        PerPage answer = findPreviousChildPage(resource.getParent(), resource);
+        if (answer != null) {
 
-        return answer;
+            Resource child = answer.getResource();
+            while(child != null) {
+                child = getLastChild(child);
+                if(child != null) {
+                    answer = new PerPageImpl(child);
+                }
+            }
+            return answer;
+        } else {
+            return new PerPageImpl(resource.getParent());
+        }
+        // if(answer == null) {
+        //     Resource parent = resource.getParent();
+        //     Resource current = resource;
+        //     Iterable<Resource> children = parent.getChildren();
+        //     Resource previous = null;
+        //     for(Resource res: children) {
+        //         if(!res.equals(current) && isPrimaryType(res, PAGE_PRIMARY_TYPE)) {
+        //             previous = res;
+        //         } else if(res.equals(current)) {
+        //             break;
+        //         }
+        //     }
+
+        //     // while(parent != null) {
+        //     //     // Find any sibling in the parent this is before the this resource's path
+        //     //     answer = findPreviousChildPage(parent, child);
+        //     //     if(answer == null) {
+        //     //         child = parent;
+        //     //         parent = parent.getParent();
+        //     //         if(!isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
+        //     //             // The search ends at the first non-page node
+        //     //             break;
+        //     //         }
+        //     //     } else {
+        //     //         break;
+        //     //     }
+        //     // }
+        // }
+
+        // return answer;
     }
 
     /**

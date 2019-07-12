@@ -22,13 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.*;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.version.VersionException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.convertToMap;
@@ -118,6 +116,9 @@ public class AdminResourceHandlerService
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
     public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
 
+    private static final Pattern URL_UNSAFE_CHARACTERS_PATTERN = Pattern.compile("[^0-9a-zA-Z\\-_]");
+    private static final Pattern COMBINED_UNICODE_CHARACTER_PATTERN = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
+
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_UUID);
@@ -154,7 +155,7 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
             Node parentNode =  parent.adaptTo(Node.class);
-            Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
+            Node newFolder = parentNode.addNode(sanitizeNodeName(name), SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newFolder);
             return resourceResolver.getResource(newFolder.getPath());
@@ -178,7 +179,7 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(RESOURCE_TYPE_UNEDEFINED, parentPath, name));
             }
             Node parentNode = parent.adaptTo(Node.class);
-            Node newObject = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
+            Node newObject = parentNode.addNode(sanitizeNodeName(name), OBJECT_PRIMARY_TYPE);
             newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newObject);
@@ -717,7 +718,7 @@ public class AdminResourceHandlerService
     private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {
         try {
             Node parentNode = parent.adaptTo(Node.class);
-            Node newAsset = parentNode.addNode(name, NT_FILE);
+            Node newAsset = parentNode.addNode(sanitizeNodeName(name), NT_FILE);
             Node content = newAsset.addNode(JCR_CONTENT, NT_RESOURCE);
             content.setProperty(JCR_DATA, data);
             content.setProperty(JCR_MIME_TYPE, TEXT_MIME_TYPE);
@@ -963,7 +964,7 @@ public class AdminResourceHandlerService
             Object value = entry.getValue();
             if(value instanceof Map) {
                 Map childProperties = (Map) value;
-                String childPath = (String) childProperties.get(PATH); 
+                String childPath = (String) childProperties.get(PATH);
                 Resource child = resource.getResourceResolver().getResource(childPath);
                 if(child == null) child = resource.getChild(name);
 
@@ -1138,7 +1139,7 @@ public class AdminResourceHandlerService
     private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
         Node parentNode = parent.adaptTo(Node.class);
         Node newPage = null;
-        newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
+        newPage = parentNode.addNode(sanitizeNodeName(name), PAGE_PRIMARY_TYPE);
         Node content = newPage.addNode(JCR_CONTENT);
         content.setPrimaryType(PAGE_CONTENT_TYPE);
         content.setProperty(SLING_RESOURCE_TYPE, templateComponent);
@@ -1148,5 +1149,21 @@ public class AdminResourceHandlerService
         }
         baseResourceHandler.updateModification(parent.getResourceResolver(), newPage);
         return newPage;
+    }
+
+    /**
+     * JCR/Jackrabbit is very open in what it accepts as names, but since we access these via URLs we need to limit
+     * the characters we use.
+     *
+     * @param name
+     * @return Name with
+     */
+    private String sanitizeNodeName(String name) {
+        // Using java.text.Normalizer and a regex, remove any diacritics or other combining characters (e.g., ń -> n, Ä -> A)
+        String result = COMBINED_UNICODE_CHARACTER_PATTERN.matcher(Normalizer.normalize(name, Normalizer.Form.NFD)).replaceAll("");
+
+        // Next, remove any characters that are not valid in URLS.
+        result = URL_UNSAFE_CHARACTERS_PATTERN.matcher(result).replaceAll("-");
+        return result;
     }
 }
