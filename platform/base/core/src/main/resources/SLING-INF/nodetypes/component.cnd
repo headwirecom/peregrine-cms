@@ -24,7 +24,7 @@
  */
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-[per:Component] > nt:unstructured, sling:Folder
+[per:Component] > sling:Folder
   - group (string)
   - cardinality (string)
 

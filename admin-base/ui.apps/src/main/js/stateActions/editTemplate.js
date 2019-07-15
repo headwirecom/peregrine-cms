@@ -23,13 +23,17 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
+import {SUFFIX_PARAM_SEPARATOR, EditorTypes} from "../constants";
+import {set} from "../utils";
+
+
 let log = LoggerFactory.logger('editTemplate').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
+    set(me.getView(), '/state/contentview/editor/type', EditorTypes.TEMPLATE)
     me.loadContent('/content/admin/templates/edit.html/path'+SUFFIX_PARAM_SEPARATOR+target)
 
 }

@@ -21,7 +21,7 @@
   specific language governing permissions and limitations
   under the License.
   #L%
-  -->
+  -->   
 <template>
     <span v-bind:data-per-id="(model.component ? model.component : '') + ':'+ model.command + ':' + title">
         <a 
@@ -75,7 +75,7 @@
      * @param {string} model.tooltipTitle - used for tooltip/hover
      * @param {string} model.title - the title to be displayed
      * @param {string} model.type - if type === icon the action will be rendered as an icon
-     * @param {string{ model.classes - additional classes to be added to the action
+     * @param {string} model.classes - additional classes to be added to the action
      *
      */
     export default {
