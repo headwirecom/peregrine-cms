@@ -32,10 +32,11 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -45,7 +46,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,6 +63,8 @@ import java.util.List;
 public class ModPageSpeedCacheInvalidationService
         extends AbstractionReplicationService
 {
+    private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 5;
+    
     @ObjectClassDefinition(
             name = "Peregrine: PageSpeed Cache Invalidation Service",
             description = "Each instance provides the configuration for a PageSpeed cache invalidation endpoint"
@@ -181,11 +183,17 @@ public class ModPageSpeedCacheInvalidationService
      */
     protected void invalidateCacheKey(final String url)
     {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(HTTP_CLIENT_TIMEOUT_SECONDS * 1000)
+                .setConnectionRequestTimeout(HTTP_CLIENT_TIMEOUT_SECONDS * 1000)
+                .setSocketTimeout(HTTP_CLIENT_TIMEOUT_SECONDS * 1000).build();
+        CloseableHttpClient httpClient =
+                HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+
         HttpGet httpGet = new HttpGet(url);
         try
         {
-            CloseableHttpResponse response = httpclient.execute(httpGet);
+            CloseableHttpResponse response = httpClient.execute(httpGet);
             try {
                 log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
                         url, response.getStatusLine());
