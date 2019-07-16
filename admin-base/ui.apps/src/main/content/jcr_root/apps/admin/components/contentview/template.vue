@@ -419,13 +419,21 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
+                // console.log(isDropTarget, pos, targetBox)
+
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    this.dropPosition = 'into'
-                    if(dropLocation) {
-                        this.dropPosition += '-' + dropLocation
+                    // console.log(pos.y - targetBox.top, targetBox.bottom - pos.y)
+                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
+                        this.dropPosition = 'after'
+                        this.setEditableStyle(targetBox, 'drop-bottom')
+                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before') {
+                        this.dropPosition = 'before'
+                        this.setEditableStyle(targetBox, 'drop-top')
+                    } else if(dropLocation) {
+                        this.dropPosition = 'into-'+dropLocation
+                        this.setEditableStyle(targetBox, 'selected')
                     }
-                    this.setEditableStyle(targetBox, 'selected')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {

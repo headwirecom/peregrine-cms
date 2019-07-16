@@ -28,7 +28,7 @@
             /&nbsp;<admin-components-action
                 v-bind:model="{
                     target: { path: item.path },
-                    title: item.title || item.name,
+                    title: item.name,
                     command: 'selectPathInNav'
                 }"></admin-components-action>&nbsp;
         </template>
@@ -48,15 +48,7 @@
                 var segments = this.path.toString().split('/')
                 var ret = []
                 for(var i = 2; i < segments.length; i++) {
-                    let node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, segments.slice(0, i+1).join('/'));
-
-                    if(node) {
-                        ret.push( {
-                            name: segments[i],
-                            path: node.path,
-                            title: node.title
-                        } );
-                    }
+                    ret.push( { name: segments[i], path: segments.slice(0, i+1).join('/') } )
                 }
                 return ret;
             }
