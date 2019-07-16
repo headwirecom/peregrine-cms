@@ -90,6 +90,10 @@
                             cfg.btnsDef = btnsDef
                         }
                     }
+                    let plugins = this.schema.config.plugins;
+                    if (plugins) {
+                        cfg.plugins = plugins;
+                    }
                 }
                 return cfg;
             }
