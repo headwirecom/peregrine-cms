@@ -37,7 +37,13 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_PAGE;
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE_PATH;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -83,7 +89,7 @@ public class CreatePageServlet extends AbstractBaseServlet {
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, PAGE).writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, newPage.getName()).writeAttribute(DISPLAY_NAME, name).writeAttribute(PATH, newPage.getPath()).writeAttribute(TEMPLATE_PATH, templatePath);
+                .writeAttribute(NAME, name).writeAttribute(PATH, newPage.getPath()).writeAttribute(TEMPLATE_PATH, templatePath);
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_PAGE).setRequestPath(parentPath).setException(e);
         }

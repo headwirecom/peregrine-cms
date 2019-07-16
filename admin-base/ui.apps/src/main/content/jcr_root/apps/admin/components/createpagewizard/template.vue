@@ -153,17 +153,13 @@
 
                 return this.validateTabOne(this);
             },
-            sanitizeNodeName(name) {
-                return $perAdminApp.getSanitizedNodeName(name);
-            },
             nameAvailable(value) {
                 if(!value || value.length === 0) {
                     return ['name is required']
                 } else {
                     const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
-
                     for(let i = 0; i < folder.children.length; i++) {
-                        if(this.sanitizeNodeName(folder.children[i].name) === this.sanitizeNodeName(value)) {
+                        if(folder.children[i].name === value) {
                             return ['name aready in use']
                         }
                     }
@@ -171,7 +167,7 @@
                 }
             },
             leaveTabTwo: function() {
-                return (this.nameAvailable(this.formmodel.name).length == 0) && this.$refs.nameTab.validate();
+                return this.$refs.nameTab.validate()
             }
 
         }

@@ -24,7 +24,6 @@
  */
 import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-import {sanitizeNodeName} from '../utils'
 let log = LoggerFactory.logger('createObject').setLevelDebug()
 
 export default function(me, target) {
@@ -33,7 +32,6 @@ export default function(me, target) {
     var api = me.getApi()
     return api.createObject(target.parent, target.name, target.template).then( () => {
         if(target.data) {
-            target.name = sanitizeNodeName(target.name);
             api.saveObjectEdit(target.parent + '/' + target.name, target.data).then( () => {
                 if(target.returnTo) {
                     me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + target.parent)
