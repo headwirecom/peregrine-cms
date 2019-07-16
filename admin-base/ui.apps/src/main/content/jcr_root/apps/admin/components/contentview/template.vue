@@ -54,7 +54,7 @@
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
-                            <li class="waves-effect waves-light">
+                            <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
                                 <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
@@ -534,7 +534,9 @@ export default {
                 pagePath: view.pageView.path,
                 path: targetEl.getAttribute('data-per-path')
             }
-            $perAdminApp.stateAction('deletePageNode',  payload)
+            if(payload.path !== '/jcr:content') {
+                $perAdminApp.stateAction('deletePageNode',  payload)
+            }
             this.editableClass = null
             this.selectedComponent = null
         },
