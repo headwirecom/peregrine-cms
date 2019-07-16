@@ -135,3 +135,23 @@ export function stripNulls(data) {
         }
     }
 }
+
+export function sanitizeNodeName(name) {
+    // Here we String.prototype.normalize to normalize characters with diacritics to combined chars,
+    // then call replace with the correct Unicode block to remove those combining characters (i.e., ń -> n, Ä -> A)
+    // Lastly, any remaining characters that are not valid in URLs are removed
+    return name.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^0-9a-zA-Z-_]/g,"-");
+}
+
+
+// Per sling documentation, (https://sling.apache.org/documentation/the-sling-engine/request-parameters.html)
+// sling expects a _charset_ field in the formdata (not request header!), otherwise it will use the Servlet
+// standard of ISO-8859-1. Using this instead of standard FormData() will pre-set that form value
+export class UTF8FormData extends FormData {
+    // noinspection JSAnnotator
+    constructor() {
+        let fd = new FormData();
+        fd.append('_charset_', 'UTF-8');
+        return fd;
+    }
+}

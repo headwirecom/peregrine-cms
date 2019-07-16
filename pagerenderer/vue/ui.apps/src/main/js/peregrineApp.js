@@ -268,7 +268,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     })
 }
 
-function loadContentImpl(path, firstTime, fromPopState) {
+function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
 
     console.log(path)
     log.fine('loading content for', path, firstTime, fromPopState)
@@ -276,29 +276,33 @@ function loadContentImpl(path, firstTime, fromPopState) {
     var dataUrl = pagePathToDataPath(path);
     log.fine(dataUrl)
     getPerView().status = undefined;
-    axios.get(dataUrl).then(function (response) {
-        log.fine('got data for', path)
-
-        // if(response.data.template) {
-        //
-        //     var pageData = response.data
-        //
-        //     axios.get(response.data.template+'.data.json').then(function(response) {
-        //
-        //         var templateData = response.data
-        //         var mergedData = merge(templateData, pageData)
-        //         //merging nav, footer and content together with pageData
-        //         processLoadedContent(mergedData, path, firstTime, fromPopState)
-        //     }).catch(function(error) {
-        //         log.error("error getting %s %j", dataUrl, error);
-        //     })
-        // } else {
-        processLoadedContent(response.data, path, firstTime, fromPopState)
-        // }
-
-    }).catch(function(error) {
-        log.error("error getting %s %j", dataUrl, error);
-    });
+    if(onPage) {
+        processLoadedContent(JSON.parse(document.getElementById('perPage').innerHTML), path, firstTime, fromPopState)
+    } else {
+        axios.get(dataUrl).then(function (response) {
+            log.fine('got data for', path)
+    
+            // if(response.data.template) {
+            //
+            //     var pageData = response.data
+            //
+            //     axios.get(response.data.template+'.data.json').then(function(response) {
+            //
+            //         var templateData = response.data
+            //         var mergedData = merge(templateData, pageData)
+            //         //merging nav, footer and content together with pageData
+            //         processLoadedContent(mergedData, path, firstTime, fromPopState)
+            //     }).catch(function(error) {
+            //         log.error("error getting %s %j", dataUrl, error);
+            //     })
+            // } else {
+            processLoadedContent(response.data, path, firstTime, fromPopState)
+            // }
+    
+        }).catch(function(error) {
+            log.error("error getting %s %j", dataUrl, error);
+        });    
+    }
 }
 
 function isAuthorModeImpl() {
@@ -327,6 +331,10 @@ var peregrineApp = {
 
     loadContent: function(path, firstTime = false, fromPopState = false) {
         loadContentImpl(path, firstTime, fromPopState)
+    },
+
+    loadContentFrom: function(id, path, firstTime = false, fromPopState = false) {
+        loadContentImpl(path, firstTime, fromPopState, true)
     },
 
     logger: function(name) {

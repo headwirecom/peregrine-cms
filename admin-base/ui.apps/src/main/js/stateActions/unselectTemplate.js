@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,23 +23,14 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-import {sanitizeNodeName} from '../utils'
-let log = LoggerFactory.logger('createPage').setLevelDebug()
+let log = LoggerFactory.logger('unselectTemplate').setLevelDebug()
+
+import { set } from '../utils'
 
 export default function(me, target) {
+
     log.fine(target)
-    var api = me.getApi()
-    api.createPage(target.parent, target.name, target.template).then( () => {
-        target.data.path = '/jcr:content';
-        // This has been persisted, so the node name may have changed from what we pass in.
-        // Probably would be better if this were read from the server response instead.
-        target.name = sanitizeNodeName(target.name);
 
-        api.savePageEdit(target.parent + '/' + target.name, target.data).then( () => {
-            me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
-        })
-
-    })
-
+    let view = me.getView()
+    set(view, '/state/tools/template', undefined)
 }

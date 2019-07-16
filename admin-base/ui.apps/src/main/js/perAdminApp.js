@@ -43,7 +43,7 @@ let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
 
 import PeregrineApi from './api'
 import PerAdminImpl from './apiImpl'
-import {makePathInfo, pagePathToDataPath, set, get} from './utils'
+import {makePathInfo, pagePathToDataPath, set, get, sanitizeNodeName} from './utils'
 
 import StateActions from './stateActions'
 
@@ -423,6 +423,7 @@ function beforeStateActionImpl(fun) {
 
 function runBeforeStateActions(name) {
     // execute all before state actions
+    console.log(beforeStateActions);
     if(beforeStateActions.length > 0) {
         for(let i = 0; i < beforeStateActions.length; i++) {
             let ret = beforeStateActions[i](name)
@@ -920,8 +921,11 @@ var PerAdminApp = {
 
     beforeStateAction(fun) {
         beforeStateActionImpl(fun)
-    }
+    },
 
+    getSanitizedNodeName(name) {
+        return sanitizeNodeName(name);
+    }
 }
 
 export default PerAdminApp
