@@ -51,8 +51,6 @@ import java.util.List;
 
 /**
  * This class is responsible for issuing cache flush requests to mod_pagespeed on replication events.
- *
- * @author <a href="mailto:gg@headwire.com">Gaston Gonzalez</a>
  */
 @Component(
         configurationPolicy = ConfigurationPolicy.REQUIRE,
