@@ -4,7 +4,7 @@ peregrine cms distribution
 # Introduction
 
 Peregrine supports the content distribution through various means out of the box. This document shows
-you the supported mechanism and how to set the up.
+you the supported mechanism and how to set them up.
 
 Keep in mind that in Sling Distribution is what Replication is in AEM. The code uses **replication**
 instead of **distribution** to avoid confusion with Sling Distribution. In this documentation we use
@@ -61,7 +61,7 @@ Out of the box there is a service called **local** that has the this local mappi
 
 Because this is copying resources in Peregrine the renditions are only copied
 if already created. If not then Peregrine will create them when the desired
-rendition in the target is obrtained.
+rendition in the target is obtained.
 
 # Local, inter-Peregrine Copies
 

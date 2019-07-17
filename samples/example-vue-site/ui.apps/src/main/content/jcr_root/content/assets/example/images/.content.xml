@@ -5,5 +5,5 @@
     jcr:primaryType="sling:OrderedFolder"
     jcr:title="images">
     <logo.png/>
-    </peregrine-logo.png>
+    <peregrine-logo.png/>
 </jcr:root>

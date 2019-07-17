@@ -15,5 +15,7 @@ out
 package-lock.json
 npm-debug.log
 .DS_Store
+*.factorypath
+nohup.out
 /sling/peregrine-feature-model-starter/bin/setenv.sh
 launcher

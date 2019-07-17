@@ -21,14 +21,14 @@
   specific language governing permissions and limitations
   under the License.
   #L%
-  -->
+  -->   
 <template>
     <span>
         <a 
             v-if                    = "!model.type"
             v-bind:href             = "model.target +'.html'"
             v-bind:title            = "title"
-            v-on:click.stop.prevent = "action"
+            v-on:click.stop.prevent = "onClick"
             v-bind:class            = "model.classes">
             {{model.title}}
             <slot></slot>
@@ -75,11 +75,18 @@
      * @param {string} model.tooltipTitle - used for tooltip/hover
      * @param {string} model.title - the title to be displayed
      * @param {string} model.type - if type === icon the action will be rendered as an icon
-     * @param {string{ model.classes - additional classes to be added to the action
+     * @param {string} model.classes - additional classes to be added to the action
      *
      */
     export default {
     props: ['model'],
+    data: function() {
+        return {
+            clickCount: 0,
+            clickTimer: null,
+            dblClickDelay: 200
+        };
+    },
     computed: {
 
         /**
@@ -131,6 +138,26 @@
          */
         action: function(e) {
             $perAdminApp.action(this, this.model.command, this.model.target)
+        },
+        dblClickAction: function(e) {
+            $perAdminApp.action(this, this.model.dblClickCommand, this.model.dblClickTarget)
+        },
+        onClick: function(e) {
+            if(!this.model.dblClickCommand) {
+                this.action(e);
+            } else {
+                this.clickCount++;
+                if(this.clickCount === 1) {
+                    this.timer = setTimeout(() => {
+                        this.clickCount = 0;
+                        this.action(e);
+                    }, this.dblClickDelay);
+                } else {
+                    clearTimeout(this.timer);
+                    this.dblClickAction(e);
+                    this.clickCount = 0;
+                }
+            }
         }
     }
 }

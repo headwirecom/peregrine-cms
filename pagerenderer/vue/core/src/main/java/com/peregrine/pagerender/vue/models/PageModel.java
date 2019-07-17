@@ -59,6 +59,7 @@ public class PageModel
     extends Container {
 
     public static final String SITE_CSS = "siteCSS";
+    public static final String PREFETCH_DNS = "prefetchDNS";
     public static final String DOMAINS = "domains";
     public static final String SITE_JS = "siteJS";
     public static final String TEMPLATE = "template";
@@ -82,6 +83,10 @@ public class PageModel
     }
 
     @Inject private ModelFactory modelFactory;
+
+    @Inject
+    @Optional
+    private String[] prefetchDNS;
 
     @Inject
     @Optional
@@ -125,6 +130,20 @@ public class PageModel
 
     public String getPagePath() {
         return getResource().getParent().getPath();
+    }
+
+    public String[] getPrefetchDNS() {
+        if(prefetchDNS == null) {
+            String[] value = (String[]) getInheritedProperty(PREFETCH_DNS);
+            if(value != null && value.length != 0) return value;
+            if(getTemplate() != null) {
+                PageModel templatePageModel = getTamplatePageModel();
+                if(templatePageModel != null) {
+                    return templatePageModel.getPrefetchDNS();
+                }
+            }
+        }
+        return prefetchDNS;
     }
 
     public String[] getSiteCSS() {

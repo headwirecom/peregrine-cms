@@ -11,7 +11,11 @@ The vlt sync command can be used to automatically synchronize files between your
 
 ## Installation
 
+<<<<<<< HEAD
 1. Download [vault-cli-3.2.8-bin.zip](http://repo1.maven.org/maven2/org/apache/jackrabbit/vault/vault-cli/3.2.8/vault-cli-3.2.8-bin.zip) 
+=======
+1. Download [vault-cli-3.1.8-bin.zip](http://repo1.maven.org/maven2/org/apache/jackrabbit/vault/vault-cli/3.1.8/vault-cli-3.1.8-bin.zip) 
+>>>>>>> origin/develop
 2. Extract downloaded file somewhere on your local file system.
 3. Add bin sub-directory in the extracted folder to your PATH environment variable.
 4. Make sure Peregrine CMS is running.
@@ -19,7 +23,11 @@ The vlt sync command can be used to automatically synchronize files between your
 6. Whitelist vlt sync service in Apache Sling Login Admin Whitelist Configuration Fragmen
     1. In the browser login to Peregrine CMS instance and navigate to OSGi->Configuration in Felix Console (or go to URL http://localhost:8080/system/console/configMgr)
     2. Find Apache Sling Login Admin Whitelist Configuration Fragmen and click on + icon to add new configuration
+<<<<<<< HEAD
     3. Set Name field to something, for example vault-sync. Set Whitelisted BSNs field to vault-sync. Then click Save.
+=======
+    3. Set Name field to something, for example vault-sync. Set Whitelisted BSNs field to org.apache.jackrabbit.vault.sync. Then click Save.
+>>>>>>> origin/develop
 7. Steps 5 and 6 have to be repeated for a new Peregrine CMS instance.
 
 ## Operation

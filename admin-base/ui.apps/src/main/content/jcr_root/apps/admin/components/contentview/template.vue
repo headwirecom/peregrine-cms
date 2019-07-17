@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,10 +23,10 @@
   #L%
   -->
 <template>
-    <div 
-        v-bind:class  ="`peregrine-content-view ${viewModeClass}`" 
+    <div
+        v-bind:class  ="`peregrine-content-view ${viewModeClass}`"
         v-on:mouseout = "leftOverlayArea">
-        <div 
+        <div
             id             = "editviewoverlay"
             v-on:click     = "onClickOverlay"
             v-on:scroll    = "onScrollOverlay"
@@ -54,7 +54,7 @@
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
-                            <li class="waves-effect waves-light">
+                            <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
                                 <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
@@ -67,8 +67,8 @@
         <iframe
             v-on:load    = "onIframeLoaded"
             ref          = "editview"
-            id           = "editview" 
-            v-bind:src   = "pagePath" 
+            id           = "editview"
+            v-bind:src   = "pagePath"
             frameborder  = "0"></iframe>
     </div>
 </template>
@@ -153,16 +153,16 @@ export default {
         ============================================ */
         onKeyDown(ev){
             var nodeName = document.activeElement.nodeName
-            var className = document.activeElement.className
+            var className = ''+document.activeElement.className
             /* check no field is currently in focus */
-            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')){
                 return false
-            } else { 
+            } else {
                 var ctrlKey = 17
                 var cmdKey = 91
                 if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                    this.ctrlDown = true   
-                } 
+                    this.ctrlDown = true
+                }
                 if(this.selectedComponent !== null){
                     var cKey = 67
                     var vKey = 86
@@ -187,7 +187,7 @@ export default {
                 var cmdKey = 91
                 if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
                     this.ctrlDown = false
-                } 
+                }
             }
         },
 
@@ -394,7 +394,7 @@ export default {
             }
         },
 
-        /* Drag and Drop ===========================        
+        /* Drag and Drop ===========================
         ============================================ */
         onDragStart(ev) {
             if(this.selectedComponent === null)return
@@ -411,13 +411,21 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
+                // console.log(isDropTarget, pos, targetBox)
+
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    this.dropPosition = 'into'
-                    if(dropLocation) {
-                        this.dropPosition += '-' + dropLocation
+                    // console.log(pos.y - targetBox.top, targetBox.bottom - pos.y)
+                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
+                        this.dropPosition = 'after'
+                        this.setEditableStyle(targetBox, 'drop-bottom')
+                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before') {
+                        this.dropPosition = 'before'
+                        this.setEditableStyle(targetBox, 'drop-top')
+                    } else if(dropLocation) {
+                        this.dropPosition = 'into-'+dropLocation
+                        this.setEditableStyle(targetBox, 'selected')
                     }
-                    this.setEditableStyle(targetBox, 'selected')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
@@ -439,11 +447,12 @@ export default {
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
             var targetEl = this.getTargetEl(ev)
-            var targetPath = targetEl.getAttribute('data-per-path');
-            var componentPath = ev.dataTransfer.getData('text')
             if(typeof targetEl === 'undefined' || targetEl === null){
                 return false
             }
+            var targetPath = targetEl.getAttribute('data-per-path');
+            var componentPath = ev.dataTransfer.getData('text')
+
             if(targetPath === componentPath) {
                 ev.dataTransfer.clearData('text')
                 return false
@@ -477,7 +486,7 @@ export default {
         /* Editable methods ========================
         ============================================ */
         onEditableTouchStart: function(ev){
-            this.editableTimer = setTimeout(this.onLongTouchOverlay, 800) 
+            this.editableTimer = setTimeout(this.onLongTouchOverlay, 800)
         },
         onEditableTouchEnd: function(ev){
             clearTimeout(this.editableTimer)
@@ -497,6 +506,18 @@ export default {
                 editable.style.left   = (targetBox.left + scrollX) + 'px'
                 editable.style.width  = targetBox.width + 'px'
                 editable.style.height = targetBox.height + 'px'
+
+                if(this.selectedComponent) {
+                    var path = this.selectedComponent.getAttribute('data-per-path')
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    if(node && node.fromTemplate) {
+                        editable.style['border-color'] = 'orange'
+                    } else {
+                        editable.style['border-color'] = ''
+                    }
+                } else {
+                    editable.style['border-color'] = ''
+                }
             }
             this.editableClass = editableClass
         },
@@ -509,11 +530,13 @@ export default {
             var targetEl = this.selectedComponent
             var view = $perAdminApp.getView()
             var pagePath = view.pageView.path
-            var payload = { 
-                pagePath: view.pageView.path, 
-                path: targetEl.getAttribute('data-per-path') 
+            var payload = {
+                pagePath: view.pageView.path,
+                path: targetEl.getAttribute('data-per-path')
             }
-            $perAdminApp.stateAction('deletePageNode',  payload)
+            if(payload.path !== '/jcr:content') {
+                $perAdminApp.stateAction('deletePageNode',  payload)
+            }
             this.editableClass = null
             this.selectedComponent = null
         },
@@ -531,19 +554,18 @@ export default {
             var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
             var dropPosition
             isDropTarget ? dropPosition = 'into' : dropPosition = 'after'
-            var payload = { 
-                pagePath: view.pageView.path, 
+            var payload = {
+                pagePath: view.pageView.path,
                 data: nodeFromClipboard,
-                path: targetEl.getAttribute('data-per-path'), 
+                path: targetEl.getAttribute('data-per-path'),
                 drop: dropPosition
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
         refreshEditor(me, target) {
-            console.log('refresh editor')
             me.$refs['editview'].contentWindow.location.reload();
         }
     }
 }
 </script>
-        
+

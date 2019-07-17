@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,27 +28,27 @@
             <ul class="explorer-preview-nav">
                 <template v-if="allowOperations">
                     <li>
-                        <a  href="#!" 
-                            title="rename page" 
-                            class="waves-effect waves-light" 
+                        <a  href="#!"
+                            title="rename page"
+                            class="waves-effect waves-light"
                             v-on:click.stop.prevent="renamePage">
                             <admin-components-iconrename></admin-components-iconrename>
                         </a>
                     </li>
                     <li>
-                        <a 
-                            href="#!" 
-                            title="move page" 
-                            class="waves-effect waves-light" 
+                        <a
+                            href="#!"
+                            title="move page"
+                            class="waves-effect waves-light"
                             v-on:click.stop.prevent="movePage">
                             <i class="material-icons">compare_arrows</i>
                         </a>
                     </li>
                     <li>
-                        <a 
-                            href="#!" 
-                            title="delete page" 
-                            class="waves-effect waves-light" 
+                        <a
+                            href="#!"
+                            title="delete page"
+                            class="waves-effect waves-light"
                             v-on:click.stop.prevent="deletePage">
                             <i class="material-icons">delete</i>
                         </a>
@@ -70,7 +70,7 @@
                 </li>
 
             </ul>
-            <vue-form-generator 
+            <vue-form-generator
                 v-if="!edit"
                 class="vfg-preview"
                 v-on:validated = "onValidated"
@@ -79,13 +79,13 @@
                 v-bind:options = "options">
             </vue-form-generator>
             <template v-else>
-                <vue-form-generator 
+                <vue-form-generator
                     v-bind:schema="schema"
                     v-bind:model="page"
                     v-bind:options="options">
                 </vue-form-generator>
                 <div class="explorer-confirm-dialog">
-                    <button 
+                    <button
                         type="button"
                         title="save page properties"
                         v-bind:disabled="!valid"
@@ -100,6 +100,19 @@
             <span>{{$i18n('no page selected')}}</span>
             <i class="material-icons">info</i>
         </div>
+
+    <admin-components-pathbrowser
+            v-if="isOpen"
+            :isOpen="isOpen"
+            :browserRoot="browserRoot"
+            :browserType="'page'"
+            :currentPath="currentPath"
+            :selectedPath="selectedPath"
+            :setCurrentPath="setCurrentPath"
+            :setSelectedPath="setSelectedPath"
+            :onCancel="onMoveCancel"
+            :onSelect="onMoveSelect">
+    </admin-components-pathbrowser>
     </div>
 </template>
 
@@ -146,6 +159,10 @@
         },
         data: function() {
             return {
+                isOpen: false,
+                browserRoot: '/content/sites',
+                currentPath: '/content/sites',
+                selectedPath: null,
                 valid: true,
                 options: {
                     validateAfterLoad: true,
@@ -175,31 +192,27 @@
                 $perAdminApp.stateAction('deletePage', this.page.path)
 //                $perAdminApp.stateAction('showPageInfo', { selected: null })
             },
+            setCurrentPath(path){
+                this.currentPath = path
+            },
+            setSelectedPath(path){
+                this.selectedPath = path
+            },
             movePage() {
-                const root = '/content/sites'
-                const type = 'folder'
-                const pagePath = this.page.path
-                const selectedPath = pagePath.substr(0, pagePath.lastIndexOf('/'))
-                let currentPath
-                // is selectedPath the root dir?
-                selectedPath === root 
-                    ? currentPath = selectedPath
-                    : currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
-                const initModalState = {
-                    root: root,
-                    type: type,
-                    current: currentPath,
-                    selected: selectedPath
-                }
-                const options = {
-                    complete: () => {
-                        const newPath = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
-                        $perAdminApp.stateAction('movePage', { path: pagePath, to: newPath, type: 'child'})
-                        $perAdminApp.getNodeFromView('/state/tools').pages = newPath
-                        $perAdminApp.getNodeFromView('/state/tools').page = null
-                    }
-                }
-                $perAdminApp.pathBrowser(initModalState, options)
+                $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
+                    .then( () => {
+                        this.isOpen = true
+                    }).catch( (err) => {
+                    $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+                })
+            },
+            onMoveCancel(){
+                this.isOpen = false
+            },
+            onMoveSelect() {
+                $perAdminApp.stateAction('movePage', { path: this.page.path, to: this.selectedPath, type: 'child'})
+                $perAdminApp.stateAction('unselectPage', { })
+                this.isOpen = false
             },
             onCancel: function() {
                 $perAdminApp.stateAction('showPageInfo', { selected: this.page.path  })

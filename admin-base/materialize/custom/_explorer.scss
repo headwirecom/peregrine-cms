@@ -23,17 +23,27 @@
 					overflow-y: auto;
 					.collection-item {
 						position: relative;
+						padding: 10px 10px;
 						color: color("blue-grey", "darken-2");
 						border-color: color("blue-grey", "lighten-4");
-				    > span > a {
-				    	color: color("blue-grey", "darken-2");
-				    	&:hover,
-							&:focus,
+						&.dragging {
+							cursor: grabbing;
+						}
+						> span.draggable {
+							cursor: grab;
 							&:active {
-								color: color("blue-grey", "darken-4");
+								cursor: grabbing;
 							}
-				    }
-				    .material-icons {
+						}
+						> span > a {
+							color: color("blue-grey", "darken-2");
+							&:hover,
+								&:focus,
+								&:active {
+									color: color("blue-grey", "darken-4");
+								}
+						}
+						.material-icons {
 							vertical-align: middle;
 						}
 						.svg-icon {
@@ -63,10 +73,10 @@
 					    background-color: color("blue-grey", "lighten-5");
 						}
 						&.drop-after {
-							border-bottom: 1px solid color("orange", "lighten-3") !important;
+							border-bottom: 1px solid color("orange", "lighten-2") !important;
 						}
 						&.drop-before {
-							border-top: 1px solid color("orange", "lighten-3") !important;
+							border-top: 1px solid color("orange", "lighten-2") !important;
 							margin-top: -1px;
 						}
 						.secondary-content {
@@ -218,7 +228,7 @@
 
 					}
 					&.preview-page {
-						
+
 					}
 				}
       	&.fullscreen {
@@ -264,8 +274,8 @@
 									stroke: color("blue-grey", "darken-3");
 								}
 							}
-							&:hover, 
-							&:focus, 
+							&:hover,
+							&:focus,
 							&:active {
 								background-color: color("blue-grey", "lighten-3");
 							}
@@ -317,7 +327,7 @@
 				}
 			}
 		}
-	}	
+	}
 	@media #{$extra-large-and-up} {
 		.explorer-layout {
 			.row {
@@ -330,5 +340,5 @@
 				}
 			}
 		}
-	}	
+	}
 }
