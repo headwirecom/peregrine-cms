@@ -28,11 +28,7 @@ if [ "$folderName" == "bin" ]; then
 fi
 
 # Set Env Variables
-<<<<<<< HEAD
 . $baseDir/bin/setenv.sh
-=======
-. $baseDir/setenv.sh
->>>>>>> 71b01ec9bef042d538893d1232e6506ddbdfb1f6
 
 fmVersion=1.0.2
 laucherName=org.apache.sling.feature.launcher
