@@ -31,10 +31,8 @@ import org.slf4j.LoggerFactory;
     service = Servlet.class,
     property = {
         Constants.SERVICE_DESCRIPTION + "=Page Site Map Servlet",
-        ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "="
-            + PerConstants.SITEMAP_SERVLET_PATH,
+        ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=" + PerConstants.SITEMAP_SERVLET_PATH,
         ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=" + PerConstants.XML,
-        ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=" + PerConstants.HTML,
         ServletResolverConstants.SLING_SERVLET_METHODS + "=" + PerUtil.GET
     }
 )
@@ -49,19 +47,11 @@ public final class SitemapServlet extends SlingAllMethodsServlet {
   private ResourcePredicates resourceFilter;
 
   @Reference
-  private UrlExternalizer urlExternalizer;
+  private UrlExternalizer externalizer;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
       throws ServletException, IOException {
-    if (PerConstants.HTML.equals(request.getRequestPathInfo().getExtension())) {
-      Resource redirectPage = request.getResource().getParent();
-      if (PerConstants.PAGE_PRIMARY_TYPE.equals(PerUtil.getPrimaryType(redirectPage))) {
-        log.info("Sitemap HTML rendering is not supported. Redirecting to parent page: '{}'",
-            redirectPage.getPath());
-        response.sendRedirect(redirectPage.getPath() + ".html");
-      }
-    }
 
     response.setContentType(request.getResponseContentType());
     ResourceResolver resolver = request.getResourceResolver();
@@ -102,11 +92,10 @@ public final class SitemapServlet extends SlingAllMethodsServlet {
     }
     stream.writeStartElement(NS, "url");
 
-    String loc = urlExternalizer
-        .buildExternalizedLink(resolver, String.format("%s.html", page.getPath()));
+    String loc = externalizer.buildExternalizedLink(resolver, String.format("%s.html", page.getPath()));
     writeElement(stream, "loc", loc);
 
-    Calendar lastModified = null;
+    Calendar lastModified;
     if (page.getLastModified() != null) {
       lastModified = page.getLastModified();
     } else {

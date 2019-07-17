@@ -117,9 +117,10 @@ public class PageEventHandlerService implements ResourceChangeListener {
   private void handleProperties(Resource resource, boolean goToJcrContent, ChangeType changeType) {
     try {
       ModifiableValueMap props = PerUtil.getModifiableProperties(resource, goToJcrContent);
-      Resource r = goToJcrContent ? resource.getChild(PerConstants.JCR_CONTENT) : resource;
+      Resource res = goToJcrContent ? resource.getChild(PerConstants.JCR_CONTENT) : resource;
+      Resource reverse = goToJcrContent ? resource : resource.getParent();
 
-      String exUrl = externalizer.buildExternalizedLink(r.getResourceResolver(), r.getPath());
+      String exUrl = externalizer.buildExternalizedLink(reverse.getResourceResolver(), reverse.getPath());
       Consumer<? super Pair<String, ?>> canonical = dict -> props.put(dict.getKey(), exUrl + ".html");
 
       PerConstants.PAGE_PROPERTIES.forEach(pair -> {
@@ -134,7 +135,7 @@ public class PageEventHandlerService implements ResourceChangeListener {
         }
       });
 
-      r.getResourceResolver().commit();
+      res.getResourceResolver().commit();
 
     } catch (PersistenceException e) {
       log.error("Error: '{}', At Resource Path: '{}', Property Name: '{}' --->>> Cause: '{}'",

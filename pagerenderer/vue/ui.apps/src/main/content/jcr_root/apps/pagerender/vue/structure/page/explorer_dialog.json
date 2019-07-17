@@ -111,8 +111,6 @@
     "model": "hideInNav",
     "textOn": "yes",
     "textOff": "no",
-    "valueOn": true,
-    "valueOff": false,
     "hint": "This is to indicate whether the page should be exclude from navigation."
   },
   {
@@ -121,8 +119,6 @@
     "model": "excludeFromSitemap",
     "textOn": "yes",
     "textOff": "no",
-    "valueOn": true,
-    "valueOff": false,
     "hint": "This property indicates if the Page should be hidden from the Sitemap."
   },
   {
@@ -166,5 +162,13 @@
       { "name": "1.0", "value": "1.0" }
     ],
     "hint": "The priority of this URL relative to other URLs on your site. Valid values range from 0.0 to 1.0. This value does not affect how your pages are compared to pages on other sites—it only lets the search engines know which pages you deem most important for the crawlers."
+  },
+  {
+    "type": "materialswitch",
+    "label": "Disallow from Web Crawlers",
+    "model": "disallowFromRobots",
+    "textOn": "yes",
+    "textOff": "no",
+    "hint": "This is to indicate whether the page should be disallowed from being scanned and processed by web crawlers and other web robots."
   }
 ]}
