@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
  * Created by Andreas Schaefer on 7/5/17.
  */
 public class PageTraversingIT
-//    extends AbstractTest
+    extends AbstractTest
 {
 
     private static final Logger logger = LoggerFactory.getLogger(PageTraversingIT.class.getName());
@@ -367,5 +367,10 @@ public class PageTraversingIT
             answer++;
         }
         return answer;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 }

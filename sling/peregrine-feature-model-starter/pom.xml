@@ -29,6 +29,7 @@ under the License.
     <name>Feature model of Peregrine CMS / Sling 11</name>
     <packaging>slingosgifeature</packaging>
 
+<<<<<<< HEAD
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -139,12 +140,21 @@ under the License.
                 <groupId>org.apache.sling</groupId>
                 <artifactId>slingfeature-maven-plugin</artifactId>
                 <version>1.0.5-SNAPSHOT</version>
+=======
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>slingfeature-maven-plugin</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+>>>>>>> 71b01ec9bef042d538893d1232e6506ddbdfb1f6
                 <extensions>true</extensions>
                 <configuration>
                     <features>target/fm</features>
                 </configuration>
                 <executions>
                     <execution>
+<<<<<<< HEAD
                         <id>convert-pm</id>
                         <phase>process-classes</phase>
                         <goals>
@@ -234,6 +244,9 @@ under the License.
                     <execution>
                         <id>aggregate-base-feature</id>
                         <phase>generate-test-sources</phase>
+=======
+                        <id>aggregate-base-feature</id>
+>>>>>>> 71b01ec9bef042d538893d1232e6506ddbdfb1f6
                         <goals>
                             <goal>aggregate-features</goal>
                         </goals>
@@ -248,14 +261,20 @@ under the License.
                     </execution>
                     <execution>
                         <id>attach-base-feature</id>
+<<<<<<< HEAD
                         <phase>process-test-sources</phase>
+=======
+>>>>>>> 71b01ec9bef042d538893d1232e6506ddbdfb1f6
                         <goals>
                             <goal>attach-features</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>verify-analyze</id>
+<<<<<<< HEAD
                         <phase>generate-test-resources</phase>
+=======
+>>>>>>> 71b01ec9bef042d538893d1232e6506ddbdfb1f6
                         <goals>
                             <goal>analyse-features</goal>
                         </goals>

@@ -486,12 +486,6 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.servlet-helpers</artifactId>
-                <scope>compile</scope>
-                <version>${org.apache.sling.servlet-helpers.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>jackrabbit-api</artifactId>
                 <version>${jackrabbit.version}</version>
@@ -514,6 +508,11 @@
                 <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
                 <version>${org.apache.sling.scripting.sightly.compiler.java.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.servlet-helpers</artifactId>
+                <version>${org.apache.sling.servlet-helpers.version}</version>
             </dependency>
 
             <!-- Support -->
@@ -897,6 +896,7 @@
         <module>pagerenderer/vue</module>
         <module>admin-base</module>
         <module>samples/example-vue-site</module>
+        <module>themes/themeclean</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
         <module>tooling/maven/archetypes/project</module>

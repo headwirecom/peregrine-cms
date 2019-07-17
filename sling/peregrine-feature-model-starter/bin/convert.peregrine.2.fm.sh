@@ -52,8 +52,11 @@ function doConversion {
         $packages
 }
 
+<<<<<<< HEAD
 . $baseDir/bin/setenv.sh
 
+=======
+>>>>>>> 71b01ec9bef042d538893d1232e6506ddbdfb1f6
 # Create Output Folders if not there yet
 if [ ! -d $peregrineConversionDir ]; then
     mkdir $peregrineConversionDir

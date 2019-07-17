@@ -110,9 +110,15 @@ cp -R $conversionDir/fm.out/* $baseDir/target/fm
 
 # Convert Peregrine
 
+<<<<<<< HEAD
 # . $baseDir/bin/convert.peregrine.2.fm.sh clean
 # . $baseDir/bin/copy.converted.zip.file.to.m2.sh
 # . $baseDir/bin/copy.feature.models.to.target.sh
+=======
+. $baseDir/bin/convert.peregrine.2.fm.sh clean
+. $baseDir/bin/copy.converted.zip.file.to.m2.sh
+. $baseDir/bin/copy.feature.models.to.target.sh
+>>>>>>> 71b01ec9bef042d538893d1232e6506ddbdfb1f6
 
 # Build Project
 
