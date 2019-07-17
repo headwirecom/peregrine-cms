@@ -153,9 +153,9 @@ export default {
         ============================================ */
         onKeyDown(ev){
             var nodeName = document.activeElement.nodeName
-            var className = document.activeElement.className
+            var className = ''+document.activeElement.className
             /* check no field is currently in focus */
-            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')){
                 return false
             } else {
                 var ctrlKey = 17
@@ -563,7 +563,6 @@ export default {
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
         refreshEditor(me, target) {
-            console.log('refresh editor')
             me.$refs['editview'].contentWindow.location.reload();
         }
     }
