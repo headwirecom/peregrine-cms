@@ -29,19 +29,211 @@ under the License.
     <name>Feature model of Peregrine CMS / Sling 11</name>
     <packaging>slingosgifeature</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>base.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>example-vue.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>felib.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>node-js.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>node-js.ui.apps.script</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>admin.sling.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>admin.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>${project.groupId}</groupId>-->
+<!--            <artifactId>admin.ui.apps-example</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--            <type>zip</type>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>admin.ui.materialize</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>pagerender-vue.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.jcr.packageinit</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+<!--            <type>zip</type>-->
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>${project.groupId}</groupId>-->
+<!--            <artifactId>themeclean-ui.apps</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--            <type>zip</type>-->
+<!--        </dependency>-->
+    </dependencies>
     <build>
+<!--        <resources>-->
+<!--            <resource>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                <includes>-->
+<!--                    <include>**/*.json</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
+<!--        </resources>-->
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <resources>
+                        <resource>
+                            <directory>src/main/resources</directory>
+                        </resource>
+                    </resources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-frm-resource</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>slingfeature-maven-plugin</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <configuration>
                     <features>target/fm</features>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>convert-pm</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>convert-pm</goal>
+                        </goals>
+                        <configuration>
+                            <inputFolder>${sling.launchpad.folder}/src/main/provisioning</inputFolder>
+                            <outputFolder>fm</outputFolder>
+                            <groupId>${{project.groupId}}</groupId>
+                            <artifactId>${{project.artifactId}}</artifactId>
+                            <version>${{project.version}}</version>
+                            <frameworkProperties>
+                                launchpad:felix.systempackages.substitution=true,
+                                launchpad:felix.systempackages.calculate.uses=true
+                            </frameworkProperties>
+                            <excludeBundles>
+                                org.apache.sling.launchpad.installer,
+                                org.apache.sling.jcr.repoinit.impl.RepositoryInitializer
+                            </excludeBundles>
+                            <runModes>
+                                oak_tar,
+                                :standalone
+                            </runModes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>convert-cp</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>convert-cp</goal>
+                        </goals>
+                        <configuration>
+                            <!-- NOTE: ${{ is a way to encode placeholders that should not be interpolated in Maven in this call -->
+                            <artifactIdOverride>${{project.groupId}}:${{project.artifactId}}:slingosgifeature:${{{filename}}}:${{project.version}}</artifactIdOverride>
+                            <installConvertedCP>true</installConvertedCP>
+                            <convertedCPOutput>${project.build.directory}/fm.out</convertedCPOutput>
+                            <fmOutput>${project.build.directory}/fm</fmOutput>
+                            <fmPrefix>peregrine-</fmPrefix>
+                            <contentPackages>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>base.ui.apps</artifactId>
+                                </contentPackage>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>example-vue.ui.apps</artifactId>
+                                </contentPackage>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>felib.ui.apps</artifactId>
+                                </contentPackage>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>node-js.ui.apps</artifactId>
+                                </contentPackage>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>node-js.ui.apps.script</artifactId>
+                                </contentPackage>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>admin.sling.ui.apps</artifactId>
+                                </contentPackage>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>admin.ui.apps</artifactId>
+                                </contentPackage>
+                                <!--                                <contentPackage>-->
+                                <!--                                    <groupId>${project.groupId}</groupId>-->
+                                <!--                                    <artifactId>admin.ui.apps-example</artifactId>-->
+                                <!--                                </contentPackage>-->
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>admin.ui.materialize</artifactId>
+                                </contentPackage>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>pagerender-vue.ui.apps</artifactId>
+                                </contentPackage>
+                                <!--                                <contentPackage>-->
+                                <!--                                    <groupId>${project.groupId}</groupId>-->
+                                <!--                                    <artifactId>themeclean-ui.apps</artifactId>-->
+                                <!--                                </contentPackage>-->
+                            </contentPackages>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>aggregate-base-feature</id>
+                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>aggregate-features</goal>
                         </goals>
@@ -56,12 +248,14 @@ under the License.
                     </execution>
                     <execution>
                         <id>attach-base-feature</id>
+                        <phase>process-test-sources</phase>
                         <goals>
                             <goal>attach-features</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>verify-analyze</id>
+                        <phase>generate-test-resources</phase>
                         <goals>
                             <goal>analyse-features</goal>
                         </goals>

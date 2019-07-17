@@ -16,3 +16,4 @@ package-lock.json
 npm-debug.log
 .DS_Store
 /sling/peregrine-feature-model-starter/bin/setenv.sh
+launcher

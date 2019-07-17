@@ -107,19 +107,3 @@ else
 fi
 
 cp -R $conversionDir/fm.out/* $baseDir/target/fm
-
-# Convert Peregrine
-
-# . $baseDir/bin/convert.peregrine.2.fm.sh clean
-# . $baseDir/bin/copy.converted.zip.file.to.m2.sh
-# . $baseDir/bin/copy.feature.models.to.target.sh
-
-# Build Project
-
-mvn install
-
-# Launch Sling
-
-java -cp $launcherClassPath \
-      org.apache.sling.feature.launcher.impl.Main \
-      -f target/slingfeature-tmp/feature-example-runtime.json
