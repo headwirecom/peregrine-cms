@@ -134,6 +134,7 @@ public class PerConstants {
             Pair.of(PRIORITY, "0.5"))
         .collect(Collectors.toCollection(ArrayList::new));
 
-  public static final String SITEMAP_SERVLET_PATH = "perapi/admin/sitemap";
+    public static final String PAGE_RESOURCE_PREDICATE = "[jcr:primaryType] is 'per:Page' and [jcr:content/jcr:primaryType] is 'per:PageContent'";
+    public static final String SITEMAP_SERVLET_PATH = "perapi/admin/sitemap";
 }
 

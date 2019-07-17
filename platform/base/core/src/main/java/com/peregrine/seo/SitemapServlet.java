@@ -1,24 +1,8 @@
 package com.peregrine.seo;
 
-import static com.peregrine.commons.util.PerConstants.CHANGE_FREQUENCY;
-import static com.peregrine.commons.util.PerConstants.CREATED;
-import static com.peregrine.commons.util.PerConstants.EXCLUDE_FROM_SITEMAP;
-import static com.peregrine.commons.util.PerConstants.HTML;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PRIORITY;
-import static com.peregrine.commons.util.PerConstants.SITEMAP_SERVLET_PATH;
-import static com.peregrine.commons.util.PerConstants.XML;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_EXTENSIONS;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
-import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import java.io.IOException;
 import java.util.Calendar;
@@ -33,9 +17,11 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.resource.filter.ResourcePredicates;
 import org.apache.sling.resource.filter.ResourceStream;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -44,11 +30,12 @@ import org.slf4j.LoggerFactory;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Page Site Map Servlet",
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + SITEMAP_SERVLET_PATH,
-        SLING_SERVLET_EXTENSIONS + EQUALS + XML,
-        SLING_SERVLET_EXTENSIONS + EQUALS + HTML,
-        SLING_SERVLET_METHODS + EQUALS + GET
+        Constants.SERVICE_DESCRIPTION + "=Page Site Map Servlet",
+        ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "="
+            + PerConstants.SITEMAP_SERVLET_PATH,
+        ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=" + PerConstants.XML,
+        ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=" + PerConstants.HTML,
+        ServletResolverConstants.SLING_SERVLET_METHODS + "=" + PerUtil.GET
     }
 )
 public final class SitemapServlet extends SlingAllMethodsServlet {
@@ -67,9 +54,9 @@ public final class SitemapServlet extends SlingAllMethodsServlet {
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
       throws ServletException, IOException {
-    if (HTML.equals(request.getRequestPathInfo().getExtension())) {
+    if (PerConstants.HTML.equals(request.getRequestPathInfo().getExtension())) {
       Resource redirectPage = request.getResource().getParent();
-      if (PAGE_PRIMARY_TYPE.equals(PerUtil.getPrimaryType(redirectPage))) {
+      if (PerConstants.PAGE_PRIMARY_TYPE.equals(PerUtil.getPrimaryType(redirectPage))) {
         log.info("Sitemap HTML rendering is not supported. Redirecting to parent page: '{}'",
             redirectPage.getPath());
         response.sendRedirect(redirectPage.getPath() + ".html");
@@ -90,7 +77,7 @@ public final class SitemapServlet extends SlingAllMethodsServlet {
 
       new ResourceStream(page.adaptTo(Resource.class))
           .stream(r -> true)
-          .filter(resourceFilter.parse("[" + JCR_PRIMARY_TYPE + "] is '" + PAGE_PRIMARY_TYPE + "'"))
+          .filter(resourceFilter.parse(PerConstants.PAGE_RESOURCE_PREDICATE))
           .forEach(res -> {
             try {
               write(res.adaptTo(PerPage.class), stream, resolver);
@@ -114,24 +101,35 @@ public final class SitemapServlet extends SlingAllMethodsServlet {
       return;
     }
     stream.writeStartElement(NS, "url");
-    writeElement(stream, "loc",
-        urlExternalizer.buildExternalizedLink(resolver, String.format("%s.html", page.getPath())));
-    Calendar cal = page.getLastModified() != null ?
-        page.getLastModified() : ResourceUtil.getValueMap(page.adaptTo(Resource.class))
-        .get(CREATED, Calendar.getInstance());
-    writeElement(stream, "lastmod", DATE_FORMAT.format(cal));
-    writeElement(stream, CHANGE_FREQUENCY, page.getContentProperty(CHANGE_FREQUENCY, "weekly"));
-    writeElement(stream, PRIORITY, page.getContentProperty(PRIORITY, "0.5"));
+
+    String loc = urlExternalizer
+        .buildExternalizedLink(resolver, String.format("%s.html", page.getPath()));
+    writeElement(stream, "loc", loc);
+
+    Calendar lastModified = null;
+    if (page.getLastModified() != null) {
+      lastModified = page.getLastModified();
+    } else {
+      lastModified = ResourceUtil.getValueMap(page.adaptTo(Resource.class))
+          .get(PerConstants.CREATED, Calendar.getInstance());
+    }
+    writeElement(stream, "lastmod", DATE_FORMAT.format(lastModified));
+
+    String changeFreq = page.getContentProperty(PerConstants.CHANGE_FREQUENCY, "weekly");
+    writeElement(stream, PerConstants.CHANGE_FREQUENCY, changeFreq);
+
+    String priority = page.getContentProperty(PerConstants.PRIORITY, "0.5");
+    writeElement(stream, PerConstants.PRIORITY, priority);
+
     stream.writeEndElement();
   }
 
   private boolean isHidden(final PerPage page) {
-    return page.getContentProperty(EXCLUDE_FROM_SITEMAP, false);
+    return page.getContentProperty(PerConstants.EXCLUDE_FROM_SITEMAP, false);
   }
 
   private void writeElement(final XMLStreamWriter stream, final String elementName,
-      final String text)
-      throws XMLStreamException {
+      final String text) throws XMLStreamException {
     stream.writeStartElement(NS, elementName);
     stream.writeCharacters(text);
     stream.writeEndElement();
