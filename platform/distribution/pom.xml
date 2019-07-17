@@ -49,6 +49,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Bundle-SymbolicName>com.peregrine-cms.distribution</Bundle-SymbolicName>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.nodetypes.models</Sling-Model-Packages>
                         <_dsannotations>*</_dsannotations>
@@ -58,20 +59,6 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>maven-sling-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>com.peregrine-cms.distribution</Bundle-SymbolicName>
                         <Sling-Initial-Content>
                             SLING-CONTENT/libs/sling/distribution;path:=/libs/sling/distribution;overwrite:=true,
                             SLING-CONTENT/var/sling/distribution;path:=/var/sling/distribution;overwrite:=true,
@@ -79,6 +66,10 @@
                         </Sling-Initial-Content>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>maven-sling-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
