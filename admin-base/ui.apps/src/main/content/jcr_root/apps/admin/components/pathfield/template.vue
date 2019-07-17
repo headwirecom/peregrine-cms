@@ -28,7 +28,7 @@
             /&nbsp;<admin-components-action
                 v-bind:model="{
                     target: { path: item.path },
-                    title: (index == 0)? $i18n(item.name) : item.name,
+                    title: item.name,
                     command: 'selectPathInNav'
                 }"></admin-components-action>&nbsp;
         </template>

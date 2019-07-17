@@ -173,83 +173,86 @@
         },
         computed: {
             schema() {
-                const view = $perAdminApp.getView()
-                if(this.asset) {
-                    return { "fields":[
-                        {
-                            "type": "input",
-                            "inputType": "text",
-                            "model": "name",
-                            "label": this.$i18n("Name"),
-                            "readonly": true,
-                            "placeholder": this.$i18n("page name")
-                        },
-                        {
-                            "type": "input",
-                            "inputType": "text",
-                            "model": "title",
-                            "x-model": "jcr:title",
-                            "label": this.$i18n("Title"),
-                            "placeholder": this.$i18n("asset title")
-                        },
-                        {
-                            "type": "material-datetime",
-                            "model": "created",
-                            "label": this.$i18n("Created"),
-                            "readonly": true,
-                            "placeholder": this.$i18n("created")
-                        },
-                        {
-                            "type": "input",
-                            "inputType": "text",
-                            "model": "createdBy",
-                            "label": this.$i18n("Created By"),
-                            "readonly": true,
-                            "placeholder": this.$i18n("created by")
-                        },
-                        {
-                            "type": "material-datetime",
-                            "model": "lastModified",
-                            "label": this.$i18n("Last Modified"),
-                            "readonly": true,
-                            "placeholder":  this.$i18n("last modified")
-                        },
-                        {
-                            "type": "input",
-                            "inputType": "text",
-                            "model": "lastModifiedBy",
-                            "label": this.$i18n("Last Modified By"),
-                            "readonly": true,
-                            "placeholder": this.$i18n("last Modified By")
-                        },
-                        {
-                            "type": "material-multiselect",
-                            "model": "tags",
-                            "label": "Tags",
-                            "placeholder": "tags",
-                            "selectOptions": {
-                                "multiple": true,
-                                "trackBy": "name",
-                                "label": "name",
-                                "searchable": true,
-                                "clearOnSelect": true,
-                                "closeOnSelect": false,
-                                "taggable": true
-                            },
-                            "valuesFrom": "/content/objects/tags.infinity.json",
-                            "values": ['dog','cat','bear','wolf']
-                        },
-                        {
-                            "type": "material-textarea",
-                            "inputType": "text",
-                            "model": "description",
-                            "label": this.$i18n("Description"),
-                            "rows": 10,
-                            "placeholder": this.$i18n("enter a description for this asset")
-                        }
-                    ]}
+                var view = $perAdminApp.getView()
+                var schema = view.admin.componentDefinitions['admin-components-assetview']
+                return schema
+            //     const view = $perAdminApp.getView()
+            //     if(this.asset) {
+            //         return { "fields":[
+            //             {
+            //                 "type": "input",
+            //                 "inputType": "text",
+            //                 "model": "name",
+            //                 "label": "Name",
+            //                 "readonly": true,
+            //                 "placeholder": "page name"
+            //             },
+            //             {
+            //                 "type": "input",
+            //                 "inputType": "text",
+            //                 "model": "title",
+            //                 "x-model": "jcr:title",
+            //                 "label": "Title",
+            //                 "placeholder": "asset title"
+            //             },
+            //             {
+            //                 "type": "material-datetime",
+            //                 "model": "created",
+            //                 "label": "Created",
+            //                 "readonly": true,
+            //                 "placeholder": "created"
+            //             },
+            //             {
+            //                 "type": "input",
+            //                 "inputType": "text",
+            //                 "model": "createdBy",
+            //                 "label": "Created By",
+            //                 "readonly": true,
+            //                 "placeholder": "created by"
+            //             },
+            //             {
+            //                 "type": "material-datetime",
+            //                 "model": "lastModified",
+            //                 "label": "Last Modified",
+            //                 "readonly": true,
+            //                 "placeholder": "lastModified"
+            //             },
+            //             {
+            //                 "type": "input",
+            //                 "inputType": "text",
+            //                 "model": "lastModifiedBy",
+            //                 "label": "Last Modified By",
+            //                 "readonly": true,
+            //                 "placeholder": "lastModifiedBy"
+            //             },
+            //             {
+            //                 "type": "material-multiselect",
+            //                 "model": "tags",
+            //                 "label": "Tags",
+            //                 "placeholder": "tags",
+            //                 "selectOptions": {
+            //                     "multiple": true,
+            //                     "trackBy": "name",
+            //                     "label": "name",
+            //                     "searchable": true,
+            //                     "clearOnSelect": true,
+            //                     "closeOnSelect": false,
+            //                     "taggable": true
+            //                 },
+            //                 "valuesFrom": "/content/objects/tags.infinity.json",
+            //                 "values": [ { name: 'dog', value: 'dog' } ]
+            //             },
+            //             {
+            //                 "type": "material-textarea",
+            //                 "inputType": "text",
+            //                 "model": "description",
+            //                 "label": "Description",
+            //                 "rows": 10,
+            //                 "placeholder": "enter a description for this asset"
+            //             }
+            //         ]}
 
-                }
+            //     }
             },
             referencedBy() {
                 return $perAdminApp.getView().state.referencedBy.referencedBy

@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,37 +28,37 @@
             <ul class="explorer-preview-nav">
                 <template v-if="allowOperations">
                     <li>
-                        <a  href="#!" 
+                        <a  href="#!"
                             title="rename template"
                             v-on:click.stop.prevent="renamePage">
                             <i class="svg-icons svg-icon-rename"></i>
                         </a>
                     </li>
                     <li>
-                        <a  href="#!" 
-                            title="move template" 
+                        <a  href="#!"
+                            title="move template"
                             v-on:click.stop.prevent="movePage">
                             <i class="material-icons">compare_arrows</i>
                         </a>
                     </li>
                     <li>
-                        <a  href="#!" 
-                            title="delete template" 
+                        <a  href="#!"
+                            title="delete template"
                             v-on:click.stop.prevent="deletePage">
                             <i class="material-icons">delete</i>
                         </a>
                     </li>
                 </template>
                 <li>
-                    <a  href="#!" 
-                        title="cancel" 
+                    <a  href="#!"
+                        title="cancel"
                         v-on:click.stop.prevent="onCancel">
                         <i class="material-icons">close</i>
                     </a>
                 </li>
                 <li>
-                    <a  href="#!" 
-                        title="save" 
+                    <a  href="#!"
+                        title="save"
                         v-on:click.stop.prevent="onOk">
                         <i class="material-icons">check</i>
                     </a>
@@ -73,6 +73,19 @@
             <span>{{ $i18n('no template selected') }}</span>
             <i class="material-icons">info</i>
         </div>
+
+        <admin-components-pathbrowser
+                v-if="isOpen"
+                :isOpen="isOpen"
+                :browserRoot="browserRoot"
+                :browserType="'page'"
+                :currentPath="currentPath"
+                :selectedPath="selectedPath"
+                :setCurrentPath="setCurrentPath"
+                :setSelectedPath="setSelectedPath"
+                :onCancel="onMoveCancel"
+                :onSelect="onMoveSelect">
+        </admin-components-pathbrowser>
     </div>
 
 </template>
@@ -100,6 +113,10 @@
         },
         data: function() {
             return {
+                isOpen: false,
+                browserRoot: '/content/templates',
+                currentPath: '/content/templates',
+                selectedPath: null,
                 options: {
                     validateAfterLoad: true,
                     validateAfterChanged: true,
@@ -122,25 +139,27 @@
                 $perAdminApp.stateAction('deletePage', this.page.path)
                 $perAdminApp.stateAction('showPageInfo', { selected: null })
             },
+            setCurrentPath(path){
+                this.currentPath = path
+            },
+            setSelectedPath(path){
+                this.selectedPath = path
+            },
             movePage() {
-                let root = '/content/sites'
-                let selectedPath = this.page.path
-                let currentPath = selectedPath.substr(0, selectedPath.lastIndexOf('/'))
-                const initModalState = {
-                    root: root,
-                    type: 'page',
-                    current: currentPath,
-                    selected: selectedPath
-                }
-                const options = {
-                    complete: () => {
-                        const newValue = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')
-                        $perAdminApp.stateAction('movePage', { path: selectedPath, to: newValue, type: 'child'})
-                        $perAdminApp.getNodeFromView('/state/tools').pages = newValue
-                        $perAdminApp.getNodeFromView('/state/tools').page = null
-                    }
-                }
-                $perAdminApp.pathBrowser(initModalState, options)
+                $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
+                    .then( () => {
+                        this.isOpen = true
+                    }).catch( (err) => {
+                    $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+                })
+            },
+            onMoveCancel(){
+                this.isOpen = false
+            },
+            onMoveSelect() {
+                $perAdminApp.stateAction('moveTemplate', { path: this.page.path, to: this.selectedPath, type: 'child'})
+                $perAdminApp.stateAction('unselectTemplate', { })
+                this.isOpen = false
             },
             onCancel() {
 
