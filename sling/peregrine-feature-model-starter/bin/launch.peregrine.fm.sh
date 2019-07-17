@@ -28,12 +28,23 @@ if [ "$folderName" == "bin" ]; then
 fi
 
 # Set Env Variables
-. $baseDir/bin/setenv.sh
+#. $baseDir/bin/setenv.sh
 
-fmVersion=1.0.2
+fmVersion=1.0.4
 laucherName=org.apache.sling.feature.launcher
 contentExtensionName=org.apache.sling.feature.extension.content
 apiRegionsExtensionName=org.apache.sling.feature.extension.apiregions
+
+if [ ! -f $laucherName-$fmVersion.jar ]; then
+    curl http://repo1.maven.org/maven2/org/apache/sling/$laucherName/$fmVersion/$laucherName-$fmVersion.jar -O
+fi
+if [ ! -f $contentExtensionName-$fmVersion.jar ]; then
+    curl http://repo1.maven.org/maven2/org/apache/sling/$contentExtensionName/$fmVersion/$contentExtensionName-$fmVersion.jar -O
+fi
+if [ ! -f $apiRegionsExtensionName-$fmVersion.jar ]; then
+    curl http://repo1.maven.org/maven2/org/apache/sling/$apiRegionsExtensionName/$fmVersion/$apiRegionsExtensionName-$fmVersion.jar -O
+fi
+
 # ATTENTION: content extension needs to be placed ahead of the launcher to make
 #            sure the Extension's Content Handler is picked up ahead of the dummy
 #            implementation of the Launcher
