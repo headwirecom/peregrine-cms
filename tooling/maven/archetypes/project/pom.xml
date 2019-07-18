@@ -40,6 +40,8 @@
     </organization>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <repositoryId>peregrine.distro</repositoryId>
         <repositoryName>Peregrine Release Distribution Repository</repositoryName>
         <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2/</repositoryUrl>

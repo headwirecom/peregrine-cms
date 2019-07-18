@@ -18,6 +18,7 @@
 
     <properties>
         <node.version>v10.15.0</node.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <sling.host>localhost</sling.host>
         <sling.port>8080</sling.port>
