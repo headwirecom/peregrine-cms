@@ -30,6 +30,7 @@
     </parent>
 
     <artifactId>buildscripts</artifactId>
+    <packaging>pom</packaging>
 
     <name>Peregrine CMS - Admin - Build Scripts</name>
     <description>
