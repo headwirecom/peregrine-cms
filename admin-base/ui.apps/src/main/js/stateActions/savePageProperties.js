@@ -47,7 +47,6 @@ export default function(me, target) {
     }
 
     log.fine(nodeData)
-
     me.getApi().savePageEdit(target.path, nodeData).then( () => {
     })
 }

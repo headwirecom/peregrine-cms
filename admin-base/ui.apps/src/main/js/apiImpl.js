@@ -547,6 +547,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             populateView('/state', 'editorVisible', false)
             populateView('/state', 'rightPanelVisible', true)
+            populateView('/state', 'editor', {})
             resolve()
         })
     }
@@ -562,10 +563,15 @@ class PerAdminImpl {
                     nodeData = component.methods.beforeSave(nodeData)
                 }
             }
+            if(nodeData.path === '/jcr:content') {
+                nodeData['jcr:primaryType'] = 'per:PageContent'
+            } else {
+                nodeData['jcr:primaryType'] = 'nt:unstructured'
+            }
+
             delete nodeData['children']
             delete nodeData['path']
             delete nodeData['component']
-            nodeData['jcr:primaryType'] = 'nt:unstructured'
             if(node.component) {
                 nodeData['sling:resourceType'] = node.component.split('-').join('/')
             }
