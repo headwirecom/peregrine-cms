@@ -411,13 +411,21 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
+                // console.log(isDropTarget, pos, targetBox)
+
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    this.dropPosition = 'into'
-                    if(dropLocation) {
-                        this.dropPosition += '-' + dropLocation
+                    // console.log(pos.y - targetBox.top, targetBox.bottom - pos.y)
+                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
+                        this.dropPosition = 'after'
+                        this.setEditableStyle(targetBox, 'drop-bottom')
+                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before') {
+                        this.dropPosition = 'before'
+                        this.setEditableStyle(targetBox, 'drop-top')
+                    } else if(dropLocation) {
+                        this.dropPosition = 'into-'+dropLocation
+                        this.setEditableStyle(targetBox, 'selected')
                     }
-                    this.setEditableStyle(targetBox, 'selected')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
@@ -498,6 +506,18 @@ export default {
                 editable.style.left   = (targetBox.left + scrollX) + 'px'
                 editable.style.width  = targetBox.width + 'px'
                 editable.style.height = targetBox.height + 'px'
+
+                if(this.selectedComponent) {
+                    var path = this.selectedComponent.getAttribute('data-per-path')
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    if(node.fromTemplate) {
+                        editable.style['border-color'] = 'orange'
+                    } else {
+                        editable.style['border-color'] = ''
+                    }
+                } else {
+                    editable.style['border-color'] = ''
+                }
             }
             this.editableClass = editableClass
         },

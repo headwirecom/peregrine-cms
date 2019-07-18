@@ -92,6 +92,9 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
 
         Resource component = request.getResourceByPath(componentPath);
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
+        if("/apps/admin/components/assetview".equals(path)) {
+            page = true;
+        }
         Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
         if(dialog == null) {
             dialog = getDialogFromSuperType(component, page);
