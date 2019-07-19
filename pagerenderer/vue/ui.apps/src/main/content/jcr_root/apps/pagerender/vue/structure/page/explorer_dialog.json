@@ -111,6 +111,8 @@
     "model": "hideInNav",
     "textOn": "yes",
     "textOff": "no",
+    "valueOn": "true",
+    "valueOff": "false",
     "hint": "This is to indicate whether the page should be exclude from navigation."
   },
   {
@@ -119,6 +121,8 @@
     "model": "excludeFromSitemap",
     "textOn": "yes",
     "textOff": "no",
+    "valueOn": "true",
+    "valueOff": "false",
     "hint": "This property indicates if the Page should be hidden from the Sitemap."
   },
   {
@@ -169,6 +173,8 @@
     "model": "disallowFromRobots",
     "textOn": "yes",
     "textOff": "no",
+    "valueOn": "true",
+    "valueOff": "false",
     "hint": "This is to indicate whether the page should be disallowed from being scanned and processed by web crawlers and other web robots."
   }
 ]}
