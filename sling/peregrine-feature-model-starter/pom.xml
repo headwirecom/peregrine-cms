@@ -151,8 +151,8 @@ under the License.
                             <goal>convert-pm</goal>
                         </goals>
                         <configuration>
-                            <inputFolder>${sling.launchpad.folder}/src/main/provisioning</inputFolder>
-                            <outputFolder>fm</outputFolder>
+                            <inputFolder>${sling.starter.folder}/src/main/provisioning</inputFolder>
+                            <outputFolder>target/fm</outputFolder>
                             <groupId>${{project.groupId}}</groupId>
                             <artifactId>${{project.artifactId}}</artifactId>
                             <version>${{project.version}}</version>
@@ -177,7 +177,8 @@ under the License.
                             <goal>convert-cp</goal>
                         </goals>
                         <configuration>
-                            <!-- NOTE: ${{ is a way to encode placeholders that should not be interpolated in Maven in this call -->
+                            <!-- NOTE: ${{ / }} is a way to encode placeholders that should not be interpolated in Maven in this call
+                                       and ${{{ / }}} is used to make it a CP Conversion Placeholder }-->
                             <artifactIdOverride>${{project.groupId}}:${{project.artifactId}}:slingosgifeature:${{{filename}}}:${{project.version}}</artifactIdOverride>
                             <installConvertedCP>true</installConvertedCP>
                             <convertedCPOutput>${project.build.directory}/fm.out</convertedCPOutput>
@@ -290,4 +291,31 @@ under the License.
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>launch</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.sling</groupId>
+                        <artifactId>slingfeature-maven-plugin</artifactId>
+                        <version>1.0.5-SNAPSHOT</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>launch-it</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>launch-features</goal>
+                                </goals>
+                                <configuration>
+                                    <featureFile>${project.build.directory}/slingfeature-tmp/feature-example-runtime.json</featureFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

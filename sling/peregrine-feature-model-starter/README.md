@@ -18,22 +18,18 @@ and the Content Package Converter and the Sling Starter to provide the
 source Provisioning Model for Sling.
 You need to clone and checkout either 1.0.2 or master branch:
  
-1. sling-org-apache-sling-feature-cpconverter branch output-file-name-prefix
-1. sling-org-apache-sling-feature-modelconverter tag 1.0.4
-1. sling-org-apache-sling-starter
+1. sling-org-apache-sling-feature-cpconverter branch master
+1. sling-org-apache-sling-starter branch master (we need the source files)
 1. sling-slingfeature-maven-plugin branch merge-cpconverter-plugin
 
 Built the all of these modules.
 
 ### Build and Launch
 
-This module can be built in two steps:
+This module can be built and launched in one step:
 ```
-mvn clean install -Dsling.launchpad.folder=<path to your **Sling Starter** base directory>
+mvn clean install -P launch -Dsling.starter.folder=<path to your **Sling Starter** base directory>
 ```
-After a successful conversion it can be started with:
-```
-sh bin/launch.peregrine.fm.sh
-```
+**Note**: To only build the project then just omit the **launch** profile.
 
 Now you can connect to the Peregrine via http://localhost:8080
