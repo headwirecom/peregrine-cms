@@ -104,15 +104,15 @@
                                     v-on:click.stop.prevent="navigateFolder(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
                                     <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
-                                    <label v-on:click.stop.prevent="selectItem(item)"></label>
+                                    <label v-bind:data-per-name="item.name" v-on:click.stop.prevent="selectItem(item)"></label>
                                     <i class="material-icons">{{getFolderIcon()}}</i>
                                     <span>{{item.name}}</span>
                                 </li>
-                                <li v-if="isFile(item) && isFileAllowed()" 
-                                    v-on:click.stop.prevent="selectItem(item)" 
+                                <li v-if="isFile(item) && isFileAllowed()"
+                                    v-on:click.stop.prevent="selectItem(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
                                     <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
-                                    <label></label>
+                                    <label v-bind:data-per-name="item.name"></label>
                                     <i class="material-icons">image</i>
                                     <span>{{item.name}}</span>
                                 </li>
@@ -125,17 +125,17 @@
                             <div class="modal-content-section">
                                 <div class="current-folder">
                                     <template v-if="!isRoot">
-                                        <a  
-                                            href="#!" 
+                                        <a
+                                            href="#!"
                                             v-on:click.stop.prevent="selectParent">
-                                            <i class="material-icons">keyboard_arrow_left</i> 
+                                            <i class="material-icons">keyboard_arrow_left</i>
                                         </a>
                                         {{currentPath}} ({{list.length}})
                                     </template>
                                     <template v-else>
-                                        <input 
-                                            type="radio" 
-                                            class="with-gap" 
+                                        <input
+                                            type="radio"
+                                            class="with-gap"
                                             :checked="isSelected(currentPath)" />
                                         <label v-on:click.stop.prevent="selectItem(nodes)">{{currentPath}} ({{list.length}})</label>
                                     </template>
@@ -147,20 +147,20 @@
                                         <span class="cards-toolbar-title">Sort</span>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_name" 
+                                        <input
+                                            name="assetbrowser_sort_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_sort_cards_name"
                                             :checked="sortBy === 'name'"/>
                                         <label v-on:click="onSort('name')" for="assetbrowser_sort_cards_name">name</label>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_type" 
+                                        <input
+                                            name="assetbrowser_sort_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_sort_cards_type"
                                             :checked="sortBy === 'resourceType'"/>
                                         <label v-on:click="onSort('resourceType')" for="assetbrowser_sort_cards_type">type</label>
                                     </li>
@@ -232,7 +232,7 @@
                                         v-on:click.stop.prevent="navigateFolder(item)">
                                             <div class="item-select">
                                                 <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
-                                                <label v-on:click.stop.prevent="selectItem(item)"></label>
+                                                <label v-bind:data-per-name="item.name" v-on:click.stop.prevent="selectItem(item)"></label>
                                             </div>
                                             <div class="item-content">
                                                 <i 
