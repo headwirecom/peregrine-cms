@@ -15,6 +15,7 @@ function keyToLang(key) {
 }
 
 function setLang(language) {
+    $perAdminApp.getView().admin.i18n[lang] = {}
     lang = language
     $perAdminApp.getView().state.language = language
     $perAdminApp.loadi18n()
