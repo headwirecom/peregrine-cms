@@ -46,12 +46,17 @@
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="admin/components/extensions"
                         id="admin.pages.subnav"/>
-                <add jcr:primaryType="nt:unstructured"
-                         sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add">
+                <addSite jcr:primaryType="nt:unstructured"
+                        sling:resourceType="admin/components/action" target="" type="icon" title="add site" command="addSite" icon="folder" classes="addSite">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Webseite hinzufügen"/>
+                </addSite>
+                <addPage jcr:primaryType="nt:unstructured"
+                         sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add" classes="addPage">
                     <experiences jcr:primaryType="nt:unstructured">
                         <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Seite hinzufügen"/>
                     </experiences>
-                </add>
+                </addPage>
             </subnav>
         </nav>
 

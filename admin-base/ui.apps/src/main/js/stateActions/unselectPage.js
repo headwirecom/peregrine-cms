@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,27 +23,14 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
+let log = LoggerFactory.logger('unselectPage').setLevelDebug()
 
-import {set} from '../utils'
+import { set } from '../utils'
 
 export default function(me, target) {
 
     log.fine(target)
 
     let view = me.getView()
-    if(target.selected.startsWith('/content/sites')) {
-        set(view, '/state/tools/page', null)
-    } else {
-        set(view, '/state/tools/template', null)
-    }
-
-    me.getApi().populateNodesForBrowser(target.selected).then( () => {
-        set(me.getView(), target.path, target.selected)
-        let path = document.location.pathname
-        let html = path.indexOf('.html')
-        let newPath = path.slice(0,html) + '.html/path:'+target.selected
-        history.pushState({peregrinevue:true, path: newPath}, newPath, newPath)
-    })
-
+    set(view, '/state/tools/page', undefined)
 }
