@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-
+  
   http://www.apache.org/licenses/LICENSE-2.0
-
+  
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,9 +24,9 @@
   -->   
 <template>
     <span>
-        <a
+        <a 
             v-if                    = "!model.type"
-            v-bind:href             = "model.target +'.html'"
+            v-bind:href             = "targetHtml"
             v-bind:title            = "title"
             v-on:click.stop.prevent = "onClick"
             v-bind:class            = "model.classes">
@@ -36,7 +36,7 @@
         <a
             v-if                    = "model.type === 'icon'"
             v-bind:title            = "title"
-            v-bind:href             = "model.target"
+            v-bind:href             = "target"
             v-on:click.stop.prevent = "action"
             class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
@@ -149,6 +149,15 @@
             console.error('missing alt', this.model.command, this.model.path)
             /* eslint-enable no-console */
             return this.model.command
+        },
+        target() {
+            if(this.model.target && typeof this.model.target === 'string') {
+                return this.model.target
+            }
+            return '#'
+        },
+        targetHtml() {
+            return this.target !== '#' ? this.target + '.html' : '#'
         }
     },
     methods: {
