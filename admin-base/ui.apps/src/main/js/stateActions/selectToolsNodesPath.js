@@ -42,7 +42,7 @@ export default function(me, target) {
         set(me.getView(), target.path, target.selected)
         let path = document.location.pathname
         let html = path.indexOf('.html')
-        let newPath = path.slice(0,html) + '.html/path//'+target.selected
+        let newPath = path.slice(0,html) + '.html/path:'+target.selected
         history.pushState({peregrinevue:true, path: newPath}, newPath, newPath)
     })
 
