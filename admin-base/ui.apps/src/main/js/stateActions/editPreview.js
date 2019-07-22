@@ -26,6 +26,7 @@ import { LoggerFactory } from '../logger'
 let log = LoggerFactory.logger('editPreview').setLevelDebug()
 
 import { set, get } from '../utils'
+import { IgnoreContainers } from '../constants.js'
 
 export default function(me, target) {
 
@@ -37,22 +38,22 @@ export default function(me, target) {
         const current = get(view, '/state/tools/workspace/preview', '');
         if(current === 'preview') {
             set(view, '/state/tools/workspace/preview', '');
-            if (view.state.tools.workspace.ignoreContainers === 'on-hold') {
-                set(view, '/state/tools/workspace/ignoreContainers', 'ignore-containers');
-                set(view, '/pageView/view', 'ignore-containers');
+            if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ON_HOLD) {
+                set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ENABLED);
+                set(view, '/pageView/view', IgnoreContainers.ENABLED);
             } else {
                 set(view, '/pageView/view', view.state.tools.workspace.view);
             }
         } else {
             set(view, '/state/tools/workspace/preview', target);
             set(view, '/pageView/view', target)
-            if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') {
-                set(view, '/state/tools/workspace/ignoreContainers', 'on-hold');
+            if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
+                set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ON_HOLD);
             }
         }
-    } else if (target === 'ignore-containers'){
-        if(view.state.tools.workspace.ignoreContainers === 'ignore-containers') {
-            set(view, '/state/tools/workspace/ignoreContainers', '');
+    } else if (target === IgnoreContainers.ENABLED){
+        if(view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
+            set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
             set(view, '/pageView/view', view.state.tools.workspace.view);
         } else {
             set(view, '/state/tools/workspace/ignoreContainers', target);
