@@ -55,6 +55,8 @@
 </template>
 
 <script>
+    import { IgnoreContainers } from '../../../../../../js/constants.js';
+
     export default {
         props: ['model'],
 //        beforeCreate() {
@@ -168,17 +170,17 @@
                         ev.dataTransfer.setData('text', component.path)
                     }
                     let view = $perAdminApp.getView();
-                    if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') {
-                        Vue.set(view.state.tools.workspace, 'ignoreContainers', 'on-hold');
+                    if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
+                        Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ON_HOLD);
                         Vue.set(view.pageView, 'view', view.state.tools.workspace.view);
                     }
                 }
             },
             onDragEnd: function(component, ev) {
                 let view = $perAdminApp.getView();
-                if (view.state.tools.workspace.ignoreContainers === 'on-hold') {
-                    Vue.set(view.state.tools.workspace, 'ignoreContainers', 'ignore-containers');
-                    Vue.set(view.pageView, 'view', 'ignore-containers');
+                if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
+                    Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ENABLED);
+                    Vue.set(view.pageView, 'view', IgnoreContainers.ENABLED);
 
                 }
             }

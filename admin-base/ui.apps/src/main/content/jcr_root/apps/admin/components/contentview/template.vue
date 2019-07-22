@@ -54,7 +54,7 @@
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
-                            <li class="waves-effect waves-light">
+                            <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
                                 <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import { IgnoreContainers } from '../../../../../../js/constants.js';
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -153,9 +155,9 @@ export default {
         ============================================ */
         onKeyDown(ev){
             var nodeName = document.activeElement.nodeName
-            var className = document.activeElement.className
+            var className = ''+document.activeElement.className
             /* check no field is currently in focus */
-            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')){
                 return false
             } else {
                 var ctrlKey = 17
@@ -354,7 +356,7 @@ export default {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if (this.isContainer(targetEl)) {
-                    if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') return;
+                    if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) return;
                 }
                 if(node.fromTemplate) {
                     $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
@@ -391,7 +393,7 @@ export default {
             let view = $perAdminApp.getView();
             if(targetEl) {
                 if (this.isContainer(targetEl)) {
-                    if (view.state.tools.workspace.ignoreContainers === 'ignore-containers') return;
+                    if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) return;
                 }
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
@@ -419,13 +421,21 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
+                // console.log(isDropTarget, pos, targetBox)
+
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    this.dropPosition = 'into'
-                    if(dropLocation) {
-                        this.dropPosition += '-' + dropLocation
+                    // console.log(pos.y - targetBox.top, targetBox.bottom - pos.y)
+                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
+                        this.dropPosition = 'after'
+                        this.setEditableStyle(targetBox, 'drop-bottom')
+                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before') {
+                        this.dropPosition = 'before'
+                        this.setEditableStyle(targetBox, 'drop-top')
+                    } else if(dropLocation) {
+                        this.dropPosition = 'into-'+dropLocation
+                        this.setEditableStyle(targetBox, 'selected')
                     }
-                    this.setEditableStyle(targetBox, 'selected')
                 } else {
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
@@ -506,6 +516,18 @@ export default {
                 editable.style.left   = (targetBox.left + scrollX) + 'px'
                 editable.style.width  = targetBox.width + 'px'
                 editable.style.height = targetBox.height + 'px'
+
+                if(this.selectedComponent) {
+                    var path = this.selectedComponent.getAttribute('data-per-path')
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    if(node && node.fromTemplate) {
+                        editable.style['border-color'] = 'orange'
+                    } else {
+                        editable.style['border-color'] = ''
+                    }
+                } else {
+                    editable.style['border-color'] = ''
+                }
             }
             this.editableClass = editableClass
         },
@@ -522,7 +544,9 @@ export default {
                 pagePath: view.pageView.path,
                 path: targetEl.getAttribute('data-per-path')
             }
-            $perAdminApp.stateAction('deletePageNode',  payload)
+            if(payload.path !== '/jcr:content') {
+                $perAdminApp.stateAction('deletePageNode',  payload)
+            }
             this.editableClass = null
             this.selectedComponent = null
         },
@@ -549,7 +573,6 @@ export default {
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
         refreshEditor(me, target) {
-            console.log('refresh editor')
             me.$refs['editview'].contentWindow.location.reload();
         },
         isContainer(el) {
