@@ -21,12 +21,12 @@
   specific language governing permissions and limitations
   under the License.
   #L%
-  -->
+  -->   
 <template>
     <span>
         <a 
             v-if                    = "!model.type"
-            v-bind:href             = "model.target +'.html'"
+            v-bind:href             = "targetHtml"
             v-bind:title            = "title"
             v-on:click.stop.prevent = "onClick"
             v-bind:class            = "model.classes">
@@ -36,7 +36,7 @@
         <a 
             v-if                    = "model.type === 'icon'" 
             v-bind:title            = "title"
-            v-bind:href             = "model.target" 
+            v-bind:href             = "target" 
             v-on:click.stop.prevent = "action" 
             class                   = "btn-floating waves-effect waves-light" 
             v-bind:class            = "model.classes">
@@ -75,7 +75,7 @@
      * @param {string} model.tooltipTitle - used for tooltip/hover
      * @param {string} model.title - the title to be displayed
      * @param {string} model.type - if type === icon the action will be rendered as an icon
-     * @param {string{ model.classes - additional classes to be added to the action
+     * @param {string} model.classes - additional classes to be added to the action
      *
      */
     export default {
@@ -126,6 +126,15 @@
             console.error('missing alt', this.model.command, this.model.path)
             /* eslint-enable no-console */
             return this.model.command
+        },
+        target() {
+            if(this.model.target && typeof this.model.target === 'string') {
+                return this.model.target
+            }
+            return '#'
+        },
+        targetHtml() {
+            return this.target !== '#' ? this.target + '.html' : '#'
         }
     },
     methods: {

@@ -1,6 +1,6 @@
 /*-
  * #%L
- * peregrine default node types - Core
+ * admin base - UI Apps
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,13 +22,15 @@
  * under the License.
  * #L%
  */
-<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
+import { LoggerFactory } from '../logger'
+let log = LoggerFactory.logger('unselectTemplate').setLevelDebug()
 
-[per:Asset] > sling:Resource, mix:lastModified
-  primaryitem jcr:content
-  + jcr:content (per:AssetContent) = per:AssetContent
-  + * (nt:base) = nt:base version
+import { set } from '../utils'
 
-[per:AssetContent] > nt:unstructured, per:Replication
-  orderable
-  + renditions (nt:folder)
+export default function(me, target) {
+
+    log.fine(target)
+
+    let view = me.getView()
+    set(view, '/state/tools/template', undefined)
+}

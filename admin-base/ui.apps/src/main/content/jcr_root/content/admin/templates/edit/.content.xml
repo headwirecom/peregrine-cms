@@ -40,20 +40,20 @@
                  sling:resourceType="admin/components/nav">
 
                 <subnav jcr:primaryType="nt:unstructured"
-                  sling:resourceType="admin/components/subnav" classes="navcenter">
+                     sling:resourceType="admin/components/subnav" classes="navcenter">
 
                     <mobile jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile"
-                      stateFrom="/state/tools/workspace/view"
-                      command="editPreview" icon="phone_android"/>
+                            sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile"
+                            stateFrom="/state/tools/workspace/view"
+                            command="editPreview" icon="phone_android"/>
                     <tablet jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/action" target="tablet" type="icon" title="tablet"
-                      stateFrom="/state/tools/workspace/view"
-                      command="editPreview" icon="tablet_android"/>
+                            sling:resourceType="admin/components/action" target="tablet" type="icon" title="tablet"
+                            stateFrom="/state/tools/workspace/view"
+                            command="editPreview" icon="tablet_android"/>
                     <desktop jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
-                      stateFrom="/state/tools/workspace/view" stateFromDefault="true"
-                      command="editPreview" icon="desktop_mac"/>
+                             sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
+                             stateFrom="/state/tools/workspace/view" stateFromDefault="true"
+                             command="editPreview" icon="desktop_mac"/>
                     <separator jcr:primaryType="nt:unstructured"
                       sling:resourceType="admin/components/separator"/>
                     <ignore-containers jcr:primaryType="nt:unstructured"
@@ -61,9 +61,9 @@
                       stateFrom="/state/tools/workspace/ignoreContainers"
                       command="editPreview" icon="layers_clear"/>
                     <preview jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/action" target="preview" type="icon" title="preview"
-                      stateFrom="/state/tools/workspace/view"
-                      command="editPreview" icon="visibility"/>
+                             sling:resourceType="admin/components/action" target="preview" type="icon" title="preview"
+                             stateFrom="/state/tools/workspace/preview"
+                             command="editPreview" icon="visibility"/>
                 </subnav>
             </nav>
 

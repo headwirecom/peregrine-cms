@@ -102,8 +102,16 @@
                 var list = this.$root.$data.admin.components.data
                 if (!list || !allowedComponents) return {}
 
+                var sorted = list.sort(function( left, right) {
+                    const leftName = (left.group + '-' + left.title).toLowerCase();
+                    const rightName = (right.group + '-' + right.title).toLowerCase();
+                    if(leftName < rightName) return -1;
+                    if(leftName > rightName) return 1;
+                    return 0;
+                })
+
                 // Filter list to local components and with local filter
-                return list.filter(component => {
+                return sorted.filter(component => {
                     if (component.group === '.hidden') return false;
                     if((this.state.group && this.state.group !== '') && component.group !== this.state.group) return false;
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
