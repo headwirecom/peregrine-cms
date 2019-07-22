@@ -36,9 +36,10 @@ export default function(me, target) {
     let view = me.getView();
     if(target === 'preview') {
         const current = get(view, '/state/tools/workspace/preview', '');
+        let currIgnoreContainers = get(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
         if(current === 'preview') {
             set(view, '/state/tools/workspace/preview', '');
-            if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ON_HOLD) {
+            if (currIgnoreContainers === IgnoreContainers.ON_HOLD) {
                 set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ENABLED);
                 set(view, '/pageView/view', IgnoreContainers.ENABLED);
             } else {
@@ -47,7 +48,7 @@ export default function(me, target) {
         } else {
             set(view, '/state/tools/workspace/preview', target);
             set(view, '/pageView/view', target)
-            if (view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
+            if (currIgnoreContainers === IgnoreContainers.ENABLED) {
                 set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ON_HOLD);
             }
         }
