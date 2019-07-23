@@ -355,7 +355,14 @@ var peregrineApp = {
 
     getAdminAppNode(path) {
        return getAdminAppNodeImpl(path);
+    },
+
+    isPublicFacingSite() {
+        const server = window.location.hostname;
+        const domains = getPerView().page.domains || [];
+        return (domains.indexOf(server) >= 0)
     }
+
 }
 
 /**

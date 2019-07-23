@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -118,6 +119,8 @@ public class ImageTransformationSetup {
             configuration.imageTransformationConfigurations() == null ?
                 null : Arrays.asList(configuration.imageTransformationConfigurations())
             );
+        // Remove all existing Image Transformation Configuration with the name of this Setup
+        imageTransformationConfigurations.removeIf(p -> p.getName().equals(name));
         for(String imageTransformationConfiguration: configuration.imageTransformationConfigurations()) {
             imageTransformationConfigurations.add(new ImageTransformationConfiguration(name, imageTransformationConfiguration));
         }
