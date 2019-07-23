@@ -30,6 +30,7 @@ RUN mkdir -p /usr/local/lib/nodejs \
 
 RUN npm install percli @peregrinecms/slingpackager \
     && npx percli \
+    && npx @peregrinecms/slingpackager --version \
     && mkdir out \
     && cp binaries/*.jar out \
     && chmod a+x node_modules/percli/bin/*
