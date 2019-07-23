@@ -107,6 +107,7 @@ public class PerConstants {
     public static final String JSON = "json";
     public static final String XML = "xml";
     public static final String HTML = "html";
+    public static final String TXT = "txt";
 
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
@@ -123,6 +124,7 @@ public class PerConstants {
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";
     public static final String PRIORITY = "priority";
+    public static final String DISALLOW_FROM_ROBOTS = "disallowFromRobots";
 
     public static final List<Pair<String, ?>> PAGE_PROPERTIES = Stream
         .of(Pair.of(PROTOCOL, "https://"),
@@ -131,9 +133,14 @@ public class PerConstants {
             Pair.of(HIDE_IN_NAVIGATION, false),
             Pair.of(EXCLUDE_FROM_SITEMAP, false),
             Pair.of(CHANGE_FREQUENCY, "weekly"),
-            Pair.of(PRIORITY, "0.5"))
+            Pair.of(PRIORITY, "0.5"),
+            Pair.of(DISALLOW_FROM_ROBOTS, false))
         .collect(Collectors.toCollection(ArrayList::new));
 
-  public static final String SITEMAP_SERVLET_PATH = "perapi/admin/sitemap";
+    public static final String SITEMAP_SERVLET_PATH = "perapi/admin/sitemap";
+    public static final String ROBOTS_SERVLET_PATH = "perapi/admin/robots";
+
+    public static final String PAGE_RESOURCE_PREDICATE = "[jcr:primaryType] is 'per:Page' and [jcr:content/jcr:primaryType] is 'per:PageContent'";
+    public static final String SITEMAP_RESOURCE_PREDICATE = "[sling:resourceType] is '" + SITEMAP_SERVLET_PATH + "'";
 }
 

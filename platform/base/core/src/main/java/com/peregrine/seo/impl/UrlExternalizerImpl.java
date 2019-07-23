@@ -1,9 +1,6 @@
 package com.peregrine.seo.impl;
 
-import static com.peregrine.commons.util.PerConstants.AUTHOR_RUN_MODE;
-import static com.peregrine.commons.util.PerConstants.PUBLISH_RUN_MODE;
-import static com.peregrine.commons.util.PerConstants.STANDALONE;
-
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.seo.UrlExternalizer;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -48,8 +45,7 @@ public class UrlExternalizerImpl implements UrlExternalizer {
         description = "List of domain mappings.",
         required = true
     )
-    String[] domains() default {"local http://localhost:8181", "author http://localhost:8181",
-        "publish http://localhost:8182"};
+    String[] domains() default {"local http://localhost:8181", "author http://localhost:8181", "publish http://localhost:8182"};
   }
 
   private static final Logger log = LoggerFactory.getLogger(UrlExternalizerImpl.class);
@@ -70,8 +66,7 @@ public class UrlExternalizerImpl implements UrlExternalizer {
   private SlingSettingsService slingSettingsService;
 
   @Override
-  public String externalizeUrl(String path, ResourceResolver resolver,
-      SlingHttpServletRequest request) {
+  public String externalizeUrl(String path, ResourceResolver resolver, SlingHttpServletRequest request) {
     String actualPath = path;
     String urlRemainder = null;
     int urlRemainderPos = StringUtils.indexOfAny(actualPath, '?', '#');
@@ -79,16 +74,14 @@ public class UrlExternalizerImpl implements UrlExternalizer {
       urlRemainder = actualPath.substring(urlRemainderPos);
       actualPath = actualPath.substring(0, urlRemainderPos);
     }
-    actualPath =
-        Objects.nonNull(request) ? resolver.map(request, actualPath) : resolver.map(actualPath);
+    actualPath = Objects.nonNull(request) ? resolver.map(request, actualPath) : resolver.map(actualPath);
     try {
       actualPath = new URI(actualPath).getRawPath();
       actualPath = StringUtils.replace(actualPath, "%2F", "/");
     } catch (URISyntaxException ex) {
       throw new RuntimeException("Sling map method returned invalid URI: " + actualPath, ex);
     }
-    return Objects.isNull(actualPath) ? null
-        : actualPath + (urlRemainder != null ? urlRemainder : "");
+    return Objects.isNull(actualPath) ? null : actualPath + (urlRemainder != null ? urlRemainder : "");
   }
 
   @Override
@@ -118,12 +111,12 @@ public class UrlExternalizerImpl implements UrlExternalizer {
   public String buildExternalizedLink(ResourceResolver resolver, String path) {
     String domain = null;
     if (slingSettingsService != null) {
-      if (slingSettingsService.getRunModes().contains(PUBLISH_RUN_MODE)) {
-        domain = PUBLISH_RUN_MODE;
-      } else if (slingSettingsService.getRunModes().contains(AUTHOR_RUN_MODE)) {
-        domain = AUTHOR_RUN_MODE;
+      if (slingSettingsService.getRunModes().contains(PerConstants.PUBLISH_RUN_MODE)) {
+        domain = PerConstants.PUBLISH_RUN_MODE;
+      } else if (slingSettingsService.getRunModes().contains(PerConstants.AUTHOR_RUN_MODE)) {
+        domain = PerConstants.AUTHOR_RUN_MODE;
       } else {
-        domain = STANDALONE;
+        domain = PerConstants.STANDALONE;
       }
     }
     URI domainURI = (URI) this.domains.get(domain);
@@ -133,11 +126,10 @@ public class UrlExternalizerImpl implements UrlExternalizer {
 
     String scheme = Objects.isNull(domainURI.getScheme()) ? "http" : domainURI.getScheme();
     url.append(scheme).append("://");
-    String domainAuthority =
-        domainURI.getPort() > 0
+    String domainAuthority = domainURI.getPort() > 0
             && (!"http".equals(scheme) || domainURI.getPort() != 80)
             && (!"https".equals(scheme) || domainURI.getPort() != 443)
-            ? domainURI.getHost() + ":" + domainURI.getPort() : domainURI.getHost();
+        ? domainURI.getHost() + ":" + domainURI.getPort() : domainURI.getHost();
     URI slingMapped = URI.create(this.externalizeUrl(path, resolver, null));
     String authority =
         Objects.isNull(slingMapped.getAuthority()) ? domainAuthority : slingMapped.getAuthority();
@@ -203,19 +195,18 @@ public class UrlExternalizerImpl implements UrlExternalizer {
 
   private void setup(Configuration configuration) {
     configuration.domains();
-    String[] domainConfigs =
-        configuration.domains() != null ? configuration.domains() : DEFAULT_DOMAINS;
+    String[] domainConfigs = configuration.domains() != null ? configuration.domains() : DEFAULT_DOMAINS;
     for (int i = 0; i < domainConfigs.length; ++i) {
-      String var1 = domainConfigs[i];
-      var1 = var1.trim();
-      if (var1.indexOf(32) > 0) {
-        String n = var1.substring(0, var1.indexOf(32));
+      String conf = domainConfigs[i];
+      conf = conf.trim();
+      if (conf.indexOf(32) > 0) {
+        String name = conf.substring(0, conf.indexOf(32));
         try {
-          String d = var1.substring(var1.indexOf(32) + 1);
-          if (!d.contains("://")) {
-            d = "http://" + d;
+          String domain = conf.substring(conf.indexOf(32) + 1);
+          if (!domain.contains("://")) {
+            domain = "http://" + domain;
           }
-          domains.put(n, URI.create(d));
+          domains.put(name, URI.create(domain));
         } catch (Exception e) {
           log.error(e.getLocalizedMessage());
         }
