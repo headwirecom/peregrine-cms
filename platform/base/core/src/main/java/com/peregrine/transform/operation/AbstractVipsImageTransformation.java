@@ -73,9 +73,10 @@ public abstract class AbstractVipsImageTransformation
     public static final String OUT_TOKEN = "{out}";
 
     public static final String TRANSFORMATION_NAME_CANNOT_BE_EMPTY = "Transformation Name cannot be empty";
+    public static final String TRANSFORMATION_WIDTH_MUST_BE_PROVIDED = "Transformation Width must be greater than 0";
     public static final String VIPS_IS_NOT_INSTALLED_OR_ACCESSIBLE = "VIPS is not installed or accessible";
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     boolean enabled = false;
 

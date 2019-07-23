@@ -33,7 +33,7 @@ export default function(me, target) {
 
     let view = me.getView()
 
-    const variationSeparator = target.component.indexOf(':')
+    const variationSeparator = target.component ? target.component.indexOf(':') : -1;
     const componentPath = variationSeparator === -1 ? target.component : target.component.slice(0, variationSeparator)
     let variation = variationSeparator === -1 ? undefined : target.component.slice(variationSeparator + 1, target.component.length)
 
