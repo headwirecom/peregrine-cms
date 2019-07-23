@@ -54,7 +54,7 @@ public class PerConstants {
     public static final String SLASH = "/";
     public static final String DASH = "-";
 
-    public static final String JSON_MIME_TYPE = "application/json";
+    public static final String JSON_MIME_TYPE = "application/json;charset=utf-8";
     public static final String HTML_MIME_TYPE = "text/html";
     public static final String DATA_JSON_EXTENSION = ".data.json";
 
