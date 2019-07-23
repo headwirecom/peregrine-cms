@@ -254,15 +254,19 @@ public class PageModel
     }
 
     class Tag {
+        private String path;
         private String name;
         private String value;
 
         public Tag(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
             this.name = r.getName();
             this.value = r.getValueMap().get("value", String.class);
         }
 
         public String getName() { return name; }
         public String getValue() { return value; }
+        public String getPath() { return path; }
     }
 }
