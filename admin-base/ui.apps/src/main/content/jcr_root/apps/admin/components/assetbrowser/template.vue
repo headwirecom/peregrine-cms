@@ -272,16 +272,13 @@
             nodes() {
                 let view = $perAdminApp.getView()
                 let nodes = view.admin.pathBrowser
-                console.log('view.admin: ', view.admin)
                 if(nodes && this.path) {
                     let nodesFromPath = $perAdminApp.findNodeFromPath(nodes, this.path)
-                    console.log('nodesFromPath: ', nodesFromPath)
                     return nodesFromPath
                 }
                 return {}
             },
             list(){
-                console.log('list: ', this.nodes.children)
                 return this.nodes.children || []
             }
         },
@@ -292,16 +289,12 @@
             getImagesLoadedCbs: function() {
               return {
                 progress: (instance, img ) => {
-                  console.log('progress')
                 },
                 always: (instance) => {
-                  console.log('always')
                 },
                 done: (instance) => {
-                  console.log('done')
                 },
                 fail: (instance) => {
-                  console.log('fail')
                 }
               }
             },
