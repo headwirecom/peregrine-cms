@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$1" != "skipMaven" ]; then
   cd ..
-  mvn clean install
+  mvn clean install --show-version
   cd docker
 fi
 ./fetchfiles.sh

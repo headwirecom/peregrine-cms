@@ -46,6 +46,9 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by rr on 12/2/2016.
  */
@@ -59,6 +62,7 @@ public class PageModel
     extends Container {
 
     public static final String SITE_CSS = "siteCSS";
+    public static final String PREFETCH_DNS = "prefetchDNS";
     public static final String DOMAINS = "domains";
     public static final String SITE_JS = "siteJS";
     public static final String TEMPLATE = "template";
@@ -82,6 +86,10 @@ public class PageModel
     }
 
     @Inject private ModelFactory modelFactory;
+
+    @Inject
+    @Optional
+    private String[] prefetchDNS;
 
     @Inject
     @Optional
@@ -113,8 +121,6 @@ public class PageModel
 
     @Inject private String[] suffixToParameter;
 
-    @Inject private String tags;
-
     @Inject private String description;
 
     public String getSiteRoot() {
@@ -125,6 +131,20 @@ public class PageModel
 
     public String getPagePath() {
         return getResource().getParent().getPath();
+    }
+
+    public String[] getPrefetchDNS() {
+        if(prefetchDNS == null) {
+            String[] value = (String[]) getInheritedProperty(PREFETCH_DNS);
+            if(value != null && value.length != 0) return value;
+            if(getTemplate() != null) {
+                PageModel templatePageModel = getTamplatePageModel();
+                if(templatePageModel != null) {
+                    return templatePageModel.getPrefetchDNS();
+                }
+            }
+        }
+        return prefetchDNS;
     }
 
     public String[] getSiteCSS() {
@@ -218,11 +238,31 @@ public class PageModel
         return suffixToParameter;
     }
 
-    public String getTags() {
-        return tags;
+    public List<Tag> getTags() {
+        Resource tags = getResource().getChild("tags");
+        List<Tag> answer = new ArrayList<Tag>();
+        if(tags != null) {
+            for(Resource tag: tags.getChildren()) {
+                answer.add(new Tag(tag));
+            }
+        }
+        return answer;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    class Tag {
+        private String name;
+        private String value;
+
+        public Tag(Resource r) {
+            this.name = r.getName();
+            this.value = r.getValueMap().get("value", String.class);
+        }
+
+        public String getName() { return name; }
+        public String getValue() { return value; }
     }
 }

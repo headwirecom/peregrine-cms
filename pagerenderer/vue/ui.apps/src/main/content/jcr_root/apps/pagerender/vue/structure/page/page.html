@@ -8,6 +8,7 @@
     <meta name="keywords" content="${helper.model.tags}">
 
     <title>${resource.jcr:title}</title>
+    <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="dns-prefetch" href="${item}"></sly>
 
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
     <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
@@ -15,19 +16,20 @@
     <sly data-sly-include="tracker-head.html"></sly>
 
     <sly data-sly-include="styles.html"></sly>
-
-    <sly data-sly-list="${helper.model.siteCSS}">
-        <link rel="stylesheet" href="${item}" type="text/css">
-    </sly>
+    <sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
             document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
     </script>
 
+    <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>
 
 </head>
+
+
 <body>
+<sly data-sly-include="iconsprites.html"></sly>
 <sly data-sly-include="tracker-bodystart.html"></sly>
 <div id="peregrine-app">
     <span v-cloak>
@@ -44,7 +46,7 @@
 <script>
     var $perView = { view: 'preview' };
     $peregrineApp.registerView($perView)
-    $peregrineApp.loadContent("${resource.parent.path @ context='unsafe'}.html", true)
+    $peregrineApp.loadContentFrom("perPage", "${resource.parent.path @ context='unsafe'}.html", true)
 </script>
 <sly data-sly-include=serviceworker.html"></sly>
 <sly data-sly-include=tracker-bodyend.html"></sly>

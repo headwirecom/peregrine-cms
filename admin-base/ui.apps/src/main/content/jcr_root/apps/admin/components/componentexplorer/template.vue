@@ -24,11 +24,11 @@
   -->
 <template>
     <div class="component-explorer">
-        <span class="panel-title">Components</span>
-            <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
+        <span class="panel-title">{{ $i18n('Components') }}</span>
+            <input type="text" v-model="state.filter" v-bind:placeholder="$i18n('Filter components')" tabindex="1" autofocus/>
             <select class="browser-default" v-model="state.group">
-                <option value="">All Groups</option>
-                <option v-for="(group, key) in allGroups" v-bind:value="key">{{key}}</option>
+                <option value="">{{ $i18n('All Groups') }}</option>
+                <option v-for="(group, key) in allGroups" v-bind:value="key">{{ key }}</option>
             </select>
             <ul>
                 <li 
@@ -99,8 +99,16 @@
                 var list = this.$root.$data.admin.components.data
                 if (!list || !allowedComponents) return {}
 
+                var sorted = list.sort(function( left, right) {
+                    const leftName = (left.group + '-' + left.title).toLowerCase();
+                    const rightName = (right.group + '-' + right.title).toLowerCase();
+                    if(leftName < rightName) return -1;
+                    if(leftName > rightName) return 1;
+                    return 0;
+                })
+
                 // Filter list to local components and with local filter
-                return list.filter(component => {
+                return sorted.filter(component => {
                     if (component.group === '.hidden') return false;
                     if((this.state.group && this.state.group !== '') && component.group !== this.state.group) return false;
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;

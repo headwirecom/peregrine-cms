@@ -1,4 +1,6 @@
 #!/bin/bash
+
+### this file is retired and left here for now just because. you can use https://www.npmjs.com/package/@peregrinecms/slingpackager
 maxretry=10
 echo 
 echo "installing package $2"

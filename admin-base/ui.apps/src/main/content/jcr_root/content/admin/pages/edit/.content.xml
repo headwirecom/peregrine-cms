@@ -46,20 +46,36 @@
                     <mobile jcr:primaryType="nt:unstructured"
                             sling:resourceType="admin/components/action" target="mobile" type="icon" title="mobile"
                             stateFrom="/state/tools/workspace/view"
-                            command="editPreview" icon="phone_android"/>
+                            command="editPreview" icon="phone_android">
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Mobil"/>
+                        </experiences>
+                    </mobile>
                     <tablet jcr:primaryType="nt:unstructured"
                             sling:resourceType="admin/components/action" target="tablet" type="icon" title="tablet"
                             stateFrom="/state/tools/workspace/view"
-                            command="editPreview" icon="tablet_android"/>
+                            command="editPreview" icon="tablet_android">
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Tablet"/>
+                        </experiences>
+                    </tablet>
                     <desktop jcr:primaryType="nt:unstructured"
                              sling:resourceType="admin/components/action" target="desktop" type="icon" title="desktop"
                              stateFrom="/state/tools/workspace/view" stateFromDefault="true"
                              command="editPreview" icon="desktop_mac"/>
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Desktop"/>
+                        </experiences>
+                    </desktop>
                   </screen-dropdown>
                     <preview jcr:primaryType="nt:unstructured"
                              sling:resourceType="admin/components/action" target="preview" type="icon" title="preview"
                              stateFrom="/state/tools/workspace/preview"
-                             command="editPreview" icon="visibility"/>
+                             command="editPreview" icon="visibility">
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Vorschau"/>
+                        </experiences>
+                    </preview>
                 </subnav>
             </nav>
 
