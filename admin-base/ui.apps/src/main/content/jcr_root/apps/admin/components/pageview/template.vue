@@ -119,6 +119,10 @@
 <script>
     export default {
         props: ['model'],
+        updated: function() {
+            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
+            stateTools._deleted = {};
+        },
         computed: {
             edit() {
                 return $perAdminApp.getNodeFromView('/state/tools').edit
@@ -219,7 +223,34 @@
                 $perAdminApp.getNodeFromView('/state/tools').edit = false
             },
             onOk() {
-                $perAdminApp.stateAction('savePageProperties', this.page )
+                let data = this.page;
+                let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+
+                //Merge _deleted child items back into the object that we need to save.
+                //Loop through the model for this object/page/asset and find objects that have children
+                for ( const key in data) {
+                    //If data[key] or deleted[key] is an array of objects
+                    if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
+                        ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+
+                        let node = data[key];
+
+                        //Use an object to easily merge back in deleted nodes
+                        let targetNode = {}
+                        //Insert deleted children
+                        for ( const j in _deleted[key]) {
+                            const deleted = _deleted[key][j]
+                            targetNode[deleted.name] = deleted;
+                        }
+                        //Insert children
+                        for ( const i in node ) {
+                            const child = node[i]
+                            targetNode[child.name] = child;
+                        }
+                        data[key] = Object.values(targetNode);
+                    }
+                }
+                $perAdminApp.stateAction('savePageProperties', data)
                 $perAdminApp.getNodeFromView('/state/tools').edit = false
             }
         }
