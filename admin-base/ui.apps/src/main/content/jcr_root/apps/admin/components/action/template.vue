@@ -23,7 +23,7 @@
   #L%
   -->   
 <template>
-    <span>
+    <span v-if="visible">
         <a 
             v-if                    = "!model.type"
             v-bind:href             = "targetHtml"
@@ -145,6 +145,13 @@
         },
         targetHtml() {
             return this.target !== '#' ? this.target + '.html' : '#'
+        },
+        visible() {
+            if(this.model.visibility) {
+                return exprEval.Parser.evaluate( this.model.visibility, $perAdminApp.getView() );
+            } else {
+                return true;
+            }
         }
     },
     methods: {

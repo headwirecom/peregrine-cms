@@ -1,0 +1,8 @@
+{
+  "jcr:primaryType": "sling:OsgiConfig",
+  "enabled":true,
+  "transformationName":"vips:scaling",
+  "defaultWidth":100,
+  "defaultHeight":-1,
+  "note":"Numbers are plain JSon numbers as well as booleans so don't add a type identifier like {Long}."
+}

@@ -48,9 +48,12 @@ public class RenditionServletIT
     public static final String ROOT_PATH = "/content/tests/renditions-test";
     public static final String IMAGES_SOURCE_FOLDER_PATH = "src/test/resources/images";
     public static final String TEST_PNG_IMAGE_NAME = "test.png";
+    public static final String TEST_SCALING_PNG_IMAGE_NAME = "test-scaling.png";
     public static final String TEST_JPG_IMAGE_NAME = "test.jpg";
     public static final String THUMBNAIL_RENDITION = "thumbnail.png";
+    public static final String SCALING_100_RENDITION = "scaling100.png";
     public static final String TEST_PNG_IMAGE_RESOURCE_PATH = ROOT_PATH + "/" + TEST_PNG_IMAGE_NAME;
+    public static final String TEST_SCALING_PNG_IMAGE_RESOURCE_PATH = ROOT_PATH + "/" + TEST_SCALING_PNG_IMAGE_NAME;
     public static final String TEST_JPG_IMAGE_RESOURCE_PATH = ROOT_PATH + "/" + TEST_JPG_IMAGE_NAME;
 
     private static final Logger logger = LoggerFactory.getLogger(RenditionServletIT.class.getName());
@@ -80,6 +83,11 @@ public class RenditionServletIT
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         IOUtils.copy(new FileInputStream(image), baos);
         byte[] imageContent = baos.toByteArray();
+        uploadFile(client, ROOT_PATH, image.getName(), imageContent, PNG_MIME_TYPE, 200);
+        baos = new ByteArrayOutputStream();
+        image = new File(imagesFolder, TEST_SCALING_PNG_IMAGE_NAME);
+        IOUtils.copy(new FileInputStream(image), baos);
+        imageContent = baos.toByteArray();
         uploadFile(client, ROOT_PATH, image.getName(), imageContent, PNG_MIME_TYPE, 200);
         baos = new ByteArrayOutputStream();
         image = new File(imagesFolder, TEST_JPG_IMAGE_NAME);
@@ -123,6 +131,34 @@ public class RenditionServletIT
             );
         logger.info("Expected PNG Image With Rendition: '{}'", imageWithRendition.toJSon());
         checkResourceByJson(client, TEST_PNG_IMAGE_RESOURCE_PATH, 4, imageWithRendition.toJSon(), true);
+    }
+
+    @Test
+    public void testSimpleScalingRendition() throws Exception {
+        SlingClient client = slingInstanceRule.getAdminClient();
+        // First we check if the image is there and there are no renditions
+        Map imageMap = listResourceAsJson(client, TEST_SCALING_PNG_IMAGE_RESOURCE_PATH, 4);
+        logger.info("Original Image Map: '{}'", imageMap);
+        assertFalse("No Image data provided (upload failed?)", imageMap.isEmpty());
+        assertEquals("Image Name Primary Type is incorrect", ASSET_PRIMARY_TYPE, imageMap.get(JCR_PRIMARY_TYPE));
+        assertNull("Renditions Folder is there but should not", imageMap.get(RENDITIONS));
+
+        // Call Rendition Servlet
+        SlingHttpResponse response = renderAsset(client, TEST_SCALING_PNG_IMAGE_RESOURCE_PATH, false, SCALING_100_RENDITION, 200);
+        assertEquals("Wrong Content Type from the Response", "Content-Type: image/png",response.getLastHeader("Content-Type") + "");
+
+        imageMap = listResourceAsJson(client, TEST_SCALING_PNG_IMAGE_RESOURCE_PATH, 4);
+        logger.info("Rendered Image Map: '{}'", imageMap);
+        TestAsset imageWithRendition = (TestAsset) new TestAsset(PNG_MIME_TYPE)
+            .addChild(
+                new BasicObject(RENDITIONS, SLING_FOLDER)
+                    .addChild(
+                        new BasicWithContent(SCALING_100_RENDITION, NT_FILE, NT_RESOURCE, null)
+                            .addContentProperty(new Prop(JCR_MIME_TYPE, PNG_MIME_TYPE))
+                    )
+            );
+        logger.info("Expected PNG Image With Rendition: '{}'", imageWithRendition.toJSon());
+        checkResourceByJson(client, TEST_SCALING_PNG_IMAGE_RESOURCE_PATH, 4, imageWithRendition.toJSon(), true);
     }
 
     @Test
