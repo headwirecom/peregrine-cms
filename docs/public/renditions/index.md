@@ -14,7 +14,8 @@ of native OS code. To learn more on how to install **libvips**:
 
 [libvips Wiki Page](https://github.com/jcupitt/libvips/wiki)
 
-For Mac OS X **Homebrew** seems to be the easiest installation.
+For Mac OS X **Homebrew** seems to be the easiest installation
+(https://github.com/jcupitt/libvips/wiki/Build-for-macOS).
 
 Please make sure htat VIPS is working before more on:
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-    jcr:lastModified="{Date}2017-10-18T10:50:15.654-07:00"
+    jcr:lastModified="{Date}2019-07-23T17:54:41.480Z"
     jcr:lastModifiedBy="admin"
     jcr:primaryType="sling:OrderedFolder"
     jcr:title="images">
@@ -20,8 +20,14 @@
     <face4.jpg/>
     <face5.jpg/>
     <face6.jpg/>
+    <feature1.jpg/>
+    <feature2.png/>
     <jumbotron.jpg/>
     <logo.png/>
+    <meeting_room.jpg/>
+    <mountain.jpg/>
+    <peregrine-logo.png/>
+    <screen.jpg/>
     <workers-looking-tablet.jpg/>
     <yosemite.jpg/>
 </jcr:root>

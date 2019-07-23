@@ -24,11 +24,11 @@
   -->
 <template>
     <div class="component-explorer">
-        <span class="panel-title">Components</span>
-            <input type="text" v-model="state.filter" placeholder="Filter components" tabindex="1" autofocus/>
+        <span class="panel-title">{{ $i18n('Components') }}</span>
+            <input type="text" v-model="state.filter" v-bind:placeholder="$i18n('Filter components')" tabindex="1" autofocus/>
             <select class="browser-default" v-model="state.group">
-                <option value="">All Groups</option>
-                <option v-for="(group, key) in allGroups" v-bind:value="key">{{key}}</option>
+                <option value="">{{ $i18n('All Groups') }}</option>
+                <option v-for="(group, key) in allGroups" v-bind:value="key">{{ key }}</option>
             </select>
             <ul>
                 <li 
