@@ -12,7 +12,7 @@ RUN apt update -q \
         tar \
         xz-utils
 
-ENV PATH "/usr/local/lib/nodejs/node-v10.15.3-linux-x64/bin:$PATH"
+ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 
 COPY files/* /app/binaries/
 COPY healthcheck.sh .
@@ -20,7 +20,7 @@ COPY installpackage.sh .
 COPY installpackageretry.sh .
 
 RUN mkdir -p /usr/local/lib/nodejs \
-    && tar -xf /app/binaries/node-v10.15.3-linux-x64.tar.xz -C /usr/local/lib/nodejs \
+    && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
     && java -version \
     && echo $PATH \
     && echo node: $(node -v) \
@@ -28,21 +28,21 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
-RUN npm install percli \
+RUN npm install percli @peregrinecms/slingpackager \
     && npx percli \
     && mkdir out \
     && cp binaries/*.jar out \
     && chmod a+x node_modules/percli/bin/*
 RUN npx percli server register author
 RUN npx percli server start author \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/base.ui.apps-1.0-SNAPSHOT.zip \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/external-1.0-SNAPSHOT.zip \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/felib.ui.apps-1.0-SNAPSHOT.zip \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/admin.sling.ui.apps-1.0-SNAPSHOT.zip \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/admin.ui.materialize-1.0-SNAPSHOT.zip \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/admin.ui.apps-1.0-SNAPSHOT.zip \
-    && bash installpackageretry.sh "http://admin:admin@localhost:8080" binaries/themeclean-ui.apps-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/base.ui.apps-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/external-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/felib.ui.apps-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/admin.sling.ui.apps-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/admin.ui.materialize-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/admin.ui.apps-1.0-SNAPSHOT.zip \
+    && npx @peregrinecms/slingpackager upload -i binaries/themeclean-ui.apps-1.0-SNAPSHOT.zip \
     && sleep 10 \
     && npx percli server stop author \
     && rm -rf binaries
