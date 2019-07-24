@@ -44,11 +44,19 @@
                 <pathfield jcr:primaryType="nt:unstructured"
                            sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/assets"/>
                 <add jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder"/>
+                     sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Ordner hinzufügen"/>
+                    </experiences>
+                </add>
                 <fileupload jcr:primaryType="nt:unstructured"
                      sling:resourceType="admin/components/fileupload" />
                 <sourceFile jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/action" target="" type="icon" title="source file" command="sourceImage" icon="cloud_upload"/>
+                     sling:resourceType="admin/components/action" target="" type="icon" title="get asset from pixabay" command="sourceImage" icon="cloud_upload">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Asset von Pixabay laden"/>
+                    </experiences>
+                </sourceFile>
             </subnav>
         </nav>
 

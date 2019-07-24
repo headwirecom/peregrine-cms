@@ -119,7 +119,6 @@
               for(let i=0; i<len; i++){
                   let label = this.schema.fieldLabel[i]
                   let childItem = this.value[index]
-                  // console.log('child item: ', childItem)
                   if(childItem[label]){
                       return childItem[label]
                   }

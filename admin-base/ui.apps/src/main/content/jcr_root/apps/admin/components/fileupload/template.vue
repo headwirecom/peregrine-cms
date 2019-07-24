@@ -24,7 +24,7 @@
   -->
 <template>
     <span>
-      <a title="file upload" href="#!" class="btn-floating waves-effect waves-light">
+      <a v-bind:title="$i18n('file upload')" href="#!" class="btn-floating waves-effect waves-light">
         <label style="cursor: inherit;">
           <input type="file" ref="file_upload" style="display:none" v-on:change="addFiles">
           <i class="material-icons">file_upload</i>
@@ -38,7 +38,6 @@ export default {
   props: ['model'],
   methods: {
     addFiles (ev) {
-      console.log('add files!')
       this.uploadFile(ev.target.files)
     },
     uploadFile(files) {

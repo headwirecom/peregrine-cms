@@ -411,11 +411,8 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
-                // console.log(isDropTarget, pos, targetBox)
-
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    // console.log(pos.y - targetBox.top, targetBox.bottom - pos.y)
                     if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
