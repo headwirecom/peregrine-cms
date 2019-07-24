@@ -74,7 +74,7 @@ public class GreyscaleImageTransformation
 
     @ObjectClassDefinition(
         name = "Peregrine: Greyscale Image Transformation Configuration",
-        description = "Service to provide Greyscale Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service) for JPEG / PNG files only. "
+        description = "Service to provide Greyscale Image Transformation for JPEG / PNG files only. "
             + "This service does not support any parameters and if provided are ignored"
     )
     public @interface Configuration {
@@ -93,8 +93,6 @@ public class GreyscaleImageTransformation
         )
         String transformationName() default THUMBNAIL_TRANSFORMATION_NAME;
     }
-
-    private String transformationName = THUMBNAIL_TRANSFORMATION_NAME;
 
     @Reference
     MimeTypeService mimeTypeService;
@@ -122,8 +120,8 @@ public class GreyscaleImageTransformation
     }
 
     @Override
-    public String getTransformationName() {
-        return transformationName;
+    public String getDefaultTransformationName() {
+        return THUMBNAIL_TRANSFORMATION_NAME;
     }
 
     @Override

@@ -80,7 +80,7 @@ public class ThumbnailImageTransformation
 
     @ObjectClassDefinition(
         name = "Peregrine: Thumbnail Image Transformation Configuration",
-        description = "Service to provide Thumbnail Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service). "
+        description = "Service to provide Thumbnail Image Transformation. "
             + "This service requires a greater than 0 width, an optional height (if <= 0 is ignored) and an optional noCrop flag (false/true) which if true is not cropping the image. "
             + "If height is not set the image is scaled down and with noCrop = true the aspect radio is respected otherwise the image becomes a square"
     )
@@ -115,7 +115,6 @@ public class ThumbnailImageTransformation
         int defaultHeight() default DEFAULT_HEIGHT;
     }
 
-    private String transformationName = DEFAULT_TRANSFORMATION_NAME;
     private int defaultWidth = DEFAULT_WIDTH;
     private int defaultHeight = DEFAULT_HEIGHT;
 
@@ -124,6 +123,11 @@ public class ThumbnailImageTransformation
 
     MimeTypeService getMimeTypeService() {
         return mimeTypeService;
+    }
+
+    @Override
+    public String getDefaultTransformationName() {
+        return DEFAULT_TRANSFORMATION_NAME;
     }
 
     @Activate
@@ -150,11 +154,6 @@ public class ThumbnailImageTransformation
     }
 
     @Override
-    public String getTransformationName() {
-        return transformationName;
-    }
-
-    @Override
     public void transform(ImageContext imageContext, OperationContext operationContext)
         throws TransformationException
     {
@@ -174,7 +173,7 @@ public class ThumbnailImageTransformation
             parameters.add(CROP_PARAMETER);
             parameters.add(CENTRE);
         }
-        log.trace("Thumbnail Image: name: '{}', height: '{}', width: '{}', no-crop: '{}'", transformationName, height, width, noCrop);
+        log.trace("Thumbnail Image: name: '{}', height: '{}', width: '{}', no-crop: '{}'", getTransformationName(), height, width, noCrop);
         transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
     }
 }

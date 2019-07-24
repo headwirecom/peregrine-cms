@@ -56,22 +56,22 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformation.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:copy",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:convert",
         SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
 @Designate(
-    ocd = CopyImageTransformation.Configuration.class
+    ocd = ConvertImageTransformation.Configuration.class
 )
-public class CopyImageTransformation
+public class ConvertImageTransformation
     extends AbstractVipsImageTransformation
 {
-    public static final String DEFAULT_TRANSFORMATION_NAME = "vips:copy";
+    public static final String DEFAULT_TRANSFORMATION_NAME = "vips:convert";
     public static final String OPERATION_NAME = "copy";
 
     @ObjectClassDefinition(
         name = "Peregrine: Copy Image Transformation Configuration",
-        description = "Service to provide Copy Image Transformation to convert images (requires LIBVIPS to be installed locally otherwise disable this service). "
+        description = "Service to provide Image Transformation to convert images. "
             + "This service does not support any parameters and if provided are ignored"
     )
     public @interface Configuration {
@@ -90,8 +90,6 @@ public class CopyImageTransformation
         )
         String transformationName() default DEFAULT_TRANSFORMATION_NAME;
     }
-
-    private String transformationName = DEFAULT_TRANSFORMATION_NAME;
 
     @Reference
     MimeTypeService mimeTypeService;
@@ -119,8 +117,8 @@ public class CopyImageTransformation
     }
 
     @Override
-    public String getTransformationName() {
-        return transformationName;
+    public String getDefaultTransformationName() {
+        return DEFAULT_TRANSFORMATION_NAME;
     }
 
     @Override
@@ -130,7 +128,7 @@ public class CopyImageTransformation
         ArrayList<String> parameters = new ArrayList<>();
         parameters.add(IN_TOKEN);
         parameters.add(OUT_TOKEN);
-        log.trace("Copy Image: name: '{}'", transformationName);
+        log.trace("Copy Image: name: '{}'", getTransformationName());
         transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
     }
 }
