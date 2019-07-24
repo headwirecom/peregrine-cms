@@ -44,8 +44,8 @@ public interface ImageTransformation {
     /** @erturn The Unique Name of the Transformations to look it up by **/
     public String getTransformationName();
 
-    /** @return True if the Transformation is up and running **/
-    public boolean isValid();
+    /** @return True if the Transformation is enabled **/
+    public boolean isEnabled();
 
     /**
      * Transforms a given Image with the given Operation
