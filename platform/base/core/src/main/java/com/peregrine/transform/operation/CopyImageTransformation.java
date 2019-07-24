@@ -56,33 +56,23 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformation.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Thumbnail Image Transformation (transformation name: vips:thumbnail",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:copy",
         SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
 @Designate(
-    ocd = ThumbnailImageTransformation.Configuration.class
+    ocd = CopyImageTransformation.Configuration.class
 )
-public class ThumbnailImageTransformation
+public class CopyImageTransformation
     extends AbstractVipsImageTransformation
 {
-    public static final String DEFAULT_TRANSFORMATION_NAME = "vips:thumbnail";
-    public static final int DEFAULT_WIDTH = 50;
-    public static final int DEFAULT_HEIGHT = 50;
-
-    public static final String NO_CROP = "noCrop";
-    public static final String OPERATION_NAME = "thumbnail";
-    public static final String WIDTH = "width";
-    public static final String HEIGHT_PARAMETER = "--height";
-    public static final String HEIGHT = "height";
-    public static final String CROP_PARAMETER = "--crop";
-    public static final String CENTRE = "centre";
+    public static final String DEFAULT_TRANSFORMATION_NAME = "vips:copy";
+    public static final String OPERATION_NAME = "copy";
 
     @ObjectClassDefinition(
-        name = "Peregrine: Thumbnail Image Transformation Configuration",
-        description = "Service to provide Thumbnail Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service). "
-            + "This service requires a greater than 0 width, an optional height (if <= 0 is ignored) and an optional noCrop flag (false/true) which if true is not cropping the image. "
-            + "If height is not set the image is scaled down and with noCrop = true the aspect radio is respected otherwise the image becomes a square"
+        name = "Peregrine: Copy Image Transformation Configuration",
+        description = "Service to provide Copy Image Transformation to convert images (requires LIBVIPS to be installed locally otherwise disable this service). "
+            + "This service does not support any parameters and if provided are ignored"
     )
     public @interface Configuration {
 
@@ -99,25 +89,9 @@ public class ThumbnailImageTransformation
             required = true
         )
         String transformationName() default DEFAULT_TRANSFORMATION_NAME;
-
-        @AttributeDefinition(
-            name = "Default Width",
-            description = "Default width of the Thumbnail if no value is given",
-            min = "1"
-        )
-        int defaultWidth() default DEFAULT_WIDTH;
-
-        @AttributeDefinition(
-            name = "Default Height",
-            description = "Default height of the Thumbnail if no value is given",
-            min = "1"
-        )
-        int defaultHeight() default DEFAULT_HEIGHT;
     }
 
     private String transformationName = DEFAULT_TRANSFORMATION_NAME;
-    private int defaultWidth = DEFAULT_WIDTH;
-    private int defaultHeight = DEFAULT_HEIGHT;
 
     @Reference
     MimeTypeService mimeTypeService;
@@ -142,11 +116,6 @@ public class ThumbnailImageTransformation
 
     protected void configure(final Configuration configuration) {
         configure(configuration.enabled(), configuration.transformationName());
-        defaultWidth = configuration.defaultWidth();
-        defaultHeight = configuration.defaultHeight();
-        if(defaultWidth <= 0) {
-            throw new IllegalArgumentException(TRANSFORMATION_WIDTH_MUST_BE_PROVIDED);
-        }
     }
 
     @Override
@@ -159,22 +128,9 @@ public class ThumbnailImageTransformation
         throws TransformationException
     {
         ArrayList<String> parameters = new ArrayList<>();
-        boolean noCrop = !Boolean.FALSE.toString().equals(operationContext.getParameter(NO_CROP, Boolean.FALSE.toString()));
-        int width = Integer.parseInt(operationContext.getParameter(WIDTH, defaultWidth + ""));
-        int height = Integer.parseInt(operationContext.getParameter(HEIGHT, defaultHeight + ""));
-
         parameters.add(IN_TOKEN);
         parameters.add(OUT_TOKEN);
-        parameters.add(width + "");
-        if(height > 0) {
-            parameters.add(HEIGHT_PARAMETER);
-            parameters.add(height + "");
-        }
-        if(!noCrop) {
-            parameters.add(CROP_PARAMETER);
-            parameters.add(CENTRE);
-        }
-        log.trace("Thumbnail Image: name: '{}', height: '{}', width: '{}', no-crop: '{}'", transformationName, height, width, noCrop);
+        log.trace("Copy Image: name: '{}'", transformationName);
         transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
     }
 }

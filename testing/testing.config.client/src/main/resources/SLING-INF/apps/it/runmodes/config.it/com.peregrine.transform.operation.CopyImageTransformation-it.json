@@ -1,0 +1,6 @@
+{
+  "jcr:primaryType": "sling:OsgiConfig",
+  "enabled":true,
+  "transformationName":"vips:copy",
+  "note":"This Image Transformation is used to Convert an Image from one Format to another"
+}

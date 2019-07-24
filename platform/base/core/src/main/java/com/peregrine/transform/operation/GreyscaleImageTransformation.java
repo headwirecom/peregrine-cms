@@ -74,7 +74,8 @@ public class GreyscaleImageTransformation
 
     @ObjectClassDefinition(
         name = "Peregrine: Greyscale Image Transformation Configuration",
-        description = "Service to provide Greyscale Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service) for JPEG / PNG files only"
+        description = "Service to provide Greyscale Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service) for JPEG / PNG files only. "
+            + "This service does not support any parameters and if provided are ignored"
     )
     public @interface Configuration {
 
@@ -83,7 +84,7 @@ public class GreyscaleImageTransformation
             description = "Flag to enabled / disabled that service",
             required = true
         )
-        boolean enabled() default false;
+        boolean enabled() default true;
 
         @AttributeDefinition(
             name = "Name",
@@ -117,16 +118,7 @@ public class GreyscaleImageTransformation
     }
 
     private void configure(final Configuration configuration) {
-        enabled = configuration.enabled();
-        transformationName = configuration.transformationName();
-        if(enabled) {
-            if(transformationName.isEmpty()) {
-                throw new IllegalArgumentException(TRANSFORMATION_NAME_CANNOT_BE_EMPTY);
-            }
-            if(!checkVips()) {
-                throw new IllegalArgumentException(VIPS_IS_NOT_INSTALLED_OR_ACCESSIBLE);
-            }
-        }
+        configure(configuration.enabled(), configuration.transformationName());
     }
 
     @Override
@@ -138,36 +130,32 @@ public class GreyscaleImageTransformation
     public void transform(ImageContext imageContext, OperationContext operationContext)
         throws TransformationException
     {
-        if(enabled) {
-            if(
-                !PNG_MIME_TYPE.equals(imageContext.getSourceMimeType()) &&
-                !"image/jpeg".equals(imageContext.getSourceMimeType())
-            ) {
-                throw new UnsupportedFormatException(imageContext.getSourceMimeType());
-            }
-            // A PNG image cannot be saved directly as PNG with VIPS
-            // For that we need to store it as JPEG and then save it as PNG while stripping color info
-            boolean requiresConversion = PNG_MIME_TYPE.equals(imageContext.getSourceMimeType());
-            if(requiresConversion) {
-                imageContext.setTargetMimeType("v");
-            }
-            transform0(
-                imageContext, COLOURSPACE,
+        if(
+            !PNG_MIME_TYPE.equals(imageContext.getSourceMimeType()) &&
+            !"image/jpeg".equals(imageContext.getSourceMimeType())
+        ) {
+            throw new UnsupportedFormatException(imageContext.getSourceMimeType());
+        }
+        // A PNG image cannot be saved directly as PNG with VIPS
+        // For that we need to store it as JPEG and then save it as PNG while stripping color info
+        boolean requiresConversion = PNG_MIME_TYPE.equals(imageContext.getSourceMimeType());
+        if(requiresConversion) {
+            imageContext.setTargetMimeType("v");
+        }
+        transform0(
+            imageContext, COLOURSPACE,
+            // {in}, {out} mark the placement of the input / output file (path / name)
+            IN_TOKEN, OUT_TOKEN,
+            // Last Parameter is the color space type: Grey 16
+            GREY_16
+        );
+        if(requiresConversion) {
+            imageContext.setTargetMimeType(PNG_MIME_TYPE);
+            transform0(imageContext, PNGSAVE,
                 // {in}, {out} mark the placement of the input / output file (path / name)
                 IN_TOKEN, OUT_TOKEN,
-                // Last Parameter is the color space type: Grey 16
-                GREY_16
-            );
-            if(requiresConversion) {
-                imageContext.setTargetMimeType(PNG_MIME_TYPE);
-                transform0(imageContext, PNGSAVE,
-                    // {in}, {out} mark the placement of the input / output file (path / name)
-                    IN_TOKEN, OUT_TOKEN,
-                    // Last Parameter is to strip the color settings from JPEG to be able to save it as PNG
-                    STRIP_TRUE);
-            }
-        } else {
-            throw new DisabledTransformationException(transformationName);
+                // Last Parameter is to strip the color settings from JPEG to be able to save it as PNG
+                STRIP_TRUE);
         }
     }
 }

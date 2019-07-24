@@ -4,5 +4,5 @@
   "transformationName":"vips:thumbnail",
   "defaultWidth":75,
   "defaultHeight":75,
-  "note":"Numbers are plain JSon numbers as well as booleans so don't add a type identifier like {Long}."
+  "note":"This Image Transformation is scaling an image to given Width and Height. Numbers are plain JSon numbers as well as booleans so don't add a type identifier like {Long}."
 }
