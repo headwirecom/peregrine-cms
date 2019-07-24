@@ -109,17 +109,6 @@
         },
         computed: {
             pageSchema: function() {
-//                console.log('getting schema')
-//                if(this.formmodel.templatePath !== '') {
-//                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-//                    if(definitions) {
-//                        // todo: component should be resolved through the template
-//                        const comp = 'pagerender-vue-structure-page'
-//                        const def = $perAdminApp.getNodeFromView('/admin/componentDefinitions')[comp]
-//                        console.log(def)
-//                        return def
-//                    }
-//                }
             },
             themes: function() {
                 const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content/sites').children

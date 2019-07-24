@@ -46,7 +46,6 @@ export default {
             $perAdminApp.stateAction('editPreview', target)
         },
         editPage: function(me, target) {
-            console.log('edit page', target)
         }
     }
 }
