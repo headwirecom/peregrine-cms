@@ -223,7 +223,7 @@
                 $perAdminApp.getNodeFromView('/state/tools').edit = false
             },
             onOk() {
-                let data = this.page;
+                let data = JSON.parse(JSON.stringify(this.page));
                 let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
 
                 //Merge _deleted child items back into the object that we need to save.
