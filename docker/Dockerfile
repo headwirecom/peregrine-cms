@@ -9,6 +9,7 @@ RUN apt update -q \
     && apt install -q -y --no-install-recommends \
         curl \
         jq \
+        libvips libvips-dev libvips-tools \
         tar \
         xz-utils
 
