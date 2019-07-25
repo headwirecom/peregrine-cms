@@ -24,7 +24,7 @@
   -->
 <template>
     <div v-if="isEditMode"
-         style="border: 1px solid #c0c0c0; clear: both; padding: 4px; margin: 4px; text-align: center; width: 100%;"
+         style="border: 1px solid #c0c0c0; clear: both; padding: 4px; margin: 4px; text-align: center; width: auto;"
          v-on:allowDrop="allowDrop"
          v-on:drop="drop"
          v-bind:data-per-path="model.path"
