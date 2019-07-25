@@ -26,8 +26,7 @@
 
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="sling:OsgiConfig"
-          enabled="{Boolean}true"
-          transformationName="vips:thumbnail"
-          defaultWidth="{Long}75"
-          defaultHeight="{Long}75"
+          setupName="thumbnail.png"
+          path="/content/tests/renditions-test/customerA"
+          imageTransformationConfigurations="[transformation=vips:thumbnail|width=150|height=150]"
 />

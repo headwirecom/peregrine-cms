@@ -71,7 +71,7 @@ public class ThumbnailImageTransformation
     public static final int DEFAULT_HEIGHT = 50;
 
     public static final String NO_CROP = "noCrop";
-    public static final String THUMBNAIL = "thumbnail";
+    public static final String OPERATION_NAME = "thumbnail";
     public static final String WIDTH = "width";
     public static final String HEIGHT_PARAMETER = "--height";
     public static final String HEIGHT = "height";
@@ -80,7 +80,9 @@ public class ThumbnailImageTransformation
 
     @ObjectClassDefinition(
         name = "Peregrine: Thumbnail Image Transformation Configuration",
-        description = "Service to provide Thumbnail Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service)"
+        description = "Service to provide Thumbnail Image Transformation. "
+            + "This service requires a greater than 0 width, an optional height (if <= 0 is ignored) and an optional noCrop flag (false/true) which if true is not cropping the image. "
+            + "If height is not set the image is scaled down and with noCrop = true the aspect radio is respected otherwise the image becomes a square"
     )
     public @interface Configuration {
 
@@ -89,7 +91,7 @@ public class ThumbnailImageTransformation
             description = "Flag to enabled / disabled that service",
             required = true
         )
-        boolean enabled() default false;
+        boolean enabled() default true;
 
         @AttributeDefinition(
             name = "Name",
@@ -113,7 +115,6 @@ public class ThumbnailImageTransformation
         int defaultHeight() default DEFAULT_HEIGHT;
     }
 
-    private String transformationName = DEFAULT_TRANSFORMATION_NAME;
     private int defaultWidth = DEFAULT_WIDTH;
     private int defaultHeight = DEFAULT_HEIGHT;
 
@@ -122,6 +123,11 @@ public class ThumbnailImageTransformation
 
     MimeTypeService getMimeTypeService() {
         return mimeTypeService;
+    }
+
+    @Override
+    public String getDefaultTransformationName() {
+        return DEFAULT_TRANSFORMATION_NAME;
     }
 
     @Activate
@@ -139,26 +145,12 @@ public class ThumbnailImageTransformation
     }
 
     protected void configure(final Configuration configuration) {
-        enabled = configuration.enabled();
-        transformationName = configuration.transformationName();
-        if(enabled) {
-            if(transformationName.isEmpty()) {
-                throw new IllegalArgumentException(TRANSFORMATION_NAME_CANNOT_BE_EMPTY);
-            }
-            if(!checkVips()) {
-                throw new IllegalArgumentException(VIPS_IS_NOT_INSTALLED_OR_ACCESSIBLE);
-            }
-            defaultWidth = configuration.defaultWidth();
-            defaultHeight = configuration.defaultHeight();
-            if(defaultWidth <= 0) {
-                throw new IllegalArgumentException(TRANSFORMATION_WIDTH_MUST_BE_PROVIDED);
-            }
+        configure(configuration.enabled(), configuration.transformationName());
+        defaultWidth = configuration.defaultWidth();
+        defaultHeight = configuration.defaultHeight();
+        if(defaultWidth <= 0) {
+            throw new IllegalArgumentException(TRANSFORMATION_WIDTH_MUST_BE_PROVIDED);
         }
-    }
-
-    @Override
-    public String getTransformationName() {
-        return transformationName;
     }
 
     @Override
@@ -166,26 +158,22 @@ public class ThumbnailImageTransformation
         throws TransformationException
     {
         ArrayList<String> parameters = new ArrayList<>();
-        if(enabled) {
-            boolean noCrop = !Boolean.FALSE.toString().equals(operationContext.getParameter(NO_CROP, Boolean.FALSE.toString()));
-            int width = Integer.parseInt(operationContext.getParameter(WIDTH, defaultWidth + ""));
-            int height = Integer.parseInt(operationContext.getParameter(HEIGHT, defaultHeight + ""));
+        boolean noCrop = !Boolean.FALSE.toString().equals(operationContext.getParameter(NO_CROP, Boolean.FALSE.toString()));
+        int width = Integer.parseInt(operationContext.getParameter(WIDTH, defaultWidth + ""));
+        int height = Integer.parseInt(operationContext.getParameter(HEIGHT, defaultHeight + ""));
 
-            parameters.add(IN_TOKEN);
-            parameters.add(OUT_TOKEN);
-            parameters.add(width + "");
-            if(height > 0) {
-                parameters.add(HEIGHT_PARAMETER);
-                parameters.add(height + "");
-            }
-            if(!noCrop) {
-                parameters.add(CROP_PARAMETER);
-                parameters.add(CENTRE);
-            }
-            log.trace("Thumbnail Image: name: '{}', height: '{}', width: '{}', no-crop: '{}'", transformationName, height, width, noCrop);
-            transform0(imageContext, THUMBNAIL, parameters.toArray(new String[] {}));
-        } else {
-            throw new DisabledTransformationException(transformationName);
+        parameters.add(IN_TOKEN);
+        parameters.add(OUT_TOKEN);
+        parameters.add(width + "");
+        if(height > 0) {
+            parameters.add(HEIGHT_PARAMETER);
+            parameters.add(height + "");
         }
+        if(!noCrop) {
+            parameters.add(CROP_PARAMETER);
+            parameters.add(CENTRE);
+        }
+        log.trace("Thumbnail Image: name: '{}', height: '{}', width: '{}', no-crop: '{}'", getTransformationName(), height, width, noCrop);
+        transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
     }
 }
