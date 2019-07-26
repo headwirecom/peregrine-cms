@@ -4,9 +4,6 @@ Pin-Priority: -10
 Package: libvips
 Pin: release n=cosmic
 Pin-Priority: 500
-Package: libvips-dev libvips-tools
-Pin: release n=cosmic
-Pin-Priority: 500
 Package: libvips-tools
 Pin: release n=cosmic
 Pin-Priority: 500
