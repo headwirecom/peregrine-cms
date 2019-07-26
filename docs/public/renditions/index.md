@@ -9,13 +9,31 @@ on Windows, Mac and Linux.
 
 # Installing VIPS
 
-For now VIPS needs to be installed manually as it requires installation
-of native OS code. To learn more on how to install **libvips**:
+Unless you are running the official Peregrine Docker image, VIPS needs to 
+be installed manually as it requires installation of native OS code. 
+To learn more on how to install **libvips**:
 
 [libvips Wiki Page](https://github.com/jcupitt/libvips/wiki)
 
-For Mac OS X **Homebrew** seems to be the easiest installation
+## Linux (Ubuntu)
+
+If you have an apt-get based Linux system, run the following command:
+
+
+```
+$ sudo apt-get install libvips libvips-dev libvips-tools -y
+```
+
+## Mac OS X
+
+**Homebrew** seems to be the easiest installation
 (https://github.com/jcupitt/libvips/wiki/Build-for-macOS).
+
+## Windows
+
+TODO
+
+## Validate VIPS Installation
 
 Please make sure htat VIPS is working before more on:
 
@@ -58,7 +76,7 @@ Peregrine cannot assume that VIPS is installed.
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
-|Enabled|enabled|yes|boolean|false|Flag to indicate if the Service can be used or not|
+|Enabled|enabled|yes|boolean|true|Flag to indicate if the Service can be used or not|
 |Name|name|yes|String|vips:thumbnail|Name of the Image Transformation used for the Setup|
 |Default Width|defaultWidth|no|int|50|Default Width in pixels of the target image|
 |Default Height|defaultHeight|no|int|50|Default Height in pixels of the target image|
@@ -69,7 +87,7 @@ Peregrine cannot assume that VIPS is installed.
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
-|Enabled|enabled|yes|boolean|false|Flag to indicate if the Service can be used or not|
+|Enabled|enabled|yes|boolean|true|Flag to indicate if the Service can be used or not|
 |Name|name|yes|String|vips:greyscale|Name of the Image Transformation used for the Setup|
 
 ![Image Transformation Configuration for Greyscale](renditions.image.transformation.configuration.greyscale.png)
