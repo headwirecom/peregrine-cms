@@ -37,13 +37,13 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
-RUN npm install percli@0.1.26-alpha @peregrinecms/slingpackager \
+RUN npm install percli @peregrinecms/slingpackager \
     && npx percli \
+    && npx percli check java \
     && npx @peregrinecms/slingpackager --version \
     && mkdir out \
     && cp binaries/*.jar out \
-    && chmod a+x node_modules/percli/bin/* \
-    && npx percli check java
+    && chmod a+x node_modules/percli/bin/*
 RUN npx percli server register author
 RUN npx percli server start author \
     && npx @peregrinecms/slingpackager upload -i binaries/base.ui.apps-1.0-SNAPSHOT.zip \
