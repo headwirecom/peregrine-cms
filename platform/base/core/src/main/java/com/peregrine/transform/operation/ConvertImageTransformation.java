@@ -56,7 +56,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformation.class,
     property = {
+<<<<<<< HEAD
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Convert Image Transformation (transformation name: vips:convert",
+=======
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:convert",
+>>>>>>> develop
         SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
@@ -70,7 +74,11 @@ public class ConvertImageTransformation
     public static final String OPERATION_NAME = "copy";
 
     @ObjectClassDefinition(
+<<<<<<< HEAD
         name = "Peregrine: Convert Image Transformation Configuration",
+=======
+        name = "Peregrine: Copy Image Transformation Configuration",
+>>>>>>> develop
         description = "Service to provide Image Transformation to convert images. "
             + "This service does not support any parameters and if provided are ignored"
     )
@@ -129,6 +137,10 @@ public class ConvertImageTransformation
         parameters.add(IN_TOKEN);
         parameters.add(OUT_TOKEN);
         log.trace("Copy Image: name: '{}'", getTransformationName());
+<<<<<<< HEAD
         transform0(imageContext, VIPS, OPERATION_NAME, parameters.toArray(new String[] {}));
+=======
+        transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
+>>>>>>> develop
     }
 }

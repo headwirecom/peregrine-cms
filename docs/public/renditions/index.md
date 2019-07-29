@@ -9,15 +9,36 @@ on Windows, Mac and Linux.
 
 # Installing VIPS
 
-For now VIPS needs to be installed manually as it requires installation
-of native OS code. To learn more on how to install **libvips**:
+Unless you are running the official Peregrine Docker image, VIPS needs to 
+be installed manually as it requires installation of native OS code. 
+To learn more on how to install **libvips**:
 
 [libvips Wiki Page](https://github.com/jcupitt/libvips/wiki)
 
 For Mac OS X **Homebrew** seems to be the easiest installation
 (https://github.com/jcupitt/libvips/wiki/Build-for-macOS).
 
-Please make sure that VIPS is working before more on:
+## Linux (Ubuntu)
+
+If you have an apt-get based Linux system, run the following command:
+
+
+```
+$ sudo apt-get install libvips libvips-dev libvips-tools -y
+```
+
+## Mac OS X
+
+**Homebrew** seems to be the easiest installation
+(https://github.com/jcupitt/libvips/wiki/Build-for-macOS).
+
+## Windows
+
+TODO
+
+## Validate VIPS Installation
+
+Please make sure htat VIPS is working before more on:
 
     vips --version
 

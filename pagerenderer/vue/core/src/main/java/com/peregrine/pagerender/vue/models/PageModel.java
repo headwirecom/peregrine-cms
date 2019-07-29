@@ -46,6 +46,9 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by rr on 12/2/2016.
  */
@@ -117,8 +120,6 @@ public class PageModel
     @Inject private String[] loaders;
 
     @Inject private String[] suffixToParameter;
-
-    @Inject private String tags;
 
     @Inject private String description;
 
@@ -237,11 +238,31 @@ public class PageModel
         return suffixToParameter;
     }
 
-    public String getTags() {
-        return tags;
+    public List<Tag> getTags() {
+        Resource tags = getResource().getChild("tags");
+        List<Tag> answer = new ArrayList<Tag>();
+        if(tags != null) {
+            for(Resource tag: tags.getChildren()) {
+                answer.add(new Tag(tag));
+            }
+        }
+        return answer;
     }
 
     public String getDescription() {
         return description;
+    }
+
+    class Tag {
+        private String name;
+        private String value;
+
+        public Tag(Resource r) {
+            this.name = r.getName();
+            this.value = r.getValueMap().get("value", String.class);
+        }
+
+        public String getName() { return name; }
+        public String getValue() { return value; }
     }
 }
