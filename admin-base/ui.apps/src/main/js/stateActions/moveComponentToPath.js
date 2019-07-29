@@ -43,23 +43,25 @@ export default function(me, target) {
         log.error('addComponentToPath() target.drop not in allowed values - value was', target.drop)
     }
 
-
-    me.getApi().moveNodeTo(target.pagePath+target.path, target.pagePath+target.component, target.drop)
+    return new Promise( (resolve, reject) => {
+        me.getApi().moveNodeTo(target.pagePath+target.path, target.pagePath+target.component, target.drop)
         .then( (data) => {
-                var node = me.findNodeFromPath(view.pageView.page, target.component)
-                var parent = me.findNodeFromPath(view.pageView.page, parentPath(target.component).parentPath)
-                let index = parent.children.indexOf(node)
-                parent.children.splice(index, 1)
-                if(targetNodeUpdate.fromTemplate === true) {
-                    me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
-                } else {
-                    if(target.drop.startsWith('into')) {
-                        Vue.set(targetNodeUpdate, 'children', data.children)
-                    }
-                    else if(target.drop === 'before' || target.drop === 'after')
-                    {
-                        Vue.set(targetNodeUpdate, 'children', data.children)
-                    }
+            var node = me.findNodeFromPath(view.pageView.page, target.component)
+            var parent = me.findNodeFromPath(view.pageView.page, parentPath(target.component).parentPath)
+            let index = parent.children.indexOf(node)
+            parent.children.splice(index, 1)
+            if(targetNodeUpdate.fromTemplate === true) {
+                me.getApi().populatePageView(me.getNodeFromView('/pageView/path')).then( () => { resolve() })
+            } else {
+                if(target.drop.startsWith('into')) {
+                    Vue.set(targetNodeUpdate, 'children', data.children)
                 }
-            })
+                else if(target.drop === 'before' || target.drop === 'after')
+                {
+                    Vue.set(targetNodeUpdate, 'children', data.children)
+                }
+                resolve()
+            }
+        })
+    })
 }

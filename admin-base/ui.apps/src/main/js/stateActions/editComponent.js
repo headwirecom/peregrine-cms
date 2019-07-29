@@ -33,32 +33,44 @@ function bringUpEditor(me, view, target) {
     let checksum = ''
 
     me.beforeStateAction( function(name) {
-        if(name !== 'savePageEdit') {
-            // if there was no change skip asking to save
-            if(checksum === JSON.stringify(me.getNodeFromView('/pageView/page'))) {
-                return true
+        return new Promise( (resolve, reject) => {
+            if(name !== 'savePageEdit') {
+                // if there was no change skip asking to save
+                if(checksum === JSON.stringify(me.getNodeFromView('/pageView/page'))) {
+                    resolve(true)
+                }
+                const yes = confirm('save edit?')
+                if(yes) {
+                    const page = view.pageView.page;
+                    const path = view.state.editor.path;
+                    const data = me.findNodeFromPath(page, path);
+                    me.stateAction('savePageEdit', { pagePath: view.pageView.path, path, data}).then( () => {
+                        resolve(true)
+                    })
+                }
+                resolve(false)
+            } else {
+                resolve(true)
             }
-            const yes = confirm('save edit?')
-            if(yes) {
-                const currentObject = me.getNodeFromView("/state/tools/object")
-                me.stateAction('savePageEdit', { pagePath: view.pageView.path, path: view.state.editor.path})
-            }
-        }
-        return true
+        });
     })
 
     checksum = JSON.stringify(me.getNodeFromView('/pageView/page'))
 
-    me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
-            log.fine('component name is', name)
-            set(view, '/state/editor/component', name)
-            set(view, '/state/editor/path', target)
-            set(view, '/state/editorVisible', true)
-            set(view, '/state/rightPanelVisible', true)
-        }
-    ).catch( error => {
-        log.debug('Failed to show editor: ' + error)
-        $perAdminApp.notifyUser('error', 'was not able to bring up editor for the selected component')
+    return new Promise( (resolve, reject) => {
+        me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
+                log.fine('component name is', name)
+                set(view, '/state/editor/component', name)
+                set(view, '/state/editor/path', target)
+                set(view, '/state/editorVisible', true)
+                set(view, '/state/rightPanelVisible', true)
+                resolve()
+            }
+        ).catch( error => {
+            log.debug('Failed to show editor: ' + error)
+            $perAdminApp.notifyUser('error', 'was not able to bring up editor for the selected component')
+            reject()
+        })
     })
 }
 
@@ -67,13 +79,15 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    if(view.state.editorVisible) {
-        me.getApi().populatePageView(view.pageView.path).then( () => {
-            bringUpEditor(me, view, target)
+    return new Promise( (resolve, reject) => {
+        if(view.state.editorVisible) {
+            me.getApi().populatePageView(view.pageView.path).then( () => {
+                bringUpEditor(me, view, target).then( () => { resolve() }).catch( () => reject() )
+            })
+        } else {
+            bringUpEditor(me, view, target).then( () => { resolve() }).catch( () => reject() )
+        }
         })
-    } else {
-        bringUpEditor(me, view, target)
-    }
 
 
 }

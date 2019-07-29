@@ -30,10 +30,13 @@ export default function(me, target) {
 
     log.fine(target)
 
-    if(target.target) {
-        me.loadContent(target.target+'.html/path' + SUFFIX_PARAM_SEPARATOR +target.path)
-    } else {
-        me.loadContent('/content/admin/objects/create.html/path'+ SUFFIX_PARAM_SEPARATOR +target.path)
-    }
+    return new Promise( (resolve, reject) => {
+        if(target.target) {
+            me.loadContent(target.target+'.html/path' + SUFFIX_PARAM_SEPARATOR +target.path)
+        } else {
+            me.loadContent('/content/admin/objects/create.html/path'+ SUFFIX_PARAM_SEPARATOR +target.path)
+        }
+        resolve()
+    })
 
 }

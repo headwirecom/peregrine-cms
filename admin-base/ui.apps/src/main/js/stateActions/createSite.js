@@ -30,8 +30,11 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    api.createSite(target.fromName, target.toName).then( () => {
-        me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/sites')
+    return new Promise( (resolve, reject) => {
+        api.createSite(target.fromName, target.toName).then( () => {
+            me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/sites')
+            resolve()
+        })
     })
 
 }
