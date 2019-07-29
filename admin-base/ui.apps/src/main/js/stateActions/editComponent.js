@@ -30,32 +30,30 @@ import { set } from '../utils'
 function bringUpEditor(me, view, target) {
     log.fine('Bring Up Editor, ')
 
-    let checksum = ''
-
     me.beforeStateAction( function(name) {
         return new Promise( (resolve, reject) => {
+            const current = JSON.stringify(view.pageView.page, true, 2)
             if(name !== 'savePageEdit') {
-                // if there was no change skip asking to save
-                if(checksum === JSON.stringify(me.getNodeFromView('/pageView/page'))) {
+                if(current === view.state.editor.checksum) {
                     resolve(true)
+                } else {
+                    const yes = confirm('save edit?')
+                    if(yes) {
+                        const page = view.pageView.page;
+                        const path = view.state.editor.path;
+                        const data = me.findNodeFromPath(page, path);
+                        me.stateAction('savePageEdit', { pagePath: view.pageView.path, path, data}).then( () => {
+                            resolve(true)
+                        })
+                    } else {
+                        resolve(false)
+                    }
                 }
-                const yes = confirm('save edit?')
-                if(yes) {
-                    const page = view.pageView.page;
-                    const path = view.state.editor.path;
-                    const data = me.findNodeFromPath(page, path);
-                    me.stateAction('savePageEdit', { pagePath: view.pageView.path, path, data}).then( () => {
-                        resolve(true)
-                    })
-                }
-                resolve(false)
             } else {
                 resolve(true)
             }
         });
     })
-
-    checksum = JSON.stringify(me.getNodeFromView('/pageView/page'))
 
     return new Promise( (resolve, reject) => {
         me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
@@ -64,6 +62,7 @@ function bringUpEditor(me, view, target) {
                 set(view, '/state/editor/path', target)
                 set(view, '/state/editorVisible', true)
                 set(view, '/state/rightPanelVisible', true)
+                set(view, '/state/editor/checksum', JSON.stringify(view.pageView.page, true, 2))
                 resolve()
             }
         ).catch( error => {
@@ -72,6 +71,7 @@ function bringUpEditor(me, view, target) {
             reject()
         })
     })
+
 }
 
 export default function(me, target) {
@@ -87,7 +87,6 @@ export default function(me, target) {
         } else {
             bringUpEditor(me, view, target).then( () => { resolve() }).catch( () => reject() )
         }
-        })
-
+    })
 
 }

@@ -426,7 +426,6 @@ function runBeforeStateActions(name) {
     const actions = []
     if(beforeStateActions.length > 0) {
         for(let i = 0; i < beforeStateActions.length; i++) {
-            console.log(name)
             actions.push(beforeStateActions[i](name))
         }
     }
@@ -782,7 +781,7 @@ var PerAdminApp = {
      * @param target
      */
     stateAction(name, target) {
-        stateActionImpl(name, target)
+        return stateActionImpl(name, target)
     },
 
     /**

@@ -553,7 +553,6 @@ class PerAdminImpl {
     }
 
     savePageEdit(path, node) {
-        console.log(node)
         return new Promise( (resolve, reject) => {
             let formData = new FormData()
             // convert to a new object
