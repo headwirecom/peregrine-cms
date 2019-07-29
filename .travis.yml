@@ -2,6 +2,7 @@ branches:
   only:
   - master
   - develop
+  - develop-sling11
 
 services:
 - docker
