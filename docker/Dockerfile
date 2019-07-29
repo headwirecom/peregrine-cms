@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk8:latest
+FROM adoptopenjdk/openjdk11:latest
 
 ENV APP_VERSION 1.0.0-snapshot
 
