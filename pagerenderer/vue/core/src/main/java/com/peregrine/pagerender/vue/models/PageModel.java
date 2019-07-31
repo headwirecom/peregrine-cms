@@ -249,6 +249,17 @@ public class PageModel
         return answer;
     }
 
+    public List<String> getRenderedTags() {
+        Resource tags = getResource().getChild("tags");
+        List<String> answer = new ArrayList<String>();
+        if(tags != null) {
+            for(Resource tag: tags.getChildren()) {
+                answer.add(new Tag(tag).getName());
+            }
+        }
+        return answer;
+    }
+
     public String getDescription() {
         return description;
     }
