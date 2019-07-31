@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -200,7 +200,17 @@ function initPeregrineApp() {
 
     Vue.use(i18n)
     Vue.use(experiences)
-    const lang = view.state.language
+
+    const EventBus = {
+      install(v, options){
+        v.prototype.$adminEventBus = new Vue();
+        v.prototype.$adminEventBus.healthCheck = () => { return 200;}
+      }
+    };
+    Vue.use( EventBus );
+
+
+  const lang = view.state.language
     const i18nData = view.admin.i18n
 
     app = new Vue({
