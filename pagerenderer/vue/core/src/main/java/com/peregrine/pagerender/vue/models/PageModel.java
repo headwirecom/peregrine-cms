@@ -260,6 +260,17 @@ public class PageModel
         return answer;
     }
 
+    public List<MetaProperty> getMetaproperties() {
+        Resource metaproperties = getResource().getChild("metaproperties");
+        List<MetaProperty> answer = new ArrayList<>();
+        if(metaproperties != null) {
+            for(Resource metaproperty : metaproperties.getChildren()) {
+                answer.add(new MetaProperty(metaproperty));
+            }
+        }
+        return answer;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -279,5 +290,27 @@ public class PageModel
         public String getName() { return name; }
         public String getValue() { return value; }
         public String getPath() { return path; }
+        @Override
+        public String toString() { return name; }
+    }
+
+    public class MetaProperty {
+        public String path;
+        public String property;
+        public String content;
+
+
+        public MetaProperty(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
+            this.property = r.getValueMap().get("property", String.class);
+            this.content = r.getValueMap().get("content", String.class);
+        }
+
+        public String getPath() { return path; }
+        public String getProperty() { return property; }
+        public String getContent() { return content; }
+        @Override
+        public String toString() { return property; }
     }
 }
