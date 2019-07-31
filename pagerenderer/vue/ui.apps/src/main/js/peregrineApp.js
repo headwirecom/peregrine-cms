@@ -32,6 +32,7 @@ import state from './state.js'
 import merge from './merge.js'
 import { pagePathToDataPath, componentNameToVarName } from './util.js'
 import {Logger} from "./logger";
+import EventBus from './eventBus';
 
 
 let view
@@ -122,11 +123,7 @@ function initPeregrineApp() {
     Vue.use(experiences)
     Vue.use(helper)
 
-    const EventBus = {
-      install(v, options){
-        v.prototype.$eventBus = window.parent.$perAdminApp.getApp().$adminEventBus;
-      }
-    };
+
     Vue.use( EventBus );
 
     mdbvue.load( Vue );
