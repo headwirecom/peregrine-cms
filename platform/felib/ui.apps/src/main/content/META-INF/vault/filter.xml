@@ -41,6 +41,7 @@
         Also any sub pckage of this module needs to exclude /apps/felib/install
         folder otherwise they wipe all installed bundles.
     -->
+    <filter root="/etc/felibs/rep:policy"/>
     <filter root="/etc/felibs/example"/>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
