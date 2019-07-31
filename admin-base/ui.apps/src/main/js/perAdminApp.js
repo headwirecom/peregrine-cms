@@ -23,6 +23,8 @@
  * #L%
  */
 
+import AdminEventBus from './adminEventBus';
+
 const consoleERROR = console.error
 
 if($perAdminApp) {
@@ -201,13 +203,7 @@ function initPeregrineApp() {
     Vue.use(i18n)
     Vue.use(experiences)
 
-    const EventBus = {
-      install(v, options){
-        v.prototype.$adminEventBus = new Vue();
-        v.prototype.$adminEventBus.healthCheck = () => { return 200;}
-      }
-    };
-    Vue.use( EventBus );
+    Vue.use( AdminEventBus );
 
 
   const lang = view.state.language
