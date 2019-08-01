@@ -11,11 +11,11 @@
 <script>
 	export default {
       mixins: [VueFormGenerator.abstractField],
-	  methods: {
-		handleControlClick: function( btn ){
-          $perAdminApp.getApp().$emit( btn.event );
-		}
-	  }
+      methods: {
+        handleControlClick: function( btn ){
+          $perAdminApp.getApp().$adminEventBus.$emit( btn.event );
+        }
+      }
     }
 </script>
 

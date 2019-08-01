@@ -32,6 +32,7 @@ import state from './state.js'
 import merge from './merge.js'
 import { pagePathToDataPath, componentNameToVarName } from './util.js'
 import {Logger} from "./logger";
+import EventBus from './eventBus';
 
 
 let view
@@ -121,6 +122,9 @@ function initPeregrineApp() {
 
     Vue.use(experiences)
     Vue.use(helper)
+
+
+    Vue.use( EventBus );
 
     mdbvue.load( Vue );
 
@@ -281,7 +285,7 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
     } else {
         axios.get(dataUrl).then(function (response) {
             log.fine('got data for', path)
-    
+
             // if(response.data.template) {
             //
             //     var pageData = response.data
@@ -298,10 +302,10 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
             // } else {
             processLoadedContent(response.data, path, firstTime, fromPopState)
             // }
-    
+
         }).catch(function(error) {
             log.error("error getting %s %j", dataUrl, error);
-        });    
+        });
     }
 }
 
