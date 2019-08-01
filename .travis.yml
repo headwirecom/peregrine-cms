@@ -27,23 +27,26 @@ after_script:
 
 before_deploy:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${tag}"
 
 deploy:
     # Stable release
   - provider: script
-    script: docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:stable
+    script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:stable" && docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:stable
     on:
-      branch: master
+      branches:
+        only:
+          -  master
     # Sling 11 release
   - provider: script
-    script: docker push ${DOCKER_IMAGE}:sling11
+    script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:sling11" && docker push ${DOCKER_IMAGE}:sling11
     on:
-      branch: develop-sling11
+      branches:
+        only:
+          -  develop-sling11
     # Development release
   - provider: script
-    script: docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
+    script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest" && docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}" && docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
     on:
-      branch: develop
+      branches:
+        only:
+          -  develop
