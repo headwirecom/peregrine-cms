@@ -1,5 +1,7 @@
 branches:
   only:
+  - master
+  - develop
   - develop-sling11
 
 services:
@@ -14,8 +16,9 @@ env:
 
 before_script:
 - branch="$(echo ${TRAVIS_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]')"
+- echo "branch: ${branch}"
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
-- tag="${branch}-${version}"
+- echo "app version: ${version}"
 
 script:
 - cd docker && ./builddocker.sh
@@ -25,17 +28,21 @@ after_script:
 
 before_deploy:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:stable"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:sling11"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:develop"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
 
 deploy:
   - provider: script
-    script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:stable" && docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:stable
+    script: docker push ${DOCKER_IMAGE}:stable
     on:
       branch: master
   - provider: script
-    script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:sling11" && docker push ${DOCKER_IMAGE}:sling11
+    script: docker push ${DOCKER_IMAGE}:sling11
     on:
       branch: develop-sling11
   - provider: script
-    script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest" && docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}" && docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
+    script: docker push ${DOCKER_IMAGE}:latest && docker push ${DOCKER_IMAGE}:develop
     on:
       branch: develop
