@@ -32,13 +32,18 @@ before_deploy:
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${tag}"
 
 deploy:
-  # Stable release
-  provider: script
-  script: docker push ${DOCKER_IMAGE}:${tag}
-  on:
-    branch: master
-  # Development release
-  provider: script
-  script: docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
-  on:
-    branch: develop
+    # Stable release
+  - provider: script
+    script: docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:stable
+    on:
+      branch: master
+    # Sling 11 release
+  - provider: script
+    script: docker push ${DOCKER_IMAGE}:sling11
+    on:
+      branch: develop-sling11
+    # Development release
+  - provider: script
+    script: docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
+    on:
+      branch: develop
