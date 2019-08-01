@@ -29,24 +29,15 @@ before_deploy:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 
 deploy:
-    # Stable release
   - provider: script
     script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:stable" && docker push ${DOCKER_IMAGE}:${tag} && docker push ${DOCKER_IMAGE}:stable
     on:
-      branches:
-        only:
-          -  master
-    # Sling 11 release
+      branch: master
   - provider: script
     script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:sling11" && docker push ${DOCKER_IMAGE}:sling11
     on:
-      branches:
-        only:
-          -  develop-sling11
-    # Development release
+      branch: develop-sling11
   - provider: script
     script: docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest" && docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}" && docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
     on:
-      branches:
-        only:
-          -  develop
+      branch: develop
