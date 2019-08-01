@@ -16,9 +16,7 @@ env:
 
 before_script:
 - branch="$(echo ${TRAVIS_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]')"
-- echo branch: ${branch}
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
-- echo app version: ${version}
 
 script:
 - cd docker && ./builddocker.sh
