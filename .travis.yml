@@ -26,21 +26,7 @@ after_script:
 
 before_deploy:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:stable"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:sling11"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:develop"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
 
 deploy:
   - provider: script
-    script: docker push ${DOCKER_IMAGE}:stable
-    on:
-      branch: master
-  - provider: script
-    script: docker push ${DOCKER_IMAGE}:sling11
-    on:
-      branch: develop-sling11
-  - provider: script
-    script: docker push ${DOCKER_IMAGE}:latest && docker push ${DOCKER_IMAGE}:develop
-    on:
-      branch: develop
+    script: bash scripts/docker-push.sh ${TRAVIS_BRANCH}
