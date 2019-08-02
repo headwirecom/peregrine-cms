@@ -34,9 +34,9 @@ export default function(me, target) {
     if(!target) target = 'preview';
 
     let view = me.getView();
+    let currIgnoreContainers = get(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
     if(target === 'preview') {
         const current = get(view, '/state/tools/workspace/preview', '');
-        let currIgnoreContainers = get(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
         if(current === 'preview') {
             set(view, '/state/tools/workspace/preview', '');
             if (currIgnoreContainers === IgnoreContainers.ON_HOLD) {
