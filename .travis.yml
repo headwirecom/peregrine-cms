@@ -2,11 +2,13 @@ branches:
   only:
   - master
   - develop
-  - develop-sling11
   - /.*-\d+\.\d+\.\d+/
 
 services:
 - docker
+
+jdk:
+- openjdk11
 
 env:
   global:
