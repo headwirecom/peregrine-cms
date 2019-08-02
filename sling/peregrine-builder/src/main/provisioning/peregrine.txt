@@ -22,7 +22,7 @@
 [feature name=peregrine]
 
 [artifacts startLevel=30]
-    com.peregrine-cms/login/1.0-SNAPSHOT
+    com.peregrine-cms/login/1.0.0-SNAPSHOT
 # All 3 artifacts bundle together into one Sling instance does not work
 #    com.eclipsesource.j2v8/j2v8_linux_x86_64/4.6.0
 #    com.eclipsesource.j2v8/j2v8_macosx_x86_64/4.6.0
