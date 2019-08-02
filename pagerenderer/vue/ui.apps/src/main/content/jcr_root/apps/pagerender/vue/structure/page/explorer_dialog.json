@@ -80,31 +80,16 @@
     ],
     "fields": [
       {
-        "type": "input",
-        "inputType": "text",
-        "placeholder": "twitter:card",
-        "label": "meta name",
-        "model": "key"
+        "type": "select",
+        "label": "Type",
+        "model": "metatype",
+        "required": true,
+        "default": "property",
+        "values": [
+            "property",
+            "name"
+        ]
       },
-      {
-        "type": "input",
-        "inputType": "text",
-        "placeholder": "summary",
-        "label": "meta content",
-        "model": "value"
-      }
-    ],
-    "label": "Meta Name Values",
-    "model": "metanames"
-  },
-  {
-    "type": "collection",
-    "multifield": true,
-    "fieldLabel": [
-      "property",
-      "value"
-    ],
-    "fields": [
       {
         "type": "input",
         "inputType": "text",

@@ -261,24 +261,28 @@ public class PageModel
         return answer;
     }
 
-    private List<MetaProperty> getMetaproperties(String childName){
-        Resource metaproperties = getResource().getChild(childName);
+    public List<MetaProperty> getMetaproperties() {
+        Resource metaproperties = getResource().getChild(PerConstants.METAPROPERTIES);
         List<MetaProperty> answer = new ArrayList<>();
         if(metaproperties != null) {
             for(Resource metaproperty : metaproperties.getChildren()) {
                 MetaProperty metaProperty = new MetaProperty(metaproperty);
-                answer.add(metaProperty);
+                if( metaProperty.isProperty()) answer.add(metaProperty);
             }
         }
         return answer;
     }
 
-    public List<MetaProperty> getMetaproperties() {
-        return getMetaproperties(PerConstants.METAPROPERTIES);
-    }
-
     public List<MetaProperty> getMetanames() {
-        return getMetaproperties(PerConstants.METANAMES);
+        Resource metaproperties = getResource().getChild(PerConstants.METAPROPERTIES);
+        List<MetaProperty> answer = new ArrayList<>();
+        if(metaproperties != null) {
+            for(Resource metaproperty : metaproperties.getChildren()) {
+                MetaProperty metaProperty = new MetaProperty(metaproperty);
+                if( metaProperty.isName()) answer.add(metaProperty);
+            }
+        }
+        return answer;
     }
 
     public String getDescription() {
@@ -306,18 +310,23 @@ public class PageModel
 
     public class MetaProperty {
         public String path;
+        public String metatype;
         public String key;
         public String value;
 
         public MetaProperty(Resource r) {
             this.path = r.getPath();
             this.path = path.substring(path.indexOf("/jcr:content"));
+            this.metatype = r.getValueMap().get("metatype", String.class);
             this.key = r.getValueMap().get("key", String.class);
             this.value = r.getValueMap().get("value", String.class);
         }
 
         public String getPath() { return path; }
+        public String getMetaType() { return metatype; }
         public String getKey() { return key; }
         public String getValue() { return value; }
+        public Boolean isProperty() { return "property".equalsIgnoreCase(metatype); }
+        public Boolean isName() { return "name".equalsIgnoreCase(metatype); }
     }
 }
