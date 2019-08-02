@@ -251,7 +251,6 @@
             //                 "placeholder": "enter a description for this asset"
             //             }
             //         ]}
-
             //     }
             },
             referencedBy() {

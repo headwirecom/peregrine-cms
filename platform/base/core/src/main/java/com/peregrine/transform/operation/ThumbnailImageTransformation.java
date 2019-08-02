@@ -38,6 +38,8 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import java.util.ArrayList;
+
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -64,12 +66,12 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class ThumbnailImageTransformation
     extends AbstractVipsImageTransformation
 {
-    public static final String THUMBNAIL_TRANSFORMATION_NAME = "vips:thumbnail";
-    public static final int THUMBNAIL_DEFAULT_WIDTH = 50;
-    public static final int THUMBNAIL_DEFAULT_HEIGHT = 50;
+    public static final String DEFAULT_TRANSFORMATION_NAME = "vips:thumbnail";
+    public static final int DEFAULT_WIDTH = 50;
+    public static final int DEFAULT_HEIGHT = 50;
 
     public static final String NO_CROP = "noCrop";
-    public static final String THUMBNAIL = "thumbnail";
+    public static final String OPERATION_NAME = "thumbnail";
     public static final String WIDTH = "width";
     public static final String HEIGHT_PARAMETER = "--height";
     public static final String HEIGHT = "height";
@@ -78,7 +80,9 @@ public class ThumbnailImageTransformation
 
     @ObjectClassDefinition(
         name = "Peregrine: Thumbnail Image Transformation Configuration",
-        description = "Service to provide Thumbnail Image Transformation (requires LIBVIPS to be installed locally otherwise disable this service)"
+        description = "Service to provide Thumbnail Image Transformation. "
+            + "This service requires a greater than 0 width, an optional height (if <= 0 is ignored) and an optional noCrop flag (false/true) which if true is not cropping the image. "
+            + "If height is not set the image is scaled down and with noCrop = true the aspect radio is respected otherwise the image becomes a square"
     )
     public @interface Configuration {
 
@@ -87,39 +91,43 @@ public class ThumbnailImageTransformation
             description = "Flag to enabled / disabled that service",
             required = true
         )
-        boolean enabled() default false;
+        boolean enabled() default true;
 
         @AttributeDefinition(
             name = "Name",
             description = "Transformation Name used to find it in the Rendition Configuration",
             required = true
         )
-        String transformationName() default THUMBNAIL_TRANSFORMATION_NAME;
+        String transformationName() default DEFAULT_TRANSFORMATION_NAME;
 
         @AttributeDefinition(
             name = "Default Width",
             description = "Default width of the Thumbnail if no value is given",
             min = "1"
         )
-        int defaultWidth() default THUMBNAIL_DEFAULT_WIDTH;
+        int defaultWidth() default DEFAULT_WIDTH;
 
         @AttributeDefinition(
             name = "Default Height",
             description = "Default height of the Thumbnail if no value is given",
             min = "1"
         )
-        int defaultHeight() default THUMBNAIL_DEFAULT_HEIGHT;
+        int defaultHeight() default DEFAULT_HEIGHT;
     }
 
-    private String transformationName = THUMBNAIL_TRANSFORMATION_NAME;
-    private int defaultWidth = THUMBNAIL_DEFAULT_WIDTH;
-    private int getDefaultHeight = THUMBNAIL_DEFAULT_HEIGHT;
+    private int defaultWidth = DEFAULT_WIDTH;
+    private int defaultHeight = DEFAULT_HEIGHT;
 
     @Reference
     MimeTypeService mimeTypeService;
 
     MimeTypeService getMimeTypeService() {
         return mimeTypeService;
+    }
+
+    @Override
+    public String getDefaultTransformationName() {
+        return DEFAULT_TRANSFORMATION_NAME;
     }
 
     @Activate
@@ -136,55 +144,36 @@ public class ThumbnailImageTransformation
     protected void deactivate() {
     }
 
-    private void configure(final Configuration configuration) {
-        enabled = configuration.enabled();
-        transformationName = configuration.transformationName();
-        if(enabled) {
-            if(transformationName.isEmpty()) {
-                throw new IllegalArgumentException(TRANSFORMATION_NAME_CANNOT_BE_EMPTY);
-            }
-            if(!checkVips()) {
-                throw new IllegalArgumentException(VIPS_IS_NOT_INSTALLED_OR_ACCESSIBLE);
-            }
-            defaultWidth = configuration.defaultWidth();
-            getDefaultHeight = configuration.defaultHeight();
+    protected void configure(final Configuration configuration) {
+        configure(configuration.enabled(), configuration.transformationName());
+        defaultWidth = configuration.defaultWidth();
+        defaultHeight = configuration.defaultHeight();
+        if(defaultWidth <= 0) {
+            throw new IllegalArgumentException(TRANSFORMATION_WIDTH_MUST_BE_PROVIDED);
         }
-    }
-
-    @Override
-    public String getTransformationName() {
-        return transformationName;
     }
 
     @Override
     public void transform(ImageContext imageContext, OperationContext operationContext)
         throws TransformationException
     {
-        if(enabled) {
-            boolean noCrop = !Boolean.FALSE.toString().equals(operationContext.getParameter(NO_CROP, Boolean.FALSE.toString()));
-            if(noCrop) {
-                transform0(imageContext, THUMBNAIL,
-                    // {in}, {out} mark the placement of the input / output file (path / name)
-                    IN_TOKEN, OUT_TOKEN,
-                    // Third parameter is width with no tag
-                    operationContext.getParameter(WIDTH, defaultWidth + ""),
-                    // Optional Parameters, double dashes without equals
-                    HEIGHT_PARAMETER, operationContext.getParameter(HEIGHT, getDefaultHeight + "")
-                );
-            } else {
-                transform0(imageContext, THUMBNAIL,
-                    // {in}, {out} mark the placement of the input / output file (path / name)
-                    IN_TOKEN, OUT_TOKEN,
-                    // Third parameter is width with no tag
-                    operationContext.getParameter(WIDTH, defaultWidth + ""),
-                    // Optional Parameters, double dashes without equals
-                    HEIGHT_PARAMETER, operationContext.getParameter(HEIGHT, getDefaultHeight + ""),
-                    // We crop it at the center to make it fit within the given width and height
-                    CROP_PARAMETER, CENTRE
-                );
-            }
-        } else {
-            throw new DisabledTransformationException(transformationName);
+        ArrayList<String> parameters = new ArrayList<>();
+        boolean noCrop = !Boolean.FALSE.toString().equals(operationContext.getParameter(NO_CROP, Boolean.FALSE.toString()));
+        int width = Integer.parseInt(operationContext.getParameter(WIDTH, defaultWidth + ""));
+        int height = Integer.parseInt(operationContext.getParameter(HEIGHT, defaultHeight + ""));
+
+        parameters.add(IN_TOKEN);
+        parameters.add(OUT_TOKEN);
+        parameters.add(width + "");
+        if(height > 0) {
+            parameters.add(HEIGHT_PARAMETER);
+            parameters.add(height + "");
         }
+        if(!noCrop) {
+            parameters.add(CROP_PARAMETER);
+            parameters.add(CENTRE);
+        }
+        log.trace("Thumbnail Image: name: '{}', height: '{}', width: '{}', no-crop: '{}'", getTransformationName(), height, width, noCrop);
+        transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
     }
 }

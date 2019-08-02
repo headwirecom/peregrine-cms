@@ -59,7 +59,6 @@
     <config jcr:primaryType="nt:unstructured" jcr:title="Configuration" sling:resourceType="admin/components/iconaction"
                jcr:description="configuration management"
                action="/content/admin/config">
-               action="/content/admin/config">
       <experiences jcr:primaryType="nt:unstructured">
         <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Konfiguration" description="Konfigurationsverwaltung"/>
       </experiences>

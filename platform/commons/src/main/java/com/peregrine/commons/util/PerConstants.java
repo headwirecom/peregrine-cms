@@ -67,6 +67,7 @@ public class PerConstants {
 
     public static final String PNG_MIME_TYPE = "image/png";
     public static final String JPEG_MIME_TYPE = "image/jpeg";
+    public static final String WEBP_MIME_TYPE = "image/webp";
     //AS Does that exist?
     public static final String JPG_MIME_TYPE = "image/jpg";
     public static final String TEXT_MIME_TYPE = "plain/text";

@@ -274,7 +274,6 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
 function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
 
-    console.log(path)
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
@@ -362,7 +361,14 @@ var peregrineApp = {
 
     getAdminAppNode(path) {
        return getAdminAppNodeImpl(path);
+    },
+
+    isPublicFacingSite() {
+        const server = window.location.hostname;
+        const domains = getPerView().page.domains || [];
+        return (domains.indexOf(server) >= 0)
     }
+
 }
 
 /**

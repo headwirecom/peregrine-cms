@@ -38,7 +38,6 @@ export default {
   props: ['model'],
   methods: {
     addFiles (ev) {
-      console.log('add files!')
       this.uploadFile(ev.target.files)
     },
     uploadFile(files) {
