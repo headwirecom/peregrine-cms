@@ -31,7 +31,7 @@
                 <option v-for="(group, key) in allGroups" v-bind:value="key">{{ key }}</option>
             </select>
             <ul>
-                <li
+                <li 
                     v-for="(group, key) in groups">
                     <div>
                         <ul class="collection">
@@ -72,7 +72,7 @@
 //                state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer'),
 //            }
 //        },
-
+        
 //        mounted() {
 //            $(this.$refs.groups).collapsible({
 //                accordion: false,
@@ -140,7 +140,7 @@
                 return this.filteredList.reduce( ( obj, current ) => {
                     if ( !current.group ) current.group = 'General';
                     if ( !obj[ current.group ]) Vue.set(obj, current.group, []);
-                    obj[ current.group ].push( current );
+                    obj[ current.group ].push( current ); 
                     return obj;
                 }, {})
             },

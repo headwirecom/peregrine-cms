@@ -41,11 +41,14 @@ public interface ImageTransformation {
     public static final String SERVICE_DISABLED = "Service: '%s' is disabled";
     public static final String FILE_FORMAT_NOT_SUPPORTED = "File Format: '%s' is not supported for this operation";
 
-    /** @erturn The Unique Name of the Transformations to look it up by **/
+    /** @return The Transformation Name **/
     public String getTransformationName();
 
-    /** @return True if the Transformation is up and running **/
-    public boolean isValid();
+        /** @erturn The Default Transformation Name **/
+    public String getDefaultTransformationName();
+
+    /** @return True if the Transformation is enabled **/
+    public boolean isEnabled();
 
     /**
      * Transforms a given Image with the given Operation

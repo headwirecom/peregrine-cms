@@ -254,7 +254,6 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
 function loadContentImpl(path, firstTime, fromPopState) {
 
-    console.log(path)
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);

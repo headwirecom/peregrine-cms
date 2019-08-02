@@ -9,6 +9,7 @@ RUN apt update -q \
     && apt install -q -y --no-install-recommends \
         curl \
         jq \
+        libvips libvips-tools \
         tar \
         xz-utils
 
@@ -18,6 +19,14 @@ COPY files/* /app/binaries/
 COPY healthcheck.sh .
 COPY installpackage.sh .
 COPY installpackageretry.sh .
+
+# Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
+COPY peregrine.pref /etc/apt/preferences.d/
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ cosmic main restricted" >> /etc/apt/sources.list \
+    && echo "deb http://archive.ubuntu.com/ubuntu/ cosmic universe" >> /etc/apt/sources.list \
+    && apt update \
+    && apt --only-upgrade install -y libvips libvips-tools
+# End 
 
 RUN mkdir -p /usr/local/lib/nodejs \
     && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
@@ -30,6 +39,7 @@ RUN mkdir -p /usr/local/lib/nodejs \
 
 RUN npm install percli @peregrinecms/slingpackager \
     && npx percli \
+    && npx percli check java \
     && npx @peregrinecms/slingpackager --version \
     && mkdir out \
     && cp binaries/*.jar out \

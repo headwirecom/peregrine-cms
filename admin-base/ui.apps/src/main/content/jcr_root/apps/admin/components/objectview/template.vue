@@ -225,7 +225,6 @@
                 const type = 'folder'
                 const assetPath = $perAdminApp.getNodeFromView('/state/tools/object').show
                 const selectedPath = assetPath.substr(0, assetPath.lastIndexOf('/'))
-                console.log(selectedPath)
                 let currentPath
                 // is selectedPath the root dir?
                 selectedPath === root
@@ -237,7 +236,6 @@
                     current: currentPath,
                     selected: selectedPath
                 }
-                console.log(initModalState)
                 const options = {
                     complete: () => {
                         const newPath = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')

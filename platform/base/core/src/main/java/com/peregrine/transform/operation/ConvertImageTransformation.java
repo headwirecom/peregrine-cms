@@ -29,7 +29,6 @@ import com.peregrine.transform.ImageContext;
 import com.peregrine.transform.ImageTransformation;
 import com.peregrine.transform.OperationContext;
 import org.apache.sling.commons.mime.MimeTypeService;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -39,7 +38,8 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
+import java.util.ArrayList;
+
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -47,34 +47,31 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
- * Grey Scale Image Transformation
+ * Creates a Thumbnail Image with the define thumbnail size
  *
- * It is will take an image and make it a greyscale (black and white) image
- *
- * ATTENTION: for now only JPEG and PNG images are supported
+ * By default VIPS crops the image if the ratio of the thumbnail size
+ * does not match the ones from the source. With no-crop that can be
+ * prevented but then the width or height is smaller
  */
 @Component(
     service = ImageTransformation.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Greyscale Image Transformation (transformation name: vips:greyscale)",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:convert",
         SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
 @Designate(
-    ocd = GreyscaleImageTransformation.Configuration.class
+    ocd = ConvertImageTransformation.Configuration.class
 )
-public class GreyscaleImageTransformation
+public class ConvertImageTransformation
     extends AbstractVipsImageTransformation
 {
-    public static final String THUMBNAIL_TRANSFORMATION_NAME = "vips:greyscale";
-    public static final String PNGSAVE = "pngsave";
-    public static final String GREY_16 = "grey16";
-    public static final String STRIP_TRUE = "--strip=true";
-    public static final String COLOURSPACE = "colourspace";
+    public static final String DEFAULT_TRANSFORMATION_NAME = "vips:convert";
+    public static final String OPERATION_NAME = "copy";
 
     @ObjectClassDefinition(
-        name = "Peregrine: Greyscale Image Transformation Configuration",
-        description = "Service to provide Greyscale Image Transformation for JPEG / PNG files only. "
+        name = "Peregrine: Copy Image Transformation Configuration",
+        description = "Service to provide Image Transformation to convert images. "
             + "This service does not support any parameters and if provided are ignored"
     )
     public @interface Configuration {
@@ -91,7 +88,7 @@ public class GreyscaleImageTransformation
             description = "Transformation Name used to find it in the Rendition Configuration",
             required = true
         )
-        String transformationName() default THUMBNAIL_TRANSFORMATION_NAME;
+        String transformationName() default DEFAULT_TRANSFORMATION_NAME;
     }
 
     @Reference
@@ -115,45 +112,23 @@ public class GreyscaleImageTransformation
     protected void deactivate() {
     }
 
-    private void configure(final Configuration configuration) {
+    protected void configure(final Configuration configuration) {
         configure(configuration.enabled(), configuration.transformationName());
     }
 
     @Override
     public String getDefaultTransformationName() {
-        return THUMBNAIL_TRANSFORMATION_NAME;
+        return DEFAULT_TRANSFORMATION_NAME;
     }
 
     @Override
     public void transform(ImageContext imageContext, OperationContext operationContext)
         throws TransformationException
     {
-        if(
-            !PNG_MIME_TYPE.equals(imageContext.getSourceMimeType()) &&
-            !"image/jpeg".equals(imageContext.getSourceMimeType())
-        ) {
-            throw new UnsupportedFormatException(imageContext.getSourceMimeType());
-        }
-        // A PNG image cannot be saved directly as PNG with VIPS
-        // For that we need to store it as JPEG and then save it as PNG while stripping color info
-        boolean requiresConversion = PNG_MIME_TYPE.equals(imageContext.getSourceMimeType());
-        if(requiresConversion) {
-            imageContext.setTargetMimeType("v");
-        }
-        transform0(
-            imageContext, COLOURSPACE,
-            // {in}, {out} mark the placement of the input / output file (path / name)
-            IN_TOKEN, OUT_TOKEN,
-            // Last Parameter is the color space type: Grey 16
-            GREY_16
-        );
-        if(requiresConversion) {
-            imageContext.setTargetMimeType(PNG_MIME_TYPE);
-            transform0(imageContext, PNGSAVE,
-                // {in}, {out} mark the placement of the input / output file (path / name)
-                IN_TOKEN, OUT_TOKEN,
-                // Last Parameter is to strip the color settings from JPEG to be able to save it as PNG
-                STRIP_TRUE);
-        }
+        ArrayList<String> parameters = new ArrayList<>();
+        parameters.add(IN_TOKEN);
+        parameters.add(OUT_TOKEN);
+        log.trace("Copy Image: name: '{}'", getTransformationName());
+        transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
     }
 }

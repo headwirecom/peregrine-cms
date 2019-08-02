@@ -357,7 +357,6 @@ export default {
         onClickOverlay: function(e) {
             if(!e) return
             var targetEl = this.getTargetEl(e)
-            let view = $perAdminApp.getView();
             if(targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
@@ -396,7 +395,6 @@ export default {
             if(!e || this.isTouch) return
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
-            let view = $perAdminApp.getView();
             if(targetEl) {
                 if (this.isContainer(targetEl)) {
                     if (this.isIgnoreContainersEnabled) return;
@@ -427,11 +425,8 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
-                // console.log(isDropTarget, pos, targetBox)
-
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    // console.log(pos.y - targetBox.top, targetBox.bottom - pos.y)
                     if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
