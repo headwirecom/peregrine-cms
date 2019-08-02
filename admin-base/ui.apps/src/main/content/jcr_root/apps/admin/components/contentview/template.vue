@@ -149,6 +149,7 @@ export default {
             return !node.fromTemplate
         },
         isIgnoreContainersEnabled() {
+            let view = $perAdminApp.getView();
             return view.state.tools
                 && view.state.tools.workspace
                 && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
