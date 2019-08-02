@@ -35,8 +35,8 @@ export default function(me, target) {
 
     let view = me.getView();
     let currIgnoreContainers = get(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
+    const current = get(view, '/state/tools/workspace/preview', '');
     if(target === 'preview') {
-        const current = get(view, '/state/tools/workspace/preview', '');
         if(current === 'preview') {
             set(view, '/state/tools/workspace/preview', '');
             if (currIgnoreContainers === IgnoreContainers.ON_HOLD) {
@@ -53,12 +53,14 @@ export default function(me, target) {
             }
         }
     } else if (target === IgnoreContainers.ENABLED){
-        if(view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
-            set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
-            set(view, '/pageView/view', view.state.tools.workspace.view);
-        } else {
-            set(view, '/state/tools/workspace/ignoreContainers', target);
-            set(view, '/pageView/view', target);
+        if (current !== 'preview') {
+            if(currIgnoreContainers === IgnoreContainers.ENABLED) {
+                set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
+                set(view, '/pageView/view', view.state.tools.workspace.view);
+            } else {
+                set(view, '/state/tools/workspace/ignoreContainers', target);
+                set(view, '/pageView/view', target);
+            }
         }
     } else {
         set(view, '/state/tools/workspace/view', target);
