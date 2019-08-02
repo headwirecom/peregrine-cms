@@ -147,6 +147,11 @@ export default {
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if(!node) return false
             return !node.fromTemplate
+        },
+        isIgnoreContainersEnabled() {
+            return view.state.tools
+                && view.state.tools.workspace
+                && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         }
     },
 
@@ -356,11 +361,7 @@ export default {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if (this.isContainer(targetEl)) {
-                    if (   view.state.tools
-                        && view.state.tools.workspace
-                        && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
-                        return;
-                    }
+                    if (this.isIgnoreContainersEnabled) return;
                 }
                 if(node.fromTemplate) {
                     $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
@@ -397,11 +398,7 @@ export default {
             let view = $perAdminApp.getView();
             if(targetEl) {
                 if (this.isContainer(targetEl)) {
-                    if (   view.state.tools
-                        && view.state.tools.workspace
-                        && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED) {
-                        return;
-                    }
+                    if (this.isIgnoreContainersEnabled) return;
                 }
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
