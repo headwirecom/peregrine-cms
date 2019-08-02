@@ -2,7 +2,7 @@ branches:
   only:
   - master
   - develop
-  - /.*-\d+\.\d+\.\d+/
+  - develop-sling11
 
 services:
 - docker
