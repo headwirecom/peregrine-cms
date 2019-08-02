@@ -27,7 +27,7 @@ case "$branch" in
     docker push ${DOCKER_IMAGE}:develop
     docker push ${DOCKER_IMAGE}:latest 
   ;;
-  develop-sling11)
+  sling11-*)
     docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:sling11"
     docker push ${DOCKER_IMAGE}:sling11
   ;;
