@@ -31,7 +31,7 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: bash scripts/docker-push.sh ${TRAVIS_BRANCH}
+    script: bash ${TRAVIS_BUILD_DIR}/scripts/docker-push.sh ${TRAVIS_BRANCH}
     on:
       tags: true
       all_branches: true
