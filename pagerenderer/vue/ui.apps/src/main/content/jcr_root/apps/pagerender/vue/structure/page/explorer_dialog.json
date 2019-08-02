@@ -80,15 +80,19 @@
     ],
     "fields": [
       {
-        "type": "select",
+        "type": "material-select",
         "label": "Type",
         "model": "metatype",
+        "selectOptions": {
+          "name": "name",
+          "value": "value"
+        },
+        "values": [ 
+          {"name": "property", "value": "property" },
+          {"name": "name", "value": "name" }
+        ],
         "required": true,
-        "default": "property",
-        "values": [
-            "property",
-            "name"
-        ]
+        "validator": "required"
       },
       {
         "type": "input",
