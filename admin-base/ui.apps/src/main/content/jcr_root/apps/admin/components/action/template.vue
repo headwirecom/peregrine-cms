@@ -194,4 +194,49 @@
         background-color: white !important;
         color: #37474f !important;
     }
+
+    .field-radios [type="radio"]:not(:checked),
+    [type="radio"]:checked {
+      position: unset;
+      opacity: unset;
+      pointer-events: none;
+    }
+
+    &.field-radios [type="radio"]:not(:checked),
+    [type="radio"]:checked {
+      input {
+        margin: 4px;
+      }
+    }
+
+    .field-radios [type="radio"]:not(:checked) + label,
+    [type="radio"]:checked + label {
+      position: relative;
+      padding-left: 35px;
+      cursor: pointer;
+      display: inline-block;
+      height: 25px;
+      line-height: 25px;
+      font-size: 1rem;
+      -webkit-transition: .28s ease;
+      transition: .28s ease;
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
+    }
+
+    .field-radios [type="radio"] + label:before,
+    [type="radio"] + label:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      margin: 4px;
+      width: 16px;
+      height: 16px;
+      z-index: 0;
+      -webkit-transition: .28s ease;
+      transition: .28s ease;
+    }
 </style>

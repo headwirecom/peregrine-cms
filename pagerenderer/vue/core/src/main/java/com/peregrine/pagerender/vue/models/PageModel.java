@@ -25,6 +25,7 @@ package com.peregrine.pagerender.vue.models;
  * #L%
  */
 
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
@@ -260,15 +261,24 @@ public class PageModel
         return answer;
     }
 
-    public List<MetaProperty> getMetaproperties() {
-        Resource metaproperties = getResource().getChild("metaproperties");
+    private List<MetaProperty> getMetaproperties(String childName){
+        Resource metaproperties = getResource().getChild(childName);
         List<MetaProperty> answer = new ArrayList<>();
         if(metaproperties != null) {
             for(Resource metaproperty : metaproperties.getChildren()) {
-                answer.add(new MetaProperty(metaproperty));
+                MetaProperty metaProperty = new MetaProperty(metaproperty);
+                answer.add(metaProperty);
             }
         }
         return answer;
+    }
+
+    public List<MetaProperty> getMetaproperties() {
+        return getMetaproperties(PerConstants.METAPROPERTIES);
+    }
+
+    public List<MetaProperty> getMetanames() {
+        return getMetaproperties(PerConstants.METANAMES);
     }
 
     public String getDescription() {
@@ -296,21 +306,18 @@ public class PageModel
 
     public class MetaProperty {
         public String path;
-        public String property;
-        public String content;
-
+        public String key;
+        public String value;
 
         public MetaProperty(Resource r) {
             this.path = r.getPath();
             this.path = path.substring(path.indexOf("/jcr:content"));
-            this.property = r.getValueMap().get("property", String.class);
-            this.content = r.getValueMap().get("content", String.class);
+            this.key = r.getValueMap().get("key", String.class);
+            this.value = r.getValueMap().get("value", String.class);
         }
 
         public String getPath() { return path; }
-        public String getProperty() { return property; }
-        public String getContent() { return content; }
-        @Override
-        public String toString() { return property; }
+        public String getKey() { return key; }
+        public String getValue() { return value; }
     }
 }
