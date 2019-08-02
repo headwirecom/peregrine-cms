@@ -116,7 +116,7 @@
         "type": "input",
         "inputType": "text",
         "placeholder": "title",
-        "label": "meta content updated",
+        "label": "meta content",
         "model": "value"
       }
     ],
