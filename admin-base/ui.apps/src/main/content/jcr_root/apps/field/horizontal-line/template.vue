@@ -1,10 +1,9 @@
 <template>
-    <hr class="hr" :data-per-path="model.path"/>
+    <hr class="hr"/>
 </template>
 
 <script>
     export default {
-        props: ['model']
     }
 </script>
 
