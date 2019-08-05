@@ -443,6 +443,16 @@ class PerAdminImpl {
         })
     }
 
+    deleteSite(name, path) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('name', name);
+            updateWithForm('/admin/deleteSite.json', data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
     renamePage(path, newName) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
