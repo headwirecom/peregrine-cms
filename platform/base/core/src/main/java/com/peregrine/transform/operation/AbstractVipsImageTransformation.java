@@ -73,31 +73,62 @@ public abstract class AbstractVipsImageTransformation
     public static final String OUT_TOKEN = "{out}";
 
     public static final String TRANSFORMATION_NAME_CANNOT_BE_EMPTY = "Transformation Name cannot be empty";
-    public static final String VIPS_IS_NOT_INSTALLED_OR_ACCESSIBLE = "VIPS is not installed or accessible";
+    public static final String TRANSFORMATION_WIDTH_MUST_BE_PROVIDED = "Transformation Width must be greater than 0";
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    boolean enabled = false;
+    private boolean enabled = false;
+
+    private boolean vipsInstalled = false;
+    private long lastCheckTime = -1;
+    private long checkTimeout = 5 * 60 * 1000;
+    private String transformationName = getDefaultTransformationName();
 
     abstract MimeTypeService getMimeTypeService();
 
     @Override
-    public boolean isValid() {
-        return enabled && checkVips();
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public String getTransformationName() {
+        return transformationName;
     }
 
     /** @return Returns true if VIPS is installed and can be invoked here **/
     protected boolean checkVips() {
-        boolean answer = false;
-        ProcessRunner runner = new ProcessRunner();
-        List<String> commands = new ArrayList<>(Arrays.asList(VIPS, VERSION_PARAMETER));
-        try {
-            ProcessContext processContext = runner.execute(commands);
-            answer = processContext.getExitCode() == 0;
-        } catch(ExternalProcessException e) {
-            log.error("Failed to execute VIPS", e);
+        return checkVips(false);
+    }
+
+    protected boolean checkVips(boolean force) {
+        if(force || lastCheckTime + checkTimeout < System.currentTimeMillis()) {
+            lastCheckTime = System.currentTimeMillis();
+            ProcessRunner runner = new ProcessRunner();
+            List<String> commands = new ArrayList<>(Arrays.asList(VIPS, VERSION_PARAMETER));
+            try {
+                ProcessContext processContext = runner.execute(commands);
+                vipsInstalled = processContext.getExitCode() == 0;
+            } catch(ExternalProcessException e) {
+                log.error("Failed to execute VIPS", e);
+                vipsInstalled = false;
+            }
         }
-        return answer;
+        return vipsInstalled;
+    }
+
+
+    protected void configure(boolean enabled, String transformationName) {
+        this.enabled = enabled;
+        this.transformationName = transformationName == null || transformationName.isEmpty() ?
+            getDefaultTransformationName() :
+            transformationName;
+        if(enabled) {
+            if(transformationName.isEmpty()) {
+                throw new IllegalArgumentException(TRANSFORMATION_NAME_CANNOT_BE_EMPTY);
+            }
+            checkVips(true);
+        }
     }
 
     /**
@@ -112,60 +143,75 @@ public abstract class AbstractVipsImageTransformation
     protected void transform0(ImageContext imageContext, String operationName, String...parameters)
         throws TransformationException
     {
-        if(imageContext == null) { throw new TransformationException(IMAGE_CONTEXT_MUST_BE_DEFINED_FOR_TRANSFORMATION); }
-        if(isEmpty(operationName)) { throw new TransformationException(VIPS_OPERATION_NAME_CANNOT_BE_EMPTY); }
-        String sourceExtension = getMimeTypeService().getExtension(imageContext.getSourceMimeType());
-        if(sourceExtension == null) { sourceExtension = imageContext.getSourceMimeType(); }
-        String targetExtension = getMimeTypeService().getExtension(imageContext.getTargetMimeType());
-        if(targetExtension == null) { targetExtension = imageContext.getTargetMimeType(); }
-        String name = "transformation.in." + System.currentTimeMillis() + "." + sourceExtension;
-        Path temporaryFolder = createTempFolder();
-        if(temporaryFolder != null) {
-            File input = writeToFile(temporaryFolder, name, imageContext.getImageStream());
-            if(input == null) {
-                throw new TransformationException(COULD_NOT_CREATE_INPUT_FILE + name);
-            }
-            String outputFileName = "transformation.out." + System.currentTimeMillis() + "." + targetExtension;
-            File output = createTempFile(temporaryFolder, outputFileName);
-            if(output == null) {
-                throw new TransformationException(COULD_NOT_CREATE_OUTPUT_FILE + outputFileName);
-            }
-            ProcessRunner runner = new ProcessRunner();
-            List<String> commands = new ArrayList<>(Arrays.asList(VIPS, operationName));
-            boolean inputUsed = false, outputUsed = false;
-            for(String parameter: parameters) {
-                if(IN_TOKEN.equals(parameter)) {
-                    commands.add(input.getAbsolutePath());
-                    inputUsed = true;
-                } else
-                if(OUT_TOKEN.equals(parameter)) {
-                    commands.add(output.getAbsolutePath());
-                    outputUsed = true;
-                } else {
-                    commands.add(parameter);
-                }
-            }
-            if(!inputUsed) {
-                throw new IllegalArgumentException(INPUT_WAS_NOT_USED_IN);
-            }
-            InputStream inputStream = null;
-            try {
-                ProcessContext processContext = runner.execute(commands);
-                if(processContext.getExitCode() > 0) {
-                    throw new TransformationException(String.format(FAILED_TO_EXECUTE_VIPS_OPERATION_WITH_CODE, operationName, processContext.getExitCode()));
-                }
-                if(outputUsed) {
-                    inputStream = openFileInput(temporaryFolder, output.getName());
-                } else {
-                    inputStream = openFileInput(temporaryFolder, input.getName());
-                }
-                imageContext.resetImageStream(inputStream);
-            } catch(ExternalProcessException e) {
-                log.error("Failed to execute VIPS", e);
-                throw new TransformationException(FAILED_TO_EXECUTE_VIPS_OPERATION + operationName, e);
-            }
+        if(!enabled) {
+            log.debug("Image Transformation: '{}' is not enabled and so it is ignored", transformationName);
         } else {
-            throw new TransformationException(COULD_NOT_CREATE_TEMPORARY_FOLDER + name);
+            if (imageContext == null) {
+                throw new TransformationException(IMAGE_CONTEXT_MUST_BE_DEFINED_FOR_TRANSFORMATION);
+            }
+            if (isEmpty(operationName)) {
+                throw new TransformationException(VIPS_OPERATION_NAME_CANNOT_BE_EMPTY);
+            }
+            if (checkVips()) {
+                String sourceExtension = getMimeTypeService().getExtension(imageContext.getSourceMimeType());
+                if (sourceExtension == null) {
+                    sourceExtension = imageContext.getSourceMimeType();
+                }
+                String targetExtension = getMimeTypeService().getExtension(imageContext.getTargetMimeType());
+                if (targetExtension == null) {
+                    targetExtension = imageContext.getTargetMimeType();
+                }
+                String name = "transformation.in." + System.currentTimeMillis() + "." + sourceExtension;
+                Path temporaryFolder = createTempFolder();
+                if (temporaryFolder != null) {
+                    File input = writeToFile(temporaryFolder, name, imageContext.getImageStream());
+                    if (input == null) {
+                        throw new TransformationException(COULD_NOT_CREATE_INPUT_FILE + name);
+                    }
+                    String outputFileName = "transformation.out." + System.currentTimeMillis() + "." + targetExtension;
+                    File output = createTempFile(temporaryFolder, outputFileName);
+                    if (output == null) {
+                        throw new TransformationException(COULD_NOT_CREATE_OUTPUT_FILE + outputFileName);
+                    }
+                    ProcessRunner runner = new ProcessRunner();
+                    List<String> commands = new ArrayList<>(Arrays.asList(VIPS, operationName));
+                    boolean inputUsed = false, outputUsed = false;
+                    for (String parameter : parameters) {
+                        if (IN_TOKEN.equals(parameter)) {
+                            commands.add(input.getAbsolutePath());
+                            inputUsed = true;
+                        } else if (OUT_TOKEN.equals(parameter)) {
+                            commands.add(output.getAbsolutePath());
+                            outputUsed = true;
+                        } else {
+                            commands.add(parameter);
+                        }
+                    }
+                    if (!inputUsed) {
+                        throw new IllegalArgumentException(INPUT_WAS_NOT_USED_IN);
+                    }
+                    InputStream inputStream = null;
+                    try {
+                        ProcessContext processContext = runner.execute(commands);
+                        if (processContext.getExitCode() > 0) {
+                            throw new TransformationException(String.format(FAILED_TO_EXECUTE_VIPS_OPERATION_WITH_CODE, operationName, processContext.getExitCode()));
+                        }
+                        if (outputUsed) {
+                            inputStream = openFileInput(temporaryFolder, output.getName());
+                        } else {
+                            inputStream = openFileInput(temporaryFolder, input.getName());
+                        }
+                        imageContext.resetImageStream(inputStream);
+                    } catch (ExternalProcessException e) {
+                        log.error("Failed to execute VIPS", e);
+                        throw new TransformationException(FAILED_TO_EXECUTE_VIPS_OPERATION + operationName, e);
+                    }
+                } else {
+                    throw new TransformationException(COULD_NOT_CREATE_TEMPORARY_FOLDER + name);
+                }
+            } else {
+                log.debug("VIPS not installed -> ignore transformation: '{}'", transformationName);
+            }
         }
     }
 

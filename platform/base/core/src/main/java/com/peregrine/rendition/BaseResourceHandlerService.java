@@ -83,9 +83,9 @@ public class BaseResourceHandlerService
         ImageContext answer = null;
 
         String targetMimeType = mimeTypeService.getMimeType(renditionName);
-
+        logger.trace("Target Mime Type for rendition: '{}': '{}'", renditionName, targetMimeType);
         List<ImageTransformationConfiguration> imageTransformationConfigurationList =
-            imageTransformationConfigurationProvider.getImageTransformationConfigurations(renditionName);
+            imageTransformationConfigurationProvider.getImageTransformationConfigurations(renditionName, resource.getPath());
         if(imageTransformationConfigurationList != null) {
             InputStream assetRenditionStream = asset.getRenditionStream(renditionName);
             if(assetRenditionStream != null) {
@@ -119,7 +119,7 @@ public class BaseResourceHandlerService
                 if(brokenImageResource != null) {
                     try {
                         InputStream brokenImageStream = getDataStream(brokenImageResource);
-                        imageTransformationConfigurationList = imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.no.crop.png");
+                        imageTransformationConfigurationList = imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.no.crop.png", "/");
                         answer = transform(renditionName, "image/svg+xml", brokenImageStream, PNG_MIME_TYPE, imageTransformationConfigurationList);
                     } catch(TransformationException e) {
                         logger.error("Transformation failed, image ignore", e);
@@ -153,7 +153,7 @@ public class BaseResourceHandlerService
 
         for(ImageTransformationConfiguration imageTransformationConfiguration : imageTransformationConfigurationList) {
             ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(imageTransformationConfiguration.getTransformationName());
-            //AS TODO: If Image Transformation is not found then thow a Transformation Exception
+            //AS TODO: If Image Transformation is not found then throw a Transformation Exception
             if(imageTransformation != null) {
                 Map<String, String> parameters = imageTransformationConfiguration.getParameters();
                 OperationContext operationContext = new OperationContext(renditionName, parameters);

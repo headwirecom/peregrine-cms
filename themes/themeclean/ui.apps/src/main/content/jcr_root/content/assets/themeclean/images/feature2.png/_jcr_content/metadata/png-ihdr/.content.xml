@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="sling:Folder"
+    bits_per_sample="8"
+    color_type="True Color with Alpha"
+    compression_type="Deflate"
+    filter_method="Adaptive"
+    image_height="1266"
+    image_width="1280"
+    interlace_method="No Interlace"/>
