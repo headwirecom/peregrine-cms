@@ -26,7 +26,7 @@
   org.apache.sling/org.apache.sling.junit.core/1.0.26
   org.apache.sling/org.apache.sling.distribution.api/0.3.0
 # Install Commons-Test bundle to make sure the server-side test bundle has the necessary classes available (AbstractTest)
-  com.peregrine-cms/commons-test/1.0-SNAPSHOT
+  com.peregrine-cms/commons-test/1.0.0-SNAPSHOT
 
 # additional configuration for testing
 [configurations]

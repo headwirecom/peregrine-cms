@@ -21,11 +21,11 @@ under the License.
     <parent>
       <groupId>com.peregrine-cms</groupId>
       <artifactId>parent</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>com.peregrine-cms.featuremodel.starter</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Feature model of Peregrine CMS / Sling 11</name>
     <packaging>slingosgifeature</packaging>
 
