@@ -54,12 +54,13 @@ public class PerConstants {
     public static final String SLASH = "/";
     public static final String DASH = "-";
 
-    public static final String JSON_MIME_TYPE = "application/json";
+    public static final String JSON_MIME_TYPE = "application/json;charset=utf-8";
     public static final String HTML_MIME_TYPE = "text/html";
     public static final String DATA_JSON_EXTENSION = ".data.json";
 
     public static final String PNG_MIME_TYPE = "image/png";
     public static final String JPEG_MIME_TYPE = "image/jpeg";
+    public static final String WEBP_MIME_TYPE = "image/webp";
     //AS Does that exist?
     public static final String JPG_MIME_TYPE = "image/jpg";
     public static final String TEXT_MIME_TYPE = "plain/text";
@@ -93,6 +94,8 @@ public class PerConstants {
     public static final String PARENT_PATH = "parentPath";
     public static final String CONTENT = "content";
     public static final String TITLE = "title";
+    public static final String TAGS = "tags";
+    public static final String METAPROPERTIES = "metaproperties";
 
     public static final String PAGE = "page";
     public static final String DROP = "drop";
