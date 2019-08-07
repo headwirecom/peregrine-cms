@@ -42,6 +42,7 @@ import sourceImageWizard from './stateActions/sourceImageWizard'
 import fetchExternalAsset from './stateActions/fetchExternalAsset'
 import createFolder from './stateActions/createFolder'
 import deleteFolder from './stateActions/deleteFolder'
+import deleteFile from './stateActions/deleteFile'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
 import editTemplate from './stateActions/editTemplate'
@@ -91,6 +92,7 @@ actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
 actions['createFolder'] = createFolder
 actions['deleteFolder'] = deleteFolder
+actions['deleteFile'] = deleteFile
 actions['uploadFiles'] = uploadFiles
 actions['sourceImageWizard'] = sourceImageWizard
 actions['fetchExternalAsset'] = fetchExternalAsset

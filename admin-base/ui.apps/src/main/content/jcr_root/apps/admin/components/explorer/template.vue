@@ -502,7 +502,7 @@
             },
             deleteSiteOrPage: function(me, target) {
                 if(me.path == '/content/sites') {
-                    me.deleteSite(target.name, target.path)
+                    me.deleteSite(me, target)
                 }
                 else {
                     me.deletePage(me, target)
@@ -518,14 +518,18 @@
                         $perAdminApp.stateAction('deleteAsset', target.path)
                 } else if(resourceType === 'sling:OrderedFolder') {
                     $perAdminApp.stateAction('deleteFolder', target.path)
-                } else {
+                } else if(resourceType === 'per:Page') {
                     $perAdminApp.stateAction('deletePage', target.path)
+                } else if(resourceType === 'nt:file') {
+                    $perAdminApp.stateAction('deleteFile', target.path)
+                }else {
+                    $perAdminApp.stateAction('deleteFolder', target.path)
                 }
             },
-            deleteSite: function(name, path) {
+            deleteSite: function(me, target) {
                 const really = confirm('Are you sure you want to delete this site, its children, and generated content and components?')
                 if(!really) return
-                $perAdminApp.stateAction('deleteSite', name, path)
+                $perAdminApp.stateAction('deleteSite', target)
             },
             editPage: function(me, target) {
                 const path = me.pt.path

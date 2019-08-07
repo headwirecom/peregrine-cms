@@ -170,6 +170,10 @@ class PerApi {
         return impl.deleteFolder(parentPath, name)
     }
 
+    deleteFile(path, name) {
+        return impl.deleteFile(path, name)
+    }
+
     uploadFiles(path, files, cb) {
         return impl.uploadFiles(path, files, cb)
     }
