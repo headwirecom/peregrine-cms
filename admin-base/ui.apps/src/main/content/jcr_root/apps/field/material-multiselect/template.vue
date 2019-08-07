@@ -22,7 +22,7 @@
 		mixins: [ VueFormGenerator.abstractField ], 
 		methods: {
 			removeOption: function(removedOption, id) {
-				if( "path"  in removedOption ) {
+				if( removedOption.hasOwnProperty('path') ) {
 					let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
 					let copy = JSON.parse(JSON.stringify(removedOption));
 					copy._opDelete = true;
