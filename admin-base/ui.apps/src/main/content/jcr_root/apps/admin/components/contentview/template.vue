@@ -42,7 +42,7 @@
                     v-on:dragstart = "onDragStart"
                     v-on:touchstart = "onEditableTouchStart"
                     v-on:touchend  = "onEditableTouchEnd">
-                    <div v-show="inlineContent && enableEditableFeatures" style="background-color: white;" >
+                    <div v-show="editorVisible && inlineContent && enableEditableFeatures" style="background-color: white;" >
                         <div v-once contentEditable="true" v-on:input.stop.prevent="onInput" ref="inlineEdit">inline edit here</div>
                     </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
@@ -163,17 +163,18 @@ export default {
                     answer = answer[segments[i]]
                     if(!answer) return undefined
                 }
-                console.log(answer)
                 return answer
             } else {
                 return undefined
             }
+        },
+        editorVisible() {
+            return $perAdminApp.getNodeFromViewOrNull('/state/editorVisible')
         }
     },
 
     methods: {
         onInput(event) {
-            console.log(event)
             if(this.inline) {                
                 var targetEl = this.selectedComponent
                 if(targetEl == null || targetEl === undefined) return undefined
@@ -406,6 +407,12 @@ export default {
                     this.selectedComponent = targetEl
                     this.inline = target.inline ? target.inline.getAttribute('data-per-inline-edit') : undefined
                     if(this.inline) {
+                        const style = window.getComputedStyle(target.inline)
+
+                        // copy styles from original element into this one
+                        let cssText = style.cssText
+                        cssText = cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+                        this.$refs.inlineEdit.setAttribute('style', cssText)
                         this.$refs.inlineEdit.innerHTML = target.inline.innerHTML
                     }
                     var targetBox = this.getBoundingClientRect(targetEl)
