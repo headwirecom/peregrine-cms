@@ -174,7 +174,7 @@
           },
           onOk: function() {
             let {data,show} = this.currentObject;
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
 
             //Find child nodes with subchildren for our edited object
             for ( const key in data) {
