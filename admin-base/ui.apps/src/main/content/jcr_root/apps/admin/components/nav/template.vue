@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,9 +27,9 @@
     <div class="nav-wrapper blue-grey darken-3">
       <div class="col s12">
         <div class="brand-logo">
-          <admin-components-action 
-            v-bind:model="{ 
-              command: 'selectPath', 
+          <admin-components-action
+            v-bind:model="{
+              command: 'selectPath',
               target: '/content/admin',
               classes: 'peregrine-logo',
               tooltipTitle: $i18n('home')
@@ -72,10 +72,9 @@
         </ul>
       </div>
     </div>
-    <template v-for="child in model.children">
+      <template v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-
+      </template>
 </nav>
 </template>
 

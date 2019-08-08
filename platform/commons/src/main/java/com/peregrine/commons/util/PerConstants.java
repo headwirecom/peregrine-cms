@@ -1,6 +1,11 @@
 package com.peregrine.commons.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Commonly used Constants in Peregrine
@@ -8,6 +13,7 @@ import java.util.Locale;
  * Created by Andreas Schaefer on 6/19/17.
  */
 public class PerConstants {
+
     public static final String JCR_CONTENT = "jcr:content";
     public static final String JCR_DATA = "jcr:data";
     public static final String NT_FOLDER = "nt:folder";
@@ -47,6 +53,7 @@ public class PerConstants {
     public static final String CHILD_COUNT = "childCount";
 
     public static final String DISTRIBUTION_SUB_SERVICE = "peregrine-distribution-sub-service";
+    public static final String RESOURCE_CHANGE_LISTENER = "metaproc-resource-change-listener";
 
     public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     public static final Locale ECMA_DATE_FORMAT_LOCALE = Locale.US;
@@ -99,9 +106,42 @@ public class PerConstants {
     public static final String DROP = "drop";
     public static final String JACKSON = "jackson";
     public static final String JSON = "json";
+    public static final String XML = "xml";
+    public static final String HTML = "html";
+    public static final String TXT = "txt";
 
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
     public static final String DEPENDENCIES = "dependencies";
+
+    public static final String STANDALONE = "local";
+    public static final String AUTHOR_RUN_MODE = "author";
+    public static final String PUBLISH_RUN_MODE = "publish";
+
+    public static final String PROTOCOL = "protocol";
+    public static final String HOSTNAME = "hostname";
+    public static final String CANONICAL_LINK_ELEMENT = "canonicalLink";
+    public static final String HIDE_IN_NAVIGATION = "hideInNav";
+    public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
+    public static final String CHANGE_FREQUENCY = "changefreq";
+    public static final String PRIORITY = "priority";
+    public static final String DISALLOW_FROM_ROBOTS = "disallowFromRobots";
+
+    public static final List<Pair<String, ?>> PAGE_PROPERTIES = Stream
+        .of(Pair.of(PROTOCOL, "https://"),
+            Pair.of(HOSTNAME, "www.metaproc.com"),
+            Pair.of(CANONICAL_LINK_ELEMENT, "https://www.metaproc.com"),
+            Pair.of(HIDE_IN_NAVIGATION, false),
+            Pair.of(EXCLUDE_FROM_SITEMAP, false),
+            Pair.of(CHANGE_FREQUENCY, "weekly"),
+            Pair.of(PRIORITY, "0.5"),
+            Pair.of(DISALLOW_FROM_ROBOTS, false))
+        .collect(Collectors.toCollection(ArrayList::new));
+
+    public static final String SITEMAP_SERVLET_PATH = "perapi/admin/sitemap";
+    public static final String ROBOTS_SERVLET_PATH = "perapi/admin/robots";
+
+    public static final String PAGE_RESOURCE_PREDICATE = "[jcr:primaryType] is 'per:Page' and [jcr:content/jcr:primaryType] is 'per:PageContent'";
+    public static final String SITEMAP_RESOURCE_PREDICATE = "[sling:resourceType] is '" + SITEMAP_SERVLET_PATH + "'";
 }
 
