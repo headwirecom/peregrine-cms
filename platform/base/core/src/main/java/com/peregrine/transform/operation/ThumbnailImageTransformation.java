@@ -174,6 +174,6 @@ public class ThumbnailImageTransformation
             parameters.add(CENTRE);
         }
         log.trace("Thumbnail Image: name: '{}', height: '{}', width: '{}', no-crop: '{}'", getTransformationName(), height, width, noCrop);
-        transform0(imageContext, VIPS, OPERATION_NAME, parameters.toArray(new String[] {}));
+        transform0(imageContext, OPERATION_NAME, parameters.toArray(new String[] {}));
     }
 }

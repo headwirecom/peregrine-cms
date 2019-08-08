@@ -25,6 +25,7 @@ package com.peregrine.nodetypes.models;
  * #L%
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
@@ -32,6 +33,8 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;

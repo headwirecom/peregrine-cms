@@ -2,13 +2,9 @@ branches:
   only:
   - master
   - develop
-  - develop-sling11
 
 services:
 - docker
-
-jdk:
-- openjdk11
 
 env:
   global:
@@ -20,6 +16,7 @@ env:
 before_script:
 - branch="$(echo ${TRAVIS_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]')"
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
+- tag="${branch}-${version}"
 
 script:
 - cd docker && ./builddocker.sh
@@ -29,11 +26,18 @@ after_script:
 
 before_deploy:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${tag}"
 
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script: bash ${TRAVIS_BUILD_DIR}/scripts/docker-push.sh ${TRAVIS_BRANCH}
-    on:
-      tags: true
-      all_branches: true
+  # Stable release
+  provider: script
+  script: docker push ${DOCKER_IMAGE}:${tag}
+  on:
+    branch: master
+  # Development release
+  provider: script
+  script: docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
+  on:
+    branch: develop

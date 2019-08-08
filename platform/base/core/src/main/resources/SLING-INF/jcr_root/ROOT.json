@@ -1,8 +1,0 @@
-{
-  "sling:resourceType": "sling:redirect",
-  "sling:target": "/index.html",
-  "content" : {
-    "sling:resourceType": "sling:redirect",
-    "sling:target": "/index.html"
-  }
-}
