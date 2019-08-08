@@ -42,6 +42,9 @@
                     v-on:dragstart = "onDragStart"
                     v-on:touchstart = "onEditableTouchStart"
                     v-on:touchend  = "onEditableTouchEnd">
+                    <div v-show="inlineContent && enableEditableFeatures" style="background-color: white;" >
+                        <div v-once contentEditable="true" v-on:input.stop.prevent="onInput" ref="inlineEdit">inline edit here</div>
+                    </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
@@ -110,7 +113,8 @@ export default {
             scrollTop: 0,
             isTouch: false,
             isIOS: false,
-            editableTimer: null
+            editableTimer: null,
+            inline: undefined
         }
     },
     watch: {
@@ -145,10 +149,46 @@ export default {
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if(!node) return false
             return !node.fromTemplate
+        },
+        inlineContent: function() {
+            if(this.inline) {
+                var targetEl = this.selectedComponent
+                if(targetEl == null || targetEl === undefined) return undefined
+                const path = targetEl.getAttribute('data-per-path')
+                if(path === undefined || path === null) return undefined
+                let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                const segments = this.inline.split('.')
+                segments.shift()
+                for(let i = 0; i < segments.length; i++) {
+                    answer = answer[segments[i]]
+                    if(!answer) return undefined
+                }
+                console.log(answer)
+                return answer
+            } else {
+                return undefined
+            }
         }
     },
 
     methods: {
+        onInput(event) {
+            console.log(event)
+            if(this.inline) {                
+                var targetEl = this.selectedComponent
+                if(targetEl == null || targetEl === undefined) return undefined
+                const path = targetEl.getAttribute('data-per-path')
+                if(path === undefined || path === null) return undefined
+                let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                const segments = this.inline.split('.')
+                segments.shift()
+                for(let i = 0; i < segments.length -1; i++) {
+                    answer = answer[segments[i]]
+                    if(!answer) return undefined
+                }
+                answer[segments[length-1]] = event.target.innerHTML
+            }
+        },
         /* Window/Document methods =================
         ============================================ */
         onKeyDown(ev){
@@ -337,18 +377,24 @@ export default {
 //                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
 //            }
             var targetEl = this.findIn(editview.contentWindow.document.body, pos)
-            if(!targetEl) return
+            if(!targetEl) return { targetEl: undefined, inline: undefined }
 
+            let inline = targetEl.getAttribute('data-per-inline-edit') ? targetEl : undefined
             while(!targetEl.getAttribute('data-per-path')) {
                 targetEl = targetEl.parentElement
+                if(!inline && targetEl.getAttribute('data-per-inline-edit')) {
+                    inline = targetEl
+                }
                 if(!targetEl) { break }
             }
-            return targetEl
+            return { targetEl, inline }
         },
 
         onClickOverlay: function(e) {
             if(!e) return
-            var targetEl = this.getTargetEl(e)
+            if(e.target && e.target.getAttribute('contenteditable') === 'true') return;
+            const target = this.getTargetEl(e)
+            let targetEl = target.targetEl
             if(targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
@@ -358,6 +404,10 @@ export default {
                     })
                 } else {
                     this.selectedComponent = targetEl
+                    this.inline = target.inline ? target.inline.getAttribute('data-per-inline-edit') : undefined
+                    if(this.inline) {
+                        this.$refs.inlineEdit.innerHTML = target.inline.innerHTML
+                    }
                     var targetBox = this.getBoundingClientRect(targetEl)
                     this.setEditableStyle(targetBox, 'selected')
                     $perAdminApp.action(this, 'showComponentEdit', path)
@@ -369,7 +419,7 @@ export default {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
 
             // check if we only left the area into the overlay for the actions
-            var targetEl = this.getTargetEl(e)
+            var targetEl = this.getTargetEl(e).targetEl
             if(targetEl) return
             this.removeEditOverlay()
         },
@@ -383,7 +433,7 @@ export default {
         mouseMove: function(e) {
             if(!e || this.isTouch) return
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
-            var targetEl = this.getTargetEl(e)
+            var targetEl = this.getTargetEl(e).targetEl
             if(targetEl) {
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
@@ -404,7 +454,7 @@ export default {
 
         onDragOver(ev) {
             ev.preventDefault()
-            var targetEl = this.getTargetEl(ev)
+            var targetEl = this.getTargetEl(ev).targetEl
 
             if(targetEl) {
                 var pos = this.getPosFromMouse(ev)
@@ -443,7 +493,7 @@ export default {
         onDrop(ev) {
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
-            var targetEl = this.getTargetEl(ev)
+            var targetEl = this.getTargetEl(ev).targetEl
             if(typeof targetEl === 'undefined' || targetEl === null){
                 return false
             }
