@@ -4,7 +4,7 @@
 
     <groupId>com.peregrine-cms</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Peregrine CMS Root</name>
@@ -18,6 +18,7 @@
 
     <properties>
         <node.version>v10.15.0</node.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <sling.host>localhost</sling.host>
         <sling.port>8080</sling.port>
@@ -29,11 +30,11 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- OSGi Dependency Versions -->
-        <osgi.core>6.0.0</osgi.core>
-        <osgi.annotation.version>6.0.1</osgi.annotation.version>
-        <org.osgi.service.component.annotations.version>1.3.0</org.osgi.service.component.annotations.version>
-        <org.osgi.service.metatype.annotations.version>1.3.0</org.osgi.service.metatype.annotations.version>
-        <org.osgi.compendium.version>4.2.0</org.osgi.compendium.version>
+        <osgi.core>7.0.0</osgi.core>
+        <osgi.annotation.version>7.0.0</osgi.annotation.version>
+        <org.osgi.service.component.annotations.version>1.4.0</org.osgi.service.component.annotations.version>
+        <org.osgi.service.metatype.annotations.version>1.4.0</org.osgi.service.metatype.annotations.version>
+        <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
 
         <!-- Java Frameworks -->
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
@@ -47,20 +48,18 @@
         <org.apache.sling.commons.mime.version>2.1.10</org.apache.sling.commons.mime.version>
         <org.apache.sling.settings.version>1.3.8</org.apache.sling.settings.version>
         <org.apache.sling.commons.osgi.version>2.4.0</org.apache.sling.commons.osgi.version>
-        <org.apache.sling.models.api.version>1.3.4</org.apache.sling.models.api.version>
+        <org.apache.sling.models.api.version>1.3.6</org.apache.sling.models.api.version>
         <org.apache.sling.engine.version>2.6.12</org.apache.sling.engine.version>
         <org.apache.sling.scripting.sightly.compiler.java.version>1.0.18</org.apache.sling.scripting.sightly.compiler.java.version>
         <org.apache.sling.servlet-helpers.version>1.1.8</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.3.0</distribution.api.version>
-        <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
 
         <!-- Third Party Dependencies Versions -->
         <jackrabbit.version>2.14.4</jackrabbit.version>
-        <commons-lang.version>2.6</commons-lang.version>
-        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-lang3.version>3.7</commons-lang3.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <com.fasterxml.jackson.version>2.8.7</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.9.3</com.fasterxml.jackson.version>
         <guava.version>15.0</guava.version>
         <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version>
         <metadata-extractor.version>2.10.1</metadata-extractor.version>
@@ -73,7 +72,7 @@
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
         <org.apache.sling.junit.core.version>1.0.14</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>1.0.0</org.apache.sling.testing.clients.version>
-        <org.apache.sling.junit.teleporter.version>1.0.16</org.apache.sling.junit.teleporter.version>
+        <org.apache.sling.junit.teleporter.version>1.0.18</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
@@ -355,11 +354,6 @@
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>1.3</version>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-scr-plugin</artifactId>
-                    <version>1.21.0</version>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -376,7 +370,7 @@
             <!-- OSGi Dependencies -->
             <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
+                <artifactId>osgi.core</artifactId>
                 <version>${osgi.core}</version>
                 <scope>provided</scope>
             </dependency>
@@ -522,14 +516,7 @@
                 <version>${org.apache.sling.servlet-helpers.version}</version>
             </dependency>
 
-
             <!-- Support -->
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
@@ -625,6 +612,11 @@
                 <version>${slf4j.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.commons.testing</artifactId>
+                <version>${org.apache.sling.commons.testing.version}</version>
+            </dependency>
 
             <!-- IT Tests Support -->
             <dependency>
@@ -657,9 +649,6 @@
     <profiles>
         <profile>
             <id>sign</id>
-            <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
             <build>
                 <plugins>
                     <plugin>
@@ -742,13 +731,6 @@
                          the official subject of any release vote. -->
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <!--<dependencies>-->
-                            <!--<dependency>-->
-                                <!--<groupId>com.peregrine-cms.resources</groupId>-->
-                                <!--<artifactId>apache-source-release-assembly-descriptor</artifactId>-->
-                                <!--<version>1.0.3</version>-->
-                            <!--</dependency>-->
-                        <!--</dependencies>-->
                         <executions>
                             <execution>
                                 <id>source-release-assembly</id>
@@ -761,10 +743,6 @@
                                     <descriptors>
                                         <descriptor>src/main/resources/assemblies/${sourceReleaseAssemblyDescriptor}.xml</descriptor>
                                     </descriptors>
-                                    <!--<descriptorRefs>-->
-                                        <!--<descriptorRef>${sourceReleaseAssemblyDescriptor}</descriptorRef>-->
-                                    <!--</descriptorRefs>-->
-                                    <!--<tarLongFileFormat>gnu</tarLongFileFormat>-->
                                 </configuration>
                             </execution>
                         </executions>
@@ -790,19 +768,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!--AS TODO: Do we need that here? -->
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-javadoc-plugin</artifactId>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>attach-javadocs</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>jar</goal>-->
-                                <!--</goals>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
                     <!-- We want to sign the artifact, the POM, and all attached artifacts -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

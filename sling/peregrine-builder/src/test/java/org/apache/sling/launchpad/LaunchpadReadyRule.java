@@ -38,8 +38,8 @@ public class LaunchpadReadyRule extends ExternalResource {
 
     public LaunchpadReadyRule(int launchpadPort) {
 
-        checks.add(new Check("http://localhost:" + launchpadPort + "/server/default/jcr:root"));
-        checks.add(new Check("http://localhost:" + launchpadPort + "/index.html") {
+        checks.add(new Check("http://localhost:" + launchpadPort + "/server/default/jcr:root/content"));
+        checks.add(new Check("http://localhost:" + launchpadPort + "/content/starter/index.html") {
             @Override
             public String runCheck(HttpResponse response) throws Exception {
                 try (InputStreamReader isr = new InputStreamReader(response.getEntity().getContent());
@@ -47,7 +47,7 @@ public class LaunchpadReadyRule extends ExternalResource {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        if (line.contains("Do not remove this comment, used for Launchpad integration tests")) {
+                        if (line.contains("Do not remove this comment, used for Starter integration tests")) {
                             return null;
                         }
                     }

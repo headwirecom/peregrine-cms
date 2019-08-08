@@ -26,6 +26,9 @@
 
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="sling:OsgiConfig"
-          setupName="scaling100.png"
-          imageTransformationConfigurations="[transformation=vips:thumbnail|width=400|height=-1|noCrop=true]"
+          enabled="{Boolean}true"
+          transformationName="vipsthumbnail"
+          command="vipsthumbnail"
+          cli="[{in},-o,{out},--size,{{size}},{{crop}}]"
+          notes="The only Parameter that needs to be provided is the 'size' in a format 'WIDTHxHEIGTH'. One Value can be omitted but keep the 'x'"
 />

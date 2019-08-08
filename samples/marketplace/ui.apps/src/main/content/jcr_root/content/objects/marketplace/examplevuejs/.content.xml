@@ -5,5 +5,5 @@
           name="examplevuejs"
           description="an example object"
           sling:resourceType="marketplace/objects/product"
-          link="http://www.peregrine-cms.com/content/assets/marketplace/examplevuejs/example-vue.ui.apps-1.0-SNAPSHOT.zip"
+          link="http://www.peregrine-cms.com/content/assets/marketplace/examplevuejs/example-vue.ui.apps-1.0.0-SNAPSHOT.zip"
 />

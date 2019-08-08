@@ -290,7 +290,7 @@
             <!-- OSGi Dependencies -->
             <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
+                <artifactId>osgi.core</artifactId>
                 <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
@@ -397,9 +397,9 @@
 
             <!-- Support -->
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.6</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.7</version>
             </dependency>
 
             <!-- Basic dependencies for Unit Tests -->

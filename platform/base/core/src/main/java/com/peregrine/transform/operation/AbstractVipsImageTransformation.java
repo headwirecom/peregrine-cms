@@ -135,12 +135,13 @@ public abstract class AbstractVipsImageTransformation
      * Transforms an image using the given Operation Name and Parameters
      *
      * @param imageContext Context of the Image to be transformed which cannot be null
-     * @param operationName VIPS Operation Name which cannot be empty
+     * @param command Name of the command. If or null empty it will use thd default 'vips'
+     * @param operationName VIPS Operation Name which can only be empty if command is provided
      * @param parameters Optional Parameters for the VIPS Operation
      * @throws TransformationException If image context is null, operation name is empty, files cannot be created
      *         or the VIPS process executions fails
      */
-    protected void transform0(ImageContext imageContext, String operationName, String...parameters)
+    protected void transform0(ImageContext imageContext, String command, String operationName, String...parameters)
         throws TransformationException
     {
         if(!enabled) {
@@ -149,7 +150,10 @@ public abstract class AbstractVipsImageTransformation
             if (imageContext == null) {
                 throw new TransformationException(IMAGE_CONTEXT_MUST_BE_DEFINED_FOR_TRANSFORMATION);
             }
-            if (isEmpty(operationName)) {
+            if(isEmpty(command)) {
+                command = VIPS;
+            }
+            if(VIPS.equals(command) && isEmpty(operationName)) {
                 throw new TransformationException(VIPS_OPERATION_NAME_CANNOT_BE_EMPTY);
             }
             if (checkVips()) {
@@ -174,7 +178,11 @@ public abstract class AbstractVipsImageTransformation
                         throw new TransformationException(COULD_NOT_CREATE_OUTPUT_FILE + outputFileName);
                     }
                     ProcessRunner runner = new ProcessRunner();
-                    List<String> commands = new ArrayList<>(Arrays.asList(VIPS, operationName));
+                    List<String> commands = new ArrayList<>();
+                    commands.add(command);
+                    if(!isEmpty(operationName)) {
+                        commands.add(operationName);
+                    }
                     boolean inputUsed = false, outputUsed = false;
                     for (String parameter : parameters) {
                         if (IN_TOKEN.equals(parameter)) {
@@ -210,7 +218,8 @@ public abstract class AbstractVipsImageTransformation
                     throw new TransformationException(COULD_NOT_CREATE_TEMPORARY_FOLDER + name);
                 }
             } else {
-                log.debug("VIPS not installed -> ignore transformation: '{}'", transformationName);
+                log.trace("VIPS not installed -> ignore transformation: '{}'", transformationName);
+                imageContext.markAsFlawed();
             }
         }
     }

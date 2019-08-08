@@ -19,12 +19,12 @@
 [feature name=sling-with-composum]
 # Dependencies
 [artifacts]
-  org.apache.sling/org.apache.sling.launchpad/9/slingstart
+  org.apache.sling/org.apache.sling.starter/11/slingstart
   # this is necessary to execute the tests
   org.apache.sling/org.apache.sling.junit.core/1.0.26
   org.apache.sling/org.apache.sling.distribution.api/0.3.0
-  com.peregrine-cms/base.core/1.0-SNAPSHOT
-  com.peregrine-cms/testing.config.client/1.0-SNAPSHOT
+  com.peregrine-cms/base.core/1.0.0-SNAPSHOT
+  com.peregrine-cms/testing.config.client/1.0.0-SNAPSHOT
 
 # additional configuration for testing
 [configurations]

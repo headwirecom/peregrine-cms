@@ -90,6 +90,7 @@ go through these steps.
 ### Setup Runmodes for Author / Publish
 
 1. Create an **Author** and **Publish** instance using **percli** service
+(`percli server install author` and `percli server install publish`)
 
 or
 
@@ -196,3 +197,47 @@ appropriately otherwise the UI will not be able to distribute.
 
 That said there can be many more default distribution created and set up as a convenient
 way to manage contribution.
+
+# Sling Distribution Setup
+
+Peregrine is installing the **Sling Distribution Sample** in order to setup the
+Sling Distribution. It comes with the all the necessary services configured
+to make Sling Distribution work including the **publish** Forward Agent that is
+used to replicate to other Peregrine instances. That said these configurations
+are samples and need to be adjusted for you needs like the **Distribution
+Transport Secret Provider** to adjust user name and password and the **Forward
+Agent** to adjust to the target (Import Endpoints) URL.
+
+The **Forward Agent** is the service responsible to send the content to another
+Sling instance but it depends on many other services in order to work. These
+must be configured in order for the Distribution to work. Please have a look
+at the Distribution Sample to checkout what is needed. For the Remote Distribution
+have a look at these configuration files:
+
+1. org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory-default.json
+2. org.apache.sling.distribution.transport.impl.UserCredentialsDistributionTransportSecretProvider-default.json
+3. org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPackageBuilderFactory-default.json in the **install.notshared** folder
+4. org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory-publish.json in the **install.author/publish** folder
+5. org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-distributionAgentService.json
+
+Also make sure that the user **distribution-agent-user** is created as **System User**
+in the Composum User editor.
+
+## Setup Issues
+
+Setting up the Sling Distribution is not easy and the available configuration is
+not complete. In case the distribution is not working please try these steps:
+1. Take the URL from the Swagger UI (curl URL) and add '=u admin:admin' at the front and
+look at the response as the Swagger UI is not showing the error response
+2. If the call fails with Agent not found then:
+    1. Go to System Console Components (System Console -> OSGi -> Components
+    2. Search for ForwardDistributionAgentFactory
+    3. If the Status of that service is not **active** then click on it
+       (if you have multiple then search for the one with the desired
+       name in the properties)
+    4. See which reference is in state **Unsatisfied** and then configure
+       that service. Afterwards refresh and check if that one is not satisfied
+    5. It might be that a referenced service also as unsatisfied references.
+       Repeat 3 and 4) for these sub services
+    5. Repeat until all references are satisfied and the component is **active**
+3. Tail the error.log file to see if there is an issue with Sling Distribution
