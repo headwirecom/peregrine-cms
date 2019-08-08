@@ -6,14 +6,13 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.peregrine.adaption.PerAsset;
-import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -22,28 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.*;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.version.VersionException;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static com.peregrine.commons.util.PerUtil.*;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -674,6 +659,7 @@ public class AdminResourceHandlerService
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
                 copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                updateStringsInFiles(targetResource, fromName, targetName);
             }
             answer = targetResource;
         }
@@ -712,6 +698,88 @@ public class AdminResourceHandlerService
         }
 
         return answer;
+    }
+
+    private void updateStringsInFiles(Resource targetResource, String fromName, String targetName) {
+        Resource contentResource = targetResource.getChild("jcr:content");
+        if (contentResource == null) {
+            logger.error("No jcr:content resource for resource '{}'", targetResource.getPath());
+            return;
+        }
+        Resource replacementsResource = contentResource.getChild("replacements");
+        if(replacementsResource == null) {
+            logger.info("No replacements defined for resource '{}'", targetResource.getPath());
+            return;
+        }
+
+        for(Resource fileChild : replacementsResource.getChildren()) {
+            //If the file resource doesn't have children, we don't need to do anything
+            //since the children define the actual replacements
+            if(fileChild.hasChildren()) {
+                String filename = fileChild.getName();
+                Resource fileResource = targetResource.getChild(filename);
+                if (fileResource != null) {
+                    String fileContent = null;
+                    try {
+                        fileContent = getFileContentAsString(fileResource);
+                    } catch (IOException e) {
+                        logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
+                    }
+
+                    if (StringUtils.isNotBlank(fileContent)) {
+                        String modifiedFileContent = fileContent;
+                        for(Resource replacementResource : fileChild.getChildren()) {
+                            ValueMap replacementProperties = replacementResource.getValueMap();
+                            String pattern = replacementProperties.get("regex", String.class);
+                            String replaceWith = replacementProperties.get("replaceWith", String.class);
+                            if(StringUtils.isNotBlank(pattern) && StringUtils.isNotBlank(replaceWith)) {
+                                //"_SITENAME_" is a placeholder for the actual new site name
+                                replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
+                                modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
+                            }
+                        }
+                        try {
+                            replaceFileContent(fileResource, modifiedFileContent);
+                        } catch (IOException e) {
+                            logger.error("IOException replacing contents of file " + fileResource.getPath(), e);
+                        } catch (RepositoryException e) {
+                            logger.error("RepositoryException replacing contents of file " + fileResource.getPath(), e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String getFileContentAsString(Resource fileResource) throws IOException {
+        InputStream is = fileResource.adaptTo(InputStream.class);
+        try {
+            String manifestContent = IOUtils.toString(is, StandardCharsets.UTF_8.name());
+            return manifestContent;
+        } finally {
+            is.close();
+        }
+    }
+
+    private void replaceFileContent(Resource fileResource, String newContent) throws IOException, RepositoryException {
+        if(fileResource == null)
+        {
+            logger.error("Could not replace file contents: resource was null");
+            return;
+        }
+        Node fileNode = fileResource.adaptTo(Node.class);
+        if(fileNode == null) {
+            logger.error("Could not replace file contents: could not adapt resource '{}' to node.", fileResource.getPath());
+            return;
+        }
+        String mimeType = "";
+        Resource fileContent = fileResource.getChild("jcr:content");
+        if(fileContent != null) {
+            ValueMap fileContentProperties = fileContent.getValueMap();
+            mimeType = fileContentProperties.get("jcr:mimeType", "");
+        }
+        InputStream newContentStream = IOUtils.toInputStream(newContent, StandardCharsets.UTF_8.name());
+        JcrUtils.putFile(fileNode.getParent(), fileNode.getName(), mimeType, newContentStream);
     }
 
     private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {
