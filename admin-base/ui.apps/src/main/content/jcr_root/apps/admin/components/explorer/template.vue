@@ -181,8 +181,6 @@
 </template>
 
 <script>
-    import deletePage from "../../../../../../js/stateActions/deletePage";
-
     export default {
         props: ['model'],
         data(){
@@ -509,7 +507,7 @@
                 }
             },
             deletePage: function(me, target) {
-                const really = confirm('Are you sure you want to delete this node and all its children?')
+                const really = confirm(me.$i18n('Are you sure you want to delete this node and all its children?'))
                 if(!really) return
                 const resourceType = target.resourceType
                 if(resourceType === 'per:Object') {
@@ -527,7 +525,7 @@
                 }
             },
             deleteSite: function(me, target) {
-                const really = confirm('Are you sure you want to delete this site, its children, and generated content and components?')
+                const really = confirm(me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'))
                 if(!really) return
                 $perAdminApp.stateAction('deleteSite', target)
             },
