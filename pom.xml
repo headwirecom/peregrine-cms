@@ -23,6 +23,19 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Ruben Reusser</name>
+            <organization>headwire.com inc.</organization>
+            <organizationUrl>https://www.headwire.com/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Gaston Gonzalez</name>
+            <organization>headwire.com inc.</organization>
+            <organizationUrl>https://www.headwire.com/</organizationUrl>
+        </developer>
+  </developers>
+
     <description>Peregrine CMS Root POM. It contains the plugin and dependencies definitions and profiles</description>
 
     <properties>
@@ -139,6 +152,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
