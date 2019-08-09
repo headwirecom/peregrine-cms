@@ -7,11 +7,11 @@
     "chai": "^4.2.0",
     "drag-mock": "^1.4.0",
     "html-dnd": "^1.2.0",
-    "selenium-standalone": "^6.15.4",
+    "selenium-standalone": "^6.16.0",
     "wdio-mocha-framework": "^0.6.4",
     "wdio-selenium-standalone-service": "^0.0.12",
     "wdio-spec-reporter": "^0.1.5",
-    "webdriverio": "^5.4.3"
+    "webdriverio": "^5.11.13"
   },
   "scripts": {
     "test": "wdio wdio.conf.js",
@@ -21,6 +21,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wdio": "^3.0.0"
+    "wdio": "^3.0.3"
   }
 }
