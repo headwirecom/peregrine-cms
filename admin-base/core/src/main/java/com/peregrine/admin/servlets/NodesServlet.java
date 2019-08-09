@@ -102,11 +102,14 @@ public class NodesServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    private void convertResource(JsonResponse json, Resource resource) throws IOException {
+    private void convertResource(JsonResponse json, Resource resource, boolean path) throws IOException {
         Iterable<Resource> children = resource.getChildren();
         for(Resource child : children) {
             json.writeObject();
             json.writeAttribute(NAME, child.getName());
+            if(path) {
+                json.writeAttribute(PATH, child.getPath());
+            }
             for (String key: child.getValueMap().keySet()) {
                 if(key.indexOf(":") < 0) {
                     json.writeAttribute(key, child.getValueMap().get(key, String.class));
@@ -114,6 +117,10 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             json.writeClose();
         }
+    }
+
+    private void convertResource(JsonResponse json, Resource resource) throws IOException {
+        convertResource(json, resource, false);
     }
 
     private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
@@ -175,7 +182,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Resource res = content.getChild(name);
         if (res != null) {
             json.writeArray(name);
-            convertResource(json, res);
+            convertResource(json, res, true);
             json.writeClose();
         }
     }
