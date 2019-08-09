@@ -17,7 +17,7 @@
     <description>Peregrine CMS Root POM. It contains the plugin and dependencies definitions and profiles</description>
 
     <properties>
-        <node.version>v10.15.0</node.version>
+        <node.version>v10.16.2</node.version>
 
         <sling.host>localhost</sling.host>
         <sling.port>8080</sling.port>

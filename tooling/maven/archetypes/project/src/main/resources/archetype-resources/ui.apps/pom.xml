@@ -95,9 +95,9 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <configuration>
+                <!-- <configuration>
                     <installDirectory>${nodepath}</installDirectory>
-                </configuration> 
+                </configuration>  -->
                 <version>1.4</version>
 
                 <executions>
@@ -107,7 +107,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v10.15.0</nodeVersion>
+                            <!-- archetype should be bound to a specific version of node -->
+                            <nodeVersion>10.16.2</nodeVersion>
                         </configuration>
                     </execution>
 
