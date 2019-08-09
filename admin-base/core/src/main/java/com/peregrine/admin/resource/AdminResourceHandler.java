@@ -162,7 +162,7 @@ public interface AdminResourceHandler {
      * @param target Target Node which must exit
      * @param deep If true child resources are created and copied over, too
      * @return Target Node
-     * @throws ManagementException
+     * @throws ManagementException If a management error occurs 
      */
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
 
@@ -174,7 +174,7 @@ public interface AdminResourceHandler {
      * @param fromName Name of the source Site which must exist
      * @param targetName Name of the target Site which cannot be null and must not exist
      * @return Resource of the Target Copy
-     * @throws ManagementException
+     * @throws ManagementException If a management error occurs 
      */
     public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException;
 
@@ -185,8 +185,7 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver to obtain the resources
      * @param sitesParentPath Absolute Path to Sites
      * @param name Name of the Site to delete
-     * @return
-     * @throws ManagementException
+     * @throws ManagementException If a management error occurs 
      */
     public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
 

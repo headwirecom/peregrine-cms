@@ -71,8 +71,8 @@ public interface PerAsset
      * @param dataStream Input Stream of the rendition image
      * @param mimeType Mime-Type of the Image
      *
-     * @throws PersistenceException
-     * @throws RepositoryException
+     * @throws PersistenceException If there's a persistence error
+     * @throws RepositoryException If there's a repository error
      */
     public void addRendition(String renditionName, InputStream dataStream, String mimeType) throws PersistenceException, RepositoryException;
 

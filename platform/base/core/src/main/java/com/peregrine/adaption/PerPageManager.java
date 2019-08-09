@@ -35,7 +35,10 @@ import java.util.Calendar;
  */
 public interface PerPageManager {
 
-    /** @return Per Page instance if page was found under the given path otherwise null **/
+    /**
+     * @param pagePath Page to get by path
+     * @return Per Page instance if page was found under the given path otherwise null
+     */
     public PerPage getPage(String pagePath);
 
     /**

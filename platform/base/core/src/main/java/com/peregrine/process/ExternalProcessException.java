@@ -48,12 +48,18 @@ public class ExternalProcessException
         super(message, cause);
     }
 
-    /** @eturn List of commands provided to the process **/
+    /**
+     * @return List of commands provided to the process 
+     */
     public List<String> getCommand() {
         return command;
     }
 
-    /** Sets the list of commands **/
+    /** 
+     * Sets the list of commands 
+     * @param command List of commands
+     * @return external process exception
+     */
     public ExternalProcessException setCommand(List<String> command) {
         this.command = command;
         return this;

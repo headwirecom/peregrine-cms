@@ -75,12 +75,18 @@ public class PerUtil {
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
-    /** @return True if the given text is either null or empty **/
+    /** 
+     * @param text Text to check 
+     * @return True if the given text is either null or empty 
+     */
     public static boolean isEmpty(String text) {
         return text == null || text.isEmpty();
     }
 
-    /** @return True if the given text is both not null and not empty **/
+    /** 
+     * @param text Text to check 
+     * @return True if the given text is both not null and not empty 
+     */
     public static boolean isNotEmpty(String text) {
         return text != null && !text.isEmpty();
     }
@@ -369,9 +375,9 @@ public class PerUtil {
     /**
      * Lists all the parent nodes between the child and the root if the root is one
      * of the child's parents. Both child and root and not included in the returned list
-     * @param root
-     * @param child
-     * @return
+     * @param root Root node
+     * @param child Child node
+     * @return A list of nodes on success, and an empty list otherwise.
      */
     public static List<Resource> listParents(Resource root, Resource child) {
         List<Resource> answer = new ArrayList<>();
@@ -568,7 +574,10 @@ public class PerUtil {
         return answer;
     }
 
-    /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
+    /** 
+     * @param resource Resource to check
+     * @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found 
+     */
     public static String getResourceType(Resource resource) {
         String answer = null;
         if(resource != null) {
@@ -583,7 +592,10 @@ public class PerUtil {
         return answer;
     }
 
-    /** @return The Mime Type of this resource (in the JCR Content resource) **/
+    /** 
+     * @param resource Resource to check
+     * @return The Mime Type of this resource (in the JCR Content resource)
+     */
     public static String getMimeType(Resource resource) {
         String answer = null;
         if(resource != null) {
@@ -615,9 +627,15 @@ public class PerUtil {
 
     /** Resource Check interface **/
     public static interface ResourceChecker {
-        /** @return True if the resource checks out **/
+        /**
+         * @param resource Resource to add
+         * @return True if the resource checks out
+         */
         public boolean doAdd(Resource resource);
-        /** @return False if the resource's children should not be considered **/
+        /** 
+         * @param resource Resource to add
+         * @return False if the resource's children should not be considered
+         */
         public boolean doAddChildren(Resource resource);
     }
 
