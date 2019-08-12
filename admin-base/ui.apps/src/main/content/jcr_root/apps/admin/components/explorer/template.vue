@@ -99,6 +99,15 @@
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
 
+                        <admin-components-action v-if="composumEditable(child)"
+                            v-bind:model="{
+                                target: child.path,
+                                command: 'editFile',
+                                tooltipTitle: `${$i18n('edit file')} '${child.title || child.name}'`
+                            }">
+                            <admin-components-iconeditpage></admin-components-iconeditpage>
+                        </admin-components-action>
+
                         <admin-components-action v-if="replicatable(child)"
                             v-bind:model="{
                                 target: child.path,
@@ -402,6 +411,9 @@
             editable: function(child) {
                 return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
             },
+            composumEditable: function(child) {
+                return ['nt:file'].indexOf(child.resourceType) >= 0
+            },
             viewable: function(child) {
                 return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
@@ -540,7 +552,11 @@
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }
+            },
+            editFile: function(me, target) {
+                window.open(`/bin/cpm/edit/code.html${target}`, 'composum')
             }
+
         }
 
     }
