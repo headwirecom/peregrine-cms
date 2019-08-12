@@ -443,6 +443,18 @@ class PerAdminImpl {
         })
     }
 
+    deleteSite(target) {
+        let name = target.name;
+        let root = '/content/sites';
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('name', name);
+            updateWithForm('/admin/deleteSite.json', data)
+                .then( (data) => this.populateNodesForBrowser(root) )
+                .then( () => resolve() )
+        })
+    }
+
     renamePage(path, newName) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
@@ -495,6 +507,15 @@ class PerAdminImpl {
     }
 
     deleteFolder(path) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
+    deleteFile(path) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             updateWithForm('/admin/deleteNode.json'+path, data)
