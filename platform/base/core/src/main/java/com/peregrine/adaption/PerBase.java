@@ -65,6 +65,7 @@ public interface PerBase
      * Provide Content Property
      * @param propertyName Name of the Property
      * @param type Response Type
+     * @param <T> Type
      * @return Content Property Value converted to the given type or null if not found or could not convert
      */
     public <T> T getContentProperty(String propertyName, Class<T> type);
@@ -73,6 +74,7 @@ public interface PerBase
      * Provide Content Property
      * @param propertyName Name of the Property
      * @param defaultValue Value to be returned if not found and cannot be null
+     * @param <T> Type
      * @return The content property of the type of the default value or if not found the default value instead
      */
     public <T> T getContentProperty(String propertyName, T defaultValue);

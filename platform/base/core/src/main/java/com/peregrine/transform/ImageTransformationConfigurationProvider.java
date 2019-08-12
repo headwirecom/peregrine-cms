@@ -100,6 +100,7 @@ public class ImageTransformationConfigurationProvider {
     /**
      * Provides the Image Transformation Configurations for a given Setup
      * @param name Image Transformation Setup name
+     * @param path Path to configuration
      * @return List of Image Transformation Configurations that belong to that Setup Name. If name is empty or no setup
      *         found the <code>null</code> is returned
      */

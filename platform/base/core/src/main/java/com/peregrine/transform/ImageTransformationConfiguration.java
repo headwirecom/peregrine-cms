@@ -114,12 +114,17 @@ public class ImageTransformationConfiguration {
         return transformationName;
     }
 
-    /** Parameters of the Image Transformation which can be empt if there are none **/
+    /**
+     * @return Parameters of the Image Transformation which can be empt if there are none 
+     */
     public Map<String, String> getParameters() {
         return Collections.unmodifiableMap(parameters);
     }
 
-    /** @return Single Parameter denoted by the given parameter name. Can be null if not found **/
+    /** 
+     * @param name Name of parameter
+     * @return Single Parameter denoted by the given parameter name. Can be null if not found 
+     */
     public String getParameter(String name) {
         return parameters.get(name);
     }

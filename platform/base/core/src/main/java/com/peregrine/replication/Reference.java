@@ -35,16 +35,16 @@ import org.apache.sling.api.resource.Resource;
  * Example with Content:
  * /a
  *   /b
- *     /myResource             <- Resource
+ *     /myResource             &lt;- Resource
  *       /jcr:content
- *         /myReference        <- Property Resource
- *           - myPropertyRef   <- Property (which name is provided here)
+ *         /myReference        &lt;- Property Resource
+ *           - myPropertyRef   &lt;- Property (which name is provided here)
  *
  * Example w/o Content
  * /a
  *   /b
- *     /myResource             <- Resource and Property Resource
- *        - myPropertyRef      <- Property (which name is provided here)
+ *     /myResource             &lt;- Resource and Property Resource
+ *        - myPropertyRef      &lt;- Property (which name is provided here)
  *
  * Created by Andreas Schaefer on 5/25/17.
  */
@@ -62,17 +62,24 @@ public class Reference {
     /**
      * This is either the same of the property resource or if found the parent of the JCR content
      * that is parent of the property resource
+     * @return The resource
      **/
     public Resource getResource() {
         return resource;
     }
 
-    /** Name of the Property that contains the reference **/
+    /** 
+     * Name of the Property that contains the reference.
+     * @return The property name
+     */
     public String getPropertyName() {
         return propertyName;
     }
 
-    /** The resource that contains the property with the reference **/
+    /**
+     * The resource that contains the property with the reference.
+     * @return The resource
+     */
     public Resource getPropertyResource() {
         return propertyResource;
     }

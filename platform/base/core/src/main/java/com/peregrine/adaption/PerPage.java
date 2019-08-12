@@ -40,11 +40,21 @@ public interface PerPage
     public String getTitle();
     /** @return List all children of type page **/
     public Iterable<PerPage> listChildren();
-    /** @return List all children of type page that passes the filter **/
+    /** 
+     * @param filter Filter
+     * @return List all children of type page that passes the filter.
+     */
     public Iterable<PerPage> listChildren(Filter<PerPage> filter);
-    /** @return List all children or their children of type page that passes the filter **/
+    /** 
+     * @param filter Filter
+     * @param deep <code>true</code> if this is recursive
+     * @return List all children or their children of type page that passes the filter.
+     */
     public Iterable<PerPage> listChildren(Filter<PerPage> filter, boolean deep);
-    /** @return If there is a child page with the given name **/
+    /** 
+     * @param name Page name
+     * @return If there is a child page with the given name.
+     */
     public boolean hasChild(String name);
     /** @return Parent Page of this page if it is a page otherwise null **/
     public PerPage getParent();

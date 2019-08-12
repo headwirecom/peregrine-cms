@@ -87,13 +87,19 @@ public class ImageContext {
         return targetMimeType;
     }
 
-    /** Updates the Target Mime Type **/
+    /**
+     * Updates the Target MIME type.
+     * @param targetMimeType MIME type to set
+     * @return An ImageContext with the specified MIME type
+     */
     public ImageContext setTargetMimeType(String targetMimeType) {
         this.targetMimeType = targetMimeType;
         return this;
     }
 
-    /** @returns the Image Input Stream which is not null **/
+    /**
+     * @return the Image Input Stream which is not null
+     */
     public InputStream getImageStream() {
         return imageStream;
     }

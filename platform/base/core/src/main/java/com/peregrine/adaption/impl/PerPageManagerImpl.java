@@ -50,7 +50,10 @@ public class PerPageManagerImpl
     /** Resource Resolver that backs that Page Manager **/
     private ResourceResolver resourceResolver;
 
-    /** Creates a Page Manager from a Resource Resolver which cannot be null **/
+    /**
+     * Creates a Page Manager from a Resource Resolver which cannot be null.
+     * @param resourceResolver Resource resolver
+     */
     public PerPageManagerImpl(ResourceResolver resourceResolver) {
         if(resourceResolver == null) {
             throw new IllegalArgumentException(RESOURCE_RESOLVER_MUST_BE_PROVIDED);
@@ -58,7 +61,10 @@ public class PerPageManagerImpl
         this.resourceResolver = resourceResolver;
     }
 
-    /** Creates a Page Manager from a Resource which cannot be null **/
+    /**
+     * @param resource Resource used to create page
+     * Creates a Page Manager from a Resource which cannot be null.
+     */
     public PerPageManagerImpl(Resource resource) {
         if(resource == null) {
             throw new IllegalArgumentException(RESOURCE_MUST_BE_PROVIDED);

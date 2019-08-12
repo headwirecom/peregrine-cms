@@ -189,17 +189,31 @@ public abstract class AbstractBaseServlet
         /** @return Type of the response **/
         public String getType() { return type; }
 
-        /** @return Response Content as text **/
+        /**
+         * Get response content.
+         * @throws IOException if there's an error getting the content
+         * @return Response Content as text 
+         */
         public String getContent() throws IOException {
             return null;
         }
 
-        /** @return Writes the content to a given Output Stream **/
+        /**
+         * Writes the content to a given Output Stream.
+         * @param outputStream Output steeam to write to
+         * @throws IOException if the content can't be written to the output steam
+         */
         public void writeTo(OutputStream outputStream) throws IOException {
             throw new UnsupportedOperationException(WRITE_TO_IS_NOT_SUPPORTED);
         }
 
-        /** @return The Servlet handles the output by itself **/
+        /** 
+         * The Servlet handles the output by itself.
+         * @param request The request
+         * @param response The response
+         * @throws IOException If there's an i/o error
+         * @throws ServletException If there;s a servlet error
+         */
         public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
             throw new UnsupportedOperationException(HANDLE_DIRECT_IS_NOT_SUPPORTED);
         }
@@ -433,23 +447,49 @@ public abstract class AbstractBaseServlet
             this.httpErrorCode = httpErrorCode;
             return this;
         }
-        /** Sets the Error Code which is returned as 'code' number field **/
+        /** 
+         * Sets the Error Code which is returned as 'code' number field.
+         * @param code The code to set
+         * @throws IOException If an error response can't be created
+         * @return An error response object
+         */
         public ErrorResponse setErrorCode(int code) throws IOException {
             return (ErrorResponse) writeAttribute(CODE, code);
         }
-        /** Sets the Error Message which is returned as 'message' text field **/
+        /** 
+         * Sets the Error Message which is returned as 'message' text field.
+         * @param message The error mesage to set
+         * @throws IOException If an error response can't be created
+         * @return An error response object
+         */
         public ErrorResponse setErrorMessage(String message) throws IOException {
             return (ErrorResponse) writeAttribute(MESSAGE, message);
         }
-        /** Sets the Request Past which is returned as 'path' text field **/
+        /** 
+         * Sets the Request Past which is returned as 'path' text field.
+         * @param path The path to set
+         * @throws IOException If an error response can't be created
+         * @return An error response object
+         */
         public ErrorResponse setRequestPath(String path) throws IOException {
             return (ErrorResponse) writeAttribute(PATH, path);
         }
-        /** Sets the Custom Error Field which is returned as the provide name / value field **/
+        /** 
+         * Sets the Custom Error Field which is returned as the provide name / value field.
+         * @param fieldName Field name to set
+         * @param value Field value
+         * @throws IOException If an error response can't be created
+         * @return An error response object
+         */
         public ErrorResponse setCustom(String fieldName, String value) throws IOException {
             return (ErrorResponse) writeAttribute(fieldName, value);
         }
-        /** Sets an Exception that cause the Error which is written out a serialized exception **/
+        /** 
+         * Sets an Exception that cause the Error which is written out a serialized exception.
+         * @param e Exception to set
+         * @throws IOException If an error response can't be created
+         * @return An error response object
+         */
         public ErrorResponse setException(Exception e) throws IOException {
             if(e != null) {
                 StringWriter out = new StringWriter();

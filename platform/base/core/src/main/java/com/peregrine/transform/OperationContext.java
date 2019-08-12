@@ -68,12 +68,19 @@ public class OperationContext {
         return parameters;
     }
 
-    /** @return Single Parameter denoted by the given name. If not found is null **/
+    /** 
+     * @param name Name of parameter
+     * @return Single Parameter denoted by the given name. If not found is null
+     */
     public String getParameter(String name) {
         return parameters.get(name);
     }
 
-    /** @return Single Parameter denoted by the given name. If not found or empty then given default value is returned instead **/
+    /**
+     * @param name Name of parameter
+     * @param defaultValue Fallback value
+     * @return Single Parameter denoted by the given name. If not found or empty then given default value is returned instead 
+     */
     public String getParameter(String name, String defaultValue) {
         String answer = defaultValue;
         if(parameters.containsKey(name)) {
