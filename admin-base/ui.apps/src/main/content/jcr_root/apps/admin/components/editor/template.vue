@@ -51,6 +51,16 @@
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromView("/state/tools");
             stateTools._deleted = {};
+
+        const $groups = $('.vue-form-generator fieldset');
+        $groups.each( function(i) {
+            const $group = $(this);
+            const $title = $group.find('legend');
+            $title.click(function(e){
+                $group.find('div').toggle();
+            })
+            $group.find('div').hide();
+        })
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
@@ -148,3 +158,21 @@
 //      }
     }
 </script>
+
+<style>
+    .vue-form-generator fieldset > legend{
+        width: calc(100% + 1.5rem);
+        margin: 0 -0.75rem;
+        padding: 0.75rem;
+    }
+
+    .vue-form-generator fieldset > legend:hover{
+        cursor: pointer;
+        background: white;
+    }
+
+    .vue-form-generator > fieldset > .form-group{
+        background: white;
+        padding: 0.75rem;
+    }
+</style>
