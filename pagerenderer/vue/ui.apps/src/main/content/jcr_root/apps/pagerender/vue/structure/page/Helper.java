@@ -13,9 +13,9 @@ package apps.pagerender.vue.structure.page;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,6 +26,7 @@ package apps.pagerender.vue.structure.page;
  */
 
 import javax.script.Bindings;
+import java.util.Map;
 
 import org.apache.sling.scripting.sightly.pojo.Use;
 import org.apache.sling.api.resource.Resource;
@@ -34,11 +35,17 @@ import org.apache.sling.models.factory.ModelFactory;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 
+
 public class Helper implements Use {
 
     private Object model;
     private String siteRootPath;
     private String siteName;
+    private String siteLanguage;
+
+    public String getSiteLanguage() {
+      return siteLanguage;
+    }
 
     public String getHello() {
         return "hello";
@@ -64,12 +71,22 @@ public class Helper implements Use {
         Resource resource = (Resource) bindings.get("resource");
         SlingHttpServletRequest request = (SlingHttpServletRequest) bindings.get("request");
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
+        Map<String,String> properties = (Map<String,String>) bindings.get("properties");
+
 
         String path = resource.getPath();
+        String lang = "";
         if(path.startsWith("/content/sites/")) {
             path = path.substring("/content/sites/".length());
+            lang = properties.get("siteLanguage");
         } else if(path.startsWith("/content/templates/")) {
             path = path.substring("/content/templates/".length());
+            lang = properties.get("siteLanguage");
+        }
+        if( lang.equals("")){
+          siteLanguage = "en";
+        } else {
+          siteLanguage = lang;
         }
         int slash = path.indexOf("/");
         siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
