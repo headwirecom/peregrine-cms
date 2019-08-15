@@ -17,21 +17,17 @@
   },
   {
     "type": "material-select",
-    "label": "Sprache",
+    "label": "lang=",
     "model": "siteLanguage",
-    "visible": "model.path.split('/').includes('templates')",
     "selectOptions": {
       "name": "name",
       "value": "value"
     },
     "values": [
-      { "name": "Deutsch", "value": "de-DE" },
-      { "name": "English", "value": "en-EN" },
-      { "name": "Português", "value": "pt-PT" },
-      { "name": "Español", "value": "es-ES" },
-      { "name": "From Template", "value": "fromTemplate"}
+      { "name": "de", "value": "de" },
+      { "name": "en", "value": "en" }
     ],
-    "hint": "The name of the scheme used to make the request."
+    "hint": "The name of the scheme used to make the request. Only choice from template will be used"
   },
   {
     "type": "material-datetime",
