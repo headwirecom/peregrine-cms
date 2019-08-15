@@ -19,6 +19,7 @@
     "type": "material-select",
     "label": "Sprache",
     "model": "siteLanguage",
+    "visible": "model.path.split('/').includes('templates')",
     "selectOptions": {
       "name": "name",
       "value": "value"
