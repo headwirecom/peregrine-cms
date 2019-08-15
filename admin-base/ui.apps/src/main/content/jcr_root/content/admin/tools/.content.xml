@@ -56,11 +56,11 @@
             <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Template" description="Templates bearbeiten und verwalten"/>
         </experiences>
     </templates>
-    <config jcr:primaryType="nt:unstructured" jcr:title="Configuration" sling:resourceType="admin/components/iconaction"
-               jcr:description="configuration management"
+    <config jcr:primaryType="nt:unstructured" jcr:title="Tools" sling:resourceType="admin/components/iconaction"
+               jcr:description="Dig deeper into Peregrine with these tools"
                action="/content/admin/config">
       <experiences jcr:primaryType="nt:unstructured">
-        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Konfiguration" description="Konfigurationsverwaltung"/>
+        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Hillfsmittel" description="Vertiefte Ansicht von Peregrine"/>
       </experiences>
     </config>
 </jcr:root>

@@ -23,15 +23,11 @@
   #L%
   -->
 <template>
-    <div v-if="isEditMode"
-         style="border: 1px solid #c0c0c0; clear: both; padding: 4px; margin: 4px; text-align: center; width: auto;"
-         v-on:allowDrop="allowDrop"
-         v-on:drop="drop"
-         v-bind:data-per-path="model.path"
-         data-per-droptarget="true"
-         v-bind:data-per-location="model.location"
-         v-bind:class="{ignore: isIgnoreContainers}">
-            {{componentName}}
+
+    <div v-if="isEditMode" class="per-drop-target"
+        v-on:allowDrop="allowDrop" v-on:drop="drop" v-bind:data-per-path="model.path" data-per-droptarget="true" v-bind:data-per-location="model.location">
+        {{componentName}}
+
     </div>
 </template>
 
@@ -78,5 +74,19 @@ export default {
 <style scoped>
     div.ignore {
       opacity: 0.05;
+
+
+<style>
+    .per-drop-target {
+        border: 1px solid #c0c0c0;
+        clear: both;
+        padding: 4px;
+        margin: 4px;
+        text-align: center;
+        width: calc(100% - 8px);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
     }
 </style>
