@@ -25,6 +25,7 @@ package apps.pagerender.vue.structure.page;
  * #L%
  */
 
+import com.peregrine.pagerender.vue.models.PageModel;
 import javax.script.Bindings;
 import java.util.Map;
 
@@ -74,28 +75,28 @@ public class Helper implements Use {
         Map<String,String> properties = (Map<String,String>) bindings.get("properties");
 
 
+        try {
+          model = sling.getService(ModelFactory.class).getModelFromResource(resource);
+        } catch(Throwable t) {
+          model = sling.getService(ModelFactory.class).getModelFromRequest(request);
+        }
+
         String path = resource.getPath();
         String lang = "";
         if(path.startsWith("/content/sites/")) {
             path = path.substring("/content/sites/".length());
-            lang = properties.get("siteLanguage");
+            lang = (String) ((PageModel) model).getTemplateSiteLanguage();
         } else if(path.startsWith("/content/templates/")) {
             path = path.substring("/content/templates/".length());
             lang = properties.get("siteLanguage");
         }
-        if( lang.equals("")){
-          siteLanguage = "en";
+        if( lang.equals("") ){
+          siteLanguage = "en-EN";
         } else {
           siteLanguage = lang;
         }
         int slash = path.indexOf("/");
         siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
         siteRootPath = "/content/sites/"+siteName;
-
-        try {
-            model = sling.getService(ModelFactory.class).getModelFromResource(resource);
-        } catch(Throwable t) {
-            model = sling.getService(ModelFactory.class).getModelFromRequest(request);
-        }
     }
 }
