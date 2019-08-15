@@ -16,6 +16,23 @@
     "placeholder": "page title"
   },
   {
+    "type": "material-select",
+    "label": "Sprache",
+    "model": "siteLanguage",
+    "selectOptions": {
+      "name": "name",
+      "value": "value"
+    },
+    "values": [
+      { "name": "Deutsch", "value": "de-DE" },
+      { "name": "English", "value": "en-EN" },
+      { "name": "Português", "value": "pt-PT" },
+      { "name": "Español", "value": "es-ES" },
+      { "name": "From Template", "value": "fromTemplate"}
+    ],
+    "hint": "The name of the scheme used to make the request."
+  },
+  {
     "type": "material-datetime",
     "inputType": "text",
     "model": "created",
