@@ -91,7 +91,7 @@ public class Helper implements Use {
             lang = properties.get("siteLanguage");
         }
         if( lang.equals("") ){
-          siteLanguage = "en-EN";
+          siteLanguage = "en";
         } else {
           siteLanguage = lang;
         }

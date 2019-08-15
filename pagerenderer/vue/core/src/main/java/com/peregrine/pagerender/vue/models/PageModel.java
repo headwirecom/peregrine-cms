@@ -176,13 +176,12 @@ public class PageModel
     }
 
     public String getTemplateSiteLanguage(){
-      // ValueMap resources = getResource().getValueMap();
       Resource resource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
       if( resource != null ){
         ValueMap map = resource.getValueMap();
         return (String) map.get("siteLanguage");
       }
-      return "en-EN";
+      return "en";
     }
 
     private PageModel getTamplatePageModel() {
