@@ -402,7 +402,16 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.3</version>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -818,23 +827,16 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- We want to sign the artifact, the POM, and all attached artifacts -->
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
                         <configuration>
-                            <executable>gpg2</executable>
-                            <executable>${gpg.executable}</executable>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                            <useAgent>${gpg.useagent}</useAgent>
+                           <serverId>ossrh</serverId>
+                           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                           <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -930,12 +932,12 @@
 
     <distributionManagement>
         <repository>
-            <id>peregrine.releases.https</id>
+            <id>ossrh</id>
             <name>${repositoryName}</name>
             <url>${repositoryUrl}</url>
         </repository>
         <snapshotRepository>
-            <id>peregrine.snapshots.https</id>
+            <id>ossrh</id>
             <name>${snapshotRepositoryName}</name>
             <url>${snapshotRepositoryUrl}</url>
         </snapshotRepository>

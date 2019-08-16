@@ -175,6 +175,14 @@
                     <group>themeclean</group>
                 </configuration>
             </plugin>
+            <!-- Don't deploy themeclean to a remote repository since it is in a different namespace than Peregrine. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
