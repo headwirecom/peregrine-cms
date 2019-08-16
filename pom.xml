@@ -103,7 +103,7 @@
         <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</repositoryUrl>
         <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
         <snapshotRepositoryUrl>https://oss.sonatype.org/content/repositories/snapshots</snapshotRepositoryUrl>
-        <gpg.useagent>true</gpg.useagent>
+        <gpg.useagent>false</gpg.useagent>
 
         <noContent>true</noContent>
     </properties>
@@ -398,20 +398,6 @@
                             <vue>xml</vue>
                         </extraExtensions>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -721,7 +707,12 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <configuration>
-                                    <gpg.useagent>true</gpg.useagent>
+                                    <gpg.useagent>false</gpg.useagent>
+                                    <!-- Workaround to prevent interactive passphrase prompt -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
                                 </configuration>
                             </execution>
                         </executions>
