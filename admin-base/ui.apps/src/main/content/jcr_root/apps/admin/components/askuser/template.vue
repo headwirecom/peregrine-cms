@@ -23,31 +23,38 @@
   #L%
   -->
 <template>
-    <div class="tooling-page">
-        <template v-for="child in model.children">
-            <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
-        </template>
-        <admin-components-notifyuser></admin-components-notifyuser>
-        <admin-components-askuser></admin-components-askuser>
+    <div id="askUserModal" class="modal bottom-sheet">
+        <div class="modal-content">
+            <h4>{{title}}</h4>
+            <p>{{message}}</p>
+        </div>
+        <div class="modal-footer">
+            <button 
+                type="button"
+                class="modal-action modal-close waves-effect waves-light btn-flat"
+                title="ok">
+                no
+            </button>
+            <button 
+                type="button"
+                class="modal-action modal-close waves-effect waves-light btn-flat"
+                title="ok">
+                yes
+            </button>
+        </div>
     </div>
 </template>
 
 <script>
-export default {
-    props: ['model'],
-    mounted(){
-        // init materialize plugins
-        $('.modal').modal()
-    },
-    methods: {
-        selectPath: function(me, target) {
-            $perAdminApp.loadContent(target+'.html')
-        },
-        editPreview: function(me, target) {
-            $perAdminApp.stateAction('editPreview', target)
-        },
-        editPage: function(me, target) {
+    export default {
+        props: ['model'],
+        computed: {
+            title() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/title')
+            },
+            message() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/message')
+            }
         }
     }
-}
 </script>
