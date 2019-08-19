@@ -25,13 +25,20 @@
 <template>
     <div>
         <div v-if="!schema.preview" class="wrapper wysiwygeditor">
-            <trumbowyg :config="config" v-model="value"></trumbowyg>
+            <trumbowyg :config="config" v-model="value" ref="editor"></trumbowyg>
         </div>
         <p v-else v-html="value"></p>
     </div>
 </template>
 
 <script>
+    let editorInstance = undefined
+
+    function doLink() {
+        console.log(editorInstance.$refs.editor)
+        console.log(editorInstance.$refs.editor.el.trumbowyg('html'))
+    }
+
     export default {
         mixins: [ VueFormGenerator.abstractField ],
         data () {
@@ -45,6 +52,9 @@
                                 dropdown: ['p', 'quote', 'preformatted', 'h1', 'h2', 'h3', 'h4'],
                                 ico: 'p', // Apply formatting icon
                                 hasIcon: true
+                            },
+                            link: {
+                                fn: doLink
                             }
                         },
                         btns: [
@@ -69,6 +79,9 @@
                     }
                 }
             }
+        },
+        mounted() {
+            editorInstance = this
         },
         computed: {
             isValidBtns() {
