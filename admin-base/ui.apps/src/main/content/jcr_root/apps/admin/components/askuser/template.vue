@@ -22,8 +22,8 @@
   under the License.
   #L%
   -->
-<template>
-    <div id="askUserModal" class="modal bottom-sheet">
+<template>  
+    <div id="askUserModal" class="modal bottom-sheet" ref="modal">
         <div class="modal-content">
             <h4>{{title}}</h4>
             <p>{{message}}</p>
@@ -32,12 +32,14 @@
             <button 
                 type="button"
                 class="modal-action modal-close waves-effect waves-light btn-flat"
-                title="ok">
+                v-on:click="cancel()"
+                title="cancel">
                 no
             </button>
             <button 
                 type="button"
                 class="modal-action modal-close waves-effect waves-light btn-flat"
+                v-on:click="ok()"
                 title="ok">
                 yes
             </button>
@@ -55,6 +57,15 @@
             message() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/notification/message')
             }
+        },
+        methods: {
+            cancel() {
+                $('#askUserModal').modal('getInstance').options.takeAction = false;
+            },
+            ok() {
+                $('#askUserModal').modal('getInstance').options.takeAction = true;
+            }
         }
+
     }
 </script>

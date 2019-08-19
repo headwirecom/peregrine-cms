@@ -555,7 +555,17 @@ function notifyUserImpl(title, message, options) {
 function askUserImpl(title, message, options) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
-    $('#askUserModal').modal('open', options)
+    options.takeAction = false
+    options.complete = function() {
+        const answer = $('#askUserModal').modal('getInstance').options.takeAction;
+        if(answer && options.yes) {
+            options.yes()
+        } else if(options.no) {
+            options.no()
+        }
+    }
+    $('#askUserModal').modal(options)
+    $('#askUserModal').modal('open')
 }
 
 /**
