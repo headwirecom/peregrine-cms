@@ -51,19 +51,10 @@
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromView("/state/tools");
             stateTools._deleted = {};
-
-        const $groups = $('.vue-form-generator fieldset');
-        $groups.each( function(i) {
-            const $group = $(this);
-            const $title = $group.find('legend');
-            $title.click(function(e){
-                $group.find('div').toggle();
-            })
-            $group.find('div').hide();
-        })
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
+        this.hideGroups();
       },
       data() {
         return {
@@ -86,6 +77,7 @@
             var view = $perAdminApp.getView()
             var path = view.state.editor.path
             var model = $perAdminApp.findNodeFromPath(view.pageView.page, path)
+            this.hideGroups();
             return model
         },
         hasSchema: function() {
@@ -150,6 +142,19 @@
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
+        },
+        hideGroups() {
+            const $groups = $('.vue-form-generator fieldset');
+            $groups.each( function(i) {
+                const $group = $(this);
+                const $title = $group.find('legend');
+                $title.click(function(e){
+                    $group.find('div').toggle();
+                    $group.toggleClass('active');
+                })
+                $group.find('div').hide();
+                $group.removeClass('active');
+            })
         }
       }
 //      ,
@@ -166,9 +171,20 @@
         padding: 0.75rem;
     }
 
+    .vue-form-generator fieldset > legend:before{
+        content: "+";
+        margin-right: 10px;
+        width: 10px;
+        display: inline-block;
+    }
+
+    .vue-form-generator fieldset.active > legend:before {
+        content: "-";
+    }
+
     .vue-form-generator fieldset > legend:hover{
         cursor: pointer;
-        background: white;
+        text-decoration: underline;
     }
 
     .vue-form-generator > fieldset > .form-group{
