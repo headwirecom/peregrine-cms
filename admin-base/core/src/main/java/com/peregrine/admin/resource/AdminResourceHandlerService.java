@@ -1321,4 +1321,67 @@ public class AdminResourceHandlerService
         baseResourceHandler.updateModification(parent.getResourceResolver(), newPage);
         return newPage;
     }
+
+    public Resource copyResource(Resource resourceToCopy, Resource newParent, String newName, String newTitle, Resource nextSibling) throws ManagementException {
+        if(resourceToCopy == null) {
+            throw new ManagementException("No resource to copy provided.");
+        }
+        if(newParent == null) {
+            throw new ManagementException("No new parent resource provided.");
+        }
+        newName = getNameForCopy(resourceToCopy, newParent, newName);
+
+        String originalPath = resourceToCopy.getPath();
+        String parentPath = newParent.getPath();
+        String newPath = parentPath + SLASH + newName;
+
+        //We're using the JCR api to copy rather than Sling because JCR allows for renaming of the copied node on the fly
+        try {
+            Node node = resourceToCopy.adaptTo(Node.class);
+            Session session = node.getSession();
+            Workspace workspace = session.getWorkspace();
+            workspace.copy(originalPath, newPath);
+            ResourceResolver resourceResolver = resourceToCopy.getResourceResolver();
+            Resource copiedResource = resourceResolver.getResource(newPath);
+            Resource copiedContent = copiedResource.getChild(JCR_CONTENT);
+            if(copiedContent != null) {
+                ValueMap modifiableProperties = getModifiableProperties(copiedContent);
+                if(modifiableProperties.containsKey(NAME)) {
+                    modifiableProperties.put(NAME, newName);
+                }
+                if(StringUtils.isNotBlank(newTitle)) {
+                    modifiableProperties.put(JCR_TITLE, newTitle);
+                }
+            }
+            if(nextSibling != null) {
+                String nextSiblingName = nextSibling.getName();
+                Node parentNode = newParent.adaptTo(Node.class);
+                parentNode.orderBefore(newName,nextSiblingName);
+            }
+            return copiedResource;
+        } catch (RepositoryException e) {
+            throw new ManagementException(String.format("Repository exception occurred while copying resource '%s' to '%s'", originalPath, newPath), e);
+        }
+    }
+
+    private String getNameForCopy(Resource resourceToCopy, Resource newParent, String newName) throws ManagementException{
+        if(StringUtils.isNotBlank(newName)) {
+            if(newParent.getChild(newName) == null) {
+                return newName;
+            }
+            else {
+                throw new ManagementException(String.format("Resource '%s' already has a child named '%s'", newParent.getName(), newName));
+            }
+        }
+        newName = resourceToCopy.getName();
+        if(newParent.getChild(newName) == null) {
+            return newName;
+        }
+
+        int i = 1;
+        while(newParent.getChild(newName+i) != null) {
+            i++;
+        }
+        return newName+i;
+    }
 }

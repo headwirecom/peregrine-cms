@@ -178,7 +178,6 @@ public interface AdminResourceHandler {
      */
     public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException;
 
-
     /**
      * Delete a peregrine cms site
      *
@@ -189,6 +188,8 @@ public interface AdminResourceHandler {
      * @throws ManagementException
      */
     public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
+
+    Resource copyResource(Resource resourceToCopy, Resource newParent, String newName, String newTitle, Resource nextSibling) throws ManagementException;
 
     public class ManagementException
         extends Exception
