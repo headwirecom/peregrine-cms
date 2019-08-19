@@ -28,7 +28,7 @@
             <span class="panel-title">Editor</span>
             <span v-if="title"> - {{title}}</span>
             <div v-if="!hasSchema">this component does not have a dialog defined</div>
-            <vue-form-generator v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
+            <vue-form-generator :key="dataModel.path" v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
             </vue-form-generator>
         </div>
         <div class="editor-panel-buttons">
@@ -51,10 +51,10 @@
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromView("/state/tools");
             stateTools._deleted = {};
+            if(this.schema.hasOwnProperty('groups')) this.hideGroups();
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
-        this.hideGroups();
       },
       data() {
         return {
@@ -77,7 +77,6 @@
             var view = $perAdminApp.getView()
             var path = view.state.editor.path
             var model = $perAdminApp.findNodeFromPath(view.pageView.page, path)
-            this.hideGroups();
             return model
         },
         hasSchema: function() {
@@ -153,6 +152,7 @@
                     $group.toggleClass('active');
                 })
                 $group.find('div').hide();
+                $group.addClass('vfg-group');
                 $group.removeClass('active');
             })
         }
@@ -187,7 +187,7 @@
         text-decoration: underline;
     }
 
-    .vue-form-generator > fieldset > .form-group{
+    .vue-form-generator > fieldset.vfg-group > .form-group{
         background: white;
         padding: 0.75rem;
     }
