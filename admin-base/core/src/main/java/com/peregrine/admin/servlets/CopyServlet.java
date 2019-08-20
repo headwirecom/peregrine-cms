@@ -31,6 +31,7 @@ import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -75,6 +76,7 @@ public class CopyServlet extends AbstractBaseServlet {
     public static final String TO = "to";
     public static final String NEW_NAME = "newName";
     public static final String NEW_TITLE = "newTitle";
+    public static final String DEEP = "deep";
 
     private List<String> acceptedTypes = Arrays.asList(ORDER_BEFORE_TYPE, ORDER_CHILD_TYPE);
 
@@ -93,6 +95,9 @@ public class CopyServlet extends AbstractBaseServlet {
         String type = request.getParameter(TYPE);
         String newName = request.getParameter(NEW_NAME);
         String newTitle = request.getParameter(NEW_TITLE);
+        String deepParam = request.getParameter(DEEP);
+        boolean deep = false;
+        deep = "true".equalsIgnoreCase(deepParam);
         if(ORDER_CHILD_TYPE.equals(type)) {
             newParent = PerUtil.getResource(request.getResourceResolver(), toPath);
         }
@@ -107,13 +112,14 @@ public class CopyServlet extends AbstractBaseServlet {
         }
 
         Resource copiedResource = null;
+        ResourceResolver resourceResolver = request.getResourceResolver();
         try {
-            copiedResource = resourceManagement.copyResource(from, newParent, newName, newTitle, nextSibling);
+            copiedResource = resourceManagement.copyResource(resourceResolver, from, newParent, newName, newTitle, nextSibling, deep);
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(fromPath).setException(e);
         }
 
-        request.getResourceResolver().commit();
+        resourceResolver.commit();
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute(SOURCE_NAME, from.getName());
         answer.writeAttribute(SOURCE_PATH, from.getPath());

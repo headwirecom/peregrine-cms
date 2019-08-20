@@ -189,7 +189,20 @@ public interface AdminResourceHandler {
      */
     public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
 
-    Resource copyResource(Resource resourceToCopy, Resource newParent, String newName, String newTitle, Resource nextSibling) throws ManagementException;
+    /**
+     * Copies a resource to a new location
+     *
+     * @param resourceResolver Resource Resolver to obtain the resources
+     * @param resourceToCopy the resource to copy
+     * @param newParent the new parent of the copied resource
+     * @param newName the new node name for the copy
+     * @param newTitle the new title property for the copy
+     * @param nextSibling the resource to order the copy before
+     * @param deep true to copy all children of the resource; false to only copy the resource and its content
+     * @return the copied resource
+     * @throws ManagementException
+     */
+    Resource copyResource(ResourceResolver resourceResolver, Resource resourceToCopy, Resource newParent, String newName, String newTitle, Resource nextSibling, boolean deep) throws ManagementException;
 
     public class ManagementException
         extends Exception

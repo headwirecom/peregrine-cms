@@ -757,6 +757,11 @@ paths:
           in: formData
           description: The new title that copied resource will have
           required: false
+        - name: deep
+          type: boolean
+          in: formData
+          description: flag indicating if children of the selected resource should also be copied
+          required: false
       responses:
         200:
           description: returns the from node name and path and the new node name and path
