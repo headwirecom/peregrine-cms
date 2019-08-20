@@ -32,13 +32,6 @@
 </template>
 
 <script>
-    let editorInstance = undefined
-
-    function doLink() {
-        console.log(editorInstance.$refs.editor)
-        console.log(editorInstance.$refs.editor.el.trumbowyg('html'))
-    }
-
     export default {
         mixins: [ VueFormGenerator.abstractField ],
         data () {
@@ -52,9 +45,6 @@
                                 dropdown: ['p', 'quote', 'preformatted', 'h1', 'h2', 'h3', 'h4'],
                                 ico: 'p', // Apply formatting icon
                                 hasIcon: true
-                            },
-                            link: {
-                                fn: doLink
                             }
                         },
                         btns: [
@@ -80,8 +70,19 @@
                 }
             }
         },
-        mounted() {
-            editorInstance = this
+        beforeCreate() {
+            $.extend(true, $.trumbowyg, {
+                plugins: {
+                    modalOverride: {
+                        init: function(trumbowyg) {
+                            console.log(trumbowyg)
+                            trumbowyg.__proto__.openModalInsert = function(title, fields, cmd) {
+                                console.log(title, fields, cmd)
+                            }
+                        }
+                    }
+                }
+            })
         },
         computed: {
             isValidBtns() {
