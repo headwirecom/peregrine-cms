@@ -555,6 +555,7 @@ function notifyUserImpl(title, message, options) {
 function askUserImpl(title, message, options) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
+    options.dismissible = false
     options.takeAction = false
     options.complete = function() {
         const answer = $('#askUserModal').modal('getInstance').options.takeAction;
