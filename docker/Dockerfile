@@ -17,8 +17,7 @@ ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 
 COPY files/* /app/binaries/
 COPY healthcheck.sh .
-COPY installpackage.sh .
-COPY installpackageretry.sh .
+COPY installpackages.sh .
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY peregrine.pref /etc/apt/preferences.d/
@@ -46,14 +45,7 @@ RUN npm install percli @peregrinecms/slingpackager \
     && chmod a+x node_modules/percli/bin/*
 RUN npx percli server register author
 RUN npx percli server start author \
-    && npx @peregrinecms/slingpackager upload -i binaries/base.ui.apps-1.0-SNAPSHOT.zip \
-    && npx @peregrinecms/slingpackager upload -i binaries/external-1.0-SNAPSHOT.zip \
-    && npx @peregrinecms/slingpackager upload -i binaries/felib.ui.apps-1.0-SNAPSHOT.zip \
-    && npx @peregrinecms/slingpackager upload -i binaries/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
-    && npx @peregrinecms/slingpackager upload -i binaries/admin.sling.ui.apps-1.0-SNAPSHOT.zip \
-    && npx @peregrinecms/slingpackager upload -i binaries/admin.ui.materialize-1.0-SNAPSHOT.zip \
-    && npx @peregrinecms/slingpackager upload -i binaries/admin.ui.apps-1.0-SNAPSHOT.zip \
-    && npx @peregrinecms/slingpackager upload -i binaries/themeclean-ui.apps-1.0-SNAPSHOT.zip \
+    && ./installpackages.sh \
     && sleep 10 \
     && npx percli server stop author \
     && rm -rf binaries

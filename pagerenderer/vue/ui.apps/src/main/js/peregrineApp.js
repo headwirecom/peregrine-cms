@@ -217,7 +217,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     walkTreeAndLoad(data)
 
     if(data.description) document.getElementsByTagName('meta').description.content=data.description
-    if(data.tags) document.getElementsByTagName('meta').keywords.content=data.tags
+    if(data.tags) document.getElementsByTagName('meta').keywords.content=data.tags.map( tag => tag.name )
 
     if(data.suffixToParameter) {
         const pathInfo = makePathInfo(path)

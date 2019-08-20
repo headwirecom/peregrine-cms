@@ -6,14 +6,14 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.peregrine.adaption.PerAsset;
-import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -22,28 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.*;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.version.VersionException;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static com.peregrine.commons.util.PerUtil.*;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -56,6 +42,7 @@ public class AdminResourceHandlerService
     implements AdminResourceHandler
 {
     public static final String DELETION_PROPERTY_NAME = "_opDelete";
+    public static final String MODE_PROPERTY = "mode";
 
     private static final String PARENT_NOT_FOUND = "Could not find %s Parent Resource. Path: '%s', name: '%s'";
     private static final String RESOURCE_TYPE_UNEDEFINED = "Resource Type is not provided. Path: '%s', name: '%s'";
@@ -109,6 +96,8 @@ public class AdminResourceHandlerService
     private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
     private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
 
+    private static final String PACKAGES_PATH = "/etc/packages";
+
     public static final String MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY = "Resource Resolver must be provide to copy a Site";
     public static final String MISSING_PARENT_RESOURCE_FOR_COPY_SITES = "Sites Parent Resource was not provided or does not exist";
     public static final String MISSING_SOURCE_SITE_NAME = "Source Name must be provide";
@@ -117,6 +106,24 @@ public class AdminResourceHandlerService
     public static final String SOURCE_SITE_DOES_NOT_EXIST = "Source Site: '%s' was not provided or does not exist";
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
     public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
+
+    //Package creation constants
+    private static final String PACKAGE_SUFFIX = "-full-package";
+    private static final double DEFAULT_PACKAGE_VERSION = 1.0;
+    private static final double MAXIMUM_VERSION = 10.0;
+    private static final String ZIP_EXTENSION = ".zip";
+    private static final String DASH = "-";
+    private static final String ZIP_MIME_TYPE = "application/zip";
+    private static final String VLT_PACKAGE = "vlt:Package";
+    private static final String GROUP_PROPERTY = "group";
+    private static final String NAME_PROPERTY = "name";
+    private static final String VERSION_PROPERTY = "version";
+    private static final String VLT_PACKAGE_DEFINITION = "vlt:PackageDefinition";
+    private static final String VLT_DEFINITION = "vlt:definition";
+    private static final String FILTER = "filter";
+    private static final String REPLACE_VALUE = "replace";
+    private static final String ROOT_PROPERTY = "root";
+    private static final String RULES_PROPERTY = "rules";
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -630,11 +637,14 @@ public class AdminResourceHandlerService
 
         ArrayList<String> superTypes = new ArrayList<>();
 
+        List<String> packagePaths = new ArrayList<>();
+
         Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + fromName);
         if(appsSource != null) {
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
             if(appsTarget == null) {
                 appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
+                packagePaths.add(appsTarget.getPath());
             }
             // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
             // with the sling:resourceSuperType set to the <fromSite> component
@@ -649,6 +659,7 @@ public class AdminResourceHandlerService
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
+                packagePaths.add(targetResource.getPath());
                 copyChildResources(sourceResource, true, targetResource, null, targetName);
             }
         }
@@ -657,6 +668,7 @@ public class AdminResourceHandlerService
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
+                packagePaths.add(targetResource.getPath());
                 copyChildResources(sourceResource, true, targetResource, fromName, targetName);
             }
         }
@@ -665,6 +677,7 @@ public class AdminResourceHandlerService
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
+                packagePaths.add(targetResource.getPath());
                 copyChildResources(sourceResource, true, targetResource, fromName, targetName);
             }
         }
@@ -673,7 +686,9 @@ public class AdminResourceHandlerService
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
+                packagePaths.add(targetResource.getPath());
                 copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                updateStringsInFiles(targetResource, fromName, targetName);
             }
             answer = targetResource;
         }
@@ -681,6 +696,7 @@ public class AdminResourceHandlerService
         sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            packagePaths.add(targetResource.getPath());
             logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
             ValueMap properties = getModifiableProperties(targetResource, false);
             logger.trace("Copied Felibs Properties: '{}'", properties);
@@ -711,7 +727,163 @@ public class AdminResourceHandlerService
             createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
         }
 
+        try {
+            createSitePackage(resourceResolver, targetName, packagePaths);
+        } catch (PersistenceException e) {
+            logger.error("Failed to create package for site " + targetName, e);
+        }
+
         return answer;
+    }
+
+    private void createSitePackage(ResourceResolver resourceResolver, String siteName, List<String> packagePaths) throws PersistenceException {
+        Resource packagesRoot = resourceResolver.getResource(PACKAGES_PATH);
+        if(packagesRoot == null) {
+            logger.error("Package root path '{}' could not be resolved.", PACKAGES_PATH);
+            return;
+        }
+
+        Map<String, Object> propertiesMap;
+
+        Resource groupResource = packagesRoot.getChild(siteName);
+        if(groupResource == null) {
+            propertiesMap = new HashMap<>();
+            propertiesMap.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
+            groupResource = resourceResolver.create(packagesRoot, siteName, propertiesMap);
+        }
+
+        String packageName = siteName + PACKAGE_SUFFIX;
+        double version = DEFAULT_PACKAGE_VERSION;
+        String filename = packageName + DASH + version + ZIP_EXTENSION;
+
+        Resource packageResource = groupResource.getChild(filename);
+        //Since it's possible that backups of a previous site with the same name exist, we'll increment
+        //the version number until we find a version we don't have (or hit a maximum version number)
+        while(packageResource != null) {
+            version += 1;
+            filename = packageName + DASH + version + ZIP_EXTENSION;
+            packageResource = groupResource.getChild(filename);
+            if(version >= MAXIMUM_VERSION) {
+                logger.error("{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.", version, packageResource.getPath());
+                return;
+            }
+        }
+
+        propertiesMap = new HashMap<>();
+        propertiesMap.put(JCR_PRIMARY_TYPE, NT_FILE);
+        packageResource = resourceResolver.create(groupResource, filename, propertiesMap);
+
+        propertiesMap = new HashMap<>();
+        propertiesMap.put(JCR_PRIMARY_TYPE, NT_RESOURCE);
+        propertiesMap.put(JCR_MIME_TYPE, ZIP_MIME_TYPE);
+        propertiesMap.put(JcrConstants.JCR_MIXINTYPES, VLT_PACKAGE);
+        //jcr:data property must exist when the node is created but does not need to have anything in it
+        propertiesMap.put(JCR_DATA, "");
+        Resource contentResource = resourceResolver.create(packageResource, JCR_CONTENT, propertiesMap);
+
+        propertiesMap = new HashMap<>();
+        propertiesMap.put(GROUP_PROPERTY, siteName);
+        propertiesMap.put(JCR_PRIMARY_TYPE, VLT_PACKAGE_DEFINITION);
+        propertiesMap.put(NAME_PROPERTY, packageName);
+        propertiesMap.put(VERSION_PROPERTY, ""+version);
+        Resource vltDefinitionResource = resourceResolver.create(contentResource, VLT_DEFINITION, propertiesMap);
+
+        propertiesMap = new HashMap<>();
+        propertiesMap.put(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        Resource filterResource = resourceResolver.create(vltDefinitionResource, FILTER, propertiesMap);
+
+        for(int i = 0; i < packagePaths.size(); i++) {
+            String filterPath = packagePaths.get(i);
+            propertiesMap = new HashMap<>();
+            propertiesMap.put(MODE_PROPERTY, REPLACE_VALUE);
+            propertiesMap.put(ROOT_PROPERTY, filterPath);
+            propertiesMap.put(RULES_PROPERTY, new String[0]);
+            //Named to match the filters that appear under naturally created packages
+            resourceResolver.create(filterResource, "f"+i, propertiesMap);
+        }
+
+    }
+
+    private void updateStringsInFiles(Resource targetResource, String fromName, String targetName) {
+        Resource contentResource = targetResource.getChild("jcr:content");
+        if (contentResource == null) {
+            logger.error("No jcr:content resource for resource '{}'", targetResource.getPath());
+            return;
+        }
+        Resource replacementsResource = contentResource.getChild("replacements");
+        if(replacementsResource == null) {
+            logger.info("No replacements defined for resource '{}'", targetResource.getPath());
+            return;
+        }
+
+        for(Resource fileChild : replacementsResource.getChildren()) {
+            //If the file resource doesn't have children, we don't need to do anything
+            //since the children define the actual replacements
+            if(fileChild.hasChildren()) {
+                String filename = fileChild.getName();
+                Resource fileResource = targetResource.getChild(filename);
+                if (fileResource != null) {
+                    String fileContent = null;
+                    try {
+                        fileContent = getFileContentAsString(fileResource);
+                    } catch (IOException e) {
+                        logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
+                    }
+
+                    if (StringUtils.isNotBlank(fileContent)) {
+                        String modifiedFileContent = fileContent;
+                        for(Resource replacementResource : fileChild.getChildren()) {
+                            ValueMap replacementProperties = replacementResource.getValueMap();
+                            String pattern = replacementProperties.get("regex", String.class);
+                            String replaceWith = replacementProperties.get("replaceWith", String.class);
+                            if(StringUtils.isNotBlank(pattern) && StringUtils.isNotBlank(replaceWith)) {
+                                //"_SITENAME_" is a placeholder for the actual new site name
+                                replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
+                                modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
+                            }
+                        }
+                        try {
+                            replaceFileContent(fileResource, modifiedFileContent);
+                        } catch (IOException e) {
+                            logger.error("IOException replacing contents of file " + fileResource.getPath(), e);
+                        } catch (RepositoryException e) {
+                            logger.error("RepositoryException replacing contents of file " + fileResource.getPath(), e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String getFileContentAsString(Resource fileResource) throws IOException {
+        InputStream is = fileResource.adaptTo(InputStream.class);
+        try {
+            String manifestContent = IOUtils.toString(is, StandardCharsets.UTF_8.name());
+            return manifestContent;
+        } finally {
+            is.close();
+        }
+    }
+
+    private void replaceFileContent(Resource fileResource, String newContent) throws IOException, RepositoryException {
+        if(fileResource == null)
+        {
+            logger.error("Could not replace file contents: resource was null");
+            return;
+        }
+        Node fileNode = fileResource.adaptTo(Node.class);
+        if(fileNode == null) {
+            logger.error("Could not replace file contents: could not adapt resource '{}' to node.", fileResource.getPath());
+            return;
+        }
+        String mimeType = "";
+        Resource fileContent = fileResource.getChild("jcr:content");
+        if(fileContent != null) {
+            ValueMap fileContentProperties = fileContent.getValueMap();
+            mimeType = fileContentProperties.get("jcr:mimeType", "");
+        }
+        InputStream newContentStream = IOUtils.toInputStream(newContent, StandardCharsets.UTF_8.name());
+        JcrUtils.putFile(fileNode.getParent(), fileNode.getName(), mimeType, newContentStream);
     }
 
     private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {

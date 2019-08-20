@@ -72,6 +72,47 @@
     "placeholder": "enter a description for this page"
   },
   {
+    "type": "collection",
+    "multifield": true,
+    "fieldLabel": [
+      "property",
+      "value"
+    ],
+    "fields": [
+      {
+        "type": "material-select",
+        "label": "Type",
+        "model": "metatype",
+        "selectOptions": {
+          "name": "name",
+          "value": "value"
+        },
+        "values": [
+          {"name": "property", "value": "property" },
+          {"name": "name", "value": "name" }
+        ],
+        "required": true,
+        "validator": "required"
+      },
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "og:title",
+        "label": "meta property",
+        "model": "key"
+      },
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "title",
+        "label": "meta content",
+        "model": "value"
+      }
+    ],
+    "label": "Meta Properties",
+    "model": "metaproperties"
+  },
+  {
     "type": "material-select",
     "label": "Protocol",
     "model": "protocol",

@@ -47,7 +47,7 @@
                         sling:resourceType="admin/components/extensions"
                         id="admin.pages.subnav"/>
                 <addSite jcr:primaryType="nt:unstructured"
-                        sling:resourceType="admin/components/action" target="" type="icon" title="add site" command="addSite" icon="folder" classes="addSite">
+                        sling:resourceType="admin/components/action" target="" type="icon" title="add site" command="addSite" icon="folder" classes="addSite" visibility="state.tools.pages == '/content/sites'">
                     <experiences jcr:primaryType="nt:unstructured">
                         <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Webseite hinzufügen"/>
                     </experiences>
@@ -59,7 +59,7 @@
                     </experiences>
                 </addSite>
                 <addPage jcr:primaryType="nt:unstructured"
-                         sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add" classes="addPage">
+                         sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add" classes="addPage" visibility="state.tools.pages != '/content/sites'">
                     <experiences jcr:primaryType="nt:unstructured">
                         <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Seite hinzufügen"/>
                     </experiences>

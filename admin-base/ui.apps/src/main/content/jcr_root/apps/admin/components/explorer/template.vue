@@ -99,6 +99,15 @@
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
 
+                        <admin-components-action v-if="composumEditable(child)"
+                            v-bind:model="{
+                                target: child.path,
+                                command: 'editFile',
+                                tooltipTitle: `${$i18n('edit file')} '${child.title || child.name}'`
+                            }">
+                            <admin-components-iconeditpage></admin-components-iconeditpage>
+                        </admin-components-action>
+
                         <admin-components-action v-if="replicatable(child)"
                             v-bind:model="{
                                 target: child.path,
@@ -131,7 +140,7 @@
                         <admin-components-action
                             v-bind:model="{
                                 target: child,
-                                command: 'deletePage',
+                                command: 'deleteSiteOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons">delete</i>
@@ -402,6 +411,9 @@
             editable: function(child) {
                 return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
             },
+            composumEditable: function(child) {
+                return ['nt:file'].indexOf(child.resourceType) >= 0
+            },
             viewable: function(child) {
                 return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
@@ -498,8 +510,16 @@
             addObject: function(me, target) {
                 $perAdminApp.stateAction('createObjectWizard', { path: me.pt.path, target: target })
             },
+            deleteSiteOrPage: function(me, target) {
+                if(me.path == '/content/sites') {
+                    me.deleteSite(me, target)
+                }
+                else {
+                    me.deletePage(me, target)
+                }
+            },
             deletePage: function(me, target) {
-                const really = confirm('Are you sure to delete this node and all its children?')
+                const really = confirm(me.$i18n('Are you sure you want to delete this node and all its children?'))
                 if(!really) return
                 const resourceType = target.resourceType
                 if(resourceType === 'per:Object') {
@@ -508,9 +528,18 @@
                         $perAdminApp.stateAction('deleteAsset', target.path)
                 } else if(resourceType === 'sling:OrderedFolder') {
                     $perAdminApp.stateAction('deleteFolder', target.path)
-                } else {
+                } else if(resourceType === 'per:Page') {
                     $perAdminApp.stateAction('deletePage', target.path)
+                } else if(resourceType === 'nt:file') {
+                    $perAdminApp.stateAction('deleteFile', target.path)
+                }else {
+                    $perAdminApp.stateAction('deleteFolder', target.path)
                 }
+            },
+            deleteSite: function(me, target) {
+                const really = confirm(me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'))
+                if(!really) return
+                $perAdminApp.stateAction('deleteSite', target)
             },
             editPage: function(me, target) {
                 const path = me.pt.path
@@ -523,7 +552,11 @@
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }
+            },
+            editFile: function(me, target) {
+                window.open(`/bin/cpm/edit/code.html${target}`, 'composum')
             }
+
         }
 
     }
