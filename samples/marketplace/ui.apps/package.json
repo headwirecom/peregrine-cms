@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./node_modules/rollup/dist/bin/rollup -c && node ./src/main/content/buildscripts/buildvue.js marketplace"
+    "build": "node ./node_modules/rollup/bin/rollup -c && node ./src/main/content/buildscripts/buildvue.js marketplace"
   },
   "author": "",
   "license": "Apache-2.0",

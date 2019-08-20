@@ -21,6 +21,6 @@
     "rollup-plugin-node-resolve": "^4.0.0"
   },
   "scripts": {
-    "build": "node ./node_modules/rollup/dist/bin/rollup -c && node ../../../buildscripts/buildreact.js pagerender-react"
+    "build": "node ./node_modules/rollup/bin/rollup -c && node ../../../buildscripts/buildreact.js pagerender-react"
   }
 }
