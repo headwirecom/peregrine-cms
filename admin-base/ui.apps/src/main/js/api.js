@@ -118,6 +118,10 @@ class PerApi {
         return impl.deletePage(path)
     }
 
+    deleteSite(name, path) {
+        return impl.deleteSite(name, path)
+    }
+
     renamePage(path, newName) {
         return impl.renamePage(path, newName)
     }
@@ -164,6 +168,10 @@ class PerApi {
 
     deleteFolder(parentPath, name) {
         return impl.deleteFolder(parentPath, name)
+    }
+
+    deleteFile(path, name) {
+        return impl.deleteFile(path, name)
     }
 
     uploadFiles(path, files, cb) {

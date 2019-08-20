@@ -156,7 +156,7 @@
       onRemoveItem(item, index){
         this.value.splice(index, 1)
         if( this.schema.multifield ) {
-          if( "path"  in item ) {
+          if( item.hasOwnProperty('path') ) {
             let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
             let copy = JSON.parse(JSON.stringify(item));
             copy._opDelete = true;
