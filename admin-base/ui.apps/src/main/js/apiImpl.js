@@ -249,28 +249,61 @@ class PerAdminImpl {
                         data.model = component.methods.augmentEditorSchema(data.model)
                     }
 
+                    function isJSON(data) {
+                        var ret = true;
+                        try {
+                            JSON.parse(data);
+                        } catch (e) {
+                            ret = false;
+                        }
+                        return ret;
+                    }
+
                     let promises = []
                     if(data && data.model) {
                         for(let i = 0; i < data.model.fields.length; i++) {
+                            let src = []
                             let from = data.model.fields[i].valuesFrom
-                            if(from) {
-                                data.model.fields[i].values = []
-                                let promise = axios.get(from).then( (response) => {
-                                    for(var key in response.data) {
-                                        if(response.data[key]['jcr:title']) {
-                                            const nodeName = key
-                                            const val = from.replace('.infinity.json', '/'+nodeName)
-                                            let name = response.data[key].name
-                                            if(!name) {
-                                                name = response.data[key]['jcr:title']
+
+                            if (isJSON(from)) {
+                                src = JSON.parse(from)
+                                console.log(src)
+                            } else {
+                                src.push(from)
+                                console.log(src)
+                            }
+
+                            for (var path in src) {
+                                if (path) {
+                                    data.model.fields[i].values = []
+                                    let promise = axios.get(path).then(
+                                        (response) => {
+                                            for (var key in response.data) {
+                                                if (response.data[key]['jcr:title']) {
+                                                    const nodeName = key
+                                                    const val = path.replace(
+                                                        '.infinity.json',
+                                                        '/' + nodeName)
+                                                    let name = response.data[key].name
+                                                    if (!name) {
+                                                        name = response.data[key]['jcr:title']
+                                                    }
+
+                                                    data.model.fields[i].values.push(
+                                                        {
+                                                            value: val,
+                                                            name: name
+                                                        })
+                                                }
                                             }
-                                            data.model.fields[i].values.push({ value: val, name: name })
-                                        }
-                                    }
-                                }).catch( (error) => {
-                                    logger.error('missing node', data.model.fields[i].valuesFrom, 'for list population in dialog', error)
-                                })
-                                promises.push(promise)
+                                        }).catch((error) => {
+                                        logger.error('missing node',
+                                            data.model.fields[i].valuesFrom,
+                                            'for list population in dialog',
+                                            error)
+                                    })
+                                    promises.push(promise)
+                                }
                             }
                             let visible = data.model.fields[i].visible
                             if(visible) {

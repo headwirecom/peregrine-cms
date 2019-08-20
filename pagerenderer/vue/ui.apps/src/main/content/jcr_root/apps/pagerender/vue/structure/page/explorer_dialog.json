@@ -61,7 +61,11 @@
       "closeOnSelect": false,
       "taggable": true
     },
-    "valuesFrom": "/content/objects/tags.infinity.json"
+    "valuesFrom": [
+      "/content/objects/tags.infinity.json",
+      "/content/objects/democontent.infinity.json",
+      "/content/objects/metaprocdeutsch.infinity.json"
+    ]
   },
   {
     "type": "material-textarea",
