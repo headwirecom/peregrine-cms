@@ -27,7 +27,7 @@
       { "name": "de", "value": "de" },
       { "name": "en", "value": "en" }
     ],
-    "hint": "The name of the scheme used to make the request. Only choice from template will be used"
+    "hint": "Defined Language for current site. Only choice from template will be used"
   },
   {
     "type": "material-datetime",
@@ -101,7 +101,7 @@
           "name": "name",
           "value": "value"
         },
-        "values": [ 
+        "values": [
           {"name": "property", "value": "property" },
           {"name": "name", "value": "name" }
         ],
