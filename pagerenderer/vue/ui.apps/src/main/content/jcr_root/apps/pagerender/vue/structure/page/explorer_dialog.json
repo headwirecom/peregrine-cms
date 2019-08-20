@@ -17,7 +17,7 @@
   },
   {
     "type": "material-select",
-    "label": "lang=",
+    "label": "Site Language",
     "model": "siteLanguage",
     "selectOptions": {
       "name": "name",

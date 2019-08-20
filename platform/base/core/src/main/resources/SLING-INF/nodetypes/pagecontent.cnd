@@ -26,4 +26,4 @@
 
 [per:PageContent] > nt:unstructured, sling:Resource, sling:VanityPath, per:Replication
   orderable
-  - siteLanguage (string) = "de" autocreated
+  - siteLanguage (string) = "en" autocreated
