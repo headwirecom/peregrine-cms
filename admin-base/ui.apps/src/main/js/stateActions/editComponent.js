@@ -37,17 +37,19 @@ function bringUpEditor(me, view, target) {
                 if(current === view.state.editor.checksum) {
                     resolve(true)
                 } else {
-                    const yes = confirm('save edit?')
-                    if(yes) {
-                        const page = view.pageView.page;
-                        const path = view.state.editor.path;
-                        const data = me.findNodeFromPath(page, path);
-                        me.stateAction('savePageEdit', { pagePath: view.pageView.path, path, data}).then( () => {
-                            resolve(true)
-                        })
-                    } else {
-                        resolve(false)
-                    }
+                    $perAdminApp.askUser('Save Page Edit?', 'Would you like to save your page edits?', {
+                        yes() {
+                            const page = view.pageView.page;
+                            const path = view.state.editor.path;
+                            const data = me.findNodeFromPath(page, path);
+                            me.stateAction('savePageEdit', { pagePath: view.pageView.path, path, data}).then( () => {
+                                resolve(true)
+                            })
+                        },
+                        no() {
+                            resolve(false)
+                        }
+                    })
                 }
             } else {
                 resolve(true)
