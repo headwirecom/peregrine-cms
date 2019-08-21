@@ -27,11 +27,13 @@
     org.apache.felix/org.apache.felix.jaas/1.0.2
 
 [artifacts startLevel=15]
+
     org.apache.jackrabbit/oak-core/${oak.version}
     org.apache.jackrabbit/oak-commons/${oak.version}
     org.apache.jackrabbit/oak-lucene/${oak.version}
     org.apache.jackrabbit/oak-blob/${oak.version}
     org.apache.jackrabbit/oak-jcr/${oak.version}
+
 
 [artifacts startLevel=15 runModes=oak_tar]
     org.apache.jackrabbit/oak-segment-tar/${oak.version}
@@ -84,6 +86,7 @@
 [configurations runModes=oak_tar]
   org.apache.jackrabbit.oak.segment.SegmentNodeStoreService
     name="Default\ NodeStore"
+
 
 [configurations runModes=oak_mongo]
   org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreService

@@ -1,0 +1,20 @@
+{
+  "definitions": {
+    "Title": {
+      "type": "object",
+      "x-type": "component",
+      "properties": {
+        "title": {
+          "type": "string",
+          "x-source": "inject",
+          "x-form-label": "Title",
+          "x-form-type": "text"
+        },
+        "bgref": {
+          "x-form-type": "reference",
+          "$ref": "fragments/block/model.json#/definitions/Block"
+        }
+      }
+    }
+  }
+}
