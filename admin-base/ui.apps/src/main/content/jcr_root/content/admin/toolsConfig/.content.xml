@@ -36,7 +36,23 @@
                 jcr:description="see all the front end libraries available in this instance"
                 action="/content/admin/config/felibs"/>
                 -->
-    <querytool jcr:primaryType="nt:unstructured" jcr:title="JCR Query Tool" sling:resourceType="admin/components/iconaction"
+        <composum jcr:primaryType="nt:unstructured" jcr:title="Composum" sling:resourceType="admin/components/iconaction"
+                jcr:description="Developer Tool"
+                action="/bin/browser.html" target="composum">
+            <experiences jcr:primaryType="nt:unstructured">
+                <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Entwickler Tool" description="Für Entwickler und Fehler Suche"/>
+            </experiences>
+        </composum>
+
+        <api jcr:primaryType="nt:unstructured" jcr:title="Peregrine API" sling:resourceType="admin/components/iconaction"
+                jcr:description="Peregrine API Explorer"
+                action="/perapi/swaggereditor/" target="api">
+            <experiences jcr:primaryType="nt:unstructured">
+                <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Peregrine API" description="Peregrine API erkunden"/>
+            </experiences>
+        </api>
+
+        <querytool jcr:primaryType="nt:unstructured" jcr:title="JCR Query Tool" sling:resourceType="admin/components/iconaction"
             jcr:description="for developers, query the jcr repository"
             action="/content/admin/config/querytool">
         <experiences jcr:primaryType="nt:unstructured">

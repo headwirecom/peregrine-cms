@@ -33,6 +33,7 @@ import createPageWizard from './stateActions/createPageWizard'
 import createSiteWizard from './stateActions/createSiteWizard'
 import createSite from './stateActions/createSite'
 import deletePage from './stateActions/deletePage'
+import deleteSite from './stateActions/deleteSite'
 import renamePage from './stateActions/renamePage'
 import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
@@ -41,6 +42,7 @@ import sourceImageWizard from './stateActions/sourceImageWizard'
 import fetchExternalAsset from './stateActions/fetchExternalAsset'
 import createFolder from './stateActions/createFolder'
 import deleteFolder from './stateActions/deleteFolder'
+import deleteFile from './stateActions/deleteFile'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
 import editTemplate from './stateActions/editTemplate'
@@ -83,12 +85,14 @@ actions['createSite'] = createSite
 actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['deletePage'] = deletePage
+actions['deleteSite'] = deleteSite
 actions['renamePage'] = renamePage
 actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
 actions['createFolder'] = createFolder
 actions['deleteFolder'] = deleteFolder
+actions['deleteFile'] = deleteFile
 actions['uploadFiles'] = uploadFiles
 actions['sourceImageWizard'] = sourceImageWizard
 actions['fetchExternalAsset'] = fetchExternalAsset
