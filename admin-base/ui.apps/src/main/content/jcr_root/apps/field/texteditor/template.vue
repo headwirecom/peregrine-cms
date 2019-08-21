@@ -96,20 +96,23 @@
                     modalOverride: {
                         init: function(trumbowyg) {
                             trumbowyg.openModalInsert = function(title, fields, cmd) {
+                                //Setup state of pathbrowser and open pathbrowser
                                 let isImage = fields.hasOwnProperty('alt');
                                 self.browserType = isImage ? 'asset' : 'page';
-                                self.browserRoot = isImage ? '/content/assets/' : '/content/sites';
-                                self.currentPath = isImage ? '/content/assets/' : '/content/sites';
-                                self.withLinkTab = !isImage;
+                                self.browserRoot = isImage ? '/content/assets' : '/content/sites';
+                                self.currentPath = isImage ? '/content/assets' : '/content/sites';
+                                let documentSelection = trumbowyg.doc.getSelection();
+                                let text = new XMLSerializer().serializeToString(documentSelection.getRangeAt(0).cloneContents());
                                 self.browse();
+
+                                //Setup pathbrowser select event to call trumbowyg cmd callback
                                 self.onSelect = function() {
-                                    let e = {};
-                                    let documentSelection = trumbowyg.doc.getSelection();
-                                    e.text = new XMLSerializer().serializeToString(documentSelection.getRangeAt(0).cloneContents());
-                                    e.title = title;
-                                    e.target = "blank";
-                                    e.url = self.selectedPath;
-                                    cmd(e);
+                                    cmd({
+                                        text,
+                                        title,
+                                        target: "blank",
+                                        url: self.selectedPath
+                                    })
                                     self.isOpen = false;
                                 }
                             }
