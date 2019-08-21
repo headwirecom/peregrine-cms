@@ -22,11 +22,7 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger'
-let log = LoggerFactory.logger('actions').setLevelDebug()
-
-let actions = []
-
+import {LoggerFactory} from './logger'
 import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
 import createPageWizard from './stateActions/createPageWizard'
@@ -79,6 +75,10 @@ import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
 
+let log = LoggerFactory.logger('actions').setLevelDebug()
+
+let actions = []
+
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createSiteWizard'] = createSiteWizard
 actions['createSite'] = createSite
@@ -130,6 +130,9 @@ actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
 actions['moveObject'] = moveObject
 actions['moveTemplate'] = moveTemplate
+actions['deleteTemplate'] = deletePage
+actions['showTemplateInfo'] = showPageInfo
+actions['saveTemplateProperties'] = savePageProperties
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)
