@@ -10,8 +10,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./node_modules/rollup/dist/bin/rollup -c --silent && node ../../buildscripts/buildvue.js admin && node ../../buildscripts/copyfelibs.js && node src/main/buildjs/mdtopage.js",
-    "quickbuild": "node ./node_modules/rollup/dist/bin/rollup -c && node ./src/main/buildjs/build.js",
+    "build": "node ./node_modules/rollup/bin/rollup -c --silent && node ../../buildscripts/buildvue.js admin && node ../../buildscripts/copyfelibs.js && node src/main/buildjs/mdtopage.js",
+    "quickbuild": "node ./node_modules/rollup/bin/rollup -c && node ./src/main/buildjs/build.js",
     "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json",
     "lint-vue": "node node_modules/eslint/bin/eslint.js src/main/content/jcr_root --ext vue",
     "lint-js": "node node_modules/eslint/bin/eslint.js src/main/js"

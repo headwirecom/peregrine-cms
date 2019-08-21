@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import com.peregrine.intra.IntraSlingCaller;
 
@@ -87,9 +88,9 @@ public class NodeServlet extends AbstractBaseServlet {
                     .setExtension(DATA_JSON_EXTENSION)
             );
             return new TextResponse(JSON, JSON_MIME_TYPE)
-                .write(new String(response));
+                .write(new String(response, Charset.forName("utf-8")));
         } catch(IntraSlingCaller.CallException e) {
-            logger.warn("Internal call failed", e);
+             logger.warn("Internal call failed", e);
         }
         return new RedirectResponse(path + DATA_JSON_EXTENSION);
     }

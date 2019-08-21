@@ -57,6 +57,7 @@ public class IntraSlingCallerService
             pathInfo.setExtension(callerContext.getExtension());
             pathInfo.setSuffix(callerContext.getSuffix());
             MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
+            resp.setCharacterEncoding("utf-8");
             requestProcessor.processRequest(req, resp, callerContext.getResourceResolver());
             logger.trace("Response Status: '{}'", resp.getStatus());
             //AS TODO: do we need to support redirects (301 / 302)
