@@ -6,7 +6,7 @@ module.exports = {
        f.wrap($, 'themeclean-components-block')
        f.bindAttribute($.parent(),'model','model')
 
-        //add text in p tag
+        //add text in h1 tag
         f.mapRichField($.find('h1').first(), "model.title")
     }
 }
