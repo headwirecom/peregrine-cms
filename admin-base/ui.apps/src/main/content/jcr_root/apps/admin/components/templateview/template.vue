@@ -95,9 +95,9 @@
         props: ['model'],
         computed: {
             currentObject() {
-                return $perAdminApp.getNodeFromViewOrNull("/state/tools/template")
+      return $perAdminApp.getNodeFromViewOrNull("/state/tools/template")
             },
-            page() {
+    page() {
                 return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject)
             },
             allowOperations() {
@@ -128,16 +128,16 @@
             renamePage() {
                 let newName = prompt('new name for '+this.page.name)
                 if(newName) {
-                    $perAdminApp.stateAction('renamePage', { path: this.page.path, name: newName})
+        $perAdminApp.stateAction('renamePage', { path: this.page.path, name: newName})
                     let newPath = this.currentObject.split('/')
                     newPath.pop()
                     newPath.push(newName)
-                    $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
+        $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
                 }
             },
-            deletePage() {
-                $perAdminApp.stateAction('deletePage', this.page.path)
-                $perAdminApp.stateAction('showPageInfo', { selected: null })
+    deletePage() {
+      $perAdminApp.stateAction('deletePage', this.page.path)
+      $perAdminApp.stateAction('showPageInfo', { selected: null })
             },
             setCurrentPath(path){
                 this.currentPath = path
@@ -145,7 +145,7 @@
             setSelectedPath(path){
                 this.selectedPath = path
             },
-            movePage() {
+    movePage() {
                 $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
                     .then( () => {
                         this.isOpen = true
@@ -157,7 +157,7 @@
                 this.isOpen = false
             },
             onMoveSelect() {
-                $perAdminApp.stateAction('moveTemplate', { path: this.page.path, to: this.selectedPath, type: 'child'})
+      $perAdminApp.stateAction('moveTemplate', { path: this.page.path, to: this.selectedPath, type: 'child'})
                 $perAdminApp.stateAction('unselectTemplate', { })
                 this.isOpen = false
             },
