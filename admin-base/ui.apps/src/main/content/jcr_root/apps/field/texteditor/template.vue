@@ -28,6 +28,19 @@
             <trumbowyg :config="config" v-model="value" ref="editor"></trumbowyg>
         </div>
         <p v-else v-html="value"></p>
+        <admin-components-pathbrowser 
+            v-if="isOpen"
+            :isOpen="isOpen" 
+            :browserRoot="browserRoot" 
+            :browserType="browserType" 
+            :currentPath="currentPath" 
+            :selectedPath="selectedPath" 
+            :withLinkTab="withLinkTab"
+            :setCurrentPath="setCurrentPath"
+            :setSelectedPath="setSelectedPath"
+            :onCancel="onCancel"
+            :onSelect="onSelect">
+        </admin-components-pathbrowser>
     </div>
 </template>
 
@@ -36,6 +49,12 @@
         mixins: [ VueFormGenerator.abstractField ],
         data () {
             return {
+                browserRoot: '/content/assets',
+                browserType: 'asset',
+                currentPath: '/content/assets',
+                selectedPath: null,
+                withLinkTab: true,
+                isOpen: false,
                 default: {
                     config: {
                         svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
@@ -71,13 +90,28 @@
             }
         },
         beforeCreate() {
+            var self = this;
             $.extend(true, $.trumbowyg, {
                 plugins: {
                     modalOverride: {
                         init: function(trumbowyg) {
-                            console.log(trumbowyg)
-                            trumbowyg.__proto__.openModalInsert = function(title, fields, cmd) {
-                                console.log(title, fields, cmd)
+                            trumbowyg.openModalInsert = function(title, fields, cmd) {
+                                let isImage = fields.hasOwnProperty('alt');
+                                self.browserType = isImage ? 'asset' : 'page';
+                                self.browserRoot = isImage ? '/content/assets/' : '/content/sites';
+                                self.currentPath = isImage ? '/content/assets/' : '/content/sites';
+                                self.withLinkTab = !isImage;
+                                self.browse();
+                                self.onSelect = function() {
+                                    let e = {};
+                                    let documentSelection = trumbowyg.doc.getSelection();
+                                    e.text = new XMLSerializer().serializeToString(documentSelection.getRangeAt(0).cloneContents());
+                                    e.title = title;
+                                    e.target = "blank";
+                                    e.url = self.selectedPath;
+                                    cmd(e);
+                                    self.isOpen = false;
+                                }
                             }
                         }
                     }
@@ -118,6 +152,29 @@
             },
             isObjectAndNotEmpty(p) {
                 return typeof p === 'object' && Object.entries(p).length > 0
+            },
+            onCancel(){
+                this.isOpen = false
+            },
+            setCurrentPath(path){
+                this.currentPath = path
+            },
+            setSelectedPath(path){
+                this.selectedPath = path
+            },
+            isImage(path) {
+                return /\.(jpg|png|gif)$/.test(path);
+            },
+            isValidPath(path, root){
+                return path && path !== root && path.includes(root)
+            },
+            browse() {
+                $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
+                    .then( () => {
+                        this.isOpen = true
+                    }).catch( (err) => {
+                        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+                    })
             }
         }
     }
