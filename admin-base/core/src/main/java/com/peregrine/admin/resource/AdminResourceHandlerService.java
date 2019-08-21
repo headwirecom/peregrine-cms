@@ -488,8 +488,15 @@ public class AdminResourceHandlerService
     private Node createNode(Node parent, Map data, String variation) throws RepositoryException, ManagementException {
         data.remove(PATH);
         String component = (String) data.remove(COMPONENT);
+        String componentName = component.substring(component.lastIndexOf("/") + 1);
+        String nodeName = componentName;
+        int k = 1;
+        while(parent.hasNode(nodeName)) {
+            nodeName = componentName + k;
+            k++;
+        }
 
-        Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
+        Node newNode = parent.addNode(nodeName, NT_UNSTRUCTURED);
         newNode.setProperty(SLING_RESOURCE_TYPE, component);
         for (Object key: data.keySet()) {
             Object val = data.get(key);
