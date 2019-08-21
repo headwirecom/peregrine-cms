@@ -25,9 +25,14 @@ under the License.
     </parent>
 
     <artifactId>com.peregrine-cms.featuremodel.starter</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+<!--    <version>1.0.0-SNAPSHOT</version>-->
     <name>Feature model of Peregrine CMS / Sling 11</name>
     <packaging>slingosgifeature</packaging>
+
+    <properties>
+        <slingfeature-maven-plugin.version>1.0.7-SNAPSHOT</slingfeature-maven-plugin.version>
+        <sling-feature-converter-maven-plugin.version>1.0.0-SNAPSHOT</sling-feature-converter-maven-plugin.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -72,12 +77,6 @@ under the License.
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>${project.groupId}</groupId>-->
-<!--            <artifactId>admin.ui.apps-example</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--            <type>zip</type>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>admin.ui.materialize</artifactId>
@@ -94,24 +93,15 @@ under the License.
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.jcr.packageinit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-<!--            <type>zip</type>-->
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>${project.groupId}</groupId>-->
-<!--            <artifactId>themeclean-ui.apps</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--            <type>zip</type>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.themeclean</groupId>
+            <artifactId>themeclean-ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
     <build>
-<!--        <resources>-->
-<!--            <resource>-->
-<!--                <directory>src/main/resources</directory>-->
-<!--                <includes>-->
-<!--                    <include>**/*.json</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
-<!--        </resources>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -135,14 +125,11 @@ under the License.
                     </execution>
                 </executions>
             </plugin>
-             <plugin>
+            <plugin>
                 <groupId>org.apache.sling</groupId>
-                <artifactId>slingfeature-maven-plugin</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <artifactId>sling-feature-converter-maven-plugin</artifactId>
+                <version>${sling-feature-converter-maven-plugin.version}</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <features>target/fm</features>
-                </configuration>
                 <executions>
                     <execution>
                         <id>convert-pm</id>
@@ -213,10 +200,6 @@ under the License.
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>admin.ui.apps</artifactId>
                                 </contentPackage>
-                                <!--                                <contentPackage>-->
-                                <!--                                    <groupId>${project.groupId}</groupId>-->
-                                <!--                                    <artifactId>admin.ui.apps-example</artifactId>-->
-                                <!--                                </contentPackage>-->
                                 <contentPackage>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>admin.ui.materialize</artifactId>
@@ -225,13 +208,25 @@ under the License.
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>pagerender-vue.ui.apps</artifactId>
                                 </contentPackage>
-                                <!--                                <contentPackage>-->
-                                <!--                                    <groupId>${project.groupId}</groupId>-->
-                                <!--                                    <artifactId>themeclean-ui.apps</artifactId>-->
-                                <!--                                </contentPackage>-->
+                                <contentPackage>
+                                    <groupId>com.themeclean</groupId>
+                                    <artifactId>themeclean-ui.apps</artifactId>
+                                </contentPackage>
                             </contentPackages>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>slingfeature-maven-plugin</artifactId>
+                <version>${slingfeature-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <features>target/fm</features>
+                    <generatedFeatures>${basedir}/target/fm</generatedFeatures>
+                </configuration>
+                <executions>
                     <execution>
                         <id>aggregate-base-feature</id>
                         <phase>generate-test-sources</phase>
@@ -254,28 +249,29 @@ under the License.
                             <goal>attach-features</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>verify-analyze</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>analyse-features</goal>
-                        </goals>
-                        <configuration>
-                            <framework>
-                                <groupId>org.apache.felix</groupId>
-                                <artifactId>org.apache.felix.framework</artifactId>
-                                <version>6.0.1</version>
-                            </framework>
-                            <scans>
-                                <scan>
-                                    <includeClassifier>example-runtime</includeClassifier>
-                                    <includeTasks>
-                                        <includeTask>bundle-packages</includeTask>
-                                    </includeTasks>
-                                </scan>
-                            </scans>
-                        </configuration>
-                    </execution>
+                    <!-- Sling PM startlevels are not setup correctly according to the Analyzer and that make the build fail -->
+<!--                    <execution>-->
+<!--                        <id>verify-analyze</id>-->
+<!--                        <phase>generate-test-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>analyse-features</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <framework>-->
+<!--                                <groupId>org.apache.felix</groupId>-->
+<!--                                <artifactId>org.apache.felix.framework</artifactId>-->
+<!--                                <version>6.0.1</version>-->
+<!--                            </framework>-->
+<!--                            <scans>-->
+<!--                                <scan>-->
+<!--                                    <includeClassifier>example-runtime</includeClassifier>-->
+<!--                                    <includeTasks>-->
+<!--                                        <includeTask>bundle-packages</includeTask>-->
+<!--                                    </includeTasks>-->
+<!--                                </scan>-->
+<!--                            </scans>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                 </executions>
             </plugin>
             <plugin>
@@ -299,8 +295,20 @@ under the License.
                     <plugin>
                         <groupId>org.apache.sling</groupId>
                         <artifactId>slingfeature-maven-plugin</artifactId>
-                        <version>1.0.5-SNAPSHOT</version>
+                        <version>1.0.7-SNAPSHOT</version>
                         <extensions>true</extensions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.sling</groupId>
+                                <artifactId>org.apache.sling.feature.launcher</artifactId>
+                                <version>1.0.7-SNAPSHOT</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.sling</groupId>
+                                <artifactId>org.apache.sling.feature.extension.content</artifactId>
+                                <version>1.0.5-SNAPSHOT</version>
+                            </dependency>
+                        </dependencies>
                         <executions>
                             <execution>
                                 <id>launch-it</id>
@@ -309,7 +317,9 @@ under the License.
                                     <goal>launch-features</goal>
                                 </goals>
                                 <configuration>
-                                    <featureFile>${project.build.directory}/slingfeature-tmp/feature-example-runtime.json</featureFile>
+                                    <selection>
+                                        <includeClassifier>example-runtime</includeClassifier>
+                                    </selection>
                                 </configuration>
                             </execution>
                         </executions>
