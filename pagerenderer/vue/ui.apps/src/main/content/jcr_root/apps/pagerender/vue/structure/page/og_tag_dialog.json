@@ -1,0 +1,67 @@
+{
+  "fields": [
+    {
+      "type": "material-checkbox",
+      "label": "Title für og:title übernehmen?",
+      "default": true,
+      "model": "useTitle"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogTitle",
+      "label": "og:title",
+      "placeholder": "og.title",
+      "visible": "model.useTitle != true"
+    },
+    {
+      "type": "material-checkbox",
+      "label": "Description für og:description übernehmen?",
+      "default": true,
+      "model": "useDescription"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogDescription",
+      "label": "og:description",
+      "placeholder": "og.description",
+      "visible": "model.useDescription != true"
+    },
+    {
+      "type": "material-select",
+      "label": "og:type",
+      "model": "ogType",
+      "placeholder": "og.type",
+      "default": "website",
+      "values" : [
+        {
+          "name": "website",
+          "value": "website"
+        }
+      ]
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/assets",
+      "label": "og:image",
+      "readonly": true,
+      "placeholder": "ogImage",
+      "model": "ogImage"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogImageAlt",
+      "placeholder": "og.imageAlt",
+      "label": "og:image:alt"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogUrl",
+      "label": "og:url",
+      "placeholder": "og.url"
+    }
+  ]
+}
