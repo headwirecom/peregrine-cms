@@ -33,11 +33,12 @@
             :isOpen="isOpen" 
             :browserRoot="browserRoot" 
             :browserType="browserType" 
-            :currentPath="currentPath" 
-            :selectedPath="selectedPath" 
             :withLinkTab="withLinkTab"
-            :setCurrentPath="setCurrentPath"
-            :setSelectedPath="setSelectedPath"
+            :newWindow="newWindow" :toggleNewWindow="toggleNewWindow"
+            :altText="altText" :setAltText="setAltText"
+            :linkTitle="linkTitle" :setLinkTitle="setLinkTitle"
+            :currentPath="currentPath" :setCurrentPath="setCurrentPath"
+            :selectedPath="selectedPath" :setSelectedPath="setSelectedPath"
             :onCancel="onCancel"
             :onSelect="onSelect">
         </admin-components-pathbrowser>
@@ -53,7 +54,10 @@
                 browserType: 'asset',
                 currentPath: '/content/assets',
                 selectedPath: null,
+                altText: null,
+                linkTitle: null,
                 withLinkTab: true,
+                newWindow: true,
                 isOpen: false,
                 default: {
                     config: {
@@ -96,6 +100,7 @@
                     modalOverride: {
                         init: function(trumbowyg) {
                             trumbowyg.openModalInsert = function(title, fields, cmd) {
+                                console.log(fields);
                                 //Setup state of pathbrowser and open pathbrowser
                                 let isImage = fields.hasOwnProperty('alt');
                                 self.browserType = isImage ? 'asset' : 'page';
@@ -109,8 +114,8 @@
                                 self.onSelect = function() {
                                     cmd({
                                         text,
-                                        title,
-                                        target: "blank",
+                                        title: self.linkTitle,
+                                        target: self.newWindow ? "_blank" : "_self",
                                         url: self.selectedPath
                                     })
                                     self.isOpen = false;
@@ -158,6 +163,15 @@
             },
             onCancel(){
                 this.isOpen = false
+            },
+            toggleNewWindow() {
+                this.newWindow = !this.newWindow;
+            },
+            setAltText(e) {
+                this.altText = e.target.value;
+            },
+            setLinkTitle(e) {
+                this.linkTitle = e.target.value;
             },
             setCurrentPath(path){
                 this.currentPath = path

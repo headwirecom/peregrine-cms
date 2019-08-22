@@ -271,7 +271,6 @@
                         <p v-else class="flow-text">{{getEmptyText()}}</p>
                     </template>
                     <template v-if="withLinkTab && tab === 'link' && !search">
-                        <p>
                             <label for="pathBrowserLink">URL</label>
                             <input 
                                 id="pathBrowserLink" 
@@ -279,9 +278,24 @@
                                 placeholder="https://" 
                                 :value="selectedPath"
                                 @input="selectLink" />
-                            <input type="checkbox" id="newWindow" />
-                            <label for="newWindow">Open in new window?</label>
-                        </p>
+                            <div v-if="browserType === 'link' || browserType === 'page'" @click="toggleNewWindow">  
+                                <input type="checkbox" id="newWindow" :checked="newWindow"/>
+                                <label for="newWindow">Open in new window?</label>
+                            </div>
+                            <input 
+                                id="altText" 
+                                v-if="browserType === 'asset' || browserType === 'image'"
+                                type="text" 
+                                placeholder="Alt Text" 
+                                :value="altText"
+                                @input="setAltText" />
+                            <input 
+                                id="T" 
+                                v-if="browserType === 'page' || browserType === 'link'"
+                                type="text" 
+                                placeholder="Link Title" 
+                                :value="linkTitle"
+                                @input="setLinkTitle" />
                     </template>
                 </div>
                 <div class="col-preview">
@@ -337,10 +351,16 @@
             'currentPath', 
             'selectedPath', 
             'withLinkTab', 
+            'newWindow',
+            'toggleNewWindow',
             'setCurrentPath', 
             'setSelectedPath', 
+            'linkTitle',
+            'setLinkTitle',
+            'altText',
+            'setAltText',
             'onCancel', 
-            'onSelect'
+            'onSelect',
         ],
         watch: {
             cardSize: function (newCardSize) {
