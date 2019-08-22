@@ -74,6 +74,8 @@ import replicate from './stateActions/replicate'
 import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
+import deleteTemplate from './stateActions/deleteTemplate';
+import renameTemplate from './stateActions/renameTemplate';
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -129,10 +131,12 @@ actions['renameObject'] = renameObject
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
 actions['moveObject'] = moveObject
-actions['moveTemplate'] = moveTemplate
-actions['deleteTemplate'] = deletePage
+
 actions['showTemplateInfo'] = showPageInfo
 actions['saveTemplateProperties'] = savePageProperties
+actions['renameTemplate'] = renameTemplate
+actions['moveTemplate'] = moveTemplate
+actions['deleteTemplate'] = deleteTemplate
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

@@ -354,6 +354,10 @@
             } else {
                 this.tab = 'browse'
             }
+            console.log('browserRoot', this.browserRoot)
+            console.log('browserType', this.browserType)
+            console.log('currentPath', this.currentPath)
+            console.log('selectedPath', this.selectedpath)
         },
         data: function() {
             return {

@@ -24,10 +24,10 @@
  */
 // var axios = require('axios')
 
-import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
+import {LoggerFactory} from './logger'
+import {stripNulls} from './utils'
 
-import { stripNulls} from './utils'
+let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
 const API_BASE = '/perapi'
 const postConfig = {
@@ -493,6 +493,15 @@ class PerAdminImpl {
             updateWithForm('/admin/createTemplate.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
+        })
+    }
+
+    deleteTemplate(path) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json'+path, data)
+            .then( (data) => this.populateNodesForBrowser(path) )
+            .then( () => resolve() )
         })
     }
 
