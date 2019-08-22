@@ -102,7 +102,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             dialog = getDialogFromSuperType(component, page, false);
         }
         Resource ogTags = component.getChild(OG_TAG_DIALOG_JSON);
-        if(ogTags == null){
+        if(ogTags == null) {
           ogTags = getDialogFromSuperType(component, page, true);
         }
         JsonResponse answer = new JsonResponse();
@@ -111,7 +111,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         if(dialog != null) {
             answer.writeAttributeRaw(MODEL, ServletHelper.asString(dialog.adaptTo(InputStream.class)).toString());
         }
-        if(ogTags != null){
+        if(ogTags != null) {
           answer.writeAttributeRaw(OG_TAGS, ServletHelper.asString(ogTags.adaptTo(InputStream.class)).toString());
         }
         return answer;

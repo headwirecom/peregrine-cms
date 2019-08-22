@@ -310,7 +310,7 @@ class PerAdminImpl {
                         }
                     }
                     Promise.all(promises).then( () => {
-                            populateView('/admin/componentDefinitions', data.name, data.model)
+                            populateView('/admin/componentDefinitions', data.name, data)
                             resolve(name)
                         }
                     )
