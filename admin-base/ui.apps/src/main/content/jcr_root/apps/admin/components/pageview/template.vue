@@ -185,11 +185,17 @@
             renamePage() {
                 let newName = prompt('new name for '+this.page.name)
                 if(newName) {
-                    $perAdminApp.stateAction('renamePage', { path: this.page.path, name: newName})
+                    let renamePromise = $perAdminApp.stateAction('renamePage', { path: this.page.path, name: newName})
+
                     let newPath = this.currentObject.split('/')
-                    newPath.pop()
-                    newPath.push(newName)
-                    $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
+                    renamePromise.then(
+                        function(a,b,c,d) {
+                            newPath.pop()
+                            newPath.push(newName)
+                            $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
+                                .then(() => {});
+                        }
+                    );
                 }
             },
             deletePage() {

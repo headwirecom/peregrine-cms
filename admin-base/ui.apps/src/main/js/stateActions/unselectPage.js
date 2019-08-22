@@ -32,5 +32,8 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    set(view, '/state/tools/page', undefined)
+    return new Promise( (resolve, reject) => {
+        set(view, '/state/tools/page', undefined)
+        resolve()
+    })
 }
