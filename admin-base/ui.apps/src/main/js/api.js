@@ -139,6 +139,10 @@ class PerApi {
         return impl.createTemplate(parentPath, name, component)
     }
 
+    moveTemplate(path, to, type) {
+        return impl.moveTemplate(path, to, type)
+    }
+
     deleteTemplate(path) {
         return impl.deleteTemplate(path)
     }
