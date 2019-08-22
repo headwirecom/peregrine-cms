@@ -26,6 +26,7 @@ package com.peregrine.nodetypes.merge;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peregrine.commons.util.BindingsUseUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.scripting.SlingScriptHelper;
@@ -59,7 +60,6 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 public class PageMerge implements Use {
 
     public static final String FROM_TEMPLATE = "fromTemplate";
-    public static final String REQUEST = "request";
     public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
     public static final String CONTENT_TEMPLATES = "/content/templates/";
@@ -205,7 +205,7 @@ public class PageMerge implements Use {
 
     @Override
     public void init(Bindings bindings) {
-        request = (SlingHttpServletRequest) bindings.get(REQUEST);
+        request = BindingsUseUtil.getRequest(bindings);
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
         modelFactory = sling.getService(ModelFactory.class);
         renderContext.remove();
