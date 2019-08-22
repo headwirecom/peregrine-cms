@@ -244,11 +244,11 @@
         }
       },
       moveNode() {
-        $perAdminApp.getApi().populateNodesForBrowser(this.browser.path.current, 'browser')
+        $perAdminApp.getApi().populateNodesForBrowser(this.browser.path.current, 'pathBrowser')
         .then(() => {
           this.isOpen = true;
         }).catch((err) => {
-          $perAdminApp.getApi().populateNodesForBrowser('/content', 'browser');
+          $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser');
         });
       },
       deleteNode() {
