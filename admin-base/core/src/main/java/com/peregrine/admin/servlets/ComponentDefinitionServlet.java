@@ -28,7 +28,6 @@ package com.peregrine.admin.servlets;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import com.peregrine.commons.util.PerConstants;
-import jdk.internal.util.xml.impl.Input;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
