@@ -60,7 +60,6 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 public class PageMerge implements Use {
 
     public static final String FROM_TEMPLATE = "fromTemplate";
-    public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
     public static final String CONTENT_TEMPLATES = "/content/templates/";
     private final Logger log = LoggerFactory.getLogger(PageMerge.class);
@@ -206,7 +205,7 @@ public class PageMerge implements Use {
     @Override
     public void init(Bindings bindings) {
         request = BindingsUseUtil.getRequest(bindings);
-        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
+        SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
         modelFactory = sling.getService(ModelFactory.class);
         renderContext.remove();
         renderContext.set(new RenderContext(request));
