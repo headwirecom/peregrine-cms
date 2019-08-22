@@ -116,7 +116,8 @@
                                         text,
                                         title: self.linkTitle,
                                         target: self.newWindow ? "_blank" : "_self",
-                                        url: self.selectedPath
+                                        url: self.selectedPath,
+                                        alt: self.altText
                                     })
                                     self.isOpen = false;
                                 }
