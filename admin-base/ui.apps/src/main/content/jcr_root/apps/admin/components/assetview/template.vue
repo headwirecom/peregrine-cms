@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -91,7 +91,7 @@
             </template>
 
             <template v-if="edit">
-                <vue-form-generator 
+                <vue-form-generator
                     class="vfg-preview"
                     v-on:validated = "onValidated"
                     v-bind:schema  = "schema"
@@ -99,7 +99,7 @@
                     v-bind:options = "options">
                 </vue-form-generator>
                 <div class="explorer-confirm-dialog">
-                    <button 
+                    <button
                         type="button"
                         v-bind:title="$i18n('save page properties')"
                         v-bind:disabled="!valid"
@@ -116,8 +116,8 @@
                     <li class="collection-item" v-for="item in referencedBy">
                         <span>
                             <admin-components-action
-                                v-bind:model="{ 
-                                    target: item.path, 
+                                v-bind:model="{
+                                    target: item.path,
                                     command: 'editPage',
                                     tooltipTitle: `edit '${item.name}'`
                                 }">
@@ -136,13 +136,13 @@
             <i class="material-icons">info</i>
         </div>
 
-        <admin-components-pathbrowser 
+        <admin-components-pathbrowser
             v-if="isOpen"
-            :isOpen="isOpen" 
-            :browserRoot="browserRoot" 
-            :browserType="'page'" 
-            :currentPath="currentPath" 
-            :selectedPath="selectedPath" 
+            :isOpen="isOpen"
+            :browserRoot="browserRoot"
+            :browserType="'page'"
+            :currentPath="currentPath"
+            :selectedPath="selectedPath"
             :setCurrentPath="setCurrentPath"
             :setSelectedPath="setSelectedPath"
             :onCancel="onMoveCancel"
@@ -174,7 +174,7 @@
         computed: {
             schema() {
                 var view = $perAdminApp.getView()
-                var schema = view.admin.componentDefinitions['admin-components-assetview']
+                var schema = view.admin.componentDefinitions['admin-components-assetview'].model
                 return schema
             //     const view = $perAdminApp.getView()
             //     if(this.asset) {

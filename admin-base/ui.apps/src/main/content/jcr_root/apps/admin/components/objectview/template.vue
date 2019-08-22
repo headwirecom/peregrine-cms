@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -53,13 +53,13 @@
                 <li>
                     <a  v-if="!edit"
                         v-bind:title="$i18n('edit object')"
-                        class="waves-effect waves-light" 
+                        class="waves-effect waves-light"
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
                     </a>
                     <a  v-else
                         v-bind:title="$i18n('preview object')"
-                        class="waves-effect waves-light" 
+                        class="waves-effect waves-light"
                         v-on:click.stop.prevent="onCancel">
                         <i class="material-icons">info</i>
                     </a>
@@ -67,7 +67,7 @@
             </ul>
             <template v-if="(edit === false || edit === undefined) && schema !== undefined">
                 <template v-if="currentObject.data && schema">
-                    <vue-form-generator 
+                    <vue-form-generator
                             class="vfg-preview"
                             v-on:validated = "onValidated"
                             v-bind:schema  = "readOnlySchema"
@@ -85,12 +85,12 @@
                   v-bind:options = "formOptions">
                 </vue-form-generator>
                 <div class="explorer-confirm-dialog">
-                    <button  
+                    <button
                         v-if="edit"
                         type="button"
                         v-bind:title="$i18n('save object')"
-                        v-bind:disabled="!valid" 
-                        class="btn btn-raised waves-effect waves-light right" 
+                        v-bind:disabled="!valid"
+                        class="btn btn-raised waves-effect waves-light right"
                         v-on:click.stop.prevent="onOk">
                         <i class="material-icons">check</i>
                     </button>
@@ -132,12 +132,12 @@
           currentObject: function () {
             let data = $perAdminApp.getNodeFromView("/state/tools/object");
             return data;
-          }, 
+          },
           schema: function () {
             if(!this.currentObject || !this.currentObject.data) return
             let resourceType = this.currentObject.data['component'] ? this.currentObject.data['component'] : this.currentObject.data['sling:resourceType']
             resourceType = resourceType.split('/').join('-')
-            return $perAdminApp.getNodeFromView('/admin/componentDefinitions/' + resourceType)
+            return $perAdminApp.getNodeFromView('/admin/componentDefinitions/' + resourceType).model
           },
           edit() {
               return $perAdminApp.getNodeFromView('/state/tools').edit
@@ -179,7 +179,7 @@
             //Find child nodes with subchildren for our edited object
             for ( const key in data) {
                 //If node (or deleted node) is an array of objects then we have a child node
-                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
+                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') ||
                     ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
 
                     let node = data[key];
