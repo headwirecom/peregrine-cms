@@ -111,10 +111,10 @@
     <admin-components-pathbrowser
         v-if="isOpen"
         :isOpen="isOpen"
-        :browserRoot="browserRoot"
+        :browserRoot="browser.root"
         :browserType="nodeType"
-        :currentPath="currentPath"
-        :selectedPath="selectedPath"
+        :currentPath="browser.path.current"
+        :selectedPath="browser.path.selected"
         :setCurrentPath="setCurrentPath"
         :setSelectedPath="setSelectedPath"
         :onCancel="onMoveCancel"
@@ -141,9 +141,13 @@
         tab: 'info',
         valid: true,
         isOpen: false,
-        browserRoot: `/content/${this.nodeType}s`,
-        currentPath: `/content/${this.nodeType}s`,
-        selectedPath: null,
+        browser: {
+          root: `/content/${this.nodeType}s`,
+          path: {
+            current: `/content/${this.nodeType}s`,
+            selected: null
+          }
+        },
         options: {
           validateAfterLoad: true,
           validateAfterChanged: true,
@@ -240,11 +244,11 @@
         }
       },
       moveNode() {
-        $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
+        $perAdminApp.getApi().populateNodesForBrowser(this.browser.path.current, 'browser')
         .then(() => {
           this.isOpen = true;
         }).catch((err) => {
-          $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser');
+          $perAdminApp.getApi().populateNodesForBrowser('/content', 'browser');
         });
       },
       deleteNode() {
@@ -253,10 +257,10 @@
         this.isOpen = false;
       },
       setCurrentPath(path) {
-        this.currentPath = path;
+        this.browser.path.current = path;
       },
       setSelectedPath(path) {
-        this.selectedPath = path;
+        this.browser.path.selected = path;
       },
       onMoveCancel() {
         this.isOpen = false;
@@ -264,7 +268,7 @@
       onMoveSelect() {
         $perAdminApp.stateAction(`move${this.uNodeType}`, {
           path: this.node.path,
-          to: this.selectedPath,
+          to: this.browser.path.selected,
           type: 'child'
         });
         $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
