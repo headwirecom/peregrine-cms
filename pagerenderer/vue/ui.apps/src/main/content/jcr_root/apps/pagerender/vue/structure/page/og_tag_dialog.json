@@ -2,7 +2,7 @@
   "fields": [
     {
       "type": "material-checkbox",
-      "label": "Title für og:title übernehmen?",
+      "label": "Use site-title as og:title?",
       "default": true,
       "model": "useTitle"
     },
@@ -11,12 +11,12 @@
       "inputType": "text",
       "model": "ogTitle",
       "label": "og:title",
-      "placeholder": "og.title",
+      "placeholder": "og:title",
       "visible": "model.useTitle != true"
     },
     {
       "type": "material-checkbox",
-      "label": "Description für og:description übernehmen?",
+      "label": "Use site-description for og:description",
       "default": true,
       "model": "useDescription"
     },
@@ -25,14 +25,14 @@
       "inputType": "text",
       "model": "ogDescription",
       "label": "og:description",
-      "placeholder": "og.description",
+      "placeholder": "og:description",
       "visible": "model.useDescription != true"
     },
     {
       "type": "material-select",
       "label": "og:type",
       "model": "ogType",
-      "placeholder": "og.type",
+      "placeholder": "og:type",
       "default": "website",
       "values" : [
         {
@@ -53,7 +53,7 @@
       "type": "input",
       "inputType": "text",
       "model": "ogImageAlt",
-      "placeholder": "og.imageAlt",
+      "placeholder": "og:image:alt",
       "label": "og:image:alt"
     },
     {
@@ -61,7 +61,7 @@
       "inputType": "text",
       "model": "ogUrl",
       "label": "og:url",
-      "placeholder": "og.url"
+      "placeholder": "og:url"
     }
   ]
 }
