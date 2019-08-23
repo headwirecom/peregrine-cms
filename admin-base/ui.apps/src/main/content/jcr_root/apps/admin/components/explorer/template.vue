@@ -519,27 +519,31 @@
                 }
             },
             deletePage: function(me, target) {
-                const really = confirm(me.$i18n('Are you sure you want to delete this node and all its children?'))
-                if(!really) return
-                const resourceType = target.resourceType
-                if(resourceType === 'per:Object') {
-                    $perAdminApp.stateAction('deleteObject', target.path)
-                } else if(resourceType === 'per:Asset') {
-                        $perAdminApp.stateAction('deleteAsset', target.path)
-                } else if(resourceType === 'sling:OrderedFolder') {
-                    $perAdminApp.stateAction('deleteFolder', target.path)
-                } else if(resourceType === 'per:Page') {
-                    $perAdminApp.stateAction('deletePage', target.path)
-                } else if(resourceType === 'nt:file') {
-                    $perAdminApp.stateAction('deleteFile', target.path)
-                }else {
-                    $perAdminApp.stateAction('deleteFolder', target.path)
-                }
+                $perAdminApp.askUser('Delete Page', me.$i18n('Are you sure you want to delete this node and all its children?'), {
+                    yes() {
+                        const resourceType = target.resourceType
+                        if(resourceType === 'per:Object') {
+                            $perAdminApp.stateAction('deleteObject', target.path)
+                        } else if(resourceType === 'per:Asset') {
+                                $perAdminApp.stateAction('deleteAsset', target.path)
+                        } else if(resourceType === 'sling:OrderedFolder') {
+                            $perAdminApp.stateAction('deleteFolder', target.path)
+                        } else if(resourceType === 'per:Page') {
+                            $perAdminApp.stateAction('deletePage', target.path)
+                        } else if(resourceType === 'nt:file') {
+                            $perAdminApp.stateAction('deleteFile', target.path)
+                        }else {
+                            $perAdminApp.stateAction('deleteFolder', target.path)
+                        }
+                    }
+                })
             },
             deleteSite: function(me, target) {
-                const really = confirm(me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'))
-                if(!really) return
-                $perAdminApp.stateAction('deleteSite', target)
+                $perAdminApp.askUser('Delete Site', me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'), {
+                    yes() {
+                        $perAdminApp.stateAction('deleteSite', target)
+                    }
+                })
             },
             editPage: function(me, target) {
                 const path = me.pt.path
