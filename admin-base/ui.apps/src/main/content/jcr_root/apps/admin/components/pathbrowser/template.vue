@@ -271,6 +271,7 @@
                         <p v-else class="flow-text">{{getEmptyText()}}</p>
                     </template>
                     <template v-if="withLinkTab && tab === 'link' && !search">
+                        <div>
                             <label for="pathBrowserLink">URL</label>
                             <input 
                                 id="pathBrowserLink" 
@@ -278,20 +279,25 @@
                                 placeholder="https://" 
                                 :value="selectedPath"
                                 @input="selectLink" />
+                        </div>
+                        <div class="form-group" v-if="browserType === 'asset' || browserType === 'image'">
+                            <label for="altText">Image Alternate Text</label>
                             <input 
                                 id="altText" 
-                                v-if="browserType === 'asset' || browserType === 'image'"
                                 type="text" 
                                 placeholder="Alt Text" 
                                 :value="altText"
                                 @input="setAltText" />
+                        </div>
+                        <div class="form-group" v-if="browserType === 'page' || browserType === 'link'">
+                            <label for="linkTitle">Link Title</label>
                             <input 
-                                id="T" 
-                                v-if="browserType === 'page' || browserType === 'link'"
+                                id="linkTitle" 
                                 type="text" 
                                 placeholder="Link Title" 
                                 :value="linkTitle"
                                 @input="setLinkTitle" />
+                        </div>
                     </template>
                 </div>
                 <div class="col-preview">
