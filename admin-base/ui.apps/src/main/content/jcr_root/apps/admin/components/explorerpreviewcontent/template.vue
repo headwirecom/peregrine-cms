@@ -62,7 +62,7 @@
         </div>
       </div>
       <template v-else>
-        <div v-else-if="tab==='info'" class="show-overflow">
+        <div class="show-overflow">
           <vue-form-generator
               v-bind:schema="schema"
               v-bind:model="node"
