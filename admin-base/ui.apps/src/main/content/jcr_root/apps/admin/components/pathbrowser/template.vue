@@ -278,10 +278,6 @@
                                 placeholder="https://" 
                                 :value="selectedPath"
                                 @input="selectLink" />
-                            <div v-if="browserType === 'link' || browserType === 'page'" @click="toggleNewWindow">  
-                                <input type="checkbox" id="newWindow" :checked="newWindow"/>
-                                <label for="newWindow">Open in new window?</label>
-                            </div>
                             <input 
                                 id="altText" 
                                 v-if="browserType === 'asset' || browserType === 'image'"
@@ -326,15 +322,26 @@
             </div>
 
             <div class="modal-footer">
-                <span class="selected-path">{{selectedPath}}</span>
-                <button v-on:click="onCancel"
-                        class="modal-action waves-effect waves-light btn-flat">
-                        cancel
-                </button>
-                <button v-on:click="onSelect" 
-                        class="modal-action waves-effect waves-light btn-flat">
-                        select
-                </button>
+                <div class="pathbrowser-footer-details">
+                    <span class="pathbrowser-selected-path">{{selectedPath}}</span>
+                    <div class="pathbrowser-newwindow" 
+                         v-if="browserType === 'link' || browserType === 'page'" 
+                         @click="toggleNewWindow" 
+                         @keyup.space="toggleNewWindow">  
+                        <input type="checkbox" id="newWindow" :checked="newWindow"/>
+                        <label for="newWindow">Open in new window?</label>
+                    </div>
+                </div>
+                    <div class="pathbrowser-buttons">
+                        <button v-on:click="onCancel"
+                                class="modal-action waves-effect waves-light btn-flat">
+                                cancel
+                        </button>
+                        <button v-on:click="onSelect" 
+                                class="modal-action waves-effect waves-light btn-flat">
+                                select
+                        </button>
+                </div>
             </div>
         </div>
         </div>
