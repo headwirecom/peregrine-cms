@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,6 +27,19 @@
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
+        <template v-if="isEditor()">
+            <admin-components-separator></admin-components-separator>
+            <admin-components-action
+                v-bind:model="{
+                  command: 'selectPath',
+                  download: getDownloadPath(),
+                  target: getPath() + '/jcr:content.xml',
+                  tooltipTitle: 'Export Module',
+                  title: 'Export',
+                  type: 'download'
+                }"
+            ></admin-components-action>
+        </template>
     </div>
 </template>
 
@@ -39,6 +52,25 @@ export default {
                 return this.model.classes
             }
             return 'navright'
+        }
+    },
+    methods: {
+        isEditor: function() {
+            return this.$root.$data.adminPage.title === "editor"
+        },
+        getPath: function(){
+            if( this.$root.$data.pageView){
+                if( this.$root.$data.pageView.path ){
+                    return this.$root.$data.pageView.path;
+                } else {
+                    return "";
+                }
+            } else {
+                return "";
+            }
+        },
+        getDownloadPath(){
+            return this.getPath().split('/').reverse()[0];
         }
     }
 }

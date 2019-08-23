@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,12 +25,14 @@
 import { LoggerFactory } from './logger.js'
 import experiences from './experiences.js'
 import helper from './helper.js'
+import mdbvue from './mdbvueLoaderFree';
 
 let log = LoggerFactory.logger('peregrineApp').setDebugLevel()
 import state from './state.js'
 import merge from './merge.js'
 import { pagePathToDataPath, componentNameToVarName } from './util.js'
 import {Logger} from "./logger";
+import EventBus from './eventBus';
 
 
 let view
@@ -120,6 +122,11 @@ function initPeregrineApp() {
 
     Vue.use(experiences)
     Vue.use(helper)
+
+
+    Vue.use( EventBus );
+
+    mdbvue.load( Vue );
 
     perVueApp = new Vue({
         el: '#peregrine-app',
@@ -277,7 +284,7 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
     } else {
         axios.get(dataUrl).then(function (response) {
             log.fine('got data for', path)
-    
+
             // if(response.data.template) {
             //
             //     var pageData = response.data
@@ -294,10 +301,10 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
             // } else {
             processLoadedContent(response.data, path, firstTime, fromPopState)
             // }
-    
+
         }).catch(function(error) {
             log.error("error getting %s %j", dataUrl, error);
-        });    
+        });
     }
 }
 
@@ -307,7 +314,7 @@ function isAuthorModeImpl() {
         return true
     }
     return false
-    
+
 }
 
 function getAdminAppNodeImpl(path) {
@@ -343,9 +350,9 @@ var peregrineApp = {
 
     getPerVueApp: function() {
         return perVueApp
-    }, 
+    },
     isAuthorMode: function() {
-        return isAuthorModeImpl()        
+        return isAuthorModeImpl()
     },
 
     getView: function() {

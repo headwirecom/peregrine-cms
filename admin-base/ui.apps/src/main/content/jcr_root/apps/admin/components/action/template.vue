@@ -33,17 +33,30 @@
             {{model.title}}
             <slot></slot>
         </a>
-        <a 
-            v-if                    = "model.type === 'icon'" 
+        <a
+            v-if                    = "model.type === 'icon'"
             v-bind:title            = "title"
-            v-bind:href             = "target" 
-            v-on:click.stop.prevent = "action" 
-            class                   = "btn-floating waves-effect waves-light" 
+            v-bind:href             = "target"
+            v-on:click.stop.prevent = "action"
+            class                   = "btn-floating waves-effect waves-light"
             v-bind:class            = "model.classes">
             <i class="material-icons" v-bind:class="isSelected ? 'actionSelected' : ''">
                 {{model.icon ? model.icon : model.title}}
                 <slot></slot>
             </i>
+        </a>
+        <a
+            v-if                    = "model.type === 'download'"
+            v-bind:title            = "title"
+            v-bind:href             = "model.target"
+            v-bind:download         = "model.download"
+            target                  = "_blank"
+            class                   = "btn-floating waves-effect waves-light"
+            v-bind:class            = "model.classes">
+            <i class="fa fa-download" v-bind:class="isSelected ? 'actionSelected' : ''">
+                <slot></slot>
+            </i>
+            {{model.title}}
         </a>
     </span>
 </template>
@@ -155,7 +168,6 @@
         }
     },
     methods: {
-
         /**
          *  triggers the action specified by the model
          *
@@ -189,9 +201,13 @@
 }
 </script>
 
-<style>
+<style scoped>
     .actionSelected {
         background-color: white !important;
         color: #37474f !important;
+    }
+
+    .material-icons {
+        line-height: 40px;
     }
 </style>

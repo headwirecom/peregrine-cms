@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import { IgnoreContainers } from '../../../../../../js/constants.js';
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -145,6 +147,12 @@ export default {
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if(!node) return false
             return !node.fromTemplate
+        },
+        isIgnoreContainersEnabled() {
+            let view = $perAdminApp.getView();
+            return view.state.tools
+                && view.state.tools.workspace
+                && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         }
     },
 
@@ -349,9 +357,13 @@ export default {
         onClickOverlay: function(e) {
             if(!e) return
             var targetEl = this.getTargetEl(e)
+            let view = $perAdminApp.getView();
             if(targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                if (this.isContainer(targetEl)) {
+                    if (this.isIgnoreContainersEnabled) return;
+                }
                 if(node.fromTemplate) {
                     $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
                         complete: this.removeEditOverlay
@@ -384,7 +396,11 @@ export default {
             if(!e || this.isTouch) return
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
+            let view = $perAdminApp.getView();
             if(targetEl) {
+                if (this.isContainer(targetEl)) {
+                    if (this.isIgnoreContainersEnabled) return;
+                }
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
@@ -506,7 +522,7 @@ export default {
 
                 if(this.selectedComponent) {
                     var path = this.selectedComponent.getAttribute('data-per-path')
-                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                     if(node && node.fromTemplate) {
                         editable.style['border-color'] = 'orange'
                     } else {
@@ -561,6 +577,25 @@ export default {
         },
         refreshEditor(me, target) {
             me.$refs['editview'].contentWindow.location.reload();
+        },
+        isContainer(el) {
+            if (el && el.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+            let subEl = el.firstElementChild;
+            if (!subEl) {
+                return false;
+            }
+            while (!subEl.getAttribute('data-per-path')) {
+                subEl = subEl.firstElementChild;
+                if (!subEl) {
+                    return false;
+                }
+            }
+            if (subEl.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+            return false;
         }
     }
 }
