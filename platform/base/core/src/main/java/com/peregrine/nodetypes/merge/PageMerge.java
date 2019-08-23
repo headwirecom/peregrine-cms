@@ -55,15 +55,22 @@ public class PageMerge implements Use {
     public static final String CONTENT_TEMPLATES = "/content/templates/";
     private final Logger log = LoggerFactory.getLogger(PageMerge.class);
 
-    private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
+    private static final ThreadLocal<RenderContext> renderContext = new ThreadLocal<>();
 
-//    @Reference
-    ModelFactory modelFactory;
+    private ModelFactory modelFactory;
 
     private SlingHttpServletRequest request;
 
     public static RenderContext getRenderContext() {
         return renderContext.get();
+    }
+
+    @Override
+    public void init(final Bindings bindings) {
+        request = BindingsUseUtil.getRequest(bindings);
+        renderContext.set(new RenderContext(request));
+        final SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
+        modelFactory = sling.getService(ModelFactory.class);
     }
 
     public String getMerged() {
@@ -82,7 +89,7 @@ public class PageMerge implements Use {
             res = res.getParent();
         }
         String merged = toJSON(getMerged(res));
-        return merged.replaceAll("</script>", "<\\\\/script>");
+        return merged.replace("</script>", "<\\/script>");
     }
 
     public Map getMerged(Resource resource) {
@@ -95,12 +102,12 @@ public class PageMerge implements Use {
                     Collections.<String, String> emptyMap());
             String templatePath = (String) page.get(TEMPLATE);
             if(templatePath == null) {
-                if(resource.getParent().getPath().startsWith(CONTENT_TEMPLATES)) {
-                    // only use the parent as a template of a template if it is in fact a page
-                    if(resource.getParent().getResourceType().equals(PAGE_PRIMARY_TYPE)) {
-                        templatePath = resource.getParent().getPath();
-                    }
-                }
+                templatePath = Optional.of(resource)
+                        .map(Resource::getParent)
+                        .filter(parent -> parent.getResourceType().equals(PAGE_PRIMARY_TYPE))
+                        .map(Resource::getPath)
+                        .filter(path -> path.startsWith(CONTENT_TEMPLATES))
+                        .orElse(null);
             }
             if(templatePath != null) {
                 Map template = getMerged(request.getResourceResolver().getResource(templatePath));
@@ -118,8 +125,7 @@ public class PageMerge implements Use {
 
     private void flagFromTemplate(Map template) {
         template.put(FROM_TEMPLATE, Boolean.TRUE);
-        for(Object key: template.keySet()) {
-            Object value = template.get(key);
+        for(final Object value: template.values()) {
             if(value instanceof ArrayList) {
                 ArrayList arr = (ArrayList) value;
                 for(int i = 0; i < arr.size(); i++) {
@@ -136,47 +142,53 @@ public class PageMerge implements Use {
         TreeMap res = new TreeMap();
         res.putAll(template);
 
-        for (Object key: page.keySet()) {
-            Object value = page.get(key);
+        final Set<Map.Entry> entrySet = page.entrySet();
+        for(Map.Entry entry: entrySet) {
+            final Object key = entry.getKey();
+            final Object value = entry.getValue();
             log.debug("key is {}", key);
-            log.debug("value is {}", value == null ? value : value.getClass());
-            if(key.equals(COMPONENT) && value.equals(NT_UNSTRUCTURED)) continue;
-            if(value instanceof Map) {
-
-            } else if(value instanceof ArrayList) {
-                mergeArrays((ArrayList) res.get(key), (ArrayList) value);
-            } else {
+            log.debug("value is {}", value == null ? null : value.getClass());
+            if(COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
+                continue;
+            }
+            if(value instanceof ArrayList) {
+                merge((ArrayList) res.get(key), (ArrayList) value);
+            } else if(!(value instanceof Map)) {
                 res.put(key, value);
             }
         }
         return res;
     }
 
-    private void mergeArrays(ArrayList target, ArrayList value) {
+    private void merge(ArrayList target, ArrayList value) {
         for (Iterator it = value.iterator(); it.hasNext(); ) {
-            Object val = it.next();
-            log.debug("array merge: {}",val.getClass());
-            boolean merged = false;
-            if(val instanceof Map) {
-                Map map = (Map) val;
-                String path = (String) map.get(PATH);
-                if(path != null) {
-                    log.debug("find entry for {}", path);
-                    for (int i = 0; i < target.size(); i++) {
-                        Object t = target.get(i);
-                        if(((Map)t).get(PATH).equals(path)) {
-                            log.debug("found");
-                            target.set(i, merge((Map)t, map));
-                            log.debug("{}", target.get(i));
-                            merged = true;
-                        }
+            final Object next = it.next();
+            log.debug("array merge: {}", next.getClass());
+            merge(target, next);
+        }
+    }
+
+    private void merge(ArrayList target, Object value) {
+        boolean merged = false;
+        if(value instanceof Map) {
+            Map map = (Map) value;
+            String path = (String) map.get(PATH);
+            if(path != null) {
+                log.debug("find entry for {}", path);
+                for (int i = 0; i < target.size(); i++) {
+                    Object t = target.get(i);
+                    if(((Map)t).get(PATH).equals(path)) {
+                        log.debug("found");
+                        target.set(i, merge((Map)t, map));
+                        log.debug("{}", target.get(i));
+                        merged = true;
                     }
                 }
             }
+        }
 
-            if(!target.contains(val) && !merged) {
-                target.add(val);
-            }
+        if(!target.contains(value) && !merged) {
+            target.add(value);
         }
     }
 
@@ -190,13 +202,5 @@ public class PageMerge implements Use {
             log.error("not able to create string writer", e);
         }
         return writer.toString();
-    }
-
-    @Override
-    public void init(Bindings bindings) {
-        request = BindingsUseUtil.getRequest(bindings);
-        SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
-        modelFactory = sling.getService(ModelFactory.class);
-        renderContext.set(new RenderContext(request));
     }
 }
