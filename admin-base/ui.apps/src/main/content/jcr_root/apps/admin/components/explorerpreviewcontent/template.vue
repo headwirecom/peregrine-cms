@@ -51,7 +51,7 @@
         </li>
       </ul>
       <div v-if="!edit" class="show-overflow">
-        <div v-else-if="tab==='info'">
+        <div>
           <vue-form-generator
               class="vfg-preview"
               v-on:validated="onValidated"
@@ -171,7 +171,7 @@
       schema() {
         const view = $perAdminApp.getView();
         const component = this.node.component;
-        return view.admin.componentDefinitions[component].model;
+        return view.admin.componentDefinitions[component];
       }
     },
     methods: {
