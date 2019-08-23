@@ -34,7 +34,7 @@
       "model": "ogType",
       "placeholder": "og:type",
       "default": "website",
-      "values" : [
+      "values": [
         {
           "name": "website",
           "value": "website"
@@ -44,6 +44,7 @@
     {
       "type": "pathbrowser",
       "browserRoot": "/content/assets",
+      "browserType": "image",
       "label": "og:image",
       "readonly": true,
       "placeholder": "ogImage",
