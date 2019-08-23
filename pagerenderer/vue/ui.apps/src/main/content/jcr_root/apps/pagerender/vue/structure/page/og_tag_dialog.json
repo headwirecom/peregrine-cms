@@ -47,7 +47,7 @@
       "browserType": "image",
       "label": "og:image",
       "readonly": true,
-      "placeholder": "ogImage",
+      "placeholder": "og:image",
       "model": "ogImage"
     },
     {
