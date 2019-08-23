@@ -4,12 +4,6 @@
       <ul class="explorer-preview-nav">
         <li class="icon-list">
           <div class="icons-left">
-            <a title="og-tags"
-               class="icon-list-tab waves-effect waves-light"
-               :class="{'active': (tab==='og-tag')}"
-               v-on:click.stop.prevent="onTabClick('og-tag')">
-              <i class="editor-icon material-icons">label</i>
-            </a>
             <a :title="`${nodeType}-info`"
                class="icon-list-tab waves-effect waves-light"
                :class="{'active': (tab==='info')}"
@@ -57,15 +51,6 @@
         </li>
       </ul>
       <div v-if="!edit" class="show-overflow">
-        <div v-if="tab==='og-tag'">
-          <vue-form-generator
-              class="vfg-preview"
-              v-on:validated="onValidated"
-              v-bind:schema="readOnlyOgTagSchema"
-              v-bind:model="node"
-              v-bind:options="options">
-          </vue-form-generator>
-        </div>
         <div v-else-if="tab==='info'">
           <vue-form-generator
               class="vfg-preview"
@@ -77,13 +62,6 @@
         </div>
       </div>
       <template v-else>
-        <div v-if="tab==='og-tag'" class="show-overflow">
-          <vue-form-generator
-              v-bind:schema="ogTagSchema"
-              v-bind:model="node"
-              v-bind:options="options">
-          </vue-form-generator>
-        </div>
         <div v-else-if="tab==='info'" class="show-overflow">
           <vue-form-generator
               v-bind:schema="schema"
@@ -181,23 +159,6 @@
         return roSchema;
 
       },
-      readOnlyOgTagSchema() {
-        if (!this.ogTagSchema) {
-          return {};
-        }
-        const roSchema = JSON.parse(JSON.stringify(this.ogTagSchema));
-        roSchema.fields.forEach((field) => {
-          field.preview = true;
-          field.readonly = true;
-          if (field.fields) {
-            field.fields.forEach((field) => {
-              field.readonly = true;
-            })
-          }
-        });
-        return roSchema;
-
-      },
       currentObject() {
         return $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
       },
@@ -211,13 +172,6 @@
         const view = $perAdminApp.getView();
         const component = this.node.component;
         return view.admin.componentDefinitions[component].model;
-      },
-      ogTagSchema() {
-        const view = $perAdminApp.getView();
-        if (this.node) {
-          const component = this.node.component;
-          return view.admin.componentDefinitions[component].ogTags;
-        }
       }
     },
     methods: {
