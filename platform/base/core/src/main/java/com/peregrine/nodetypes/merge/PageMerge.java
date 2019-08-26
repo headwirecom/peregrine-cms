@@ -53,9 +53,10 @@ public class PageMerge implements Use {
     public static final String FROM_TEMPLATE = "fromTemplate";
     public static final String TEMPLATE = "template";
     public static final String CONTENT_TEMPLATES = "/content/templates/";
-    private final Logger log = LoggerFactory.getLogger(PageMerge.class);
 
     private static final ThreadLocal<RenderContext> renderContext = new ThreadLocal<>();
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private ModelFactory modelFactory;
 
