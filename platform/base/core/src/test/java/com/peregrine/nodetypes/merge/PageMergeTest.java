@@ -28,8 +28,8 @@ public final class PageMergeTest {
 
     private static final String SLASH = "/";
     private static final String PAGE_PARENT_NAME = "parent";
-    private static final String PAGE_NAME = "page";
     private static final String PAGE_PARENT_PATH = "/content/templates/" + PAGE_PARENT_NAME;
+    private static final String PAGE_NAME = "page";
     private static final String PAGE_PATH = PAGE_PARENT_PATH + SLASH + PAGE_NAME;
 
     private final PageMerge model = new PageMerge();
@@ -61,7 +61,7 @@ public final class PageMergeTest {
         page.setPath(PAGE_PATH);
         page.setParent(parent);
 
-        parent.setPath(PAGE_PARENT_NAME);
+        parent.setPath(PAGE_PARENT_PATH);
         parent.addChild(PAGE_NAME, page);
 
         when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(new HashMap<>());
