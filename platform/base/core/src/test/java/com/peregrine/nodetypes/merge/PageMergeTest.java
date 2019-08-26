@@ -16,15 +16,22 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
+import java.util.Optional;
+
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PageMergeTest {
 
+    private static final String SLASH = "/";
+    private static final String PAGE_PARENT_NAME = "parent";
     private static final String PAGE_NAME = "page";
-    private static final String PAGE_PATH = "/content/" + PAGE_NAME;
-    private static final String JCR_CONTENT_PATH = PAGE_PATH + "/" + JCR_CONTENT;
+    private static final String PAGE_PARENT_PATH = "/content/templates/" + PAGE_PARENT_NAME;
+    private static final String PAGE_PATH = PAGE_PARENT_PATH + SLASH + PAGE_NAME;
+    private static final String JCR_CONTENT_PATH = PAGE_PATH + SLASH + JCR_CONTENT;
 
     private final PageMerge model = new PageMerge();
 
@@ -40,6 +47,9 @@ public final class PageMergeTest {
     @Mock
     private Resource jcrContent;
 
+    @Mock
+    private Resource pageParent;
+
     @Before
     public void setUp() {
         final BindingsMock bindings = new BindingsMock();
@@ -54,10 +64,16 @@ public final class PageMergeTest {
         when(page.getName()).thenReturn(PAGE_NAME);
         when(page.getPath()).thenReturn(PAGE_PATH);
         when(page.getChild(JCR_CONTENT)).thenReturn(jcrContent);
+        when(page.getParent()).thenReturn(pageParent);
 
         when(jcrContent.getName()).thenReturn(JCR_CONTENT);
         when(jcrContent.getPath()).thenReturn(JCR_CONTENT_PATH);
         when(jcrContent.getParent()).thenReturn(page);
+
+        when(pageParent.getName()).thenReturn(PAGE_PARENT_NAME);
+        when(pageParent.getPath()).thenReturn(PAGE_PARENT_PATH);
+        when(pageParent.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
+        when(pageParent.getChild(PAGE_NAME)).thenReturn(page);
     }
 
     @Test
@@ -88,6 +104,14 @@ public final class PageMergeTest {
     @SuppressWarnings("unchecked")
     public void getMerged_MissingExporterException() throws ExportException, MissingExporterException {
         when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenThrow(MissingExporterException.class);
+        equals("{}");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getMerged_emptyPageMap() throws ExportException, MissingExporterException {
+        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(Collections.emptyMap());
+        when(page.getParent()).thenReturn(null);
         equals("{}");
     }
 }
