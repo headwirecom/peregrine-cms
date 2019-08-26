@@ -20,6 +20,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.HashMap;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.nodetypes.merge.PageMerge.*;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +30,7 @@ public final class PageMergeTest {
 
     private static final String SLASH = "/";
     private static final String PAGE_PARENT_NAME = "parent";
-    private static final String PAGE_PARENT_PATH = "/content/templates/" + PAGE_PARENT_NAME;
+    private static final String PAGE_PARENT_PATH = CONTENT_TEMPLATES + PAGE_PARENT_NAME;
     private static final String PAGE_NAME = "page";
     private static final String PAGE_PATH = PAGE_PARENT_PATH + SLASH + PAGE_NAME;
 
@@ -38,14 +40,18 @@ public final class PageMergeTest {
 
     private final PageMock parent = new PageMock();
 
+    private final HashMap<Object, Object> exportedResourceMap = new HashMap<>();
+
     @Mock
     private SlingHttpServletRequest request;
 
     @Mock
     private ModelFactory modelFactory;
 
+    @Mock
+    private ResourceResolver resourceResolver;
+
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() throws ExportException, MissingExporterException {
         final BindingsMock bindings = new BindingsMock();
         bindings.put(BindingsUseUtil.REQUEST, request);
@@ -55,7 +61,6 @@ public final class PageMergeTest {
         model.init(bindings);
 
         when(request.getResource()).thenReturn(page.getContent());
-        final ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
         when(request.getResourceResolver()).thenReturn(resourceResolver);
 
         page.setPath(PAGE_PATH);
@@ -64,7 +69,7 @@ public final class PageMergeTest {
         parent.setPath(PAGE_PARENT_PATH);
         parent.addChild(PAGE_NAME, page);
 
-        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(new HashMap<>());
+        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(exportedResourceMap);
 
         when(resourceResolver.getResource(PAGE_PARENT_PATH)).thenReturn(parent);
     }
@@ -108,5 +113,15 @@ public final class PageMergeTest {
     public void getMerged_emptyPageMap() {
         page.setParent(null);
         equalsEmpty();
+    }
+
+    @Test
+    public void getMerged_fromEmptyTemplate() throws ExportException, MissingExporterException {
+        final String path = CONTENT_TEMPLATES + "empty";
+        final PageMock template = new PageMock();
+        when(resourceResolver.getResource(path)).thenReturn(template);
+        exportedResourceMap.put(PageMerge.TEMPLATE, path);
+        when(modelFactory.exportModelForResource(eq(template.getContent()), any(), any(), any())).thenReturn(new HashMap<>());
+        equals("{\"fromTemplate\":true,\"template\":\"/content/templates/empty\"}");
     }
 }
