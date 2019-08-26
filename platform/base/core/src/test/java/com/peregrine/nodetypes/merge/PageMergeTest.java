@@ -1,9 +1,10 @@
 package com.peregrine.nodetypes.merge;
 
 import com.peregrine.BindingsMock;
+import com.peregrine.PageMock;
 import com.peregrine.commons.util.BindingsUseUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
@@ -16,10 +17,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collections;
+import java.util.HashMap;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -35,20 +35,15 @@ public final class PageMergeTest {
 
     private final PageMerge model = new PageMerge();
 
+    private final PageMock page = new PageMock();
+
+    private final PageMock parent = new PageMock();
+
     @Mock
     private SlingHttpServletRequest request;
 
     @Mock
     private ModelFactory modelFactory;
-
-    @Mock
-    private Resource page;
-
-    @Mock
-    private Resource jcrContent;
-
-    @Mock
-    private Resource pageParent;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -60,23 +55,19 @@ public final class PageMergeTest {
         when(sling.getService(ModelFactory.class)).thenReturn(modelFactory);
         model.init(bindings);
 
-        when(request.getResource()).thenReturn(jcrContent);
+        when(request.getResource()).thenReturn(page.getContent());
+        final ResourceResolver resourceResolver = Mockito.mock(ResourceResolver.class);
+        when(request.getResourceResolver()).thenReturn(resourceResolver);
 
-        when(page.getName()).thenReturn(PAGE_NAME);
-        when(page.getPath()).thenReturn(PAGE_PATH);
-        when(page.getChild(JCR_CONTENT)).thenReturn(jcrContent);
-        when(page.getParent()).thenReturn(pageParent);
+        page.setPath(PAGE_PATH);
+        page.setParent(parent);
 
-        when(jcrContent.getName()).thenReturn(JCR_CONTENT);
-        when(jcrContent.getPath()).thenReturn(JCR_CONTENT_PATH);
-        when(jcrContent.getParent()).thenReturn(page);
+        parent.setPath(PAGE_PARENT_NAME);
+        parent.addChild(PAGE_NAME, page);
 
-        when(pageParent.getName()).thenReturn(PAGE_PARENT_NAME);
-        when(pageParent.getPath()).thenReturn(PAGE_PARENT_PATH);
-        when(pageParent.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
-        when(pageParent.getChild(PAGE_NAME)).thenReturn(page);
+        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(new HashMap<>());
 
-        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(Collections.emptyMap());
+        when(resourceResolver.getResource(PAGE_PARENT_PATH)).thenReturn(parent);
     }
 
     @Test
