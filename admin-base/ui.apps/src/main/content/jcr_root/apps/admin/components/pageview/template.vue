@@ -183,20 +183,24 @@
                 this.valid = isValid
             },
             renamePage() {
-                let newName = prompt('new name for '+this.page.name)
-                if(newName) {
-                    let renamePromise = $perAdminApp.stateAction('renamePage', { path: this.page.path, name: newName})
-
-                    let newPath = this.currentObject.split('/')
-                    renamePromise.then(
-                        function(a,b,c,d) {
-                            newPath.pop()
-                            newPath.push(newName)
-                            $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
-                                .then(() => {});
+                let me = this
+                $perAdminApp.promptUser('Rename Page', 'What is the new name for this page?', {
+                    yesText: 'Rename',
+                    yes(newName) {
+                        if(newName) {
+                            let renamePromise = $perAdminApp.stateAction('renamePage', { path: me.page.path, name: newName})
+                            let newPath = me.currentObject.split('/')
+                            renamePromise.then(
+                                function(a,b,c,d) {
+                                    newPath.pop()
+                                    newPath.push(newName)
+                                    $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
+                                        .then(() => {});
+                                }
+                            );
                         }
-                    );
-                }
+                    }
+                })
             },
             deletePage() {
                 $perAdminApp.stateAction('deletePage', this.page.path)

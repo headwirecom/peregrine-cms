@@ -569,6 +569,10 @@ function notifyUserImpl(title, message, options) {
 function askUserImpl(title, message, options) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
+    let yesText = options.yesText ? options.yesText : 'Yes'
+    let noText = options.noText ? options.noText : 'No'
+    set(view, '/state/notification/yesText', yesText)
+    set(view, '/state/notification/noText', noText)
     options.dismissible = false
     options.takeAction = false
     options.complete = function() {
@@ -581,6 +585,37 @@ function askUserImpl(title, message, options) {
     }
     $('#askUserModal').modal(options)
     $('#askUserModal').modal('open')
+}
+
+/**
+ * implementation of $perAdminApp.promptUser()
+ *
+ * @private
+ * @param title
+ * @param message
+ * @param options
+ */
+function promptUserImpl(title, message, options) {
+    set(view, '/state/notification/title', title)
+    set(view, '/state/notification/message', message)
+    let yesText = options.yesText ? options.yesText : 'Ok'
+    let noText = options.noText ? options.noText : 'Cancel'
+    set(view, '/state/notification/yesText', yesText)
+    set(view, '/state/notification/noText', noText)
+
+    options.dismissible = false
+    options.takeAction = false
+    options.complete = function() {
+        const answer = $('#promptUserModal').modal('getInstance').options.takeAction;
+        const value = $('#promptUserModal').modal('getInstance').options.value;
+        if(answer && options.yes) {
+            options.yes(value)
+        } else if(options.no) {
+            options.no()
+        }
+    }
+    $('#promptUserModal').modal(options)
+    $('#promptUserModal').modal('open')
 }
 
 /**
@@ -907,6 +942,21 @@ var PerAdminApp = {
      */
     askUser(title, message, options) {
         askUserImpl(title, message, options)
+    },
+
+    /**
+     * modal with the given title and message to ask the user and a field for user input,
+     * calls the callback on close if provided
+     *
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param title
+     * @param message
+     * @param options
+     */
+    promptUser(title, message, options) {
+        promptUserImpl(title, message, options)
     },
 
 

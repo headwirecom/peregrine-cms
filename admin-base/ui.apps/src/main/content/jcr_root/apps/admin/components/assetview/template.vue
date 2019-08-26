@@ -287,11 +287,16 @@
                 return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(mime) >= 0
             },
             renameAsset() {
-                let newName = prompt('new name for '+this.asset.name)
-                if(newName) {
-                    $perAdminApp.stateAction('renameAsset', { path: this.asset.path, name: newName})
-                    $perAdminApp.getNodeFromView('/state/tools').asset = null
-                }
+                let me = this
+                $perAdminApp.promptUser('Rename Asset', 'What is the new name for this asset?', {
+                    yesText: 'Rename',
+                    yes(newName) {
+                        if(newName) {
+                            $perAdminApp.stateAction('renameAsset', { path: me.asset.path, name: newName})
+                            $perAdminApp.getNodeFromView('/state/tools').asset = null
+                        }
+                    }
+                })
             },
             deleteAsset() {
                 $perAdminApp.stateAction('deleteAsset', this.asset.path)

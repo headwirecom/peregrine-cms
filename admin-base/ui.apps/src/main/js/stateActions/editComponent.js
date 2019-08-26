@@ -38,6 +38,8 @@ function bringUpEditor(me, view, target) {
                     resolve(true)
                 } else {
                     $perAdminApp.askUser('Save Page Edit?', 'Would you like to save your page edits?', {
+                        yesText: 'Save',
+                        noText: 'Cancel',
                         yes() {
                             const page = view.pageView.page;
                             const path = view.state.editor.path;

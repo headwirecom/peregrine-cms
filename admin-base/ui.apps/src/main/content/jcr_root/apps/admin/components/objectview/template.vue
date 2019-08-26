@@ -208,11 +208,15 @@
           },
             renameObject() {
                 const name = $perAdminApp.getNodeFromView('/state/tools/object').show.substring($perAdminApp.getNodeFromView('/state/tools/object').show.lastIndexOf('/')+1)
-                let newName = prompt('new name for '+name)
-                if(newName) {
-                    $perAdminApp.stateAction('renameObject', { path: $perAdminApp.getNodeFromView('/state/tools/object').show, name: newName})
-                    $perAdminApp.getNodeFromView('/state/tools').object = null
-                }
+                $perAdminApp.promptUser('Rename Object', 'What is the new name for ' + name + '?', {
+                    yesText: 'Rename',
+                    yes(newName) {
+                        if(newName) {
+                            $perAdminApp.stateAction('renameObject', { path: $perAdminApp.getNodeFromView('/state/tools/object').show, name: newName})
+                            $perAdminApp.getNodeFromView('/state/tools').object = null
+                        }
+                    }
+                })
             },
             deleteObject() {
                 const really = confirm("Are you sure you want to delete this object and all its children?")

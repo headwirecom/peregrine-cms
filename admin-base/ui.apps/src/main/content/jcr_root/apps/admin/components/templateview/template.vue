@@ -126,14 +126,19 @@
         },
         methods: {
             renamePage() {
-                let newName = prompt('new name for '+this.page.name)
-                if(newName) {
-                    $perAdminApp.stateAction('renamePage', { path: this.page.path, name: newName})
-                    let newPath = this.currentObject.split('/')
-                    newPath.pop()
-                    newPath.push(newName)
-                    $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
-                }
+                let me = this
+                $perAdminApp.promptUser('Rename Template', 'What is the new name for ' + me.page.name + '?', {
+                    yesText: 'Rename',
+                    yes(newName) {
+                        if(newName) {
+                            $perAdminApp.stateAction('renamePage', { path: me.page.path, name: newName})
+                            let newPath = me.currentObject.split('/')
+                            newPath.pop()
+                            newPath.push(newName)
+                            $perAdminApp.stateAction('showPageInfo', { selected: newPath.join('/') })
+                        }
+                    }
+                })
             },
             deletePage() {
                 $perAdminApp.stateAction('deletePage', this.page.path)
