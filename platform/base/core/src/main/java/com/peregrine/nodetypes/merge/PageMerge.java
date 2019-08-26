@@ -47,7 +47,6 @@ import static com.peregrine.commons.util.PerConstants.*;
 /**
  * Created by rr on 5/8/2017.
  */
-@SuppressWarnings("serial")
 public class PageMerge implements Use {
 
     public static final String FROM_TEMPLATE = "fromTemplate";
@@ -87,35 +86,42 @@ public class PageMerge implements Use {
         return getMerged().replace("</script>", "<\\/script>");
     }
 
-    public Map getMerged(Resource resource) {
+    private Map getMerged(Resource resource) {
         log.debug("getMerge({})", resource.getPath());
         try {
             Resource content = resource.getChild(JCR_CONTENT);
-            if(content == null) return Collections.<String, String> emptyMap();
+            if(content == null) {
+            	return Collections.<String, String> emptyMap();
+            }
+
             Map page = modelFactory.exportModelForResource(content,
                     JACKSON, Map.class,
                     Collections.<String, String> emptyMap());
-            String templatePath = (String) page.get(TEMPLATE);
-            if(templatePath == null) {
-                templatePath = Optional.of(resource)
-                        .map(Resource::getParent)
-                        .filter(parent -> parent.getResourceType().equals(PAGE_PRIMARY_TYPE))
-                        .map(Resource::getPath)
-                        .filter(path -> path.startsWith(CONTENT_TEMPLATES))
-                        .orElse(null);
-            }
-            if(templatePath != null) {
-                Map template = getMerged(request.getResourceResolver().getResource(templatePath));
-                flagFromTemplate(template);
-                return merge(template, page);
-            }
-            return page;
+            return getMerged(resource, page);
         } catch (ExportException e) {
             log.error("not able to export model", e);
         } catch (MissingExporterException e) {
             log.error("not able to find exporter for model", e);
         }
         return Collections.<String, String> emptyMap();
+    }
+
+    private Map getMerged(Resource resource, Map page) {
+        String templatePath = (String) page.get(TEMPLATE);
+        if(templatePath == null) {
+            templatePath = Optional.of(resource)
+                    .map(Resource::getParent)
+                    .filter(parent -> parent.getResourceType().equals(PAGE_PRIMARY_TYPE))
+                    .map(Resource::getPath)
+                    .filter(path -> path.startsWith(CONTENT_TEMPLATES))
+                    .orElse(null);
+        }
+        if(templatePath != null) {
+            Map template = getMerged(request.getResourceResolver().getResource(templatePath));
+            flagFromTemplate(template);
+            return merge(template, page);
+        }
+        return page;
     }
 
     private void flagFromTemplate(Map template) {
