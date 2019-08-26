@@ -31,7 +31,6 @@ public final class PageMergeTest {
     private static final String PAGE_NAME = "page";
     private static final String PAGE_PARENT_PATH = "/content/templates/" + PAGE_PARENT_NAME;
     private static final String PAGE_PATH = PAGE_PARENT_PATH + SLASH + PAGE_NAME;
-    private static final String JCR_CONTENT_PATH = PAGE_PATH + SLASH + JCR_CONTENT;
 
     private final PageMerge model = new PageMerge();
 
@@ -87,7 +86,7 @@ public final class PageMergeTest {
     @Test
     public void getMerged_missingJcrContent() {
         when(request.getResource()).thenReturn(page);
-        when(page.getChild(JCR_CONTENT)).thenReturn(null);
+        page.addChild(JCR_CONTENT, null);
         equalsEmpty();
     }
 
@@ -107,7 +106,7 @@ public final class PageMergeTest {
 
     @Test
     public void getMerged_emptyPageMap() {
-        when(page.getParent()).thenReturn(null);
+        page.setParent(null);
         equalsEmpty();
     }
 }
