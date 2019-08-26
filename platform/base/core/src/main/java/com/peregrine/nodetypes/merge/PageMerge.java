@@ -27,6 +27,8 @@ package com.peregrine.nodetypes.merge;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.commons.util.BindingsUseUtil;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.scripting.SlingScriptHelper;
@@ -96,7 +98,7 @@ public class PageMerge implements Use {
 
             Map page = modelFactory.exportModelForResource(content,
                     JACKSON, Map.class,
-                    Collections.<String, String> emptyMap());
+                    Collections.emptyMap());
             return getMerged(resource, page);
         } catch (ExportException e) {
             log.error("not able to export model", e);
@@ -108,7 +110,7 @@ public class PageMerge implements Use {
 
     private Map getMerged(Resource resource, Map page) {
         String templatePath = (String) page.get(TEMPLATE);
-        if(templatePath == null) {
+        if(StringUtils.isBlank(templatePath)) {
             templatePath = Optional.of(resource)
                     .map(Resource::getParent)
                     .filter(parent -> parent.getResourceType().equals(PAGE_PRIMARY_TYPE))
@@ -116,7 +118,7 @@ public class PageMerge implements Use {
                     .filter(path -> path.startsWith(CONTENT_TEMPLATES))
                     .orElse(null);
         }
-        if(templatePath != null) {
+        if(StringUtils.isNotBlank(templatePath)) {
             Map template = getMerged(request.getResourceResolver().getResource(templatePath));
             flagFromTemplate(template);
             return merge(template, page);
