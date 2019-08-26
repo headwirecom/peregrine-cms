@@ -55,6 +55,7 @@
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
+        if(this.schema.hasOwnProperty('groups')) this.hideGroups();
       },
       data() {
         return {
