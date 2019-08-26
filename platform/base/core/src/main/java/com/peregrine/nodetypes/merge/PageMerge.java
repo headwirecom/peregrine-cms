@@ -119,7 +119,7 @@ public class PageMerge implements Use {
                     .orElse(null);
         }
         if(StringUtils.isNotBlank(templatePath)) {
-            Map template = getMerged(request.getResourceResolver().getResource(templatePath));
+            final Map template = getMerged(request.getResourceResolver().getResource(templatePath));
             flagFromTemplate(template);
             return merge(template, page);
         }

@@ -17,11 +17,11 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PageMergeTest {
@@ -51,7 +51,8 @@ public final class PageMergeTest {
     private Resource pageParent;
 
     @Before
-    public void setUp() {
+    @SuppressWarnings("unchecked")
+    public void setUp() throws ExportException, MissingExporterException {
         final BindingsMock bindings = new BindingsMock();
         bindings.put(BindingsUseUtil.REQUEST, request);
         final SlingScriptHelper sling = Mockito.mock(SlingScriptHelper.class);
@@ -74,6 +75,8 @@ public final class PageMergeTest {
         when(pageParent.getPath()).thenReturn(PAGE_PARENT_PATH);
         when(pageParent.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
         when(pageParent.getChild(PAGE_NAME)).thenReturn(page);
+
+        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(Collections.emptyMap());
     }
 
     @Test
@@ -86,32 +89,34 @@ public final class PageMergeTest {
         Assert.assertEquals(expected, actual);
     }
 
+    private void equalsEmpty() {
+        equals("{}");
+    }
+
     @Test
     public void getMerged_missingJcrContent() {
         when(request.getResource()).thenReturn(page);
         when(page.getChild(JCR_CONTENT)).thenReturn(null);
-        equals("{}");
+        equalsEmpty();
     }
 
 	@Test
     @SuppressWarnings("unchecked")
     public void getMerged_ExportException() throws ExportException, MissingExporterException {
     	when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenThrow(ExportException.class);
-        equals("{}");
+        equalsEmpty();
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void getMerged_MissingExporterException() throws ExportException, MissingExporterException {
         when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenThrow(MissingExporterException.class);
-        equals("{}");
+        equalsEmpty();
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void getMerged_emptyPageMap() throws ExportException, MissingExporterException {
-        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(Collections.emptyMap());
+    public void getMerged_emptyPageMap() {
         when(page.getParent()).thenReturn(null);
-        equals("{}");
+        equalsEmpty();
     }
 }
