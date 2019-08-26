@@ -5,6 +5,8 @@ import com.peregrine.commons.util.BindingsUseUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.scripting.SlingScriptHelper;
+import org.apache.sling.models.factory.ExportException;
+import org.apache.sling.models.factory.MissingExporterException;
 import org.apache.sling.models.factory.ModelFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,10 +17,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PageMergeTest {
+public final class PageMergeTest {
 
     private static final String PAGE_NAME = "page";
     private static final String PAGE_PATH = "/content/" + PAGE_NAME;
@@ -47,7 +49,7 @@ public class PageMergeTest {
         when(sling.getService(ModelFactory.class)).thenReturn(modelFactory);
         model.init(bindings);
 
-        when(request.getResource()).thenReturn(page);
+        when(request.getResource()).thenReturn(jcrContent);
 
         when(page.getName()).thenReturn(PAGE_NAME);
         when(page.getPath()).thenReturn(PAGE_PATH);
@@ -70,7 +72,22 @@ public class PageMergeTest {
 
     @Test
     public void getMerged_missingJcrContent() {
+        when(request.getResource()).thenReturn(page);
         when(page.getChild(JCR_CONTENT)).thenReturn(null);
+        equals("{}");
+    }
+
+	@Test
+    @SuppressWarnings("unchecked")
+    public void getMerged_ExportException() throws ExportException, MissingExporterException {
+    	when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenThrow(ExportException.class);
+        equals("{}");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getMerged_MissingExporterException() throws ExportException, MissingExporterException {
+        when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenThrow(MissingExporterException.class);
         equals("{}");
     }
 }
