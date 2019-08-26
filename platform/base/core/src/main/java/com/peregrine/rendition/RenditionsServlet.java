@@ -111,7 +111,14 @@ public class RenditionsServlet extends AbstractBaseServlet {
         String selector = request.getSelector();
         // if we have a selector called 'rendition' or the request path is the same as the resource path then we handle them as images
         // otherwise we delegate to Sling
-        if(!"rendition".equals(selector) && !resource.getPath().equals(request.getRequestPath())) {
+        // TODO: If the path changes because of a Mapping then this will fail loading the image
+        String resourceName = resource.getName();
+        String requestName = request.getRequestPath();
+        int index = requestName.lastIndexOf("/");
+        if(index >= 0) {
+            requestName = requestName.substring(index + 1);
+        }
+        if(!"rendition".equals(selector) && !resourceName.equals(requestName)) {
             redirectServlet.service(request.getRequest(), request.getResponse());
             return new ResponseHandledResponse();
         }
@@ -126,7 +133,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
         if(suffix != null && suffix.length() > 0) {
             // Get final Rendition Name and Mime Type
             String renditionName = suffix;
-            int index = renditionName.indexOf('/');
+            index = renditionName.indexOf('/');
             if(index >= 0) {
                 renditionName = renditionName.substring(index + 1);
             }
