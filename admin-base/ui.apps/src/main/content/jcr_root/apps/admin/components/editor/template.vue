@@ -28,7 +28,7 @@
             <span class="panel-title">Editor</span>
             <span v-if="title"> - {{title}}</span>
             <div v-if="!hasSchema">this component does not have a dialog defined</div>
-            <vue-form-generator v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
+            <vue-form-generator :key="dataModel.path" v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
             </vue-form-generator>
         </div>
         <div class="editor-panel-buttons">
@@ -51,6 +51,7 @@
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromView("/state/tools");
             stateTools._deleted = {};
+            if(this.schema.hasOwnProperty('groups')) this.hideGroups();
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
@@ -140,6 +141,20 @@
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
+        },
+        hideGroups() {
+            const $groups = $('.vue-form-generator fieldset');
+            $groups.each( function(i) {
+                const $group = $(this);
+                const $title = $group.find('legend');
+                $title.click(function(e){
+                    $group.find('div').toggle();
+                    $group.toggleClass('active');
+                })
+                $group.find('div').hide();
+                $group.addClass('vfg-group');
+                $group.removeClass('active');
+            })
         }
       }
 //      ,
@@ -148,3 +163,32 @@
 //      }
     }
 </script>
+
+<style>
+    .vue-form-generator fieldset > legend{
+        width: calc(100% + 1.5rem);
+        margin: 0 -0.75rem;
+        padding: 0.75rem;
+    }
+
+    .vue-form-generator fieldset > legend:before{
+        content: "+";
+        margin-right: 10px;
+        width: 10px;
+        display: inline-block;
+    }
+
+    .vue-form-generator fieldset.active > legend:before {
+        content: "-";
+    }
+
+    .vue-form-generator fieldset > legend:hover{
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .vue-form-generator > fieldset.vfg-group > .form-group{
+        background: white;
+        padding: 0.75rem;
+    }
+</style>
