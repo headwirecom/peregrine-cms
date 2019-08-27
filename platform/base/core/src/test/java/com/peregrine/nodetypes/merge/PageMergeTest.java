@@ -39,6 +39,8 @@ public final class PageMergeTest {
 
     private final PageMerge model = new PageMerge();
 
+    private final BindingsMock bindings = new BindingsMock();
+
     private final PageMock page = new PageMock();
 
     private final PageMock parent = new PageMock();
@@ -56,7 +58,6 @@ public final class PageMergeTest {
 
     @Before
     public void setUp() throws ExportException, MissingExporterException {
-        final BindingsMock bindings = new BindingsMock();
         bindings.put(BindingsUseUtil.REQUEST, request);
         final SlingScriptHelper sling = Mockito.mock(SlingScriptHelper.class);
         bindings.put(BindingsUseUtil.SLING, sling);
@@ -74,16 +75,16 @@ public final class PageMergeTest {
         when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(exportedResourceMap);
 
         when(resourceResolver.getResource(PAGE_PARENT_PATH)).thenReturn(parent);
-
-        model.init(bindings);
     }
 
     @Test
     public void getRenderContext() {
+        model.init(bindings);
         Assert.assertEquals(request, PageMerge.getRenderContext().getRequest());
     }
 
     private void equals(final String expected) {
+        model.init(bindings);
         final String actual = model.getMergedForScript();
         Assert.assertEquals(expected, actual);
     }
