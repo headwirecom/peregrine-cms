@@ -164,17 +164,22 @@ public class PageMerge implements Use {
         }
 
         if(value instanceof List) {
-            for (final Object v : (List) value) {
-                log.debug("array merge: {}", v.getClass());
-                merge((List) target.get(key), v);
-            }
+            merge((List) target.get(key), (List) value);
         } else if(!(value instanceof Map)) {
             target.put(key, value);
         }
     }
 
-    private void merge(List target, Object value) {
-        boolean merged = false;
+    private void merge(final List target, final List value) {
+        for (final Object v : value) {
+            log.debug("array merge: {}", v.getClass());
+            if(!merge(target, v) && !target.contains(v)) {
+                target.add(v);
+            }
+        }
+    }
+
+    private boolean merge(List target, Object value) {
         if(value instanceof Map) {
             Map map = (Map) value;
             String path = (String) map.get(PATH);
@@ -182,19 +187,18 @@ public class PageMerge implements Use {
                 log.debug("find entry for {}", path);
                 for (int i = 0; i < target.size(); i++) {
                     Object t = target.get(i);
-                    if(((Map)t).get(PATH).equals(path)) {
+                    final Map tMap = (Map) t;
+                    if(tMap.get(PATH).equals(path)) {
                         log.debug("found");
-                        target.set(i, merge((Map)t, map));
+                        target.set(i, merge(tMap, map));
                         log.debug("{}", target.get(i));
-                        merged = true;
+                        return true;
                     }
                 }
             }
         }
 
-        if(!target.contains(value) && !merged) {
-            target.add(value);
-        }
+        return false;
     }
 
     private String toJSON(Map template) {
