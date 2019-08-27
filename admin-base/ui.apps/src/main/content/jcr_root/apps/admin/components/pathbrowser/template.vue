@@ -271,7 +271,7 @@
                         <p v-else class="flow-text">{{getEmptyText()}}</p>
                     </template>
                     <template v-if="withLinkTab && tab === 'link' && !search">
-                        <div>
+                        <div class="form-group">
                             <label for="pathBrowserLink">URL</label>
                             <input 
                                 id="pathBrowserLink" 
