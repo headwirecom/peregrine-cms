@@ -45,17 +45,20 @@
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
-                                <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
+                              <a href="#" v-bind:title="$i18n('copy')"
+                                 v-on:click.stop.prevent="onCopy">
                                     <i class="material-icons">content_copy</i>
                                 </a>
                             </li>
                             <li v-if="clipboard" class="waves-effect waves-light">
-                                <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
+                              <a v-bind:title="$i18n('paste')" href="#"
+                                 v-on:click.stop.prevent="onPaste">
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
                             <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
-                                <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
+                              <a href="#" v-bind:title="$i18n('delete component')"
+                                 v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
                             </li>
