@@ -72,15 +72,15 @@ public class PageMerge implements Use {
     @Override
     public void init(final Bindings bindings) {
         request = BindingsUseUtil.getRequest(bindings);
-        resource = request.getResource();
         renderContext.set(new RenderContext(request));
+        resource = request.getResource();
         final SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
         modelFactory = sling.getService(ModelFactory.class);
     }
 
     public String getMerged() {
         log.debug("merge on {}", resource.getPath());
-        if(JCR_CONTENT.equals(resource.getName())) {
+        if (JCR_CONTENT.equals(resource.getName())) {
             return toJSON(resource.getParent());
         }
 
@@ -91,23 +91,42 @@ public class PageMerge implements Use {
         return StringUtils.replace(getMerged(), "</script>", "<\\/script>");
     }
 
-    private Map getMerged(Resource resource) {
+    private String toJSON(final Resource resource) {
+        return toJSON(getMerged(resource));
+    }
+
+    private String toJSON(final Map template) {
+        final ObjectMapper mapper = new ObjectMapper();
+        try (final StringWriter writer = new StringWriter()) {
+            mapper.writeValue(writer, template);
+            return writer.toString();
+        } catch (final IOException e) {
+            log.error("not able to create string writer", e);
+        }
+
+        return StringUtils.EMPTY;
+    }
+
+    private Map getMerged(final Resource resource) {
         log.debug("getMerge({})", resource.getPath());
         try {
-            Resource content = resource.getChild(JCR_CONTENT);
-            if(content == null) {
+            final Resource content = resource.getChild(JCR_CONTENT);
+            if (content == null) {
             	return emptyMap();
             }
 
-            Map page = modelFactory.exportModelForResource(content,
-                    JACKSON, Map.class,
+            final Map page = modelFactory.exportModelForResource(
+                    content,
+                    JACKSON,
+                    Map.class,
                     emptyMap());
             return getMerged(resource, page);
-        } catch (ExportException e) {
+        } catch (final ExportException e) {
             log.error("not able to export model", e);
-        } catch (MissingExporterException e) {
+        } catch (final MissingExporterException e) {
             log.error("not able to find exporter for model", e);
         }
+
         return emptyMap();
     }
 
@@ -115,9 +134,9 @@ public class PageMerge implements Use {
         return Collections.emptyMap();
     }
 
-    private Map getMerged(Resource resource, Map page) {
+    private Map getMerged(final Resource resource, final Map page) {
         String templatePath = (String) page.get(TEMPLATE);
-        if(StringUtils.isBlank(templatePath)) {
+        if (StringUtils.isBlank(templatePath)) {
             templatePath = Optional.of(resource)
                     .map(Resource::getParent)
                     .filter(parent -> parent.getResourceType().equals(PAGE_PRIMARY_TYPE))
@@ -125,11 +144,13 @@ public class PageMerge implements Use {
                     .filter(path -> path.startsWith(CONTENT_TEMPLATES))
                     .orElse(null);
         }
-        if(StringUtils.isNotBlank(templatePath)) {
+
+        if (StringUtils.isNotBlank(templatePath)) {
             final Map template = getMerged(request.getResourceResolver().getResource(templatePath));
             flagFromTemplate(template);
             return merge(template, page);
         }
+
         return page;
     }
 
@@ -146,11 +167,11 @@ public class PageMerge implements Use {
                 .forEach(item -> flagFromTemplate((Map)item));
     }
 
-    private Map merge(Map template, Map page) {
+    private Map merge(final Map template, final Map page) {
         final TreeMap res = new TreeMap();
         res.putAll(template);
         final Set<Map.Entry> entrySet = page.entrySet();
-        for(Map.Entry entry: entrySet) {
+        for (Map.Entry entry: entrySet) {
             merge(res, entry);
         }
 
@@ -162,11 +183,11 @@ public class PageMerge implements Use {
         log.debug("key is {}", key);
         final Object value = entry.getValue();
         log.debug("value is {}", value == null ? null : value.getClass());
-        if(COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
+        if (COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
             return;
         }
 
-        if(value instanceof List && target.containsKey(key)) {
+        if (value instanceof List && target.containsKey(key)) {
             final Object o = target.get(key);
             if (o instanceof List) {
                 merge((List) o, (List) value);
@@ -180,17 +201,17 @@ public class PageMerge implements Use {
         for (final Object v : value) {
             log.debug("array merge: {}", v.getClass());
             boolean merged = false;
-            if(v instanceof Map) {
+            if (v instanceof Map) {
                 merged = merge(target, (Map)v);
             }
 
-            if(!merged && !target.contains(v)) {
+            if (!merged && !target.contains(v)) {
                 target.add(v);
             }
         }
     }
 
-    private boolean merge(List target, Map map) {
+    private boolean merge(final List target, final Map map) {
         final String path = (String) map.get(PATH);
         if (StringUtils.isBlank(path)) {
             return false;
@@ -209,21 +230,5 @@ public class PageMerge implements Use {
         }
 
         return false;
-    }
-
-    private String toJSON(final Resource resource) {
-        return toJSON(getMerged(resource));
-    }
-
-    private String toJSON(final Map template) {
-        StringWriter writer = new StringWriter();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            mapper.writeValue(writer, template);
-            writer.close();
-        } catch (IOException e) {
-            log.error("not able to create string writer", e);
-        }
-        return writer.toString();
     }
 }
