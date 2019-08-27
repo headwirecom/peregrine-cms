@@ -55,7 +55,7 @@
                 currentPath: '/content/assets',
                 selectedPath: null,
                 altText: null,
-                linkTitle: null,
+                linkTitle: "",
                 withLinkTab: true,
                 newWindow: true,
                 isOpen: false,
@@ -100,7 +100,6 @@
                     modalOverride: {
                         init: function(trumbowyg) {
                             trumbowyg.openModalInsert = function(title, fields, cmd) {
-                                console.log(fields);
                                 //Setup state of pathbrowser and open pathbrowser
                                 let isImage = fields.hasOwnProperty('alt');
                                 self.browserType = isImage ? 'asset' : 'page';
@@ -112,10 +111,13 @@
 
                                 //Setup pathbrowser select event to call trumbowyg cmd callback
                                 self.onSelect = function() {
-                                    cmd({
+                                    cmd( !isImage ? {
                                         text,
                                         title: self.linkTitle,
                                         target: self.newWindow ? "_blank" : "_self",
+                                        url: self.selectedPath,
+                                    }:
+                                    {
                                         url: self.selectedPath,
                                         alt: self.altText
                                     })
