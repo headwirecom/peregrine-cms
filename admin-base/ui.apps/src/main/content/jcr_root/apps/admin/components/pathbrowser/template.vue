@@ -280,7 +280,7 @@
                                 :value="selectedPath"
                                 @input="selectLink" />
                         </div>
-                        <div class="form-group" v-if="browserType === 'asset' || browserType === 'image'">
+                        <div class="form-group" v-if="altText && setAltText">
                             <label for="altText">Image Alternate Text</label>
                             <input 
                                 id="altText" 
@@ -289,7 +289,7 @@
                                 :value="altText"
                                 @input="setAltText" />
                         </div>
-                        <div class="form-group" v-if="browserType === 'link'">
+                        <div class="form-group" v-if="linkTitle && setLinkTitle">
                             <label for="linkTitle">Link Title</label>
                             <input 
                                 id="linkTitle" 
@@ -298,8 +298,7 @@
                                 :value="linkTitle"
                                 @input="setLinkTitle" />
                         </div>
-                        <div class="pathbrowser-newwindow" 
-                            v-if="browserType === 'link'" 
+                        <div class="pathbrowser-newwindow" v-if="newWindow && toggleNewWindow"
                             @click="toggleNewWindow" 
                             @keyup.space="toggleNewWindow">  
                             <input type="checkbox" id="newWindow" :checked="newWindow"/>
