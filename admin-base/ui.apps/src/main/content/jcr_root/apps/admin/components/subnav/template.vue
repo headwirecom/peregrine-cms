@@ -27,6 +27,19 @@
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
+        <template v-if="isEditor()">
+            <admin-components-separator></admin-components-separator>
+            <admin-components-action
+                v-bind:model="{
+                  command: 'selectPath',
+                  download: getDownloadPath(),
+                  target: getPath() + '/jcr:content.xml',
+                  tooltipTitle: $i18n('Export Module'),
+                  title: 'Export',
+                  type: 'download'
+                }"
+            ></admin-components-action>
+        </template>
     </div>
 </template>
 
