@@ -93,19 +93,23 @@ public class PageMerge implements Use {
         try {
             Resource content = resource.getChild(JCR_CONTENT);
             if(content == null) {
-            	return Collections.<String, String> emptyMap();
+            	return emptyMap();
             }
 
             Map page = modelFactory.exportModelForResource(content,
                     JACKSON, Map.class,
-                    Collections.emptyMap());
+                    emptyMap());
             return getMerged(resource, page);
         } catch (ExportException e) {
             log.error("not able to export model", e);
         } catch (MissingExporterException e) {
             log.error("not able to find exporter for model", e);
         }
-        return Collections.<String, String> emptyMap();
+        return emptyMap();
+    }
+
+    private Map<String, String> emptyMap() {
+        return Collections.emptyMap();
     }
 
     private Map getMerged(Resource resource, Map page) {
@@ -126,19 +130,17 @@ public class PageMerge implements Use {
         return page;
     }
 
-    private void flagFromTemplate(Map template) {
+    private void flagFromTemplate(final Map template) {
         template.put(FROM_TEMPLATE, Boolean.TRUE);
-        for(final Object value: template.values()) {
-            if(value instanceof ArrayList) {
-                ArrayList arr = (ArrayList) value;
-                for(int i = 0; i < arr.size(); i++) {
-                    Object item = arr.get(i);
-                    if(item instanceof Map) {
-                        flagFromTemplate((Map)arr.get(i));
-                    }
-                }
-            }
-        }
+        template.values().stream()
+                .filter(value -> value instanceof Collection)
+                .forEach(value -> flagFromTemplate((Collection) value));
+    }
+
+    private void flagFromTemplate(final Collection collection) {
+        collection.stream()
+                .filter(item -> item instanceof Map)
+                .forEach(item -> flagFromTemplate((Map)item));
     }
 
     private Map merge(Map template, Map page) {

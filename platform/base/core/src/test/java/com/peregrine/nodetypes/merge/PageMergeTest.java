@@ -18,6 +18,8 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.nodetypes.merge.PageMerge.*;
@@ -128,5 +130,19 @@ public final class PageMergeTest {
         exportedResourceMap.put(PageMerge.TEMPLATE, path);
         when(modelFactory.exportModelForResource(eq(template.getContent()), any(), any(), any())).thenReturn(new HashMap<>());
         equals("{\"fromTemplate\":true,\"template\":\"/content/templates/empty\"}");
+    }
+
+    @Test
+    public void getMerged_flagFromTemplateRecursion() {
+        exportedResourceMap.put("string", "string");
+        final HashMap<Object, Object> map = new HashMap<>();
+        map.put("string", "string");
+        map.put("list", new LinkedList<>());
+        final List<Object> list = new LinkedList<>();
+        list.add(map);
+        list.add("value");
+        exportedResourceMap.put("list", list);
+
+        equals("{\"fromTemplate\":true,\"list\":[{\"string\":\"string\",\"fromTemplate\":true,\"list\":[]},\"value\"],\"string\":\"string\"}");
     }
 }
