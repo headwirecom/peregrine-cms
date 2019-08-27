@@ -165,13 +165,17 @@ public final class PageMergeTest {
 
     @Test
     public void getMerged_path() {
-        final HashMap<Object, Object> map = new HashMap<>();
-        map.put(PATH, "/path");
         final List<Object> list = new ArrayList<>();
+        HashMap<Object, Object> map = new HashMap<>();
+        map.put("string", "string");
+        map.put(PATH, "/path");
+        list.add(map);
+        map = new HashMap<>();
+        map.put(PATH, "/path2");
         list.add(map);
         exportedResourceMap.put("list", list);
 
-        equals("{\"fromTemplate\":true,\"list\":[{\"fromTemplate\":true,\"path\":\"/path\"}]}");
+        equals("{\"fromTemplate\":true,\"list\":[{\"fromTemplate\":true,\"path\":\"/path\",\"string\":\"string\"},{\"fromTemplate\":true,\"path\":\"/path2\"}]}");
     }
 
     @Test
