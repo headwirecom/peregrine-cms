@@ -174,7 +174,7 @@ public class PageMerge implements Use {
         for (final Object v : value) {
             log.debug("array merge: {}", v.getClass());
             boolean merged = false;
-            if(value instanceof Map) {
+            if(v instanceof Map) {
                 merged = merge(target, (Map)v);
             }
 
