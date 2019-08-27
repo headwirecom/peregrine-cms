@@ -63,6 +63,8 @@ public class PageMerge implements Use {
 
     private SlingHttpServletRequest request;
 
+    private Resource resource;
+
     public static RenderContext getRenderContext() {
         return renderContext.get();
     }
@@ -70,22 +72,23 @@ public class PageMerge implements Use {
     @Override
     public void init(final Bindings bindings) {
         request = BindingsUseUtil.getRequest(bindings);
+        resource = request.getResource();
         renderContext.set(new RenderContext(request));
         final SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
         modelFactory = sling.getService(ModelFactory.class);
     }
 
     public String getMerged() {
-        Resource res = request.getResource();
-        log.debug("merge on {}", res.getPath());
-        if(JCR_CONTENT.equals(res.getName())) {
-            res = res.getParent();
+        log.debug("merge on {}", resource.getPath());
+        if(JCR_CONTENT.equals(resource.getName())) {
+            return toJSON(resource.getParent());
         }
-        return toJSON(getMerged(res));
+
+        return toJSON(resource);
     }
 
     public String getMergedForScript() {
-        return getMerged().replace("</script>", "<\\/script>");
+        return StringUtils.replace(getMerged(), "</script>", "<\\/script>");
     }
 
     private Map getMerged(Resource resource) {
@@ -163,8 +166,11 @@ public class PageMerge implements Use {
             return;
         }
 
-        if(value instanceof List) {
-            merge((List) target.get(key), (List) value);
+        if(value instanceof List && target.containsKey(key)) {
+            final Object o = target.get(key);
+            if (o instanceof List) {
+                merge((List) o, (List) value);
+            }
         } else if(!(value instanceof Map)) {
             target.put(key, value);
         }
@@ -205,7 +211,11 @@ public class PageMerge implements Use {
         return false;
     }
 
-    private String toJSON(Map template) {
+    private String toJSON(final Resource resource) {
+        return toJSON(getMerged(resource));
+    }
+
+    private String toJSON(final Map template) {
         StringWriter writer = new StringWriter();
         ObjectMapper mapper = new ObjectMapper();
         try {
