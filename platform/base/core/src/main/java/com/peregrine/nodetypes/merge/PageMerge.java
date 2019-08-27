@@ -144,32 +144,32 @@ public class PageMerge implements Use {
     }
 
     private Map merge(Map template, Map page) {
-        TreeMap res = new TreeMap();
+        final TreeMap res = new TreeMap();
         res.putAll(template);
-
         final Set<Map.Entry> entrySet = page.entrySet();
         for(Map.Entry entry: entrySet) {
-            final Object key = entry.getKey();
-            log.debug("key is {}", key);
-            final Object value = entry.getValue();
-            log.debug("value is {}", value == null ? null : value.getClass());
-            if(COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
-                continue;
-            }
-            if(value instanceof List) {
-                merge((List) res.get(key), (List) value);
-            } else if(!(value instanceof Map)) {
-                res.put(key, value);
-            }
+            merge(res, entry);
         }
+
         return res;
     }
 
-    private void merge(List target, List value) {
-        for (Iterator it = value.iterator(); it.hasNext(); ) {
-            final Object next = it.next();
-            log.debug("array merge: {}", next.getClass());
-            merge(target, next);
+    private void merge(final Map target, final Map.Entry entry) {
+        final Object key = entry.getKey();
+        log.debug("key is {}", key);
+        final Object value = entry.getValue();
+        log.debug("value is {}", value == null ? null : value.getClass());
+        if(COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
+            return;
+        }
+
+        if(value instanceof List) {
+            for (final Object v : (List) value) {
+                log.debug("array merge: {}", v.getClass());
+                merge((List) target.get(key), v);
+            }
+        } else if(!(value instanceof Map)) {
+            target.put(key, value);
         }
     }
 

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.nodetypes.merge.PageMerge.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
@@ -149,7 +149,7 @@ public final class PageMergeTest {
     @Test
     public void getMerged_specialValuesInMap() {
         exportedResourceMap.put("null", null);
-        exportedResourceMap.put("component", "nt:unstructured");
+        exportedResourceMap.put(COMPONENT, NT_UNSTRUCTURED);
         exportedResourceMap.put("map", new HashMap());
         equals("{\"component\":\"nt:unstructured\",\"fromTemplate\":true,\"map\":{},\"null\":null}");
     }
