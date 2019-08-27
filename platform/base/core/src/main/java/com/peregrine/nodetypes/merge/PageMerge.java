@@ -173,28 +173,32 @@ public class PageMerge implements Use {
     private void merge(final List target, final List value) {
         for (final Object v : value) {
             log.debug("array merge: {}", v.getClass());
-            if(!merge(target, v) && !target.contains(v)) {
+            boolean merged = false;
+            if(value instanceof Map) {
+                merged = merge(target, (Map)v);
+            }
+
+            if(!merged && !target.contains(v)) {
                 target.add(v);
             }
         }
     }
 
-    private boolean merge(List target, Object value) {
-        if(value instanceof Map) {
-            Map map = (Map) value;
-            String path = (String) map.get(PATH);
-            if(path != null) {
-                log.debug("find entry for {}", path);
-                for (int i = 0; i < target.size(); i++) {
-                    Object t = target.get(i);
-                    final Map tMap = (Map) t;
-                    if(tMap.get(PATH).equals(path)) {
-                        log.debug("found");
-                        target.set(i, merge(tMap, map));
-                        log.debug("{}", target.get(i));
-                        return true;
-                    }
-                }
+    private boolean merge(List target, Map map) {
+        final String path = (String) map.get(PATH);
+        if (StringUtils.isBlank(path)) {
+            return false;
+        }
+
+        log.debug("find entry for {}", path);
+        for (int i = 0; i < target.size(); i++) {
+            Object t = target.get(i);
+            final Map tMap = (Map) t;
+            if(tMap.get(PATH).equals(path)) {
+                log.debug("found");
+                target.set(i, merge(tMap, map));
+                log.debug("{}", target.get(i));
+                return true;
             }
         }
 
