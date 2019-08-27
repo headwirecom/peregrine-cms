@@ -50,16 +50,16 @@
                     </li>
                 </template>
                 <li>
-                    <a  href="#!"
-                        title="cancel"
-                        v-on:click.stop.prevent="onCancel">
+                    <a href="#!"
+                       v-bind:title="$i18n('cancel')"
+                       v-on:click.stop.prevent="onCancel">
                         <i class="material-icons">close</i>
                     </a>
                 </li>
                 <li>
-                    <a  href="#!"
-                        title="save"
-                        v-on:click.stop.prevent="onOk">
+                    <a href="#!"
+                       v-bind:title="$i18n('save')"
+                       v-on:click.stop.prevent="onOk">
                         <i class="material-icons">check</i>
                     </a>
                 </li>
