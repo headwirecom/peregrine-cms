@@ -145,4 +145,12 @@ public final class PageMergeTest {
 
         equals("{\"fromTemplate\":true,\"list\":[{\"string\":\"string\",\"fromTemplate\":true,\"list\":[]},\"value\"],\"string\":\"string\"}");
     }
+
+    @Test
+    public void getMerged_specialValuesInMap() {
+        exportedResourceMap.put("null", null);
+        exportedResourceMap.put("component", "nt:unstructured");
+        exportedResourceMap.put("map", new HashMap());
+        equals("{\"component\":\"nt:unstructured\",\"fromTemplate\":true,\"map\":{},\"null\":null}");
+    }
 }
