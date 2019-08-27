@@ -31,6 +31,7 @@ import com.peregrine.commons.util.BindingsUseUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
@@ -65,6 +66,8 @@ public class PageMerge implements Use {
 
     private Resource resource;
 
+    private ResourceResolver resourceResolver;
+
     public static RenderContext getRenderContext() {
         return renderContext.get();
     }
@@ -74,6 +77,7 @@ public class PageMerge implements Use {
         request = BindingsUseUtil.getRequest(bindings);
         renderContext.set(new RenderContext(request));
         resource = request.getResource();
+        resourceResolver = request.getResourceResolver();
         final SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
         modelFactory = sling.getService(ModelFactory.class);
     }
@@ -91,8 +95,8 @@ public class PageMerge implements Use {
         return StringUtils.replace(getMerged(), "</script>", "<\\/script>");
     }
 
-    private String toJSON(final Resource resource) {
-        return toJSON(getMerged(resource));
+    private String toJSON(final Resource page) {
+        return toJSON(findTemplateAndMergeWithPageProperties(page));
     }
 
     private String toJSON(final Map template) {
@@ -107,20 +111,20 @@ public class PageMerge implements Use {
         return StringUtils.EMPTY;
     }
 
-    private Map getMerged(final Resource resource) {
-        log.debug("getMerged({})", resource.getPath());
+    private Map findTemplateAndMergeWithPageProperties(final Resource page) {
+        log.debug("getMerged({})", page.getPath());
         try {
-            final Resource content = resource.getChild(JCR_CONTENT);
+            final Resource content = page.getChild(JCR_CONTENT);
             if (content == null) {
             	return emptyMap();
             }
 
-            final Map pageProperties = modelFactory.exportModelForResource(
+            final Map properties = modelFactory.exportModelForResource(
                     content,
                     JACKSON,
                     Map.class,
                     emptyMap());
-            return getMerged(resource, pageProperties);
+            return findTemplateAndMergeWithPageProperties(page, properties);
         } catch (final ExportException e) {
             log.error("not able to export model", e);
         } catch (final MissingExporterException e) {
@@ -134,10 +138,10 @@ public class PageMerge implements Use {
         return Collections.emptyMap();
     }
 
-    private Map getMerged(final Resource resource, final Map pageProperties) {
-        String templatePath = (String) pageProperties.get(TEMPLATE);
+    private Map findTemplateAndMergeWithPageProperties(final Resource page, final Map properties) {
+        String templatePath = (String) properties.get(TEMPLATE);
         if (StringUtils.isBlank(templatePath)) {
-            templatePath = Optional.of(resource)
+            templatePath = Optional.of(page)
                     .map(Resource::getParent)
                     .filter(parent -> PAGE_PRIMARY_TYPE.equals(parent.getResourceType()))
                     .map(Resource::getPath)
@@ -146,17 +150,18 @@ public class PageMerge implements Use {
         }
 
         if (StringUtils.isNotBlank(templatePath)) {
-            final Map templateProperties = getMerged(request.getResourceResolver().getResource(templatePath));
+            final Resource template = resourceResolver.getResource(templatePath);
+            final Map templateProperties = findTemplateAndMergeWithPageProperties(template);
             flagFromTemplate(templateProperties);
-            return merge(templateProperties, pageProperties);
+            return merge(templateProperties, properties);
         }
 
-        return pageProperties;
+        return properties;
     }
 
-    private void flagFromTemplate(final Map templateProperties) {
-        templateProperties.put(FROM_TEMPLATE, Boolean.TRUE);
-        templateProperties.values().stream()
+    private void flagFromTemplate(final Map properties) {
+        properties.put(FROM_TEMPLATE, Boolean.TRUE);
+        properties.values().stream()
                 .filter(value -> value instanceof Collection)
                 .forEach(value -> flagFromTemplate((Collection) value));
     }
@@ -167,10 +172,9 @@ public class PageMerge implements Use {
                 .forEach(item -> flagFromTemplate((Map)item));
     }
 
-    private Map merge(final Map templateProperties, final Map pageProperties) {
-        final TreeMap result = new TreeMap();
-        result.putAll(templateProperties);
-        final Set<Map.Entry> entrySet = pageProperties.entrySet();
+    private TreeMap merge(final Map target, final Map source) {
+        final TreeMap result = new TreeMap(target);
+        final Set<Map.Entry> entrySet = source.entrySet();
         for (Map.Entry entry: entrySet) {
             merge(result, entry);
         }
@@ -178,41 +182,41 @@ public class PageMerge implements Use {
         return result;
     }
 
-    private void merge(final Map target, final Map.Entry entry) {
-        final Object key = entry.getKey();
+    private void merge(final Map target, final Map.Entry source) {
+        final Object key = source.getKey();
         log.debug("key is {}", key);
-        final Object value = entry.getValue();
+        final Object value = source.getValue();
         log.debug("value is {}", value == null ? null : value.getClass());
         if (COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
             return;
         }
 
         if (value instanceof List && target.containsKey(key)) {
-            final Object o = target.get(key);
-            if (o instanceof List) {
-                merge((List) o, (List) value);
+            final Object targetValue = target.get(key);
+            if (targetValue instanceof List) {
+                merge((List) targetValue, (List) value);
             }
         } else if(!(value instanceof Map)) {
             target.put(key, value);
         }
     }
 
-    private void merge(final List target, final List value) {
-        for (final Object v : value) {
-            log.debug("array merge: {}", v.getClass());
+    private void merge(final List target, final List source) {
+        for (final Object srcItem : source) {
+            log.debug("array merge: {}", srcItem.getClass());
             boolean merged = false;
-            if (v instanceof Map) {
-                merged = merge(target, (Map)v);
+            if (srcItem instanceof Map) {
+                merged = merge(target, (Map)srcItem);
             }
 
-            if (!merged && !target.contains(v)) {
-                target.add(v);
+            if (!merged && !target.contains(srcItem)) {
+                target.add(srcItem);
             }
         }
     }
 
-    private boolean merge(final List target, final Map map) {
-        final String path = (String) map.get(PATH);
+    private boolean merge(final List target, final Map source) {
+        final String path = (String) source.get(PATH);
         if (StringUtils.isBlank(path)) {
             return false;
         }
@@ -223,7 +227,7 @@ public class PageMerge implements Use {
             final Map targetMap = (Map) (target.get(i));
             if (targetMap.get(PATH).equals(path)) {
                 log.debug("found");
-                final Map merged = merge(targetMap, map);
+                final Map merged = merge(targetMap, source);
                 target.set(i, merged);
                 log.debug("{}", merged);
                 result = true;
