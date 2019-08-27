@@ -108,19 +108,19 @@ public class PageMerge implements Use {
     }
 
     private Map getMerged(final Resource resource) {
-        log.debug("getMerge({})", resource.getPath());
+        log.debug("getMerged({})", resource.getPath());
         try {
             final Resource content = resource.getChild(JCR_CONTENT);
             if (content == null) {
             	return emptyMap();
             }
 
-            final Map page = modelFactory.exportModelForResource(
+            final Map pageProperties = modelFactory.exportModelForResource(
                     content,
                     JACKSON,
                     Map.class,
                     emptyMap());
-            return getMerged(resource, page);
+            return getMerged(resource, pageProperties);
         } catch (final ExportException e) {
             log.error("not able to export model", e);
         } catch (final MissingExporterException e) {
@@ -134,29 +134,29 @@ public class PageMerge implements Use {
         return Collections.emptyMap();
     }
 
-    private Map getMerged(final Resource resource, final Map page) {
-        String templatePath = (String) page.get(TEMPLATE);
+    private Map getMerged(final Resource resource, final Map pageProperties) {
+        String templatePath = (String) pageProperties.get(TEMPLATE);
         if (StringUtils.isBlank(templatePath)) {
             templatePath = Optional.of(resource)
                     .map(Resource::getParent)
-                    .filter(parent -> parent.getResourceType().equals(PAGE_PRIMARY_TYPE))
+                    .filter(parent -> PAGE_PRIMARY_TYPE.equals(parent.getResourceType()))
                     .map(Resource::getPath)
                     .filter(path -> path.startsWith(CONTENT_TEMPLATES))
                     .orElse(null);
         }
 
         if (StringUtils.isNotBlank(templatePath)) {
-            final Map template = getMerged(request.getResourceResolver().getResource(templatePath));
-            flagFromTemplate(template);
-            return merge(template, page);
+            final Map templateProperties = getMerged(request.getResourceResolver().getResource(templatePath));
+            flagFromTemplate(templateProperties);
+            return merge(templateProperties, pageProperties);
         }
 
-        return page;
+        return pageProperties;
     }
 
-    private void flagFromTemplate(final Map template) {
-        template.put(FROM_TEMPLATE, Boolean.TRUE);
-        template.values().stream()
+    private void flagFromTemplate(final Map templateProperties) {
+        templateProperties.put(FROM_TEMPLATE, Boolean.TRUE);
+        templateProperties.values().stream()
                 .filter(value -> value instanceof Collection)
                 .forEach(value -> flagFromTemplate((Collection) value));
     }
@@ -167,15 +167,15 @@ public class PageMerge implements Use {
                 .forEach(item -> flagFromTemplate((Map)item));
     }
 
-    private Map merge(final Map template, final Map page) {
-        final TreeMap res = new TreeMap();
-        res.putAll(template);
-        final Set<Map.Entry> entrySet = page.entrySet();
+    private Map merge(final Map templateProperties, final Map pageProperties) {
+        final TreeMap result = new TreeMap();
+        result.putAll(templateProperties);
+        final Set<Map.Entry> entrySet = pageProperties.entrySet();
         for (Map.Entry entry: entrySet) {
-            merge(res, entry);
+            merge(result, entry);
         }
 
-        return res;
+        return result;
     }
 
     private void merge(final Map target, final Map.Entry entry) {
@@ -217,18 +217,19 @@ public class PageMerge implements Use {
             return false;
         }
 
+        boolean result = false;
         log.debug("find entry for {}", path);
         for (int i = 0; i < target.size(); i++) {
             final Map targetMap = (Map) (target.get(i));
-            if(targetMap.get(PATH).equals(path)) {
+            if (targetMap.get(PATH).equals(path)) {
                 log.debug("found");
                 final Map merged = merge(targetMap, map);
                 target.set(i, merged);
                 log.debug("{}", merged);
-                return true;
+                result = true;
             }
         }
 
-        return false;
+        return result;
     }
 }
