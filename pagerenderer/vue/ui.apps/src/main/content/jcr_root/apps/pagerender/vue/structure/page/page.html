@@ -24,7 +24,7 @@
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
-            document.write('<script src="/etc/felibs/admin/dependencies/js/shim.min.js"><\/script>');
+            document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');
     </script>
 
     <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>

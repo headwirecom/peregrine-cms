@@ -117,11 +117,6 @@
                 </excludes>
             </resource>
 
-            <resource>
-                <directory>${basedir}/src/main/js/external</directory>
-                <targetPath>etc/felibs/admin/dependencies/js</targetPath>
-            </resource>
-
         </resources>
 
         <plugins>
