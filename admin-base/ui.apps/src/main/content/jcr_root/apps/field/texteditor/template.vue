@@ -30,12 +30,23 @@
         <p v-else v-html="value"></p>
         <admin-components-pathbrowser 
             v-if="isOpen"
+            :isOpen="isOpen && browserType === 'asset'" 
+            :browserRoot="browserRoot" 
+            :browserType="browserType" 
+            :withLinkTab="withLinkTab"
+            :altText="altText" :setAltText="setAltText"
+            :currentPath="currentPath" :setCurrentPath="setCurrentPath"
+            :selectedPath="selectedPath" :setSelectedPath="setSelectedPath"
+            :onCancel="onCancel"
+            :onSelect="onSelect">
+        </admin-components-pathbrowser>
+        <admin-components-pathbrowser 
+            v-if="isOpen && browserType === 'page'"
             :isOpen="isOpen" 
             :browserRoot="browserRoot" 
             :browserType="browserType" 
             :withLinkTab="withLinkTab"
             :newWindow="newWindow" :toggleNewWindow="toggleNewWindow"
-            :altText="altText" :setAltText="setAltText"
             :linkTitle="linkTitle" :setLinkTitle="setLinkTitle"
             :currentPath="currentPath" :setCurrentPath="setCurrentPath"
             :selectedPath="selectedPath" :setSelectedPath="setSelectedPath"
@@ -55,9 +66,9 @@
                 currentPath: '/content/assets',
                 selectedPath: null,
                 altText: null,
-                linkTitle: "",
+                linkTitle: null,
                 withLinkTab: true,
-                newWindow: true,
+                newWindow: false,
                 isOpen: false,
                 default: {
                     config: {
@@ -107,6 +118,7 @@
                                 self.currentPath = isImage ? '/content/assets' : '/content/sites';
                                 let documentSelection = trumbowyg.doc.getSelection();
                                 let text = new XMLSerializer().serializeToString(documentSelection.getRangeAt(0).cloneContents());
+
                                 self.browse();
 
                                 //Setup pathbrowser select event to call trumbowyg cmd callback
