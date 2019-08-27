@@ -150,14 +150,14 @@ public class PageMerge implements Use {
         final Set<Map.Entry> entrySet = page.entrySet();
         for(Map.Entry entry: entrySet) {
             final Object key = entry.getKey();
-            final Object value = entry.getValue();
             log.debug("key is {}", key);
+            final Object value = entry.getValue();
             log.debug("value is {}", value == null ? null : value.getClass());
             if(COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
                 continue;
             }
-            if(value instanceof ArrayList) {
-                merge((ArrayList) res.get(key), (ArrayList) value);
+            if(value instanceof List) {
+                merge((List) res.get(key), (List) value);
             } else if(!(value instanceof Map)) {
                 res.put(key, value);
             }
@@ -165,7 +165,7 @@ public class PageMerge implements Use {
         return res;
     }
 
-    private void merge(ArrayList target, ArrayList value) {
+    private void merge(List target, List value) {
         for (Iterator it = value.iterator(); it.hasNext(); ) {
             final Object next = it.next();
             log.debug("array merge: {}", next.getClass());
@@ -173,7 +173,7 @@ public class PageMerge implements Use {
         }
     }
 
-    private void merge(ArrayList target, Object value) {
+    private void merge(List target, Object value) {
         boolean merged = false;
         if(value instanceof Map) {
             Map map = (Map) value;
