@@ -111,6 +111,11 @@ public final class PageMergeTest {
 
     @Test
     public void getMerged_emptyPageMap() {
+        equals("{\"fromTemplate\":true}");
+    }
+
+    @Test
+    public void getMerged_emptyPageMap_missingParent() {
         page.setParent(null);
         equalsEmpty();
     }
