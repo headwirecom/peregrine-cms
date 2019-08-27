@@ -289,7 +289,7 @@
                                 :value="altText"
                                 @input="setAltText" />
                         </div>
-                        <div class="form-group" v-if="browserType === 'page' || browserType === 'link'">
+                        <div class="form-group" v-if="browserType === 'link'">
                             <label for="linkTitle">Link Title</label>
                             <input 
                                 id="linkTitle" 
@@ -297,6 +297,13 @@
                                 placeholder="Link Title" 
                                 :value="linkTitle"
                                 @input="setLinkTitle" />
+                        </div>
+                        <div class="pathbrowser-newwindow" 
+                            v-if="browserType === 'link'" 
+                            @click="toggleNewWindow" 
+                            @keyup.space="toggleNewWindow">  
+                            <input type="checkbox" id="newWindow" :checked="newWindow"/>
+                            <label for="newWindow">Open in new window?</label>
                         </div>
                     </template>
                 </div>
@@ -330,13 +337,6 @@
             <div class="modal-footer">
                 <div class="pathbrowser-footer-details">
                     <span class="pathbrowser-selected-path">{{selectedPath}}</span>
-                    <div class="pathbrowser-newwindow" 
-                         v-if="browserType === 'link' || browserType === 'page'" 
-                         @click="toggleNewWindow" 
-                         @keyup.space="toggleNewWindow">  
-                        <input type="checkbox" id="newWindow" :checked="newWindow"/>
-                        <label for="newWindow">Open in new window?</label>
-                    </div>
                 </div>
                     <div class="pathbrowser-buttons">
                         <button v-on:click="onCancel"
