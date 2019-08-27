@@ -1,8 +1,6 @@
 package com.peregrine.nodetypes.merge;
 
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.nodetypes.merge.PageMerge.CONTENT_TEMPLATES;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -161,5 +159,16 @@ public final class PageMergeTest {
     public void getMerged_componentNull() {
         exportedResourceMap.put(COMPONENT, null);
         equals("{\"component\":null,\"fromTemplate\":true}");
+    }
+
+    @Test
+    public void getMerged_path() {
+        final HashMap<Object, Object> map = new HashMap<>();
+        map.put(PATH, "/path");
+        final List<Object> list = new ArrayList<>();
+        list.add(map);
+        exportedResourceMap.put("list", list);
+
+        equals("{\"fromTemplate\":true,\"list\":[{\"fromTemplate\":true,\"path\":\"/path\"}]}");
     }
 }
