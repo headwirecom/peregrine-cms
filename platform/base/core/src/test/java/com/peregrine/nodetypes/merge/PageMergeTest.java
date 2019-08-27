@@ -61,7 +61,6 @@ public final class PageMergeTest {
         final SlingScriptHelper sling = Mockito.mock(SlingScriptHelper.class);
         bindings.put(BindingsUseUtil.SLING, sling);
         when(sling.getService(ModelFactory.class)).thenReturn(modelFactory);
-        model.init(bindings);
 
         when(request.getResource()).thenReturn(page.getContent());
         when(request.getResourceResolver()).thenReturn(resourceResolver);
@@ -75,6 +74,8 @@ public final class PageMergeTest {
         when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(exportedResourceMap);
 
         when(resourceResolver.getResource(PAGE_PARENT_PATH)).thenReturn(parent);
+
+        model.init(bindings);
     }
 
     @Test
@@ -170,5 +171,20 @@ public final class PageMergeTest {
         exportedResourceMap.put("list", list);
 
         equals("{\"fromTemplate\":true,\"list\":[{\"fromTemplate\":true,\"path\":\"/path\"}]}");
+    }
+
+    @Test
+    public void getMerged_externalTemplate() throws ExportException, MissingExporterException {
+        final String path = CONTENT_TEMPLATES + "external";
+        final PageMock template = new PageMock();
+        when(resourceResolver.getResource(path)).thenReturn(template);
+        exportedResourceMap.put(PageMerge.TEMPLATE, path);
+        when(modelFactory.exportModelForResource(eq(template.getContent()), any(), any(), any())).thenReturn(new HashMap<>());
+        final HashMap<Object, Object> map = new HashMap<>();
+        map.put(PATH, "/path");
+        final List<Object> list = new ArrayList<>();
+        list.add(map);
+        exportedResourceMap.put("list", list);
+        equals("{\"fromTemplate\":true,\"list\":[{\"path\":\"/path\"}],\"template\":\"/content/templates/external\"}");
     }
 }
