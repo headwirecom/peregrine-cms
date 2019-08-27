@@ -153,4 +153,10 @@ public final class PageMergeTest {
         exportedResourceMap.put("map", new HashMap());
         equals("{\"component\":\"nt:unstructured\",\"fromTemplate\":true,\"map\":{},\"null\":null}");
     }
+
+    @Test
+    public void getMerged_componentNull() {
+        exportedResourceMap.put(COMPONENT, null);
+        equals("{\"component\":null,\"fromTemplate\":true}");
+    }
 }
