@@ -192,12 +192,12 @@ public class PageMerge implements Use {
 
         log.debug("find entry for {}", path);
         for (int i = 0; i < target.size(); i++) {
-            Object t = target.get(i);
-            final Map tMap = (Map) t;
-            if(tMap.get(PATH).equals(path)) {
+            final Map targetMap = (Map) (target.get(i));
+            if(targetMap.get(PATH).equals(path)) {
                 log.debug("found");
-                target.set(i, merge(tMap, map));
-                log.debug("{}", target.get(i));
+                final Map merged = merge(targetMap, map);
+                target.set(i, merged);
+                log.debug("{}", merged);
                 return true;
             }
         }
