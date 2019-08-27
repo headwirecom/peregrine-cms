@@ -1,8 +1,17 @@
 package com.peregrine.nodetypes.merge;
 
-import com.peregrine.BindingsMock;
-import com.peregrine.PageMock;
-import com.peregrine.commons.util.BindingsUseUtil;
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.nodetypes.merge.PageMerge.CONTENT_TEMPLATES;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.scripting.SlingScriptHelper;
@@ -17,15 +26,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.nodetypes.merge.PageMerge.*;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import com.peregrine.BindingsMock;
+import com.peregrine.PageMock;
+import com.peregrine.commons.util.BindingsUseUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PageMergeTest {
@@ -137,8 +140,8 @@ public final class PageMergeTest {
         exportedResourceMap.put("string", "string");
         final HashMap<Object, Object> map = new HashMap<>();
         map.put("string", "string");
-        map.put("list", new LinkedList<>());
-        final List<Object> list = new LinkedList<>();
+        map.put("list", new ArrayList<>());
+        final List<Object> list = new ArrayList<>();
         list.add(map);
         list.add("value");
         exportedResourceMap.put("list", list);
