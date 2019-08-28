@@ -39,6 +39,8 @@ public final class PageMergeTest {
     private static final String PAGE_PATH = PAGE_PARENT_PATH + SLASH + PAGE_NAME;
     private static final String EXTERNAL_TEMPLATE_PATH = CONTENT_TEMPLATES + "external";
 
+    private static final String PN_LIST = "list";
+
     private final PageMerge model = new PageMerge();
 
     private final BindingsMock bindings = new BindingsMock();
@@ -148,11 +150,11 @@ public final class PageMergeTest {
         exportedResourceMap.put("string", "string");
         final HashMap<Object, Object> map = new HashMap<>();
         map.put("string", "string");
-        map.put("list", new ArrayList<>());
+        map.put(PN_LIST, new ArrayList<>());
         final List<Object> list = new ArrayList<>();
         list.add(map);
         list.add("value");
-        exportedResourceMap.put("list", list);
+        exportedResourceMap.put(PN_LIST, list);
 
         equals("{\"fromTemplate\":true,\"list\":[{\"string\":\"string\",\"fromTemplate\":true,\"list\":[]},\"value\"],\"string\":\"string\"}");
     }
@@ -181,7 +183,7 @@ public final class PageMergeTest {
         map = new HashMap<>();
         map.put(PATH, "/path2");
         list.add(map);
-        exportedResourceMap.put("list", list);
+        exportedResourceMap.put(PN_LIST, list);
 
         equals("{\"fromTemplate\":true,\"list\":[{\"fromTemplate\":true,\"path\":\"/path\",\"string\":\"string\"},{\"fromTemplate\":true,\"path\":\"/path2\"}]}");
     }
@@ -193,15 +195,27 @@ public final class PageMergeTest {
         map.put(PATH, "/path");
         final List<Object> list = new ArrayList<>();
         list.add(map);
-        exportedResourceMap.put("list", list);
+        exportedResourceMap.put(PN_LIST, list);
         equals("{\"fromTemplate\":true,\"list\":[{\"path\":\"/path\"}],\"template\":\"/content/templates/external\"}");
     }
 
     @Test
     public void getMerged_incompatibleListTypes() {
         exportedResourceMap.put(PageMerge.TEMPLATE, EXTERNAL_TEMPLATE_PATH);
-        externalTemplate.getProperties().put("list", "Not a List");
-        exportedResourceMap.put("list", new ArrayList<>());
+        externalTemplate.getProperties().put(PN_LIST, "Not a List");
+        exportedResourceMap.put(PN_LIST, new ArrayList<>());
         equals("{\"fromTemplate\":true,\"list\":\"Not a List\",\"template\":\"/content/templates/external\"}");
+    }
+
+    @Test
+    public void getMerged_addNotMergedToList() {
+        exportedResourceMap.put(PageMerge.TEMPLATE, EXTERNAL_TEMPLATE_PATH);
+        final List<Object> targetList = new ArrayList<>();
+        targetList.add("x");
+        externalTemplate.getProperties().put(PN_LIST, targetList);
+        final List<Object> sourceList = new ArrayList<>();
+        sourceList.add("y");
+        exportedResourceMap.put(PN_LIST, sourceList);
+        equals("{\"fromTemplate\":true,\"list\":[\"x\",\"y\"],\"template\":\"/content/templates/external\"}");
     }
 }
