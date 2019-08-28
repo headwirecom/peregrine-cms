@@ -1,16 +1,8 @@
 package com.peregrine.nodetypes.merge;
 
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.nodetypes.merge.PageMerge.CONTENT_TEMPLATES;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.peregrine.BindingsMock;
+import com.peregrine.PageMock;
+import com.peregrine.commons.util.BindingsUseUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.scripting.SlingScriptHelper;
@@ -25,9 +17,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.peregrine.BindingsMock;
-import com.peregrine.PageMock;
-import com.peregrine.commons.util.BindingsUseUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.nodetypes.merge.PageMerge.CONTENT_TEMPLATES;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PageMergeTest {
@@ -163,7 +161,7 @@ public final class PageMergeTest {
     public void getMerged_specialValuesInMap() {
         exportedResourceMap.put("null", null);
         exportedResourceMap.put(COMPONENT, NT_UNSTRUCTURED);
-        exportedResourceMap.put("map", new HashMap());
+        exportedResourceMap.put("map", new HashMap<>());
         equals("{\"component\":\"nt:unstructured\",\"fromTemplate\":true,\"map\":{},\"null\":null}");
     }
 
