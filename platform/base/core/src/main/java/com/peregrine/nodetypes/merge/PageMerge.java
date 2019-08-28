@@ -62,8 +62,6 @@ public class PageMerge implements Use {
 
     private ModelFactory modelFactory;
 
-    private SlingHttpServletRequest request;
-
     private Resource resource;
 
     private ResourceResolver resourceResolver;
@@ -74,7 +72,7 @@ public class PageMerge implements Use {
 
     @Override
     public void init(final Bindings bindings) {
-        request = BindingsUseUtil.getRequest(bindings);
+        final SlingHttpServletRequest request = BindingsUseUtil.getRequest(bindings);
         renderContext.set(new RenderContext(request));
         resource = request.getResource();
         resourceResolver = request.getResourceResolver();
