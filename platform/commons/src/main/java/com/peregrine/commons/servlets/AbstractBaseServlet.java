@@ -10,6 +10,7 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,11 +120,13 @@ public abstract class AbstractBaseServlet
         private SlingHttpServletRequest request;
         private SlingHttpServletResponse response;
         private Map<String, String> parameters = new HashMap<>();
+        private String method;
 
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
             this.request = request;
             this.response = response;
             this.parameters = ServletHelper.obtainParameters(request);
+            this.method = request.getMethod();
         }
 
         public SlingHttpServletRequest getRequest() {
@@ -174,6 +177,12 @@ public abstract class AbstractBaseServlet
         public String getSuffix() { return request.getRequestPathInfo().getSuffix(); }
 
         public Collection<Part> getParts() throws IOException, ServletException { return request.getParts(); }
+
+        public boolean isPost() { return HttpConstants.METHOD_POST.equals(method); }
+
+        public boolean isGet() { return HttpConstants.METHOD_GET.equals(method); }
+
+        public String getMethod() { return method; }
     }
 
     /**
