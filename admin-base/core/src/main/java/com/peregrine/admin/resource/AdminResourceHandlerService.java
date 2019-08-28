@@ -21,6 +21,9 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.jcr.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -454,6 +457,8 @@ public class AdminResourceHandlerService
                         }
                     }
                 }
+                // Obtain the Asset Dimension and store directly in the meta data folder
+                handleAssetDimensions(perAsset);
             } catch(ImageProcessingException e) {
                 e.printStackTrace();
             }
@@ -1320,5 +1325,25 @@ public class AdminResourceHandlerService
         }
         baseResourceHandler.updateModification(parent.getResourceResolver(), newPage);
         return newPage;
+    }
+
+    private void handleAssetDimensions(PerAsset perAsset) throws RepositoryException {
+        try {
+            InputStream is = perAsset.getRenditionStream((String) null);
+            ImageInputStream iis = ImageIO.createImageInputStream(is);
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+            while(readers.hasNext()) {
+                ImageReader reader = readers.next();
+                reader.setInput(iis);
+                int minIndex = reader.getMinIndex();
+                int width = reader.getWidth(minIndex);
+                int height = reader.getHeight(minIndex);
+                perAsset.addTag("per-data", "width", width);
+                perAsset.addTag("per-data", "height", height);
+                break;
+            }
+        } catch (IOException e) {
+            logger.warn("Was not able to obtain Width/Height from Image", e);
+        }
     }
 }
