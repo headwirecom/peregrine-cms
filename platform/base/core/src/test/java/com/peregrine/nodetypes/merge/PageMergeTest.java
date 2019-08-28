@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -36,6 +37,7 @@ public final class PageMergeTest {
     private static final String PAGE_PARENT_PATH = CONTENT_TEMPLATES + PAGE_PARENT_NAME;
     private static final String PAGE_NAME = "page";
     private static final String PAGE_PATH = PAGE_PARENT_PATH + SLASH + PAGE_NAME;
+    private static final String EXTERNAL_TEMPLATE_PATH = CONTENT_TEMPLATES + "external";
 
     private final PageMerge model = new PageMerge();
 
@@ -46,6 +48,8 @@ public final class PageMergeTest {
     private final PageMock parent = new PageMock();
 
     private final HashMap<Object, Object> exportedResourceMap = new HashMap<>();
+
+    private final PageMock externalTemplate = new PageMock();
 
     @Mock
     private SlingHttpServletRequest request;
@@ -75,6 +79,10 @@ public final class PageMergeTest {
         when(modelFactory.exportModelForResource(any(), any(), any(), any())).thenReturn(exportedResourceMap);
 
         when(resourceResolver.getResource(PAGE_PARENT_PATH)).thenReturn(parent);
+
+        when(resourceResolver.getResource(EXTERNAL_TEMPLATE_PATH)).thenReturn(externalTemplate);
+        when(modelFactory.exportModelForResource(eq(externalTemplate.getContent()), any(), any(), any()))
+                .thenReturn(externalTemplate.getProperties());
     }
 
     @Test
@@ -179,17 +187,21 @@ public final class PageMergeTest {
     }
 
     @Test
-    public void getMerged_externalTemplate() throws ExportException, MissingExporterException {
-        final String path = CONTENT_TEMPLATES + "external";
-        final PageMock template = new PageMock();
-        when(resourceResolver.getResource(path)).thenReturn(template);
-        exportedResourceMap.put(PageMerge.TEMPLATE, path);
-        when(modelFactory.exportModelForResource(eq(template.getContent()), any(), any(), any())).thenReturn(new HashMap<>());
+    public void getMerged_externalTemplate() {
+        exportedResourceMap.put(PageMerge.TEMPLATE, EXTERNAL_TEMPLATE_PATH);
         final HashMap<Object, Object> map = new HashMap<>();
         map.put(PATH, "/path");
         final List<Object> list = new ArrayList<>();
         list.add(map);
         exportedResourceMap.put("list", list);
         equals("{\"fromTemplate\":true,\"list\":[{\"path\":\"/path\"}],\"template\":\"/content/templates/external\"}");
+    }
+
+    @Test
+    public void getMerged_incompatibleListTypes() {
+        exportedResourceMap.put(PageMerge.TEMPLATE, EXTERNAL_TEMPLATE_PATH);
+        externalTemplate.getProperties().put("list", "Not a List");
+        exportedResourceMap.put("list", new ArrayList<>());
+        equals("{\"fromTemplate\":true,\"list\":\"Not a List\",\"template\":\"/content/templates/external\"}");
     }
 }
