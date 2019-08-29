@@ -65,7 +65,7 @@ public final class PerUtil {
 
     public static final String PER_VENDOR = "headwire.com, Inc";
     public static final String PER_PREFIX = "Peregrine: ";
-    public static final String EQUALS = "=";
+    public static final String EQUAL = "=";
     public static final String GET = "GET";
     public static final String POST = "POST";
 

@@ -29,7 +29,6 @@ import com.peregrine.transform.ImageContext;
 import com.peregrine.transform.ImageTransformation;
 import com.peregrine.transform.OperationContext;
 import org.apache.sling.commons.mime.MimeTypeService;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -40,7 +39,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -56,8 +55,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformation.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Greyscale Image Transformation (transformation name: vips:greyscale)",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Greyscale Image Transformation (transformation name: vips:greyscale)",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR
     }
 )
 @Designate(

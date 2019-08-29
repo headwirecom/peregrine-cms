@@ -1,6 +1,5 @@
 package com.peregrine.nodejs.servlet;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_ALLOWED_TYPES;
@@ -54,11 +53,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Sling Node Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_PATHS + EQUALS + LIST_PACKAGES,
-        SLING_SERVLET_PATHS + EQUALS + INSTALL_PACKAGE,
-        SLING_SERVLET_PATHS + EQUALS + REMOVE_PACKAGE
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Sling Node Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_PATHS + EQUAL + LIST_PACKAGES,
+        SLING_SERVLET_PATHS + EQUAL + INSTALL_PACKAGE,
+        SLING_SERVLET_PATHS + EQUAL + REMOVE_PACKAGE
     }
 )
 @SuppressWarnings("serial")

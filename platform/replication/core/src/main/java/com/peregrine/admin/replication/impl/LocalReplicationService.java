@@ -56,7 +56,7 @@ import java.util.Map;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getParent;
@@ -128,7 +128,7 @@ public class LocalReplicationService
         init(configuration.name(), configuration.description());
         localSource = localTarget = null;
         String mapping = configuration.localMapping();
-        String[] tokens = mapping.split(EQUALS);
+        String[] tokens = mapping.split(EQUAL);
         if(tokens.length == 2) {
             localSource = tokens[0];
             localTarget = tokens[1];
