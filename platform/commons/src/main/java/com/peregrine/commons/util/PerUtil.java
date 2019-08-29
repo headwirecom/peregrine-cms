@@ -229,14 +229,8 @@ public final class PerUtil {
      * @return Path from the Root to the Child if Child is a sub node of the
      *         root otherwise null
      */
-    public static String relativePath(Resource root, Resource child) {
-        String answer = null;
-        String rootPath = root.getPath();
-        String childPath = child.getPath();
-        if(childPath.startsWith(rootPath) && childPath.length() > rootPath.length() + 1) {
-            answer = childPath.substring(rootPath.length() + 1);
-        }
-        return answer;
+    public static String relativePath(final Resource root, final Resource child) {
+        return StringUtils.substringAfter(child.getPath(), root.getPath() + SLASH);
     }
 
     /**
@@ -271,7 +265,7 @@ public final class PerUtil {
             }
         } else {
             if(source == null) {
-                LOG.warn("Source is null so path: '{}' cannot be resolved", StringUtils.strip(path));
+                LOG.warn("Source is null so path: '{}' cannot be resolved", path);
             } else {
                 LOG.warn("Path is null so call is ignored");
             }
@@ -332,15 +326,16 @@ public final class PerUtil {
      * @return The Value Map of the Resource or JCR Content node
      */
     public static ValueMap getProperties(Resource resource, boolean goToJcrContent) {
-        ValueMap answer = null;
-        Resource jcrContent = resource;
-        if(goToJcrContent && !PerConstants.JCR_CONTENT.equals(jcrContent.getName())) {
-            jcrContent = jcrContent.getChild(PerConstants.JCR_CONTENT);
+        Resource content = resource;
+        if(goToJcrContent && !PerConstants.JCR_CONTENT.equals(resource.getName())) {
+            content = resource.getChild(PerConstants.JCR_CONTENT);
         }
-        if(jcrContent != null) {
-            answer = jcrContent.getValueMap();
+
+        if(content != null) {
+            return content.getValueMap();
         }
-        return answer;
+
+        return null;
     }
 
     /**
@@ -412,42 +407,50 @@ public final class PerUtil {
      *                         if children resources are traversed
      * @param deep If true this goes down recursively any children
      */
-    public static void listMissingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
+    public static void listMissingResources(
+            final Resource startingResource,
+            final List<Resource> response,
+            final ResourceChecker resourceChecker,
+            final boolean deep) {
         ResourceChecker childResourceChecker = resourceChecker;
-        if(startingResource != null && resourceChecker != null && response != null) {
-            if(resourceChecker.doAdd(startingResource)) {
-                if(!containsResource(response, startingResource)) {
-                    response.add(startingResource);
-                }
-                // If this is JCR Content we need to add all children
-                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
-                    childResourceChecker = new AddAllResourceChecker();
-                }
+        if (startingResource == null || resourceChecker == null || response == null) {
+            return;
+        }
+
+        if (resourceChecker.doAdd(startingResource)) {
+            if (!containsResource(response, startingResource)) {
+                response.add(startingResource);
             }
-            if(resourceChecker.doAddChildren(startingResource)) {
-                for (final Resource child : startingResource.getChildren()) {
-                    if (deep || PerConstants.JCR_CONTENT.equals(child.getName())) {
-                        listMissingResources(child, response, childResourceChecker, true);
-                    }
-                }
+            // If this is JCR Content we need to add all children
+            if (PerConstants.JCR_CONTENT.equals(startingResource.getName())) {
+                childResourceChecker = new AddAllResourceChecker();
+            }
+        }
+
+        if (!resourceChecker.doAddChildren(startingResource)) {
+            return;
+        }
+
+        for (final Resource child : startingResource.getChildren()) {
+            if (deep || PerConstants.JCR_CONTENT.equals(child.getName())) {
+                listMissingResources(child, response, childResourceChecker, true);
             }
         }
     }
 
     public static boolean containsResource(List<Resource> resources, Resource check) {
-        boolean answer = false;
-        if(check != null) {
-            String path = check.getPath();
-            for(Resource item : resources) {
-                if(path.equals(item.getPath())) {
-                    answer = true;
-                    break;
-                }
-            }
-        } else {
-            answer = true;
+        if (check == null) {
+            return true;
         }
-        return answer;
+
+        final String path = check.getPath();
+        for (final Resource item : resources) {
+            if (path.equals(item.getPath())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -533,12 +536,12 @@ public final class PerUtil {
      * @return Returns the JCR Primary Type property from the resource if that one is not null and if it is found
      */
     public static String getPrimaryType(Resource resource) {
-        String answer = null;
-        if(resource != null) {
+        if (resource != null) {
             ValueMap properties = getProperties(resource, false);
-            answer = properties.get(JCR_PRIMARY_TYPE, String.class);
+            return properties.get(JCR_PRIMARY_TYPE, String.class);
         }
-        return answer;
+
+        return null;
     }
 
     /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
@@ -548,14 +551,10 @@ public final class PerUtil {
         }
 
         ValueMap properties = getProperties(resource, true);
-        if (properties == null) {
-            properties = getProperties(resource, false);
-            if (properties == null) {
-                return null;
-            }
-        }
-
-        return properties.get(SLING_RESOURCE_TYPE, String.class);
+        properties = properties == null ? getProperties(resource, false) : properties;
+        return Optional.ofNullable(properties)
+                .map(props -> props.get(SLING_RESOURCE_TYPE, String.class))
+                .orElse(null);
     }
 
     /** @return The Mime Type of this resource (in the JCR Content resource) **/
@@ -617,23 +616,25 @@ public final class PerUtil {
         }
 
         @Override
-        public boolean doAdd(Resource resource) {
-            boolean answer = false;
-            String relativePath = relativePath(source, resource);
-            Resource targetResource = target.getChild(relativePath);
+        public boolean doAdd(final Resource resource) {
+            final String relativePath = relativePath(source, resource);
+            final Resource targetResource = Optional.ofNullable(relativePath)
+                    .map(path -> target.getChild(path))
+                    .orElse(null);
             LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
-            if(targetResource == null) {
-                answer = true;
+            if (targetResource == null) {
+                return true;
             } else {
-                //AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
-                //AS TODO replicated timestamp
-                Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
-                Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
+                // AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
+                // AS TODO replicated timestamp
+                final Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
+                final Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
                 if(sourceLastModified != null && targetLastModified != null) {
-                    answer = sourceLastModified.after(targetLastModified);
+                    return sourceLastModified.after(targetLastModified);
                 }
             }
-            return answer;
+
+            return false;
         }
 
         @Override
@@ -656,10 +657,10 @@ public final class PerUtil {
         }
 
         @Override
-        public boolean doAdd(Resource resource) {
-            String relativePath = relativePath(source, resource);
-            Resource targetResource = target.getChild(relativePath);
-            return targetResource != null;
+        public boolean doAdd(final Resource resource) {
+            return Optional.ofNullable(relativePath(source, resource))
+                    .map(path -> target.getChild(path))
+                    .isPresent();
         }
 
         @Override
