@@ -57,7 +57,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 /**
  * Created by Andreas Schaefer on 5/26/17.
  */
-public class PerUtil {
+public final class PerUtil {
 
     public static final String RENDITIONS = "renditions";
     public static final String METADATA = "metadata";
@@ -70,10 +70,14 @@ public class PerUtil {
     public static final String POST = "POST";
 
     public static final String ENTRY_NOT_KEY_VALUE_PAIR = "Entry: '%s' could not be split into a key value pair, entries: '%s'";
-
-    private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
+
+    private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
+
+    private PerUtil() {
+        throw new UnsupportedOperationException();
+    }
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
