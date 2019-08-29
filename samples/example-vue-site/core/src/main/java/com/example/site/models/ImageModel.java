@@ -25,13 +25,16 @@ package com.example.site.models;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
+import org.apache.sling.models.annotations.ExternalizePath;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.impl.serializer.ExternalizePathSerializer;
 
 import javax.inject.Inject;
 
@@ -40,6 +43,7 @@ import javax.inject.Inject;
  */
 @Model(adaptables = Resource.class, resourceType = "example/components/image", defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL, adapters = IComponent.class)
 @Exporter(name = "jackson", extensions = "json")
+@JsonSerialize(using = ExternalizePathSerializer.class)
 public class ImageModel extends AbstractComponent {
 
     @Inject
@@ -63,6 +67,7 @@ public class ImageModel extends AbstractComponent {
         return caption;
     }
 
+    @ExternalizePath
     public String getImagePath() {
         return imagePath;
     }
