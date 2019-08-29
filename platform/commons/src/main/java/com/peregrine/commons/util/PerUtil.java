@@ -41,13 +41,7 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.DASH;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
@@ -277,7 +271,7 @@ public final class PerUtil {
             }
         } else {
             if(source == null) {
-                LOG.warn("Source is null so path: '{}' cannot be resolved", path);
+                LOG.warn("Source is null so path: '{}' cannot be resolved", StringUtils.strip(path));
             } else {
                 LOG.warn("Path is null so call is ignored");
             }
@@ -340,7 +334,7 @@ public final class PerUtil {
     public static ValueMap getProperties(Resource resource, boolean goToJcrContent) {
         ValueMap answer = null;
         Resource jcrContent = resource;
-        if(goToJcrContent && !jcrContent.getName().equals(PerConstants.JCR_CONTENT)) {
+        if(goToJcrContent && !PerConstants.JCR_CONTENT.equals(jcrContent.getName())) {
             jcrContent = jcrContent.getChild(PerConstants.JCR_CONTENT);
         }
         if(jcrContent != null) {
@@ -388,22 +382,23 @@ public final class PerUtil {
      * @return
      */
     public static List<Resource> listParents(Resource root, Resource child) {
-        List<Resource> answer = new ArrayList<>();
+        final List<Resource> answer = new ArrayList<>();
         Resource parent = child.getParent();
         while(true) {
             if(parent == null) {
                 // No parent matches 'source' so we ignore it
                 answer.clear();
-                break;
+                return answer;
             }
+
             if(parent.getPath().equals(root.getPath())) {
                 // Hit the source -> done with loop
-                break;
+                return answer;
             }
+
             answer.add(parent);
             parent = parent.getParent();
         }
-        return answer;
     }
 
     /**
@@ -430,10 +425,8 @@ public final class PerUtil {
                 }
             }
             if(resourceChecker.doAddChildren(startingResource)) {
-                for(Resource child : startingResource.getChildren()) {
-                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-                        listMissingResources(child, response, childResourceChecker, true);
-                    } else if(deep) {
+                for (final Resource child : startingResource.getChildren()) {
+                    if (deep || PerConstants.JCR_CONTENT.equals(child.getName())) {
                         listMissingResources(child, response, childResourceChecker, true);
                     }
                 }
@@ -457,38 +450,6 @@ public final class PerUtil {
         return answer;
     }
 
-    //AS TODO: This seems to be a duplicate of the method above?
-//    public static void listMatchingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
-//        ResourceChecker childResourceChecker = resourceChecker;
-//        if(startingResource != null && resourceChecker != null && response != null) {
-//            if(resourceChecker.doAdd(startingResource)) {
-//                response.add(startingResource);
-//                // If this is JCR Content we need to add all children
-//                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
-//                    childResourceChecker = new AddAllResourceChecker();
-//                }
-//            }
-//            if(resourceChecker.doAddChildren(startingResource)) {
-//                for(Resource child : startingResource.getChildren()) {
-//                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-//                        listMatchingResources(child, response, childResourceChecker, true);
-//                    } else if(deep) {
-//                        listMatchingResources(child, response, childResourceChecker, true);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    public static boolean containsResource(List<Resource> resourceList, Resource resource) {
-//        for(Resource item: resourceList) {
-//            if(item.getPath().equals(resource.getPath())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     /**
      * Lists all the missing parents compared to the parents on the source
      *
@@ -503,10 +464,8 @@ public final class PerUtil {
             // Now we go through all parents, check if the matching parent exists on the target
             // side and if not there add it to the list
             for(Resource sourceParent : parents) {
-                if(resourceChecker.doAdd(sourceParent)) {
-                    if(!containsResource(response, sourceParent)) {
-                        response.add(sourceParent);
-                    }
+                if(resourceChecker.doAdd(sourceParent) && !containsResource(response, sourceParent)) {
+                    response.add(sourceParent);
                 }
             }
         }
@@ -523,7 +482,7 @@ public final class PerUtil {
     public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
         if(resolverFactory == null) { throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL); }
         if(StringUtils.isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
-        Map<String, Object> authInfo = new HashMap<String, Object>();
+        Map<String, Object> authInfo = new HashMap<>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);
     }
@@ -536,7 +495,7 @@ public final class PerUtil {
     public static String adjustMetadataName(String name) {
         return name == null ?
             null :
-            name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+            name.toLowerCase().replace(" ", "_").replace("/", "_");
     }
 
     /**
@@ -583,18 +542,20 @@ public final class PerUtil {
     }
 
     /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
-    public static String getResourceType(Resource resource) {
-        String answer = null;
-        if(resource != null) {
-            ValueMap properties = getProperties(resource, true);
-            if(properties == null) {
-                properties = getProperties(resource, false);
-            }
-            if(properties != null) {
-                answer = properties.get(SLING_RESOURCE_TYPE, String.class);
+    public static String getResourceType(final Resource resource) {
+        if (resource == null) {
+            return null;
+        }
+
+        ValueMap properties = getProperties(resource, true);
+        if (properties == null) {
+            properties = getProperties(resource, false);
+            if (properties == null) {
+                return null;
             }
         }
-        return answer;
+
+        return properties.get(SLING_RESOURCE_TYPE, String.class);
     }
 
     /** @return The Mime Type of this resource (in the JCR Content resource) **/
@@ -728,11 +689,11 @@ public final class PerUtil {
      */
     public static String getComponentNameFromResource(Resource resource) {
         String resourceType = resource.getResourceType();
-        if (resourceType != null) {
+        if (StringUtils.isNotBlank(resourceType)) {
             if(resourceType.startsWith("/")) {
                 resourceType = StringUtils.substringAfter(resourceType, SLASH);
             }
-            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll(SLASH, DASH));
+            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replace(SLASH, DASH));
         } else {
             return "";
         }
@@ -743,7 +704,7 @@ public final class PerUtil {
             if(resourceType.startsWith("/")) {
                 resourceType = StringUtils.substringAfter(resourceType, SLASH);
             }
-            return "cmp"+CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, resourceType.replaceAll(SLASH, DASH));
+            return "cmp" + CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, resourceType.replace(SLASH, DASH));
         } else {
             return "";
         }
