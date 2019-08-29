@@ -28,6 +28,7 @@ package com.peregrine.admin.resource;
 import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
@@ -48,7 +49,6 @@ import java.util.TreeSet;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 
@@ -430,7 +430,7 @@ public class ReferenceListerService
          * @return This tree instance
          */
         public Tree addChildByPath(String path) {
-            if(isEmpty(path)) { throw new IllegalArgumentException("Child Path must be provided"); }
+            if(StringUtils.isEmpty(path)) { throw new IllegalArgumentException("Child Path must be provided"); }
             String[] tokens = path.split(SLASH);
             Node node = this;
             for(String token: tokens) {
@@ -468,7 +468,7 @@ public class ReferenceListerService
          */
         public Node(Node parent, String segment) {
             setParent(parent);
-            if(isEmpty(segment)) {
+            if(StringUtils.isEmpty(segment)) {
                 throw new IllegalArgumentException("Node Segment must be defined");
             }
             this.segment = segment;

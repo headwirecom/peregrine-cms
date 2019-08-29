@@ -27,7 +27,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
@@ -77,11 +77,6 @@ public final class PerUtil {
 
     private PerUtil() {
         throw new UnsupportedOperationException();
-    }
-
-    /** @return True if the given text is either null or empty **/
-    public static boolean isEmpty(String text) {
-        return text == null || text.isEmpty();
     }
 
     /** @return True if the given text is both not null and not empty **/
@@ -512,7 +507,7 @@ public final class PerUtil {
      */
     public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
         if(resolverFactory == null) { throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL); }
-        if(isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
+        if(StringUtils.isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
         Map<String, Object> authInfo = new HashMap<String, Object>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);

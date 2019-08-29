@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
@@ -68,7 +69,6 @@ import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
@@ -257,10 +257,10 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                 group = variation.getProperty(GROUP).getString();
             }
         }
-        if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
+        if(StringUtils.isEmpty(title) && component.hasProperty(JCR_TITLE)) {
             title = component.getProperty(JCR_TITLE).getString();
         }
-        if(isEmpty(group) && component.hasProperty(GROUP)) {
+        if(StringUtils.isEmpty(group) && component.hasProperty(GROUP)) {
             group = component.getProperty(GROUP).getString();
         }
         if(isNotEmpty(title)) {

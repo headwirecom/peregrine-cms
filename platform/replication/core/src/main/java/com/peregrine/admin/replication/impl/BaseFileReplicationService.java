@@ -31,6 +31,7 @@ import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.render.RenderService;
 import com.peregrine.render.RenderService.RenderException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -334,7 +335,7 @@ public abstract class BaseFileReplicationService
         private boolean exportFolders = false;
 
         public ExportExtension(String name, List<String> types) {
-            if(PerUtil.isEmpty(name)) {
+            if(StringUtils.isEmpty(name)) {
                 throw new IllegalArgumentException(EXTENSION_NAME_MUST_BE_PROVIDED);
             }
             if(types == null || types.isEmpty()) {

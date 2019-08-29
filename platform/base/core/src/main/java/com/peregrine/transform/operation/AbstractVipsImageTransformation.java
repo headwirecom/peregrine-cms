@@ -31,6 +31,7 @@ import com.peregrine.process.ProcessRunner;
 import com.peregrine.transform.ImageContext;
 import com.peregrine.transform.ImageTransformation;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.commons.mime.MimeTypeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +48,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 
 /**
  * Base Class for VIPS Image Transformation made by
@@ -149,7 +148,7 @@ public abstract class AbstractVipsImageTransformation
             if (imageContext == null) {
                 throw new TransformationException(IMAGE_CONTEXT_MUST_BE_DEFINED_FOR_TRANSFORMATION);
             }
-            if (isEmpty(operationName)) {
+            if (StringUtils.isEmpty(operationName)) {
                 throw new TransformationException(VIPS_OPERATION_NAME_CANNOT_BE_EMPTY);
             }
             if (checkVips()) {

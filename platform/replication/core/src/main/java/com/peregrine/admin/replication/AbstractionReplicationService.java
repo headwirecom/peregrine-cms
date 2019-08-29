@@ -1,10 +1,9 @@
 package com.peregrine.admin.replication;
 
 import com.peregrine.replication.Replication;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 
 /**
  * Common Properties Base Class for Replications
@@ -24,7 +23,7 @@ public abstract class AbstractionReplicationService
      * @throws IllegalArgumentException If the name is null or empty
      */
     protected void init(String name, String description) {
-        if(isEmpty(name)) { throw new IllegalArgumentException("Replication Name must be provided"); }
+        if(StringUtils.isEmpty(name)) { throw new IllegalArgumentException("Replication Name must be provided"); }
         this.name = name;
         this.description = description == null ? "" : description;
     }
