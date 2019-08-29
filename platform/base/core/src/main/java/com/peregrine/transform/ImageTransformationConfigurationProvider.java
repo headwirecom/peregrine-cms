@@ -25,6 +25,7 @@ package com.peregrine.transform;
  * #L%
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -41,7 +42,6 @@ import java.util.stream.Collectors;
 import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
@@ -105,7 +105,7 @@ public class ImageTransformationConfigurationProvider {
      */
     public List<ImageTransformationConfiguration> getImageTransformationConfigurations(String name, String path) {
         List<ImageTransformationConfiguration> answer = null;
-        if(isNotEmpty(name)) {
+        if(StringUtils.isNotEmpty(name)) {
             logger.trace("Obtain Image Transformation Configuration with Name: '{}', with path: '{}'", name, path);
             // Find the best matching
             Optional<ImageTransformationSetup> setup = imageTransformationSetupList.stream()

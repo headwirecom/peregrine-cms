@@ -237,7 +237,7 @@ public class AdminResourceHandlerService
             Node newPage = createPageOrTemplate(parent, name, component, null);
             // If there is a component then we check the component node and see if there is a child jcr:content node
             // If found we copy this over into our newly created node
-            if(isNotEmpty(component)) {
+            if(StringUtils.isNotEmpty(component)) {
                 logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node");
                 try {
                     if(component.startsWith("/")) {
@@ -505,7 +505,7 @@ public class AdminResourceHandlerService
 
         // If there is a component then we check the component node and see if there is a child jcr:content node
         // If found we copy this over into our newly created node
-        if(isNotEmpty(component)) {
+        if(StringUtils.isNotEmpty(component)) {
             try {
                 if(component.startsWith("/")) {
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
@@ -527,7 +527,7 @@ public class AdminResourceHandlerService
                                     alreadyVisitedNodes.add(superTypeNode.getPath());
                                     if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
                                         String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-                                        if(isNotEmpty(resourceSuperType)) {
+                                        if(StringUtils.isNotEmpty(resourceSuperType)) {
                                             try {
                                                 superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
                                                 logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
@@ -552,7 +552,7 @@ public class AdminResourceHandlerService
                                 }
                                 if(isVariations) {
                                     boolean useDefault = true;
-                                    if(isNotEmpty(variation)) {
+                                    if(StringUtils.isNotEmpty(variation)) {
                                         // Look up the variation node
                                         if(contentNode.hasNode(variation)) {
                                             Node variationNode = contentNode.getNode(variation);
@@ -997,7 +997,7 @@ public class AdminResourceHandlerService
             logger.trace("Child handling started: '{}'", child.getPath());
             Map<String, Object> newProperties = copyProperties(child.getValueMap());
             try {
-                if(isNotEmpty(fromName)) {
+                if(StringUtils.isNotEmpty(fromName)) {
                     String pattern1 = SLASH + fromName;
                     String pattern2 = fromName + SLASH;
                     for(Entry<String, Object> entry : newProperties.entrySet()) {

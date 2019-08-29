@@ -28,6 +28,7 @@ package com.peregrine.admin.replication.impl;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import com.peregrine.render.RenderService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.BundleContext;
@@ -53,7 +54,6 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static com.peregrine.commons.util.PerUtil.intoList;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
 import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 
@@ -166,7 +166,7 @@ public class LocalFileSystemReplicationService
 //        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
-            if(isNotEmpty(name)) {
+            if(StringUtils.isNotEmpty(name)) {
                 List<String> types = extension.getValue();
                 if(types != null && !types.isEmpty()) {
                     List<String> parameters = extensionParameters.get(name);
@@ -355,7 +355,7 @@ public class LocalFileSystemReplicationService
         if(!directory.exists() || !directory.isDirectory()) {
             throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
         }
-        String fileName = resource.getName() + (isNotEmpty(extension) ? "." + extension : "");
+        String fileName = resource.getName() + (StringUtils.isNotEmpty(extension) ? "." + extension : "");
         File renderingFile = new File(directory, fileName);
         if(renderingFile.exists()) {
             if(renderingFile.isDirectory()) {

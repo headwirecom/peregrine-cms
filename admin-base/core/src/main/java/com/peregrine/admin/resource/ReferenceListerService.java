@@ -49,7 +49,6 @@ import java.util.TreeSet;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 
 /**
@@ -229,7 +228,7 @@ public class ReferenceListerService
      * @param response List of resources found
      */
     private void traverseTreeReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && isNotEmpty(referencePath)) {
+        if(resource != null && StringUtils.isNotEmpty(referencePath)) {
             for(Resource child : resource.getChildren()) {
                 parsePropertiesReverse(child, referencePath, response);
                 traverseTreeReverse(child, referencePath, response);
@@ -245,7 +244,7 @@ public class ReferenceListerService
      * @param response List of resources found
      */
     private void parsePropertiesReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && isNotEmpty(referencePath)) {
+        if(resource != null && StringUtils.isNotEmpty(referencePath)) {
             ValueMap properties = resource.getValueMap();
             for(Map.Entry<String, Object> entry : properties.entrySet()) {
                 String name = entry.getKey();
@@ -378,7 +377,7 @@ public class ReferenceListerService
          *             must start with a slash
          */
         public TraversingContext addDeepLimit(String path) {
-            if(isNotEmpty(path) && !deepLimits.contains(path)) {
+            if(StringUtils.isNotEmpty(path) && !deepLimits.contains(path)) {
                 deepLimits.add(path);
             }
             return this;
@@ -405,12 +404,12 @@ public class ReferenceListerService
          */
         public boolean contains(String path) {
             boolean answer = false;
-            if(isNotEmpty(path)) {
+            if(StringUtils.isNotEmpty(path)) {
                 answer = true;
                 String[] tokens = path.split(SLASH);
                 Node node = this;
                 for(String token: tokens) {
-                    if(isNotEmpty(token)) {
+                    if(StringUtils.isNotEmpty(token)) {
                         Node child = node.getChild(token);
                         if(child != null) {
                             node = child;
@@ -434,7 +433,7 @@ public class ReferenceListerService
             String[] tokens = path.split(SLASH);
             Node node = this;
             for(String token: tokens) {
-                if(isNotEmpty(token)) {
+                if(StringUtils.isNotEmpty(token)) {
                     Node child = node.getChild(token);
                     if(child != null) {
                         node = child;
@@ -492,7 +491,7 @@ public class ReferenceListerService
         /** @return A node with the given resource name if found otherwise null **/
         public Node getChild(String segment) {
             Node answer = null;
-            if(children != null && isNotEmpty(segment)) {
+            if(children != null && StringUtils.isNotEmpty(segment)) {
                 for(Node child: children) {
                     if(child.getSegment().equals(segment)) {
                         answer = child;
