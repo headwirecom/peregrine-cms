@@ -1,5 +1,17 @@
 package com.peregrine.commons.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.CaseFormat;
+import org.apache.sling.api.resource.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.*;
+
+import static com.peregrine.commons.util.PerConstants.*;
+import static org.apache.commons.lang3.StringUtils.*;
+
 /*-
  * #%L
  * admin base - Core
@@ -13,9 +25,9 @@ package com.peregrine.commons.util;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,18 +36,6 @@ package com.peregrine.commons.util;
  * under the License.
  * #L%
  */
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.CaseFormat;
-import org.apache.sling.api.resource.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.*;
-
-import static com.peregrine.commons.util.PerConstants.*;
-import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -57,6 +57,8 @@ public final class PerUtil {
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private PerUtil() {
         throw new UnsupportedOperationException();
@@ -563,7 +565,7 @@ public final class PerUtil {
      * @param key Property Name
      * @return Property Value as string otherwise null
      */
-    public static String getStringOrNull(Map source, String key) {
+    public static String getStringOrNull(Map<?, ?> source, String key) {
         String answer = null;
         if(source != null && source.containsKey(key)) {
             Object temp = source.get(key);
@@ -571,6 +573,7 @@ public final class PerUtil {
                 answer = temp.toString();
             }
         }
+
         return answer;
     }
 
@@ -704,12 +707,11 @@ public final class PerUtil {
      * @return Map representing the JSon Object
      * @throws IOException If it could not been converted
      */
-    public static Map convertToMap(String json) throws IOException {
-        Map answer = new LinkedHashMap();
-        if(json != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            answer = mapper.readValue(json, LinkedHashMap.class);
+    public static Map<?, ?> convertToMap(final String json) throws IOException {
+        if (json != null) {
+            return OBJECT_MAPPER.readValue(json, LinkedHashMap.class);
         }
-        return answer;
+
+        return new LinkedHashMap<>();
     }
 }
