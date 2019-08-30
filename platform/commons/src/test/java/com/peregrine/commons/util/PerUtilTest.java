@@ -179,6 +179,26 @@ public final class PerUtilTest {
 
     @Test
     public void containsResource() {
+        final Resource root = mock(Resource.class);
+        final Resource parent = mock(Resource.class);
+        final Resource resource = mock(Resource.class);
+        final Resource child = mock(Resource.class);
+
+        when(root.getPath()).thenReturn("/content");
+        when(parent.getPath()).thenReturn("/content/parent");
+        when(resource.getPath()).thenReturn("/content/parent/resource");
+        when(child.getPath()).thenReturn("/content/parent/resource/jcr:content");
+
+        final List<Resource> list = new LinkedList<>();
+        list.add(root);
+        list.add(parent);
+        list.add(resource);
+
+        assertTrue(PerUtil.containsResource(list, root));
+        assertTrue(PerUtil.containsResource(list, parent));
+        assertTrue(PerUtil.containsResource(list, resource));
+        assertFalse(PerUtil.containsResource(list, child));
+        assertTrue(PerUtil.containsResource(list, null));
     }
 
     @Test

@@ -430,7 +430,7 @@ public final class PerUtil {
         }
     }
 
-    public static boolean containsResource(List<Resource> resources, Resource check) {
+    public static boolean containsResource(final List<Resource> resources, final Resource check) {
         if (check == null) {
             return true;
         }
