@@ -1,35 +1,21 @@
 package com.peregrine.commons.util;
 
-import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.api.resource.Resource;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PerUtilTest
-    extends AbstractTest
-{
-    private static final Logger logger = LoggerFactory.getLogger(PerUtilTest.class.getName());
-
-    @Override
-    public Logger getLogger() {
-        return logger;
-    }
+public final class PerUtilTest {
 
     @Test
-    public void testSplitIntoMap() throws Exception {
-        String[] configurations = new String[] { "data.json=example/components/page|per:Template","infinity.json=per:Object","html=per:Page|per:Template","*~raw=nt:file" };
-        Map<String, List<String>> answer = PerUtil.splitIntoMap(configurations, "=", "\\|");
-        Map<String, List<String>> expected = new HashMap<>();
+    public void splitIntoMap() {
+        final String[] configurations = new String[] { "data.json=example/components/page|per:Template","infinity.json=per:Object","html=per:Page|per:Template","*~raw=nt:file" };
+        final Map<String, List<String>> answer = PerUtil.splitIntoMap(configurations, "=", "\\|");
+        final Map<String, List<String>> expected = new HashMap<>();
         expected.put("data.json", Arrays.asList("example/components/page", "per:Template"));
         expected.put("infinity.json", Arrays.asList("per:Object"));
         expected.put("html", Arrays.asList("per:Page", "per:Template"));
@@ -40,11 +26,51 @@ public class PerUtilTest
     }
 
     @Test
-    public void testGetComponentNameFromResource() throws Exception {
-        Resource resource = mock(Resource.class);
+    @Test
+    public void splitIntoParameterMap() {
+    }
+
+    @Test
+    public void relativePath() {
+    }
+
+    @Test
+    public void getProperties() {
+    }
+
+    @Test
+    public void listParents() {
+    }
+
+    @Test
+    public void containsResource() {
+    }
+
+    @Test
+    public void listMissingParents() {
+    }
+
+    @Test
+    public void loginService() {
+    }
+
+    @Test
+    public void getPrimaryType() {
+    }
+
+    @Test
+    public void getResourceType() {
+    }
+
+    @Test
+    public void getComponentNameFromResource() {
+        final  Resource resource = mock(Resource.class);
         when(resource.getResourceType()).thenReturn("/one/twoThree/FourFive");
-        String componentName = PerUtil.getComponentNameFromResource(resource);
-        logger.info("Component Name: '{}'", componentName);
+        final String componentName = PerUtil.getComponentNameFromResource(resource);
         assertEquals("Component Name Extraction failed", "one-two-three--four-five", componentName);
+    }
+
+    @Test
+    public void getComponentVariableNameFromString() {
     }
 }
