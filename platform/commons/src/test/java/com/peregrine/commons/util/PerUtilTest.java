@@ -1,8 +1,8 @@
 package com.peregrine.commons.util;
 
+import com.peregrine.ResourceMock;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -113,10 +113,10 @@ public final class PerUtilTest {
     }
 
     private void assertRelativePath(final String rootPath, final String childPath, final String result) {
-        final Resource root = mock(Resource.class);
-        when(root.getPath()).thenReturn(rootPath);
-        final Resource child = mock(Resource.class);
-        when(child.getPath()).thenReturn(childPath);
+        final ResourceMock root = new ResourceMock();
+        root.setPath(rootPath);
+        final ResourceMock child = new ResourceMock();
+        child.setPath(childPath);
         assertEquals(result, PerUtil.relativePath(root, child));
     }
 
@@ -150,19 +150,19 @@ public final class PerUtilTest {
 
     @Test
     public void listParents() {
-        final Resource root = mock(Resource.class);
-        final Resource parent = mock(Resource.class);
-        final Resource resource = mock(Resource.class);
-        final Resource child = mock(Resource.class);
+        final ResourceMock root = new ResourceMock();
+        final ResourceMock parent = new ResourceMock();
+        final ResourceMock resource = new ResourceMock();
+        final ResourceMock child = new ResourceMock();
 
-        when(root.getPath()).thenReturn("/content");
-        when(parent.getPath()).thenReturn("/content/parent");
-        when(resource.getPath()).thenReturn("/content/parent/resource");
-        when(child.getPath()).thenReturn("/content/parent/resource/jcr:content");
+        root.setPath("/content");
+        parent.setPath("/content/parent");
+        resource.setPath("/content/parent/resource");
+        child.setPath("/content/parent/resource/jcr:content");
 
-        when(parent.getParent()).thenReturn(root);
-        when(resource.getParent()).thenReturn(parent);
-        when(child.getParent()).thenReturn(resource);
+        parent.setParent(root);
+        resource.setParent(parent);
+        child.setParent(resource);
 
         List<Resource> result = PerUtil.listParents(root, child);
         assertEquals(2, result.size());
@@ -179,15 +179,15 @@ public final class PerUtilTest {
 
     @Test
     public void containsResource() {
-        final Resource root = mock(Resource.class);
-        final Resource parent = mock(Resource.class);
-        final Resource resource = mock(Resource.class);
-        final Resource child = mock(Resource.class);
+        final ResourceMock root = new ResourceMock();
+        final ResourceMock parent = new ResourceMock();
+        final ResourceMock resource = new ResourceMock();
+        final ResourceMock child = new ResourceMock();
 
-        when(root.getPath()).thenReturn("/content");
-        when(parent.getPath()).thenReturn("/content/parent");
-        when(resource.getPath()).thenReturn("/content/parent/resource");
-        when(child.getPath()).thenReturn("/content/parent/resource/jcr:content");
+        root.setPath("/content");
+        parent.setPath("/content/parent");
+        resource.setPath("/content/parent/resource");
+        child.setPath("/content/parent/resource/jcr:content");
 
         final List<Resource> list = new LinkedList<>();
         list.add(root);
@@ -209,11 +209,9 @@ public final class PerUtilTest {
     public void getPrimaryType() {
         assertNull(PerUtil.getPrimaryType(null));
 
-        final Resource resource = mock(Resource.class);
-        final Map<String, Object> properties = new HashMap<>();
-        when(resource.getValueMap()).thenReturn(new ValueMapDecorator(properties));
+        final ResourceMock resource = new ResourceMock();
         final String primaryType = "per/component";
-        properties.put(JCR_PRIMARY_TYPE, primaryType);
+        resource.getProperties().put(JCR_PRIMARY_TYPE, primaryType);
         assertEquals(primaryType, PerUtil.getPrimaryType(resource));
     }
 
