@@ -2,6 +2,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,6 +208,11 @@ public final class PerUtil {
         return parameters;
     }
 
+    public static String relativePath(final String root, final String child) {
+        final String substring = substringAfter(child, root + SLASH);
+        return EMPTY.equals(substring) ? null : substring;
+    }
+
     /**
      * Provides the relative path of a resource to a given root
      * @param root Root Resource
@@ -215,7 +221,7 @@ public final class PerUtil {
      *         root otherwise null
      */
     public static String relativePath(final Resource root, final Resource child) {
-        return substringAfter(child.getPath(), root.getPath() + SLASH);
+        return relativePath(root.getPath(), child.getPath());
     }
 
     /**

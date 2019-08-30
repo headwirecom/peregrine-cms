@@ -2,6 +2,7 @@ package com.peregrine.commons.util;
 
 import org.apache.sling.api.resource.Resource;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.*;
 
@@ -100,6 +101,20 @@ public final class PerUtilTest {
 
     @Test
     public void relativePath() {
+        assertRelativePath("/content", "/content", null);
+        assertRelativePath("/content", "/content/child", "child");
+        assertRelativePath("/content/parent", "/content/child", null);
+        assertRelativePath("/contents", "/content/child", null);
+        assertRelativePath("/content", "/contents/child", null);
+        assertRelativePath("/content", "/content/ ", " ");
+    }
+
+    private void assertRelativePath(final String rootPath, final String childPath, final String result) {
+        final Resource root = Mockito.mock(Resource.class);
+        Mockito.when(root.getPath()).thenReturn(rootPath);
+        final Resource child = Mockito.mock(Resource.class);
+        Mockito.when(child.getPath()).thenReturn(childPath);
+        assertEquals(result, PerUtil.relativePath(root, child));
     }
 
     @Test
