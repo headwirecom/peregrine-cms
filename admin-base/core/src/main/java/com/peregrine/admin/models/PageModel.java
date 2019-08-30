@@ -154,7 +154,7 @@ public class PageModel
             ret.addFirst(new TitlePath(res));
             res = getParentContent(res);
             // we do not want to stop at level 2 and not include it
-            if(res != null && res.getParent().getPath().equals("/content/admin")) {
+            if(res != null && res.getParent() != null && res.getParent().getPath().equals("/content/admin")) {
                 break;
             }
         }
@@ -173,7 +173,7 @@ public class PageModel
         }
 
         public String getPath() {
-            return res.getParent().getPath();
+            return res.getParent() == null ? "" : res.getParent().getPath();
         }
     }
 }

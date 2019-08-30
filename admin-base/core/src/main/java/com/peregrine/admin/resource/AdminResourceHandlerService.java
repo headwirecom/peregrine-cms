@@ -164,6 +164,7 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
             Node parentNode =  parent.adaptTo(Node.class);
+            if(parentNode == null) { throw new ManagementException("Unable to adapt parent: '" + parent + "' to Node"); }
             Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newFolder);
@@ -188,6 +189,7 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(RESOURCE_TYPE_UNEDEFINED, parentPath, name));
             }
             Node parentNode = parent.adaptTo(Node.class);
+            if(parentNode == null) { throw new ManagementException("Unable to adapt parent: '" + parent + "' to Node"); }
             Node newObject = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
             newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
@@ -238,7 +240,7 @@ public class AdminResourceHandlerService
             // If there is a component then we check the component node and see if there is a child jcr:content node
             // If found we copy this over into our newly created node
             if(isNotEmpty(component)) {
-                logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node");
+                logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node", component);
                 try {
                     if(component.startsWith("/")) {
                         logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
@@ -302,6 +304,7 @@ public class AdminResourceHandlerService
         }
         try {
             Node node = resource.adaptTo(Node.class);
+            if(node == null) { throw new ManagementException("Unable to adapt resource: '" + resource + "' to Node"); }
             Node newNode;
             if(addAsChild) {
                 Resource firstChild = null;
@@ -566,6 +569,7 @@ public class AdminResourceHandlerService
                                             } else {
                                                 logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
                                                 contentNode = null;
+                                                useDefault = false;
                                             }
                                         } else {
                                             logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
@@ -653,14 +657,18 @@ public class AdminResourceHandlerService
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
             if(appsTarget == null) {
                 appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
-                packagePaths.add(appsTarget.getPath());
+                if(appsTarget != null) {
+                    packagePaths.add(appsTarget.getPath());
+                }
             }
-            // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-            // with the sling:resourceSuperType set to the <fromSite> component
-            copyStubs(appsSource, appsTarget, COMPONENTS, superTypes);
-            // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
-            // with the sling:resourceSuperType set to the <fromSite> object
-            copyStubs(appsSource, appsTarget, OBJECTS, null);
+            if(appsTarget != null) {
+                // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
+                // with the sling:resourceSuperType set to the <fromSite> component
+                copyStubs(appsSource, appsTarget, COMPONENTS, superTypes);
+                // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
+                // with the sling:resourceSuperType set to the <fromSite> object
+                copyStubs(appsSource, appsTarget, OBJECTS, null);
+            }
         }
 
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
@@ -705,35 +713,37 @@ public class AdminResourceHandlerService
         sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            packagePaths.add(targetResource.getPath());
-            logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
-            ValueMap properties = getModifiableProperties(targetResource, false);
-            logger.trace("Copied Felibs Properties: '{}'", properties);
-            if(properties != null) {
-                String[] dependencies = properties.get(DEPENDENCIES, String[].class);
-                if(dependencies == null) {
-                    dependencies = new String[]{sourceResource.getPath()};
-                } else {
-                    String[] newDependencies = new String[dependencies.length + 1];
-                    System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
-                    newDependencies[dependencies.length] = sourceResource.getPath();
-                    dependencies = newDependencies;
+            if(targetResource != null) {
+                packagePaths.add(targetResource.getPath());
+                logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
+                ValueMap properties = getModifiableProperties(targetResource, false);
+                logger.trace("Copied Felibs Properties: '{}'", properties);
+                if (properties != null) {
+                    String[] dependencies = properties.get(DEPENDENCIES, String[].class);
+                    if (dependencies == null) {
+                        dependencies = new String[]{sourceResource.getPath()};
+                    } else {
+                        String[] newDependencies = new String[dependencies.length + 1];
+                        System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
+                        newDependencies[dependencies.length] = sourceResource.getPath();
+                        dependencies = newDependencies;
+                    }
+                    properties.put(DEPENDENCIES, dependencies);
                 }
-                properties.put(DEPENDENCIES, dependencies);
-            }
 
-            StringBuilder mappings = new StringBuilder();
-            for (String superType : superTypes) {
-                String componentSourceName = PerUtil.getComponentVariableNameFromString(superType);
-                String componentDestName = PerUtil.getComponentVariableNameFromString(superType.replace(fromName+"/", targetName+"/"));
-                mappings.append("var ");
-                mappings.append(componentDestName);
-                mappings.append(" = ");
-                mappings.append(componentSourceName);
-                mappings.append('\n');
+                StringBuilder mappings = new StringBuilder();
+                for (String superType : superTypes) {
+                    String componentSourceName = PerUtil.getComponentVariableNameFromString(superType);
+                    String componentDestName = PerUtil.getComponentVariableNameFromString(superType.replace(fromName + "/", targetName + "/"));
+                    mappings.append("var ");
+                    mappings.append(componentDestName);
+                    mappings.append(" = ");
+                    mappings.append(componentSourceName);
+                    mappings.append('\n');
+                }
+                createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
+                createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
             }
-            createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
-            createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
         }
 
         try {
@@ -773,7 +783,11 @@ public class AdminResourceHandlerService
             filename = packageName + DASH + version + ZIP_EXTENSION;
             packageResource = groupResource.getChild(filename);
             if(version >= MAXIMUM_VERSION) {
-                logger.error("{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.", version, packageResource.getPath());
+                logger.error(
+                    "{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.",
+                    version,
+                    packageResource == null ? "NOT FOUND" : packageResource.getPath()
+                );
                 return;
             }
         }
@@ -870,7 +884,9 @@ public class AdminResourceHandlerService
             String manifestContent = IOUtils.toString(is, StandardCharsets.UTF_8.name());
             return manifestContent;
         } finally {
-            is.close();
+            if(is != null) {
+                is.close();
+            }
         }
     }
 
@@ -898,6 +914,7 @@ public class AdminResourceHandlerService
     private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {
         try {
             Node parentNode = parent.adaptTo(Node.class);
+            if(parentNode == null) { throw new ManagementException("Parent: '" + parent.getPath() + "' could not be adapted to a Node"); }
             Node newAsset = parentNode.addNode(name, NT_FILE);
             Node content = newAsset.addNode(JCR_CONTENT, NT_RESOURCE);
             content.setProperty(JCR_DATA, data);
@@ -1248,11 +1265,8 @@ public class AdminResourceHandlerService
                     // Move the child to the correct position
                     if(lastResourceItem == null) {
                         // No saved last resource item so we need to place it as the first entry
-                        Resource first = null;
-                        for(Resource tempResource: resource.getChildren()) {
-                            first = tempResource;
-                            break;
-                        }
+                        Iterator<Resource> it = resource.getChildren().iterator();
+                        Resource first = it.hasNext() ? it.next() : null;
                         // If there are no items then ignore it (it will be first
                         if(first != null) {
                             moveNode(resourceListItem, first, false, true);
@@ -1284,11 +1298,8 @@ public class AdminResourceHandlerService
                     if(i != index) {
                         if(lastResourceItem == null) {
                             // No saved last resource item so we need to place it as the first entry
-                            Resource first = null;
-                            for(Resource tempResource : resource.getChildren()) {
-                                first = tempResource;
-                                break;
-                            }
+                            Iterator<Resource> it = resource.getChildren().iterator();
+                            Resource first = it.hasNext() ? it.next() : null;
                             // If there are no items then ignore it (it will be first
                             if(first != null) {
                                 moveNode(resourceListItem, first, false, true);
@@ -1316,8 +1327,9 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
+    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException, ManagementException {
         Node parentNode = parent.adaptTo(Node.class);
+        if(parentNode == null) { throw new ManagementException("Resource: '" + parent.getPath() + "' could not be adapted to a Node"); }
         Node newPage = null;
         newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
         Node content = newPage.addNode(JCR_CONTENT);

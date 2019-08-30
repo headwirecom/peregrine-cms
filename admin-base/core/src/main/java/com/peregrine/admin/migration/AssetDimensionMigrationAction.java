@@ -58,21 +58,23 @@ public class AssetDimensionMigrationAction
     private void handleFolder(Resource folder, List<String> failedAssets) throws MigrationException {
         for(Resource child: folder.getChildren()) {
             ValueMap properties = child.adaptTo(ValueMap.class);
-            String resourceType = properties.get(JCR_PRIMARY_TYPE, String.class);
-            if(ASSET_PRIMARY_TYPE.equals(resourceType)) {
-                PerAsset asset = child.adaptTo(PerAsset.class);
-                if(asset != null) {
-                    try {
-                        handleAssetDimensions(asset);
-                    } catch (RepositoryException | IOException e) {
-                        failedAssets.add(asset.getName() + "(Message: " + e.getLocalizedMessage() + ")");
+            if(properties != null) {
+                String resourceType = properties.get(JCR_PRIMARY_TYPE, String.class);
+                if (ASSET_PRIMARY_TYPE.equals(resourceType)) {
+                    PerAsset asset = child.adaptTo(PerAsset.class);
+                    if (asset != null) {
+                        try {
+                            handleAssetDimensions(asset);
+                        } catch (RepositoryException | IOException e) {
+                            failedAssets.add(asset.getName() + "(Message: " + e.getLocalizedMessage() + ")");
+                        }
+                    } else {
+                        failedAssets.add(child.getName() + "(Failed to Adapt to PerAsset)");
                     }
                 } else {
-                    failedAssets.add(child.getName() + "(Failed to Adapt to PerAsset)");
+                    // If this is not an Asset we assume a folder and delve into it
+                    handleFolder(child, failedAssets);
                 }
-            } else {
-                // If this is not an Asset we assume a folder and delve into it
-                handleFolder(child, failedAssets);
             }
         }
     }

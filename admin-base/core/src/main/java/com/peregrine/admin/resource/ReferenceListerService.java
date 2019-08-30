@@ -108,7 +108,7 @@ public class ReferenceListerService
         List<Reference> answer = new ArrayList<>();
         if(resource != null) {
             for(String root : referencedByRootList) {
-                Resource rootResource = resource != null ? resource.getResourceResolver().getResource(root) : null;
+                Resource rootResource = resource.getResourceResolver().getResource(root);
                 if(rootResource != null) {
                     traverseTreeReverse(rootResource, resource.getPath(), answer);
                 }
@@ -258,7 +258,9 @@ public class ReferenceListerService
                         if(temp.getName().equals(JCR_CONTENT)) {
                             Resource parent = temp.getParent();
                             if(parent != null) {
-                                if(!response.contains(parent)) {
+                                if(response.stream()
+                                    .anyMatch(p -> parent.equals(p.getResource()))
+                                ) {
                                     response.add(new Reference(parent, name, resource));
                                 }
                                 found = true;
@@ -275,7 +277,9 @@ public class ReferenceListerService
                     }
                     if(!found) {
                         // No JCR Content node found so just use this one
-                        if(!response.contains(resource)) {
+                        if(response.stream()
+                            .anyMatch(p -> resource.equals(p.getResource()))
+                        ) {
                             response.add(new Reference(resource, name, resource));
                         }
                     }
