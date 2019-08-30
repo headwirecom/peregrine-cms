@@ -366,17 +366,17 @@ public final class PerUtil {
      * @param child
      * @return
      */
-    public static List<Resource> listParents(Resource root, Resource child) {
+    public static List<Resource> listParents(final Resource root, final Resource child) {
         final List<Resource> answer = new ArrayList<>();
         Resource parent = child.getParent();
         while(true) {
-            if(parent == null) {
+            if (parent == null) {
                 // No parent matches 'source' so we ignore it
                 answer.clear();
                 return answer;
             }
 
-            if(parent.getPath().equals(root.getPath())) {
+            if (parent.getPath().equals(root.getPath())) {
                 // Hit the source -> done with loop
                 return answer;
             }
