@@ -1,5 +1,6 @@
 package com.peregrine.commons.util;
 
+import com.peregrine.PageMock;
 import com.peregrine.ResourceMock;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
@@ -9,6 +10,7 @@ import org.mockito.Mockito;
 import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -210,13 +212,23 @@ public final class PerUtilTest {
         assertNull(PerUtil.getPrimaryType(null));
 
         final ResourceMock resource = new ResourceMock();
-        final String primaryType = "per/component";
+        final String primaryType = "per:Type";
         resource.getProperties().put(JCR_PRIMARY_TYPE, primaryType);
         assertEquals(primaryType, PerUtil.getPrimaryType(resource));
     }
 
     @Test
     public void getResourceType() {
+        assertNull(PerUtil.getResourceType(null));
+        assertNull(PerUtil.getResourceType(mock(Resource.class)));
+
+        final ResourceMock resource = new ResourceMock();
+        assertNull(PerUtil.getResourceType(resource));
+
+        final PageMock page = new PageMock();
+        final String type = "per/component";
+        page.getContent().getProperties().put(SLING_RESOURCE_TYPE, type);
+        assertEquals(type, PerUtil.getResourceType(page));
     }
 
     @Test
