@@ -28,8 +28,76 @@ public final class PerUtilTest {
     }
 
     @Test
+    public void splitIntoParameterMap_entriesAreNull() {
+        final Map<String, Map<String, String>> actual = PerUtil
+                .splitIntoParameterMap(null, null, null, null);
+        assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    public void splitIntoParameterMap_keySeparatorIsEmpty() {
+        final Map<String, Map<String, String>> actual = PerUtil
+                .splitIntoParameterMap(new String[0], null, null, null);
+        assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    public void splitIntoParameterMap_emptySplit_break() {
+        final String space = " ";
+        final String[] entries = new String[] {
+                null,
+                "",
+                space
+        };
+
+        final Map<String, Map<String, String>> actual = PerUtil
+                .splitIntoParameterMap(entries, space, null, null);
+        assertTrue(actual.isEmpty());
+    }
+
     @Test
     public void splitIntoParameterMap() {
+        final String noValueKey = "no_value";
+        final String space = " ";
+        final String[] entries = new String[] {
+                space,
+                noValueKey,
+                "x:y=z,s=t",
+                "y:x=z",
+                "z:"
+        };
+
+        final Map<String, Map<String, String>> expected = new LinkedHashMap<>();
+
+        expected.put(space, new LinkedHashMap<>());
+        expected.put(noValueKey, new LinkedHashMap<>());
+
+        final Map<String, String> xValue = new LinkedHashMap<>();
+        xValue.put("y", "z");
+        xValue.put("s", "t");
+        expected.put("x", xValue);
+
+        final Map<String, String> yValue = new LinkedHashMap<>();
+        yValue.put("x", "z");
+        expected.put("y", yValue);
+
+        expected.put("z", new LinkedHashMap<>());
+
+        final Map<String, Map<String, String>> actual = PerUtil
+                .splitIntoParameterMap(entries, ":", ",", "=");
+        assertEquals(expected, actual);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void splitIntoParameterMap_incorrectEntry_throwIllegalArgumentException() {
+        final String[] entries = new String[] { "a:b:c" };
+        PerUtil.splitIntoParameterMap(entries, ":", ",", "=");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void splitIntoParameterMap_incorrectEntryValue_throwIllegalArgumentException() {
+        final String[] entries = new String[] { "a:x=y=z" };
+        PerUtil.splitIntoParameterMap(entries, ":", ",", "=");
     }
 
     @Test

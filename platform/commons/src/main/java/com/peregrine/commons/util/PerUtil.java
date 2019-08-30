@@ -173,17 +173,17 @@ public final class PerUtil {
                 continue;
             }
 
-            final List<String> keyValue = split(entry, keySeparator);
-            switch(keyValue.size()) {
+            final List<String> entrySplit = split(entry, keySeparator);
+            switch(entrySplit.size()) {
                 case 0:
                     break;
                 case 1:
-                    final String key = keyValue.get(0);
-                    final Map<String, String> parameters = new LinkedHashMap<>();
-                    answer.put(key, parameters);
+                    answer.put(entrySplit.get(0), new LinkedHashMap<>());
                     break;
                 case 2:
-                    splitKeyValueIntoParameterMap(valueSeparator, parameterSeparator, answer, keyValue);
+                    final String key = entrySplit.get(0);
+                    final List<String> values = split(entrySplit.get(1), valueSeparator);
+                    answer.put(key, splitValueIntoParameterMap(values, parameterSeparator));
                     break;
                 default:
                     throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, entry, entries));
@@ -193,24 +193,20 @@ public final class PerUtil {
         return answer;
     }
 
-    private static void splitKeyValueIntoParameterMap(
-            final String valueSeparator,
-            final String parameterSeparator,
-            final Map<String, Map<String, String>> answer,
-            final List<String> keyValue) {
-        final String key = keyValue.get(0);
-        final String value = keyValue.get(1);
-        final List<String> values = split(value, valueSeparator);
+    private static Map<String, String> splitValueIntoParameterMap(
+            final List<String> values,
+            final String parameterSeparator) {
         final Map<String, String> parameters = new LinkedHashMap<>();
-        answer.put(key, parameters);
         for (final String aValue: values) {
             final List<String> parameterList = split(aValue, parameterSeparator);
-            if(parameterList.size() != 2) {
+            if (parameterList.size() != 2) {
                 throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, aValue, values));
             }
 
             parameters.put(parameterList.get(0), parameterList.get(1));
         }
+
+        return parameters;
     }
 
     /**
