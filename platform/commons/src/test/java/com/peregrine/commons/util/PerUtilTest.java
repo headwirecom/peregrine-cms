@@ -2,11 +2,13 @@ package com.peregrine.commons.util;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.*;
 
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -204,11 +206,15 @@ public final class PerUtilTest {
     }
 
     @Test
-    public void loginService() {
-    }
-
-    @Test
     public void getPrimaryType() {
+        assertNull(PerUtil.getPrimaryType(null));
+
+        final Resource resource = mock(Resource.class);
+        final Map<String, Object> properties = new HashMap<>();
+        when(resource.getValueMap()).thenReturn(new ValueMapDecorator(properties));
+        final String primaryType = "per/component";
+        properties.put(JCR_PRIMARY_TYPE, primaryType);
+        assertEquals(primaryType, PerUtil.getPrimaryType(resource));
     }
 
     @Test
