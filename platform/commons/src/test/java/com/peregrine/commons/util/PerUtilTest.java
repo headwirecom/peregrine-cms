@@ -150,6 +150,31 @@ public final class PerUtilTest {
 
     @Test
     public void listParents() {
+        final Resource root = mock(Resource.class);
+        final Resource parent = mock(Resource.class);
+        final Resource resource = mock(Resource.class);
+        final Resource child = mock(Resource.class);
+
+        when(root.getPath()).thenReturn("/content");
+        when(parent.getPath()).thenReturn("/content/parent");
+        when(resource.getPath()).thenReturn("/content/parent/resource");
+        when(child.getPath()).thenReturn("/content/parent/resource/jcr:content");
+
+        when(parent.getParent()).thenReturn(root);
+        when(resource.getParent()).thenReturn(parent);
+        when(child.getParent()).thenReturn(resource);
+
+        List<Resource> result = PerUtil.listParents(root, child);
+        assertEquals(2, result.size());
+        assertTrue(result.contains(resource));
+        assertTrue(result.contains(parent));
+        assertEquals(resource, result.get(0));
+        assertEquals(parent, result.get(1));
+
+        assertEquals(1, PerUtil.listParents(root, resource).size());
+        assertEquals(0, PerUtil.listParents(root, parent).size());
+        assertEquals(0, PerUtil.listParents(root, root).size());
+        assertEquals(0, PerUtil.listParents(parent, root).size());
     }
 
     @Test
