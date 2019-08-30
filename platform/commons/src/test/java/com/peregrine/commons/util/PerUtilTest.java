@@ -1,6 +1,7 @@
 package com.peregrine.commons.util;
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -112,15 +113,39 @@ public final class PerUtilTest {
     }
 
     private void assertRelativePath(final String rootPath, final String childPath, final String result) {
-        final Resource root = Mockito.mock(Resource.class);
-        Mockito.when(root.getPath()).thenReturn(rootPath);
-        final Resource child = Mockito.mock(Resource.class);
-        Mockito.when(child.getPath()).thenReturn(childPath);
+        final Resource root = mock(Resource.class);
+        when(root.getPath()).thenReturn(rootPath);
+        final Resource child = mock(Resource.class);
+        when(child.getPath()).thenReturn(childPath);
         assertEquals(result, PerUtil.relativePath(root, child));
     }
 
     @Test
     public void getProperties() {
+        assertNull(PerUtil.getProperties(null, false));
+
+        final Resource resource = mock(Resource.class);
+        assertNull(PerUtil.getProperties(resource, false));
+        assertNull(PerUtil.getProperties(resource));
+
+        final Resource content = Mockito.mock(Resource.class);
+        when(resource.getChild(PerConstants.JCR_CONTENT)).thenReturn(content);
+        assertNull(PerUtil.getProperties(resource, false));
+        assertNull(PerUtil.getProperties(resource));
+
+        final ValueMap valueMap = mock(ValueMap.class);
+        when(resource.getValueMap()).thenReturn(valueMap);
+        assertEquals(valueMap, PerUtil.getProperties(resource, false));
+        assertNull(PerUtil.getProperties(resource));
+
+        final ValueMap contentValueMap = mock(ValueMap.class);
+        when(content.getValueMap()).thenReturn(contentValueMap);
+        assertEquals(valueMap, PerUtil.getProperties(resource, false));
+        assertEquals(contentValueMap, PerUtil.getProperties(resource));
+
+        when(resource.getName()).thenReturn(PerConstants.JCR_CONTENT);
+        assertEquals(valueMap, PerUtil.getProperties(resource, false));
+        assertEquals(valueMap, PerUtil.getProperties(resource));
     }
 
     @Test
