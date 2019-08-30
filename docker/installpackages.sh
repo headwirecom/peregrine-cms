@@ -37,3 +37,9 @@ do
   fi  
 done
 
+
+# Install themeclean-flex
+THEMECLEANFLEX_PKG=themecleanflex.ui.apps-1.0.0-SNAPSHOT.zip
+curl -L -o ${THEMECLEANFLEX_PKG} \
+  https://vagrant.headwire.com/peregrine/${THEMECLEANFLEX_PKG}
+ npx @peregrinecms/slingpackager upload -i ${THEMECLEANFLEX_PKG}
