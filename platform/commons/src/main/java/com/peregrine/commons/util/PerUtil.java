@@ -27,14 +27,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +36,8 @@ import javax.jcr.Session;
 import java.io.IOException;
 import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.DASH;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -84,7 +73,7 @@ public final class PerUtil {
         List<String> answer = new ArrayList<>();
         if(entries != null) {
             for(String entry: entries) {
-                if(StringUtils.isNotEmpty(entry)) {
+                if(isNotEmpty(entry)) {
                     answer.add(entry);
                 }
             }
@@ -100,8 +89,8 @@ public final class PerUtil {
      */
     public static List<String> split(String text, String separator) {
         List<String> answer = new ArrayList<>();
-        if(StringUtils.isNotEmpty(text)) {
-            if(StringUtils.isNotEmpty(separator)) {
+        if(isNotEmpty(text)) {
+            if(isNotEmpty(separator)) {
                 String[] tokens = text.split(separator);
                 answer.addAll(Arrays.asList(tokens));
             } else {
@@ -142,9 +131,9 @@ public final class PerUtil {
      */
     public static Map<String, List<String>> splitIntoMap(String[] entries, String keySeparator, String valueSeparator) {
         Map<String, List<String>> answer = new LinkedHashMap<>();
-        if(entries != null && StringUtils.isNotEmpty(keySeparator)) {
+        if(entries != null && isNotEmpty(keySeparator)) {
             for(String entry: entries) {
-                if(StringUtils.isNotEmpty(entry)) {
+                if(isNotEmpty(entry)) {
                     List<String> keyValue = split(entry, keySeparator);
                     if(keyValue.size() != 2) {
                         throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, entry, Arrays.asList(entries)));
@@ -173,12 +162,12 @@ public final class PerUtil {
             final String valueSeparator,
             final String parameterSeparator) {
         final Map<String, Map<String, String>> answer = new LinkedHashMap<>();
-        if (entries == null || StringUtils.isEmpty(keySeparator)) {
+        if (entries == null || isEmpty(keySeparator)) {
             return answer;
         }
 
         for (final String entry: entries) {
-            if (StringUtils.isEmpty(entry)) {
+            if (isEmpty(entry)) {
                 continue;
             }
 
@@ -230,7 +219,7 @@ public final class PerUtil {
      *         root otherwise null
      */
     public static String relativePath(final Resource root, final Resource child) {
-        return StringUtils.substringAfter(child.getPath(), root.getPath() + SLASH);
+        return substringAfter(child.getPath(), root.getPath() + SLASH);
     }
 
     /**
@@ -484,7 +473,7 @@ public final class PerUtil {
      */
     public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
         if(resolverFactory == null) { throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL); }
-        if(StringUtils.isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
+        if(isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
         Map<String, Object> authInfo = new HashMap<>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);
@@ -690,9 +679,9 @@ public final class PerUtil {
      */
     public static String getComponentNameFromResource(Resource resource) {
         String resourceType = resource.getResourceType();
-        if (StringUtils.isNotBlank(resourceType)) {
+        if (isNotBlank(resourceType)) {
             if(resourceType.startsWith("/")) {
-                resourceType = StringUtils.substringAfter(resourceType, SLASH);
+                resourceType = substringAfter(resourceType, SLASH);
             }
             return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replace(SLASH, DASH));
         } else {
@@ -703,7 +692,7 @@ public final class PerUtil {
     public static String getComponentVariableNameFromString(String resourceType) {
         if (resourceType != null) {
             if(resourceType.startsWith("/")) {
-                resourceType = StringUtils.substringAfter(resourceType, SLASH);
+                resourceType = substringAfter(resourceType, SLASH);
             }
             return "cmp" + CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, resourceType.replace(SLASH, DASH));
         } else {
