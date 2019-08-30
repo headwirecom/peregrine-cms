@@ -304,7 +304,7 @@ public final class PerUtil {
      * @return The Value Map of the JCR Content node if found otherwise the resource's value map. If
      *         resource is null then it will return null
      */
-    public static ValueMap getProperties(Resource resource) {
+    public static ValueMap getProperties(final Resource resource) {
         return getProperties(resource, true);
     }
 
@@ -315,13 +315,13 @@ public final class PerUtil {
      * @param goToJcrContent If true then if the given resource is not the JCR Content it will look that one up
      * @return The Value Map of the Resource or JCR Content node
      */
-    public static ValueMap getProperties(Resource resource, boolean goToJcrContent) {
+    public static ValueMap getProperties(final Resource resource, final boolean goToJcrContent) {
         Resource content = resource;
-        if(goToJcrContent && !PerConstants.JCR_CONTENT.equals(resource.getName())) {
+        if (goToJcrContent && !PerConstants.JCR_CONTENT.equals(resource.getName())) {
             content = resource.getChild(PerConstants.JCR_CONTENT);
         }
 
-        if(content != null) {
+        if (content != null) {
             return content.getValueMap();
         }
 
