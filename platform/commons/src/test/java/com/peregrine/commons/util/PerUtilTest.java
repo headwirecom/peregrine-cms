@@ -215,6 +215,42 @@ public final class PerUtilTest {
     }
 
     @Test
+    public void listMissingParents() {
+        final ResourceMock root = new ResourceMock();
+        final ResourceMock parent = new ResourceMock();
+        final ResourceMock resource = new ResourceMock();
+        final ResourceMock child = new ResourceMock();
+        final ResourceMock grandChild = new ResourceMock();
+
+        root.setPath("/content");
+        parent.setPath("/content/parent");
+        resource.setPath("/content/parent/resource");
+        child.setPath("/content/parent/resource/jcr:content");
+        grandChild.setPath("/content/parent/resource/jcr:content/par");
+
+        parent.setParent(root);
+        resource.setParent(parent);
+        child.setParent(resource);
+        grandChild.setParent(child);
+
+        final List<Resource> response = new LinkedList<>();
+        response.add(parent);
+
+        final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
+        when(resourceChecker.doAdd(parent)).thenReturn(true);
+        when(resourceChecker.doAdd(resource)).thenReturn(true);
+        when(resourceChecker.doAdd(child)).thenReturn(false);
+
+        PerUtil.listMissingParents(grandChild, response, root, resourceChecker);
+
+        assertFalse(response.contains(root));
+        assertTrue(response.contains(parent));
+        assertTrue(response.contains(resource));
+        assertFalse(response.contains(child));
+        assertFalse(response.contains(grandChild));
+    }
+
+    @Test
     public void getPrimaryType() {
         assertNull(PerUtil.getPrimaryType(null));
 
