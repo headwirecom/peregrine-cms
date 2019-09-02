@@ -266,6 +266,16 @@ public final class PerUtilTest {
     }
 
     @Test
+    public void isResourceType() {
+
+    }
+
+    @Test
+    public void isPrimaryType() {
+
+    }
+
+    @Test
     public void getPrimaryType() {
         assertNull(PerUtil.getPrimaryType(null));
 
