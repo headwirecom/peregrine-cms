@@ -180,6 +180,11 @@ public final class PerUtilTest {
     }
 
     @Test
+    public void listMissingResources() {
+
+    }
+
+    @Test
     public void containsResource() {
         final ResourceMock root = new ResourceMock();
         final ResourceMock parent = new ResourceMock();
@@ -251,6 +256,16 @@ public final class PerUtilTest {
     }
 
     @Test
+    public void loginService() {
+
+    }
+
+    @Test
+    public void adjustMetadataName() {
+
+    }
+
+    @Test
     public void getPrimaryType() {
         assertNull(PerUtil.getPrimaryType(null));
 
@@ -275,6 +290,16 @@ public final class PerUtilTest {
     }
 
     @Test
+    public void MissingOrOutdatedResourceChecker_doAdd() {
+
+    }
+
+    @Test
+    public void MatchingResourceChecker_doAdd() {
+
+    }
+
+    @Test
     public void getComponentNameFromResource() {
         final Resource resource = mock(Resource.class);
         assertEquals("", PerUtil.getComponentNameFromResource(resource));
@@ -291,5 +316,10 @@ public final class PerUtilTest {
 
         assertEquals("cmpPeregrineComponent", PerUtil.getComponentVariableNameFromString("peregrine/component"));
         assertEquals("cmpPeregrineComponent", PerUtil.getComponentVariableNameFromString("/peregrine/component"));
+    }
+
+    @Test
+    public void convertToMap() {
+
     }
 }
