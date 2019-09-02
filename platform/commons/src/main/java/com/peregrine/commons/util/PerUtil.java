@@ -336,7 +336,7 @@ public final class PerUtil {
 
     public static ValueMap getJcrContentOrSelfProperties(final Resource resource) {
         return Optional.ofNullable(getJcrContentOrSelf(resource))
-                .map(r -> r.getValueMap())
+                .map(Resource::getValueMap)
                 .orElse(null);
     }
 
@@ -514,13 +514,12 @@ public final class PerUtil {
      * @param resourceType Sling Resource Type to test. If null or empty this method returns false
      * @return true if the resource contains a Sling Resource Type that matches the given value
      */
-    public static boolean isResourceType(Resource resource, String resourceType) {
-        String answer = null;
-        if(resource != null) {
-            ValueMap properties = getProperties(resource, false);
-            answer = properties.get(SLING_RESOURCE_TYPE, String.class);
-        }
-        return answer != null && answer.equals(resourceType);
+    public static boolean isResourceType(final Resource resource, final String resourceType) {
+        return Optional.ofNullable(resource)
+                .map(r -> getProperties(r, false))
+                .map(p -> p.get(SLING_RESOURCE_TYPE, String.class))
+                .map(s -> s.equals(resourceType))
+                .orElse(false);
     }
 
     /**
@@ -529,13 +528,12 @@ public final class PerUtil {
      * @param primaryType Primary Type to test. If null or empty this method returns false
      * @return true if the resource contains a Primary Type that matches the given value
      */
-    public static boolean isPrimaryType(Resource resource, String primaryType) {
-        String answer = null;
-        if(resource != null) {
-            ValueMap properties = getProperties(resource, false);
-            answer = properties.get(JCR_PRIMARY_TYPE, String.class);
-        }
-        return answer != null && answer.equals(primaryType);
+    public static boolean isPrimaryType(final Resource resource, final String primaryType) {
+        return Optional.ofNullable(resource)
+                .map(r -> getProperties(r, false))
+                .map(p -> p.get(JCR_PRIMARY_TYPE, String.class))
+                .map(s -> s.equals(primaryType))
+                .orElse(false);
     }
 
     /**
@@ -543,12 +541,10 @@ public final class PerUtil {
      * @return Returns the JCR Primary Type property from the resource if that one is not null and if it is found
      */
     public static String getPrimaryType(final Resource resource) {
-        if (resource != null) {
-            final ValueMap properties = getProperties(resource, false);
-            return properties.get(JCR_PRIMARY_TYPE, String.class);
-        }
-
-        return null;
+        return Optional.ofNullable(resource)
+                .map(r -> getProperties(r, false))
+                .map(props -> props.get(JCR_PRIMARY_TYPE, String.class))
+                .orElse(null);
     }
 
     /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
@@ -560,7 +556,7 @@ public final class PerUtil {
     }
 
     /** @return The Mime Type of this resource (in the JCR Content resource) **/
-    public static String getMimeType(Resource resource) {
+    public static String getMimeType(final Resource resource) {
         String answer = null;
         if(resource != null) {
             ValueMap properties = getProperties(resource);
@@ -728,7 +724,7 @@ public final class PerUtil {
      * @return Map representing the JSon Object
      * @throws IOException If it could not been converted
      */
-    public static Map<?, ?> convertToMap(final String json) throws IOException {
+    public static Map convertToMap(final String json) throws IOException {
         if (json != null) {
             return OBJECT_MAPPER.readValue(json, LinkedHashMap.class);
         }
