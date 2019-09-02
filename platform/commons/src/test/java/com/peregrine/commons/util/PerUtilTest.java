@@ -204,7 +204,14 @@ public final class PerUtilTest {
     }
 
     @Test
-    public void listMissingParents() {
+    public void listMissingParents_nullInputs() {
+        final Resource resource = mock(Resource.class);
+        final List<Resource> response = new LinkedList<>();
+        final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
+        PerUtil.listMissingParents(null, response, resource, resourceChecker);
+        PerUtil.listMissingParents(resource, null, resource, resourceChecker);
+        PerUtil.listMissingParents(resource, response, null, resourceChecker);
+        PerUtil.listMissingParents(resource, response, resource, null);
     }
 
     @Test

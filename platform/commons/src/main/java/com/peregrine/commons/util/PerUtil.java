@@ -453,15 +453,21 @@ public final class PerUtil {
      * @param source Root of the Child
      * @param resourceChecker Resource Check instance that defined when a parent is added to the missing list
      */
-    public static void listMissingParents(Resource startingResource, List<Resource> response, Resource source, ResourceChecker resourceChecker) {
-        if(startingResource != null && source != null && resourceChecker != null && response != null) {
-            List<Resource> parents = listParents(source, startingResource);
-            // Now we go through all parents, check if the matching parent exists on the target
-            // side and if not there add it to the list
-            for(Resource sourceParent : parents) {
-                if(resourceChecker.doAdd(sourceParent) && !containsResource(response, sourceParent)) {
-                    response.add(sourceParent);
-                }
+    public static void listMissingParents(
+            final Resource startingResource,
+            final List<Resource> response,
+            final Resource source,
+            final ResourceChecker resourceChecker) {
+        if (startingResource == null || source == null || resourceChecker == null || response == null) {
+            return;
+        }
+
+        final List<Resource> parents = listParents(source, startingResource);
+        // Now we go through all parents, check if the matching parent exists on the target
+        // side and if not there add it to the list
+        for (final Resource sourceParent : parents) {
+            if (resourceChecker.doAdd(sourceParent) && !containsResource(response, sourceParent)) {
+                response.add(sourceParent);
             }
         }
     }
