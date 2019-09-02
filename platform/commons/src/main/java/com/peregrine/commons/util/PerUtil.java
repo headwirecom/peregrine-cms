@@ -288,8 +288,8 @@ public final class PerUtil {
      * @param resource Resource to be checked
      * @return The given resource if it is not null and does exist (is not a Non Existing Resource ref) otherwise null
      */
-    public static Resource checkResource(Resource resource) {
-        if(resource != null) {
+    public static Resource checkResource(final Resource resource) {
+        if (resource != null) {
             return ResourceUtil.isNonExistingResource(resource) ? null : resource;
         } else {
             return null;
@@ -316,16 +316,28 @@ public final class PerUtil {
      * @return The Value Map of the Resource or JCR Content node
      */
     public static ValueMap getProperties(final Resource resource, final boolean goToJcrContent) {
-        Resource content = resource;
-        if (goToJcrContent && !PerConstants.JCR_CONTENT.equals(resource.getName())) {
-            content = resource.getChild(PerConstants.JCR_CONTENT);
+        return Optional.ofNullable(goToJcrContent ? getJcrContent(resource) : resource)
+                .map(Resource::getValueMap)
+                .orElse(null);
+    }
+
+    public static Resource getJcrContent(final Resource resource) {
+        if (PerConstants.JCR_CONTENT.equals(resource.getName())) {
+            return resource;
         }
 
-        if (content != null) {
-            return content.getValueMap();
-        }
+        return resource.getChild(PerConstants.JCR_CONTENT);
+    }
 
-        return null;
+    public static Resource getJcrContentOrSelf(final Resource resource) {
+        return Optional.ofNullable(getJcrContent(resource))
+                .orElse(resource);
+    }
+
+    public static ValueMap getJcrContentOrSelfProperties(final Resource resource) {
+        return Optional.ofNullable(getJcrContentOrSelf(resource))
+                .map(r -> r.getValueMap())
+                .orElse(null);
     }
 
     /**
@@ -348,15 +360,9 @@ public final class PerUtil {
      * @return The Modifiable Value Map of the Resource or JCR Content node
      */
     public static ModifiableValueMap getModifiableProperties(Resource resource, boolean goToJcrContent) {
-        ModifiableValueMap answer = null;
-        Resource jcrContent = resource;
-        if(goToJcrContent && !jcrContent.getName().equals(PerConstants.JCR_CONTENT)) {
-            jcrContent = jcrContent.getChild(PerConstants.JCR_CONTENT);
-        }
-        if(jcrContent != null) {
-            answer = jcrContent.adaptTo(ModifiableValueMap.class);
-        }
-        return answer;
+        return Optional.ofNullable(goToJcrContent ? getJcrContent(resource) : resource)
+                .map(r -> r.adaptTo(ModifiableValueMap.class))
+                .orElse(null);
     }
 
     /**
@@ -547,13 +553,8 @@ public final class PerUtil {
 
     /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
     public static String getResourceType(final Resource resource) {
-        if (resource == null) {
-            return null;
-        }
-
-        ValueMap properties = getProperties(resource, true);
-        properties = properties == null ? getProperties(resource, false) : properties;
-        return Optional.ofNullable(properties)
+        return Optional.ofNullable(resource)
+                .map(PerUtil::getJcrContentOrSelfProperties)
                 .map(props -> props.get(SLING_RESOURCE_TYPE, String.class))
                 .orElse(null);
     }
@@ -562,7 +563,7 @@ public final class PerUtil {
     public static String getMimeType(Resource resource) {
         String answer = null;
         if(resource != null) {
-            ValueMap properties = getProperties(resource, true);
+            ValueMap properties = getProperties(resource);
             if(properties != null) {
                 answer = properties.get(JCR_MIME_TYPE, String.class);
             }
@@ -590,7 +591,7 @@ public final class PerUtil {
     }
 
     /** Resource Check interface **/
-    public static interface ResourceChecker {
+    public interface ResourceChecker {
         /** @return True if the resource checks out **/
         public boolean doAdd(Resource resource);
         /** @return False if the resource's children should not be considered **/
