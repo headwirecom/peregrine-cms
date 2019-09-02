@@ -276,7 +276,8 @@ public final class PerUtilTest {
 
     @Test
     public void getComponentNameFromResource() {
-        final  Resource resource = mock(Resource.class);
+        final Resource resource = mock(Resource.class);
+        assertEquals("", PerUtil.getComponentNameFromResource(resource));
         when(resource.getResourceType()).thenReturn("/one/twoThree/FourFive");
         final String componentName = PerUtil.getComponentNameFromResource(resource);
         assertEquals("Component Name Extraction failed", "one-two-three--four-five", componentName);
@@ -284,5 +285,11 @@ public final class PerUtilTest {
 
     @Test
     public void getComponentVariableNameFromString() {
+        assertEquals("", PerUtil.getComponentVariableNameFromString(null));
+        assertEquals("", PerUtil.getComponentVariableNameFromString(""));
+        assertEquals("", PerUtil.getComponentVariableNameFromString("   "));
+
+        assertEquals("cmpPeregrineComponent", PerUtil.getComponentVariableNameFromString("peregrine/component"));
+        assertEquals("cmpPeregrineComponent", PerUtil.getComponentVariableNameFromString("/peregrine/component"));
     }
 }
