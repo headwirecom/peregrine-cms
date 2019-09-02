@@ -460,10 +460,9 @@ public final class PerUtil {
             return;
         }
 
-        final List<Resource> parents = listParents(source, startingResource);
         // Now we go through all parents, check if the matching parent exists on the target
         // side and if not there add it to the list
-        for (final Resource sourceParent : parents) {
+        for (final Resource sourceParent : listParents(source, startingResource)) {
             if (resourceChecker.doAdd(sourceParent) && !containsResource(response, sourceParent)) {
                 response.add(sourceParent);
             }
