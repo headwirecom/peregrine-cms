@@ -692,27 +692,35 @@ public final class PerUtil {
      *         Will Yield: 'one-two-three--four-five'
      *         The double hyphen is due to the / and uppercase F in Four
      */
-    public static String getComponentNameFromResource(Resource resource) {
-        String resourceType = resource.getResourceType();
-        if (isNotBlank(resourceType)) {
-            if(resourceType.startsWith("/")) {
-                resourceType = substringAfter(resourceType, SLASH);
-            }
-            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replace(SLASH, DASH));
-        } else {
-            return "";
+    public static String getComponentNameFromResource(final Resource resource) {
+        final String normalized = normalizeResourceTypeName(resource.getResourceType());
+        if (isBlank(normalized)) {
+            return EMPTY;
         }
+
+        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, normalized);
     }
 
-    public static String getComponentVariableNameFromString(String resourceType) {
-        if (resourceType != null) {
-            if(resourceType.startsWith("/")) {
-                resourceType = substringAfter(resourceType, SLASH);
-            }
-            return "cmp" + CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, resourceType.replace(SLASH, DASH));
-        } else {
-            return "";
+    public static String getComponentVariableNameFromString(final String resourceType) {
+        final String normalized = normalizeResourceTypeName(resourceType);
+        if (isBlank(normalized)) {
+            return EMPTY;
         }
+
+        return "cmp" + CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, normalized);
+    }
+
+    private static String normalizeResourceTypeName(final String resourceType) {
+        if (isBlank(resourceType)) {
+            return resourceType;
+        }
+
+        String result = resourceType;
+        if (result.startsWith(SLASH)) {
+            result = substringAfter(result, SLASH);
+        }
+
+        return result.replace(SLASH, DASH);
     }
 
     /**
