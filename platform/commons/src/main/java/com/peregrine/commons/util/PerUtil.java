@@ -504,10 +504,12 @@ public final class PerUtil {
      * @param name Name to be adjust
      * @return The given name lowercase and spaces and slashes to underscore or if name is null then null
      */
-    public static String adjustMetadataName(String name) {
-        return name == null ?
-            null :
-            name.toLowerCase().replace(" ", "_").replace("/", "_");
+    public static String adjustMetadataName(final String name) {
+        return Optional.ofNullable(name)
+                .map(String::toLowerCase)
+                .map(s -> s.replace(" ", "_"))
+                .map(s -> s.replace("/", "_"))
+                .orElse(null);
     }
 
     /**

@@ -297,7 +297,14 @@ public final class PerUtilTest {
 
     @Test
     public void adjustMetadataName() {
+        assertAdjustMetadataName(null, null);
+        assertAdjustMetadataName(" ", "_");
+        assertAdjustMetadataName(SLASH, "_");
+        assertAdjustMetadataName("Let it be Slash /", "let_it_be_slash__");
+    }
 
+    private void assertAdjustMetadataName(final String input, final String expected) {
+        assertEquals(expected, PerUtil.adjustMetadataName(input));
     }
 
     @Test
