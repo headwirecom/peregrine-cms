@@ -31,6 +31,8 @@ import com.peregrine.adaption.PerPageManager;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -264,7 +266,7 @@ public class PerPageImpl extends PerBaseImpl implements PerPage {
      * @param resource Starting Page Resource
      * @return Previous Page Wrapper Object if found
      */
-    private PerPage findPrevious(Resource resource) {
+    private @Nullable PerPage findPrevious(@NotNull Resource resource) {
         Resource parent = resource.getParent();
         PerPage answer = null;
         if(parent != null) {
@@ -290,7 +292,7 @@ public class PerPageImpl extends PerBaseImpl implements PerPage {
      * @param before Sibling that is the next in the tree
      * @return Page Wrapper Object that comes before the given sibling
      */
-    private PerPage findPreviousChildPage(Resource resource, Resource before) {
+    private PerPage findPreviousChildPage(@NotNull Resource resource, @NotNull Resource before) {
         Resource last = null;
         for(Resource child: resource.getChildren()) {
             // JCR Content nodes will not yield a page -> ignore

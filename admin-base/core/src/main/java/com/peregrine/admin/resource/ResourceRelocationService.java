@@ -7,6 +7,8 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -116,23 +118,20 @@ public class ResourceRelocationService
         }
     }
 
-    private Node getNextNode(Node parent, String childName) throws RepositoryException {
+    private @Nullable Node getNextNode(@NotNull Node parent, @Nullable String childName) throws RepositoryException {
         Node answer = null;
-        if(parent != null) {
-            NodeIterator i = parent.getNodes();
-            while (i.hasNext()) {
-                Node child = i.nextNode();
-                if (childName == null) {
-                    // No Child Name means returns first
-                    answer = child;
-                    break;
+        NodeIterator i = parent.getNodes();
+        while (i.hasNext()) {
+            Node child = i.nextNode();
+            if (childName == null) {
+                // No Child Name means returns first
+                answer = child;
+                break;
+            } else if (child.getName().equals(childName)) {
+                if (i.hasNext()) {
+                    answer = i.nextNode();
                 }
-                if (child.getName().equals(childName)) {
-                    if (i.hasNext()) {
-                        answer = i.nextNode();
-                    }
-                    break;
-                }
+                break;
             }
         }
         return answer;
@@ -174,6 +173,7 @@ public class ResourceRelocationService
             fromNodeParent.orderBefore(newName, nextNode.getName());
         }
         Resource answer = parent.getChild(newName);
+        if(answer == null) { throw new ManagementException("After rename new resource: '" + newName + "' could not be found"); }
         // Update the references
         for(com.peregrine.replication.Reference reference : references) {
             Resource propertyResource = reference.getPropertyResource();
