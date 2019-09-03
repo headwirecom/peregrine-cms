@@ -60,7 +60,6 @@ public final class PerUtilTest {
         initialResourcesSize = resources.size();
     }
 
-
     @Test
     public void splitIntoMap() {
         final String[] configurations = new String[] { "data.json=example/components/page|per:Template","infinity.json=per:Object","html=per:Page|per:Template","*~raw=nt:file" };
@@ -349,11 +348,6 @@ public final class PerUtilTest {
 
         page.getContent().putProperty(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
         assertEquals(RESOURCE_TYPE, PerUtil.getResourceType(page));
-    }
-
-    @Test
-    public void MissingOrOutdatedResourceChecker_doAdd() {
-
     }
 
     @Test
