@@ -16,6 +16,8 @@ import static org.mockito.Mockito.when;
 
 public final class PerUtilTest {
 
+    public static final String PRIMARY_TYPE = "per:Type";
+    public static final String RESOURCE_TYPE = "per/component";
     private final ResourceMock root = new ResourceMock();
     private final ResourceMock parent = new ResourceMock();
     private final PageMock page = new PageMock();
@@ -309,7 +311,13 @@ public final class PerUtilTest {
 
     @Test
     public void isResourceType() {
+        assertFalse(PerUtil.isResourceType(null, RESOURCE_TYPE));
+        assertFalse(PerUtil.isResourceType(mock(Resource.class), RESOURCE_TYPE));
+        assertFalse(PerUtil.isResourceType(resource, RESOURCE_TYPE));
 
+        resource.putProperty(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
+        assertFalse(PerUtil.isResourceType(resource, PRIMARY_TYPE));
+        assertTrue(PerUtil.isResourceType(resource, RESOURCE_TYPE));
     }
 
     @Test
@@ -321,9 +329,8 @@ public final class PerUtilTest {
     public void getPrimaryType() {
         assertNull(PerUtil.getPrimaryType(null));
 
-        final String primaryType = "per:Type";
-        resource.getProperties().put(JCR_PRIMARY_TYPE, primaryType);
-        assertEquals(primaryType, PerUtil.getPrimaryType(resource));
+        resource.getProperties().put(JCR_PRIMARY_TYPE, PRIMARY_TYPE);
+        assertEquals(PRIMARY_TYPE, PerUtil.getPrimaryType(resource));
     }
 
     @Test
@@ -333,9 +340,8 @@ public final class PerUtilTest {
 
         assertNull(PerUtil.getResourceType(resource));
 
-        final String type = "per/component";
-        page.getContent().getProperties().put(SLING_RESOURCE_TYPE, type);
-        assertEquals(type, PerUtil.getResourceType(page));
+        page.getContent().getProperties().put(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
+        assertEquals(RESOURCE_TYPE, PerUtil.getResourceType(page));
     }
 
     @Test
