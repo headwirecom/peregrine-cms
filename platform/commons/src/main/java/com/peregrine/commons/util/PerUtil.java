@@ -600,8 +600,8 @@ public final class PerUtil {
     public static class MissingOrOutdatedResourceChecker
         implements ResourceChecker
     {
-        private Resource source;
-        private Resource target;
+        private final Resource source;
+        private final Resource target;
 
         /**
          * This class will map any children of the source resource to a
@@ -611,7 +611,7 @@ public final class PerUtil {
          * @param source Source Root Resource
          * @param target Target Root Resource
          */
-        public MissingOrOutdatedResourceChecker(Resource source, Resource target) {
+        public MissingOrOutdatedResourceChecker(final Resource source, final Resource target) {
             this.source = source;
             this.target = target;
         }
@@ -637,7 +637,7 @@ public final class PerUtil {
         }
 
         @Override
-        public boolean doAddChildren(Resource resource) {
+        public boolean doAddChildren(final Resource resource) {
             return true;
         }
     }
@@ -649,10 +649,10 @@ public final class PerUtil {
     public static class MatchingResourceChecker
         implements ResourceChecker
     {
-        private Resource source;
-        private Resource target;
+        private final Resource source;
+        private final Resource target;
 
-        public MatchingResourceChecker(Resource source, Resource target) {
+        public MatchingResourceChecker(final Resource source, final Resource target) {
             this.source = source;
             this.target = target;
         }
@@ -665,7 +665,7 @@ public final class PerUtil {
         }
 
         @Override
-        public boolean doAddChildren(Resource resource) { return true; }
+        public boolean doAddChildren(final Resource resource) { return true; }
     }
 
     /** Checks all resources **/
@@ -673,11 +673,11 @@ public final class PerUtil {
         implements ResourceChecker
     {
         @Override
-        public boolean doAdd(Resource resource) {
+        public boolean doAdd(final Resource resource) {
             return true;
         }
         @Override
-        public boolean doAddChildren(Resource resource) { return true; }
+        public boolean doAddChildren(final Resource resource) { return true; }
     }
 
     /**
