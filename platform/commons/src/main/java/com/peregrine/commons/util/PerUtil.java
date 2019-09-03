@@ -515,7 +515,7 @@ public final class PerUtil {
     private static boolean isPropertyEqual(final Resource resource, final String propertyName, final String value) {
         return Optional.ofNullable(resource)
                 .map(r -> getProperties(r, false))
-                .map(p -> p.get(propertyName))
+                .map(p -> p.get(propertyName, String.class))
                 .map(v -> v.equals(value))
                 .orElse(false);
     }
