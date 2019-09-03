@@ -9,13 +9,39 @@ import org.mockito.Mockito;
 
 import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class PerUtilTest {
+
+    private final ResourceMock root = new ResourceMock();
+    private final ResourceMock parent = new ResourceMock();
+    private final PageMock page = new PageMock();
+    private final ResourceMock content = page.getContent();
+    private final ResourceMock resource = new ResourceMock();
+
+    public PerUtilTest() {
+        String path = "/content";
+        root.setPath(path);
+        path += SLASH + "parent";
+        parent.setPath(path);
+        path += SLASH + "page";
+        page.setPath(path);
+        path = content.getPath();
+        path += SLASH + "resource";
+        resource.setPath(path);
+
+        parent.setParent(root);
+        page.setParent(parent);
+        resource.setParent(content);
+
+        root.addChild(parent);
+        parent.addChild(page);
+        content.addChild(resource);
+    }
+
 
     @Test
     public void splitIntoMap() {
@@ -152,28 +178,14 @@ public final class PerUtilTest {
 
     @Test
     public void listParents() {
-        final ResourceMock root = new ResourceMock();
-        final ResourceMock parent = new ResourceMock();
-        final ResourceMock resource = new ResourceMock();
-        final ResourceMock child = new ResourceMock();
-
-        root.setPath("/content");
-        parent.setPath("/content/parent");
-        resource.setPath("/content/parent/resource");
-        child.setPath("/content/parent/resource/jcr:content");
-
-        parent.setParent(root);
-        resource.setParent(parent);
-        child.setParent(resource);
-
-        List<Resource> result = PerUtil.listParents(root, child);
+        List<Resource> result = PerUtil.listParents(root, content);
         assertEquals(2, result.size());
-        assertTrue(result.contains(resource));
+        assertTrue(result.contains(page));
         assertTrue(result.contains(parent));
-        assertEquals(resource, result.get(0));
+        assertEquals(page, result.get(0));
         assertEquals(parent, result.get(1));
 
-        assertEquals(1, PerUtil.listParents(root, resource).size());
+        assertEquals(1, PerUtil.listParents(root, page).size());
         assertEquals(0, PerUtil.listParents(root, parent).size());
         assertEquals(0, PerUtil.listParents(root, root).size());
         assertEquals(0, PerUtil.listParents(parent, root).size());
@@ -196,25 +208,15 @@ public final class PerUtilTest {
 
     @Test
     public void containsResource() {
-        final ResourceMock root = new ResourceMock();
-        final ResourceMock parent = new ResourceMock();
-        final ResourceMock resource = new ResourceMock();
-        final ResourceMock child = new ResourceMock();
-
-        root.setPath("/content");
-        parent.setPath("/content/parent");
-        resource.setPath("/content/parent/resource");
-        child.setPath("/content/parent/resource/jcr:content");
-
         final List<Resource> list = new LinkedList<>();
         list.add(root);
         list.add(parent);
-        list.add(resource);
+        list.add(page);
 
         assertTrue(PerUtil.containsResource(list, root));
         assertTrue(PerUtil.containsResource(list, parent));
-        assertTrue(PerUtil.containsResource(list, resource));
-        assertFalse(PerUtil.containsResource(list, child));
+        assertTrue(PerUtil.containsResource(list, page));
+        assertFalse(PerUtil.containsResource(list, content));
         assertTrue(PerUtil.containsResource(list, null));
     }
 
@@ -231,38 +233,21 @@ public final class PerUtilTest {
 
     @Test
     public void listMissingParents() {
-        final ResourceMock root = new ResourceMock();
-        final ResourceMock parent = new ResourceMock();
-        final ResourceMock resource = new ResourceMock();
-        final ResourceMock child = new ResourceMock();
-        final ResourceMock grandChild = new ResourceMock();
-
-        root.setPath("/content");
-        parent.setPath("/content/parent");
-        resource.setPath("/content/parent/resource");
-        child.setPath("/content/parent/resource/jcr:content");
-        grandChild.setPath("/content/parent/resource/jcr:content/par");
-
-        parent.setParent(root);
-        resource.setParent(parent);
-        child.setParent(resource);
-        grandChild.setParent(child);
-
         final List<Resource> response = new LinkedList<>();
         response.add(parent);
 
         final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
         when(resourceChecker.doAdd(parent)).thenReturn(true);
-        when(resourceChecker.doAdd(resource)).thenReturn(true);
-        when(resourceChecker.doAdd(child)).thenReturn(false);
+        when(resourceChecker.doAdd(page)).thenReturn(true);
+        when(resourceChecker.doAdd(content)).thenReturn(false);
 
-        PerUtil.listMissingParents(grandChild, response, root, resourceChecker);
+        PerUtil.listMissingParents(resource, response, root, resourceChecker);
 
         assertFalse(response.contains(root));
         assertTrue(response.contains(parent));
-        assertTrue(response.contains(resource));
-        assertFalse(response.contains(child));
-        assertFalse(response.contains(grandChild));
+        assertTrue(response.contains(page));
+        assertFalse(response.contains(content));
+        assertFalse(response.contains(resource));
     }
 
     @Test
