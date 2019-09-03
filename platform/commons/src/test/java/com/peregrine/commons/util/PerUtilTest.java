@@ -22,8 +22,12 @@ public final class PerUtilTest {
     private final ResourceMock content = page.getContent();
     private final ResourceMock resource = new ResourceMock();
 
+    private final List<Resource> resources = new LinkedList<>();
+
+    final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
+
     public PerUtilTest() {
-        String path = "/content";
+        String path = SLASH + "content";
         root.setPath(path);
         path += SLASH + "parent";
         parent.setPath(path);
@@ -40,6 +44,12 @@ public final class PerUtilTest {
         root.addChild(parent);
         parent.addChild(page);
         content.addChild(resource);
+
+        resources.add(root);
+        resources.add(parent);
+        resources.add(page);
+        resources.add(content);
+        resources.add(resource);
     }
 
 
@@ -178,7 +188,7 @@ public final class PerUtilTest {
 
     @Test
     public void listParents() {
-        List<Resource> result = PerUtil.listParents(root, content);
+        final List<Resource> result = PerUtil.listParents(root, content);
         assertEquals(2, result.size());
         assertTrue(result.contains(page));
         assertTrue(result.contains(parent));
@@ -195,7 +205,6 @@ public final class PerUtilTest {
     public void listMissingResources_nullInputs() {
         final Resource startingResource = mock(Resource.class);
         final List<Resource> response = new LinkedList<>();
-        final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
 
         PerUtil.listMissingResources(null, response, resourceChecker, true);
         PerUtil.listMissingResources(startingResource, null, resourceChecker, true);
@@ -204,27 +213,24 @@ public final class PerUtilTest {
 
     @Test
     public void listMissingResources() {
+
     }
 
     @Test
     public void containsResource() {
-        final List<Resource> list = new LinkedList<>();
-        list.add(root);
-        list.add(parent);
-        list.add(page);
+        resources.remove(content);
 
-        assertTrue(PerUtil.containsResource(list, root));
-        assertTrue(PerUtil.containsResource(list, parent));
-        assertTrue(PerUtil.containsResource(list, page));
-        assertFalse(PerUtil.containsResource(list, content));
-        assertTrue(PerUtil.containsResource(list, null));
+        assertTrue(PerUtil.containsResource(resources, root));
+        assertTrue(PerUtil.containsResource(resources, parent));
+        assertTrue(PerUtil.containsResource(resources, page));
+        assertFalse(PerUtil.containsResource(resources, content));
+        assertTrue(PerUtil.containsResource(resources, null));
     }
 
     @Test
     public void listMissingParents_nullInputs() {
         final Resource resource = mock(Resource.class);
         final List<Resource> response = new LinkedList<>();
-        final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
         PerUtil.listMissingParents(null, response, resource, resourceChecker);
         PerUtil.listMissingParents(resource, null, resource, resourceChecker);
         PerUtil.listMissingParents(resource, response, null, resourceChecker);
@@ -236,7 +242,6 @@ public final class PerUtilTest {
         final List<Resource> response = new LinkedList<>();
         response.add(parent);
 
-        final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
         when(resourceChecker.doAdd(parent)).thenReturn(true);
         when(resourceChecker.doAdd(page)).thenReturn(true);
         when(resourceChecker.doAdd(content)).thenReturn(false);
