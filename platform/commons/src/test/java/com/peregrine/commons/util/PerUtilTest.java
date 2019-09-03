@@ -351,11 +351,6 @@ public final class PerUtilTest {
     }
 
     @Test
-    public void MatchingResourceChecker_doAdd() {
-
-    }
-
-    @Test
     public void getComponentNameFromResource() {
         assertEquals("", PerUtil.getComponentNameFromResource(resource));
         when(resource.getResourceType()).thenReturn("/one/twoThree/FourFive");
