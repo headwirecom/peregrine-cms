@@ -6,6 +6,7 @@ import org.apache.sling.api.resource.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.*;
@@ -379,7 +380,8 @@ public final class PerUtilTest {
     }
 
     @Test
-    public void convertToMap() {
-
+    public void convertToMap() throws IOException {
+        assertTrue(PerUtil.convertToMap(null).isEmpty());
+        assertEquals(5, PerUtil.convertToMap("{\"property\": 5}").get("property"));
     }
 }
