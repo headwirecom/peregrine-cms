@@ -591,9 +591,9 @@ public final class PerUtil {
     /** Resource Check interface **/
     public interface ResourceChecker {
         /** @return True if the resource checks out **/
-        public boolean doAdd(Resource resource);
+        boolean doAdd(Resource resource);
         /** @return False if the resource's children should not be considered **/
-        public boolean doAddChildren(Resource resource);
+        boolean doAddChildren(Resource resource);
     }
 
     /** Checks all resources that are either missing or are outdated on the target **/
@@ -625,21 +625,21 @@ public final class PerUtil {
             LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
             if (targetResource == null) {
                 return true;
-            } else {
-                // AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
-                // AS TODO replicated timestamp
-                final Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
-                final Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
-                if(sourceLastModified != null && targetLastModified != null) {
-                    return sourceLastModified.after(targetLastModified);
-                }
             }
 
-            return false;
+            // AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
+            // AS TODO replicated timestamp
+            final Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
+            final Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
+
+            return sourceLastModified != null && targetLastModified != null
+                    && sourceLastModified.after(targetLastModified);
         }
 
         @Override
-        public boolean doAddChildren(Resource resource) { return true; }
+        public boolean doAddChildren(Resource resource) {
+            return true;
+        }
     }
 
     /**
