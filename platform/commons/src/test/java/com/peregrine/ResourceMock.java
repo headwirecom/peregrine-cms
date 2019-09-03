@@ -7,7 +7,9 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,6 +19,8 @@ public class ResourceMock extends ResourceWrapper {
     protected final Resource mock;
 
     protected final Map<String, Object> properties = new HashMap<>();
+
+    private final Map<String, Resource> children = new TreeMap<>();
 
     public ResourceMock() {
         super(mock(Resource.class));
@@ -45,8 +49,31 @@ public class ResourceMock extends ResourceWrapper {
         when(mock.getParent()).thenReturn(parent);
     }
 
-    public final void addChild(final String name, final Resource child) {
-        when(mock.getChild(name)).thenReturn(child);
+    @Override
+    public final Resource getChild(final String name) {
+        return children.get(name);
     }
 
+    public final void addChild(final String name, final Resource child) {
+        children.put(name, child);
+    }
+
+    public final void addChild(final Resource child) {
+        addChild(child.getName(), child);
+    }
+
+    @Override
+    public Iterable<Resource> getChildren() {
+        return children.values();
+    }
+
+    @Override
+    public Iterator<Resource> listChildren() {
+        return getChildren().iterator();
+    }
+
+    @Override
+    public boolean hasChildren() {
+        return !children.isEmpty();
+    }
 }
