@@ -620,7 +620,7 @@ public final class PerUtil {
         public boolean doAdd(final Resource resource) {
             final String relativePath = relativePath(source, resource);
             final Resource targetResource = Optional.ofNullable(relativePath)
-                    .map(path -> target.getChild(path))
+                    .map(target::getChild)
                     .orElse(null);
             LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
             if (targetResource == null) {
@@ -660,7 +660,7 @@ public final class PerUtil {
         @Override
         public boolean doAdd(final Resource resource) {
             return Optional.ofNullable(relativePath(source, resource))
-                    .map(path -> target.getChild(path))
+                    .map(target::getChild)
                     .isPresent();
         }
 
