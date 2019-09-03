@@ -11,6 +11,7 @@ import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +24,7 @@ public final class PerUtilTest {
     private final ResourceMock resource = new ResourceMock();
 
     private final List<Resource> resources = new LinkedList<>();
+    private final int initialResourcesSize;
 
     final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
 
@@ -50,6 +52,7 @@ public final class PerUtilTest {
         resources.add(page);
         resources.add(content);
         resources.add(resource);
+        initialResourcesSize = resources.size();
     }
 
 
@@ -202,13 +205,39 @@ public final class PerUtilTest {
     @Test
     public void listMissingResources_nullInputs() {
         PerUtil.listMissingResources(null, resources, resourceChecker, true);
-        PerUtil.listMissingResources(resource, null, resourceChecker, true);
-        PerUtil.listMissingResources(resource, resources, null, true);
+        PerUtil.listMissingResources(root, null, resourceChecker, true);
+        PerUtil.listMissingResources(root, resources, null, true);
+    }
+
+    @Test
+    public void listMissingResources_doNotAddResources() {
+        when(resourceChecker.doAdd(any())).thenReturn(false);
+        when(resourceChecker.doAddChildren(any())).thenReturn(false);
+        PerUtil.listMissingResources(root, resources, resourceChecker, true);
+        assertEquals(initialResourcesSize, resources.size());
+    }
+
+    @Test
+    public void listMissingResources_doNotAddChildren() {
+        when(resourceChecker.doAdd(any())).thenReturn(true);
+        when(resourceChecker.doAddChildren(any())).thenReturn(true);
+        resources.remove(root);
+        PerUtil.listMissingResources(root, resources, resourceChecker, true);
+        assertEquals(initialResourcesSize, resources.size());
     }
 
     @Test
     public void listMissingResources() {
+        when(resourceChecker.doAdd(any())).thenReturn(true);
+        when(resourceChecker.doAddChildren(any())).thenReturn(true);
 
+        PerUtil.listMissingResources(root, resources, resourceChecker, false);
+        assertEquals(initialResourcesSize, resources.size());
+
+        resources.remove(content);
+        resources.remove(resource);
+        PerUtil.listMissingResources(page, resources, resourceChecker, false);
+        assertEquals(initialResourcesSize, resources.size());
     }
 
     @Test
