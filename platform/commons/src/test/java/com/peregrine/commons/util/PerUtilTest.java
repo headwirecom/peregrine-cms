@@ -180,8 +180,18 @@ public final class PerUtilTest {
     }
 
     @Test
-    public void listMissingResources() {
+    public void listMissingResources_nullInputs() {
+        final Resource startingResource = mock(Resource.class);
+        final List<Resource> response = new LinkedList<>();
+        final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
 
+        PerUtil.listMissingResources(null, response, resourceChecker, true);
+        PerUtil.listMissingResources(startingResource, null, resourceChecker, true);
+        PerUtil.listMissingResources(startingResource, response, null, true);
+    }
+
+    @Test
+    public void listMissingResources() {
     }
 
     @Test
