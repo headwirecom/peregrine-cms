@@ -1,7 +1,6 @@
 package com.peregrine;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
 import static org.mockito.Mockito.when;
 
 public final class PageMock extends ResourceMock {
@@ -18,7 +17,7 @@ public final class PageMock extends ResourceMock {
 
     @Override
     protected void setPathImpl(final String path) {
-        content.setPath(path + "/" + JCR_CONTENT);
+        content.setPath(path + SLASH + JCR_CONTENT);
     }
 
     public ResourceMock getContent() {
