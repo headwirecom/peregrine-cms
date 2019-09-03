@@ -485,7 +485,7 @@ public final class PerUtil {
      * @throws LoginException If the resolver factory could not obtain the Service Resource Resolver
      * @throws IllegalArgumentException If the resource resolver is null or the service name is empty
      */
-    public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
+    public static ResourceResolver loginService(final ResourceResolverFactory resolverFactory, final String serviceName) throws LoginException {
         if (resolverFactory == null) {
             throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL);
         }
