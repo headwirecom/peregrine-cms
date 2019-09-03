@@ -510,6 +510,14 @@ public final class PerUtil {
                 .orElse(null);
     }
 
+    private static boolean isPropertyEqual(final Resource resource, final String propertyName, final String value) {
+        return Optional.ofNullable(resource)
+                .map(r -> getProperties(r, false))
+                .map(p -> p.get(propertyName))
+                .map(v -> v.equals(value))
+                .orElse(false);
+    }
+
     /**
      * Check if the given resource has that Sling Resource Type
      * @param resource Resource to be checked. It will test this resource and not go down to JCR Content
@@ -517,11 +525,7 @@ public final class PerUtil {
      * @return true if the resource contains a Sling Resource Type that matches the given value
      */
     public static boolean isResourceType(final Resource resource, final String resourceType) {
-        return Optional.ofNullable(resource)
-                .map(r -> getProperties(r, false))
-                .map(p -> p.get(SLING_RESOURCE_TYPE, String.class))
-                .map(s -> s.equals(resourceType))
-                .orElse(false);
+        return isPropertyEqual(resource, SLING_RESOURCE_TYPE, resourceType);
     }
 
     /**
@@ -531,11 +535,7 @@ public final class PerUtil {
      * @return true if the resource contains a Primary Type that matches the given value
      */
     public static boolean isPrimaryType(final Resource resource, final String primaryType) {
-        return Optional.ofNullable(resource)
-                .map(r -> getProperties(r, false))
-                .map(p -> p.get(JCR_PRIMARY_TYPE, String.class))
-                .map(s -> s.equals(primaryType))
-                .orElse(false);
+        return isPropertyEqual(resource, JCR_PRIMARY_TYPE, primaryType);
     }
 
     /**
