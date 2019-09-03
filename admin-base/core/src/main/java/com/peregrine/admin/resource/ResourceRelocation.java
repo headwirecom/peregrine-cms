@@ -1,5 +1,6 @@
 package com.peregrine.admin.resource;
 
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 
@@ -39,8 +40,10 @@ public interface ResourceRelocation {
      * @param targetChildName Name of the resource of which the source resource is added before or after. If it is null
      *                        then the source is moved to the end
      * @param before If true the source resource will be placed ahead of the target otherwise after than one
+     * @throws RepositoryException If there is an issue with JCR Repository
+     * @throws ManagementException If the parent cannot be adapted to a Node
      */
-    public void reorder(Resource parent, String sourceChildName, String targetChildName, boolean before) throws RepositoryException;
+    public void reorder(Resource parent, String sourceChildName, String targetChildName, boolean before) throws RepositoryException, ManagementException;
 
     /**
      * Renames a resource to a new name. This will cause
@@ -49,6 +52,8 @@ public interface ResourceRelocation {
      * @param from Resource to be renamed
      * @param newName New name of the resource
      * @return The renamed resource
+     * @throws RepositoryException If there is an issue with JCR Repository
+     * @throws ManagementException If the from or its parent cannot be adapted to a Node or if the from has no parent
      */
-    public Resource rename(Resource from, String newName, boolean updateReferences) throws RepositoryException;
+    public Resource rename(Resource from, String newName, boolean updateReferences) throws RepositoryException, ManagementException;
 }

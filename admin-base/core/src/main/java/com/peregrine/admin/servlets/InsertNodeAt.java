@@ -105,7 +105,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
         Resource resource = getResource(request.getResourceResolver(), path);
-        //AS This is a fix for missing intermediary nodes from templates
+        // This is a fix for missing intermediary nodes from templates
         if(resource == null) {
             int index = path.lastIndexOf(JCR_CONTENT);
             if(index > 0 && index < path.length() - JCR_CONTENT.length()) {
@@ -139,7 +139,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 }
             }
         }
-        //AS End of Patch
         if(resource == null) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH).setRequestPath(path);
         }
@@ -173,7 +172,11 @@ public class InsertNodeAt extends AbstractBaseServlet {
         try {
             Resource newResource = resourceManagement.insertNode(resource, properties, addAsChild, addBefore, variation);
             newResource.getResourceResolver().commit();
-            return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + MODEL_JSON);
+            Resource parent = resource.getParent();
+            if(parent == null) {
+                throw new ManagementException("Resource: '" + resource.getPath() + "' has no parent");
+            }
+            return new RedirectResponse((addAsChild ? path : parent.getPath()) + MODEL_JSON);
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
         }

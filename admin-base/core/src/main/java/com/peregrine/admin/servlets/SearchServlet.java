@@ -81,6 +81,9 @@ public class SearchServlet extends AbstractBaseServlet {
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             JsonResponse answer = new JsonResponse();
+            if(session == null) {
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Could not obtain JCR Session");
+            }
             try {
                 QueryManager qm = session.getWorkspace().getQueryManager();
                 Query q = qm.createQuery(query, Query.SQL);

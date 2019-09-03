@@ -35,6 +35,7 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.factory.ModelFactory;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -131,7 +132,8 @@ public class PageModel
     }
 
     public String getPagePath() {
-        return getResource().getParent().getPath();
+        Resource parent = getResource().getParent();
+        return parent == null ? "" : parent.getPath();
     }
 
     public String[] getPrefetchDNS() {
@@ -139,7 +141,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(PREFETCH_DNS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getPrefetchDNS();
                 }
@@ -153,7 +155,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(SITE_CSS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getSiteCSS();
                 }
@@ -167,7 +169,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(DOMAINS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getDomains();
                 }
@@ -176,11 +178,11 @@ public class PageModel
         return domains;
     }
 
-    private PageModel getTamplatePageModel() {
+    private @Nullable PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
-        return (PageModel) modelFactory.getModelFromResource(templateResource);
+        return templateResource == null ? null : (PageModel) modelFactory.getModelFromResource(templateResource);
     }
 
     private Object getInheritedProperty(String propertyName) {
@@ -200,7 +202,7 @@ public class PageModel
         if(siteJS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_JS);
             if(value != null && value.length != 0) return value;
-            PageModel templatePageModel = getTamplatePageModel();
+            PageModel templatePageModel = getTemplatePageModel();
             if(templatePageModel != null) {
                 return templatePageModel.getSiteJS();
             }

@@ -78,10 +78,17 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
         Resource resource = request.getResourceByPath(path);
+        if(resource == null) {
+            // In case the resource could not be found issue an Error Resposne
+            return new ErrorResponse().setErrorCode(404).setErrorMessage("Resource with Path: '" + path + "' not found");
+        }
         boolean page = false;
         if(resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
+            Resource jcrContent = resource.getChild(PerConstants.JCR_CONTENT);
+            if(jcrContent != null) {
+                return new ErrorResponse().setErrorCode(404).setErrorMessage("Page with Path: '" + path + "' has no Content Chile Node");
+            }
             page = true;
-            resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
         String componentPath = "";
         if(path.startsWith(APPS_ROOT + SLASH)) {
@@ -91,6 +98,10 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         }
 
         Resource component = request.getResourceByPath(componentPath);
+        if(component == null) {
+            // In case the resource could not be found issue an Error Resposne
+            return new ErrorResponse().setErrorCode(404).setErrorMessage("Component Resource with Path: '" + componentPath + "' not found");
+        }
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
         if("/apps/admin/components/assetview".equals(path)) {
             page = true;

@@ -74,6 +74,7 @@ public class ListServlet extends AbstractBaseServlet {
     public static final String UNKNOWN_SUFFIX = "Unknown suffix: ";
     public static final String ERROR_WHILE_EXPORTING_MODEL = "Error while exporting model";
     public static final String NO_EXPORTER_JACKSON_DEFINED = "no exporter 'jackson' defined";
+    public static final String RESOURCE_BY_PATH_NOT_FOUND = "Resource '%s' was not found";
 
     @Reference
     ModelFactory modelFactory;
@@ -99,13 +100,17 @@ public class ListServlet extends AbstractBaseServlet {
     private Response getJSONFromResource(Resource resource, String resourcePath) throws IOException {
         Response answer;
         Resource res = resource.getResourceResolver().getResource(resourcePath);
-        try {
-            String out = modelFactory.exportModelForResource(res, JACKSON, String.class, Collections.<String, String> emptyMap());
-            answer = new PlainJsonResponse(out);
-        } catch (ExportException e) {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(ERROR_WHILE_EXPORTING_MODEL).setException(e);
-        } catch (MissingExporterException e) {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_EXPORTER_JACKSON_DEFINED).setException(e);
+        if(res == null) {
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(String.format(RESOURCE_BY_PATH_NOT_FOUND, resourcePath));
+        } else {
+            try {
+                String out = modelFactory.exportModelForResource(res, JACKSON, String.class, Collections.<String, String> emptyMap());
+                answer = new PlainJsonResponse(out);
+            } catch (ExportException e) {
+                answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(ERROR_WHILE_EXPORTING_MODEL).setException(e);
+            } catch (MissingExporterException e) {
+                answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_EXPORTER_JACKSON_DEFINED).setException(e);
+            }
         }
         return answer;
     }

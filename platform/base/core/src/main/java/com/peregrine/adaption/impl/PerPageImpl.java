@@ -231,12 +231,16 @@ public class PerPageImpl extends PerBaseImpl implements PerPage {
         Calendar now = Calendar.getInstance();
         // Update Content Properties
         ModifiableValueMap properties = getModifiableProperties();
-        properties.put(JCR_LAST_MODIFIED_BY, user);
-        properties.put(JCR_LAST_MODIFIED, now);
+        if(properties != null) {
+            properties.put(JCR_LAST_MODIFIED_BY, user);
+            properties.put(JCR_LAST_MODIFIED, now);
+        }
         // Update Page
         properties = resource.adaptTo(ModifiableValueMap.class);
-        properties.put(JCR_LAST_MODIFIED_BY, user);
-        properties.put(JCR_LAST_MODIFIED, now);
+        if(properties != null) {
+            properties.put(JCR_LAST_MODIFIED_BY, user);
+            properties.put(JCR_LAST_MODIFIED, now);
+        }
     }
 
     private Resource getLastChild(Resource res) {
@@ -261,50 +265,23 @@ public class PerPageImpl extends PerBaseImpl implements PerPage {
      * @return Previous Page Wrapper Object if found
      */
     private PerPage findPrevious(Resource resource) {
-        PerPage answer = findPreviousChildPage(resource.getParent(), resource);
-        if (answer != null) {
-
-            Resource child = answer.getResource();
-            while(child != null) {
-                child = getLastChild(child);
-                if(child != null) {
-                    answer = new PerPageImpl(child);
+        Resource parent = resource.getParent();
+        PerPage answer = null;
+        if(parent != null) {
+            answer = findPreviousChildPage(parent, resource);
+            if (answer != null) {
+                Resource child = answer.getResource();
+                while (child != null) {
+                    child = getLastChild(child);
+                    if (child != null) {
+                        answer = new PerPageImpl(child);
+                    }
                 }
+            } else {
+                answer = new PerPageImpl(resource.getParent());
             }
-            return answer;
-        } else {
-            return new PerPageImpl(resource.getParent());
         }
-        // if(answer == null) {
-        //     Resource parent = resource.getParent();
-        //     Resource current = resource;
-        //     Iterable<Resource> children = parent.getChildren();
-        //     Resource previous = null;
-        //     for(Resource res: children) {
-        //         if(!res.equals(current) && isPrimaryType(res, PAGE_PRIMARY_TYPE)) {
-        //             previous = res;
-        //         } else if(res.equals(current)) {
-        //             break;
-        //         }
-        //     }
-
-        //     // while(parent != null) {
-        //     //     // Find any sibling in the parent this is before the this resource's path
-        //     //     answer = findPreviousChildPage(parent, child);
-        //     //     if(answer == null) {
-        //     //         child = parent;
-        //     //         parent = parent.getParent();
-        //     //         if(!isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
-        //     //             // The search ends at the first non-page node
-        //     //             break;
-        //     //         }
-        //     //     } else {
-        //     //         break;
-        //     //     }
-        //     // }
-        // }
-
-        // return answer;
+        return answer;
     }
 
     /**

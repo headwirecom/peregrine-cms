@@ -84,7 +84,7 @@ public class NodesServlet extends AbstractBaseServlet {
 
     private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
 
-    private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
+    private DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Reference
     ModelFactory modelFactory;
@@ -147,8 +147,13 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeAttribute(PATH,child.getPath());
                     writeProperties(child, json);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
-                        String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
-                        json.writeAttribute(MIME_TYPE, mimeType);
+                        Resource childContent = child.getChild(JCR_CONTENT);
+                        if(childContent != null) {
+                            String mimeType = childContent.getValueMap().get(JCR_MIME_TYPE, String.class);
+                            json.writeAttribute(MIME_TYPE, mimeType);
+                        } else {
+                            logger.debug("No Asset Content Child found for: '{}'", child.getPath());
+                        }
                     }
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);

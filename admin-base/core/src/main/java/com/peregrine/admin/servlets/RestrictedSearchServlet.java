@@ -27,7 +27,9 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
+import org.jetbrains.annotations.NotNull;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -143,7 +145,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         return findAndOutputToWriterAsJSON(request, query);
     }
 
-    private Response findAndOutputToWriterAsJSON(Request request, String query) throws IOException {
+    private @NotNull Response findAndOutputToWriterAsJSON(@NotNull Request request, @NotNull String query) throws IOException {
         JsonResponse answer = new JsonResponse();
         if(query.length() == 0) {
             answer.writeAttribute(CURRENT, 1).writeAttribute(MORE, false).writeArray(DATA).writeClose();
@@ -204,10 +206,10 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    private Node findChildNodeRecursive(Node node, String nodeName) throws RepositoryException {
-        Node jcrContent = null;
+    private @Nullable Node findChildNodeRecursive(@NotNull Node node, String nodeName) throws RepositoryException {
+        Node answer = null;
         if(node.hasNode(nodeName)) {
-            jcrContent = node.getNode(nodeName);
+            answer = node.getNode(nodeName);
         } else {
             // Loop for a sling:resourceSuperType and copy this one in instead
             Node superTypeNode = node;
@@ -224,8 +226,8 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                             logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
                             // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
                             if(superTypeNode.hasNode(nodeName)) {
-                                jcrContent = superTypeNode.getNode(nodeName);
-                                logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), jcrContent.getPath());
+                                answer = superTypeNode.getNode(nodeName);
+                                logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), answer.getPath());
                                 break;
                             }
                         } catch(PathNotFoundException e) {
@@ -236,10 +238,10 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                 }
             }
         }
-        return jcrContent;
+        return answer;
     }
 
-    private void writeComponentNode(Node component, Node variation, JsonResponse answer) throws RepositoryException, IOException {
+    private void writeComponentNode(@NotNull Node component, @Nullable Node variation, @NotNull JsonResponse answer) throws RepositoryException, IOException {
         answer.writeObject();
         answer.writeAttribute(NAME, component.getName());
         answer.writeAttribute(PATH, component.getPath());
@@ -275,14 +277,21 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                 answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
             }
         }
-        if(variation == null && findChildNodeRecursive(component, THUMBNAIL_PNG) != null) {
-            answer.writeAttribute(THUMBNAIL, findChildNodeRecursive(component, THUMBNAIL_PNG).getPath());
-        } else if(variation == null && findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG) != null) {
-            answer.writeAttribute(THUMBNAIL, findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG).getPath());
-        } else if(variation != null) {
+        if(variation == null) {
+            Node childNode = findChildNodeRecursive(component, THUMBNAIL_PNG);
+            if(childNode != null) {
+                answer.writeAttribute(THUMBNAIL, childNode.getPath());
+            } else {
+                childNode = findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG);
+                if(childNode != null) {
+                    answer.writeAttribute(THUMBNAIL, childNode.getPath());
+                }
+            }
+        } else {
             String thumbnailName = THUMBNAIL + "-" + variation.getName().toLowerCase()+".png";
-            if(findChildNodeRecursive(component, thumbnailName) != null) {
-                answer.writeAttribute(THUMBNAIL, findChildNodeRecursive(component, thumbnailName).getPath());
+            Node childNOde = findChildNodeRecursive(component, thumbnailName);
+            if(childNOde != null) {
+                answer.writeAttribute(THUMBNAIL, childNOde.getPath());
             }
         }
         answer.writeAttribute(NODE_TYPE, component.getPrimaryNodeType() + "");

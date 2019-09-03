@@ -1,5 +1,6 @@
 package com.peregrine.admin.resource;
 
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -83,7 +84,7 @@ public class ResourceRelocationService
     }
 
     @Override
-    public void reorder(Resource parent, String sourceChildName, String targetChildName, boolean before) throws RepositoryException {
+    public void reorder(Resource parent, String sourceChildName, String targetChildName, boolean before) throws RepositoryException, ManagementException {
         if(parent == null) {
             throw new IllegalArgumentException(PARENT_RESOURCE_MUST_BE_SPECIFIED);
         }
@@ -94,6 +95,7 @@ public class ResourceRelocationService
             throw new IllegalArgumentException(String.format(TARGET_NOT_FOUND, sourceChildName, parent.getPath()));
         }
         Node toNode = parent.adaptTo(Node.class);
+        if(toNode == null) { throw new ManagementException("Parent: '" + parent.getPath() + "' could not be adapted to a Node"); }
         if(before) {
             // No Target Child Name and before means we move it to the first place
             if(targetChildName == null) {
@@ -116,26 +118,28 @@ public class ResourceRelocationService
 
     private Node getNextNode(Node parent, String childName) throws RepositoryException {
         Node answer = null;
-        NodeIterator i = parent.getNodes();
-        while(i.hasNext()) {
-            Node child = i.nextNode();
-            if(childName == null) {
-                // No Child Name means returns first
-                answer = child;
-                break;
-            }
-            if(child.getName().equals(childName)) {
-                if(i.hasNext()) {
-                    answer = i.nextNode();
+        if(parent != null) {
+            NodeIterator i = parent.getNodes();
+            while (i.hasNext()) {
+                Node child = i.nextNode();
+                if (childName == null) {
+                    // No Child Name means returns first
+                    answer = child;
+                    break;
                 }
-                break;
+                if (child.getName().equals(childName)) {
+                    if (i.hasNext()) {
+                        answer = i.nextNode();
+                    }
+                    break;
+                }
             }
         }
         return answer;
     }
 
     @Override
-    public Resource rename(Resource from, String newName, boolean updateReferences) throws RepositoryException {
+    public Resource rename(Resource from, String newName, boolean updateReferences) throws RepositoryException, ManagementException {
         if(from == null) {
             throw new IllegalArgumentException(FROM_RESOURCE_MUST_BE_SPECIFIED);
         }
@@ -148,8 +152,11 @@ public class ResourceRelocationService
             references = referenceLister.getReferencedByList(from);
         }
         Node fromNode = from.adaptTo(Node.class);
+        if(fromNode == null) { throw new ManagementException("Form Resource: '" + from.getPath() + "' could not be adapted to a Node"); }
         Resource parent = from.getParent();
+        if(parent == null) { throw new ManagementException("Resource: '" + from.getPath() + "' has no parent"); }
         Node fromNodeParent = parent.adaptTo(Node.class);
+        if(fromNodeParent == null) { throw new ManagementException("From Parent: '" + from.getPath() + "' could not be adapted to a Node"); }
         Node nextNode = getNextNode(fromNodeParent, from.getName());
         String fromPath = from.getPath();
         String fromName = from.getName();

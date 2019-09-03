@@ -32,6 +32,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.jetbrains.annotations.NotNull;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -115,8 +116,10 @@ public class PerAssetImpl
         throws PersistenceException, RepositoryException
     {
         Session session = adaptTo(Session.class);
+        if(session == null) { throw new RepositoryException("Could not adapt asset to session"); }
         Resource renditions = getRenditionsResource(true);
         Node renditionsNode = renditions.adaptTo(Node.class);
+        if(renditionsNode == null) { throw new RepositoryException("Renditions Resource could not be adapted to Node"); }
         Node renditionNode = renditionsNode.addNode(renditionName, NT_FILE);
         Node jcrContent = renditionNode.addNode(JCR_CONTENT, NT_RESOURCE);
         Binary data = session.getValueFactory().createBinary(dataStream);
@@ -211,7 +214,7 @@ public class PerAssetImpl
      * @return The Renditions resource if found or created otherwise null
      * @throws PersistenceException If resource could not be created
      */
-    private Resource getRenditionsResource(boolean create)
+    private @NotNull Resource getRenditionsResource(boolean create)
         throws PersistenceException
     {
         ResourceResolver resourceResolver = adaptTo(ResourceResolver.class);

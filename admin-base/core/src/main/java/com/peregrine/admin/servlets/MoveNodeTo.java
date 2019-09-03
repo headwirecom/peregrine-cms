@@ -104,6 +104,10 @@ public class MoveNodeTo extends AbstractBaseServlet {
             Resource fromResource = request.getResourceByPath(fromPath);
             resourceManagement.moveNode(fromResource, toResource, addAsChild, addBefore);
             request.getResourceResolver().commit();
+            Resource parent = toResource.getParent();
+            if(parent == null) {
+                throw new ManagementException("To Resource: '" + toResource.getPath() + "' has no parent");
+            }
             answer = new RedirectResponse((addAsChild ? toPath : toResource.getParent().getPath()) + MODEL_JSON);
         } catch(ManagementException e) {
             logger.error("problems while moving", e);
