@@ -204,22 +204,18 @@ public class DistributionReplicationService
                 } catch(PersistenceException e) {
                     throw new ReplicationException("Could not set Replication User before distribution", e);
                 }
-                if(distributor != null) {
-                    DistributionResponse response = distributor.distribute(
-                        agentName,
-                        resourceResolver,
-                        new SimpleDistributionRequest(
-                            activate ?
-                                DistributionRequestType.ADD :
-                                DistributionRequestType.DELETE,
-                            paths)
-                    );
-                    log.trace("Distributor Response: '{}'", response);
-                    if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
-                        throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
-                    }
-                } else {
-                    throw new ReplicationException(NO_DISTRIBUTOR_AVAILABLE);
+                DistributionResponse response = distributor.distribute(
+                    agentName,
+                    resourceResolver,
+                    new SimpleDistributionRequest(
+                        activate ?
+                            DistributionRequestType.ADD :
+                            DistributionRequestType.DELETE,
+                        paths)
+                );
+                log.trace("Distributor Response: '{}'", response);
+                if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
+                    throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
                 }
             }
         }

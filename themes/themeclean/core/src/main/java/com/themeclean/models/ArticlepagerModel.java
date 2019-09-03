@@ -398,7 +398,7 @@ public class ArticlepagerModel extends AbstractComponent {
       Resource res = getCurrentPage(getRootResource());
       LOG.debug("resource: {}",res);
       if(res == null) res = getCurrentPage(getResource());
-      PerPage page = res.adaptTo(PerPage.class);
+      PerPage page = res == null ? null : res.adaptTo(PerPage.class);
       if(page == null) return "not adaptable";
       PerPage prev = page.getPrevious();
       return prev != null ? prev.getPath(): "unknown";
@@ -407,7 +407,7 @@ public class ArticlepagerModel extends AbstractComponent {
   public String getNext() {
     Resource res = getCurrentPage(getRootResource());
     if(res == null) res = getCurrentPage(getResource());
-    PerPage page = res.adaptTo(PerPage.class);
+    PerPage page = res == null ? null : res.adaptTo(PerPage.class);
     if(page == null) return "not adaptable";
     PerPage next = page.getNext();
     return next != null ? next.getPath(): "unknown";
@@ -419,7 +419,9 @@ public class ArticlepagerModel extends AbstractComponent {
     try{
       
       ValueMap props = resource.adaptTo(ValueMap.class);
-      resourceType = props.get("jcr:primaryType", "type not found");
+      resourceType = props == null ?
+		  "props for type not found" :
+		  props.get("jcr:primaryType", "type not found");
       LOG.debug("resource type is: " + resourceType + "  path is:" + resource.getPath());
       // we only care about per:page node
       if("per:Page".equals(resourceType)) {

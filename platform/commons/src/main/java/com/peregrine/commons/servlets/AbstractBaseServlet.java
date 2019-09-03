@@ -15,6 +15,7 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -607,7 +608,9 @@ public abstract class AbstractBaseServlet
 
         @Override
         public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
-            request.getRequestDispatcher(resource, requestDispatcherOptions).forward(request, response);
+            RequestDispatcher dispatcher = request.getRequestDispatcher(resource, requestDispatcherOptions);
+            if(dispatcher == null) { throw new ServletException("Request Dispatcher not found for resource: " + response); }
+            dispatcher.forward(request, response);
         }
 
         @Override

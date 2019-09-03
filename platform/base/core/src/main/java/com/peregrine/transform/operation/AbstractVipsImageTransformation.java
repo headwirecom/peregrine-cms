@@ -81,7 +81,7 @@ public abstract class AbstractVipsImageTransformation
 
     private boolean vipsInstalled = false;
     private long lastCheckTime = -1;
-    private long checkTimeout = 5 * 60 * 1000;
+    private long checkTimeout = 5 * 60 * 1000L;
     private String transformationName = getDefaultTransformationName();
 
     abstract MimeTypeService getMimeTypeService();
@@ -120,6 +120,7 @@ public abstract class AbstractVipsImageTransformation
 
     protected void configure(boolean enabled, String transformationName) {
         this.enabled = enabled;
+
         this.transformationName = transformationName == null || transformationName.isEmpty() ?
             getDefaultTransformationName() :
             transformationName;

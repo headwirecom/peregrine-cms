@@ -370,7 +370,7 @@ public class BreadcrumbModel extends AbstractComponent {
     	try{
 			    		
     		ValueMap props = resource.adaptTo(ValueMap.class);
-		    String resourceType = props.get("jcr:primaryType", "type not found");
+		    String resourceType = props == null ? "" : props.get("jcr:primaryType", "type not found");
 		    // we only care about per:page child
 		    if(resourceType.equals("per:Page")){
 			    TextLink link = new TextLink(resource.getPath(), getPageTitle(resource.getPath()));
@@ -393,8 +393,11 @@ public class BreadcrumbModel extends AbstractComponent {
 		try{
 			String resourcePath = pageUrl + "/jcr:content";
 			ResourceResolver resourceResolver = getResource().getResourceResolver();
-			ValueMap props = resourceResolver.getResource(resourcePath).adaptTo(ValueMap.class);
-			return props.get("jcr:title", "title not found");
+			Resource contentResource = resourceResolver.getResource(resourcePath);
+			ValueMap props = contentResource == null ?
+				null :
+				contentResource.adaptTo(ValueMap.class);
+			return props == null ? "props for title not found...." : props.get("jcr:title", "title not found");
 		} catch(Exception e){
 			LOG.error("getPageTitle error: {}",e);
 			return "title not found....";

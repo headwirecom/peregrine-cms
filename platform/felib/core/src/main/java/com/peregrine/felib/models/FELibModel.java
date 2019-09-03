@@ -99,7 +99,7 @@ public class FELibModel {
                 try {
                     if (br != null) br.close();
                 } catch (IOException ioe) {
-                    throw new RuntimeException("failed to clean up file", ioe);
+                    // Ignore
                 }
             }
         }

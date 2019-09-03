@@ -8,6 +8,8 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,27 +114,27 @@ public class PagelistModel extends AbstractComponent {
 		return levels == null ? "1" : levels;
 	}
 
-	public String getRootPageTitle() {
-		PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
-		PerPage page = ppm.getPage(getRootpage());
-        if(page == null) return "not adaptable";
-        return page != null ? page.getTitle(): "";
+	public @Nullable String getRootPageTitle() {
+		PerPage page = getPage();
+        return page != null ? page.getTitle() : "not adaptable";
 	}
 
-	public String getRootPageLink() {
-		PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
-		PerPage page = ppm.getPage(getRootpage());
-        if(page == null) return "not adaptable";
-        return page != null ? page.getPath(): "";
+	public @Nullable String getRootPageLink() {
+		PerPage page = getPage();
+		return page != null ? page.getPath() : "not adaptable";
 	}
 
-	public List<Page> getChildrenPages() {
+	private @Nullable PerPage getPage() {
+		PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
+		return ppm == null ? null : ppm.getPage(getRootpage());
+	}
+
+	public @NotNull List<Page> getChildrenPages() {
 		List<Page> childPages = new ArrayList<Page>();
 		String rootPage = getRootpage();
 		if (rootPage != null) {
 			int levels = Integer.parseInt(getLevels());
-			PerPageManager ppm = getResource().getResourceResolver().adaptTo(PerPageManager.class);
-			PerPage page = ppm.getPage(getRootpage());
+			PerPage page = getPage();
 			if (page != null) {
 				for (PerPage child : page.listChildren()) {
 					if (!child.getPath().equals(page.getPath())) {

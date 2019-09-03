@@ -30,6 +30,7 @@ import com.peregrine.replication.Replication;
 import com.peregrine.render.RenderService;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -75,6 +76,7 @@ public class LocalFileSystemReplicationService
     public static final String LOCAL_FILE_SYSTEM = "local-file-system://";
     public static final String FAILED_TO_CREATED_FOLDER = "Failed to create folder: '%s'";
     public static final String FAILED_TO_DELETE_FILE = "Failed to delete file: '%s'";
+    public static final String NO_PARENT_FROM_RESOURCE = "Resource: '%s' has no parent";
     public static final String FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER = "Failed to Store Rendering as Parent Folder does not exist or is not a directory: '%s'";
     public static final String FAILED_STORE_RENDERING_FILE_IS_DIRECTORY = "Failed to Store Rendering as target file is a directory:: '%s'";
     public static final String PLACEHOLDER_NO_VALUE = "Place Holder: '%s' did not yield a value";
@@ -266,10 +268,8 @@ public class LocalFileSystemReplicationService
     @Override
     String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
         File renderingFile = createRenderingFile(resource, extension);
-        try {
-            FileWriter fileWriter = new FileWriter(renderingFile);
+        try (FileWriter fileWriter = new FileWriter(renderingFile)) {
             fileWriter.append(content);
-            fileWriter.close();
         } catch(IOException e) {
             throw new ReplicationException(String.format(FAILED_TO_STORE_RENDERING, renderingFile.getAbsolutePath()), e);
         }
@@ -279,10 +279,8 @@ public class LocalFileSystemReplicationService
     @Override
     String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException {
         File renderingFile = createRenderingFile(resource, extension);
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(renderingFile);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(renderingFile)) {
             fileOutputStream.write(content);
-            fileOutputStream.close();
         } catch(IOException e) {
             throw new ReplicationException(String.format(CANNOT_WRITE_RENDERING, renderingFile.getAbsolutePath()), e);
         }
@@ -292,31 +290,24 @@ public class LocalFileSystemReplicationService
     @Override
     void removeReplica(Resource resource, final List<Pattern> namePattern, final boolean isFolder) throws ReplicationException {
         final String resourceName = resource.getName();
-        File directory = new File(targetFolder, resource.getParent().getPath());
-        if(!directory.exists() || !directory.isDirectory()) {
-            throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
-        }
-        final List<Pattern> patterns = new ArrayList<>();
+        File directory = getParentDirectory(resource);
         File[] filesToBeDeletedFiles = directory.listFiles(
-            new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    if(isFolder) {
-                        if(file.isDirectory() && file.getName().equals(resourceName)) {
+            file -> {
+                if(isFolder) {
+                    if(file.isDirectory() && file.getName().equals(resourceName)) {
+                        return true;
+                    }
+                }
+                if(namePattern == null) {
+                    return file.getName().startsWith(resourceName);
+                } else {
+                    for(Pattern pattern : namePattern) {
+                        if(pattern.matcher(file.getName()).matches()) {
                             return true;
                         }
                     }
-                    if(namePattern == null) {
-                        return file.getName().startsWith(resourceName);
-                    } else {
-                        for(Pattern pattern : namePattern) {
-                            if(pattern.matcher(file.getName()).matches()) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
                 }
+                return false;
             }
         );
         if(filesToBeDeletedFiles != null) {
@@ -344,10 +335,7 @@ public class LocalFileSystemReplicationService
     }
 
     private File createRenderingFile(Resource resource, String extension) throws ReplicationException {
-        File directory = new File(targetFolder, resource.getParent().getPath());
-        if(!directory.exists() || !directory.isDirectory()) {
-            throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
-        }
+        File directory = getParentDirectory(resource);
         String fileName = resource.getName() + (isNotEmpty(extension) ? "." + extension : "");
         File renderingFile = new File(directory, fileName);
         if(renderingFile.exists()) {
@@ -359,6 +347,16 @@ public class LocalFileSystemReplicationService
             }
         }
         return renderingFile;
+    }
+
+    private @NotNull File getParentDirectory(@NotNull Resource resource) throws ReplicationException {
+        Resource parent = resource.getParent();
+        if(parent == null) { throw new ReplicationException(String.format(NO_PARENT_FROM_RESOURCE, resource.getPath())); }
+        File directory = new File(targetFolder, parent.getPath());
+        if(!directory.exists() || !directory.isDirectory()) {
+            throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
+        }
+        return directory;
     }
 
     public static final String PLACEHOLDER_START_TOKEN = "${";

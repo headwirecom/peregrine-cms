@@ -112,11 +112,12 @@ public class Activator
      * @throws IOException If the extraction failed
      */
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-        byte[] bytesIn = new byte[BUFFER_SIZE];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+            byte[] bytesIn = new byte[BUFFER_SIZE];
+            int read = 0;
+            while ((read = zipIn.read(bytesIn)) != -1) {
+                bos.write(bytesIn, 0, read);
+            }
         }
-        bos.close();
-    }}
+    }
+}

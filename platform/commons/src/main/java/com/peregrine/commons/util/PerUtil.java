@@ -38,6 +38,8 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -620,6 +622,22 @@ public class PerUtil {
             Object temp = source.get(key);
             if(temp != null) {
                 answer = temp.toString();
+            }
+        }
+        return answer;
+    }
+
+    public static boolean doSave(ResourceResolver resourceResolver, String action) {
+        boolean answer = false;
+        Session session = resourceResolver.adaptTo(Session.class);
+        if(session == null) {
+            LOG.warn("Could not obtain Session to save changes for: '{}'", action);
+        } else {
+            try {
+                session.save();
+                answer = true;
+            } catch (RepositoryException e) {
+                LOG.warn("Failed to save changes for: '{}'", action, e);
             }
         }
         return answer;

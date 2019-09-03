@@ -25,6 +25,8 @@ package com.peregrine.transform;
  * #L%
  */
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Defines the API for Image Transformations
  *
@@ -45,7 +47,7 @@ public interface ImageTransformation {
     public String getTransformationName();
 
     /** @return The Default Transformation Name **/
-    public String getDefaultTransformationName();
+    public @NotNull String getDefaultTransformationName();
 
     /** @return True if the Transformation is enabled **/
     public boolean isEnabled();

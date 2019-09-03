@@ -108,10 +108,11 @@ public class PageMerge implements Use {
                     Collections.<String, String> emptyMap());
             String templatePath = (String) page.get(TEMPLATE);
             if(templatePath == null) {
-                if(resource.getParent().getPath().startsWith(CONTENT_TEMPLATES)) {
+                Resource parent = resource.getParent();
+                if(parent != null && parent.getPath().startsWith(CONTENT_TEMPLATES)) {
                     // only use the parent as a template of a template if it is in fact a page
-                    if(resource.getParent().getResourceType().equals(PAGE_PRIMARY_TYPE)) {
-                        templatePath = resource.getParent().getPath();
+                    if(parent.getResourceType().equals(PAGE_PRIMARY_TYPE)) {
+                        templatePath = parent.getPath();
                     }
                 }
             }
@@ -152,8 +153,8 @@ public class PageMerge implements Use {
         for (Object key: page.keySet()) {
             Object value = page.get(key);
             log.debug("key is {}", key);
-            log.debug("value is {}", value == null ? value : value.getClass());
-            if(key.equals(COMPONENT) && value.equals(NT_UNSTRUCTURED)) continue;
+            log.debug("value is {}", value == null ? "null" : value.getClass());
+            if(key.equals(COMPONENT) && value != null && value.equals(NT_UNSTRUCTURED)) continue;
             if(value instanceof Map) {
 
             } else if(value instanceof ArrayList) {
@@ -210,6 +211,7 @@ public class PageMerge implements Use {
         request = (SlingHttpServletRequest) bindings.get(REQUEST);
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
         modelFactory = sling.getService(ModelFactory.class);
+        renderContext.remove();
         renderContext.set(new RenderContext(request));
     }
 }

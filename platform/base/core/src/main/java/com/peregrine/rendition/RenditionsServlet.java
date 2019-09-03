@@ -87,14 +87,11 @@ public class RenditionsServlet extends AbstractBaseServlet {
     )
     void bindServlet(Servlet servlet) {
         logger.trace("Bind Servlet: '{}', Name: '{}'", servlet, servlet.getClass().getName());
-        if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) {
-            redirectServlet = servlet;
-            logger.trace("Redirect Servlet: '{}'", redirectServlet);
-        }
+        if(servlet.getClass() == RenditionsServlet.class) { redirectServlet = servlet; }
     }
     void unbindServlet(Servlet servlet) {
         logger.trace("Unbind Servlet: '{}'", servlet);
-        if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) { redirectServlet = null; }
+        if(servlet.getClass() == RenditionsServlet.class) { redirectServlet = null; }
     }
 
     @Override

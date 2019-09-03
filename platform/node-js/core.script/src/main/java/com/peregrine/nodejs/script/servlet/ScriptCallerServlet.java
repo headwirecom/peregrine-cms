@@ -10,6 +10,7 @@ import com.peregrine.render.RenderService.RenderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.framework.Constants;
@@ -145,7 +146,7 @@ public class ScriptCallerServlet
                     String extension = path.substring(extensionDot + 1);
                     jsResource = request.getResourceResolver().resolve(resourcePath);
                     try {
-                        if(jsResource != null) {
+                        if(!(jsResource instanceof NonExistingResource)) {
                             script = renderService.renderInternally(jsResource, extension);
                             log.trace("Script loaded: '{}'", script);
                         } else {

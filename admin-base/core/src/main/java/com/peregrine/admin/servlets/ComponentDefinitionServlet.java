@@ -30,6 +30,8 @@ import com.peregrine.commons.servlets.ServletHelper;
 import com.peregrine.commons.util.PerConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
@@ -119,7 +121,8 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    private Resource getDialogFromSuperType(Resource resource, boolean page) {
+    private @Nullable Resource getDialogFromSuperType(@NotNull Resource resource, boolean page) {
+        Resource answer = null;
         String componentPath = resource.getValueMap().get(SLING_RESOURCE_SUPER_TYPE, String.class);
         if(componentPath != null) {
             if (!componentPath.startsWith(APPS_ROOT + SLASH)) {
@@ -127,16 +130,16 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             }
             ResourceResolver resourceResolver = resource.getResourceResolver();
             Resource component = resourceResolver.getResource(componentPath);
-            Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
-            if (dialog == null) {
-                return getDialogFromSuperType(component, page);
-            } else {
-                return dialog;
+            if(component != null) {
+                Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
+                if (dialog == null) {
+                    answer = getDialogFromSuperType(component, page);
+                } else {
+                    answer = dialog;
+                }
             }
-        } else {
-            return null;
         }
+        return answer;
     }
-
 }
 

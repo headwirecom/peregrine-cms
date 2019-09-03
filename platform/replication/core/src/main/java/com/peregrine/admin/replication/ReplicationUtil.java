@@ -36,32 +36,36 @@ public class ReplicationUtil {
     public static boolean supportsReplicationProperties(Resource resource) {
         boolean answer = false;
         Node sourceNode = resource.adaptTo(Node.class);
-        List<String> replicationPrimaries = getReplicationPrimaryNodeTypes(sourceNode);
-        try {
-            if(replicationPrimaries != null) {
-                answer = replicationPrimaries.contains(sourceNode.getPrimaryNodeType().getName());
-            }
-            if(!answer) {
-                NodeType[] mixins = sourceNode.getMixinNodeTypes();
-                for(NodeType mixin : mixins) {
-                    if(mixin.getName().equals(PER_REPLICATION)) {
-                        answer = true;
-                        break;
-                    }
+        if(sourceNode == null) {
+            LOGGER.warn("Resource: '{}' could not be adapted to a Node", resource);
+        } else {
+            List<String> replicationPrimaries = getReplicationPrimaryNodeTypes(sourceNode);
+            try {
+                if (replicationPrimaries != null) {
+                    answer = replicationPrimaries.contains(sourceNode.getPrimaryNodeType().getName());
                 }
-                if(!answer) {
-                    NodeType nodeType = sourceNode.getPrimaryNodeType();
-                    NodeType[] superTypes = nodeType.getSupertypes();
-                    for(NodeType mixin : superTypes) {
-                        if(mixin.getName().equals(PER_REPLICATION)) {
+                if (!answer) {
+                    NodeType[] mixins = sourceNode.getMixinNodeTypes();
+                    for (NodeType mixin : mixins) {
+                        if (mixin.getName().equals(PER_REPLICATION)) {
                             answer = true;
                             break;
                         }
                     }
+                    if (!answer) {
+                        NodeType nodeType = sourceNode.getPrimaryNodeType();
+                        NodeType[] superTypes = nodeType.getSupertypes();
+                        for (NodeType mixin : superTypes) {
+                            if (mixin.getName().equals(PER_REPLICATION)) {
+                                answer = true;
+                                break;
+                            }
+                        }
+                    }
                 }
+            } catch (RepositoryException e) {
+                LOGGER.warn("Failed to check Primary Node Type for Replication support -> ignore that", e);
             }
-        } catch(RepositoryException e) {
-            LOGGER.warn("Failed to check Primary Node Type for Replication support -> ignore that", e);
         }
         return answer;
     }
@@ -134,8 +138,13 @@ public class ReplicationUtil {
                         targetProperties.put(PER_REPLICATED_BY, userId);
                         targetProperties.put(PER_REPLICATED, replicated);
                         if(JCR_CONTENT.equals(source.getName())) {
-                            sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
-                            targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+                            Resource parent = target.getParent();
+                            if(parent == null) {
+                                LOGGER.warn("A Content Node should always have a parent but we did not get one for: '{}'", target);
+                            } else {
+                                sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
+                                targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+                            }
                         } else {
                             sourceProperties.put(PER_REPLICATION_REF, target.getPath());
                             targetProperties.put(PER_REPLICATION_REF, source.getPath());

@@ -314,6 +314,7 @@ public class RemoteS3SystemReplicationService
     @Override
     String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
         PutObjectRequest request = createPutRequest(awsBucketName, resource.getPath(), extension, content);
+        if(request == null) { throw new ReplicationException("Could not create Put Request"); }
         if(extension.endsWith(JSON)) {
             log.trace("Set JSon Content Type");
             ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -350,6 +351,7 @@ public class RemoteS3SystemReplicationService
     @Override
     String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException {
         PutObjectRequest request = createPutRequest(awsBucketName, resource.getPath(), extension,content);
+        if(request == null) { throw new ReplicationException("Could not create Put Request"); }
         // Check if this is an Asset and if so check for the rendition
         String mimeType = null;
         String primaryType = getPrimaryType(resource);

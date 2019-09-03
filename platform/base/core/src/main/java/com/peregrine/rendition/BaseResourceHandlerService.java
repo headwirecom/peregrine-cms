@@ -175,8 +175,8 @@ public class BaseResourceHandlerService
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
         if(resource != null) {
-            ValueMap properties = resource != null ? resource.getValueMap() : null;
-            answer = properties != null ? properties.get(PerConstants.JCR_DATA, InputStream.class) : null;
+            ValueMap properties = resource.getValueMap();
+            answer = properties.get(PerConstants.JCR_DATA, InputStream.class);
         }
         return answer;
     }

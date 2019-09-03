@@ -33,6 +33,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -214,7 +215,7 @@ public class PerAssetImpl
      * @return The Renditions resource if found or created otherwise null
      * @throws PersistenceException If resource could not be created
      */
-    private @NotNull Resource getRenditionsResource(boolean create)
+    private @Nullable Resource getRenditionsResource(boolean create)
         throws PersistenceException
     {
         ResourceResolver resourceResolver = adaptTo(ResourceResolver.class);

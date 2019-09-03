@@ -58,6 +58,7 @@ import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationP
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.containsResource;
+import static com.peregrine.commons.util.PerUtil.doSave;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getParent;
 import static com.peregrine.commons.util.PerUtil.getProperties;
@@ -255,17 +256,12 @@ public class LocalReplicationService
                     }
                 }
             }
-            Session session = resourceResolver.adaptTo(Session.class);
-            for(Resource item: resourceList) {
-                if(item != null) {
+            for (Resource item : resourceList) {
+                if (item != null) {
                     handleParents(handledSources, item, answer, pathMapping, resourceResolver);
                 }
             }
-            try {
-                session.save();
-            } catch(RepositoryException e) {
-                log.warn("Failed to save changes replicate parents", e);
-            }
+            doSave(resourceResolver, "Do Local Replication");
         }
         return answer;
     }
@@ -317,12 +313,7 @@ public class LocalReplicationService
             } else {
                 log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", toBeDeleted, localSource);
             }
-            Session session = resourceResolver.adaptTo(Session.class);
-            try {
-                session.save();
-            } catch(RepositoryException e) {
-                log.warn("Failed to save changes replicate parents", e);
-            }
+            doSave(resourceResolver, "Deactivate Local Replication");
         }
         return answer;
     }
@@ -352,8 +343,8 @@ public class LocalReplicationService
                             // No more parent -> handling parents failed
                             return false;
                         }
-                        log.trace("Recursive Handle Parents: '{}'", resource.getParent().getPath());
-                        boolean ok = handleParents(handledSources, resource.getParent(), resourceList, pathMapping, resourceResolver);
+                        log.trace("Recursive Handle Parents: '{}'", parent.getPath());
+                        boolean ok = handleParents(handledSources, parent, resourceList, pathMapping, resourceResolver);
                         if(!ok) {
                             // Handling of parent failed -> leaving as failure
                             return false;
@@ -365,7 +356,7 @@ public class LocalReplicationService
                             }
                         }
                     }
-                    log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource.getPath());
+                    log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource == null ? "null" : targetParentResource.getPath());
                     Resource copy = copy(resource, targetParentResource, pathMapping);
                     resourceList.add(copy);
                     handledSources.add(resource);

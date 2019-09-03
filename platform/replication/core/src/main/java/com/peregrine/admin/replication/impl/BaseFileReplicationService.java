@@ -51,6 +51,7 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
+import static com.peregrine.commons.util.PerUtil.doSave;
 
 /**
  * Base Class for External File System / Storage Replications
@@ -127,7 +128,6 @@ public abstract class BaseFileReplicationService
             }
         }
         if(resourceResolver != null) {
-            Session session = resourceResolver.adaptTo(Session.class);
             for(Resource item: resourceList) {
                 if(item != null) {
                     // Ignore jcr:content as they cannot be rendered to the FS (if needed then we need to map the file names)
@@ -139,11 +139,7 @@ public abstract class BaseFileReplicationService
                     }
                 }
             }
-            try {
-                session.save();
-            } catch(RepositoryException e) {
-                log.warn("Failed to save changes replicate parents", e);
-            }
+            doSave(resourceResolver, "Do File Replication");
         }
         return answer;
     }
@@ -186,7 +182,7 @@ public abstract class BaseFileReplicationService
 
     private void handleParents(Resource resource) throws ReplicationException {
         // Go through all its parents and make sure the folder does exist
-        if(!isFolderOnTarget(resource.getPath())) {
+        if(resource != null && !isFolderOnTarget(resource.getPath())) {
             Resource parent = resource.getParent();
             if(parent != null) {
                 handleParents(parent);

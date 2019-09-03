@@ -60,7 +60,13 @@ public class NavModel extends AbstractComponent {
         SlingHttpServletRequest request = rx.getRequest();
         Resource homePage = getResourceAt(request.getResource(), 3);
         Resource content = homePage.getChild("jcr:content");
-        return content.adaptTo(ValueMap.class).get("brand", String.class);
+        if(content != null) {
+            ValueMap props = content.adaptTo(ValueMap.class);
+            if(props != null) {
+                return props.get("brand", String.class);
+            }
+        }
+        return null;
     }
 
     public List<NavItem> getNavigation() {
@@ -78,8 +84,12 @@ public class NavModel extends AbstractComponent {
             if("per:Page".equals(child.getResourceType())) {
 
                 Resource content = child.getChild("jcr:content");
-                ValueMap map = content.adaptTo(ValueMap.class);
-                ret.add(new NavItem(child.getPath(), ""+map.get("jcr:title")));
+                if(content != null) {
+                    ValueMap map = content.adaptTo(ValueMap.class);
+                    if (map != null) {
+                        ret.add(new NavItem(child.getPath(), "" + map.get("jcr:title")));
+                    }
+                }
             }
         }
         return ret;
