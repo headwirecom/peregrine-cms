@@ -151,11 +151,9 @@ public final class PerUtilTest {
     }
 
     private void assertRelativePath(final String rootPath, final String childPath, final String result) {
-        final ResourceMock root = new ResourceMock();
         root.setPath(rootPath);
-        final ResourceMock child = new ResourceMock();
-        child.setPath(childPath);
-        assertEquals(result, PerUtil.relativePath(root, child));
+        resource.setPath(childPath);
+        assertEquals(result, PerUtil.relativePath(root, resource));
     }
 
     @Test
@@ -203,12 +201,9 @@ public final class PerUtilTest {
 
     @Test
     public void listMissingResources_nullInputs() {
-        final Resource startingResource = mock(Resource.class);
-        final List<Resource> response = new LinkedList<>();
-
-        PerUtil.listMissingResources(null, response, resourceChecker, true);
-        PerUtil.listMissingResources(startingResource, null, resourceChecker, true);
-        PerUtil.listMissingResources(startingResource, response, null, true);
+        PerUtil.listMissingResources(null, resources, resourceChecker, true);
+        PerUtil.listMissingResources(resource, null, resourceChecker, true);
+        PerUtil.listMissingResources(resource, resources, null, true);
     }
 
     @Test
@@ -229,12 +224,10 @@ public final class PerUtilTest {
 
     @Test
     public void listMissingParents_nullInputs() {
-        final Resource resource = mock(Resource.class);
-        final List<Resource> response = new LinkedList<>();
-        PerUtil.listMissingParents(null, response, resource, resourceChecker);
+        PerUtil.listMissingParents(null, resources, resource, resourceChecker);
         PerUtil.listMissingParents(resource, null, resource, resourceChecker);
-        PerUtil.listMissingParents(resource, response, null, resourceChecker);
-        PerUtil.listMissingParents(resource, response, resource, null);
+        PerUtil.listMissingParents(resource, resources, null, resourceChecker);
+        PerUtil.listMissingParents(resource, resources, resource, null);
     }
 
     @Test
@@ -279,7 +272,6 @@ public final class PerUtilTest {
     public void getPrimaryType() {
         assertNull(PerUtil.getPrimaryType(null));
 
-        final ResourceMock resource = new ResourceMock();
         final String primaryType = "per:Type";
         resource.getProperties().put(JCR_PRIMARY_TYPE, primaryType);
         assertEquals(primaryType, PerUtil.getPrimaryType(resource));
@@ -290,10 +282,8 @@ public final class PerUtilTest {
         assertNull(PerUtil.getResourceType(null));
         assertNull(PerUtil.getResourceType(mock(Resource.class)));
 
-        final ResourceMock resource = new ResourceMock();
         assertNull(PerUtil.getResourceType(resource));
 
-        final PageMock page = new PageMock();
         final String type = "per/component";
         page.getContent().getProperties().put(SLING_RESOURCE_TYPE, type);
         assertEquals(type, PerUtil.getResourceType(page));
@@ -311,7 +301,6 @@ public final class PerUtilTest {
 
     @Test
     public void getComponentNameFromResource() {
-        final Resource resource = mock(Resource.class);
         assertEquals("", PerUtil.getComponentNameFromResource(resource));
         when(resource.getResourceType()).thenReturn("/one/twoThree/FourFive");
         final String componentName = PerUtil.getComponentNameFromResource(resource);
