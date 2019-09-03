@@ -322,14 +322,20 @@ public final class PerUtilTest {
 
     @Test
     public void isPrimaryType() {
+        assertFalse(PerUtil.isPrimaryType(null, PRIMARY_TYPE));
+        assertFalse(PerUtil.isPrimaryType(mock(Resource.class), PRIMARY_TYPE));
+        assertFalse(PerUtil.isPrimaryType(resource, PRIMARY_TYPE));
 
+        resource.putProperty(JCR_PRIMARY_TYPE, PRIMARY_TYPE);
+        assertFalse(PerUtil.isPrimaryType(resource, RESOURCE_TYPE));
+        assertTrue(PerUtil.isPrimaryType(resource, PRIMARY_TYPE));
     }
 
     @Test
     public void getPrimaryType() {
         assertNull(PerUtil.getPrimaryType(null));
 
-        resource.getProperties().put(JCR_PRIMARY_TYPE, PRIMARY_TYPE);
+        resource.putProperty(JCR_PRIMARY_TYPE, PRIMARY_TYPE);
         assertEquals(PRIMARY_TYPE, PerUtil.getPrimaryType(resource));
     }
 
@@ -340,7 +346,7 @@ public final class PerUtilTest {
 
         assertNull(PerUtil.getResourceType(resource));
 
-        page.getContent().getProperties().put(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
+        page.getContent().putProperty(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
         assertEquals(RESOURCE_TYPE, PerUtil.getResourceType(page));
     }
 
