@@ -2,8 +2,7 @@ package com.peregrine.commons.util;
 
 import com.peregrine.PageMock;
 import com.peregrine.ResourceMock;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -26,7 +25,10 @@ public final class PerUtilTest {
     private final List<Resource> resources = new LinkedList<>();
     private final int initialResourcesSize;
 
-    final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
+    private final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class);
+    private final ResourceResolver resourceResolver = mock(ResourceResolver.class);
+
+    private final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
 
     public PerUtilTest() {
         String path = SLASH + "content";
@@ -277,9 +279,20 @@ public final class PerUtilTest {
         assertFalse(response.contains(resource));
     }
 
-    @Test
-    public void loginService() {
+    @Test(expected = IllegalArgumentException.class)
+    public void loginService_missingResolverFactory() throws LoginException {
+        PerUtil.loginService(null, null);
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void loginService_emptyServiceName() throws LoginException {
+        PerUtil.loginService(resolverFactory, null);
+    }
+
+    @Test
+    public void loginService() throws LoginException {
+        when(resolverFactory.getServiceResourceResolver(any())).thenReturn(resourceResolver);
+        assertEquals(resourceResolver, PerUtil.loginService(resolverFactory, "service"));
     }
 
     @Test
