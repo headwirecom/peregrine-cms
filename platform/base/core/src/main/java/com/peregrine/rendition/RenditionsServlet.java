@@ -75,6 +75,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 public class RenditionsServlet extends AbstractBaseServlet {
 
+    private static final String REDIRECT_SERVLET_CLASS_NAME = "org.apache.sling.servlets.get.impl.RedirectServlet";
+
     @Reference
     BaseResourceHandler renditionHandler;
 
@@ -87,11 +89,15 @@ public class RenditionsServlet extends AbstractBaseServlet {
     )
     void bindServlet(Servlet servlet) {
         logger.trace("Bind Servlet: '{}', Name: '{}'", servlet, servlet.getClass().getName());
-        if(servlet.getClass() == RenditionsServlet.class) { redirectServlet = servlet; }
+        if(REDIRECT_SERVLET_CLASS_NAME.equals(servlet.getClass().getName())) {
+            redirectServlet = servlet;
+        }
     }
     void unbindServlet(Servlet servlet) {
         logger.trace("Unbind Servlet: '{}'", servlet);
-        if(servlet.getClass() == RenditionsServlet.class) { redirectServlet = null; }
+        if(REDIRECT_SERVLET_CLASS_NAME.equals(servlet.getClass().getName())) {
+            redirectServlet = null;
+        }
     }
 
     @Override

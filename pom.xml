@@ -88,7 +88,7 @@
         <xmpcore.version>5.1.3</xmpcore.version>
 
         <!-- Tests Dependencies Versions -->
-        <junit.version>4.11</junit.version>
+        <junit.version>4.12</junit.version>
         <mockito-all.version>1.9.5</mockito-all.version>
         <jmock-junit4.version>2.8.2</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
