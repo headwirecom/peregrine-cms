@@ -235,7 +235,7 @@ public class AdminResourceHandlerService
             // If there is a component then we check the component node and see if there is a child jcr:content node
             // If found we copy this over into our newly created node
             if(isNotEmpty(component)) {
-                logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node");
+                logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node", component);
                 try {
                     if(component.startsWith("/")) {
                         logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
@@ -437,7 +437,7 @@ public class AdminResourceHandlerService
                         logger.trace("Image Metadata Tag Name: '{}'", name);
                         String tagName = selector != null ? selector.acceptTag(name) : name;
                         if(tagName != null) {
-                            logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
+                            logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", directoryName, tagName, tag.getDescription());
                             if(asJson) {
                                 json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
                             } else {
@@ -935,7 +935,8 @@ public class AdminResourceHandlerService
             try {
                 resourceResolver.delete(resource);
             } catch (PersistenceException e) {
-                throw new ManagementException(String.format("not able to delete {}", resource.getPath()));
+                final String message = String.format("not able to delete %s", resource.getPath());
+                throw new ManagementException(message);
             }
         }
     }
