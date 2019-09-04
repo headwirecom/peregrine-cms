@@ -102,7 +102,7 @@ public class AdminResourceHandlerService
     public static final String MODE_PROPERTY = "mode";
 
     private static final String PARENT_NOT_FOUND = "Could not find %s Parent Resource. Path: '%s', name: '%s'";
-    private static final String RESOURCE_TYPE_UNEDEFINED = "Resource Type is not provided. Path: '%s', name: '%s'";
+    private static final String RESOURCE_TYPE_UNDEFINED = "Resource Type is not provided. Path: '%s', name: '%s'";
     private static final String NAME_UNDEFINED = "%s Name is not provided. Parent Path: '%s'";
     private static final String TEMPLATE_NOT_FOUND = "Could not find template with path: '%s'";
 
@@ -112,7 +112,6 @@ public class AdminResourceHandlerService
     private static final String FAILED_TO_DELETE = "Failed to Delete Resource: '%s'";
 
     private static final String INSERT_RESOURCE_MISSING = "To Insert a New Node the Reference Resource must be provided";
-    private static final String INSERT_RESOURCE_PROPERTIES_MISSING = "To Insert a New Node the Node Properties must be provided";
     private static final String FAILED_TO_INSERT = "Failed to insert node at: '%s'";
 
     private static final String MOVE_FROM_RESOURCE_MISSING = "To Move a Node the Source Resource must be provided";
@@ -136,8 +135,8 @@ public class AdminResourceHandlerService
     private static final String FAILED_TO_PARSE_JSON = "Failed to parse Json Content: '%s'";
 
     private static final String FAILED_TO_DELETE_CHILD = "Failed to delete child resource: '%s'";
-    private static final String OJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE = "Object List had an unsupported first entry: '%s' (type: '%s')";
-    private static final String OJECT_ITEM_WITH_UNSUPPORTED_TYPE = "Object List was a single list but had an unsupported entry: '%s' (type: '%s')";
+    private static final String OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE = "Object List had an unsupported first entry: '%s' (type: '%s')";
+    private static final String OBJECT_ITEM_WITH_UNSUPPORTED_TYPE = "Object List was a single list but had an unsupported entry: '%s' (type: '%s')";
     private static final String ITEM_NAME_MISSING = "Item: '%s' does not have a name (parent: '%s'";
     private static final String OBJECT_LIST_WITH_UNSUPPORTED_ITEM = "Object List was a full list but had an unsupported entry: '%s' (type: '%s')";
 
@@ -240,8 +239,8 @@ public class AdminResourceHandlerService
             if(name == null || name.isEmpty()) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
             }
-            if(resourceType == null || resourceType.isEmpty()) {
-                throw new ManagementException(String.format(RESOURCE_TYPE_UNEDEFINED, parentPath, name));
+            if(isEmpty(resourceType)) {
+                throw new ManagementException(String.format(RESOURCE_TYPE_UNDEFINED, parentPath, name));
             }
             Node parentNode = parent.adaptTo(Node.class);
             if(parentNode == null) { throw new ManagementException("Unable to adapt parent: '" + parent + "' to Node"); }
@@ -1251,6 +1250,7 @@ public class AdminResourceHandlerService
                     Resource child = resource.getChild(name);
                     if(child == null) {
                         child = createNode(resource, name, NT_UNSTRUCTURED, null);
+                        throw new ManagementException(String.format(OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
                     }
                     // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
                     // for which we have to get all the values in a list and then afterwards if such values were found update
@@ -1259,7 +1259,6 @@ public class AdminResourceHandlerService
                 } else if(type == 1) {
                     updateObjectSingleList(name, list, resource);
                 } else if(type < 0) {
-                    throw new ManagementException(String.format(OJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
                 }
             } else {
                 updateProperties.put(name, value);
@@ -1278,7 +1277,7 @@ public class AdminResourceHandlerService
                 }
                 newSingleList.add(listItem);
             } else {
-                throw new ManagementException(String.format(OJECT_ITEM_WITH_UNSUPPORTED_TYPE, item, (item == null ? "null" : item.getClass().getName())));
+                throw new ManagementException(String.format(OBJECT_ITEM_WITH_UNSUPPORTED_TYPE, item, (item == null ? "null" : item.getClass().getName())));
             }
         }
         ModifiableValueMap childProperties = getModifiableProperties(resource, false);
