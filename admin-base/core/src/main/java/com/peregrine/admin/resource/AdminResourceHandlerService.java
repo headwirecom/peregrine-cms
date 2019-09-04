@@ -276,7 +276,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
         }
         try {
             String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, String.class);
-            if(primaryType != null && !primaryType.isEmpty() && !primaryType.equals(primaryTypeValue)) {
+            if(isNotEmpty(primaryType) && !primaryType.equals(primaryTypeValue)) {
                 throw new ManagementException(String.format(PRIMARY_TYPE_ASKEW_FOR_DELETION, path, primaryType, primaryTypeValue));
             }
             Resource parent = resource.getParent();
@@ -467,7 +467,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
     public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
         Map<String, Object> properties = new HashMap<>();
         properties.put(JCR_PRIMARY_TYPE, primaryType);
-        if(resourceType != null && !resourceType.isEmpty()) {
+        if(isNotEmpty(resourceType)) {
             properties.put(SLING_RESOURCE_TYPE, resourceType);
         }
         try {
@@ -1074,7 +1074,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
             if(answer == null) {
                 throw new ManagementException(String.format(RESOURCE_NOT_FOUND, path));
             }
-            if(jsonContent == null || jsonContent.isEmpty()) {
+            if(isEmpty(jsonContent)) {
                 throw new ManagementException(String.format(NO_CONTENT_PROVIDED, path));
             }
             Map content = convertToMap(jsonContent);
@@ -1204,7 +1204,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
                 if(temp != null) {
                     incomingItemName = temp.toString();
                 }
-                if(incomingItemName == null || incomingItemName.isEmpty()) {
+                if(isEmpty(incomingItemName)) {
                     throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
                 }
                 // Get index of the matching resource child to compare with the index in the list
