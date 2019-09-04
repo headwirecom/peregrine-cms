@@ -445,12 +445,10 @@ public class AdminResourceHandlerService
                             }
                         }
                     }
-                    if(asJson) {
-                        if(json.length() > 1) {
-                            json = json.substring(0, json.length() - 1);
-                            json += "}";
-                            perAsset.addTag(directoryName, RAW_TAGS, json);
-                        }
+                    if(asJson && json.length() > 1) {
+                        json = json.substring(0, json.length() - 1);
+                        json += "}";
+                        perAsset.addTag(directoryName, RAW_TAGS, json);
                     }
                 }
                 // Obtain the Asset Dimension and store directly in the meta data folder
