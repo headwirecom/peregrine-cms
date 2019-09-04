@@ -168,7 +168,6 @@ public class AdminResourceHandlerService
             return resourceResolver.getResource(newFolder.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Folder. Parent Path: '{}', Name: '{}'", parentPath, name);
-            logger.error("Failed to create Folder", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, FOLDER, parentPath, name), e);
         }
     }
@@ -193,7 +192,6 @@ public class AdminResourceHandlerService
             return resourceResolver.getResource(newObject.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
-            logger.error("Failed to create Object", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
         }
     }
@@ -217,7 +215,6 @@ public class AdminResourceHandlerService
             return resourceResolver.getResource(newPage.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
-            logger.error("Failed to create Page", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, PAGE, parentPath, name), e);
         }
     }
@@ -258,7 +255,6 @@ public class AdminResourceHandlerService
             return resourceResolver.getResource(newPage.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
-            logger.error("Failed to create Template", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, TEMPLATE, parentPath, name), e);
         }
     }
@@ -323,7 +319,7 @@ public class AdminResourceHandlerService
                 baseResourceHandler.updateModification(answer);
             }
         } catch (RepositoryException e) {
-            logger.trace("Failed to insert node at: " + resource.getPath(), e);
+            logger.debug("Failed to insert node at: " + resource.getPath(), e);
             throw new ManagementException(String.format(FAILED_TO_INSERT, resource.getPath()), e);
         }
         return answer;
@@ -364,7 +360,7 @@ public class AdminResourceHandlerService
                 baseResourceHandler.updateModification(answer);
             }
         } catch (Exception e) {
-            logger.error("problems while moving", e);
+            logger.debug("problems while moving", e);
             throw new ManagementException(String.format(FAILED_TO_MOVE, fromResource.getPath(), toResource.getPath()), e);
         }
         return answer;
@@ -387,7 +383,7 @@ public class AdminResourceHandlerService
             answer = resourceRelocation.rename(fromResource, newName, true);
             baseResourceHandler.updateModification(answer);
         } catch (Exception e) {
-            logger.error("problems while moving", e);
+            logger.debug("problems while moving", e);
             throw new ManagementException(String.format(FAILED_TO_RENAME, fromResource.getPath(), newName), e);
         }
         return answer;
@@ -458,7 +454,7 @@ public class AdminResourceHandlerService
                 // Obtain the Asset Dimension and store directly in the meta data folder
                 handleAssetDimensions(perAsset);
             } catch(ImageProcessingException e) {
-                e.printStackTrace();
+                logger.debug(EMPTY, e);
             }
         } catch(RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);
@@ -477,12 +473,9 @@ public class AdminResourceHandlerService
         try {
             return parent.getResourceResolver().create(parent, name, properties);
         } catch(PersistenceException e) {
-//            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
-//            logger.trace("Failure Exception", e);
             throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
         } catch(RuntimeException e) {
-            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
-            logger.trace("Failure Exception", e);
+            logger.debug("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
             throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
         }
     }
@@ -617,7 +610,7 @@ public class AdminResourceHandlerService
             }
             return target;
         } catch(RepositoryException e) {
-            logger.trace("Failed to copy components node", e);
+            logger.debug("Failed to copy components node", e);
             throw new ManagementException(String.format(FAILED_TO_COPY, source, target), e);
         }
     }
@@ -897,7 +890,7 @@ public class AdminResourceHandlerService
             content.setProperty(JCR_DATA, data);
             content.setProperty(JCR_MIME_TYPE, TEXT_MIME_TYPE);
         } catch(RepositoryException e) {
-            logger.error("failed to create resource {}", name, e);
+            logger.debug("failed to create resource {}", name, e);
             throw new ManagementException(String.format(FAILED_TO_CREATE, name, parent.getPath(), name), e);
         }
     }
