@@ -74,6 +74,21 @@ paths:
             type: object
             additionalProperties:
               type: object
+  '/getComponent.json{path}':
+    get:
+      description: returns the model for the component at the given path
+      parameters:
+        - description: the path to the component, for example /content/sites/mysite/jcr:content/mycomponent
+          name: path
+          type: string
+          in: path
+      responses:
+        200:
+          description: returns the model for the component at the given path
+          schema:
+            type: object
+            additionalProperties:
+              type: object
   '/getObject.json{path}':
     get:
       description: returns the content for the given object
