@@ -35,16 +35,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.*;
 
-/**
- * Created by Andreas Schaefer on 7/6/17.
- */
 @Component(
     service = AdminResourceHandler.class,
     immediate = true
 )
-public class AdminResourceHandlerService
-    implements AdminResourceHandler
-{
+public final class AdminResourceHandlerService implements AdminResourceHandler {
+
     public static final String DELETION_PROPERTY_NAME = "_opDelete";
     public static final String MODE_PROPERTY = "mode";
 
@@ -137,11 +133,11 @@ public class AdminResourceHandlerService
         IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED_BY);
     }
 
+    @Reference
+    private ResourceRelocation resourceRelocation;
 
     @Reference
-    ResourceRelocation resourceRelocation;
-    @Reference
-    BaseResourceHandler baseResourceHandler;
+    private BaseResourceHandler baseResourceHandler;
 
     private List<ImageMetadataSelector> imageMetadataSelectors = new ArrayList<>();
     @Reference(
