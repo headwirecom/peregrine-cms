@@ -233,28 +233,33 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
             // If found we copy this over into our newly created node
             if(isNotEmpty(component)) {
                 logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node", component);
-                try {
-                    if(component.startsWith("/")) {
-                        logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
-                    } else {
-                        String componentPath = APPS_ROOT + SLASH + component;
-                        if(newPage.getSession().itemExists(componentPath)) {
-                            Node componentNode = newPage.getSession().getNode("/apps/" + component);
-                            if(componentNode.hasNode(JCR_CONTENT)) {
-                                Node source = componentNode.getNode(JCR_CONTENT);
-                                Node target = newPage.getNode(JCR_CONTENT);
-                                copyNode(source, target, true);
-                            }
-                        }
-                    }
-                } catch(PathNotFoundException e) {
-                    logger.warn("Component (for template)t: '{}' not found -> ignored", component);
-                }
+                copyAppsComponentToNewTemplate(component, newPage);
             }
             return resourceResolver.getResource(newPage.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, TEMPLATE, parentPath, name), e);
+        }
+    }
+
+    private void copyAppsComponentToNewTemplate(final String component, final Node template) throws RepositoryException, ManagementException {
+        try {
+            if(component.startsWith(SLASH)) {
+                logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
+            } else {
+                String componentPath = APPS_ROOT + SLASH + component;
+                final Session session = template.getSession();
+                if(session.itemExists(componentPath)) {
+                    Node componentNode = session.getNode(componentPath);
+                    if(componentNode.hasNode(JCR_CONTENT)) {
+                        Node source = componentNode.getNode(JCR_CONTENT);
+                        Node target = template.getNode(JCR_CONTENT);
+                        copyNode(source, target, true);
+                    }
+                }
+            }
+        } catch(PathNotFoundException e) {
+            logger.warn("Component (for template)t: '{}' not found -> ignored", component);
         }
     }
 
@@ -366,35 +371,33 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
 
     @Override
     public Resource rename(Resource fromResource, String newName) throws ManagementException {
-        Resource answer = null;
         if(fromResource == null) {
             throw new ManagementException(RENAME_RESOURCE_MISSING);
         }
-        if(newName == null || newName.isEmpty()) {
+        if(isEmpty(newName)) {
             throw new ManagementException(NAME_TO_BE_RENAMED_TO_MUST_BE_PROVIDED);
         }
         if(newName.indexOf('/') >= 0) {
             throw new ManagementException(NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH);
         }
         try {
-            answer = resourceRelocation.rename(fromResource, newName, true);
+            final Resource answer = resourceRelocation.rename(fromResource, newName, true);
             baseResourceHandler.updateModification(answer);
+            return answer;
         } catch (Exception e) {
             throw new ManagementException(String.format(FAILED_TO_RENAME, fromResource.getPath(), newName), e);
         }
-        return answer;
     }
 
     @Override
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
-        Resource answer = null;
         if(parent == null) {
             throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
-        if(assetName == null || assetName.isEmpty()) {
+        if(isEmpty(assetName)) {
             throw new ManagementException(ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
-        if(contentType == null || contentType.isEmpty()) {
+        if(isEmpty(contentType)) {
             throw new ManagementException(CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         if(inputStream == null) {
@@ -407,55 +410,58 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
             Binary data = parentNode.getSession().getValueFactory().createBinary(inputStream);
             content.setProperty(JCR_DATA, data);
             content.setProperty(JCR_MIME_TYPE, contentType);
-            baseResourceHandler.updateModification(parent.getResourceResolver(), newAsset);
-
-            answer = parent.getResourceResolver().getResource(newAsset.getPath());
-            PerAsset perAsset = answer.adaptTo(PerAsset.class);
-            try {
-                Metadata metadata = ImageMetadataReader.readMetadata(perAsset.getRenditionStream((Resource) null));
-                for(Directory directory : metadata.getDirectories()) {
-                    String directoryName = directory.getName();
-                    logger.trace("Image Metadata Directory: '{}'", directoryName);
-                    ImageMetadataSelector selector = null;
-                    for(ImageMetadataSelector item : imageMetadataSelectors) {
-                        String temp = item.acceptCategory(directoryName);
-                        if(temp != null) {
-                            selector = item;
-                            directoryName = temp;
-                        }
-                    }
-                    boolean asJson = selector != null && selector.asJsonProperty();
-                    String json = "{";
-                    for(Tag tag : directory.getTags()) {
-                        String name = tag.getTagName();
-                        logger.trace("Image Metadata Tag Name: '{}'", name);
-                        String tagName = selector != null ? selector.acceptTag(name) : name;
-                        if(tagName != null) {
-                            logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", directoryName, tagName, tag.getDescription());
-                            if(asJson) {
-                                json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
-                            } else {
-                                perAsset.addTag(directoryName, tagName, tag.getDescription());
-                            }
-                        }
-                    }
-                    if(asJson && json.length() > 1) {
-                        json = json.substring(0, json.length() - 1);
-                        json += "}";
-                        perAsset.addTag(directoryName, RAW_TAGS, json);
-                    }
-                }
-                // Obtain the Asset Dimension and store directly in the meta data folder
-                handleAssetDimensions(perAsset);
-            } catch(ImageProcessingException e) {
-                logger.debug(EMPTY, e);
-            }
+            final ResourceResolver resourceResolver = parent.getResourceResolver();
+            baseResourceHandler.updateModification(resourceResolver, newAsset);
+            final Resource answer = resourceResolver.getResource(newAsset.getPath());
+            processNewAsset(answer.adaptTo(PerAsset.class));
+            return answer;
         } catch(RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);
         } catch(IOException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, RENDITION, parent.getPath(), assetName), e);
         }
-        return answer;
+    }
+
+    private void processNewAsset(final PerAsset asset) throws IOException, RepositoryException {
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(asset.getRenditionStream((Resource) null));
+            for(Directory directory : metadata.getDirectories()) {
+                String directoryName = directory.getName();
+                logger.trace("Image Metadata Directory: '{}'", directoryName);
+                ImageMetadataSelector selector = null;
+                for(ImageMetadataSelector item : imageMetadataSelectors) {
+                    String temp = item.acceptCategory(directoryName);
+                    if(temp != null) {
+                        selector = item;
+                        directoryName = temp;
+                    }
+                }
+                boolean asJson = selector != null && selector.asJsonProperty();
+                String json = "{";
+                for(Tag tag : directory.getTags()) {
+                    String name = tag.getTagName();
+                    logger.trace("Image Metadata Tag Name: '{}'", name);
+                    String tagName = selector != null ? selector.acceptTag(name) : name;
+                    if(tagName != null) {
+                        logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", directoryName, tagName, tag.getDescription());
+                        if(asJson) {
+                            json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
+                        } else {
+                            asset.addTag(directoryName, tagName, tag.getDescription());
+                        }
+                    }
+                }
+                if(asJson && json.length() > 1) {
+                    json = json.substring(0, json.length() - 1);
+                    json += "}";
+                    asset.addTag(directoryName, RAW_TAGS, json);
+                }
+            }
+            // Obtain the Asset Dimension and store directly in the meta data folder
+            handleAssetDimensions(asset);
+        } catch(ImageProcessingException e) {
+            logger.debug(EMPTY, e);
+        }
     }
 
     public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
@@ -477,9 +483,9 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
     // todo: needs deep clone
     private Node createNode(Node parent, Map data, String variation) throws RepositoryException, ManagementException {
         data.remove(PATH);
-        String component = (String) data.remove(COMPONENT);
+        final String component = (String) data.remove(COMPONENT);
 
-        Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
+        Node newNode = parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
         newNode.setProperty(SLING_RESOURCE_TYPE, component);
         final Set<Map.Entry> entrySet = data.entrySet();
         for (final Map.Entry entry: entrySet) {
@@ -494,7 +500,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
         // If found we copy this over into our newly created node
         if(isNotEmpty(component)) {
             try {
-                if(component.startsWith("/")) {
+                if(component.startsWith(SLASH)) {
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
                 } else {
                     String componentPath = APPS_ROOT + SLASH + component;
