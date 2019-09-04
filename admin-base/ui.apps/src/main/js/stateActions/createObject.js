@@ -30,16 +30,19 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    return api.createObject(target.parent, target.name, target.template).then( () => {
-        if(target.data) {
-            api.saveObjectEdit(target.parent + '/' + target.name, target.data).then( () => {
-                if(target.returnTo) {
-                    me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + target.parent)
-                } else {
-                    me.loadContent('/content/admin/objects.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
-                }
-            })
-        }
+    return new Promise( (resolve, reject) => {
+        api.createObject(target.parent, target.name, target.template).then( () => {
+            if(target.data) {
+                api.saveObjectEdit(target.parent + '/' + target.name, target.data).then( () => {
+                    if(target.returnTo) {
+                        me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + target.parent)
+                    } else {
+                        me.loadContent('/content/admin/objects.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
+                    }
+                    resolve()
+                })
+            }
+        })
     })
 
 }

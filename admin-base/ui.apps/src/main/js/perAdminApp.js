@@ -423,16 +423,23 @@ function beforeStateActionImpl(fun) {
 
 function runBeforeStateActions(name) {
     // execute all before state actions
+    const actions = []
     if(beforeStateActions.length > 0) {
         for(let i = 0; i < beforeStateActions.length; i++) {
-            let ret = beforeStateActions[i](name)
-            if(!ret) return false
+            actions.push(beforeStateActions[i](name))
         }
     }
 
-    // clear the actions
-    beforeStateActions = new Array()
-    return true
+    return new Promise( (resolve, reject) => {
+        Promise.all(actions).then( () => {
+            beforeStateActions = new Array()
+            resolve()
+        })
+    });
+    // console.log(ret);
+
+    // // clear the actions
+    // return true
 }
 
 /**
@@ -444,20 +451,27 @@ function runBeforeStateActions(name) {
  */
 function stateActionImpl(name, target) {
 
-    if(!runBeforeStateActions(name)) return
-
-    try {
-        const stateAction = StateActions(name)
-        Promise.resolve(stateAction($perAdminApp, target)).then(result => {
-            if(result && result.startsWith('Uncaught (in promise')) {
-                notifyUserImpl('error', result)
+    return new Promise( (resolve, reject) => {
+        runBeforeStateActions(name).then( () => {
+            try {
+                const stateAction = StateActions(name)
+                Promise.resolve(stateAction($perAdminApp, target)).then(result => {
+                    if(result && result.startsWith('Uncaught (in promise')) {
+                        notifyUserImpl('error', result)
+                        reject()
+                    } else {
+                        resolve()
+                    }
+                }).catch(error => {
+                    notifyUserImpl('error', error)
+                    reject()
+                })
+            } catch(error) {
+                console.log('error', error)
+                reject(error)
             }
-        }).catch(error => {
-            notifyUserImpl('error', error)
-        })
-    } catch(error) {
-        console.log('error', error)
-    }
+        }) 
+    })
 
 }
 
@@ -791,7 +805,7 @@ var PerAdminApp = {
      * @param target
      */
     stateAction(name, target) {
-        stateActionImpl(name, target)
+        return stateActionImpl(name, target)
     },
 
     /**

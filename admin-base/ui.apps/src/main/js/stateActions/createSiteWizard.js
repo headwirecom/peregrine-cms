@@ -30,6 +30,9 @@ export default function(me, target) {
 
     log.fine(target)
 
-    me.loadContent('/content/admin/pages/createsite.html/path' + SUFFIX_PARAM_SEPARATOR +target)
+    return new Promise( (resolve, reject) => {
+        me.loadContent('/content/admin/pages/createsite.html/path' + SUFFIX_PARAM_SEPARATOR +target)
+        resolve()
+    })
 
 }
