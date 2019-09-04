@@ -9,7 +9,6 @@ import com.peregrine.adaption.PerAsset;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.*;
@@ -32,6 +31,9 @@ import java.util.Map.Entry;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -158,7 +160,7 @@ public class AdminResourceHandlerService
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
+            if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
             Node parentNode =  parent.adaptTo(Node.class);
@@ -178,7 +180,7 @@ public class AdminResourceHandlerService
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
+            if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
             }
             if(isEmpty(resourceType)) {
@@ -203,7 +205,7 @@ public class AdminResourceHandlerService
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, PAGE, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
+            if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, PAGE, parentPath));
             }
             Resource templateResource = getResource(resourceResolver, templatePath + "/" + JCR_CONTENT);
@@ -226,7 +228,7 @@ public class AdminResourceHandlerService
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, TEMPLATE, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
+            if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, TEMPLATE, parentPath));
             }
             Node newPage = createPageOrTemplate(parent, name, component, null);
@@ -826,13 +828,13 @@ public class AdminResourceHandlerService
                         logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
                     }
 
-                    if (StringUtils.isNotBlank(fileContent)) {
+                    if (isNotBlank(fileContent)) {
                         String modifiedFileContent = fileContent;
                         for(Resource replacementResource : fileChild.getChildren()) {
                             ValueMap replacementProperties = replacementResource.getValueMap();
                             String pattern = replacementProperties.get("regex", String.class);
                             String replaceWith = replacementProperties.get("replaceWith", String.class);
-                            if(StringUtils.isNotBlank(pattern) && StringUtils.isNotBlank(replaceWith)) {
+                            if(isNotBlank(pattern) && isNotBlank(replaceWith)) {
                                 //"_SITENAME_" is a placeholder for the actual new site name
                                 replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
                                 modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
