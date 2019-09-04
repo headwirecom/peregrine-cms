@@ -487,8 +487,10 @@ public class AdminResourceHandlerService
 
         Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
         newNode.setProperty(SLING_RESOURCE_TYPE, component);
-        for (Object key: data.keySet()) {
-            Object val = data.get(key);
+        final Set<Map.Entry> entrySet = data.entrySet();
+        for (final Map.Entry entry: entrySet) {
+            Object key = entry.getKey();
+            Object val = entry.getValue();
             if(val instanceof String) {
                 newNode.setProperty(key.toString(), (String) val);
             }
@@ -1146,8 +1148,10 @@ public class AdminResourceHandlerService
                     child = createNode(resource, name, NT_UNSTRUCTURED, resourceType);
                     // Now update the child with any remaining properties
                     ModifiableValueMap newChildProperties = getModifiableProperties(child, false);
-                    for(Object childPropertyKey : childProperties.keySet()) {
-                        newChildProperties.put(childPropertyKey + "", childProperties.get(childPropertyKey));
+                    final Set<Map.Entry> childPropertyEntrySet = childProperties.entrySet();
+                    for(final Map.Entry childPropertyEntry: childPropertyEntrySet) {
+                        final Object childPropertyKey = childPropertyEntry.getKey();
+                        newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
                     }
                 } else {
                     updateResourceTree(child, childProperties);
@@ -1250,8 +1254,10 @@ public class AdminResourceHandlerService
                     }
                     // Now update the child with any remaining properties
                     ModifiableValueMap newChildProperties = getModifiableProperties(resourceListItem, false);
-                    for(Object childPropertyKey : incomingItemProperties.keySet()) {
-                        newChildProperties.put(childPropertyKey + "", incomingItemProperties.get(childPropertyKey));
+                    final Set<Map.Entry> childPropertyEntrySet = incomingItemProperties.entrySet();
+                    for(Map.Entry childPropertyEntry : childPropertyEntrySet) {
+                        Object childPropertyKey = childPropertyEntry.getKey();
+                        newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
                     }
                 } else {
                     if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)) {
