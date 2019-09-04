@@ -105,6 +105,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
     public static final String SOURCE_SITE_DOES_NOT_EXIST = "Source Site: '%s' was not provided or does not exist";
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
     public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
+    public static final String COPY_FAILED = "Copy of %s: '%s' failed";
 
     //Package creation constants
     private static final String PACKAGE_SUFFIX = "-full-package";
@@ -945,7 +946,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
             target = source.getResourceResolver().create(targetParent, toName, newProperties);
             updateTitle(target, toName);
         } catch(PersistenceException e) {
-            logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
+            logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
             return null;
         }
         logger.trace("New Resource Properties: '{}'", target.getValueMap());
@@ -1019,7 +1020,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
                     copyChildResources(child, true, childTarget, fromName, toName, depth + 1);
                 }
             } catch(PersistenceException e) {
-                logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
+                logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
                 return;
             }
             logger.trace("Child handled: '{}'", child.getPath());
@@ -1046,7 +1047,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
                 try {
                     source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
                 } catch(PersistenceException e) {
-                    logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                    logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
                 }
             }
         }
@@ -1059,7 +1060,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
         try {
             answer = folder.getResourceResolver().create(targetParent, folderName, newProperties);
         } catch(PersistenceException e) {
-            logger.warn("Copy of " + folder.getName() + ": '" + folder.getPath() + "' failed", e);
+            logger.warn(String.format(COPY_FAILED, folder.getName(), folder.getPath()), e);
         }
         return answer;
     }
