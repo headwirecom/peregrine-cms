@@ -1284,16 +1284,10 @@ public class AdminResourceHandlerService
                             }
                         } else {
                             // We only have to move if this wasn't already the first item due to deletion
-                            boolean doMove = false;
-                            Iterator<Resource> ir = resource.getChildren().iterator();
-                            if(ir.hasNext()) {
-                                if(!lastResourceItem.getName().equals(ir.next().getName())) {
-                                    doMove = true;
-                                    break;
-                                }
-                            }
-                            if(doMove) {
+                            final Iterator<Resource> ir = resource.getChildren().iterator();
+                            if(ir.hasNext() && !lastResourceItem.getName().equals(ir.next().getName())) {
                                 moveNode(resourceListItem, lastResourceItem, false, false);
+                                break;
                             }
                         }
                     }
