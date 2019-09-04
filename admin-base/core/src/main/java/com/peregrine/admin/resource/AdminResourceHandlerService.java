@@ -686,7 +686,7 @@ public class AdminResourceHandlerService
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
                 copyChildResources(sourceResource, true, targetResource, fromName, targetName);
-                updateStringsInFiles(targetResource, fromName, targetName);
+                updateStringsInFiles(targetResource, targetName);
             }
             answer = targetResource;
         }
@@ -721,8 +721,8 @@ public class AdminResourceHandlerService
                 mappings.append(componentSourceName);
                 mappings.append('\n');
             }
-            createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
-            createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
+            createResourceFromString(targetResource, "mapping.js", mappings.toString());
+            createResourceFromString(targetResource, "js.txt", "mapping.js\n");
         }
 
         try {
@@ -802,7 +802,7 @@ public class AdminResourceHandlerService
 
     }
 
-    private void updateStringsInFiles(Resource targetResource, String fromName, String targetName) {
+    private void updateStringsInFiles(Resource targetResource, String targetName) {
         Resource contentResource = targetResource.getChild("jcr:content");
         if (contentResource == null) {
             logger.error("No jcr:content resource for resource '{}'", targetResource.getPath());
@@ -884,7 +884,7 @@ public class AdminResourceHandlerService
         JcrUtils.putFile(fileNode.getParent(), fileNode.getName(), mimeType, newContentStream);
     }
 
-    private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {
+    private void createResourceFromString(Resource parent, String name, String data) throws ManagementException {
         try {
             Node parentNode = parent.adaptTo(Node.class);
             Node newAsset = parentNode.addNode(name, NT_FILE);
@@ -994,7 +994,6 @@ public class AdminResourceHandlerService
                     String pattern1 = SLASH + fromName;
                     String pattern2 = fromName + SLASH;
                     for(Entry<String, Object> entry : newProperties.entrySet()) {
-                        String key = entry.getKey();
                         Object temp = entry.getValue();
                         if(temp instanceof String) {
                             String value = (String) temp;
@@ -1034,7 +1033,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void copyStubs(Resource source, Resource target, String folderName, List superTypes) throws ManagementException {
+    private void copyStubs(Resource source, Resource target, String folderName, List superTypes) {
         Resource appsSource = getResource(source, folderName);
         if(appsSource != null) {
             Resource appsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
