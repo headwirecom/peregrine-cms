@@ -1154,27 +1154,22 @@ public class AdminResourceHandlerService
                 }
             } else if(value instanceof List) {
                 List list = (List) value;
-                int type = 0;
-                Object first = null;
                 if(!list.isEmpty()) {
-                    first = list.get(0);
-                    type = first instanceof Map ? 2 :
-                        first instanceof String ? 1 :
-                            -1;
-                }
-                if(type == 2) {
-                    Resource child = resource.getChild(name);
-                    if(child == null) {
-                        child = createNode(resource, name, NT_UNSTRUCTURED, null);
+                    Object first = list.get(0);
+                    if(first instanceof Map) {
+                        Resource child = resource.getChild(name);
+                        if(child == null) {
+                            child = createNode(resource, name, NT_UNSTRUCTURED, null);
+                        }
+                        // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
+                        // for which we have to get all the values in a list and then afterwards if such values were found update
+                        // them as a property
+                        updateObjectList(list, child);
+                    } else if(first instanceof String) {
+                        updateObjectSingleList(name, list, resource);
+                    } else {
                         throw new ManagementException(String.format(OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
                     }
-                    // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
-                    // for which we have to get all the values in a list and then afterwards if such values were found update
-                    // them as a property
-                    updateObjectList(list, child);
-                } else if(type == 1) {
-                    updateObjectSingleList(name, list, resource);
-                } else if(type < 0) {
                 }
             } else {
                 updateProperties.put(name, value);
