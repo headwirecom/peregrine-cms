@@ -854,12 +854,8 @@ public class AdminResourceHandlerService
     }
 
     private String getFileContentAsString(Resource fileResource) throws IOException {
-        InputStream is = fileResource.adaptTo(InputStream.class);
-        try {
-            String manifestContent = IOUtils.toString(is, StandardCharsets.UTF_8.name());
-            return manifestContent;
-        } finally {
-            is.close();
+        try (final InputStream is = fileResource.adaptTo(InputStream.class)) {
+            return IOUtils.toString(is, StandardCharsets.UTF_8.name());
         }
     }
 
