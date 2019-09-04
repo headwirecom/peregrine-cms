@@ -211,6 +211,7 @@ public final class PerUtilTest {
         PerUtil.listMissingResources(null, resources, resourceChecker, true);
         PerUtil.listMissingResources(root, null, resourceChecker, true);
         PerUtil.listMissingResources(root, resources, null, true);
+        assertEquals(initialResourcesSize, resources.size());
     }
 
     @Test
@@ -261,6 +262,7 @@ public final class PerUtilTest {
         PerUtil.listMissingParents(resource, null, resource, resourceChecker);
         PerUtil.listMissingParents(resource, resources, null, resourceChecker);
         PerUtil.listMissingParents(resource, resources, resource, null);
+        assertEquals(initialResourcesSize, resources.size());
     }
 
     @Test
