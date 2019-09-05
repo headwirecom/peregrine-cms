@@ -55,6 +55,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -211,42 +212,60 @@ public final class AdminResourceHandlerService
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
         try {
-            Resource parent = getResource(resourceResolver, parentPath);
-            if(parent == null) {
-                throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
-            }
             if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
-            Node parentNode =  parent.adaptTo(Node.class);
-            Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
+
+            final Node parent = Optional.ofNullable(parentPath)
+                    .map(p -> getResource(resourceResolver, p))
+                    .map(r -> r.adaptTo(Node.class))
+                    .orElse(null);
+            if(parent == null) {
+                throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
+            }
+
+            Node newFolder = parent.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newFolder);
-            return resourceResolver.getResource(newFolder.getPath());
+            return adaptNodeToResource(resourceResolver, newFolder);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Folder. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, FOLDER, parentPath, name), e);
         }
     }
 
+    private Resource adaptNodeToResource(final ResourceResolver resourceResolver, final Node node) throws RepositoryException {
+        if (node == null) {
+            return null;
+        }
+
+        return resourceResolver.getResource(node.getPath());
+    }
+
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException {
         try {
-            Resource parent = getResource(resourceResolver, parentPath);
-            if(parent == null) {
-                throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
-            }
             if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
             }
+
             if(isEmpty(resourceType)) {
                 throw new ManagementException(String.format(RESOURCE_TYPE_UNDEFINED, parentPath, name));
             }
-            Node parentNode = parent.adaptTo(Node.class);
-            Node newObject = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
+
+            final Node parent = Optional.ofNullable(parentPath)
+                    .map(p -> getResource(resourceResolver, p))
+                    .map(r -> r.adaptTo(Node.class))
+                    .orElse(null);
+
+            if(parent == null) {
+                throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
+            }
+
+            Node newObject = parent.addNode(name, OBJECT_PRIMARY_TYPE);
             newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newObject);
-            return resourceResolver.getResource(newObject.getPath());
+            return adaptNodeToResource(resourceResolver, newObject);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
@@ -269,7 +288,7 @@ public final class AdminResourceHandlerService
             }
             String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
             Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath);
-            return resourceResolver.getResource(newPage.getPath());
+            return adaptNodeToResource(resourceResolver, newPage);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, PAGE, parentPath, name), e);
@@ -293,7 +312,7 @@ public final class AdminResourceHandlerService
                 logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node", component);
                 copyAppsComponentToNewTemplate(component, newPage);
             }
-            return resourceResolver.getResource(newPage.getPath());
+            return adaptNodeToResource(resourceResolver, newPage);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, TEMPLATE, parentPath, name), e);
@@ -304,7 +323,7 @@ public final class AdminResourceHandlerService
         try {
             if(component.startsWith(SLASH)) {
                 logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
-            } else {
+            } else if (template != null) {
                 String componentPath = APPS_ROOT + SLASH + component;
                 final Session session = template.getSession();
                 if(session.itemExists(componentPath)) {
@@ -352,43 +371,42 @@ public final class AdminResourceHandlerService
 
     @Override
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
-        Resource answer = null;
-        if(resource == null) {
+        final Node node = Optional.ofNullable(resource)
+                .map(r -> r.adaptTo(Node.class))
+                .orElse(null);
+        if(node == null) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
+
         try {
-            Node node = resource.adaptTo(Node.class);
-            Node newNode;
+            final Node newNode;
+            final ResourceResolver resourceResolver = resource.getResourceResolver();
             if(addAsChild) {
-                Resource firstChild = null;
-                if(orderBefore) {
-                    Iterator<Resource> i = resource.listChildren();
-                    if(i.hasNext()) { firstChild = i.next(); }
-                }
                 newNode = createNode(node, properties, variation);
-                baseResourceHandler.updateModification(resource.getResourceResolver(), newNode);
-                if(firstChild != null) {
-                    resourceRelocation.reorder(resource, newNode.getName(), firstChild.getName(), true);
+                baseResourceHandler.updateModification(resourceResolver, newNode);
+                if(orderBefore) {
+                    final Iterator<Resource> i = resource.listChildren();
+                    if(i.hasNext()) {
+                        resourceRelocation.reorder(resource, newNode.getName(), i.next().getName(), true);
+                    }
                 }
-                answer = resource.getResourceResolver().getResource(newNode.getPath());
-                baseResourceHandler.updateModification(answer);
             } else {
                 Node parent = node.getParent();
                 newNode = createNode(parent, properties, variation);
-                baseResourceHandler.updateModification(resource.getResourceResolver(), newNode);
+                baseResourceHandler.updateModification(resourceResolver, newNode);
                 resourceRelocation.reorder(resource.getParent(), newNode.getName(), node.getName(), orderBefore);
-                answer = resource.getResourceResolver().getResource(newNode.getPath());
-                baseResourceHandler.updateModification(answer);
             }
+
+            final Resource answer = adaptNodeToResource(resourceResolver, newNode);
+            baseResourceHandler.updateModification(answer);
+            return answer;
         } catch (RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_INSERT, resource.getPath()), e);
         }
-        return answer;
     }
 
     @Override
     public Resource moveNode(Resource fromResource, Resource toResource, boolean addAsChild, boolean orderBefore) throws ManagementException {
-        Resource answer = null;
         if(fromResource == null) {
             throw new ManagementException(MOVE_FROM_RESOURCE_MISSING);
         }
@@ -396,7 +414,7 @@ public final class AdminResourceHandlerService
             throw new ManagementException(MOVE_TO_RESOURCE_MISSING);
         }
         try {
-            answer = fromResource;
+            Resource answer = fromResource;
             if(addAsChild) {
                 boolean sameParent = resourceRelocation.isChildOfParent(fromResource, toResource);
                 if(!sameParent) {
@@ -420,10 +438,11 @@ public final class AdminResourceHandlerService
                 resourceRelocation.reorder(toResource.getParent(), fromResource.getName(), toResource.getName(), orderBefore);
                 baseResourceHandler.updateModification(answer);
             }
+
+            return answer;
         } catch (Exception e) {
             throw new ManagementException(String.format(FAILED_TO_MOVE, fromResource.getPath(), toResource.getPath()), e);
         }
-        return answer;
     }
 
 
@@ -449,9 +468,6 @@ public final class AdminResourceHandlerService
 
     @Override
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
-        if(parent == null) {
-            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
-        }
         if(isEmpty(assetName)) {
             throw new ManagementException(ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
@@ -461,8 +477,14 @@ public final class AdminResourceHandlerService
         if(inputStream == null) {
             throw new ManagementException(INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
+
+        final Node parentNode = Optional.ofNullable(parent)
+                .map(r -> r.adaptTo(Node.class))
+                .orElse(null);
+        if(parentNode == null) {
+            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+        }
         try {
-            Node parentNode = parent.adaptTo(Node.class);
             Node newAsset = parentNode.addNode(assetName, ASSET_PRIMARY_TYPE);
             Node content = newAsset.addNode(JCR_CONTENT, ASSET_CONTENT_TYPE);
             Binary data = parentNode.getSession().getValueFactory().createBinary(inputStream);
@@ -470,8 +492,11 @@ public final class AdminResourceHandlerService
             content.setProperty(JCR_MIME_TYPE, contentType);
             final ResourceResolver resourceResolver = parent.getResourceResolver();
             baseResourceHandler.updateModification(resourceResolver, newAsset);
-            final Resource answer = resourceResolver.getResource(newAsset.getPath());
-            processNewAsset(answer.adaptTo(PerAsset.class));
+            final Resource answer = adaptNodeToResource(resourceResolver, newAsset);
+            if (answer != null) {
+                processNewAsset(answer.adaptTo(PerAsset.class));
+            }
+
             return answer;
         } catch(RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);
@@ -618,7 +643,7 @@ public final class AdminResourceHandlerService
                                             logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
                                         }
                                     }
-                                    if(useDefault) {
+                                    if(useDefault && contentNode != null) {
                                         NodeIterator i = contentNode.getNodes();
                                         if(i.hasNext()) {
                                             Node variationNode = i.nextNode();
@@ -699,7 +724,9 @@ public final class AdminResourceHandlerService
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
             if(appsTarget == null) {
                 appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
-                packagePaths.add(appsTarget.getPath());
+                if(appsTarget != null) {
+                    packagePaths.add(appsTarget.getPath());
+                }
             }
             // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
             // with the sling:resourceSuperType set to the <fromSite> component
@@ -751,7 +778,9 @@ public final class AdminResourceHandlerService
         sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            packagePaths.add(targetResource.getPath());
+            if (targetResource != null) {
+                packagePaths.add(targetResource.getPath());
+            }
             logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
             ValueMap properties = getModifiableProperties(targetResource, false);
             logger.trace("Copied Felibs Properties: '{}'", properties);
@@ -819,7 +848,10 @@ public final class AdminResourceHandlerService
             filename = packageName + DASH + version + ZIP_EXTENSION;
             packageResource = groupResource.getChild(filename);
             if(version >= MAXIMUM_VERSION) {
-                logger.error("{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.", version, packageResource.getPath());
+                final String path = Optional.ofNullable(packageResource)
+                        .map(Resource::getPath)
+                        .orElse(null);
+                logger.error("{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.", version, path);
                 return;
             }
         }
@@ -938,14 +970,24 @@ public final class AdminResourceHandlerService
     }
 
     private void createResourceFromString(Resource parent, String name, String data) throws ManagementException {
+        final Optional<Resource> optionalParent = Optional.ofNullable(parent);
+        final String path = optionalParent
+                .map(Resource::getPath)
+                .orElse("?");
+        final Node parentNode = optionalParent
+                .map(r -> r.adaptTo(Node.class))
+                .orElse(null);
+        if (parentNode == null) {
+            throw new ManagementException(String.format(FAILED_TO_CREATE, name, path, name));
+        }
+
         try {
-            Node parentNode = parent.adaptTo(Node.class);
             Node newAsset = parentNode.addNode(name, NT_FILE);
             Node content = newAsset.addNode(JCR_CONTENT, NT_RESOURCE);
             content.setProperty(JCR_DATA, data);
             content.setProperty(JCR_MIME_TYPE, TEXT_MIME_TYPE);
         } catch(RepositoryException e) {
-            throw new ManagementException(String.format(FAILED_TO_CREATE, name, parent.getPath(), name), e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, name, path, name), e);
         }
     }
 
@@ -1351,9 +1393,14 @@ public final class AdminResourceHandlerService
     }
 
     private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
-        Node parentNode = parent.adaptTo(Node.class);
-        Node newPage = null;
-        newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
+        final Node parentNode = Optional.ofNullable(parent)
+                .map(r -> r.adaptTo(Node.class))
+                .orElse(null);
+        if (parentNode == null) {
+            return null;
+        }
+
+        Node newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
         Node content = newPage.addNode(JCR_CONTENT);
         content.setPrimaryType(PAGE_CONTENT_TYPE);
         content.setProperty(SLING_RESOURCE_TYPE, templateComponent);
