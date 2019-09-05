@@ -98,7 +98,8 @@ import com.peregrine.replication.ImageMetadataSelector;
     service = AdminResourceHandler.class,
     immediate = true
 )
-public final class AdminResourceHandlerService implements AdminResourceHandler {
+public final class AdminResourceHandlerService
+        implements AdminResourceHandler {
 
     public static final String DELETION_PROPERTY_NAME = "_opDelete";
     public static final String MODE_PROPERTY = "mode";
@@ -537,15 +538,15 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
         }
     }
 
-    // todo: needs deep clone
-    private Node createNode(Node parent, Map data, String variation) throws RepositoryException, ManagementException {
+    // TODO: needs deep clone
+    private Node createNode(Node parent, Map<String, Object> data, String variation) throws RepositoryException, ManagementException {
         data.remove(PATH);
         final String component = (String) data.remove(COMPONENT);
 
         Node newNode = parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
         newNode.setProperty(SLING_RESOURCE_TYPE, component);
-        final Set<Map.Entry> entrySet = data.entrySet();
-        for (final Map.Entry entry: entrySet) {
+        final Set<Map.Entry<String, Object>> entrySet = data.entrySet();
+        for (final Map.Entry<String, Object> entry: entrySet) {
             Object key = entry.getKey();
             Object val = entry.getValue();
             if(val instanceof String) {
@@ -1085,7 +1086,7 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
         }
     }
 
-    private void copyStubs(Resource source, Resource target, String folderName, List superTypes) {
+    private void copyStubs(Resource source, Resource target, String folderName, List<String> superTypes) {
         Resource appsSource = getResource(source, folderName);
         if(appsSource != null) {
             Resource appsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
