@@ -75,6 +75,7 @@ public class AdminResourceHandlerService
     private static final String CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Content Type must be provided to create Asset";
     private static final String INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Input Stream must be provided to create Asset";
     private static final String FAILED_TO_CREATE = "Failed to Create %s in Parent: '%s', name: '%s'";
+    private static final String FAILED_TO_CREATE_RENDITION = "Failed to Create %s Rendition in Parent: '%s', name: '%s'";
     private static final String FAILED_TO_COPY = "Failed to copy source: '%s' on target parent: '%s'";
     private static final String RESOURCE_NOT_FOUND = "Resource not found, Path: '%s'";
     private static final String NO_CONTENT_PROVIDED = "No Content provided, Path: '%s'";
@@ -467,7 +468,7 @@ public class AdminResourceHandlerService
                     logger.warn("Was not able to obtain Width/Height from Image", e);
                 }
             } catch(ImageProcessingException e) {
-                e.printStackTrace();
+                throw new ManagementException(String.format(FAILED_TO_CREATE_RENDITION, ASSET, parent.getPath(), assetName), e);
             }
         } catch(RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);

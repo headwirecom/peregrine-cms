@@ -112,7 +112,7 @@ public class ScriptCallerServlet
             } else {
                 log.error("J2V8 Executor is not installed here");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("J2V8 Executor is not installed for: " + request.getPathInfo());
+                response.getWriter().write("J2V8 Executor is not installed for: " + EXECUTE_SCRIPT_WITH_J2V8);
             }
         } else
         if(EXECUTE_SCRIPT_WITH_NODE_JS.equals(request.getPathInfo())) {
@@ -150,13 +150,15 @@ public class ScriptCallerServlet
                             script = renderService.renderInternally(jsResource, extension);
                             log.trace("Script loaded: '{}'", script);
                         } else {
-                            log.error("Resource with path: '{}' could not be found", resourcePath);
+                            String checkedPath = resourcePath.replaceAll("[\n|\r|\t]", "_");
+                            log.error("Resource with path: '{}' could not be found", checkedPath);
                         }
                     } catch(RenderException e) {
                         log.error("Failed to internally render resource: '{}' with extension: '{}'", jsResource.getPath(), extension);
                     }
                 }
-                log.error("Resource: '{}' was not found", path);
+                String checkedPath = path.replaceAll("[\n|\r|\t]", "_");
+                log.error("Resource: '{}' was not found", checkedPath);
             }
             if(script != null && !script.isEmpty()) {
                 List<String> command = new ArrayList<String>(Arrays.asList("node", "-e", script));
@@ -182,7 +184,8 @@ public class ScriptCallerServlet
             }
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Unknown request: " + request.getPathInfo());
+            String encodedPath = org.owasp.encoder.Encode.forHtml(request.getPathInfo());
+            response.getWriter().write("Unknown request: " + encodedPath);
         }
     }
 }

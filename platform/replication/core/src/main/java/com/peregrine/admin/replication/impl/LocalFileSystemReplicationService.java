@@ -343,7 +343,9 @@ public class LocalFileSystemReplicationService
                 throw new ReplicationException(String.format(FAILED_STORE_RENDERING_FILE_IS_DIRECTORY, renderingFile.getAbsolutePath()));
             } else {
                 log.trace("Delete existing Rendering File: '{}'", renderingFile.getAbsolutePath());
-                renderingFile.delete();
+                if(!renderingFile.delete()) {
+                    log.warn("Failed to delete existing Rendering File: '{}'", renderingFile.getAbsolutePath());
+                }
             }
         }
         return renderingFile;

@@ -95,13 +95,19 @@ public class ProcessContextReader
             parent = errorFile.getParentFile();
         }
         if(errorFile != null) {
-            errorFile.delete();
+            if(!errorFile.delete()) {
+                log.warn("Failed to delete External Process Error File: " + errorFile.getAbsolutePath());
+            }
         }
         if(outputFile != null) {
-            outputFile.delete();
+            if(!outputFile.delete()) {
+                log.warn("Failed to delete External Process Output File: " + outputFile.getAbsolutePath());
+            }
         }
         if(parent != null) {
-            parent.delete();
+            if(!parent.delete()) {
+                log.warn("Failed to delete External Process Folder: " + parent.getAbsolutePath());
+            }
         }
     }
 

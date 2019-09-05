@@ -270,11 +270,15 @@ public abstract class AbstractVipsImageTransformation
             log.error("Failed to create Output File", e);
         } catch(FileNotFoundException e) {
             log.error("Failed to create File Output Stream", e);
-            output.delete();
+            if(!output.delete()) {
+                log.error("Failed to delete File Output Stream", e);
+            }
             output = null;
         } catch(IOException e) {
             log.error("Failed to write to file", e);
-            output.delete();
+            if(!output.delete()) {
+                log.error("Failed to delete File Output Stream", e);
+            }
             output = null;
         } finally {
             IOUtils.closeQuietly(fos);

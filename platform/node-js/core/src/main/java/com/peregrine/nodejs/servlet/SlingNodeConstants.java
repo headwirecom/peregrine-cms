@@ -1,6 +1,7 @@
 package com.peregrine.nodejs.servlet;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,7 +32,9 @@ public class SlingNodeConstants {
     /** List Type PROD **/
     public static final String LIST_TYPE_PROD = "prod";
     /** List of all allowed List Types **/
-    public static final List<String> LIST_ALLOWED_TYPES = Arrays.asList(LIST_TYPE_ALL, LIST_TYPE_DEV, LIST_TYPE_PROD);
+    public static final List<String> LIST_ALLOWED_TYPES = Collections.unmodifiableList(
+        Arrays.asList(LIST_TYPE_ALL, LIST_TYPE_DEV, LIST_TYPE_PROD)
+    );
 
     /** Package Name argument **/
     public static final String PACKAGE_NAME = "name";
