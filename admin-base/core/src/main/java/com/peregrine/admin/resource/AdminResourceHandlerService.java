@@ -165,6 +165,8 @@ public final class AdminResourceHandlerService
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
     public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
     public static final String COPY_FAILED = "Copy of %s: '%s' failed";
+    private static final String IMAGE_METADATA_TAG_NAME = "Image Metadata Tag Name: '{}'";
+    private static final String ADD_TAG_CATEGORY_TAG_NAME_VALUE = "Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'";
 
     //Package creation constants
     private static final String PACKAGE_SUFFIX = "-full-package";
@@ -506,8 +508,12 @@ public final class AdminResourceHandlerService
     }
 
     private void processNewAsset(final PerAsset asset) throws IOException, RepositoryException {
+        if (asset == null) {
+            return;
+        }
+
         try {
-            Metadata metadata = ImageMetadataReader.readMetadata(asset.getRenditionStream((Resource) null));
+            final Metadata metadata = ImageMetadataReader.readMetadata(asset.getRenditionStream((Resource) null));
             for(Directory directory : metadata.getDirectories()) {
                 String directoryName = directory.getName();
                 logger.trace("Image Metadata Directory: '{}'", directoryName);
@@ -519,36 +525,52 @@ public final class AdminResourceHandlerService
                         directoryName = temp;
                     }
                 }
-                boolean asJson = selector != null && selector.asJsonProperty();
-                final StringBuilder json = new StringBuilder("{");
-                for(Tag tag : directory.getTags()) {
-                    String name = tag.getTagName();
-                    logger.trace("Image Metadata Tag Name: '{}'", name);
-                    String tagName = selector != null ? selector.acceptTag(name) : name;
-                    if(tagName != null) {
-                        logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", directoryName, tagName, tag.getDescription());
-                        if(asJson) {
-                            json.append("\"");
-                            json.append(tagName);
-                            json.append("\":\"");
-                            json.append(tag.getDescription());
-                            json.append("\",");
-                        } else {
-                            asset.addTag(directoryName, tagName, tag.getDescription());
-                        }
-                    }
-                }
-                final int length = json.length();
-                if(asJson && length > 1) {
-                    json.deleteCharAt(length - 1);
-                    json.append("}");
-                    asset.addTag(directoryName, RAW_TAGS, json.toString());
+                if (selector != null && selector.asJsonProperty()) {
+                    addTagsToNewAssetAsJson(asset, directory, directoryName, selector);
+                } else {
+                    addTagsToNewAsset(asset, directory, directoryName, selector);
                 }
             }
             // Obtain the Asset Dimension and store directly in the meta data folder
             handleAssetDimensions(asset);
         } catch(ImageProcessingException e) {
             logger.debug(EMPTY, e);
+        }
+    }
+
+    private void addTagsToNewAssetAsJson(PerAsset asset, Directory directory, String directoryName, ImageMetadataSelector selector) throws PersistenceException, RepositoryException {
+        final StringBuilder json = new StringBuilder("{");
+        for(final Tag tag : directory.getTags()) {
+            final String name = tag.getTagName();
+            logger.trace(IMAGE_METADATA_TAG_NAME, name);
+            final String tagName = selector != null ? selector.acceptTag(name) : name;
+            if(tagName != null) {
+                logger.trace(ADD_TAG_CATEGORY_TAG_NAME_VALUE, directoryName, tagName, tag.getDescription());
+                json.append("\"");
+                json.append(tagName);
+                json.append("\":\"");
+                json.append(tag.getDescription());
+                json.append("\",");
+            }
+        }
+
+        final int length = json.length();
+        if(length > 1) {
+            json.deleteCharAt(length - 1);
+            json.append("}");
+            asset.addTag(directoryName, RAW_TAGS, json.toString());
+        }
+    }
+
+    private void addTagsToNewAsset(PerAsset asset, Directory directory, String directoryName, ImageMetadataSelector selector) throws PersistenceException, RepositoryException {
+        for(final Tag tag : directory.getTags()) {
+            final String name = tag.getTagName();
+            logger.trace(IMAGE_METADATA_TAG_NAME, name);
+            final String tagName = selector != null ? selector.acceptTag(name) : name;
+            if(tagName != null) {
+                logger.trace(ADD_TAG_CATEGORY_TAG_NAME_VALUE, directoryName, tagName, tag.getDescription());
+                asset.addTag(directoryName, tagName, tag.getDescription());
+            }
         }
     }
 
