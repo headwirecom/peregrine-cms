@@ -71,6 +71,7 @@ public class PerConstants {
     public static final String OBJECTS_ROOT = "/content/objects";
     public static final String SITES_ROOT = "/content/sites";
     public static final String TEMPLATES_ROOT = "/content/templates";
+    public static final String PACKAGES_PATH = "/etc/packages";
 
     public static final String COMPONENTS = "components";
     public static final String TEMPLATES = "templates";

@@ -95,8 +95,6 @@ public final class AdminResourceHandlerService implements AdminResourceHandler {
     private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
     private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
 
-    private static final String PACKAGES_PATH = "/etc/packages";
-
     public static final String MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY = "Resource Resolver must be provide to copy a Site";
     public static final String MISSING_PARENT_RESOURCE_FOR_COPY_SITES = "Sites Parent Resource was not provided or does not exist";
     public static final String MISSING_SOURCE_SITE_NAME = "Source Name must be provide";
