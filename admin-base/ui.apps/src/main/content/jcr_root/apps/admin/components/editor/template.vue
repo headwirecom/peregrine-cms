@@ -131,12 +131,9 @@
 
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } )
-                .then(() => fetch(`/perapi/admin/getObject.json${view.pageView.path + data.path}`))
-                .then( res => res.json() )
-                .then( json => {
-                    let model = $perAdminApp.findNodeFromPath(view.pageView.page, data.path)
-                    for( const key in json ) {
-                        Vue.set(this.dataModel,key,json[key])
+                .then( ({data}) => {
+                    for( const key in data ) {
+                        this.dataModel[key] =  data[key];
                     }
                 })
 
