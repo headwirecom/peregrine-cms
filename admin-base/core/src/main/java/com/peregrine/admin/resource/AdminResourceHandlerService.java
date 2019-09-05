@@ -930,7 +930,7 @@ public final class AdminResourceHandlerService
                             String replaceWith = replacementProperties.get("replaceWith", String.class);
                             if(isNotBlank(pattern) && isNotBlank(replaceWith)) {
                                 //"_SITENAME_" is a placeholder for the actual new site name
-                                replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
+                                replaceWith = replaceWith.replace("_SITENAME_", targetName);
                                 modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
                             }
                         }
@@ -976,14 +976,14 @@ public final class AdminResourceHandlerService
 
     private void createResourceFromString(Resource parent, String name, String data) throws ManagementException {
         final Optional<Resource> optionalParent = Optional.ofNullable(parent);
-        final String path = optionalParent
+        final String parentPathDisplay = optionalParent
                 .map(Resource::getPath)
-                .orElse("?");
+                .orElse(null);
         final Node parentNode = optionalParent
                 .map(r -> r.adaptTo(Node.class))
                 .orElse(null);
         if (parentNode == null) {
-            throw new ManagementException(String.format(FAILED_TO_CREATE, name, path, name));
+            throw new ManagementException(String.format(FAILED_TO_CREATE, name, parentPathDisplay, name));
         }
 
         try {
@@ -992,7 +992,7 @@ public final class AdminResourceHandlerService
             content.setProperty(JCR_DATA, data);
             content.setProperty(JCR_MIME_TYPE, TEXT_MIME_TYPE);
         } catch(RepositoryException e) {
-            throw new ManagementException(String.format(FAILED_TO_CREATE, name, path, name), e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, name, parentPathDisplay, name), e);
         }
     }
 
@@ -1117,10 +1117,13 @@ public final class AdminResourceHandlerService
                         }
                     }
                 }
-                Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
-                updateTitle(childTarget, (((depth > 0) && (newProperties.get(JCR_TITLE) != null)) ?  (String) newProperties.get(JCR_TITLE) : toName));
 
-                logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
+                Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
+                updateTitle(childTarget, ((depth > 0) && newProperties.containsKey(JCR_TITLE)) ?  (String) newProperties.get(JCR_TITLE) : toName);
+                final String childTargetPathDisplay = Optional.ofNullable(childTarget)
+                        .map(Resource::getPath)
+                        .orElse(null);
+                logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
                 // Copy grandchildren
                 if(deep) {
                     copyChildResources(child, true, childTarget, fromName, toName, depth + 1);
