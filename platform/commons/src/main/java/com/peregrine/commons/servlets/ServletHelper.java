@@ -27,7 +27,11 @@ package com.peregrine.commons.servlets;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;

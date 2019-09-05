@@ -36,8 +36,6 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 

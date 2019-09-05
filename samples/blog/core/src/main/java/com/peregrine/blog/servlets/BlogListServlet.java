@@ -10,7 +10,6 @@ import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
-
 import java.io.IOException;
 
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;

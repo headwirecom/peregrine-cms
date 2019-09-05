@@ -25,8 +25,8 @@ package com.peregrine.admin.models;
  * #L%
  */
 
-import com.peregrine.nodetypes.models.IComponent;
 import com.peregrine.nodetypes.models.Container;
+import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;

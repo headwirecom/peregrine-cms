@@ -25,9 +25,9 @@ package com.peregrine.admin.resource;
  * #L%
  */
 
+import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;
-import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;

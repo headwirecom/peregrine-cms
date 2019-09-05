@@ -26,9 +26,9 @@ package com.peregrine.rendition;
  */
 
 import com.peregrine.adaption.PerAsset;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.rendition.BaseResourceHandler.HandlerException;
 import com.peregrine.transform.ImageContext;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
@@ -43,8 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;

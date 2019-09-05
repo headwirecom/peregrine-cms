@@ -6,8 +6,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +13,6 @@ import static com.peregrine.admin.migration.MigrationResponse.MIGRATION_EXCEPTIO
 import static com.peregrine.admin.migration.MigrationResponse.NO_MIGRATION_ACTION_FOUND_CODE;
 import static com.peregrine.admin.migration.MigrationResponse.SUCCESS;
 import static com.peregrine.admin.migration.MigrationResponse.UNEXPECTED_EXCEPTION_CODE;
-import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT_LOCALE;
 
 /**
  * Migration Service that provides the List of registered Migration Action and executes it if found

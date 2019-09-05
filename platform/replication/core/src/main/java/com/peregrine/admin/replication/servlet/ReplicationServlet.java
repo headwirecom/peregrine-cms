@@ -25,10 +25,10 @@ package com.peregrine.admin.replication.servlet;
  * #L%
  */
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

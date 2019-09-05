@@ -28,7 +28,6 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.Filter;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
-import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -45,7 +43,6 @@ import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 
 /**

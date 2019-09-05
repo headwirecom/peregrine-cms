@@ -37,7 +37,6 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static org.junit.Assert.assertEquals;

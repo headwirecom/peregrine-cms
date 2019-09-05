@@ -25,22 +25,15 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ExportException;
-import org.apache.sling.models.factory.MissingExporterException;
-import org.apache.sling.models.factory.ModelClassException;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_OBJECT;
 import static com.peregrine.commons.util.PerConstants.MODEL;

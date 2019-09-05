@@ -25,9 +25,9 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
+import com.peregrine.render.RenderService;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
-import com.peregrine.render.RenderService;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +42,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;

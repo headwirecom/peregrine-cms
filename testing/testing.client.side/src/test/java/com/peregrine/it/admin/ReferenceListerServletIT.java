@@ -19,13 +19,11 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.compareJson;
 import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_JUMBOTRON_TYPE_PATH;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.createTemplate;

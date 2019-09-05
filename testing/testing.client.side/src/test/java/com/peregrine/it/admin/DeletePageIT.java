@@ -15,14 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.io.StringWriter;
 import java.util.Map;
 
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
-import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
-import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
-import static com.peregrine.it.util.TestHarness.createObject;
-import static com.peregrine.it.util.TestHarness.createPage;
-import static com.peregrine.it.util.TestHarness.deletePage;
-import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
@@ -31,6 +23,14 @@ import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
+import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
+import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
+import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
+import static com.peregrine.it.util.TestHarness.createObject;
+import static com.peregrine.it.util.TestHarness.createPage;
+import static com.peregrine.it.util.TestHarness.deletePage;
 import static org.junit.Assert.assertFalse;
 
 /**

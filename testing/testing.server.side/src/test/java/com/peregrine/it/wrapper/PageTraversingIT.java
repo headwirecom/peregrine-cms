@@ -16,13 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-//import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
-import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
@@ -31,10 +28,14 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
+import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+//import java.util.Iterator;
 //import static org.junit.Assert.fail;
 
 /**

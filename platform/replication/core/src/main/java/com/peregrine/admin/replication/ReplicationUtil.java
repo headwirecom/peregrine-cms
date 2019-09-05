@@ -10,7 +10,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;

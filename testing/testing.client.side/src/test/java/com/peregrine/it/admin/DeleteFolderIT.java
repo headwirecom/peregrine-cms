@@ -16,8 +16,8 @@ import java.util.Map;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolders;
-import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.basic.BasicTestHelpers.listResourceAsJson;
+import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

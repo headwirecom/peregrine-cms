@@ -21,10 +21,10 @@ import static com.peregrine.it.basic.BasicTestHelpers.checkPages;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResponse;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
+import static com.peregrine.it.basic.BasicTestHelpers.listResource;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_TEMPLATE_PATH;
 import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
-import static com.peregrine.it.basic.BasicTestHelpers.listResource;
 import static com.peregrine.it.util.TestHarness.moveResource;
 import static com.peregrine.it.util.TestHarness.renameResource;
 

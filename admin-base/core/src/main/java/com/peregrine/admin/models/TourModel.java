@@ -34,9 +34,9 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 
+import static com.peregrine.admin.util.AdminConstants.TOUR_COMPONENT_PATH;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.admin.util.AdminConstants.TOUR_COMPONENT_PATH;
 
 
 @Model(adaptables = Resource.class,

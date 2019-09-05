@@ -1,46 +1,43 @@
 package com.peregrine.nodejs.servlet;
 
-import java.io.File;
+import com.peregrine.nodejs.npm.NpmExternalProcess;
+import com.peregrine.nodejs.process.ExternalProcessException;
+import com.peregrine.nodejs.process.ProcessContext;
+import com.peregrine.nodejs.util.ObjectConverter;
+import org.apache.commons.io.IOUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.json.JSONObject;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
-import com.peregrine.nodejs.npm.NpmExternalProcess;
-import com.peregrine.nodejs.process.ExternalProcessException;
-import com.peregrine.nodejs.process.ProcessContext;
-import com.peregrine.nodejs.util.ObjectConverter;
-import org.apache.commons.io.IOUtils;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.service.component.annotations.Component;
-
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.json.JSONObject;
-
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_ALLOWED_TYPES;
-import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_TYPE_ALL;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.INSTALL_PACKAGE;
+import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_ALLOWED_TYPES;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_DEPTH;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_NAME;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_PACKAGES;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_SIZE;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_TYPE;
+import static com.peregrine.nodejs.servlet.SlingNodeConstants.LIST_TYPE_ALL;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.PACKAGE_NAME;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.PACKAGE_VERSION;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.REMOVE_PACKAGE;

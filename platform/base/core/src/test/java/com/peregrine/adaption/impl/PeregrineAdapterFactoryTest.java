@@ -8,7 +8,9 @@ import static com.peregrine.adaption.impl.PerTestUtil.createPageResource;
 import static com.peregrine.adaption.impl.PerTestUtil.createResource;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by Andreas Schaefer on 6/20/17.

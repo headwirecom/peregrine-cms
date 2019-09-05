@@ -39,6 +39,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -47,9 +49,6 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by rr on 12/2/2016.

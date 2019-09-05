@@ -34,7 +34,6 @@ import org.apache.sling.models.annotations.Model;
 
 import javax.inject.Inject;
 
-import static com.peregrine.admin.util.AdminConstants.ACTION_COMPONENT_PATH;
 import static com.peregrine.admin.util.AdminConstants.TAG_OBJECT_PATH;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;

@@ -1,10 +1,10 @@
 package com.peregrine.intra;
 
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.engine.SlingRequestProcessor;
 import org.apache.sling.servlethelpers.MockRequestPathInfo;
 import org.apache.sling.servlethelpers.MockSlingHttpServletRequest;
 import org.apache.sling.servlethelpers.MockSlingHttpServletResponse;
-import org.apache.sling.engine.SlingRequestProcessor;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;

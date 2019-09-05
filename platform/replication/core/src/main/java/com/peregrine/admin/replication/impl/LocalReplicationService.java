@@ -26,11 +26,11 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
-import com.peregrine.replication.ReferenceLister;
-import com.peregrine.replication.Replication;
 import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -46,8 +46,6 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

@@ -20,15 +20,12 @@ import java.io.IOException;
 
 import static com.peregrine.admin.resource.AdminResourceHandlerService.DELETION_PROPERTY_NAME;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_OBJECT_TYPE_PATH;
 import static com.peregrine.it.util.TestHarness.createObject;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.updateResource;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Andreas Schaefer on 6/22/17.

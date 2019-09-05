@@ -26,6 +26,8 @@ package com.peregrine.pagerender.server.models;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.peregrine.nodetypes.models.AbstractComponent;
+import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
@@ -33,9 +35,6 @@ import org.apache.sling.models.annotations.Model;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
-
-import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.AbstractComponent;
 
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;

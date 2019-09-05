@@ -39,9 +39,9 @@ import javax.inject.Named;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.peregrine.admin.util.AdminConstants.TOOLING_PAGE_COMPONENT_PATH;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.admin.util.AdminConstants.TOOLING_PAGE_COMPONENT_PATH;
 
 /**
  * Created by rr on 12/2/2016.

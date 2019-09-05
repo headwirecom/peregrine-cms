@@ -13,8 +13,6 @@ import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,6 @@ import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
 import static com.peregrine.nodejs.util.NodeConstants.NODE_JS_SUB_SERVICE_NAME;
 

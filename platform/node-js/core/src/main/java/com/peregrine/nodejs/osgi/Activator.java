@@ -87,16 +87,21 @@ public class Activator
         }
         ZipInputStream zipIn = new ZipInputStream(zipFileStream);
         ZipEntry entry = zipIn.getNextEntry();
+        String canonicalDestPath = destFolder.getCanonicalPath();
         // iterates over entries in the zip file
         while (entry != null) {
             String filePath = destFolder.getPath() + File.separator + entry.getName();
+            File entryFile = new File(filePath);
+            String canonicalTargetPat = entryFile.getCanonicalPath();
+            if (!canonicalTargetPat.startsWith(canonicalDestPath + File.separator)) {
+                throw new IOException("ZIP Entry is trying to leave target dir: " + entry.getName());
+            }
             if (!entry.isDirectory()) {
                 // if the entry is a file, extracts it
                 extractFile(zipIn, filePath);
             } else {
                 // if the entry is a directory, make the directory
-                File dir = new File(filePath);
-                dir.mkdir();
+                entryFile.mkdir();
             }
             zipIn.closeEntry();
             entry = zipIn.getNextEntry();

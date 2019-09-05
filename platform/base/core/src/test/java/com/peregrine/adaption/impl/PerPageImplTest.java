@@ -5,7 +5,8 @@ import org.junit.Test;
 
 import static com.peregrine.adaption.impl.PerTestUtil.countIterable;
 import static com.peregrine.adaption.impl.PerTestUtil.createPage;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by Andreas Schaefer on 6/21/17.

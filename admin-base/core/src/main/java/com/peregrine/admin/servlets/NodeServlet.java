@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.intra.IntraSlingCaller;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,13 +35,10 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import com.peregrine.intra.IntraSlingCaller;
-
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODE;
 import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;

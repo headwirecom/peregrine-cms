@@ -33,7 +33,6 @@ import org.apache.sling.models.annotations.Model;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
-import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;

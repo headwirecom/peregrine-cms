@@ -25,8 +25,8 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.replication.ImageMetadataSelector;
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.replication.ImageMetadataSelector;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;

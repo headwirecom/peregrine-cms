@@ -21,6 +21,8 @@ import java.util.Calendar;
 import java.util.Map;
 
 import static com.peregrine.admin.resource.AdminResourceHandlerService.DELETION_PROPERTY_NAME;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
@@ -36,8 +38,6 @@ import static com.peregrine.it.util.TestHarness.createPage;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.insertNodeAtAsComponent;
 import static com.peregrine.it.util.TestHarness.updateResource;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

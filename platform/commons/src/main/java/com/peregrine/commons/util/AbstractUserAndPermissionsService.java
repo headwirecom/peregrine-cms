@@ -19,7 +19,6 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.security.AccessControlEntry;
 import javax.jcr.security.Privilege;
-
 import java.security.Principal;
 
 import static com.peregrine.commons.util.PerUtil.loginService;

@@ -16,6 +16,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Calendar;
 
+import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
+import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerUtil.METADATA;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
@@ -23,12 +29,6 @@ import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.BasicTestHelpers.loadFile;
 import static com.peregrine.it.util.TestHarness.deleteFolder;
 import static com.peregrine.it.util.TestHarness.uploadFile;
-import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerUtil.METADATA;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.

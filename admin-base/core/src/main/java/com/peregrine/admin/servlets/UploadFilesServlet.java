@@ -29,7 +29,6 @@ import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

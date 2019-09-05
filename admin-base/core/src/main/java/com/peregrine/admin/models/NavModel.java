@@ -32,9 +32,9 @@ import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
+import static com.peregrine.admin.util.AdminConstants.NAV_COMPONENT_PATH;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.admin.util.AdminConstants.NAV_COMPONENT_PATH;
 
 /*
     //GEN[:DATA

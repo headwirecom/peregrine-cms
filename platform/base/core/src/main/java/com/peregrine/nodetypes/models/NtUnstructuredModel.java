@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Exporter;
+import org.apache.sling.models.annotations.Model;
 
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 
 @Model(adaptables = Resource.class,
        resourceType = {NT_UNSTRUCTURED},

@@ -26,27 +26,25 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
-import com.peregrine.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.render.RenderService;
 import com.peregrine.render.RenderService.RenderException;
+import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
-import static com.peregrine.commons.util.PerConstants.RENDITION_ACTION;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.NT_FOLDER;
+import static com.peregrine.commons.util.PerConstants.RENDITION_ACTION;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;

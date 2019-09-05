@@ -1,10 +1,11 @@
 package com.peregrine.nodejs.servlet;
 
 import org.junit.rules.TestWatcher;
-//import org.junit.rules.TestWatchman;
 import org.junit.runner.Description;
-//import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
+
+//import org.junit.rules.TestWatchman;
+//import org.junit.runners.model.FrameworkMethod;
 
 /**
  * This class is here to be used as a Test Rule to LOGGER any exception emitting from a Test

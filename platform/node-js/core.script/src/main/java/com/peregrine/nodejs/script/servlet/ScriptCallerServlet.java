@@ -1,6 +1,5 @@
 package com.peregrine.nodejs.script.servlet;
 
-import com.peregrine.nodejs.j2v8.J2V8ProcessExecution;
 import com.peregrine.nodejs.j2v8.J2V8WebExecution;
 import com.peregrine.nodejs.process.ExternalProcessException;
 import com.peregrine.nodejs.process.ProcessContext;
@@ -13,7 +12,6 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

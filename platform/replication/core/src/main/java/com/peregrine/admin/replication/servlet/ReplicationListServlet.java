@@ -25,9 +25,9 @@ package com.peregrine.admin.replication.servlet;
  * #L%
  */
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
