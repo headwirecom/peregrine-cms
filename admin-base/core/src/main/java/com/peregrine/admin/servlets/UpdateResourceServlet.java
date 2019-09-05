@@ -25,16 +25,25 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerConstants;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ExportException;
+import org.apache.sling.models.factory.MissingExporterException;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPDATE_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.CONTENT;
@@ -82,6 +91,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class UpdateResourceServlet extends AbstractBaseServlet {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UpdateResourceServlet.class);
+
     public static final String FAILED_TO_UPDATE_PAGE = "Failed to Update Page";
     @Reference
     ModelFactory modelFactory;
@@ -96,11 +107,25 @@ public class UpdateResourceServlet extends AbstractBaseServlet {
         try {
             Resource updatePage = resourceManagement.updateResource(request.getResourceResolver(), path, content);
             request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, PAGE)
-                .writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, updatePage.getName())
-                .writeAttribute(PATH, updatePage.getPath());
+            Map objectExport = null;
+
+            try {
+                objectExport = modelFactory.exportModelForResource(updatePage, PerConstants.JACKSON, Map.class, Collections.<String, String>emptyMap());
+            } catch (ExportException e) {
+                LOG.error("Export failed for resource " + updatePage.getPath(), e);
+            } catch (MissingExporterException e) {
+                LOG.error("Failed to write json for resource  " + updatePage.getPath(), e);
+            }
+
+            JsonResponse jsonResponse = new JsonResponse()
+                    .writeAttribute(TYPE, PAGE)
+                    .writeAttribute(STATUS, CREATED)
+                    .writeAttribute(NAME, updatePage.getName())
+                    .writeAttribute(PATH, updatePage.getPath());
+            if(objectExport != null) {
+                jsonResponse.writeMap("data", objectExport);
+            }
+            return jsonResponse;
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_UPDATE_PAGE).setRequestPath(path).setException(e);
         }

@@ -287,6 +287,18 @@ public abstract class AbstractBaseServlet
             return this;
         }
 
+        public JsonResponse writeMap(String fieldName, Map object) throws IOException {
+            json.writeFieldName(fieldName);
+            json.writeRaw(" : ");
+            StringWriter writer = new StringWriter();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(writer, object);
+            writer.close();
+            String data = writer.toString();
+            json.writeRaw(data);
+            return this;
+        }
+
         /**
          * Write a boolean field
          * @param name Name of the field
