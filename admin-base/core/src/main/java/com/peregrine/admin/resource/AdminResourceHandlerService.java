@@ -520,7 +520,7 @@ public final class AdminResourceHandlerService
                     }
                 }
                 boolean asJson = selector != null && selector.asJsonProperty();
-                String json = "{";
+                final StringBuilder json = new StringBuilder("{");
                 for(Tag tag : directory.getTags()) {
                     String name = tag.getTagName();
                     logger.trace("Image Metadata Tag Name: '{}'", name);
@@ -528,16 +528,21 @@ public final class AdminResourceHandlerService
                     if(tagName != null) {
                         logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", directoryName, tagName, tag.getDescription());
                         if(asJson) {
-                            json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
+                            json.append("\"");
+                            json.append(tagName);
+                            json.append("\":\"");
+                            json.append(tag.getDescription());
+                            json.append("\",");
                         } else {
                             asset.addTag(directoryName, tagName, tag.getDescription());
                         }
                     }
                 }
-                if(asJson && json.length() > 1) {
-                    json = json.substring(0, json.length() - 1);
-                    json += "}";
-                    asset.addTag(directoryName, RAW_TAGS, json);
+                final int length = json.length();
+                if(asJson && length > 1) {
+                    json.deleteCharAt(length - 1);
+                    json.append("}");
+                    asset.addTag(directoryName, RAW_TAGS, json.toString());
                 }
             }
             // Obtain the Asset Dimension and store directly in the meta data folder
