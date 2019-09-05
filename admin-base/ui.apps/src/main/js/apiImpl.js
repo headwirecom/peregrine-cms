@@ -602,7 +602,7 @@ class PerAdminImpl {
 
             updateWithForm('/admin/updateResource.json'+path + node.path, formData)
                 // .then( (data) => this.populateNodesForBrowser(parentPath) )
-                .then( () => resolve() )
+                .then( result => resolve(result) )
         })
     }
 

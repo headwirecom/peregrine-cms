@@ -456,11 +456,11 @@ function stateActionImpl(name, target) {
             try {
                 const stateAction = StateActions(name)
                 Promise.resolve(stateAction($perAdminApp, target)).then(result => {
-                    if(result && result.startsWith('Uncaught (in promise')) {
+                    if(typeof result === 'string' && result.startsWith('Uncaught (in promise')) {
                         notifyUserImpl('error', result)
                         reject()
                     } else {
-                        resolve()
+                        resolve(result)
                     }
                 }).catch(error => {
                     notifyUserImpl('error', error)
