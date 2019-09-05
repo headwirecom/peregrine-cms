@@ -1103,57 +1103,62 @@ public final class AdminResourceHandlerService
     private void copyChildResources(Resource source, Resource target, String fromName, String toName) {
         // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
         // while child assets will use the name from the source; otherwise every asset has the same name
-        copyChildResources(source, target, fromName, toName, 0);
+        copyChildResources(source, target, fromName, toName, source.getResourceResolver(), 0);
     }
 
-    private void copyChildResources(Resource source, Resource target, String fromName, String toName, int depth) {
+    private void copyChildResources(Resource source, Resource target, String fromName, String toName, ResourceResolver resourceResolver, int depth) {
         logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
         for(Resource child: source.getChildren()) {
             logger.trace("Child handling started: '{}'", child.getPath());
-            Map<String, Object> newProperties = copyProperties(child.getValueMap());
             try {
-                if(isNotEmpty(fromName)) {
-                    String pattern1 = SLASH + fromName;
-                    String pattern2 = fromName + SLASH;
-                    for(Entry<String, Object> entry : newProperties.entrySet()) {
-                        Object temp = entry.getValue();
-                        if(temp instanceof String) {
-                            String value = (String) temp;
-                            int index = value.indexOf(pattern1);
-                            String newValue = null;
-                            if(value.startsWith("/content/") && index > 0) {
-                                // Check if the string ends or if the next character is a slash to avoid collisions
-                                logger.trace("Value Length: {}, Index: {}, Pattern Length: {}", value.length(), index, pattern1.length());
-                                if(index + pattern1.length() == value.length()) {
-                                    newValue = value.substring(0, index) + SLASH + toName;
-                                } else if(value.charAt(index + pattern1.length()) == '/') {
-                                    newValue = value.substring(0, index) + SLASH + toName + SLASH + value.substring(index + pattern1.length() + 1);
-                                }
-                            } else if(value.startsWith(pattern2)) {
-                                newValue = toName + SLASH + value.substring(pattern2.length());
-                            }
-                            if(newValue != null) {
-                                entry.setValue(newValue);
-                                logger.trace("Updated Properties: '{}'", newProperties);
-                            }
-                        }
-                    }
-                }
-
-                Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
-                updateTitle(childTarget, ((depth > 0) && newProperties.containsKey(JCR_TITLE)) ?  (String) newProperties.get(JCR_TITLE) : toName);
-                final String childTargetPathDisplay = Optional.ofNullable(childTarget)
-                        .map(Resource::getPath)
-                        .orElse(null);
-                logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
-                // Copy grandchildren
-                copyChildResources(child, childTarget, fromName, toName, depth + 1);
+                copyChildResource(child, target, fromName, toName, resourceResolver, depth);
             } catch(PersistenceException e) {
                 logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
                 return;
             }
             logger.trace("Child handled: '{}'", child.getPath());
         }
+    }
+
+    private void copyChildResource(Resource sourceChild, Resource targetParent, String fromName, String toName, ResourceResolver resourceResolver, int depth) throws PersistenceException {
+        Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
+        if(isNotEmpty(fromName)) {
+            final String patternSlashName = SLASH + fromName;
+            final String patternNameSlash = fromName + SLASH;
+            final int patternLength = patternSlashName.length();
+            for(final Entry<String, Object> entry : newProperties.entrySet()) {
+                final Object temp = entry.getValue();
+                if(temp instanceof String) {
+                    String value = (String) temp;
+                    int index = value.indexOf(patternSlashName);
+                    String newValue = null;
+                    if(value.startsWith("/content/") && index > 0) {
+                        // Check if the string ends or if the next character is a slash to avoid collisions
+                        logger.trace("Value Length: {}, Index: {}, Pattern Length: {}", value.length(), index, patternLength);
+                        if(index + patternLength == value.length()) {
+                            newValue = value.substring(0, index) + SLASH + toName;
+                        } else if(value.charAt(index + patternLength) == '/') {
+                            newValue = value.substring(0, index) + SLASH + toName + SLASH + value.substring(index + patternLength + 1);
+                        }
+                    } else if(value.startsWith(patternNameSlash)) {
+                        newValue = toName + SLASH + value.substring(patternLength);
+                    }
+                    if(newValue != null) {
+                        entry.setValue(newValue);
+                        logger.trace("Updated Properties: '{}'", newProperties);
+                    }
+                }
+            }
+        }
+
+        Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
+        updateTitle(childTarget, ((depth > 0) && newProperties.containsKey(JCR_TITLE)) ?  (String) newProperties.get(JCR_TITLE) : toName);
+        final String childTargetPathDisplay = Optional.ofNullable(childTarget)
+                .map(Resource::getPath)
+                .orElse(null);
+        logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
+        // Copy grandchildren
+        copyChildResources(sourceChild, childTarget, fromName, toName, resourceResolver, depth + 1);
     }
 
     private void copyStubs(Resource source, Resource target, String folderName, List<String> superTypes) {
