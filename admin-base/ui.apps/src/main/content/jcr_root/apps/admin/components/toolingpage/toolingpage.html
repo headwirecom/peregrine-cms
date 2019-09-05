@@ -44,7 +44,7 @@
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
-            document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
+            document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');
     </script>
 
 </head>
@@ -72,6 +72,7 @@
         $perAdminApp.loadComponent('admin-components-iconaction')
         $perAdminApp.loadComponent('admin-components-action')
         $perAdminApp.loadComponent('admin-components-notifyuser')
+        $perAdminApp.loadComponent('admin-components-askuser')
         $perAdminApp.loadComponent('admin-components-pathbrowser')
         $perAdminApp.loadComponent('admin-components-logo')
         $perAdminApp.loadComponent('admin-components-extensions')
