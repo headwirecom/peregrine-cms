@@ -769,7 +769,7 @@ public final class AdminResourceHandlerService
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, null, targetName);
+                copyChildResources(sourceResource, targetResource, null, targetName);
             }
         }
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
@@ -778,7 +778,7 @@ public final class AdminResourceHandlerService
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                copyChildResources(sourceResource, targetResource, fromName, targetName);
             }
         }
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
@@ -787,7 +787,7 @@ public final class AdminResourceHandlerService
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                copyChildResources(sourceResource, targetResource, fromName, targetName);
             }
         }
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
@@ -796,7 +796,7 @@ public final class AdminResourceHandlerService
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                copyChildResources(sourceResource, targetResource, fromName, targetName);
                 updateStringsInFiles(targetResource, targetName);
             }
             answer = targetResource;
@@ -1100,13 +1100,13 @@ public final class AdminResourceHandlerService
         }
     }
 
-    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName) {
+    private void copyChildResources(Resource source, Resource target, String fromName, String toName) {
         // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
         // while child assets will use the name from the source; otherwise every asset has the same name
-        copyChildResources(source, deep, target, fromName, toName, 0);
+        copyChildResources(source, target, fromName, toName, 0);
     }
 
-    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName, int depth) {
+    private void copyChildResources(Resource source, Resource target, String fromName, String toName, int depth) {
         logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
         for(Resource child: source.getChildren()) {
             logger.trace("Child handling started: '{}'", child.getPath());
@@ -1147,9 +1147,7 @@ public final class AdminResourceHandlerService
                         .orElse(null);
                 logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
                 // Copy grandchildren
-                if(deep) {
-                    copyChildResources(child, true, childTarget, fromName, toName, depth + 1);
-                }
+                copyChildResources(child, childTarget, fromName, toName, depth + 1);
             } catch(PersistenceException e) {
                 logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
                 return;
