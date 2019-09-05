@@ -357,9 +357,11 @@ public class LocalReplicationService
                         }
                     }
                     log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource == null ? "null" : targetParentResource.getPath());
-                    Resource copy = copy(resource, targetParentResource, pathMapping);
-                    resourceList.add(copy);
-                    handledSources.add(resource);
+                    if(targetParentResource != null) {
+                        Resource copy = copy(resource, targetParentResource, pathMapping);
+                        resourceList.add(copy);
+                        handledSources.add(resource);
+                    }
                 } catch(PersistenceException e) {
                     log.error("Failed to replicate resource: '{}' -> ignored", resource, e);
                 }

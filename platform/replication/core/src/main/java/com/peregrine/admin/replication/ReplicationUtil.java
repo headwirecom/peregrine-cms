@@ -138,12 +138,13 @@ public class ReplicationUtil {
                         targetProperties.put(PER_REPLICATED_BY, userId);
                         targetProperties.put(PER_REPLICATED, replicated);
                         if(JCR_CONTENT.equals(source.getName())) {
-                            Resource parent = target.getParent();
-                            if(parent == null) {
-                                LOGGER.warn("A Content Node should always have a parent but we did not get one for: '{}'", target);
+                            Resource targetParent = target.getParent();
+                            Resource sourceParent = source.getParent();
+                            if(sourceParent == null || targetParent == null) {
+                                LOGGER.warn("A Content Node should always have a parent but we did not get one for: '{}' or '{}'", source, target);
                             } else {
-                                sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
-                                targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+                                sourceProperties.put(PER_REPLICATION_REF, targetParent.getPath());
+                                targetProperties.put(PER_REPLICATION_REF, sourceParent.getPath());
                             }
                         } else {
                             sourceProperties.put(PER_REPLICATION_REF, target.getPath());

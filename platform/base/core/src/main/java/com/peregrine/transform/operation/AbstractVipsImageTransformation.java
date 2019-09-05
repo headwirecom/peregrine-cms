@@ -47,6 +47,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 
@@ -120,10 +121,10 @@ public abstract class AbstractVipsImageTransformation
 
     protected void configure(boolean enabled, String transformationName) {
         this.enabled = enabled;
-
-        this.transformationName = transformationName == null || transformationName.isEmpty() ?
-            getDefaultTransformationName() :
-            transformationName;
+        // In case Transformation Name is null or empty then return getDefaultTransformationName() instead
+        this.transformationName = Optional.ofNullable(transformationName)
+            .filter(t -> t.isEmpty())
+            .orElse(getDefaultTransformationName());
         if(enabled) {
             if(transformationName.isEmpty()) {
                 throw new IllegalArgumentException(TRANSFORMATION_NAME_CANNOT_BE_EMPTY);
