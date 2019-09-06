@@ -26,7 +26,6 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
@@ -74,6 +73,8 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Limited Search of either Peregrine:
@@ -217,7 +218,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                 alreadyVisitedNodes.add(superTypeNode.getPath());
                 if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
                     String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-                    if(StringUtils.isNotEmpty(resourceSuperType)) {
+                    if(isNotEmpty(resourceSuperType)) {
                         try {
                             superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
                             logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
@@ -256,16 +257,16 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                 group = variation.getProperty(GROUP).getString();
             }
         }
-        if(StringUtils.isEmpty(title) && component.hasProperty(JCR_TITLE)) {
+        if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
             title = component.getProperty(JCR_TITLE).getString();
         }
-        if(StringUtils.isEmpty(group) && component.hasProperty(GROUP)) {
+        if(isEmpty(group) && component.hasProperty(GROUP)) {
             group = component.getProperty(GROUP).getString();
         }
-        if(StringUtils.isNotEmpty(title)) {
+        if(isNotEmpty(title)) {
             answer.writeAttribute(TITLE, title);
         }
-        if(StringUtils.isNotEmpty(group)) {
+        if(isNotEmpty(group)) {
             answer.writeAttribute(GROUP, group);
         }
         if(component.hasProperty(TEMPLATE_COMPONENT)) {

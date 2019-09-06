@@ -3,7 +3,6 @@ package com.peregrine.admin.replication;
 import com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
 
@@ -220,7 +220,7 @@ public class DefaultReplicationMapperService
 
         /** Configuration for the Default Replication **/
         public DefaultReplicationConfig(String serviceName, Map<String, String> parameters) {
-            if(StringUtils.isEmpty(serviceName)) { throw new IllegalArgumentException(REPLICATION_SERVICE_NAME_CANNOT_BE_NULL); }
+            if(isEmpty(serviceName)) { throw new IllegalArgumentException(REPLICATION_SERVICE_NAME_CANNOT_BE_NULL); }
             this.serviceName = serviceName;
             if(parameters != null) { this.parameters.putAll(parameters); }
         }
@@ -228,7 +228,7 @@ public class DefaultReplicationMapperService
         /** Configuration for a single Path Mapping **/
         public DefaultReplicationConfig(String serviceName, String path, Map<String, String> parameters) {
             this(serviceName, parameters);
-            if(StringUtils.isEmpty(path)) { throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL); }
+            if(isEmpty(path)) { throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL); }
             this.path = path;
         }
 

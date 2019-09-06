@@ -40,7 +40,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import com.peregrine.render.RenderService;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.BundleContext;
@@ -61,6 +60,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.HTML_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
@@ -179,7 +179,7 @@ public class RemoteS3SystemReplicationService
         Map<String, List<String>> extensionParameters = new HashMap<>();
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
-            if(StringUtils.isNotEmpty(name)) {
+            if(isNotEmpty(name)) {
                 List<String> types = extension.getValue();
                 log.trace("Extension Types: '{}'", types);
                 if(types != null && !types.isEmpty()) {
@@ -289,7 +289,7 @@ public class RemoteS3SystemReplicationService
         if(key.startsWith(SLASH)) {
             key = key.substring(1);
         }
-        String awsKey = key + (StringUtils.isNotEmpty(extension) ? "." + extension : "");
+        String awsKey = key + (isNotEmpty(extension) ? "." + extension : "");
         return new PutObjectRequest(
             awsBucketName,
             awsKey,
@@ -354,7 +354,7 @@ public class RemoteS3SystemReplicationService
         String mimeType = null;
         String primaryType = getPrimaryType(resource);
         if(ASSET_PRIMARY_TYPE.equals(primaryType) || NT_FILE.equals(primaryType)) {
-            if(StringUtils.isNotEmpty(extension)) {
+            if(isNotEmpty(extension)) {
                 Resource renditions = resource.getChild(RENDITIONS);
                 if(renditions != null) {
                     Resource rendition = renditions.getChild(extension);
@@ -367,7 +367,7 @@ public class RemoteS3SystemReplicationService
         if(mimeType == null) {
             mimeType = getMimeType(resource);
         }
-        if(StringUtils.isNotEmpty(mimeType)) {
+        if(isNotEmpty(mimeType)) {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             log.trace("Set Property Mime Type: '{}'", mimeType);
             objectMetadata.setContentType(mimeType);
