@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_TEMPLATE;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_CREATION_TEMPLATE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -66,34 +66,30 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CREATION_TEMPLATE
+    },
+    reference = {
+        @Reference(name = "ModelFactory", bind = "setModelFactory", service = ModelFactory.class),
+        @Reference(name = "AdminResourceHandler", bind = "setResourceManagement", service = AdminResourceHandler.class)
     }
 )
 @SuppressWarnings("serial")
-public class CreateTemplateServlet extends AbstractBaseServlet {
+public class CreateTemplateServlet extends AbstractCreateServlet {
 
     public static final String TEMPLATE = "template";
     public static final String FAILED_TO_CREATE_TEMPLATE = "Failed to create template";
 
-    @Reference
-    ModelFactory modelFactory;
-
-    @Reference
-    AdminResourceHandler resourceManagement;
+    @Override
+    protected String getType() { return TEMPLATE; }
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected String getFailureMessage() { return FAILED_TO_CREATE_TEMPLATE; }
+
+    @Override
+    protected Resource doAction(Request request) throws ManagementException {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         String component = request.getParameter(COMPONENT);
-        try {
-            Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component);
-            request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, TEMPLATE).writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, name).writeAttribute(PATH, newTemplate.getPath());
-        } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_TEMPLATE).setRequestPath(parentPath).setException(e);
-        }
+        return resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component);
     }
 }
 

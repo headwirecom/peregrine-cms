@@ -38,7 +38,7 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DEFINITION;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_COMPONENT_DEFINITION;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.NAME;

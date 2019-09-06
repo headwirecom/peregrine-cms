@@ -39,9 +39,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_MOVE;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_RENAME;
+import static com.peregrine.admin.servlets.AdminPathConstants.JSON_EXTENSION;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_MOVE;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_RENAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.ORDER_AFTER_TYPE;
@@ -90,9 +90,9 @@ public class MoveServlet extends AbstractBaseServlet {
     private List<String> acceptedTypes = Arrays.asList(ORDER_BEFORE_TYPE, ORDER_AFTER_TYPE, ORDER_CHILD_TYPE);
 
     @Reference
-    private ResourceRelocation resourceRelocation;
+    private transient ResourceRelocation resourceRelocation;
     @Reference
-    AdminResourceHandler resourceManagement;
+    transient AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

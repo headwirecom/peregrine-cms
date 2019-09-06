@@ -35,8 +35,8 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.List;
 
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF_BY;
+import static com.peregrine.admin.servlets.AdminPathConstants.JSON_EXTENSION;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_REF_BY;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -81,7 +81,7 @@ public class ReferencedByListerServlet extends AbstractBaseServlet {
     public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
 
     @Reference
-    private ReferenceLister referenceLister;
+    private transient ReferenceLister referenceLister;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

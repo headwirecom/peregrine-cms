@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_PAGE;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_DELETE_PAGE;
 import static com.peregrine.commons.util.PerConstants.DELETED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NODE_TYPE;
@@ -69,33 +69,27 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_DELETE_PAGE
+    },
+    reference = {
+        @Reference(name = "ModelFactory", bind = "setModelFactory", service = ModelFactory.class),
+        @Reference(name = "AdminResourceHandler", bind = "setResourceManagement", service = AdminResourceHandler.class)
     }
 )
 @SuppressWarnings("serial")
-public class DeletePageServlet extends AbstractBaseServlet {
+public class DeletePageServlet extends AbstractDeleteServlet {
 
-    public static final String FAILED_TO_DELETE_NODE = "Failed to delete node: ";
-    @Reference
-    ModelFactory modelFactory;
-
-    @Reference
-    AdminResourceHandler resourceManagement;
+    public static final String FAILED_TO_DELETE_PAGE = "Failed to delete page: ";
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected String getType() { return PAGE; }
+
+    @Override
+    protected String getFailureMessage() { return FAILED_TO_DELETE_PAGE; }
+
+    @Override
+    protected DeletionResponse doAction(Request request) throws ManagementException {
         String path = request.getParameter(PATH);
-        try {
-            DeletionResponse response = resourceManagement.deleteResource(request.getResourceResolver(), path, PAGE_PRIMARY_TYPE);
-            request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, PAGE)
-                .writeAttribute(STATUS, DELETED)
-                .writeAttribute(NAME, response.getName())
-                .writeAttribute(NODE_TYPE, response.getType())
-                .writeAttribute(PARENT_PATH, response.getParentPath());
-        } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_DELETE_NODE + path).setRequestPath(path).setException(e);
-        }
+        return resourceManagement.deleteResource(request.getResourceResolver(), path, PAGE_PRIMARY_TYPE);
     }
 }
 

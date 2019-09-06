@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_ACCESS;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -65,7 +65,7 @@ public class AccessServlet extends AbstractBaseServlet {
 
     @Reference
     @SuppressWarnings("unused")
-    private IntraSlingCaller intraSlingCaller;
+    private transient IntraSlingCaller intraSlingCaller;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

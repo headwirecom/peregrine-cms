@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_PAGE;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_CREATION_PAGE;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PAGE;
@@ -67,33 +67,33 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CREATION_PAGE
+    },
+    reference = {
+        @Reference(name = "ModelFactory", bind = "setModelFactory", service = ModelFactory.class),
+        @Reference(name = "AdminResourceHandler", bind = "setResourceManagement", service = AdminResourceHandler.class)
     }
 )
 @SuppressWarnings("serial")
-public class CreatePageServlet extends AbstractBaseServlet {
+public class CreatePageServlet extends AbstractCreateServlet {
 
     public static final String FAILED_TO_CREATE_PAGE = "Failed to create page";
-    @Reference
-    ModelFactory modelFactory;
-
-    @Reference
-    AdminResourceHandler resourceManagement;
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected String getType() { return PAGE; }
+
+    @Override
+    protected String getFailureMessage() { return FAILED_TO_CREATE_PAGE; }
+
+    @Override
+    protected Resource doAction(Request request) throws ManagementException {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         String templatePath = request.getParameter(TEMPLATE_PATH);
-        try {
-            Resource newPage = resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath);
-            request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, PAGE).writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, name).writeAttribute(PATH, newPage.getPath()).writeAttribute(TEMPLATE_PATH, templatePath);
-        } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_PAGE).setRequestPath(parentPath).setException(e);
-        }
+        return resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath);
     }
 
+    protected void enhanceResponse(JsonResponse response, Request request) throws IOException {
+        response.writeAttribute(TEMPLATE_PATH, request.getParameter(TEMPLATE_PATH));
+    };
 }
 

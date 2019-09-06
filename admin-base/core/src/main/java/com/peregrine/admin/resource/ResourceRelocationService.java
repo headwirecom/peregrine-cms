@@ -40,6 +40,11 @@ public class ResourceRelocationService
     public static final String SOURCE_NOT_FOUND = "Source Child: '%s' could not be found in Parent: '%s'";
     public static final String TARGET_NOT_FOUND = "Target Child: '%s' could not be found in Parent: '%s'";
 
+    private static final String FROM_NOT_A_NODE = "Form Resource: '%s' could not be adapted to a Node";
+    private static final String RESOURCE_HAS_NO_PARENT = "Resource: '%s' has no parent";
+    private static final String FROM_PARENT_NOT_A_NODE = "From Parent: '%s' could not be adapted to a Node";
+    private static final String AFTER_RESOURCE_NOT_FOUND = "After rename new resource: '%s' could not be found";
+
     @Reference
     private ReferenceLister referenceLister;
 
@@ -86,10 +91,7 @@ public class ResourceRelocationService
     }
 
     @Override
-    public void reorder(Resource parent, String sourceChildName, String targetChildName, boolean before) throws RepositoryException, ManagementException {
-        if(parent == null) {
-            throw new IllegalArgumentException(PARENT_RESOURCE_MUST_BE_SPECIFIED);
-        }
+    public void reorder(@NotNull Resource parent, @NotNull String sourceChildName, @Nullable String targetChildName, boolean before) throws RepositoryException, ManagementException {
         if(parent.getChild(sourceChildName) == null) {
             throw new IllegalArgumentException(String.format(SOURCE_NOT_FOUND, sourceChildName, parent.getPath()));
         }
@@ -99,39 +101,51 @@ public class ResourceRelocationService
         Node toNode = parent.adaptTo(Node.class);
         if(toNode == null) { throw new ManagementException("Parent: '" + parent.getPath() + "' could not be adapted to a Node"); }
         if(before) {
-            // No Target Child Name and before means we move it to the first place
-            if(targetChildName == null) {
-                Node temp = getNextNode(toNode, null);
-                targetChildName = temp != null ? temp.getName() : null;
-            }
-            if(targetChildName != null) {
-                toNode.orderBefore(sourceChildName, targetChildName);
-            }
+            reorderBefore(targetChildName, toNode, sourceChildName);
         } else {
-            // No Target Child Name and after means we move it to the last place
-            String nextNodeName = null;
-            if(targetChildName != null) {
-                Node nextNode = getNextNode(toNode, targetChildName);
-                nextNodeName = nextNode != null ? nextNode.getName() : null;
-            }
-            toNode.orderBefore(sourceChildName, nextNodeName);
+            reorderAfter(targetChildName, toNode, sourceChildName);
         }
+    }
+
+    private void reorderBefore(String targetChildName, Node toNode, String sourceChildName) throws RepositoryException {
+        // No Target Child Name and before means we move it to the first place
+        if(targetChildName == null) {
+            Node temp = getNextNode(toNode, null);
+            targetChildName = temp != null ? temp.getName() : null;
+        }
+        if(targetChildName != null) {
+            toNode.orderBefore(sourceChildName, targetChildName);
+        }
+    }
+
+    private void reorderAfter(String targetChildName, Node toNode, String sourceChildName) throws RepositoryException {
+        // No Target Child Name and after means we move it to the last place
+        String nextNodeName = null;
+        if(targetChildName != null) {
+            Node nextNode = getNextNode(toNode, targetChildName);
+            nextNodeName = nextNode != null ? nextNode.getName() : null;
+        }
+        toNode.orderBefore(sourceChildName, nextNodeName);
     }
 
     private @Nullable Node getNextNode(@NotNull Node parent, @Nullable String childName) throws RepositoryException {
         Node answer = null;
         NodeIterator i = parent.getNodes();
-        while (i.hasNext()) {
-            Node child = i.nextNode();
+        if (i.hasNext()) {
             if (childName == null) {
-                // No Child Name means returns first
-                answer = child;
-                break;
-            } else if (child.getName().equals(childName)) {
-                if (i.hasNext()) {
-                    answer = i.nextNode();
+                // No Child Name given so we take the first
+                answer = i.nextNode();
+            } else {
+                // Look for the Node with the given Child Name and if found and there is one more take this on
+                while (i.hasNext()) {
+                    Node child = i.nextNode();
+                    if (child.getName().equals(childName)) {
+                        if (i.hasNext()) {
+                            answer = i.nextNode();
+                        }
+                        break;
+                    }
                 }
-                break;
             }
         }
         return answer;
@@ -151,11 +165,11 @@ public class ResourceRelocationService
             references = referenceLister.getReferencedByList(from);
         }
         Node fromNode = from.adaptTo(Node.class);
-        if(fromNode == null) { throw new ManagementException("Form Resource: '" + from.getPath() + "' could not be adapted to a Node"); }
+        if(fromNode == null) { throw new ManagementException(String.format(FROM_NOT_A_NODE, from.getPath())); }
         Resource parent = from.getParent();
-        if(parent == null) { throw new ManagementException("Resource: '" + from.getPath() + "' has no parent"); }
+        if(parent == null) { throw new ManagementException(String.format(RESOURCE_HAS_NO_PARENT, from.getPath())); }
         Node fromNodeParent = parent.adaptTo(Node.class);
-        if(fromNodeParent == null) { throw new ManagementException("From Parent: '" + from.getPath() + "' could not be adapted to a Node"); }
+        if(fromNodeParent == null) { throw new ManagementException(String.format(FROM_PARENT_NOT_A_NODE, parent.getPath())); }
         Node nextNode = getNextNode(fromNodeParent, from.getName());
         String fromPath = from.getPath();
         String fromName = from.getName();
@@ -173,7 +187,7 @@ public class ResourceRelocationService
             fromNodeParent.orderBefore(newName, nextNode.getName());
         }
         Resource answer = parent.getChild(newName);
-        if(answer == null) { throw new ManagementException("After rename new resource: '" + newName + "' could not be found"); }
+        if(answer == null) { throw new ManagementException(String.format(AFTER_RESOURCE_NOT_FOUND, newName)); }
         // Update the references
         for(com.peregrine.replication.Reference reference : references) {
             Resource propertyResource = reference.getPropertyResource();

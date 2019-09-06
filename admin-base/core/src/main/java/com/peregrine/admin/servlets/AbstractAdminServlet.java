@@ -25,8 +25,9 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -35,53 +36,45 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_CONTENT;
-import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_CREATION_OBJECT;
+import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE_PATH;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
-/**
- * Forwards the Request to .data.json page rendering and replacing any
- * selectors for 'data'
- *
- * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
- */
-@Component(
-    service = Servlet.class,
-    property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Content Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CONTENT
-    }
-)
 @SuppressWarnings("serial")
-public class ContentServlet extends AbstractBaseServlet {
+public abstract class AbstractAdminServlet extends AbstractBaseServlet {
 
-    private static final String DATA = "=data";
+    public static final String OBJECT = "object";
+    public static final String FAILED_TO_CREATE_OBJECT = "Failed to create object";
 
-    @Reference
-    private transient ModelFactory modelFactory;
+    transient ModelFactory modelFactory;
 
-    @Override
-    protected Response handleRequest(Request request) throws IOException {
+    transient AdminResourceHandler resourceManagement;
 
-        String suffix = request.getSuffix();
-        if(suffix.endsWith(DATA_JSON_EXTENSION)) {
-            suffix = suffix.substring(0, suffix.indexOf(DATA_JSON_EXTENSION));
-        }
-        Resource res = request.getResourceByPath(suffix);
-        RequestDispatcherOptions rdOtions = new RequestDispatcherOptions(
-            RequestDispatcherOptions.OPT_REPLACE_SELECTORS + DATA
-        );
-        return new ForwardResponse(res, rdOtions);
+    public void setModelFactory(ModelFactory modelFactory) {
+        this.modelFactory = modelFactory;
     }
+
+    public void setResourceManagement(AdminResourceHandler resourceManagement) {
+        this.resourceManagement = resourceManagement;
+    }
+
+    protected abstract String getType();
+    protected abstract String getStatus();
+    protected abstract String getFailureMessage();
+
+    protected void enhanceResponse(JsonResponse response, Request request) throws IOException {};
 }
 

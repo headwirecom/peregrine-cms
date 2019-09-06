@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_NODE;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_DELETE_NODE;
 import static com.peregrine.commons.util.PerConstants.DELETED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NODE_TYPE;
@@ -67,37 +67,29 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_DELETE_NODE
+    },
+    reference = {
+        @Reference(name = "ModelFactory", bind = "setModelFactory", service = ModelFactory.class),
+        @Reference(name = "AdminResourceHandler", bind = "setResourceManagement", service = AdminResourceHandler.class)
     }
 )
 @SuppressWarnings("serial")
-public class DeleteNodeServlet extends AbstractBaseServlet {
+public class DeleteNodeServlet extends AbstractDeleteServlet {
 
     public static final String FAILED_TO_DELETE_NODE = "Failed to delete node: ";
     public static final String NODE = "node";
-    @Reference
-    ModelFactory modelFactory;
-
-    @Reference
-    AdminResourceHandler resourceManagement;
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected String getType() { return NODE; }
+
+    @Override
+    protected String getFailureMessage() { return FAILED_TO_DELETE_NODE; }
+
+    @Override
+    protected DeletionResponse doAction(Request request) throws ManagementException {
         String path = request.getParameter(PATH);
         String type = request.getParameter(TYPE);
-        logger.debug("Got Delete Node Type: '{}'", type);
-        try {
-            DeletionResponse response = resourceManagement.deleteResource(request.getResourceResolver(), path, type);
-            request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, NODE)
-                .writeAttribute(STATUS, DELETED)
-                .writeAttribute(NAME, response.getName())
-                .writeAttribute(NODE_TYPE, response.getType())
-                .writeAttribute(PARENT_PATH, response.getParentPath());
-        } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_DELETE_NODE + path).setRequestPath(path).setException(e);
-        }
+        return resourceManagement.deleteResource(request.getResourceResolver(), path, type);
     }
-
 }
 

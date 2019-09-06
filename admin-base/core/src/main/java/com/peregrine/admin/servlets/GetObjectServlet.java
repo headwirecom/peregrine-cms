@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_OBJECT;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_GET_OBJECT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -67,8 +67,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class GetObjectServlet extends AbstractBaseServlet {
 
     public static final String RESOURCE_NOT_FOUND = "Resource not found";
+
     @Reference
-    ModelFactory modelFactory;
+    transient ModelFactory modelFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -77,26 +78,6 @@ public class GetObjectServlet extends AbstractBaseServlet {
         if(resource == null) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND).setRequestPath(path);
         }
-
-        // changed the approach to forward through the export servlet as exportModelForResource does not
-        // yeld consistent resulrs (takes the first match for the model)
-//        try {
-//            Map object = modelFactory.exportModelForResource(resource,
-//                    "jackson", Map.class,
-//                    Collections.<String, String>emptyMap());
-//            try {
-//                JsonResponse response = new JsonResponse();
-//                response.writeMap(object);
-//                return response;
-//            } catch (IOException e) {
-//            }
-//
-//        } catch (ExportException e) {
-//        } catch (MissingExporterException e) {
-//        } catch (ModelClassException e) {
-//            // doesnt exist, continue
-//        }
-
 
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
         rdOptions.setReplaceSelectors(MODEL);

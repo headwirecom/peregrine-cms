@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_FOLDER;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_CREATION_FOLDER;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -65,34 +65,29 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CREATION_FOLDER
+    },
+    reference = {
+        @Reference(name = "ModelFactory", bind = "setModelFactory", service = ModelFactory.class),
+        @Reference(name = "AdminResourceHandler", bind = "setResourceManagement", service = AdminResourceHandler.class)
     }
 )
 @SuppressWarnings("serial")
-public class CreateFolderServlet extends AbstractBaseServlet {
+public class CreateFolderServlet extends AbstractCreateServlet {
 
     public static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder";
     public static final String FOLDER = "folder";
 
-    @Reference
-    ModelFactory modelFactory;
-
-    @Reference
-    AdminResourceHandler resourceManagement;
+    @Override
+    protected String getType() { return FOLDER; }
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected String getFailureMessage() { return FAILED_TO_CREATE_FOLDER; }
+
+    @Override
+    protected Resource doAction(Request request) throws ManagementException {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
-        try {
-            Resource newFolder = resourceManagement.createFolder(request.getResourceResolver(), parentPath, name);
-            request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, FOLDER).writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, name).writeAttribute(PATH, newFolder.getPath());
-        } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_FOLDER).setRequestPath(parentPath).setException(e);
-        }
+        return resourceManagement.createFolder(request.getResourceResolver(), parentPath, name);
     }
-
 }
 

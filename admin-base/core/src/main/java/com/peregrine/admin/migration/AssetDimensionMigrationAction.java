@@ -55,27 +55,30 @@ public class AssetDimensionMigrationAction
         }
     }
 
-    private void handleFolder(Resource folder, List<String> failedAssets) throws MigrationException {
+    /** Loop over folders and either handle children as assets or as sub folders **/
+    private void handleFolder(Resource folder, List<String> failedAssets) {
         for(Resource child: folder.getChildren()) {
-            ValueMap properties = child.adaptTo(ValueMap.class);
-            if(properties != null) {
-                String resourceType = properties.get(JCR_PRIMARY_TYPE, String.class);
-                if (ASSET_PRIMARY_TYPE.equals(resourceType)) {
-                    PerAsset asset = child.adaptTo(PerAsset.class);
-                    if (asset != null) {
-                        try {
-                            handleAssetDimensions(asset);
-                        } catch (RepositoryException | IOException e) {
-                            failedAssets.add(asset.getName() + "(Message: " + e.getLocalizedMessage() + ")");
-                        }
-                    } else {
-                        failedAssets.add(child.getName() + "(Failed to Adapt to PerAsset)");
-                    }
-                } else {
-                    // If this is not an Asset we assume a folder and delve into it
-                    handleFolder(child, failedAssets);
-                }
+            ValueMap properties = child.getValueMap();
+            String resourceType = properties.get(JCR_PRIMARY_TYPE, String.class);
+            if (ASSET_PRIMARY_TYPE.equals(resourceType)) {
+                handleAsset(child, failedAssets);
+            } else {
+                // If this is not an Asset we assume a folder and delve into it
+                handleFolder(child, failedAssets);
             }
+        }
+    }
+    /** Handle a Resource that is an Asset **/
+    private void handleAsset(Resource assetResource, List<String> failedAssets) {
+        PerAsset asset = assetResource.adaptTo(PerAsset.class);
+        if (asset != null) {
+            try {
+                handleAssetDimensions(asset);
+            } catch (RepositoryException | IOException e) {
+                failedAssets.add(asset.getName() + "(Message: " + e.getLocalizedMessage() + ")");
+            }
+        } else {
+            failedAssets.add(assetResource.getName() + "(Failed to Adapt to PerAsset)");
         }
     }
 }

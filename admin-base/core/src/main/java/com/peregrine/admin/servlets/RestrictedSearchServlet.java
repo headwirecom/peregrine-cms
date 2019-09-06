@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_SEARCH;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_SEARCH;
 import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.admin.util.AdminConstants.MORE;

@@ -1,6 +1,6 @@
 package com.peregrine.admin.servlets;
 
-public interface AdminPaths {
+public class AdminPathConstants {
     public static final String JSON_EXTENSION = "json";
     public static final String API_PREFIX = "perapi/admin/";
     public static final String RESOURCE_TYPE_ACCESS = API_PREFIX + "access";

@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_SITE;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_CREATION_SITE;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.FROM_SITE_NAME;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -46,6 +46,7 @@ import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE_PATH;
 import static com.peregrine.commons.util.PerConstants.TO_SITE_NAME;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -71,39 +72,32 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CREATION_SITE
+    },
+    reference = {
+        @Reference(name = "ModelFactory", bind = "setModelFactory", service = ModelFactory.class),
+        @Reference(name = "AdminResourceHandler", bind = "setResourceManagement", service = AdminResourceHandler.class)
     }
 )
 @SuppressWarnings("serial")
-public class CreateSiteServlet extends AbstractBaseServlet {
+public class CreateSiteServlet extends AbstractCreateServlet {
 
     public static final String FAILED_TO_CREATE_SITE = "Failed to create site";
-    public static final String FOLDER = "folder";
-
-    @Reference
-    ModelFactory modelFactory;
-
-    @Reference
-    AdminResourceHandler resourceManagement;
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected String getType() { return SITE; }
+
+    @Override
+    protected String getFailureMessage() { return FAILED_TO_CREATE_SITE; }
+
+    @Override
+    protected Resource doAction(Request request) throws ManagementException {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
-
-        try {
-            logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
-            Resource site = resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite);
-            request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, SITE)
-                .writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, toSite)
-                .writeAttribute(PATH, site.getPath())
-                .writeAttribute(SOURCE_PATH, SITES_ROOT + SLASH + fromSite);
-        } catch(ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE).setException(e);
-        }
+        return resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite);
     }
 
+    protected void enhanceResponse(JsonResponse response, Request request) throws IOException {
+        response.writeAttribute(SOURCE_PATH, SITES_ROOT + SLASH + request.getParameter(FROM_SITE_NAME));
+    };
 }
 

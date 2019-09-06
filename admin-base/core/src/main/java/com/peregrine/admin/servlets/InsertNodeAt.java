@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_INSERT_NODE;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_INSERT_NODE;
 import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
 import static com.peregrine.admin.util.AdminConstants.INTO;
 import static com.peregrine.admin.util.AdminConstants.MODEL_JSON;
@@ -92,14 +92,15 @@ public class InsertNodeAt extends AbstractBaseServlet {
 
     public static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     public static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
-    ResourceRelocation resourceRelocation;
+    transient ModelFactory modelFactory;
 
     @Reference
-    AdminResourceHandler resourceManagement;
+    transient ResourceRelocation resourceRelocation;
+
+    @Reference
+    transient AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

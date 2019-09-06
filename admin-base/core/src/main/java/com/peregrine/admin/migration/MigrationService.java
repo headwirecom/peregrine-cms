@@ -68,7 +68,7 @@ public class MigrationService
                 answer.setCode(MIGRATION_EXCEPTION_CODE)
                     .setException(e)
                     .setMessage(String.format(MIGRATION_EXCEPTION_MESSAGE, target.getDescriptor().getName()));
-            } catch(Throwable e) {
+            } catch(Exception e) {
                 answer.setCode(UNEXPECTED_EXCEPTION_CODE)
                     .setException(e)
                     .setMessage(String.format(UNEXPECTED_EXCEPTION_MESSAGE, target.getDescriptor().getName()));

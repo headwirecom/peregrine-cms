@@ -40,7 +40,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_NODES;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
@@ -108,7 +108,7 @@ public class NodesServlet extends AbstractBaseServlet {
     private DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Reference
-    ModelFactory modelFactory;
+    transient ModelFactory modelFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

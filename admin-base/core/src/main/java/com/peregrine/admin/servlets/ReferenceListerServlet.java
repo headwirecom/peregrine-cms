@@ -35,8 +35,8 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.List;
 
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
+import static com.peregrine.admin.servlets.AdminPathConstants.JSON_EXTENSION;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_REF;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -76,7 +76,7 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
     public static final String REFERENCES = "references";
 
     @Reference
-    private ReferenceLister referenceLister;
+    private transient ReferenceLister referenceLister;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

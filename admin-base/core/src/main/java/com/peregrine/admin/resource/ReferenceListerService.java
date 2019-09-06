@@ -30,6 +30,7 @@ import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -174,35 +175,43 @@ public class ReferenceListerService
      * @param source Optional root resource of the source. If source and target is provided then missing parents are added as well
      * @param target Optional root resource of the target
      */
-    private void parseProperties(Resource resource, TraversingContext context, List<Resource> response, Resource source, Resource target) {
-        ValueMap properties = resource.getValueMap();
-        for(Object item: properties.values()) {
-            String value = item + "";
-            for(String prefix: referencePrefixList) {
-                if(value.startsWith(prefix)) {
-                    String resourcePath = value;
-                    log.trace("Found Reference Resource Path: '{}'", resourcePath);
-                    Resource child = null;
-                    if(resourcePath.startsWith("/")) {
-                        child = resource.getResourceResolver().getResource(value);
-                    } else {
-                        child = resource.getChild(resourcePath);
-                    }
-                    if(child != null) {
-                        // Check if the resource is not already listed in there
-                        if(containsResource(response, child)) {
-                            log.info("Resource is already in the list: '{}'", child);
-                        } else {
-                            if(source  != null && target != null) {
-                                listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
-                            }
-                            log.trace("Found Reference Resource: '{}'", child);
-                            response.add(child);
-                            if(context.isTransitive()) {
-                                checkResource(child, context, response, source, target);
-                            }
+    private void parseProperties(@NotNull Resource resource, TraversingContext context, List<Resource> response, Resource source, Resource target) {
+        // Loop over all properties and then over all Prefixes and if the property starts with a prefix then handle it
+        resource.getValueMap().forEach(
+            (k, v) -> {
+                String value = v + "";
+                referencePrefixList.forEach(
+                    i -> {
+                        if(value.startsWith(i)) {
+                            handleReference(value, resource, context, response, source, target);
                         }
                     }
+                );
+            }
+        );
+    }
+
+    /** Gets Resource from Path and if found and not already found then add to the response **/
+    private void handleReference(String resourcePath, Resource resource, TraversingContext context, List<Resource> response, Resource source, Resource target) {
+        log.trace("Found Reference Resource Path: '{}'", resourcePath);
+        Resource child;
+        if(resourcePath.startsWith("/")) {
+            child = resource.getResourceResolver().getResource(resourcePath);
+        } else {
+            child = resource.getChild(resourcePath);
+        }
+        if(child != null) {
+            // Check if the resource is not already listed in there
+            if(containsResource(response, child)) {
+                log.info("Resource is already in the list: '{}'", child);
+            } else {
+                if(source  != null && target != null) {
+                    listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
+                }
+                log.trace("Found Reference Resource: '{}'", child);
+                response.add(child);
+                if(context.isTransitive()) {
+                    checkResource(child, context, response, source, target);
                 }
             }
         }
@@ -245,47 +254,43 @@ public class ReferenceListerService
      * @param response List of resources found
      */
     private void parsePropertiesReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && isNotEmpty(referencePath)) {
-            ValueMap properties = resource.getValueMap();
-            for(Map.Entry<String, Object> entry : properties.entrySet()) {
-                String name = entry.getKey();
-                String value = entry.getValue() + "";
-                if(referencePath.equals(value)) {
-                    // Find the node
-                    boolean found = false;
-                    Resource temp = resource;
-                    while(true) {
-                        if(temp.getName().equals(JCR_CONTENT)) {
-                            Resource parent = temp.getParent();
-                            if(parent != null) {
-                                if(response.stream()
-                                    .anyMatch(p -> parent.equals(p.getResource()))
-                                ) {
-                                    response.add(new Reference(parent, name, resource));
-                                }
-                                found = true;
-                            } else {
-                                log.warn("JCR Content Node: '{}' found but no parent", temp.getPath());
-                            }
-                            break;
-                        } else {
-                            temp = temp.getParent();
-                            if(temp == null) {
-                                break;
-                            }
-                        }
-                    }
-                    if(!found) {
+        if (resource != null && isNotEmpty(referencePath)) {
+            resource.getValueMap().forEach(
+                (name, v) -> {
+                    String value = v + "";
+                    if (referencePath.equals(value)) {
+                        boolean found = findContentNodeToAddAsReference(resource, name, response);
                         // No JCR Content node found so just use this one
-                        if(response.stream()
-                            .anyMatch(p -> resource.equals(p.getResource()))
-                        ) {
-                            response.add(new Reference(resource, name, resource));
+                        if (!found && !response.stream().anyMatch(p -> resource.equals(p.getResource()))) {
+                                response.add(new Reference(resource, name, resource));
                         }
                     }
                 }
+            );
+        }
+    }
+
+    private boolean findContentNodeToAddAsReference(Resource resource, String name, List<Reference> response) {
+        boolean answer = false;
+        while(resource != null) {
+            if(resource.getName().equals(JCR_CONTENT)) {
+                Resource parent = resource.getParent();
+                if(parent != null) {
+                    if(response.stream()
+                        .anyMatch(p -> parent.equals(p.getResource()))
+                    ) {
+                        response.add(new Reference(parent, name, resource));
+                    }
+                    answer = true;
+                } else {
+                    log.warn("JCR Content Node: '{}' found but no parent", resource.getPath());
+                }
+                break;
+            } else {
+                resource = resource.getParent();
             }
         }
+        return answer;
     }
 
     @Activate
@@ -324,8 +329,6 @@ public class ReferenceListerService
         private Set<String> deepLimits = new TreeSet<>();
         private Tree visited = new Tree();
 
-        public TraversingContext() {};
-
         public TraversingContext setTransitive(boolean transitive) {
             this.transitive = transitive;
             return this;
@@ -362,15 +365,21 @@ public class ReferenceListerService
                 if(!visited.contains(path)) {
                     visited.addChildByPath(path);
                     if(!deep) {
-                        for(String limit : deepLimits) {
-                            if(path.startsWith(limit)) {
-                                answer = true;
-                                break;
-                            }
-                        }
+                        answer = handleDeepLimits(path);
                     } else {
                         answer = true;
                     }
+                }
+            }
+            return answer;
+        }
+
+        private boolean handleDeepLimits(String path) {
+            boolean answer = false;
+            for(String limit : deepLimits) {
+                if(path.startsWith(limit)) {
+                    answer = true;
+                    break;
                 }
             }
             return answer;
@@ -400,6 +409,8 @@ public class ReferenceListerService
             super(null, SLASH);
         }
 
+        // A Tree does not have a parent so we prevent it here from being set on the Node to avoid an NPE
+        @Override
         void setParent(Node parent) {}
 
         /**
@@ -462,7 +473,6 @@ public class ReferenceListerService
      */
     public static class Node {
         private String segment;
-        private Node parent;
         private List<Node> children;
 
         /**
@@ -489,7 +499,6 @@ public class ReferenceListerService
          */
         void setParent(Node parent) {
             if(parent == null) { throw new IllegalArgumentException("Parent Node must be defined"); }
-            this.parent = parent;
             parent.addChild(this);
         }
 

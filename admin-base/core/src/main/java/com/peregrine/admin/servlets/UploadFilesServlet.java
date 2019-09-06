@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_FILES;
+import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_UPLOAD_FILES;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -88,9 +88,9 @@ public class UploadFilesServlet extends AbstractBaseServlet {
     public static final String ASSET_PATH = "assetPath";
     public static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
     @Reference
-    ModelFactory modelFactory;
+    transient ModelFactory modelFactory;
     @Reference
-    AdminResourceHandler resourceManagement;
+    transient AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
