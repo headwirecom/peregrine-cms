@@ -726,26 +726,27 @@ public final class AdminResourceHandlerService
     }
 
     @Override
-    public Resource copySite(final ResourceResolver resourceResolver, final String sitesParentPath, final String fromName, final String targetName) throws ManagementException {
-        // Check the given parameters and make sure everything is correct
-        if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
-        Resource parentResource = getResource(resourceResolver, sitesParentPath);
+    public Resource copySite(
+            final ResourceResolver resourceResolver,
+            final String sitesParentPath,
+            final String fromName,
+            final String targetName) throws ManagementException {
+        checkCopySiteParameters(resourceResolver, sitesParentPath, fromName, targetName);
+
+        final Resource parentResource = getResource(resourceResolver, sitesParentPath);
         if(parentResource == null) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
-        if(isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
-        if(fromName.equals(targetName)) { throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName); }
-        Resource source = getResource(parentResource, fromName);
+        final Resource source = getResource(parentResource, fromName);
         if(source == null) { throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, fromName)); }
-        if(isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
-        Resource answer = getResource(parentResource, targetName);
-        if(answer != null) { throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName)); }
         // Ensure the Site Resource is a page
         if(!isPrimaryType(source, PAGE_PRIMARY_TYPE)) { throw new ManagementException(String.format(SOURCE_SITE_IS_NOT_A_PAGE, fromName)); }
 
-        ArrayList<String> superTypes = new ArrayList<>();
+        Resource answer = getResource(parentResource, targetName);
+        if(answer != null) { throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName)); }
 
-        List<String> packagePaths = new ArrayList<>();
+        final ArrayList<Resource> resourcesToPackage = new ArrayList<>();
+        final ArrayList<String> superTypes = new ArrayList<>();
 
-        Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + fromName);
+        final Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + fromName);
         if(appsSource != null) {
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
             if(appsTarget == null) {
@@ -849,6 +850,19 @@ public final class AdminResourceHandlerService
         }
 
         return answer;
+    }
+
+    private void checkCopySiteParameters(
+            final ResourceResolver resourceResolver,
+            final String sitesParentPath,
+            final String fromName,
+            final String targetName) throws ManagementException {
+        // Check the given parameters and make sure everything is correct
+        if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
+        if(isBlank(sitesParentPath)) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
+        if(isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
+        if(fromName.equals(targetName)) { throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName); }
+        if(isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
     }
 
     private void createSitePackage(ResourceResolver resourceResolver, String siteName, List<String> packagePaths) throws PersistenceException {
