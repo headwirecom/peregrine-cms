@@ -25,26 +25,26 @@ package com.peregrine.commons.util;
  * #L%
  */
 
+import javax.script.Bindings;
+
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 
-import javax.script.Bindings;
-
 public final class BindingsUseUtil {
 
-    public static final String REQUEST = "request";
-    public static final String SLING = "sling";
+	public static final String REQUEST = "request";
+	public static final String SLING = "sling";
 
-    private BindingsUseUtil() {
-        throw new UnsupportedOperationException();
-    }
+	private BindingsUseUtil() {
+		throw new UnsupportedOperationException();
+	}
 
-    public static SlingHttpServletRequest getRequest(final Bindings bindings) {
-        return (SlingHttpServletRequest) bindings.get(REQUEST);
-    }
+	public static SlingHttpServletRequest getRequest(final Bindings bindings) {
+		return (SlingHttpServletRequest) bindings.get(REQUEST);
+	}
 
-    public static SlingScriptHelper getSling(final Bindings bindings) {
-        return (SlingScriptHelper) bindings.get(SLING);
-    }
+	public static SlingScriptHelper getSling(final Bindings bindings) {
+		return (SlingScriptHelper) bindings.get(SLING);
+	}
 
 }
