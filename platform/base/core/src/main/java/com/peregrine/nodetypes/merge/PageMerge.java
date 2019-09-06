@@ -45,7 +45,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
 
 /**
  * Created by rr on 5/8/2017.
