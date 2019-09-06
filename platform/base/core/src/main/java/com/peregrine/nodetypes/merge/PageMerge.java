@@ -75,16 +75,6 @@ public class PageMerge implements Use {
         return renderContext.get();
     }
 
-    @Override
-    public void init(final Bindings bindings) {
-        final SlingHttpServletRequest request = BindingsUseUtil.getRequest(bindings);
-        renderContext.set(new RenderContext(request));
-        resource = request.getResource();
-        resourceResolver = request.getResourceResolver();
-        final SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
-        modelFactory = sling.getService(ModelFactory.class);
-    }
-
     public String getMerged() {
         log.debug("merge on {}", resource.getPath());
         if (JCR_CONTENT.equals(resource.getName())) {
@@ -96,22 +86,6 @@ public class PageMerge implements Use {
 
     public String getMergedForScript() {
         return StringUtils.replace(getMerged(), "</script>", "<\\/script>");
-    }
-
-    private String toJSON(final Resource page) {
-        return toJSON(findTemplateAndMergeWithPageProperties(page));
-    }
-
-    private String toJSON(final Map template) {
-        final ObjectMapper mapper = new ObjectMapper();
-        try (final StringWriter writer = new StringWriter()) {
-            mapper.writeValue(writer, template);
-            return writer.toString();
-        } catch (final IOException e) {
-            log.error("not able to create string writer", e);
-        }
-
-        return StringUtils.EMPTY;
     }
 
     private Map findTemplateAndMergeWithPageProperties(final Resource page) {
@@ -239,4 +213,31 @@ public class PageMerge implements Use {
 
         return result;
     }
+
+    private String toJSON(final Resource page) {
+        return toJSON(findTemplateAndMergeWithPageProperties(page));
+    }
+
+    private String toJSON(final Map template) {
+        final ObjectMapper mapper = new ObjectMapper();
+        try (final StringWriter writer = new StringWriter()) {
+            mapper.writeValue(writer, template);
+            return writer.toString();
+        } catch (final IOException e) {
+            log.error("not able to create string writer", e);
+        }
+
+        return StringUtils.EMPTY;
+    }
+
+    @Override
+    public void init(final Bindings bindings) {
+        final SlingHttpServletRequest request = BindingsUseUtil.getRequest(bindings);
+        renderContext.set(new RenderContext(request));
+        resource = request.getResource();
+        resourceResolver = request.getResourceResolver();
+        final SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
+        modelFactory = sling.getService(ModelFactory.class);
+    }
+
 }
