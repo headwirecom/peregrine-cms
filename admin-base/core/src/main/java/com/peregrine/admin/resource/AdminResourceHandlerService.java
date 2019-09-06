@@ -749,24 +749,12 @@ public final class AdminResourceHandlerService
         final ArrayList<Resource> resourcesToPackage = new ArrayList<>();
         final ArrayList<String> superTypes = new ArrayList<>();
 
-        final Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + fromName);
-        if(appsSource != null) {
-            Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
-            if(appsTarget == null) {
-                appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
-                resourcesToPackage.add(appsTarget);
-            }
-            // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-            // with the sling:resourceSuperType set to the <fromSite> component
-            copyStubs(appsSource, appsTarget, COMPONENTS, superTypes);
-            // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
-            // with the sling:resourceSuperType set to the <fromSite> object
-            copyStubs(appsSource, appsTarget, OBJECTS, null);
-        }
-
         final StructureCopier copier = new StructureCopier(resourceResolver);
         copier.setToName(targetName);
+        copier.setFromName(fromName);
+        resourcesToPackage.add(copier.copyApps(superTypes));
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
+        copier.setFromName(null);
         resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
         copier.setFromName(fromName);
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
@@ -802,18 +790,7 @@ public final class AdminResourceHandlerService
                 properties.put(DEPENDENCIES, dependencies);
             }
 
-            final StringBuilder mappings = new StringBuilder();
-            for (final String superType : superTypes) {
-                String componentSourceName = getComponentVariableNameFromString(superType);
-                String componentDestName = getComponentVariableNameFromString(superType.replace(fromName+"/", targetName+"/"));
-                mappings.append("var ");
-                mappings.append(componentDestName);
-                mappings.append(" = ");
-                mappings.append(componentSourceName);
-                mappings.append('\n');
-            }
-
-            createResourceFromString(targetResource, "mapping.js", mappings.toString());
+            createResourceFromString(targetResource, "mapping.js", assembleMappingsJs(superTypes, fromName, targetName));
             createResourceFromString(targetResource, "js.txt", "mapping.js\n");
         }
 
@@ -836,11 +813,40 @@ public final class AdminResourceHandlerService
             final String fromName,
             final String targetName) throws ManagementException {
         // Check the given parameters and make sure everything is correct
-        if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
-        if(isBlank(sitesParentPath)) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
-        if(isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
-        if(fromName.equals(targetName)) { throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName); }
-        if(isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
+        if (resourceResolver == null) {
+            throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY);
+        }
+
+        if (isBlank(sitesParentPath)) {
+            throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
+        }
+
+        if (isEmpty(fromName)) {
+            throw new ManagementException(MISSING_SOURCE_SITE_NAME);
+        }
+
+        if (fromName.equals(targetName)) {
+            throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName);
+        }
+
+        if (isEmpty(targetName)) {
+            throw new ManagementException(MISSING_NEW_SITE_NAME);
+        }
+    }
+
+    private String assembleMappingsJs(final List<String> superTypes, final String fromName, final String targetName) {
+        final StringBuilder builder = new StringBuilder();
+        for (final String superType : superTypes) {
+            String sourceName = getComponentVariableNameFromString(superType);
+            String destName = getComponentVariableNameFromString(superType.replace(fromName + SLASH, targetName + SLASH));
+            builder.append("var ");
+            builder.append(destName);
+            builder.append(" = ");
+            builder.append(sourceName);
+            builder.append('\n');
+        }
+
+        return builder.toString();
     }
 
     private void createSitePackage(ResourceResolver resourceResolver, String siteName, List<String> packagePaths) throws PersistenceException {
@@ -1128,6 +1134,30 @@ public final class AdminResourceHandlerService
             this.toName = toName;
         }
 
+        public Resource copyApps(final List<String> superTypes) {
+            final String pathPrefix = APPS_ROOT + SLASH;
+            final Resource source = getResource(resourceResolver, pathPrefix + fromName);
+            if (source != null) {
+                Resource target = getResource(resourceResolver, pathPrefix + toName);
+                Resource answer = null;
+                if (target == null) {
+                    target = copyFolder(source, source.getParent(), toName);
+                    answer = target;
+                }
+
+                // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
+                // with the sling:resourceSuperType set to the <fromSite> component
+                superTypes.addAll(copyStubs(source, target, COMPONENTS));
+                // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
+                // with the sling:resourceSuperType set to the <fromSite> object
+                copyStubs(source, target, OBJECTS);
+
+                return answer;
+            }
+
+            return null;
+        }
+
         public Resource copyFromRoot(final String rootPath) {
             final Resource source = getResource(resourceResolver, rootPath + SLASH + fromName);
             if (source != null) {
@@ -1205,30 +1235,36 @@ public final class AdminResourceHandlerService
         }
     }
 
-    private void copyStubs(Resource source, Resource target, String folderName, List<String> superTypes) {
-        Resource appsSource = getResource(source, folderName);
-        if(appsSource != null) {
-            Resource appsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
+    private List<String> copyStubs(Resource source, Resource target, String folderName) {
+        final List<String> superTypes = new ArrayList<>();
+        final Resource appsSource = getResource(source, folderName);
+        if(appsSource == null) {
+            return superTypes;
+        }
+
+        final ResourceResolver resourceResolver = source.getResourceResolver();
+        Resource appsTarget = getResource(resourceResolver, target.getPath() + SLASH + folderName);
+        if (appsTarget == null) {
+            appsTarget = copyFolder(appsSource, target, folderName);
             if(appsTarget == null) {
-                appsTarget = copyFolder(appsSource, target, folderName);
-                if(appsTarget == null) { return; }
-            }
-            for(Resource child : appsSource.getChildren()) {
-                ValueMap properties = child.getValueMap();
-                Map<String, Object> newProperties = new HashMap<>(properties);
-                String originalAppsPath = child.getPath();
-                originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
-                if(superTypes != null) {
-                    superTypes.add(originalAppsPath);
-                }
-                newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
-                try {
-                    source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
-                } catch(PersistenceException e) {
-                    logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
-                }
+                return superTypes;
             }
         }
+
+        for (final Resource child : appsSource.getChildren()) {
+            final ValueMap properties = child.getValueMap();
+            final Map<String, Object> newProperties = new HashMap<>(properties);
+            final String originalAppsPath = child.getPath().substring(APPS_ROOT.length() + 1);
+            superTypes.add(originalAppsPath);
+            newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
+            try {
+                resourceResolver.create(appsTarget, child.getName(), newProperties);
+            } catch(PersistenceException e) {
+                logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
+            }
+        }
+
+        return superTypes;
     }
 
     private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
