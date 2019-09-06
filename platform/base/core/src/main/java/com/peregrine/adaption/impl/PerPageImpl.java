@@ -312,7 +312,7 @@ public class PerPageImpl extends PerBaseImpl implements PerPage {
         implements Filter<PerPage>
     {
         @Override
-        public <T> boolean include(T t) {
+        public boolean include(PerPage t) {
             return true;
         }
     }

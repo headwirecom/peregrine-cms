@@ -31,8 +31,7 @@ package com.peregrine.adaption;
 public interface Filter<T> {
     /**
      * @param t Object to be checked if it is included
-     * @param <T> Type
      * @return True if the object if included otherwise false
      */
-    public <T> boolean include(T t);
+    public boolean include(T t);
 }

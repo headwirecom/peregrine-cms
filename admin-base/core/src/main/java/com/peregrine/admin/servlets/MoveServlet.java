@@ -36,15 +36,12 @@ import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_MOVE;
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_RENAME;
+import static com.peregrine.admin.util.AdminPathConstants.JSON_EXTENSION;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_MOVE;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_RENAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.ORDER_AFTER_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -87,12 +84,10 @@ public class MoveServlet extends AbstractBaseServlet {
     public static final String MOVE = "move";
     public static final String TO = "to";
 
-    private List<String> acceptedTypes = Arrays.asList(ORDER_BEFORE_TYPE, ORDER_AFTER_TYPE, ORDER_CHILD_TYPE);
-
     @Reference
     private transient ResourceRelocation resourceRelocation;
     @Reference
-    transient AdminResourceHandler resourceManagement;
+    private transient AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

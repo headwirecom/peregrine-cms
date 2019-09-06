@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_UPDATE_RESOURCE;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_UPDATE_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.CONTENT;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -84,10 +84,10 @@ public class UpdateResourceServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_UPDATE_PAGE = "Failed to Update Page";
     @Reference
-    transient ModelFactory modelFactory;
+    private transient ModelFactory modelFactory;
 
     @Reference
-    transient AdminResourceHandler resourceManagement;
+    private transient AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

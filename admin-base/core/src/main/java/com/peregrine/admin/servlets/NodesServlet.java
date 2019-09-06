@@ -40,7 +40,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_NODES;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_NODES;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
@@ -108,7 +108,7 @@ public class NodesServlet extends AbstractBaseServlet {
     private DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Reference
-    transient ModelFactory modelFactory;
+    private transient ModelFactory modelFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -132,7 +132,7 @@ public class NodesServlet extends AbstractBaseServlet {
                 json.writeAttribute(PATH, child.getPath());
             }
             for (String key: child.getValueMap().keySet()) {
-                if(key.indexOf(":") < 0) {
+                if(key.indexOf(':') < 0) {
                     json.writeAttribute(key, child.getValueMap().get(key, String.class));
                 }
             }
@@ -140,15 +140,12 @@ public class NodesServlet extends AbstractBaseServlet {
         }
     }
 
-    private void convertResource(JsonResponse json, Resource resource) throws IOException {
-        convertResource(json, resource, false);
-    }
-
     private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
-        String path = "";
+        StringBuilder builder = new StringBuilder();
         for(int i = 1; i <= pos; i++) {
-            path += "/" + segments[i];
+            builder.append('/').append(segments[i]);
         }
+        String path = builder.toString();
         logger.debug("looking up {}", path);
         Resource res = rs.getResource(path);
         json.writeAttribute(NAME,res.getName());
@@ -168,40 +165,46 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeAttribute(PATH,child.getPath());
                     writeProperties(child, json);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
-                        Resource childContent = child.getChild(JCR_CONTENT);
-                        if(childContent != null) {
-                            String mimeType = childContent.getValueMap().get(JCR_MIME_TYPE, String.class);
-                            json.writeAttribute(MIME_TYPE, mimeType);
-                        } else {
-                            logger.debug("No Asset Content Child found for: '{}'", child.getPath());
-                        }
-                    }
-                    if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
-                        Resource content = child.getChild(JCR_CONTENT);
-                        if(content != null) {
-                            for (String key: content.getValueMap().keySet()) {
-                                if(key.equals(JCR_TITLE)) {
-                                    String title = content.getValueMap().get(JCR_TITLE, String.class);
-                                    json.writeAttribute(TITLE, title);
-                                } else {
-                                    if(key.indexOf(":") < 0) {
-                                        json.writeAttribute(key, content.getValueMap().get(key, String.class));
-                                    }
-                                }
-                            }
-                            String component = PerUtil.getComponentNameFromResource(content);
-                            json.writeAttribute(COMPONENT, component);
-                            convertNamedChild(json, content, TAGS);
-                            convertNamedChild(json, content, METAPROPERTIES);
-                        } else {
-                            logger.debug("No Content Child found for: '{}'", child.getPath());
-                        }
+                        convertAssetChild(child, json);
+                    } else if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
+                        convertPageChild(child, json);
                     }
                     json.writeClose();
                 }
             }
         }
         json.writeClose();
+    }
+
+    private void convertAssetChild(Resource child, JsonResponse json) throws IOException {
+        Resource childContent = child.getChild(JCR_CONTENT);
+        if(childContent != null) {
+            String mimeType = childContent.getValueMap().get(JCR_MIME_TYPE, String.class);
+            json.writeAttribute(MIME_TYPE, mimeType);
+        } else {
+            logger.debug("No Asset Content Child found for: '{}'", child.getPath());
+        }
+    }
+    private void convertPageChild(Resource child, JsonResponse json) throws IOException {
+        Resource content = child.getChild(JCR_CONTENT);
+        if(content != null) {
+            for (String key: content.getValueMap().keySet()) {
+                if(key.equals(JCR_TITLE)) {
+                    String title = content.getValueMap().get(JCR_TITLE, String.class);
+                    json.writeAttribute(TITLE, title);
+                } else {
+                    if(key.indexOf(':') < 0) {
+                        json.writeAttribute(key, content.getValueMap().get(key, String.class));
+                    }
+                }
+            }
+            String component = PerUtil.getComponentNameFromResource(content);
+            json.writeAttribute(COMPONENT, component);
+            convertNamedChild(json, content, TAGS);
+            convertNamedChild(json, content, METAPROPERTIES);
+        } else {
+            logger.debug("No Content Child found for: '{}'", child.getPath());
+        }
     }
 
     private void convertNamedChild(JsonResponse json, Resource content, String name) throws IOException {

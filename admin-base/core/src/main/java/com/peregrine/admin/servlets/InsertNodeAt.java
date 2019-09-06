@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_INSERT_NODE;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_INSERT_NODE;
 import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
 import static com.peregrine.admin.util.AdminConstants.INTO;
 import static com.peregrine.admin.util.AdminConstants.MODEL_JSON;
@@ -113,29 +113,12 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
                 String pagePath = path.substring(0, index - 1);
                 Resource page = getResource(request.getResourceResolver(), pagePath);
-                if(page != null) {
-                    if(isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
+                if(page != null && isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
+                    try {
                         // Now we can traverse
-                        String rest = path.substring(index);
-                        logger.debug("Rest of Page Path: '{}'", rest);
-                        String[] nodeNames = rest.split("/");
-                        Resource intermediate = page;
-                        for(String nodeName : nodeNames) {
-                            if(nodeName != null && !nodeName.isEmpty()) {
-                                Resource temp = intermediate.getChild(nodeName);
-                                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
-                                if(temp == null) {
-                                    try {
-                                        intermediate = resourceManagement.createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
-                                    } catch(ManagementException e) {
-                                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES).setRequestPath(path);
-                                    }
-                                } else {
-                                    intermediate = temp;
-                                }
-                            }
-                        }
-                        resource = getResource(request.getResourceResolver(), path);
+                        resource = traverse(request, page, path, index);
+                    } catch (ManagementException e) {
+                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES).setRequestPath(path);
                     }
                 }
             }
@@ -181,7 +164,24 @@ public class InsertNodeAt extends AbstractBaseServlet {
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
         }
+    }
 
+    private Resource traverse(Request request, Resource page, String path, int index) throws ManagementException {
+        // Now we can traverse
+        String rest = path.substring(index);
+        logger.debug("Rest of Page Path: '{}'", rest);
+        String[] nodeNames = rest.split("/");
+        Resource intermediate = page;
+        for(String nodeName : nodeNames) {
+            if(nodeName != null && !nodeName.isEmpty()) {
+                Resource temp = intermediate.getChild(nodeName);
+                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp);
+                intermediate = temp == null ?
+                    resourceManagement.createNode(intermediate, nodeName, NT_UNSTRUCTURED, null) :
+                    temp;
+            }
+        }
+        return getResource(request.getResourceResolver(), path);
     }
 }
 

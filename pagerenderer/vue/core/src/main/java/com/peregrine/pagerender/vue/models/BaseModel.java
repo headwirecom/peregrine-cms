@@ -63,6 +63,7 @@ public class BaseModel extends AbstractComponent {
         return text == null ? "" : text;
     }
 
+    @Override
     public List<IComponent> getExperiences() {
         return experiences;
     }

@@ -2,6 +2,10 @@ package com.peregrine.admin.util;
 
 public class AdminConstants {
 
+    private AdminConstants() {
+        // Hide Constructor
+    }
+
     // Component Paths use for Admin Models
     public static final String TAG_OBJECT_PATH = "admin/objects/tag";
 

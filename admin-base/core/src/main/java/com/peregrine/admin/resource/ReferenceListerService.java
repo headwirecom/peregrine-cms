@@ -29,7 +29,6 @@ import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -43,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -261,7 +259,7 @@ public class ReferenceListerService
                     if (referencePath.equals(value)) {
                         boolean found = findContentNodeToAddAsReference(resource, name, response);
                         // No JCR Content node found so just use this one
-                        if (!found && !response.stream().anyMatch(p -> resource.equals(p.getResource()))) {
+                        if (!found && response.stream().noneMatch(p -> resource.equals(p.getResource()))) {
                                 response.add(new Reference(resource, name, resource));
                         }
                     }
@@ -409,9 +407,10 @@ public class ReferenceListerService
             super(null, SLASH);
         }
 
-        // A Tree does not have a parent so we prevent it here from being set on the Node to avoid an NPE
         @Override
-        void setParent(Node parent) {}
+        void setParent(Node parent) {
+            // A Tree does not have a parent so we prevent it here from being set on the Node to avoid an NPE
+        }
 
         /**
          * Checks if the given path exists in this tree

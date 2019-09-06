@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_MOVE_NODE;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_MOVE_NODE;
 import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
 import static com.peregrine.admin.util.AdminConstants.INTO;
 import static com.peregrine.admin.util.AdminConstants.MODEL_JSON;
@@ -80,9 +80,9 @@ public class MoveNodeTo extends AbstractBaseServlet {
     transient ModelFactory modelFactory;
 
     @Reference
-    transient private ResourceRelocation resourceRelocation;
+    private transient ResourceRelocation resourceRelocation;
     @Reference
-    transient AdminResourceHandler resourceManagement;
+    private transient AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

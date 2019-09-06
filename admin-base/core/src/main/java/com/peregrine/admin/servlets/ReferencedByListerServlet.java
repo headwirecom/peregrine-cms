@@ -35,8 +35,8 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.List;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_REF_BY;
+import static com.peregrine.admin.util.AdminPathConstants.JSON_EXTENSION;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_REF_BY;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.NAME;

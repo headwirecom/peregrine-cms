@@ -291,6 +291,8 @@ public class PerUtil {
             answer = resourceResolver.getResource(path);
         } else {
             if(resourceResolver == null) {
+                // Replace pattern-breaking characters (SonarCloud Vulnerability)
+                path = path.replaceAll("[\n|\r|\t]", "_");
                 LOG.warn("Resource Resolver is null so path: '{}' cannot be resolved", path);
             } else {
                 LOG.warn("Path is null so call with RR is ignored");
@@ -681,7 +683,7 @@ public class PerUtil {
         public boolean doAdd(Resource resource) {
             boolean answer = false;
             String relativePath = relativePath(source, resource);
-            Resource targetResource = target.getChild(relativePath);
+            Resource targetResource = relativePath == null ? null : target.getChild(relativePath);
             LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
             if(targetResource == null) {
                 answer = true;
@@ -719,7 +721,7 @@ public class PerUtil {
         @Override
         public boolean doAdd(Resource resource) {
             String relativePath = relativePath(source, resource);
-            Resource targetResource = target.getChild(relativePath);
+            Resource targetResource = relativePath == null ? null : target.getChild(relativePath);
             return targetResource != null;
         }
 
@@ -750,14 +752,10 @@ public class PerUtil {
      */
     public static String getComponentNameFromResource(Resource resource) {
         String resourceType = resource.getResourceType();
-        if (resourceType != null) {
-            if(resourceType.startsWith("/")) {
-                resourceType = StringUtils.substringAfter(resourceType, SLASH);
-            }
-            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll(SLASH, DASH));
-        } else {
-            return "";
+        if(resourceType.startsWith("/")) {
+            resourceType = StringUtils.substringAfter(resourceType, SLASH);
         }
+        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll(SLASH, DASH));
     }
 
     public static String getComponentVariableNameFromString(String resourceType) {

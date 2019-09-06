@@ -44,8 +44,9 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_SEARCH;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_SEARCH;
 import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.admin.util.AdminConstants.MORE;
@@ -110,8 +111,6 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        // Path / Suffix is obtained but not used ?
-        String path = request.getParameter(PATH);
         Resource res = request.getResource();
         String type = res.getValueMap().get(TYPE, String.class);
         Response answer;
@@ -168,35 +167,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                     answer.writeAttribute(CURRENT, 1);
                     answer.writeAttribute(MORE, nodes.getSize() > ROWS_PER_PAGE);
                     answer.writeArray(DATA);
-                    while(nodes.hasNext()) {
-                        Node node = nodes.nextNode();
-                        if(node.getPrimaryNodeType().toString().equals(COMPONENT_PRIMARY_TYPE)) {
-                            // Check if this component supports variations and if then loop over all child nodes
-                            // and add each one of them to the result set
-                            boolean done = false;
-                            Node jcrContent = findChildNodeRecursive(node, JCR_CONTENT);
-                            if(jcrContent != null && jcrContent.hasProperty(VARIATIONS)) {
-                                boolean isVariations = jcrContent.getProperty(VARIATIONS).getBoolean();
-                                if(isVariations) {
-                                    NodeIterator variations = jcrContent.getNodes();
-                                    while(variations.hasNext()) {
-                                        Node variation = variations.nextNode();
-                                        writeComponentNode(node, variation, answer);
-                                        done = true;
-                                    }
-                                }
-                            }
-                            if(!done) {
-                                writeComponentNode(node, null, answer);
-                            }
-                        } else {
-                            answer.writeObject();
-                            answer.writeAttribute(NAME, node.getName());
-                            answer.writeAttribute(PATH, node.getPath());
-                            answer.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
-                            answer.writeClose();
-                        }
-                    }
+                    writeNodesToJSON(nodes, answer);
                     answer.writeClose();
                 }
             } catch(Exception e) {
@@ -204,6 +175,38 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
             }
         }
         return answer;
+    }
+
+    private void writeNodesToJSON(NodeIterator nodes, JsonResponse response) throws RepositoryException, IOException {
+        while(nodes.hasNext()) {
+            Node node = nodes.nextNode();
+            if(node.getPrimaryNodeType().toString().equals(COMPONENT_PRIMARY_TYPE)) {
+                // Check if this component supports variations and if then loop over all child nodes
+                // and add each one of them to the result set
+                boolean done = false;
+                Node jcrContent = findChildNodeRecursive(node, JCR_CONTENT);
+                if(jcrContent != null && jcrContent.hasProperty(VARIATIONS)) {
+                    boolean isVariations = jcrContent.getProperty(VARIATIONS).getBoolean();
+                    if(isVariations) {
+                        NodeIterator variations = jcrContent.getNodes();
+                        while(variations.hasNext()) {
+                            Node variation = variations.nextNode();
+                            writeComponentNode(node, variation, response);
+                            done = true;
+                        }
+                    }
+                }
+                if(!done) {
+                    writeComponentNode(node, null, response);
+                }
+            } else {
+                response.writeObject();
+                response.writeAttribute(NAME, node.getName());
+                response.writeAttribute(PATH, node.getPath());
+                response.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
+                response.writeClose();
+            }
+        }
     }
 
     private @Nullable Node findChildNodeRecursive(@NotNull Node node, String nodeName) throws RepositoryException {
@@ -214,27 +217,38 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
             // Loop for a sling:resourceSuperType and copy this one in instead
             Node superTypeNode = node;
             List<String> alreadyVisitedNodes = new ArrayList<>();
-            while(true) {
+            boolean done = false;
+            while (!done) {
+                String superTypeNodePath = superTypeNode.getPath();
                 // If we already visited that node then exit to avoid an endless loop
-                if(alreadyVisitedNodes.contains(superTypeNode.getPath())) { break; }
-                alreadyVisitedNodes.add(superTypeNode.getPath());
-                if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
-                    String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-                    if(isNotEmpty(resourceSuperType)) {
-                        try {
-                            superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
-                            logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
-                            // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
-                            if(superTypeNode.hasNode(nodeName)) {
-                                answer = superTypeNode.getNode(nodeName);
-                                logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), answer.getPath());
-                                break;
-                            }
-                        } catch(PathNotFoundException e) {
-                            logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
-                            break;
-                        }
+                if (alreadyVisitedNodes.contains(superTypeNodePath)) {
+                    done = true;
+                } else {
+                    Node old = superTypeNode;
+                    alreadyVisitedNodes.add(superTypeNodePath);
+                    superTypeNode = getResourceSuperType(superTypeNode);
+                    // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
+                    if (superTypeNode != null && superTypeNode.hasNode(nodeName)) {
+                        answer = superTypeNode.getNode(nodeName);
+                        logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), answer.getPath());
                     }
+                    done = answer != null || old == superTypeNode;
+                }
+            }
+        }
+        return answer;
+    }
+
+    private Node getResourceSuperType(Node node) throws RepositoryException {
+        Node answer = null;
+        if (node.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
+            String resourceSuperType = node.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
+            if (isNotEmpty(resourceSuperType)) {
+                try {
+                    answer = node.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
+                    logger.trace("Found Resource Super Type: '{}'", node.getPath());
+                } catch (PathNotFoundException e) {
+                    logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
                 }
             }
         }
@@ -247,24 +261,26 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         answer.writeAttribute(PATH, component.getPath());
         String group = null;
         String title = null;
+        Node thumbnailNode;
         if(variation != null) {
             String id = variation.getIdentifier();
             String name = variation.getName();
             answer.writeAttribute(VARIATION, name);
             answer.writeAttribute(VARIATION_PATH, id);
-            if(variation.hasProperty(TITLE)) {
-                title = variation.getProperty(TITLE).getString();
-            }
-            if(variation.hasProperty(GROUP)) {
-                group = variation.getProperty(GROUP).getString();
-            }
+            title = getProperty(variation, TITLE);
+            group = getProperty(variation, GROUP);
+            String thumbnailName = THUMBNAIL + "-" + variation.getName().toLowerCase() + ".png";
+            thumbnailNode = findChildNodeRecursive(component, thumbnailName);
+        } else {
+            thumbnailNode = Optional.ofNullable(findChildNodeRecursive(component, THUMBNAIL_PNG))
+                .orElse(findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG));
         }
-        if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
-            title = component.getProperty(JCR_TITLE).getString();
-        }
-        if(isEmpty(group) && component.hasProperty(GROUP)) {
-            group = component.getProperty(GROUP).getString();
-        }
+        title = isEmpty(title) ?
+            getProperty(component, JCR_TITLE) :
+            title;
+        group = isEmpty(title) ?
+            getProperty(component, GROUP) :
+            group;
         if(isNotEmpty(title)) {
             answer.writeAttribute(TITLE, title);
         }
@@ -273,29 +289,21 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         }
         if(component.hasProperty(TEMPLATE_COMPONENT)) {
             Property templateComponent = component.getProperty(TEMPLATE_COMPONENT);
-            if(templateComponent != null) {
-                answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
-            }
+            answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
         }
-        if(variation == null) {
-            Node childNode = findChildNodeRecursive(component, THUMBNAIL_PNG);
-            if(childNode != null) {
-                answer.writeAttribute(THUMBNAIL, childNode.getPath());
-            } else {
-                childNode = findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG);
-                if(childNode != null) {
-                    answer.writeAttribute(THUMBNAIL, childNode.getPath());
-                }
-            }
-        } else {
-            String thumbnailName = THUMBNAIL + "-" + variation.getName().toLowerCase()+".png";
-            Node childNOde = findChildNodeRecursive(component, thumbnailName);
-            if(childNOde != null) {
-                answer.writeAttribute(THUMBNAIL, childNOde.getPath());
-            }
+        if(thumbnailNode != null) {
+            answer.writeAttribute(THUMBNAIL, thumbnailNode.getPath());
         }
         answer.writeAttribute(NODE_TYPE, component.getPrimaryNodeType() + "");
         answer.writeClose();
+    }
+
+    private String getProperty(Node node, String propertyName) throws RepositoryException {
+        String answer = "";
+        if(node.hasProperty(propertyName)) {
+            answer = node.getProperty(propertyName).getString();
+        }
+        return answer;
     }
 }
 

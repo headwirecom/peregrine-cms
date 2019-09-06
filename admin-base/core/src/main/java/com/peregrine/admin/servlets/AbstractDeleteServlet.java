@@ -27,7 +27,6 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.AdminResourceHandler.DeletionResponse;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import org.apache.sling.api.resource.Resource;
 
 import java.io.IOException;
 

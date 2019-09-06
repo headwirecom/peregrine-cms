@@ -37,7 +37,7 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.Collections;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_LIST;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_LIST;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
@@ -77,7 +77,7 @@ public class ListServlet extends AbstractBaseServlet {
     public static final String RESOURCE_BY_PATH_NOT_FOUND = "Resource '%s' was not found";
 
     @Reference
-    transient ModelFactory modelFactory;
+    private transient ModelFactory modelFactory;
 
 
     @Override

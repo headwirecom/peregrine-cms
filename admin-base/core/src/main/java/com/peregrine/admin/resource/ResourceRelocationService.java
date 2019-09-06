@@ -16,6 +16,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -131,20 +132,15 @@ public class ResourceRelocationService
     private @Nullable Node getNextNode(@NotNull Node parent, @Nullable String childName) throws RepositoryException {
         Node answer = null;
         NodeIterator i = parent.getNodes();
-        if (i.hasNext()) {
-            if (childName == null) {
-                // No Child Name given so we take the first
-                answer = i.nextNode();
-            } else {
-                // Look for the Node with the given Child Name and if found and there is one more take this on
-                while (i.hasNext()) {
-                    Node child = i.nextNode();
-                    if (child.getName().equals(childName)) {
-                        if (i.hasNext()) {
-                            answer = i.nextNode();
-                        }
-                        break;
-                    }
+        if(childName == null) {
+            answer = i.hasNext() ? i.nextNode() : null;
+        } else {
+            // Look for the Node with the given Child Name and if found take the next if present
+            while (i.hasNext()) {
+                Node child = i.nextNode();
+                if (child.getName().equals(childName)) {
+                    answer = i.hasNext() ? i.nextNode() : null;
+                    break;
                 }
             }
         }

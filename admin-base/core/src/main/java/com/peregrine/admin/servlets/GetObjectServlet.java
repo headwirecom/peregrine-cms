@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPathConstants.RESOURCE_TYPE_GET_OBJECT;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_GET_OBJECT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -69,7 +69,7 @@ public class GetObjectServlet extends AbstractBaseServlet {
     public static final String RESOURCE_NOT_FOUND = "Resource not found";
 
     @Reference
-    transient ModelFactory modelFactory;
+    private transient ModelFactory modelFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

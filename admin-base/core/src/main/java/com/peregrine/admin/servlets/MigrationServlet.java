@@ -82,7 +82,7 @@ public class MigrationServlet extends AbstractBaseServlet {
     public static final String FAILED_TO_UPDATE_PAGE = "Failed to Update Page";
 
     @Reference
-    transient Migration migrationService;
+    private transient Migration migrationService;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
