@@ -42,6 +42,7 @@ import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -55,9 +56,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -751,9 +754,7 @@ public final class AdminResourceHandlerService
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
             if(appsTarget == null) {
                 appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
-                if(appsTarget != null) {
-                    packagePaths.add(appsTarget.getPath());
-                }
+                resourcesToPackage.add(appsTarget);
             }
             // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
             // with the sling:resourceSuperType set to the <fromSite> component
@@ -765,72 +766,44 @@ public final class AdminResourceHandlerService
 
         final StructureCopier copier = new StructureCopier(resourceResolver);
         copier.setToName(targetName);
-
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
-        Resource sourceResource = getResource(resourceResolver, ASSETS_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copier.copyChildren(sourceResource, targetResource);
-            }
-        }
-
+        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
         copier.setFromName(fromName);
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
-        sourceResource = getResource(resourceResolver, OBJECTS_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copier.copyChildren(sourceResource, targetResource);
-            }
-        }
+        resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
-        sourceResource = getResource(resourceResolver, TEMPLATES_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copier.copyChildren(sourceResource, targetResource);
-            }
-        }
+        resourcesToPackage.add(copier.copyFromRoot(TEMPLATES_ROOT));
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
-        sourceResource = getResource(resourceResolver, SITES_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copier.copyChildren(sourceResource, targetResource);
-                updateStringsInFiles(targetResource, targetName);
-            }
-            answer = targetResource;
+        answer = copier.copyFromRoot(SITES_ROOT);
+        resourcesToPackage.add(answer);
+        if (answer != null) {
+            updateStringsInFiles(answer, targetName);
         }
+
         // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
-        sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
+        final Resource sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if (targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-            }
+            final Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            resourcesToPackage.add(targetResource);
             logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
-            ValueMap properties = getModifiableProperties(targetResource, false);
+            final ValueMap properties = getModifiableProperties(targetResource, false);
             logger.trace("Copied Felibs Properties: '{}'", properties);
-            if(properties != null) {
+            if (properties != null) {
                 String[] dependencies = properties.get(DEPENDENCIES, String[].class);
                 if(dependencies == null) {
-                    dependencies = new String[]{sourceResource.getPath()};
+                    dependencies = new String[]{ sourceResource.getPath() };
                 } else {
-                    String[] newDependencies = new String[dependencies.length + 1];
+                    final String[] newDependencies = new String[dependencies.length + 1];
                     System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
                     newDependencies[dependencies.length] = sourceResource.getPath();
                     dependencies = newDependencies;
                 }
+
                 properties.put(DEPENDENCIES, dependencies);
             }
 
-            StringBuilder mappings = new StringBuilder();
-            for (String superType : superTypes) {
+            final StringBuilder mappings = new StringBuilder();
+            for (final String superType : superTypes) {
                 String componentSourceName = getComponentVariableNameFromString(superType);
                 String componentDestName = getComponentVariableNameFromString(superType.replace(fromName+"/", targetName+"/"));
                 mappings.append("var ");
@@ -839,11 +812,16 @@ public final class AdminResourceHandlerService
                 mappings.append(componentSourceName);
                 mappings.append('\n');
             }
+
             createResourceFromString(targetResource, "mapping.js", mappings.toString());
             createResourceFromString(targetResource, "js.txt", "mapping.js\n");
         }
 
         try {
+            final List<String> packagePaths = resourcesToPackage.stream()
+                    .filter(Objects::nonNull)
+                    .map(Resource::getPath)
+                    .collect(Collectors.toList());
             createSitePackage(resourceResolver, targetName, packagePaths);
         } catch (PersistenceException e) {
             logger.error("Failed to create package for site " + targetName, e);
@@ -1122,6 +1100,7 @@ public final class AdminResourceHandlerService
 
         private final ResourceResolver resourceResolver;
 
+        private String fromName;
         private String toName;
 
         private String patternSlashName;
@@ -1133,6 +1112,7 @@ public final class AdminResourceHandlerService
         }
 
         public void setFromName(final String fromName) {
+            this.fromName = fromName;
             if (isEmpty(fromName)) {
                 patternSlashName = null;
                 patternNameSlash = null;
@@ -1148,10 +1128,20 @@ public final class AdminResourceHandlerService
             this.toName = toName;
         }
 
-        public void copyChildren(final Resource source, final Resource target) {
-            // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
-            // while child assets will use the name from the source; otherwise every asset has the same name
-            copyChildren(source, target, 0);
+        public Resource copyFromRoot(final String rootPath) {
+            final Resource source = getResource(resourceResolver, rootPath + SLASH + fromName);
+            if (source != null) {
+                final Resource target = copyResources(source, source.getParent(), toName);
+                if (target != null) {
+                    // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
+                    // while child assets will use the name from the source; otherwise every asset has the same name
+                    copyChildren(source, target, 0);
+                }
+
+                return target;
+            }
+
+            return null;
         }
 
         private void copyChildren(final Resource source, final Resource target, final int depth) {
