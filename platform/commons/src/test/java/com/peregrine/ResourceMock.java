@@ -1,18 +1,19 @@
 package com.peregrine;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceWrapper;
-import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.api.wrappers.ValueMapDecorator;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceWrapper;
+import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.ValueMapDecorator;
 
 public class ResourceMock extends ResourceWrapper {
 
@@ -46,7 +47,7 @@ public class ResourceMock extends ResourceWrapper {
 
     @Override
     public final String getName() {
-        return StringUtils.substringAfterLast(getPath(), "/");
+        return StringUtils.substringAfterLast(getPath(), SLASH);
     }
 
     public final void setParent(final Resource parent) {
