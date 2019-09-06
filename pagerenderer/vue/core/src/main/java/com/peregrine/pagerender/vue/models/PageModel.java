@@ -38,13 +38,19 @@ import org.apache.sling.models.factory.ModelFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.DOMAINS;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by rr on 12/2/2016.
@@ -55,7 +61,8 @@ import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_
        adapters = IComponent.class)
 @Exporter(name = JACKSON,
           extensions = JSON)
-public class PageModel extends Container {
+public class PageModel
+        extends Container {
 
     public static final String SITE_CSS = "siteCSS";
     public static final String PREFETCH_DNS = "prefetchDNS";
