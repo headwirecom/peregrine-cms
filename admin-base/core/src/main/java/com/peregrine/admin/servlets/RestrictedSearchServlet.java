@@ -72,7 +72,6 @@ import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -243,7 +242,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         Node answer = null;
         if (node.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
             String resourceSuperType = node.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-            if (isNotEmpty(resourceSuperType)) {
+            if (StringUtils.isNotEmpty(resourceSuperType)) {
                 try {
                     answer = node.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
                     logger.trace("Found Resource Super Type: '{}'", node.getPath());
@@ -281,10 +280,10 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         if(StringUtils.isEmpty(group) && component.hasProperty(GROUP)) {
             group = component.getProperty(GROUP).getString();
         }
-        if(isNotEmpty(title)) {
+        if(StringUtils.isNotEmpty(title)) {
             answer.writeAttribute(TITLE, title);
         }
-        if(isNotEmpty(group)) {
+        if(StringUtils.isNotEmpty(group)) {
             answer.writeAttribute(GROUP, group);
         }
         if(component.hasProperty(TEMPLATE_COMPONENT)) {

@@ -30,8 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-
 /**
  * Context of an Image Transformation Operation
  *
@@ -86,7 +84,7 @@ public class OperationContext {
         String answer = defaultValue;
         if(parameters.containsKey(name)) {
             String temp = parameters.get(name);
-            if(isNotEmpty(temp)) {
+            if(StringUtils.isNotEmpty(temp)) {
                 answer = temp;
             }
         }

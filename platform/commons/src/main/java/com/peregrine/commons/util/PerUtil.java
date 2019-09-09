@@ -81,11 +81,6 @@ public final class PerUtil {
         throw new UnsupportedOperationException();
     }
 
-    /** @return True if the given text is both not null and not empty **/
-    public static boolean isNotEmpty(String text) {
-        return text != null && !text.isEmpty();
-    }
-
     /**
      * Taks an array of strings and puts any non-empty string into the returned list
      * @param entries Array to be placed. If can be a null or empty array
@@ -95,7 +90,7 @@ public final class PerUtil {
         List<String> answer = new ArrayList<>();
         if(entries != null) {
             for(String entry: entries) {
-                if(isNotEmpty(entry)) {
+                if(StringUtils.isNotEmpty(entry)) {
                     answer.add(entry);
                 }
             }
@@ -111,8 +106,8 @@ public final class PerUtil {
      */
     public static List<String> split(String text, String separator) {
         List<String> answer = new ArrayList<>();
-        if(isNotEmpty(text)) {
-            if(isNotEmpty(separator)) {
+        if(StringUtils.isNotEmpty(text)) {
+            if(StringUtils.isNotEmpty(separator)) {
                 String[] tokens = text.split(separator);
                 answer.addAll(Arrays.asList(tokens));
             } else {
@@ -153,9 +148,9 @@ public final class PerUtil {
      */
     public static Map<String, List<String>> splitIntoMap(String[] entries, String keySeparator, String valueSeparator) {
         Map<String, List<String>> answer = new LinkedHashMap<>();
-        if(entries != null && isNotEmpty(keySeparator)) {
+        if(entries != null && StringUtils.isNotEmpty(keySeparator)) {
             for(String entry: entries) {
-                if(isNotEmpty(entry)) {
+                if(StringUtils.isNotEmpty(entry)) {
                     List<String> keyValue = split(entry, keySeparator);
                     if(keyValue.size() != 2) {
                         throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, entry, Arrays.asList(entries)));
@@ -180,9 +175,9 @@ public final class PerUtil {
      */
     public static Map<String, Map<String, String>> splitIntoParameterMap(String[] entries, String keySeparator, String valueSeparator, String parameterSeparator) {
         Map<String, Map<String, String>> answer = new LinkedHashMap<>();
-        if(entries != null && isNotEmpty(keySeparator)) {
+        if(entries != null && StringUtils.isNotEmpty(keySeparator)) {
             for(String entry: entries) {
-                if(isNotEmpty(entry)) {
+                if(StringUtils.isNotEmpty(entry)) {
                     List<String> keyValue = split(entry, keySeparator);
                     switch(keyValue.size()) {
                         case 0:
