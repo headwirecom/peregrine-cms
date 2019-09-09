@@ -27,7 +27,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
@@ -38,8 +38,6 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +57,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 /**
  * Created by Andreas Schaefer on 5/26/17.
  */
-public class PerUtil {
+public final class PerUtil {
 
     public static final String RENDITIONS = "renditions";
     public static final String METADATA = "metadata";
@@ -72,23 +70,21 @@ public class PerUtil {
     public static final String POST = "POST";
 
     public static final String ENTRY_NOT_KEY_VALUE_PAIR = "Entry: '%s' could not be split into a key value pair, entries: '%s'";
-
-    private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
-    /** 
-     * @param text Text to check 
-     * @return True if the given text is either null or empty 
-     */
+    private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
+
+    private PerUtil() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
         return text == null || text.isEmpty();
     }
 
-    /** 
-     * @param text Text to check 
-     * @return True if the given text is both not null and not empty 
-     */
+    /** @return True if the given text is both not null and not empty **/
     public static boolean isNotEmpty(String text) {
         return text != null && !text.isEmpty();
     }
@@ -291,8 +287,6 @@ public class PerUtil {
             answer = resourceResolver.getResource(path);
         } else {
             if(resourceResolver == null) {
-                // Replace pattern-breaking characters (SonarCloud Vulnerability)
-                path = path.replaceAll("[\n|\r|\t]", "_");
                 LOG.warn("Resource Resolver is null so path: '{}' cannot be resolved", path);
             } else {
                 LOG.warn("Path is null so call with RR is ignored");
@@ -379,9 +373,9 @@ public class PerUtil {
     /**
      * Lists all the parent nodes between the child and the root if the root is one
      * of the child's parents. Both child and root and not included in the returned list
-     * @param root Root node
-     * @param child Child node
-     * @return A list of nodes on success, and an empty list otherwise.
+     * @param root
+     * @param child
+     * @return
      */
     public static List<Resource> listParents(Resource root, Resource child) {
         List<Resource> answer = new ArrayList<>();
@@ -578,10 +572,7 @@ public class PerUtil {
         return answer;
     }
 
-    /** 
-     * @param resource Resource to check
-     * @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found 
-     */
+    /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
     public static String getResourceType(Resource resource) {
         String answer = null;
         if(resource != null) {
@@ -596,10 +587,7 @@ public class PerUtil {
         return answer;
     }
 
-    /** 
-     * @param resource Resource to check
-     * @return The Mime Type of this resource (in the JCR Content resource)
-     */
+    /** @return The Mime Type of this resource (in the JCR Content resource) **/
     public static String getMimeType(Resource resource) {
         String answer = null;
         if(resource != null) {
@@ -629,33 +617,11 @@ public class PerUtil {
         return answer;
     }
 
-    public static boolean doSave(ResourceResolver resourceResolver, String action) {
-        boolean answer = false;
-        Session session = resourceResolver.adaptTo(Session.class);
-        if(session == null) {
-            LOG.warn("Could not obtain Session to save changes for: '{}'", action);
-        } else {
-            try {
-                session.save();
-                answer = true;
-            } catch (RepositoryException e) {
-                LOG.warn("Failed to save changes for: '{}'", action, e);
-            }
-        }
-        return answer;
-    }
-
     /** Resource Check interface **/
     public static interface ResourceChecker {
-        /**
-         * @param resource Resource to add
-         * @return True if the resource checks out
-         */
+        /** @return True if the resource checks out **/
         public boolean doAdd(Resource resource);
-        /** 
-         * @param resource Resource to add
-         * @return False if the resource's children should not be considered
-         */
+        /** @return False if the resource's children should not be considered **/
         public boolean doAddChildren(Resource resource);
     }
 
@@ -683,7 +649,7 @@ public class PerUtil {
         public boolean doAdd(Resource resource) {
             boolean answer = false;
             String relativePath = relativePath(source, resource);
-            Resource targetResource = relativePath == null ? null : target.getChild(relativePath);
+            Resource targetResource = target.getChild(relativePath);
             LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
             if(targetResource == null) {
                 answer = true;
@@ -721,7 +687,7 @@ public class PerUtil {
         @Override
         public boolean doAdd(Resource resource) {
             String relativePath = relativePath(source, resource);
-            Resource targetResource = relativePath == null ? null : target.getChild(relativePath);
+            Resource targetResource = target.getChild(relativePath);
             return targetResource != null;
         }
 
@@ -752,10 +718,14 @@ public class PerUtil {
      */
     public static String getComponentNameFromResource(Resource resource) {
         String resourceType = resource.getResourceType();
-        if(resourceType.startsWith("/")) {
-            resourceType = StringUtils.substringAfter(resourceType, SLASH);
+        if (resourceType != null) {
+            if(resourceType.startsWith("/")) {
+                resourceType = StringUtils.substringAfter(resourceType, SLASH);
+            }
+            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll(SLASH, DASH));
+        } else {
+            return "";
         }
-        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll(SLASH, DASH));
     }
 
     public static String getComponentVariableNameFromString(String resourceType) {
