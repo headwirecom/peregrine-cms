@@ -475,9 +475,15 @@ public final class PerUtil {
      * @throws IllegalArgumentException If the resource resolver is null or the service name is empty
      */
     public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
-        if(resolverFactory == null) { throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL); }
-        if(isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
-        Map<String, Object> authInfo = new HashMap<>();
+        if (resolverFactory == null) {
+            throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL);
+        }
+
+        if (isEmpty(serviceName)) {
+            throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY);
+        }
+
+        final Map<String, Object> authInfo = new HashMap<>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);
     }
@@ -527,9 +533,9 @@ public final class PerUtil {
      * @param resource Given resource
      * @return Returns the JCR Primary Type property from the resource if that one is not null and if it is found
      */
-    public static String getPrimaryType(Resource resource) {
+    public static String getPrimaryType(final Resource resource) {
         if (resource != null) {
-            ValueMap properties = getProperties(resource, false);
+            final ValueMap properties = getProperties(resource, false);
             return properties.get(JCR_PRIMARY_TYPE, String.class);
         }
 
