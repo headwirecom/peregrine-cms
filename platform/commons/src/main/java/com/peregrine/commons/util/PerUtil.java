@@ -750,4 +750,20 @@ public final class PerUtil {
         }
         return answer;
     }
+
+    public static boolean doSave(ResourceResolver resourceResolver, String action) {
+        boolean answer = false;
+        Session session = resourceResolver.adaptTo(Session.class);
+        if(session == null) {
+            LOG.warn("Could not obtain Session to save changes for: '{}'", action);
+        } else {
+            try {
+                session.save();
+                answer = true;
+            } catch (RepositoryException e) {
+                LOG.warn("Failed to save changes for: '{}'", action, e);
+            }
+        }
+        return answer;
+    }
 }
