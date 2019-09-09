@@ -590,98 +590,6 @@ public final class PerUtil {
         return answer;
     }
 
-    /** Resource Check interface **/
-    public interface ResourceChecker {
-        /** @return True if the resource checks out **/
-        boolean doAdd(Resource resource);
-        /** @return False if the resource's children should not be considered **/
-        boolean doAddChildren(Resource resource);
-    }
-
-    /** Checks all resources that are either missing or are outdated on the target **/
-    public static class MissingOrOutdatedResourceChecker
-        implements ResourceChecker
-    {
-        private final Resource source;
-        private final Resource target;
-
-        /**
-         * This class will map any children of the source resource to a
-         * child on the target (same relative child path). If missing or
-         * outdated then it will be checked
-         *
-         * @param source Source Root Resource
-         * @param target Target Root Resource
-         */
-        public MissingOrOutdatedResourceChecker(final Resource source, final Resource target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        @Override
-        public boolean doAdd(final Resource resource) {
-            final String relativePath = relativePath(source, resource);
-            final Resource targetResource = Optional.ofNullable(relativePath)
-                    .map(target::getChild)
-                    .orElse(null);
-            LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
-            if (targetResource == null) {
-                return true;
-            }
-
-            // AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
-            // AS TODO replicated timestamp
-            final Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
-            final Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
-
-            return sourceLastModified != null && targetLastModified != null
-                    && sourceLastModified.after(targetLastModified);
-        }
-
-        @Override
-        public boolean doAddChildren(final Resource resource) {
-            return true;
-        }
-    }
-
-    /**
-     * Checks all resources that exist on the target (same relative path
-     * as on the source)
-     */
-    public static class MatchingResourceChecker
-        implements ResourceChecker
-    {
-        private final Resource source;
-        private final Resource target;
-
-        public MatchingResourceChecker(final Resource source, final Resource target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        @Override
-        public boolean doAdd(final Resource resource) {
-            return Optional.ofNullable(relativePath(source, resource))
-                    .map(target::getChild)
-                    .isPresent();
-        }
-
-        @Override
-        public boolean doAddChildren(final Resource resource) { return true; }
-    }
-
-    /** Checks all resources **/
-    public static class AddAllResourceChecker
-        implements ResourceChecker
-    {
-        @Override
-        public boolean doAdd(final Resource resource) {
-            return true;
-        }
-        @Override
-        public boolean doAddChildren(final Resource resource) { return true; }
-    }
-
     /**
      * Obtains the Component Name form the Resource
      * @param resource Given Resource
@@ -750,5 +658,98 @@ public final class PerUtil {
             }
         }
         return answer;
+    }
+
+    /** Resource Check interface **/
+    public interface ResourceChecker {
+        /** @return True if the resource checks out **/
+        boolean doAdd(Resource resource);
+        /** @return False if the resource's children should not be considered **/
+        boolean doAddChildren(Resource resource);
+    }
+
+    /** Checks all resources that are either missing or are outdated on the target **/
+    public static class MissingOrOutdatedResourceChecker
+            implements ResourceChecker
+    {
+        private final Resource source;
+        private final Resource target;
+
+        /**
+         * This class will map any children of the source resource to a
+         * child on the target (same relative child path). If missing or
+         * outdated then it will be checked
+         *
+         * @param source Source Root Resource
+         * @param target Target Root Resource
+         */
+        public MissingOrOutdatedResourceChecker(final Resource source, final Resource target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            final String relativePath = relativePath(source, resource);
+            final Resource targetResource = Optional.ofNullable(relativePath)
+                    .map(target::getChild)
+                    .orElse(null);
+            LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
+            if (targetResource == null) {
+                return true;
+            }
+
+            // AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
+            // AS TODO replicated timestamp
+            final Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
+            final Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
+
+            return sourceLastModified != null && targetLastModified != null
+                    && sourceLastModified.after(targetLastModified);
+        }
+
+        @Override
+        public boolean doAddChildren(final Resource resource) {
+            return true;
+        }
+    }
+
+    /**
+     * Checks all resources that exist on the target (same relative path
+     * as on the source)
+     */
+    public static class MatchingResourceChecker
+            implements ResourceChecker
+    {
+        private final Resource source;
+        private final Resource target;
+
+        public MatchingResourceChecker(final Resource source, final Resource target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return Optional.ofNullable(relativePath(source, resource))
+                    .map(target::getChild)
+                    .isPresent();
+        }
+
+        @Override
+        public boolean doAddChildren(final Resource resource) { return true; }
+    }
+
+    /** Checks all resources **/
+    public static class AddAllResourceChecker
+            implements ResourceChecker
+    {
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return true;
+        }
+        @Override
+        public boolean doAddChildren(final Resource resource) { return true; }
+    }
     }
 }
