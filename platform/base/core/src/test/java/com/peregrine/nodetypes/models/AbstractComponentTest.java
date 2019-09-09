@@ -1,5 +1,6 @@
 package com.peregrine.nodetypes.models;
 
+import com.peregrine.commons.util.BindingsUseUtil;
 import com.peregrine.nodetypes.merge.PageMerge;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -77,9 +78,9 @@ public class AbstractComponentTest {
         PageMerge pageMerge = new PageMerge();
         Bindings bindings = mock(Bindings.class);
         SlingHttpServletRequest request = mock(SlingHttpServletRequest.class);
-        when(bindings.get(eq(PageMerge.REQUEST))).thenReturn(request);
+        when(bindings.get(eq(BindingsUseUtil.REQUEST))).thenReturn(request);
         SlingScriptHelper slingScriptHelper = mock(SlingScriptHelper.class);
-        when(bindings.get(eq(PageMerge.SLING))).thenReturn(slingScriptHelper);
+        when(bindings.get(eq(BindingsUseUtil.SLING))).thenReturn(slingScriptHelper);
         Resource rootResource = mock(Resource.class);
         when(request.getResource()).thenReturn(rootResource);
         pageMerge.init(bindings);
