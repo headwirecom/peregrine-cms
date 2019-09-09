@@ -25,10 +25,11 @@ package com.peregrine.transform;
  * #L%
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 
 /**
@@ -49,7 +50,7 @@ public class OperationContext {
      * @param parameters Optional Map of Parameters. Is ignored if null or empty
      */
     public OperationContext(String operationName, Map<String, String> parameters) {
-        if(isEmpty(operationName)) {
+        if(StringUtils.isEmpty(operationName)) {
             throw new IllegalArgumentException("Operation Name cannot be null or empty");
         }
         this.operationName = operationName;

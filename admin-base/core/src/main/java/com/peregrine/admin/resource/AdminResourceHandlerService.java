@@ -84,7 +84,6 @@ import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 
@@ -693,11 +692,11 @@ public class AdminResourceHandlerService
         if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
         Resource parentResource = getResource(resourceResolver, sitesParentPath);
         if(parentResource == null) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
-        if(isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
+        if(StringUtils.isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
         if(fromName.equals(targetName)) { throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName); }
         Resource source = getResource(parentResource, fromName);
         if(source == null) { throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, fromName)); }
-        if(isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
+        if(StringUtils.isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
         Resource answer = getResource(parentResource, targetName);
         if(answer != null) { throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName)); }
         // Ensure the Site Resource is a page
@@ -986,7 +985,7 @@ public class AdminResourceHandlerService
         if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
         Resource parentResource = getResource(resourceResolver, sitesParentPath);
         if(parentResource == null) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
-        if(isEmpty(name)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
+        if(StringUtils.isEmpty(name)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
 
         Resource source = getResource(parentResource, name);
         if(source == null) { throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, name)); }

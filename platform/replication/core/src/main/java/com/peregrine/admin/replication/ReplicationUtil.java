@@ -1,5 +1,6 @@
 package com.peregrine.admin.replication;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 
 public class ReplicationUtil {
 
@@ -124,7 +124,7 @@ public class ReplicationUtil {
                 LOGGER.trace("Updated Source Replication Properties");
                 if(target == null) {
                     // Target Path can be empty to remove the replication ref property
-                    if(isEmpty(targetPath)) {
+                    if(StringUtils.isEmpty(targetPath)) {
                         sourceProperties.remove(PER_REPLICATION_REF);
                     } else {
                         sourceProperties.put(PER_REPLICATION_REF, targetPath);

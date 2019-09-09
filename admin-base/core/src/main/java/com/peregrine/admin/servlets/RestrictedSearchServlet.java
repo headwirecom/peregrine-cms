@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,7 +72,6 @@ import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
@@ -275,12 +275,12 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
             thumbnailNode = Optional.ofNullable(findChildNodeRecursive(component, THUMBNAIL_PNG))
                 .orElse(findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG));
         }
-        title = isEmpty(title) ?
-            getProperty(component, JCR_TITLE) :
-            title;
-        group = isEmpty(title) ?
-            getProperty(component, GROUP) :
-            group;
+        if(StringUtils.isEmpty(title) && component.hasProperty(JCR_TITLE)) {
+            title = component.getProperty(JCR_TITLE).getString();
+        }
+        if(StringUtils.isEmpty(group) && component.hasProperty(GROUP)) {
+            group = component.getProperty(GROUP).getString();
+        }
         if(isNotEmpty(title)) {
             answer.writeAttribute(TITLE, title);
         }

@@ -81,11 +81,6 @@ public final class PerUtil {
         throw new UnsupportedOperationException();
     }
 
-    /** @return True if the given text is either null or empty **/
-    public static boolean isEmpty(String text) {
-        return text == null || text.isEmpty();
-    }
-
     /** @return True if the given text is both not null and not empty **/
     public static boolean isNotEmpty(String text) {
         return text != null && !text.isEmpty();
@@ -514,7 +509,7 @@ public final class PerUtil {
      */
     public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
         if(resolverFactory == null) { throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL); }
-        if(isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
+        if(StringUtils.isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
         Map<String, Object> authInfo = new HashMap<String, Object>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);
