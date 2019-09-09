@@ -7,13 +7,16 @@ import com.peregrine.nodejs.process.ProcessRunner;
 import com.peregrine.render.RenderService;
 import com.peregrine.render.RenderService.RenderException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,13 +30,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.peregrine.commons.util.PerUtil.*;
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.nodejs.script.servlet.ScriptCaller.EXECUTE_SCRIPT_WITH_J2V8;
 import static com.peregrine.nodejs.script.servlet.ScriptCaller.EXECUTE_SCRIPT_WITH_NODE_JS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.replace;
 
 /**
  * Rest API Servlet to serve the Sling Node API
@@ -84,9 +94,9 @@ public class ScriptCallerServlet
         log.trace("Example Servlet called");
         response.setContentType("text/plain");
         String path = request.getParameter("path");
-        path = StringUtils.replace(path, "\n", StringUtils.EMPTY);
-        path = StringUtils.replace(path, "\t", StringUtils.EMPTY);
-        if(StringUtils.isEmpty(path)) {
+        path = replace(path, "\n", EMPTY);
+        path = replace(path, "\t", EMPTY);
+        if(isEmpty(path)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Parameter 'path' must be provided");
             return;

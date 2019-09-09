@@ -28,7 +28,6 @@ package com.peregrine.admin.resource;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
@@ -46,6 +45,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
@@ -235,7 +236,7 @@ public class ReferenceListerService
      * @param response List of resources found
      */
     private void traverseTreeReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && StringUtils.isNotEmpty(referencePath)) {
+        if(resource != null && isNotEmpty(referencePath)) {
             for(Resource child : resource.getChildren()) {
                 parsePropertiesReverse(child, referencePath, response);
                 traverseTreeReverse(child, referencePath, response);
@@ -251,7 +252,7 @@ public class ReferenceListerService
      * @param response List of resources found
      */
     private void parsePropertiesReverse(Resource resource, String referencePath, List<Reference> response) {
-        if (resource != null && StringUtils.isNotEmpty(referencePath)) {
+        if (resource != null && isNotEmpty(referencePath)) {
             resource.getValueMap().forEach(
                 (name, v) -> {
                     String value = v + "";
@@ -388,7 +389,7 @@ public class ReferenceListerService
          *             must start with a slash
          */
         public TraversingContext addDeepLimit(String path) {
-            if(StringUtils.isNotEmpty(path) && !deepLimits.contains(path)) {
+            if(isNotEmpty(path) && !deepLimits.contains(path)) {
                 deepLimits.add(path);
             }
             return this;
@@ -418,12 +419,12 @@ public class ReferenceListerService
          */
         public boolean contains(String path) {
             boolean answer = false;
-            if(StringUtils.isNotEmpty(path)) {
+            if(isNotEmpty(path)) {
                 answer = true;
                 String[] tokens = path.split(SLASH);
                 Node node = this;
                 for(String token: tokens) {
-                    if(StringUtils.isNotEmpty(token)) {
+                    if(isNotEmpty(token)) {
                         Node child = node.getChild(token);
                         if(child != null) {
                             node = child;
@@ -443,11 +444,11 @@ public class ReferenceListerService
          * @return This tree instance
          */
         public Tree addChildByPath(String path) {
-            if(StringUtils.isEmpty(path)) { throw new IllegalArgumentException("Child Path must be provided"); }
+            if(isEmpty(path)) { throw new IllegalArgumentException("Child Path must be provided"); }
             String[] tokens = path.split(SLASH);
             Node node = this;
             for(String token: tokens) {
-                if(StringUtils.isNotEmpty(token)) {
+                if(isNotEmpty(token)) {
                     Node child = node.getChild(token);
                     if(child != null) {
                         node = child;
@@ -480,7 +481,7 @@ public class ReferenceListerService
          */
         public Node(Node parent, String segment) {
             setParent(parent);
-            if(StringUtils.isEmpty(segment)) {
+            if(isEmpty(segment)) {
                 throw new IllegalArgumentException("Node Segment must be defined");
             }
             this.segment = segment;
@@ -503,7 +504,7 @@ public class ReferenceListerService
         /** @return A node with the given resource name if found otherwise null **/
         public Node getChild(String segment) {
             Node answer = null;
-            if(children != null && StringUtils.isNotEmpty(segment)) {
+            if(children != null && isNotEmpty(segment)) {
                 for(Node child: children) {
                     if(child.getSegment().equals(segment)) {
                         answer = child;

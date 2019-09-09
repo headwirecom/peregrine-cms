@@ -10,7 +10,6 @@ import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -292,7 +291,7 @@ public class AdminResourceHandlerService
             Node newPage = createPageOrTemplate(parent, name, component, null);
             // If there is a component then we check the component node and see if there is a child jcr:content node
             // If found we copy this over into our newly created node
-            if(StringUtils.isNotEmpty(component)) {
+            if(isNotEmpty(component)) {
                 logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node", component);
                 try {
                     if(component.startsWith("/")) {
@@ -565,7 +564,7 @@ public class AdminResourceHandlerService
 
         // If there is a component then we check the component node and see if there is a child jcr:content node
         // If found we copy this over into our newly created node
-        if(StringUtils.isNotEmpty(component)) {
+        if(isNotEmpty(component)) {
             try {
                 if(component.startsWith("/")) {
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
@@ -587,7 +586,7 @@ public class AdminResourceHandlerService
                                     alreadyVisitedNodes.add(superTypeNode.getPath());
                                     if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
                                         String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-                                        if(StringUtils.isNotEmpty(resourceSuperType)) {
+                                        if(isNotEmpty(resourceSuperType)) {
                                             try {
                                                 superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
                                                 logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
@@ -612,7 +611,7 @@ public class AdminResourceHandlerService
                                 }
                                 if(isVariations) {
                                     boolean useDefault = true;
-                                    if(StringUtils.isNotEmpty(variation)) {
+                                    if(isNotEmpty(variation)) {
                                         // Look up the variation node
                                         if(contentNode.hasNode(variation)) {
                                             Node variationNode = contentNode.getNode(variation);
@@ -691,11 +690,11 @@ public class AdminResourceHandlerService
         if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
         Resource parentResource = getResource(resourceResolver, sitesParentPath);
         if(parentResource == null) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
-        if(StringUtils.isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
+        if(isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
         if(fromName.equals(targetName)) { throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName); }
         Resource source = getResource(parentResource, fromName);
         if(source == null) { throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, fromName)); }
-        if(StringUtils.isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
+        if(isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
         Resource answer = getResource(parentResource, targetName);
         if(answer != null) { throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName)); }
         // Ensure the Site Resource is a page
@@ -906,13 +905,13 @@ public class AdminResourceHandlerService
                         logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
                     }
 
-                    if (StringUtils.isNotBlank(fileContent)) {
+                    if (isNotBlank(fileContent)) {
                         String modifiedFileContent = fileContent;
                         for(Resource replacementResource : fileChild.getChildren()) {
                             ValueMap replacementProperties = replacementResource.getValueMap();
                             String pattern = replacementProperties.get("regex", String.class);
                             String replaceWith = replacementProperties.get("replaceWith", String.class);
-                            if(StringUtils.isNotBlank(pattern) && StringUtils.isNotBlank(replaceWith)) {
+                            if(isNotBlank(pattern) && isNotBlank(replaceWith)) {
                                 //"_SITENAME_" is a placeholder for the actual new site name
                                 replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
                                 modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
@@ -984,7 +983,7 @@ public class AdminResourceHandlerService
         if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
         Resource parentResource = getResource(resourceResolver, sitesParentPath);
         if(parentResource == null) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
-        if(StringUtils.isEmpty(name)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
+        if(isEmpty(name)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
 
         Resource source = getResource(parentResource, name);
         if(source == null) { throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, name)); }
@@ -1071,7 +1070,7 @@ public class AdminResourceHandlerService
             logger.trace("Child handling started: '{}'", child.getPath());
             Map<String, Object> newProperties = copyProperties(child.getValueMap());
             try {
-                if(StringUtils.isNotEmpty(fromName)) {
+                if(isNotEmpty(fromName)) {
                     String pattern1 = SLASH + fromName;
                     String pattern2 = fromName + SLASH;
                     for(Entry<String, Object> entry : newProperties.entrySet()) {
