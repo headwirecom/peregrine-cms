@@ -41,11 +41,7 @@ import static com.peregrine.commons.util.PerUtil.getComponentVariableNameFromStr
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -920,44 +916,46 @@ public final class AdminResourceHandlerService
 
     }
 
-    private void updateStringsInFiles(Resource targetResource, String targetName) {
-        Resource contentResource = targetResource.getChild("jcr:content");
+    private void updateStringsInFiles(final Resource targetResource, final String targetName) {
+        final Resource contentResource = targetResource.getChild(JCR_CONTENT);
         if (contentResource == null) {
             logger.error("No jcr:content resource for resource '{}'", targetResource.getPath());
             return;
         }
-        Resource replacementsResource = contentResource.getChild("replacements");
-        if(replacementsResource == null) {
+
+        final Resource replacementsResource = contentResource.getChild("replacements");
+        if (replacementsResource == null) {
             logger.info("No replacements defined for resource '{}'", targetResource.getPath());
             return;
         }
 
-        for(Resource fileChild : replacementsResource.getChildren()) {
-            //If the file resource doesn't have children, we don't need to do anything
-            //since the children define the actual replacements
-            if(fileChild.hasChildren()) {
-                String filename = fileChild.getName();
-                Resource fileResource = targetResource.getChild(filename);
+        for (final Resource fileChild : replacementsResource.getChildren()) {
+            // If the file resource doesn't have children, we don't need to do anything
+            // since the children define the actual replacements
+            if (fileChild.hasChildren()) {
+                final String filename = fileChild.getName();
+                final Resource fileResource = targetResource.getChild(filename);
                 if (fileResource != null) {
                     String fileContent = null;
                     try {
                         fileContent = getFileContentAsString(fileResource);
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
                     }
 
                     if (isNotBlank(fileContent)) {
                         String modifiedFileContent = fileContent;
-                        for(Resource replacementResource : fileChild.getChildren()) {
-                            ValueMap replacementProperties = replacementResource.getValueMap();
-                            String pattern = replacementProperties.get("regex", String.class);
+                        for (Resource replacementResource : fileChild.getChildren()) {
+                            final ValueMap replacementProperties = replacementResource.getValueMap();
+                            final String pattern = replacementProperties.get("regex", String.class);
                             String replaceWith = replacementProperties.get("replaceWith", String.class);
-                            if(isNotBlank(pattern) && isNotBlank(replaceWith)) {
+                            if (!isAnyBlank(pattern, replaceWith)) {
                                 //"_SITENAME_" is a placeholder for the actual new site name
                                 replaceWith = replaceWith.replace("_SITENAME_", targetName);
                                 modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
                             }
                         }
+
                         try {
                             replaceFileContent(fileResource, modifiedFileContent);
                         } catch (IOException e) {
