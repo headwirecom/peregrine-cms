@@ -27,7 +27,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
@@ -38,6 +38,8 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +67,7 @@ public final class PerUtil {
 
     public static final String PER_VENDOR = "headwire.com, Inc";
     public static final String PER_PREFIX = "Peregrine: ";
-    public static final String EQUALS = "=";
+    public static final String EQUAL = "=";
     public static final String GET = "GET";
     public static final String POST = "POST";
 

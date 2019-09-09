@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
@@ -58,8 +58,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformationConfigurationProvider.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Image Transformation Configuration Provider",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Image Transformation Configuration Provider",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR
     }
 )
 public class ImageTransformationConfigurationProvider {

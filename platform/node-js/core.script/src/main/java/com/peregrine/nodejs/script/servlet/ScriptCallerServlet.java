@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getResource;
@@ -47,10 +47,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = { Servlet.class, ScriptCaller.class },
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Sling Node Script Calling Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_PATHS + EQUALS + EXECUTE_SCRIPT_WITH_NODE_JS,
-        SLING_SERVLET_PATHS + EQUALS + EXECUTE_SCRIPT_WITH_J2V8
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Sling Node Script Calling Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_PATHS + EQUAL + EXECUTE_SCRIPT_WITH_NODE_JS,
+        SLING_SERVLET_PATHS + EQUAL + EXECUTE_SCRIPT_WITH_J2V8
     }
 )
 @SuppressWarnings("serial")
