@@ -1231,50 +1231,49 @@ public final class AdminResourceHandlerService
 
             return null;
         }
-    }
 
-    private List<String> copyStubs(Resource source, Resource target, String folderName) {
-        final List<String> superTypes = new ArrayList<>();
-        final Resource appsSource = getResource(source, folderName);
-        if(appsSource == null) {
-            return superTypes;
+        private Resource copyFolder(final Resource folder, final Resource targetParent, final String folderName) {
+            final Map<String, Object> newProperties = copyProperties(folder.getValueMap());
+            logger.trace("Resource Properties: '{}'", newProperties);
+            try {
+                return resourceResolver.create(targetParent, folderName, newProperties);
+            } catch(final PersistenceException e) {
+                logger.warn(String.format(COPY_FAILED, folder.getName(), folder.getPath()), e);
+            }
+
+            return null;
         }
 
-        final ResourceResolver resourceResolver = source.getResourceResolver();
-        Resource appsTarget = getResource(resourceResolver, target.getPath() + SLASH + folderName);
-        if (appsTarget == null) {
-            appsTarget = copyFolder(appsSource, target, folderName);
-            if(appsTarget == null) {
+        private List<String> copyStubs(final Resource source, final Resource target, final String folderName) {
+            final List<String> superTypes = new ArrayList<>();
+            final Resource appsSource = getResource(source, folderName);
+            if (appsSource == null) {
                 return superTypes;
             }
-        }
 
-        for (final Resource child : appsSource.getChildren()) {
-            final ValueMap properties = child.getValueMap();
-            final Map<String, Object> newProperties = new HashMap<>(properties);
-            final String originalAppsPath = child.getPath().substring(APPS_ROOT.length() + 1);
-            superTypes.add(originalAppsPath);
-            newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
-            try {
-                resourceResolver.create(appsTarget, child.getName(), newProperties);
-            } catch(PersistenceException e) {
-                logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
+            Resource appsTarget = getResource(resourceResolver, target.getPath() + SLASH + folderName);
+            if (appsTarget == null) {
+                appsTarget = copyFolder(appsSource, target, folderName);
+                if (appsTarget == null) {
+                    return superTypes;
+                }
             }
-        }
 
-        return superTypes;
-    }
+            for (final Resource child : appsSource.getChildren()) {
+                final ValueMap properties = child.getValueMap();
+                final Map<String, Object> newProperties = new HashMap<>(properties);
+                final String originalAppsPath = child.getPath().substring(APPS_ROOT.length() + 1);
+                superTypes.add(originalAppsPath);
+                newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
+                try {
+                    resourceResolver.create(appsTarget, child.getName(), newProperties);
+                } catch(PersistenceException e) {
+                    logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
+                }
+            }
 
-    private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
-        Resource answer = null;
-        Map<String, Object> newProperties = copyProperties(folder.getValueMap());
-        logger.trace("Resource Properties: '{}'", newProperties);
-        try {
-            answer = folder.getResourceResolver().create(targetParent, folderName, newProperties);
-        } catch(PersistenceException e) {
-            logger.warn(String.format(COPY_FAILED, folder.getName(), folder.getPath()), e);
+            return superTypes;
         }
-        return answer;
     }
 
     @Override
