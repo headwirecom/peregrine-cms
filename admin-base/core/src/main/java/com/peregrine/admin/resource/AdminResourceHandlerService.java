@@ -947,8 +947,8 @@ public final class AdminResourceHandlerService
                         String modifiedFileContent = fileContent;
                         for (Resource replacementResource : fileChild.getChildren()) {
                             final ValueMap replacementProperties = replacementResource.getValueMap();
-                            final String pattern = replacementProperties.get("regex", String.class);
-                            String replaceWith = replacementProperties.get("replaceWith", String.class);
+                            final String pattern = replacementProperties.get("regex", EMPTY);
+                            String replaceWith = replacementProperties.get("replaceWith", EMPTY);
                             if (!isAnyBlank(pattern, replaceWith)) {
                                 //"_SITENAME_" is a placeholder for the actual new site name
                                 replaceWith = replaceWith.replace("_SITENAME_", targetName);
