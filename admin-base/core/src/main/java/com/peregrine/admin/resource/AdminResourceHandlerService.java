@@ -1525,12 +1525,13 @@ public final class AdminResourceHandlerService
         return newPage;
     }
 
-    private void handleAssetDimensions(PerAsset perAsset) throws RepositoryException {
-        try {
-            InputStream is = perAsset.getRenditionStream((String) null);
+    public static void handleAssetDimensions(PerAsset perAsset) throws RepositoryException, IOException {
+        InputStream is = perAsset.getRenditionStream((String) null);
+        // Ignore images that do not have a jcr:data element aka stream
+        if(is != null) {
             ImageInputStream iis = ImageIO.createImageInputStream(is);
             Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            while(readers.hasNext()) {
+            while (readers.hasNext()) {
                 ImageReader reader = readers.next();
                 reader.setInput(iis);
                 int minIndex = reader.getMinIndex();
@@ -1540,8 +1541,6 @@ public final class AdminResourceHandlerService
                 perAsset.addTag("per-data", "height", height);
                 break;
             }
-        } catch (IOException e) {
-            logger.warn("Was not able to obtain Width/Height from Image", e);
         }
     }
 }
