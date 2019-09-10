@@ -152,9 +152,12 @@
                     $group.find('div').toggle();
                     $group.toggleClass('active');
                 })
-                $group.find('div').hide();
+                if(i !== 0) {
+                    $group.find('div').hide();
+                    $group.removeClass('active');
+                }
+                if(i === 0) $group.addClass('active');
                 $group.addClass('vfg-group');
-                $group.removeClass('active');
             })
         }
       }
