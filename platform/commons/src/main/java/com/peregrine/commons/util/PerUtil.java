@@ -645,6 +645,10 @@ public class PerUtil {
         return answer;
     }
 
+    public static boolean isNullOrTrue(final Object value) {
+        return value == null || Boolean.TRUE.toString().equalsIgnoreCase(String.valueOf(value));
+    }
+
     /** Resource Check interface **/
     public static interface ResourceChecker {
         /**

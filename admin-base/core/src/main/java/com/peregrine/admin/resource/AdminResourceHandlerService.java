@@ -36,11 +36,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getComponentVariableNameFromString;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.IOException;
@@ -1298,249 +1294,211 @@ public final class AdminResourceHandlerService
             }
 
             // AS TODO: Check if we could add some guards here to avoid misplaced updates (JCR Primary Type / Sling Resource Type)
-            updateResourceTree(resourceResolver, answer, convertToMap(jsonContent));
+            final ResourceUpdater updater = new ResourceUpdater(resourceResolver, answer);
+            updater.updateResourceTree(convertToMap(jsonContent));
             return answer;
         } catch(final IOException e) {
             throw new ManagementException(String.format(FAILED_TO_PARSE_JSON, jsonContent));
         }
     }
 
-    private void updateResourceTree(
-            final ResourceResolver resourceResolver,
-            final Resource resource,
-            final Map<String, Object> properties
-    ) throws ManagementException {
-        // Handle Deletion:
-        // 1) Delete property with either 'true' or null as value -> remove the given resource
-        // 2) Delete Property's value converted to string and then looked up as child of the given resource
-        //    - If found delete that resource
-        //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
-        if (deleteIfContainsMarkerProperty(resourceResolver, resource, properties)) {
-            return;
+    private final class ResourceUpdater {
+
+        private final ResourceResolver resourceResolver;
+        private final Resource resource;
+
+        public ResourceUpdater(
+                final ResourceResolver resourceResolver,
+                final Resource resource
+        ) {
+            this.resourceResolver = resourceResolver;
+            this.resource = resource;
         }
 
-        for (final Entry<String, Object> entry: properties.entrySet()) {
-            final String name = entry.getKey();
-            final Object value = entry.getValue();
-            if (value instanceof Map) {
-                updateMapProperty(resourceResolver, resource, name, (Map) value);
-            } else if (value instanceof List) {
-                updateListProperty(resourceResolver, resource, name, (List) value);
-            } else {
-                getModifiableProperties(resource, false).put(name, value);
-            }
+        public void updateResourceTree(final Map<String, Object> properties) throws ManagementException {
+            updateResourceTree(resource, properties);
         }
 
-        baseResourceHandler.updateModification(resource);
-    }
-
-    private boolean deleteIfContainsMarkerProperty(
-            final ResourceResolver resourceResolver,
-            final Resource resource,
-            final Map<String, Object> properties
-    ) throws ManagementException {
-        if (properties.containsKey(DELETION_PROPERTY_NAME)) {
-            final Object value = properties.get(DELETION_PROPERTY_NAME);
-            if (isNullOrTrue(value)) {
-                // This indicates that this node shall be removed
-                try {
-                    resourceResolver.delete(resource);
-                    // This resource is gone so there is noting left that can be done here
-                    return true;
-                } catch(final PersistenceException e) {
-                    throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
-                }
-            } else {
-                deleteChild(resourceResolver, resource, properties, value.toString());
-            }
-        }
-
-        return false;
-    }
-
-    private static boolean isNullOrTrue(final Object value) {
-        return value == null || Boolean.TRUE.toString().equalsIgnoreCase(String.valueOf(value));
-    }
-
-    private void deleteChild(
-            final ResourceResolver resourceResolver,
-            final Resource resource,
-            final Map<String, Object> properties,
-            final String childName
-    ) throws ManagementException {
-        final Resource child = resource.getChild(childName);
-        if (child != null) {
-            try {
-                resourceResolver.delete(child);
-                if (properties.containsKey(childName)) {
-                    final Object value = properties.get(childName);
-                    if (value instanceof Map) {
-                        properties.remove(childName);
-                    }
-                }
-            } catch(final PersistenceException e) {
-                throw new ManagementException(String.format(FAILED_TO_DELETE_CHILD, child.getPath()), e);
-            }
-        }
-    }
-
-    private void updateMapProperty(
-            final ResourceResolver resourceResolver,
-            final Resource resource,
-            final String propertyName,
-            final Map map
-    ) throws ManagementException {
-        final String childPath = (String) map.get(PATH);
-        Resource child = resourceResolver.getResource(childPath);
-        if (child == null) {
-            child = resource.getChild(propertyName);
-        }
-
-        // If child is missing then create it
-        if (child == null) {
-            final Object val = map.get(SLING_RESOURCE_TYPE);
-            final String resourceType = (String) val;
-            map.remove(NAME);
-            map.remove(SLING_RESOURCE_TYPE);
-            map.remove(JCR_PRIMARY_TYPE);
-            child = createNode(resource, propertyName, NT_UNSTRUCTURED, resourceType);
-            // Now update the child with any remaining properties
-            final ModifiableValueMap newChildProperties = getModifiableProperties(child, false);
-            final Set<Entry> childPropertyEntrySet = map.entrySet();
-            for (final Entry childPropertyEntry: childPropertyEntrySet) {
-                final Object childPropertyKey = childPropertyEntry.getKey();
-                newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
-            }
-        } else {
-            updateResourceTree(resourceResolver, child, map);
-        }
-    }
-
-    private void updateListProperty(
-            final ResourceResolver resourceResolver,
-            final Resource resource,
-            final String propertyName,
-            final List list
-    ) throws ManagementException {
-        if (list.isEmpty()) {
-            return;
-        }
-
-        final Object first = list.get(0);
-        if (first instanceof Map) {
-            Resource child = resource.getChild(propertyName);
-            if(child == null) {
-                child = createNode(resource, propertyName, NT_UNSTRUCTURED, null);
+        private void updateResourceTree(final Resource resource, final Map<String, Object> properties) throws ManagementException {
+            // Handle Deletion:
+            // 1) Delete property with either 'true' or null as value -> remove the given resource
+            // 2) Delete Property's value converted to string and then looked up as child of the given resource
+            //    - If found delete that resource
+            //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
+            if (deleteIfContainsMarkerProperty(properties)) {
+                return;
             }
 
-            // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
-            // for which we have to get all the values in a list and then afterwards if such values were found update
-            // them as a property
-            updateObjectList(resourceResolver, list, child);
-        } else if (first instanceof String) {
-            updateObjectSingleList(propertyName, list, resource);
-        } else {
-            throw new ManagementException(String.format(OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
-        }
-    }
-
-    private void updateObjectSingleList(String name, List incomingList, Resource resource) throws ManagementException {
-        List<String> newSingleList = new ArrayList<>();
-        for(Object item : incomingList) {
-            if(item instanceof String) {
-                String listItem = item.toString();
-                if(listItem.isEmpty()) {
-                    continue;
+            for (final Entry<String, Object> entry: properties.entrySet()) {
+                final String name = entry.getKey();
+                final Object value = entry.getValue();
+                if (value instanceof Map) {
+                    updateMapProperty(name, (Map) value);
+                } else if (value instanceof List) {
+                    updateListProperty(name, (List) value);
+                } else {
+                    getModifiableProperties(resource, false).put(name, value);
                 }
-                newSingleList.add(listItem);
-            } else {
-                throw new ManagementException(String.format(OBJECT_ITEM_WITH_UNSUPPORTED_TYPE, item, (item == null ? "null" : item.getClass().getName())));
             }
-        }
-        ModifiableValueMap childProperties = getModifiableProperties(resource, false);
-        childProperties.put(name, newSingleList.toArray(new String[newSingleList.size()]));
-    }
 
-    private void updateObjectList(
-            final ResourceResolver resourceResolver,
-            final List incomingList,
-            final Resource resource
-    ) throws ManagementException {
-        Resource lastResourceItem = null;
-        for(int i = 0; i < incomingList.size(); i++) {
-            Object item = incomingList.get(i);
-            if(item instanceof Map) {
-                Map incomingItemProperties = (Map) item;
-                Object temp = incomingItemProperties.get(NAME);
-                String incomingItemName = null;
-                if(temp != null) {
-                    incomingItemName = temp.toString();
-                }
-                if(isEmpty(incomingItemName)) {
-                    throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
-                }
-                // Get index of the matching resource child to compare with the index in the list
-                int index = -1;
-                Resource resourceListItem = null;
-                for(Resource tempResource: resource.getChildren()) {
-                    index++;
-                    if(incomingItemName.equals(tempResource.getName())) {
-                        resourceListItem = tempResource;
-                        break;
-                    }
-                }
-                // Handle new item
-                if(resourceListItem == null) {
-                    Object val = incomingItemProperties.get(SLING_RESOURCE_TYPE);
-                    String resourceType = val == null ? null : (String) val;
-                    incomingItemProperties.remove(NAME);
-                    incomingItemProperties.remove(SLING_RESOURCE_TYPE);
-                    incomingItemProperties.remove(JCR_PRIMARY_TYPE);
-                    resourceListItem = createNode(resource, incomingItemName, NT_UNSTRUCTURED, resourceType);
-                    // Move the child to the correct position
-                    if(lastResourceItem == null) {
-                        // No saved last resource item so we need to place it as the first entry
-                        Resource first = null;
-                        for(Resource tempResource: resource.getChildren()) {
-                            first = tempResource;
-                            break;
-                        }
-                        // If there are no items then ignore it (it will be first
-                        if(first != null) {
-                            moveNode(resourceListItem, first, false, true);
-                        }
-                    } else {
-                        // There is a resource item -> move the new one after the last one
-                        moveNode(resourceListItem, lastResourceItem, false, false);
-                    }
-                    // Now update the child with any remaining properties
-                    ModifiableValueMap newChildProperties = getModifiableProperties(resourceListItem, false);
-                    final Set<Map.Entry> childPropertyEntrySet = incomingItemProperties.entrySet();
-                    for(Map.Entry childPropertyEntry : childPropertyEntrySet) {
-                        Object childPropertyKey = childPropertyEntry.getKey();
-                        newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
+            baseResourceHandler.updateModification(resource);
+        }
+
+        private boolean deleteIfContainsMarkerProperty(
+                final Map<String, Object> properties
+        ) throws ManagementException {
+            if (properties.containsKey(DELETION_PROPERTY_NAME)) {
+                final Object value = properties.get(DELETION_PROPERTY_NAME);
+                if (isNullOrTrue(value)) {
+                    // This indicates that this node shall be removed
+                    try {
+                        resourceResolver.delete(resource);
+                        // This resource is gone so there is noting left that can be done here
+                        return true;
+                    } catch(final PersistenceException e) {
+                        throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
                     }
                 } else {
-                    if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)) {
-                        Object value = incomingItemProperties.get(DELETION_PROPERTY_NAME);
-                        if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
-                            try {
-                                logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
-                                resource.getResourceResolver().delete(resourceListItem);
-                                continue;
-                            } catch(PersistenceException e) {
-                                throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
-                            }
+                    deleteChild(properties, value.toString());
+                }
+            }
+
+            return false;
+        }
+
+        private void deleteChild(
+                final Map<String, Object> properties,
+                final String childName
+        ) throws ManagementException {
+            final Resource child = resource.getChild(childName);
+            if (child != null) {
+                try {
+                    resourceResolver.delete(child);
+                    if (properties.containsKey(childName)) {
+                        final Object value = properties.get(childName);
+                        if (value instanceof Map) {
+                            properties.remove(childName);
                         }
                     }
+                } catch(final PersistenceException e) {
+                    throw new ManagementException(String.format(FAILED_TO_DELETE_CHILD, child.getPath()), e);
+                }
+            }
+        }
 
-                    updateResourceTree(resourceResolver, resourceListItem, incomingItemProperties);
-                    // Check order
-                    if(i != index) {
+        private void updateMapProperty(
+                final String propertyName,
+                final Map map
+        ) throws ManagementException {
+            final String childPath = (String) map.get(PATH);
+            Resource child = resourceResolver.getResource(childPath);
+            if (child == null) {
+                child = resource.getChild(propertyName);
+            }
+
+            // If child is missing then create it
+            if (child == null) {
+                final Object val = map.get(SLING_RESOURCE_TYPE);
+                final String resourceType = (String) val;
+                map.remove(NAME);
+                map.remove(SLING_RESOURCE_TYPE);
+                map.remove(JCR_PRIMARY_TYPE);
+                child = createNode(resource, propertyName, NT_UNSTRUCTURED, resourceType);
+                // Now update the child with any remaining properties
+                final ModifiableValueMap newChildProperties = getModifiableProperties(child, false);
+                final Set<Entry> childPropertyEntrySet = map.entrySet();
+                for (final Entry childPropertyEntry: childPropertyEntrySet) {
+                    final Object childPropertyKey = childPropertyEntry.getKey();
+                    newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
+                }
+            } else {
+                updateResourceTree(child, map);
+            }
+        }
+
+        private void updateListProperty(
+                final String propertyName,
+                final List list
+        ) throws ManagementException {
+            if (list.isEmpty()) {
+                return;
+            }
+
+            final Object first = list.get(0);
+            if (first instanceof Map) {
+                Resource child = resource.getChild(propertyName);
+                if(child == null) {
+                    child = createNode(resource, propertyName, NT_UNSTRUCTURED, null);
+                }
+
+                // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
+                // for which we have to get all the values in a list and then afterwards if such values were found update
+                // them as a property
+                updateObjectList(list, child);
+            } else if (first instanceof String) {
+                updateObjectSingleList(propertyName, list);
+            } else {
+                throw new ManagementException(String.format(OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
+            }
+        }
+
+        private void updateObjectSingleList(String name, List incomingList) throws ManagementException {
+            List<String> newSingleList = new ArrayList<>();
+            for(Object item : incomingList) {
+                if(item instanceof String) {
+                    String listItem = item.toString();
+                    if(listItem.isEmpty()) {
+                        continue;
+                    }
+                    newSingleList.add(listItem);
+                } else {
+                    throw new ManagementException(String.format(OBJECT_ITEM_WITH_UNSUPPORTED_TYPE, item, (item == null ? "null" : item.getClass().getName())));
+                }
+            }
+
+            getModifiableProperties(resource, false).put(name, newSingleList.toArray(new String[newSingleList.size()]));
+        }
+
+        private void updateObjectList(
+                final List incomingList,
+                final Resource resource
+        ) throws ManagementException {
+            Resource lastResourceItem = null;
+            for(int i = 0; i < incomingList.size(); i++) {
+                Object item = incomingList.get(i);
+                if(item instanceof Map) {
+                    Map incomingItemProperties = (Map) item;
+                    Object temp = incomingItemProperties.get(NAME);
+                    String incomingItemName = null;
+                    if(temp != null) {
+                        incomingItemName = temp.toString();
+                    }
+                    if(isEmpty(incomingItemName)) {
+                        throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
+                    }
+                    // Get index of the matching resource child to compare with the index in the list
+                    int index = -1;
+                    Resource resourceListItem = null;
+                    for(Resource tempResource: resource.getChildren()) {
+                        index++;
+                        if(incomingItemName.equals(tempResource.getName())) {
+                            resourceListItem = tempResource;
+                            break;
+                        }
+                    }
+                    // Handle new item
+                    if(resourceListItem == null) {
+                        Object val = incomingItemProperties.get(SLING_RESOURCE_TYPE);
+                        String resourceType = val == null ? null : (String) val;
+                        incomingItemProperties.remove(NAME);
+                        incomingItemProperties.remove(SLING_RESOURCE_TYPE);
+                        incomingItemProperties.remove(JCR_PRIMARY_TYPE);
+                        resourceListItem = createNode(resource, incomingItemName, NT_UNSTRUCTURED, resourceType);
+                        // Move the child to the correct position
                         if(lastResourceItem == null) {
                             // No saved last resource item so we need to place it as the first entry
                             Resource first = null;
-                            for(Resource tempResource : resource.getChildren()) {
+                            for(Resource tempResource: resource.getChildren()) {
                                 first = tempResource;
                                 break;
                             }
@@ -1549,18 +1507,58 @@ public final class AdminResourceHandlerService
                                 moveNode(resourceListItem, first, false, true);
                             }
                         } else {
-                            // We only have to move if this wasn't already the first item due to deletion
-                            final Iterator<Resource> ir = resource.getChildren().iterator();
-                            if(ir.hasNext() && !lastResourceItem.getName().equals(ir.next().getName())) {
-                                moveNode(resourceListItem, lastResourceItem, false, false);
-                                break;
+                            // There is a resource item -> move the new one after the last one
+                            moveNode(resourceListItem, lastResourceItem, false, false);
+                        }
+                        // Now update the child with any remaining properties
+                        ModifiableValueMap newChildProperties = getModifiableProperties(resourceListItem, false);
+                        final Set<Map.Entry> childPropertyEntrySet = incomingItemProperties.entrySet();
+                        for(Map.Entry childPropertyEntry : childPropertyEntrySet) {
+                            Object childPropertyKey = childPropertyEntry.getKey();
+                            newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
+                        }
+                    } else {
+                        if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)) {
+                            Object value = incomingItemProperties.get(DELETION_PROPERTY_NAME);
+                            if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
+                                try {
+                                    logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
+                                    resource.getResourceResolver().delete(resourceListItem);
+                                    continue;
+                                } catch(PersistenceException e) {
+                                    throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
+                                }
+                            }
+                        }
+
+                        updateResourceTree(resourceListItem, incomingItemProperties);
+                        // Check order
+                        if(i != index) {
+                            if(lastResourceItem == null) {
+                                // No saved last resource item so we need to place it as the first entry
+                                Resource first = null;
+                                for(Resource tempResource : resource.getChildren()) {
+                                    first = tempResource;
+                                    break;
+                                }
+                                // If there are no items then ignore it (it will be first
+                                if(first != null) {
+                                    moveNode(resourceListItem, first, false, true);
+                                }
+                            } else {
+                                // We only have to move if this wasn't already the first item due to deletion
+                                final Iterator<Resource> ir = resource.getChildren().iterator();
+                                if(ir.hasNext() && !lastResourceItem.getName().equals(ir.next().getName())) {
+                                    moveNode(resourceListItem, lastResourceItem, false, false);
+                                    break;
+                                }
                             }
                         }
                     }
+                    lastResourceItem = resourceListItem;
+                } else {
+                    throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
                 }
-                lastResourceItem = resourceListItem;
-            } else {
-                throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
             }
         }
     }
