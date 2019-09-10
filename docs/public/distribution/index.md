@@ -22,7 +22,7 @@ These are the current supported distributions:
 
 **Attention**:
 
-Assets are replicated out of the box but for external system ike the local file system
+Assets are replicated out of the box but for external system like the local file system
 the **asset rendition** must be setup to reliably replicate all desired renditions.
 
 # General Usage
@@ -81,7 +81,7 @@ Out of the box there is a service called **remote** that has the this Forward Ag
 ## Sling Distribution Setup
 
 In order to make this work the Sling Distribution must be configured right. For this we only
-need a Forward Agent on the **Source (Autor)** Peregrine instance and a Local Distribution Package
+need a Forward Agent on the **Source (Author)** Peregrine instance and a Local Distribution Package
 Importer Factory on the **Target (Publish)** Peregrine instance.
 
 The setup is not easy but Peregrine comes with a pre-configured setup out of the box. To enable it
