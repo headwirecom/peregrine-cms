@@ -1467,14 +1467,10 @@ public final class AdminResourceHandlerService
         ) throws ManagementException {
             Resource lastResourceItem = null;
             for(int i = 0; i < incomingList.size(); i++) {
-                Object item = incomingList.get(i);
+                final Object item = incomingList.get(i);
                 if(item instanceof Map) {
-                    Map incomingItemProperties = (Map) item;
-                    Object temp = incomingItemProperties.get(NAME);
-                    String incomingItemName = null;
-                    if(temp != null) {
-                        incomingItemName = temp.toString();
-                    }
+                    final Map incomingItemProperties = (Map) item;
+                    final String incomingItemName = getString(incomingItemProperties, NAME);
                     if(isEmpty(incomingItemName)) {
                         throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
                     }

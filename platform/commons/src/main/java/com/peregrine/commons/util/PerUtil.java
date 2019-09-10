@@ -41,20 +41,9 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.DASH;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -647,6 +636,15 @@ public class PerUtil {
 
     public static boolean isNullOrTrue(final Object value) {
         return value == null || Boolean.TRUE.toString().equalsIgnoreCase(String.valueOf(value));
+    }
+
+    public static String getString(final Map map, final Object key) {
+        final Object value = map.get(key);
+        if (value == null) {
+            return null;
+        }
+
+        return value.toString();
     }
 
     /** Resource Check interface **/
