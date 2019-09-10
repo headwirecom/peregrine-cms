@@ -110,6 +110,15 @@ public class AdminResourceHandlerService
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
     public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
 
+    public static final String MISSING_RESOURCE_RESOLVER_FOR_UPDATE = "Resource Resolver must be provided to update a site from its source";
+    public static final String MISSING_SITE_RESOURCE = "Site: '%s' does not exist";
+    public static final String MISSING_CONTENT_RESOURCE = "Site: '%s' does not have a jcr:content resource";
+    public static final String MISSING_SOURCE_NAME = "Site: '%s' does not have a source site name";
+    public static final String MISSING_SITE_LOCATIONS = "Resources for site: '%s' could not be found";
+    public static final String MISSING_SOURCE_LOCATIONS = "Resources for source site: '%s' could not be found";
+
+    private static final String SOURCE_SITE = "sourceSite";
+
     //Package creation constants
     private static final String PACKAGE_SUFFIX = "-full-package";
     private static final double DEFAULT_PACKAGE_VERSION = 1.0;
@@ -127,6 +136,7 @@ public class AdminResourceHandlerService
     private static final String REPLACE_VALUE = "replace";
     private static final String ROOT_PROPERTY = "root";
     private static final String RULES_PROPERTY = "rules";
+
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -694,6 +704,11 @@ public class AdminResourceHandlerService
                 packagePaths.add(targetResource.getPath());
                 copyChildResources(sourceResource, true, targetResource, fromName, targetName);
                 updateStringsInFiles(targetResource, fromName, targetName);
+                Resource jcrContentResource = targetResource.getChild(JCR_CONTENT);
+                if(jcrContentResource != null) {
+                    ValueMap contentProperties = getModifiableProperties(jcrContentResource);
+                    contentProperties.put(SOURCE_SITE, fromName);
+                }
             }
             answer = targetResource;
         }
@@ -718,17 +733,8 @@ public class AdminResourceHandlerService
                 properties.put(DEPENDENCIES, dependencies);
             }
 
-            StringBuilder mappings = new StringBuilder();
-            for (String superType : superTypes) {
-                String componentSourceName = PerUtil.getComponentVariableNameFromString(superType);
-                String componentDestName = PerUtil.getComponentVariableNameFromString(superType.replace(fromName+"/", targetName+"/"));
-                mappings.append("var ");
-                mappings.append(componentDestName);
-                mappings.append(" = ");
-                mappings.append(componentSourceName);
-                mappings.append('\n');
-            }
-            createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
+            String mappingFileContent = getMappingFileContent(fromName, targetName, superTypes);
+            createResourceFromString(resourceResolver, targetResource, "mapping.js", mappingFileContent);
             createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
         }
 
@@ -739,6 +745,22 @@ public class AdminResourceHandlerService
         }
 
         return answer;
+    }
+
+
+    private String getMappingFileContent(String fromName, String targetName, List<String> superTypes) {
+        StringBuilder mappings = new StringBuilder();
+        for (String superType : superTypes) {
+            String componentSourceName = PerUtil.getComponentVariableNameFromString(superType);
+            String componentDestName = PerUtil.getComponentVariableNameFromString(superType.replace(fromName+"/", targetName+"/"));
+            mappings.append("var ");
+            mappings.append(componentDestName);
+            mappings.append(" = ");
+            mappings.append(componentSourceName);
+            mappings.append('\n');
+        }
+
+        return mappings.toString();
     }
 
     private void createSitePackage(ResourceResolver resourceResolver, String siteName, List<String> packagePaths) throws PersistenceException {
@@ -937,6 +959,52 @@ public class AdminResourceHandlerService
 
     }
 
+    @Override
+    public void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException {
+        if(resourceResolver == null) {
+            throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_UPDATE);
+        }
+        Resource siteResource = getResource(resourceResolver, SITES_ROOT + SLASH + siteName);
+        if(siteResource == null) {
+            throw new ManagementException(String.format(MISSING_SITE_RESOURCE, siteName));
+        }
+        Resource siteContentResource = siteResource.getChild(JCR_CONTENT);
+        if(siteContentResource == null) {
+            throw new ManagementException(String.format(MISSING_CONTENT_RESOURCE, siteName));
+        }
+        ValueMap contentProperties = siteContentResource.getValueMap();
+        String sourceSiteName = contentProperties.get(SOURCE_SITE, String.class);
+        if(StringUtils.isBlank(sourceSiteName)) {
+            throw new ManagementException(String.format(MISSING_SOURCE_NAME, siteName));
+        }
+        Resource siteAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + siteName);
+        Resource sourceAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH +sourceSiteName);
+
+        Resource siteFelibsRoot = getResource(resourceResolver, FELIBS_ROOT + SLASH + siteName);
+
+        if(siteAppsRoot == null || siteFelibsRoot == null) {
+            throw new ManagementException(String.format(MISSING_SITE_LOCATIONS, siteName));
+        }
+        if(sourceAppsRoot == null) {
+            throw new ManagementException(String.format(MISSING_SOURCE_LOCATIONS, sourceSiteName));
+        }
+
+        ArrayList<String> superTypes = new ArrayList<>();
+        copyStubs(sourceAppsRoot, siteAppsRoot, COMPONENTS, superTypes);
+
+        String mappingFileContent = getMappingFileContent(sourceSiteName, siteName, superTypes);
+        Resource mappingFileResource = siteFelibsRoot.getChild("mapping.js");
+        if(mappingFileResource == null) {
+            //TODO: We shouldn't ever end up here - not sure if we want to do this creation or just error out
+            createResourceFromString(resourceResolver, siteFelibsRoot, "mapping.js", mappingFileContent);
+        }
+        else {
+            Resource mappingFileContentResource = mappingFileResource.getChild(JCR_CONTENT);
+            ValueMap properties = getModifiableProperties(mappingFileContentResource);
+            properties.put(JCR_DATA, mappingFileContent);
+        }
+    }
+
     private void deleteResource(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
         if(resource != null) {
             try {
@@ -1058,10 +1126,14 @@ public class AdminResourceHandlerService
                     superTypes.add(originalAppsPath);
                 }
                 newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
-                try {
-                    source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
-                } catch(PersistenceException e) {
-                    logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                Resource existingResource = getResource(source.getResourceResolver(), appsTarget.getPath() + SLASH + child.getName());
+                //Check whether there's already a version of this resource for the new site
+                if(existingResource == null) {
+                    try {
+                        source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
+                    } catch(PersistenceException e) {
+                        logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                    }
                 }
             }
         }
@@ -1140,7 +1212,7 @@ public class AdminResourceHandlerService
             Object value = entry.getValue();
             if(value instanceof Map) {
                 Map childProperties = (Map) value;
-                String childPath = (String) childProperties.get(PATH); 
+                String childPath = (String) childProperties.get(PATH);
                 Resource child = resource.getResourceResolver().getResource(childPath);
                 if(child == null) child = resource.getChild(name);
 
@@ -1346,4 +1418,5 @@ public class AdminResourceHandlerService
             logger.warn("Was not able to obtain Width/Height from Image", e);
         }
     }
+
 }

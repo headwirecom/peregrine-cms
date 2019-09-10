@@ -190,6 +190,16 @@ public interface AdminResourceHandler {
      */
     public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
 
+    /**
+     * Update a peregrine cms site's components and felibs from its source site
+     *
+     * @param resourceResolver Resource Resolver to obtain the resources
+     * @param siteName The name of the site to update
+     * @throws ManagementException
+     */
+    void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException;
+
+
     public class ManagementException
         extends Exception
     {
