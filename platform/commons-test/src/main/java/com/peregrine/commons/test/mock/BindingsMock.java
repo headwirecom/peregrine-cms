@@ -1,4 +1,4 @@
-package com.peregrine;
+package com.peregrine.commons.test.mock;
 
 import java.util.HashMap;
 

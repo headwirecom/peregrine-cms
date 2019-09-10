@@ -151,7 +151,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             try {
-                if (query != null && query.trim().length() > 0) {
+                if (session != null && query.trim().length() > 0) {
                     QueryManager qm = session.getWorkspace().getQueryManager();
                     Query q = qm.createQuery(query, Query.SQL);
                     q.setLimit(ROWS_PER_PAGE+1);
@@ -232,14 +232,14 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                         answer = superTypeNode.getNode(nodeName);
                         logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), answer.getPath());
                     }
-                    done = answer != null || old == superTypeNode;
+                    done = answer != null || superTypeNode == null || old == superTypeNode;
                 }
             }
         }
         return answer;
     }
 
-    private Node getResourceSuperType(Node node) throws RepositoryException {
+    private @Nullable Node getResourceSuperType(@NotNull Node node) throws RepositoryException {
         Node answer = null;
         if (node.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
             String resourceSuperType = node.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();

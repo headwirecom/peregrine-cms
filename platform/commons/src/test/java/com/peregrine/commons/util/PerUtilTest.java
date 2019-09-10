@@ -1,6 +1,6 @@
 package com.peregrine.commons.util;
 
-import com.peregrine.commons.test.AbstractTest;
+//import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.api.resource.Resource;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -17,12 +17,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PerUtilTest
-    extends AbstractTest
-{
+public class PerUtilTest {
+    /* To avoid circular dependencies these test cannot use commons-test **/
+//    AbstractTest {
+
     private static final Logger logger = LoggerFactory.getLogger(PerUtilTest.class.getName());
 
-    @Override
     public Logger getLogger() {
         return logger;
     }

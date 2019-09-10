@@ -148,32 +148,34 @@ public class NodesServlet extends AbstractBaseServlet {
         String path = builder.toString();
         logger.debug("looking up {}", path);
         Resource res = rs.getResource(path);
-        json.writeAttribute(NAME,res.getName());
-        json.writeAttribute(PATH,res.getPath());
-        writeProperties(res, json);
-        json.writeArray(CHILDREN);
-        Iterable<Resource> children = res.getChildren();
-        for(Resource child : children) {
-            if(fullPath.startsWith(child.getPath())) {
-                json.writeObject();
-                convertResource(json, rs, segments, pos+1, fullPath);
-                json.writeClose();
-            } else {
-                if(!JCR_CONTENT.equals(child.getName())) {
+        if(res == null) {
+            json.writeAttribute(NAME, res.getName());
+            json.writeAttribute(PATH, res.getPath());
+            writeProperties(res, json);
+            json.writeArray(CHILDREN);
+            Iterable<Resource> children = res.getChildren();
+            for (Resource child : children) {
+                if (fullPath.startsWith(child.getPath())) {
                     json.writeObject();
-                    json.writeAttribute(NAME,child.getName());
-                    json.writeAttribute(PATH,child.getPath());
-                    writeProperties(child, json);
-                    if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
-                        convertAssetChild(child, json);
-                    } else if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
-                        convertPageChild(child, json);
-                    }
+                    convertResource(json, rs, segments, pos + 1, fullPath);
                     json.writeClose();
+                } else {
+                    if (!JCR_CONTENT.equals(child.getName())) {
+                        json.writeObject();
+                        json.writeAttribute(NAME, child.getName());
+                        json.writeAttribute(PATH, child.getPath());
+                        writeProperties(child, json);
+                        if (isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
+                            convertAssetChild(child, json);
+                        } else if (isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
+                            convertPageChild(child, json);
+                        }
+                        json.writeClose();
+                    }
                 }
             }
+            json.writeClose();
         }
-        json.writeClose();
     }
 
     private void convertAssetChild(Resource child, JsonResponse json) throws IOException {

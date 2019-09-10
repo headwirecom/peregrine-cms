@@ -1,18 +1,17 @@
 package com.peregrine.commons.servlets;
 
-import com.peregrine.commons.test.AbstractTest;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 
-public class ServletHelperTest
-    extends AbstractTest
-{
+public class ServletHelperTest {
+    /* To avoid circular dependencies these test cannot use commons-test **/
+//    AbstractTest {
+
     private static final Logger logger = LoggerFactory.getLogger(ServletHelperTest.class.getName());
 
-    @Override
     public Logger getLogger() {
         return logger;
     }
