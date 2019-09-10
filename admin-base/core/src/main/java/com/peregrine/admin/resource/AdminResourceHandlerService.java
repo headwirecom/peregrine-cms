@@ -67,6 +67,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -343,21 +344,23 @@ public final class AdminResourceHandlerService
 
     @Override
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException {
-        Resource resource = getResource(resourceResolver, path);
-        if(resource == null) {
+        final Resource resource = getResource(resourceResolver, path);
+        if (resource == null) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
+
         try {
-            String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, String.class);
-            if(isNotEmpty(primaryType) && !primaryType.equals(primaryTypeValue)) {
+            final String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, EMPTY);
+            if (isNotEmpty(primaryType) && !primaryTypeValue.equals(primaryType)) {
                 throw new ManagementException(String.format(PRIMARY_TYPE_ASKEW_FOR_DELETION, path, primaryType, primaryTypeValue));
             }
-            Resource parent = resource.getParent();
-            DeletionResponse response = new DeletionResponse()
+
+            final Resource parent = resource.getParent();
+            final DeletionResponse response = new DeletionResponse()
                 .setName(resource.getName())
                 .setPath(resource.getPath())
                 .setParentPath(parent != null ? parent.getPath() : "")
-                .setType(resource.getValueMap().get(JCR_PRIMARY_TYPE, "not-found"));
+                .setType(StringUtils.defaultIfEmpty(primaryTypeValue, "not-found"));
             resourceResolver.delete(resource);
             return response;
         } catch (PersistenceException e) {
