@@ -6,18 +6,13 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.peregrine.adaption.PerAsset;
-import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -28,65 +23,15 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
+import javax.jcr.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 
-import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.COMPONENTS;
-import static com.peregrine.commons.util.PerConstants.DEPENDENCIES;
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_DATA;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JCR_UUID;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.NT_FILE;
-import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.OBJECTS;
-import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
-import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
-import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.VARIATIONS;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -128,7 +73,6 @@ public class AdminResourceHandlerService
     private static final String CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Content Type must be provided to create Asset";
     private static final String INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Input Stream must be provided to create Asset";
     private static final String FAILED_TO_CREATE = "Failed to Create %s in Parent: '%s', name: '%s'";
-    private static final String FAILED_TO_CREATE_RENDITION = "Failed to Create %s Rendition in Parent: '%s', name: '%s'";
     private static final String FAILED_TO_COPY = "Failed to copy source: '%s' on target parent: '%s'";
     private static final String RESOURCE_NOT_FOUND = "Resource not found, Path: '%s'";
     private static final String NO_CONTENT_PROVIDED = "No Content provided, Path: '%s'";
@@ -210,7 +154,7 @@ public class AdminResourceHandlerService
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            Resource parent = getResource(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
             }
@@ -218,7 +162,6 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
             Node parentNode =  parent.adaptTo(Node.class);
-            if(parentNode == null) { throw new ManagementException("Unable to adapt parent: '" + parent + "' to Node"); }
             Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newFolder);
@@ -232,7 +175,7 @@ public class AdminResourceHandlerService
 
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            Resource parent = getResource(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
@@ -243,7 +186,6 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(RESOURCE_TYPE_UNDEFINED, parentPath, name));
             }
             Node parentNode = parent.adaptTo(Node.class);
-            if(parentNode == null) { throw new ManagementException("Unable to adapt parent: '" + parent + "' to Node"); }
             Node newObject = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
             newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
@@ -259,14 +201,14 @@ public class AdminResourceHandlerService
     @Override
     public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            Resource parent = getResource(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, PAGE, parentPath, name));
             }
             if(name == null || name.isEmpty()) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, PAGE, parentPath));
             }
-            Resource templateResource = PerUtil.getResource(resourceResolver, templatePath + "/" + JCR_CONTENT);
+            Resource templateResource = getResource(resourceResolver, templatePath + "/" + JCR_CONTENT);
             if(templateResource == null) {
                 throw new ManagementException(String.format(TEMPLATE_NOT_FOUND, templatePath));
             }
@@ -283,7 +225,7 @@ public class AdminResourceHandlerService
     @Override
     public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            Resource parent = getResource(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, TEMPLATE, parentPath, name));
             }
@@ -294,7 +236,7 @@ public class AdminResourceHandlerService
             // If there is a component then we check the component node and see if there is a child jcr:content node
             // If found we copy this over into our newly created node
             if(isNotEmpty(component)) {
-                logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node", component);
+                logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node");
                 try {
                     if(component.startsWith("/")) {
                         logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
@@ -328,7 +270,7 @@ public class AdminResourceHandlerService
 
     @Override
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException {
-        Resource resource = PerUtil.getResource(resourceResolver, path);
+        Resource resource = getResource(resourceResolver, path);
         if(resource == null) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
@@ -358,7 +300,6 @@ public class AdminResourceHandlerService
         }
         try {
             Node node = resource.adaptTo(Node.class);
-            if(node == null) { throw new ManagementException("Unable to adapt resource: '" + resource + "' to Node"); }
             Node newNode;
             if(addAsChild) {
                 Resource firstChild = null;
@@ -515,13 +456,9 @@ public class AdminResourceHandlerService
                     }
                 }
                 // Obtain the Asset Dimension and store directly in the meta data folder
-                try {
-                    handleAssetDimensions(perAsset);
-                } catch(IOException e) {
-                    logger.warn("Was not able to obtain Width/Height from Image", e);
-                }
+                handleAssetDimensions(perAsset);
             } catch(ImageProcessingException e) {
-                throw new ManagementException(String.format(FAILED_TO_CREATE_RENDITION, ASSET, parent.getPath(), assetName), e);
+                e.printStackTrace();
             }
         } catch(RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);
@@ -623,7 +560,6 @@ public class AdminResourceHandlerService
                                             } else {
                                                 logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
                                                 contentNode = null;
-                                                useDefault = false;
                                             }
                                         } else {
                                             logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
@@ -711,18 +647,14 @@ public class AdminResourceHandlerService
             Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
             if(appsTarget == null) {
                 appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
-                if(appsTarget != null) {
-                    packagePaths.add(appsTarget.getPath());
-                }
+                packagePaths.add(appsTarget.getPath());
             }
-            if(appsTarget != null) {
-                // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-                // with the sling:resourceSuperType set to the <fromSite> component
-                copyStubs(appsSource, appsTarget, COMPONENTS, superTypes);
-                // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
-                // with the sling:resourceSuperType set to the <fromSite> object
-                copyStubs(appsSource, appsTarget, OBJECTS, null);
-            }
+            // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
+            // with the sling:resourceSuperType set to the <fromSite> component
+            copyStubs(appsSource, appsTarget, COMPONENTS, superTypes);
+            // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
+            // with the sling:resourceSuperType set to the <fromSite> object
+            copyStubs(appsSource, appsTarget, OBJECTS, null);
         }
 
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
@@ -767,37 +699,35 @@ public class AdminResourceHandlerService
         sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
             Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
-                ValueMap properties = getModifiableProperties(targetResource, false);
-                logger.trace("Copied Felibs Properties: '{}'", properties);
-                if (properties != null) {
-                    String[] dependencies = properties.get(DEPENDENCIES, String[].class);
-                    if (dependencies == null) {
-                        dependencies = new String[]{sourceResource.getPath()};
-                    } else {
-                        String[] newDependencies = new String[dependencies.length + 1];
-                        System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
-                        newDependencies[dependencies.length] = sourceResource.getPath();
-                        dependencies = newDependencies;
-                    }
-                    properties.put(DEPENDENCIES, dependencies);
+            packagePaths.add(targetResource.getPath());
+            logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
+            ValueMap properties = getModifiableProperties(targetResource, false);
+            logger.trace("Copied Felibs Properties: '{}'", properties);
+            if(properties != null) {
+                String[] dependencies = properties.get(DEPENDENCIES, String[].class);
+                if(dependencies == null) {
+                    dependencies = new String[]{sourceResource.getPath()};
+                } else {
+                    String[] newDependencies = new String[dependencies.length + 1];
+                    System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
+                    newDependencies[dependencies.length] = sourceResource.getPath();
+                    dependencies = newDependencies;
                 }
-
-                StringBuilder mappings = new StringBuilder();
-                for (String superType : superTypes) {
-                    String componentSourceName = PerUtil.getComponentVariableNameFromString(superType);
-                    String componentDestName = PerUtil.getComponentVariableNameFromString(superType.replace(fromName + "/", targetName + "/"));
-                    mappings.append("var ");
-                    mappings.append(componentDestName);
-                    mappings.append(" = ");
-                    mappings.append(componentSourceName);
-                    mappings.append('\n');
-                }
-                createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
-                createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
+                properties.put(DEPENDENCIES, dependencies);
             }
+
+            StringBuilder mappings = new StringBuilder();
+            for (String superType : superTypes) {
+                String componentSourceName = getComponentVariableNameFromString(superType);
+                String componentDestName = getComponentVariableNameFromString(superType.replace(fromName+"/", targetName+"/"));
+                mappings.append("var ");
+                mappings.append(componentDestName);
+                mappings.append(" = ");
+                mappings.append(componentSourceName);
+                mappings.append('\n');
+            }
+            createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
+            createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
         }
 
         try {
@@ -837,11 +767,7 @@ public class AdminResourceHandlerService
             filename = packageName + DASH + version + ZIP_EXTENSION;
             packageResource = groupResource.getChild(filename);
             if(version >= MAXIMUM_VERSION) {
-                logger.error(
-                    "{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.",
-                    version,
-                    packageResource == null ? "NOT FOUND" : packageResource.getPath()
-                );
+                logger.error("{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.", version, packageResource.getPath());
                 return;
             }
         }
@@ -938,9 +864,7 @@ public class AdminResourceHandlerService
             String manifestContent = IOUtils.toString(is, StandardCharsets.UTF_8.name());
             return manifestContent;
         } finally {
-            if(is != null) {
-                is.close();
-            }
+            is.close();
         }
     }
 
@@ -968,7 +892,6 @@ public class AdminResourceHandlerService
     private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {
         try {
             Node parentNode = parent.adaptTo(Node.class);
-            if(parentNode == null) { throw new ManagementException("Parent: '" + parent.getPath() + "' could not be adapted to a Node"); }
             Node newAsset = parentNode.addNode(name, NT_FILE);
             Node content = newAsset.addNode(JCR_CONTENT, NT_RESOURCE);
             content.setProperty(JCR_DATA, data);
@@ -1319,8 +1242,11 @@ public class AdminResourceHandlerService
                     // Move the child to the correct position
                     if(lastResourceItem == null) {
                         // No saved last resource item so we need to place it as the first entry
-                        Iterator<Resource> it = resource.getChildren().iterator();
-                        Resource first = it.hasNext() ? it.next() : null;
+                        Resource first = null;
+                        for(Resource tempResource: resource.getChildren()) {
+                            first = tempResource;
+                            break;
+                        }
                         // If there are no items then ignore it (it will be first
                         if(first != null) {
                             moveNode(resourceListItem, first, false, true);
@@ -1352,8 +1278,11 @@ public class AdminResourceHandlerService
                     if(i != index) {
                         if(lastResourceItem == null) {
                             // No saved last resource item so we need to place it as the first entry
-                            Iterator<Resource> it = resource.getChildren().iterator();
-                            Resource first = it.hasNext() ? it.next() : null;
+                            Resource first = null;
+                            for(Resource tempResource : resource.getChildren()) {
+                                first = tempResource;
+                                break;
+                            }
                             // If there are no items then ignore it (it will be first
                             if(first != null) {
                                 moveNode(resourceListItem, first, false, true);
@@ -1381,9 +1310,8 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException, ManagementException {
+    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
         Node parentNode = parent.adaptTo(Node.class);
-        if(parentNode == null) { throw new ManagementException("Resource: '" + parent.getPath() + "' could not be adapted to a Node"); }
         Node newPage = null;
         newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
         Node content = newPage.addNode(JCR_CONTENT);
@@ -1397,13 +1325,12 @@ public class AdminResourceHandlerService
         return newPage;
     }
 
-    public static void handleAssetDimensions(PerAsset perAsset) throws RepositoryException, IOException {
-        InputStream is = perAsset.getRenditionStream((String) null);
-        // Ignore images that do not have a jcr:data element aka stream
-        if(is != null) {
+    private void handleAssetDimensions(PerAsset perAsset) throws RepositoryException {
+        try {
+            InputStream is = perAsset.getRenditionStream((String) null);
             ImageInputStream iis = ImageIO.createImageInputStream(is);
             Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            while (readers.hasNext()) {
+            while(readers.hasNext()) {
                 ImageReader reader = readers.next();
                 reader.setInput(iis);
                 int minIndex = reader.getMinIndex();
@@ -1413,6 +1340,8 @@ public class AdminResourceHandlerService
                 perAsset.addTag("per-data", "height", height);
                 break;
             }
+        } catch (IOException e) {
+            logger.warn("Was not able to obtain Width/Height from Image", e);
         }
     }
 }
