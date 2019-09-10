@@ -1487,11 +1487,7 @@ public final class AdminResourceHandlerService
                         // Move the child to the correct position
                         if(lastResourceItem == null) {
                             // No saved last resource item so we need to place it as the first entry
-                            Resource first = null;
-                            for(Resource tempResource: resource.getChildren()) {
-                                first = tempResource;
-                                break;
-                            }
+                            Resource first = getFirstChild(resource);
                             // If there are no items then ignore it (it will be first
                             if(first != null) {
                                 moveNode(resourceListItem, first, false, true);
@@ -1524,11 +1520,7 @@ public final class AdminResourceHandlerService
                         if(i != index) {
                             if(lastResourceItem == null) {
                                 // No saved last resource item so we need to place it as the first entry
-                                Resource first = null;
-                                for(Resource tempResource : resource.getChildren()) {
-                                    first = tempResource;
-                                    break;
-                                }
+                                Resource first = getFirstChild(resource);
                                 // If there are no items then ignore it (it will be first
                                 if(first != null) {
                                     moveNode(resourceListItem, first, false, true);

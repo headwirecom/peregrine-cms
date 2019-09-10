@@ -669,6 +669,15 @@ public class PerUtil {
         return -1;
     }
 
+    public static Resource getFirstChild(final Resource parent) {
+        return Optional.ofNullable(parent)
+                .map(Resource::getChildren)
+                .map(Iterable::iterator)
+                .filter(Iterator::hasNext)
+                .map(Iterator::next)
+                .orElse(null);
+    }
+
     /** Resource Check interface **/
     public static interface ResourceChecker {
         /**
