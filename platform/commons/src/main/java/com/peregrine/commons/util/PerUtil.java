@@ -647,6 +647,28 @@ public class PerUtil {
         return value.toString();
     }
 
+    public static int getChildIndex(final Resource parent, final Resource child) {
+        if (parent == null || child == null) {
+            return -1;
+        }
+
+        final String path = child.getPath();
+        if (!StringUtils.equals(getParent(path), parent.getPath())) {
+            return -1;
+        }
+
+        int index = 0;
+        for (final Resource resource: parent.getChildren()) {
+            if (path.equals(resource.getPath())) {
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
+    }
+
     /** Resource Check interface **/
     public static interface ResourceChecker {
         /**

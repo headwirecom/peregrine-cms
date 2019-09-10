@@ -1475,15 +1475,8 @@ public final class AdminResourceHandlerService
                         throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
                     }
                     // Get index of the matching resource child to compare with the index in the list
-                    int index = -1;
-                    Resource resourceListItem = null;
-                    for(Resource tempResource: resource.getChildren()) {
-                        index++;
-                        if(incomingItemName.equals(tempResource.getName())) {
-                            resourceListItem = tempResource;
-                            break;
-                        }
-                    }
+                    Resource resourceListItem = resource.getChild(incomingItemName);
+                    int index = getChildIndex(resource, resourceListItem);
                     // Handle new item
                     if(resourceListItem == null) {
                         String resourceType = (String) incomingItemProperties.get(SLING_RESOURCE_TYPE);
