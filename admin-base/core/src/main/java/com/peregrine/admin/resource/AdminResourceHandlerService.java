@@ -916,63 +916,70 @@ public final class AdminResourceHandlerService
 
     }
 
-    private void updateStringsInFiles(final Resource targetResource, final String targetName) {
-        final Resource contentResource = targetResource.getChild(JCR_CONTENT);
-        if (contentResource == null) {
-            logger.error("No jcr:content resource for resource '{}'", targetResource.getPath());
+    private void updateStringsInFiles(final Resource target, final String siteName) {
+        final Resource content = target.getChild(JCR_CONTENT);
+        if (content == null) {
+            logger.error("No jcr:content resource for resource '{}'", target.getPath());
             return;
         }
 
-        final Resource replacementsResource = contentResource.getChild("replacements");
-        if (replacementsResource == null) {
-            logger.info("No replacements defined for resource '{}'", targetResource.getPath());
+        final Resource replacements = content.getChild("replacements");
+        if (replacements == null) {
+            logger.info("No replacements defined for resource '{}'", target.getPath());
             return;
         }
 
-        for (final Resource fileChild : replacementsResource.getChildren()) {
+        for (final Resource replacement : replacements.getChildren()) {
             // If the file resource doesn't have children, we don't need to do anything
             // since the children define the actual replacements
-            if (fileChild.hasChildren()) {
-                final String filename = fileChild.getName();
-                final Resource fileResource = targetResource.getChild(filename);
-                if (fileResource != null) {
-                    String fileContent = null;
-                    try {
-                        fileContent = getFileContentAsString(fileResource);
-                    } catch (final IOException e) {
-                        logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
-                    }
-
-                    if (isNotBlank(fileContent)) {
-                        String modifiedFileContent = fileContent;
-                        for (Resource replacementResource : fileChild.getChildren()) {
-                            final ValueMap replacementProperties = replacementResource.getValueMap();
-                            final String pattern = replacementProperties.get("regex", EMPTY);
-                            String replaceWith = replacementProperties.get("replaceWith", EMPTY);
-                            if (!isAnyBlank(pattern, replaceWith)) {
-                                //"_SITENAME_" is a placeholder for the actual new site name
-                                replaceWith = replaceWith.replace("_SITENAME_", targetName);
-                                modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
-                            }
-                        }
-
-                        try {
-                            replaceFileContent(fileResource, modifiedFileContent);
-                        } catch (IOException e) {
-                            logger.error("IOException replacing contents of file " + fileResource.getPath(), e);
-                        } catch (RepositoryException e) {
-                            logger.error("RepositoryException replacing contents of file " + fileResource.getPath(), e);
-                        }
-                    }
+            if (replacement.hasChildren()) {
+                final String fileName = replacement.getName();
+                final Resource file = target.getChild(fileName);
+                if (file != null) {
+                    updateStringsInFile(file, replacement, siteName);
                 }
             }
         }
     }
 
-    private String getFileContentAsString(Resource fileResource) throws IOException {
-        try (final InputStream is = fileResource.adaptTo(InputStream.class)) {
-            return IOUtils.toString(is, StandardCharsets.UTF_8.name());
+    private void updateStringsInFile(final Resource file, final Resource replacements, final String siteName) {
+        String content = getFileContentAsString(file);
+        if (isBlank(content)) {
+            return;
         }
+
+        for (final Resource replacement : replacements.getChildren()) {
+            content = replaceSiteName(content, replacement.getValueMap(), siteName);
+        }
+
+        try {
+            replaceFileContent(file, content);
+        } catch (final IOException e) {
+            logger.error("IOException replacing contents of file " + file.getPath(), e);
+        } catch (RepositoryException e) {
+            logger.error("RepositoryException replacing contents of file " + file.getPath(), e);
+        }
+    }
+
+    private String getFileContentAsString(final Resource file) {
+        try (final InputStream is = file.adaptTo(InputStream.class)) {
+            return IOUtils.toString(is, StandardCharsets.UTF_8.name());
+        } catch (final IOException e) {
+            logger.error("Exception getting contents of file:" + file.getPath(), e);
+            return null;
+        }
+    }
+
+    private String replaceSiteName(final String text, final ValueMap regexMap, final String siteName) {
+        final String regex = regexMap.get("regex", EMPTY);
+        String replaceWith = regexMap.get("replaceWith", EMPTY);
+        if (isAnyBlank(regex, replaceWith)) {
+            return text;
+        }
+
+        // "_SITENAME_" is a placeholder for the actual new site name
+        replaceWith = replaceWith.replace("_SITENAME_", siteName);
+        return text.replaceAll(regex, replaceWith);
     }
 
     private void replaceFileContent(Resource fileResource, String newContent) throws IOException, RepositoryException {
