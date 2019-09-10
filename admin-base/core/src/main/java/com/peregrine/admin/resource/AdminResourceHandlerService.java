@@ -1150,12 +1150,14 @@ public final class AdminResourceHandlerService
                     answer = target;
                 }
 
-                // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-                // with the sling:resourceSuperType set to the <fromSite> component
-                superTypes.addAll(copyStubs(source, target, COMPONENTS));
-                // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
-                // with the sling:resourceSuperType set to the <fromSite> object
-                copyStubs(source, target, OBJECTS);
+                if (target != null) {
+                    // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
+                    // with the sling:resourceSuperType set to the <fromSite> component
+                    superTypes.addAll(copyStubs(source, target, COMPONENTS));
+                    // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
+                    // with the sling:resourceSuperType set to the <fromSite> object
+                    copyStubs(source, target, OBJECTS);
+                }
 
                 return answer;
             }
