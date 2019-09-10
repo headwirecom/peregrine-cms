@@ -1401,8 +1401,7 @@ public final class AdminResourceHandlerService
 
             // If child is missing then create it
             if (child == null) {
-                final Object val = map.get(SLING_RESOURCE_TYPE);
-                final String resourceType = (String) val;
+                final String resourceType = (String) map.get(SLING_RESOURCE_TYPE);
                 map.remove(NAME);
                 map.remove(SLING_RESOURCE_TYPE);
                 map.remove(JCR_PRIMARY_TYPE);
@@ -1491,8 +1490,7 @@ public final class AdminResourceHandlerService
                     }
                     // Handle new item
                     if(resourceListItem == null) {
-                        Object val = incomingItemProperties.get(SLING_RESOURCE_TYPE);
-                        String resourceType = val == null ? null : (String) val;
+                        String resourceType = (String) incomingItemProperties.get(SLING_RESOURCE_TYPE);
                         incomingItemProperties.remove(NAME);
                         incomingItemProperties.remove(SLING_RESOURCE_TYPE);
                         incomingItemProperties.remove(JCR_PRIMARY_TYPE);
@@ -1514,23 +1512,21 @@ public final class AdminResourceHandlerService
                             moveNode(resourceListItem, lastResourceItem, false, false);
                         }
                         // Now update the child with any remaining properties
-                        ModifiableValueMap newChildProperties = getModifiableProperties(resourceListItem, false);
                         final Set<Map.Entry> childPropertyEntrySet = incomingItemProperties.entrySet();
                         for(Map.Entry childPropertyEntry : childPropertyEntrySet) {
                             Object childPropertyKey = childPropertyEntry.getKey();
+                            ModifiableValueMap newChildProperties = getModifiableProperties(resourceListItem, false);
                             newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
                         }
                     } else {
-                        if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)) {
-                            Object value = incomingItemProperties.get(DELETION_PROPERTY_NAME);
-                            if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
-                                try {
-                                    logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
-                                    resource.getResourceResolver().delete(resourceListItem);
-                                    continue;
-                                } catch(PersistenceException e) {
-                                    throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
-                                }
+                        if (incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)
+                            && isNullOrTrue(incomingItemProperties.get(DELETION_PROPERTY_NAME))) {
+                            try {
+                                logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
+                                resourceResolver.delete(resourceListItem);
+                                continue;
+                            } catch(final PersistenceException e) {
+                                throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
                             }
                         }
 
