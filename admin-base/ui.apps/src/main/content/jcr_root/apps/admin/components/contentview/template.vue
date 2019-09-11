@@ -198,7 +198,10 @@ export default {
             const iframeDoc = ev.target.contentWindow.document
             this.setIframeScrollState(this.viewMode)
             iframeDoc.body.style.position = 'relative'
-            this.createHeightChangeListener(iframeDoc)
+
+            const heightChangeObserver = new ResizeObserver(this.updateOverlay);
+            heightChangeObserver.observe(iframeDoc.body);
+
         },
 
         setIframeScrollState(viewMode) {
@@ -222,23 +225,6 @@ export default {
                     this.setEditableStyle(targetBox, 'selected')
                 }
             })
-        },
-
-        createHeightChangeListener(iframeDoc){
-            var heightChangeListener = iframeDoc.createElement('iframe')
-            heightChangeListener.id = 'height_change_listener'
-            heightChangeListener.setAttribute('tabindex', '-1')
-            heightChangeListener.style.position = 'absolute'
-            heightChangeListener.style.top = '0'
-            heightChangeListener.style.bottom = '0'
-            heightChangeListener.style.left = '0'
-            heightChangeListener.style.height = '100%'
-            heightChangeListener.style.width = '100%'
-            heightChangeListener.style.border = '0'
-            heightChangeListener.style['z-index'] = '-1'
-            heightChangeListener.style['background-color'] = 'transparent'
-            iframeDoc.body.appendChild(heightChangeListener)
-            heightChangeListener.contentWindow.addEventListener("resize", this.updateOverlay)
         },
 
         /*  Overlay (editviewoverlay) methods ======
