@@ -411,19 +411,25 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
+                var isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path')).fromTemplate === true
+
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
+                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
-                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before') {
+                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before' && !isRoot) {
                         this.dropPosition = 'before'
                         this.setEditableStyle(targetBox, 'drop-top')
                     } else if(dropLocation) {
                         this.dropPosition = 'into-'+dropLocation
                         this.setEditableStyle(targetBox, 'selected')
+                    } else {
+                        this.dropPosition = 'none'
+                        this.leftOverlayArea()
                     }
-                } else {
+                } else if(!isRoot) {
+                    
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
                         this.dropPosition = 'before'
@@ -432,6 +438,9 @@ export default {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
                     }
+                } else {
+                    this.dropPosition = 'none'
+                    this.leftOverlayArea()
                 }
             } else {
                 this.dropPosition = 'none'
