@@ -20,7 +20,7 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class ReplicationUtil {
 

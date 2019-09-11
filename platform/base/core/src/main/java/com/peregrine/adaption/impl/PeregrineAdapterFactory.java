@@ -41,7 +41,7 @@ import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 
 /**
  * This Adapter Factory allows to adapt a resource to a Wrapped Peregrine Object
@@ -52,15 +52,15 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
 @Component(
     service = AdapterFactory.class,
     property = {
-        Constants.SERVICE_DESCRIPTION + EQUALS + "Peregrine: Adapter Factory",
-        Constants.SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
+        Constants.SERVICE_DESCRIPTION + EQUAL + "Peregrine: Adapter Factory",
+        Constants.SERVICE_VENDOR + EQUAL + "headwire.com, Inc",
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPage",
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerAsset",
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPageManager",
+        AdapterFactory.ADAPTER_CLASSES + EQUAL + "com.peregrine.adaption.PerPage",
+        AdapterFactory.ADAPTER_CLASSES + EQUAL + "com.peregrine.adaption.PerAsset",
+        AdapterFactory.ADAPTER_CLASSES + EQUAL + "com.peregrine.adaption.PerPageManager",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
-        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.Resource",
-        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.ResourceResolver"
+        AdapterFactory.ADAPTABLE_CLASSES + EQUAL + "org.apache.sling.api.resource.Resource",
+        AdapterFactory.ADAPTABLE_CLASSES + EQUAL + "org.apache.sling.api.resource.ResourceResolver"
     }
 )
 public class PeregrineAdapterFactory

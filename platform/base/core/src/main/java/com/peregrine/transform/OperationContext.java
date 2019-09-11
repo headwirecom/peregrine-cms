@@ -28,8 +28,8 @@ package com.peregrine.transform;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Context of an Image Transformation Operation

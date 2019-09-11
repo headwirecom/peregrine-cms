@@ -10,7 +10,6 @@ import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -46,6 +45,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.StringUtils.*;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
@@ -84,8 +84,6 @@ import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 
 /**
@@ -908,13 +906,13 @@ public class AdminResourceHandlerService
                         logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
                     }
 
-                    if (StringUtils.isNotBlank(fileContent)) {
+                    if (isNotBlank(fileContent)) {
                         String modifiedFileContent = fileContent;
                         for(Resource replacementResource : fileChild.getChildren()) {
                             ValueMap replacementProperties = replacementResource.getValueMap();
                             String pattern = replacementProperties.get("regex", String.class);
                             String replaceWith = replacementProperties.get("replaceWith", String.class);
-                            if(StringUtils.isNotBlank(pattern) && StringUtils.isNotBlank(replaceWith)) {
+                            if(isNotBlank(pattern) && isNotBlank(replaceWith)) {
                                 //"_SITENAME_" is a placeholder for the actual new site name
                                 replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
                                 modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
