@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -52,8 +52,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformationProvider.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Image Transformation Service Provider",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Image Transformation Service Provider",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR
     }
 )
 public class ImageTransformationProvider {

@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.DISTRIBUTION_SUB_SERVICE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.loginService;
@@ -31,9 +31,9 @@ import static org.osgi.service.event.EventConstants.EVENT_TOPIC;
     service = EventHandler.class,
     immediate = true,
     property = {
-        SERVICE_VENDOR + EQUALS + PER_PREFIX + "Replication Event Handler",
-        EVENT_TOPIC + EQUALS + AGENT_PACKAGE_DISTRIBUTED,
-        EVENT_TOPIC + EQUALS + IMPORTER_PACKAGE_IMPORTED
+        SERVICE_VENDOR + EQUAL + PER_PREFIX + "Replication Event Handler",
+        EVENT_TOPIC + EQUAL + AGENT_PACKAGE_DISTRIBUTED,
+        EVENT_TOPIC + EQUAL + IMPORTER_PACKAGE_IMPORTED
     }
 )
 /**
@@ -67,7 +67,7 @@ public class DistributionEventHandlerService
         if(AGENT_PACKAGE_DISTRIBUTED.equals(topic)) {
             // Forward Agent Event
             // Check the expected properties
-            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_AGENT, EVENT_TOPICS + EQUALS + AGENT_PACKAGE_DISTRIBUTED)) {
+            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_AGENT, EVENT_TOPICS + EQUAL + AGENT_PACKAGE_DISTRIBUTED)) {
                 // Ignore -> Done
                 logEvent("Received unexpected Agent Event", event);
                 return;
@@ -78,7 +78,7 @@ public class DistributionEventHandlerService
         if(IMPORTER_PACKAGE_IMPORTED.equals(topic)) {
             // Forward Agent Event
             // Check the expected properties
-            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_IMPORTER, EVENT_TOPICS + EQUALS + IMPORTER_PACKAGE_IMPORTED)) {
+            if(!checkEventProperties(event, DISTRIBUTION_TYPE_ADD, DISTRIBUTION_COMPONENT_KIND_IMPORTER, EVENT_TOPICS + EQUAL + IMPORTER_PACKAGE_IMPORTED)) {
                 // Ignore -> Done
                 logEvent("Received unexpected Importer Event", event);
                 return;
@@ -142,7 +142,7 @@ public class DistributionEventHandlerService
     private boolean checkEventProperties(Event event, String ... expectedPairs) {
         boolean answer = true;
         for(String pair: expectedPairs) {
-            String[] tokens = pair.split(EQUALS);
+            String[] tokens = pair.split(EQUAL);
             if(tokens.length == 2) {
                 Object value = event.getProperty(tokens[0]);
                 if(value == null) {

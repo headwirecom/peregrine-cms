@@ -14,7 +14,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -24,8 +24,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     service = IntraSlingCaller.class,
     immediate = true,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Intra-Sling Caller",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Intra-Sling Caller",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR
     }
 )
 public class IntraSlingCallerService
