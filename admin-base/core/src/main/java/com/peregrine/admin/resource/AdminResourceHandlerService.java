@@ -1475,77 +1475,78 @@ public final class AdminResourceHandlerService
 
         private void updateObjectList(
                 final List list,
-                final Resource resource
+                final Resource parent
         ) throws ManagementException {
-            Resource lastItem = null;
+            Resource lastResource = null;
             for (int i = 0; i < list.size(); i++) {
                 final Object item = list.get(i);
                 if (item instanceof Map) {
-                    final Map itemProperties = (Map) item;
-                    final String incomingItemName = getString(itemProperties, NAME);
-                    if(isEmpty(incomingItemName)) {
-                        throw new ManagementException(String.format(ITEM_NAME_MISSING, itemProperties, resource.getPath()));
+                    final Map properties = (Map) item;
+                    final String name = getString(properties, NAME);
+                    if (isEmpty(name)) {
+                        throw new ManagementException(String.format(ITEM_NAME_MISSING, properties, parent.getPath()));
                     }
+
                     // Get index of the matching resource child to compare with the index in the list
-                    Resource resourceListItem = resource.getChild(incomingItemName);
+                    Resource resource = parent.getChild(name);
                     // Handle new item
-                    if (resourceListItem == null) {
-                        final String resourceType = (String) itemProperties.get(SLING_RESOURCE_TYPE);
-                        itemProperties.remove(NAME);
-                        itemProperties.remove(SLING_RESOURCE_TYPE);
-                        itemProperties.remove(JCR_PRIMARY_TYPE);
-                        resourceListItem = createNode(resource, incomingItemName, NT_UNSTRUCTURED, resourceType);
+                    if (resource == null) {
+                        final String resourceType = (String) properties.get(SLING_RESOURCE_TYPE);
+                        properties.remove(NAME);
+                        properties.remove(SLING_RESOURCE_TYPE);
+                        properties.remove(JCR_PRIMARY_TYPE);
+                        resource = createNode(parent, name, NT_UNSTRUCTURED, resourceType);
                         // Move the child to the correct position
-                        if (lastItem == null) {
+                        if (lastResource == null) {
                             // No saved last resource item so we need to place it as the first entry
-                            Resource first = getFirstChild(resource);
+                            Resource first = getFirstChild(parent);
                             // If there are no items then ignore it (it will be first
                             if(first != null) {
-                                moveNode(resourceListItem, first, false, true);
+                                moveNode(resource, first, false, true);
                             }
                         } else {
                             // There is a resource item -> move the new one after the last one
-                            moveNode(resourceListItem, lastItem, false, false);
+                            moveNode(resource, lastResource, false, false);
                         }
                         // Now update the child with any remaining properties
-                        final Set<Map.Entry> childPropertyEntrySet = itemProperties.entrySet();
-                        for (final Map.Entry childPropertyEntry : childPropertyEntrySet) {
-                            final Object childPropertyKey = childPropertyEntry.getKey();
-                            getModifiableProperties(resourceListItem, false)
-                                    .put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
+                        final Set<Map.Entry> entrySet = properties.entrySet();
+                        for (final Map.Entry entry : entrySet) {
+                            final Object key = entry.getKey();
+                            getModifiableProperties(resource, false)
+                                    .put(String.valueOf(key), entry.getValue());
                         }
                     } else {
-                        final int index = getChildIndex(resource, resourceListItem);
-                        if (itemProperties.containsKey(DELETION_PROPERTY_NAME)
-                            && isNullOrTrue(itemProperties.get(DELETION_PROPERTY_NAME))) {
+                        final int index = getChildIndex(parent, resource);
+                        if (properties.containsKey(DELETION_PROPERTY_NAME)
+                            && isNullOrTrue(properties.get(DELETION_PROPERTY_NAME))) {
                             try {
-                                logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
-                                resourceResolver.delete(resourceListItem);
+                                logger.trace("Remove List Child: '{}' ('{}')", name, resource.getPath());
+                                resourceResolver.delete(resource);
                                 continue;
                             } catch (final PersistenceException e) {
-                                throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
+                                throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
                             }
                         }
 
-                        updateResourceTree(resourceListItem, itemProperties);
+                        updateResourceTree(resource, properties);
                         // Check order
                         if (i != index) {
-                            final Resource first = getFirstChild(resource);
+                            final Resource first = getFirstChild(parent);
                             if (first != null) {
-                                if (lastItem == null) {
+                                if (lastResource == null) {
                                     // No saved last resource item so we need to place it as the first entry
                                     // If there are no items then ignore it (it will be first
-                                    moveNode(resourceListItem, first, false, true);
-                                } else if (!lastItem.getName().equals(first.getName())) {
+                                    moveNode(resource, first, false, true);
+                                } else if (!lastResource.getName().equals(first.getName())) {
                                     // We only have to move if this wasn't already the first item due to deletion
-                                    moveNode(resourceListItem, lastItem, false, false);
+                                    moveNode(resource, lastResource, false, false);
                                     break;
                                 }
                             }
                         }
                     }
 
-                    lastItem = resourceListItem;
+                    lastResource = resource;
                 } else {
                     throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
                 }
