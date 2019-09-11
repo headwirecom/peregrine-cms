@@ -707,18 +707,22 @@ public final class AdminResourceHandlerService
             }
 
             alreadyVisitedNodes.add(componentPath);
-            if (component.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
-                final String resourceSuperType = component.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-                if (isNotEmpty(resourceSuperType)) {
-                    componentPath = APPS_ROOT + SLASH + resourceSuperType;
-                    try {
-                        component = session.getNode(componentPath);
-                        logger.trace("Found Resource Super Type: '{}'", componentPath);
-                    } catch (final PathNotFoundException e) {
-                        logger.warn("Could not find Resource Super Type Component: " + componentPath + " -> ignore component", e);
-                        return null;
-                    }
-                }
+            if (!component.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
+                return null;
+            }
+
+            final String resourceSuperType = component.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
+            if (isEmpty(resourceSuperType)) {
+                return null;
+            }
+
+            componentPath = APPS_ROOT + SLASH + resourceSuperType;
+            try {
+                component = session.getNode(componentPath);
+                logger.trace("Found Resource Super Type: '{}'", componentPath);
+            } catch (final PathNotFoundException e) {
+                logger.warn("Could not find Resource Super Type Component: " + componentPath + " -> ignore component", e);
+                return null;
             }
         }
     }
