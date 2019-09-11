@@ -116,6 +116,7 @@
                     <exclude>**/pom.xml</exclude>
                 </excludes>
             </resource>
+
         </resources>
 
         <plugins>
