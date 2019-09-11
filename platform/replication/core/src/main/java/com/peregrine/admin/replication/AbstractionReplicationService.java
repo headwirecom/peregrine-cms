@@ -4,7 +4,7 @@ import com.peregrine.replication.Replication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Common Properties Base Class for Replications

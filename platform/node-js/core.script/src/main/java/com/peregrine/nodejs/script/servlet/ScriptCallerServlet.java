@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +30,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getResource;
@@ -40,6 +41,9 @@ import static com.peregrine.nodejs.script.servlet.ScriptCaller.EXECUTE_SCRIPT_WI
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.replace;
 
 /**
  * Rest API Servlet to serve the Sling Node API
@@ -47,10 +51,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = { Servlet.class, ScriptCaller.class },
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Sling Node Script Calling Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_PATHS + EQUALS + EXECUTE_SCRIPT_WITH_NODE_JS,
-        SLING_SERVLET_PATHS + EQUALS + EXECUTE_SCRIPT_WITH_J2V8
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Sling Node Script Calling Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_PATHS + EQUAL + EXECUTE_SCRIPT_WITH_NODE_JS,
+        SLING_SERVLET_PATHS + EQUAL + EXECUTE_SCRIPT_WITH_J2V8
     }
 )
 @SuppressWarnings("serial")
@@ -85,20 +89,22 @@ public class ScriptCallerServlet
     protected void doGet(
         SlingHttpServletRequest request,
         SlingHttpServletResponse response
-    ) throws ServletException,
-        IOException
+    ) throws IOException
     {
         log.trace("Example Servlet called");
         response.setContentType("text/plain");
         String path = request.getParameter("path");
-        if(path == null || path.isEmpty()) {
+        path = replace(path, "\n", EMPTY);
+        path = replace(path, "\t", EMPTY);
+        if(isEmpty(path)) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Parameter 'path' must be provided");
             return;
-        };
+        }
+
         String arguments = request.getParameter("arguments");
         String[] tokens = arguments != null ? arguments.split(",") : null;
-        List<String> argumentList = tokens != null ? new ArrayList<String>(Arrays.asList(tokens)) : null;
+        List<String> argumentList = tokens != null ? new ArrayList<>(Arrays.asList(tokens)) : null;
         log.trace("Arguments Token: {}", argumentList);
         if(EXECUTE_SCRIPT_WITH_J2V8.equals(request.getPathInfo())) {
             if(executor != null) {
@@ -116,7 +122,7 @@ public class ScriptCallerServlet
         if(EXECUTE_SCRIPT_WITH_NODE_JS.equals(request.getPathInfo())) {
             // Read JS file from Resource
             String script = "";
-            Resource jsResource = getResource(request.getResourceResolver(), path + "/jcr:content");
+            Resource jsResource = getResource(request.getResourceResolver(), path + SLASH + JCR_CONTENT);
             log.trace("JS Resource (path: '{}'): '{}'", path, jsResource);
             if(jsResource != null) {
                 InputStream is = null;

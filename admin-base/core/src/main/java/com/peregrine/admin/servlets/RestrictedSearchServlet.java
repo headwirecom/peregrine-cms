@@ -67,17 +67,17 @@ import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATION;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerConstants.VARIATION_PATH;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Limited Search of either Peregrine:
@@ -91,10 +91,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Search Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_SEARCH
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Search Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUAL + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUAL + RESOURCE_TYPE_SEARCH
     }
 )
 @SuppressWarnings("serial")
@@ -151,7 +151,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             try {
-                if (query != null && query.trim().length() > 0) {
+                if (session != null && query.trim().length() > 0) {
                     QueryManager qm = session.getWorkspace().getQueryManager();
                     Query q = qm.createQuery(query, Query.SQL);
                     q.setLimit(ROWS_PER_PAGE+1);
@@ -232,14 +232,14 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                         answer = superTypeNode.getNode(nodeName);
                         logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), answer.getPath());
                     }
-                    done = answer != null || old == superTypeNode;
+                    done = answer != null || superTypeNode == null || old == superTypeNode;
                 }
             }
         }
         return answer;
     }
 
-    private Node getResourceSuperType(Node node) throws RepositoryException {
+    private @Nullable Node getResourceSuperType(@NotNull Node node) throws RepositoryException {
         Node answer = null;
         if (node.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
             String resourceSuperType = node.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
@@ -275,12 +275,12 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
             thumbnailNode = Optional.ofNullable(findChildNodeRecursive(component, THUMBNAIL_PNG))
                 .orElse(findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG));
         }
-        title = isEmpty(title) ?
-            getProperty(component, JCR_TITLE) :
-            title;
-        group = isEmpty(title) ?
-            getProperty(component, GROUP) :
-            group;
+        if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
+            title = component.getProperty(JCR_TITLE).getString();
+        }
+        if(isEmpty(group) && component.hasProperty(GROUP)) {
+            group = component.getProperty(GROUP).getString();
+        }
         if(isNotEmpty(title)) {
             answer.writeAttribute(TITLE, title);
         }

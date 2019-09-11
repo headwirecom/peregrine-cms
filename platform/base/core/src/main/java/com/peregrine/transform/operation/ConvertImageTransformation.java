@@ -40,7 +40,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.util.ArrayList;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -56,9 +56,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformation.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Convert Image Transformation (transformation name: vips:convert",
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:convert",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX +  "Convert Image Transformation (transformation name: vips:convert",
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:convert",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR
     }
 )
 @Designate(

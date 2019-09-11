@@ -63,7 +63,7 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerConstants.TAGS;
 import static com.peregrine.commons.util.PerConstants.TITLE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -84,10 +84,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Nodes servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_NODES
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Nodes servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUAL + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUAL + RESOURCE_TYPE_NODES
     }
 )
 @SuppressWarnings("serial")
@@ -148,32 +148,34 @@ public class NodesServlet extends AbstractBaseServlet {
         String path = builder.toString();
         logger.debug("looking up {}", path);
         Resource res = rs.getResource(path);
-        json.writeAttribute(NAME,res.getName());
-        json.writeAttribute(PATH,res.getPath());
-        writeProperties(res, json);
-        json.writeArray(CHILDREN);
-        Iterable<Resource> children = res.getChildren();
-        for(Resource child : children) {
-            if(fullPath.startsWith(child.getPath())) {
-                json.writeObject();
-                convertResource(json, rs, segments, pos+1, fullPath);
-                json.writeClose();
-            } else {
-                if(!JCR_CONTENT.equals(child.getName())) {
+        if(res == null) {
+            json.writeAttribute(NAME, res.getName());
+            json.writeAttribute(PATH, res.getPath());
+            writeProperties(res, json);
+            json.writeArray(CHILDREN);
+            Iterable<Resource> children = res.getChildren();
+            for (Resource child : children) {
+                if (fullPath.startsWith(child.getPath())) {
                     json.writeObject();
-                    json.writeAttribute(NAME,child.getName());
-                    json.writeAttribute(PATH,child.getPath());
-                    writeProperties(child, json);
-                    if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
-                        convertAssetChild(child, json);
-                    } else if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
-                        convertPageChild(child, json);
-                    }
+                    convertResource(json, rs, segments, pos + 1, fullPath);
                     json.writeClose();
+                } else {
+                    if (!JCR_CONTENT.equals(child.getName())) {
+                        json.writeObject();
+                        json.writeAttribute(NAME, child.getName());
+                        json.writeAttribute(PATH, child.getPath());
+                        writeProperties(child, json);
+                        if (isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
+                            convertAssetChild(child, json);
+                        } else if (isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
+                            convertPageChild(child, json);
+                        }
+                        json.writeClose();
+                    }
                 }
             }
+            json.writeClose();
         }
-        json.writeClose();
     }
 
     private void convertAssetChild(Resource child, JsonResponse json) throws IOException {

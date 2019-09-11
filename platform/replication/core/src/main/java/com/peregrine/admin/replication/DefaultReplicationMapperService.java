@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
 

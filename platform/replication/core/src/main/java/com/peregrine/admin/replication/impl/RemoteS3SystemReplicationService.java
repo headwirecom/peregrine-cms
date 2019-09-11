@@ -60,6 +60,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.HTML_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
@@ -69,7 +70,6 @@ import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.getMimeType;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
 import static com.peregrine.commons.util.PerUtil.intoList;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
 import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 

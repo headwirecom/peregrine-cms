@@ -44,7 +44,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -58,11 +58,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Rendition Provider Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_METHODS + EQUALS + POST,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "per/Asset"
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Rendition Provider Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUAL + GET,
+        SLING_SERVLET_METHODS + EQUAL + POST,
+        SLING_SERVLET_RESOURCE_TYPES + EQUAL + "per/Asset"
     }
 )
 @SuppressWarnings("serial")

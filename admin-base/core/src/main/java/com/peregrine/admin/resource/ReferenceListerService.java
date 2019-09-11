@@ -45,10 +45,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 
 /**

@@ -1,4 +1,4 @@
-package com.peregrine;
+package com.peregrine.commons.test.mock;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.mockito.Mockito.mock;
@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
@@ -30,17 +31,24 @@ public class ResourceMock extends ResourceWrapper {
         when(mock.getValueMap()).thenReturn(valueMap);
     }
 
+    public final ResourceMock setResourceResolver(ResourceResolver resourceResolver) {
+        when(mock.getResourceResolver()).thenReturn(resourceResolver);
+        return this;
+    }
+
     public final Map<String, Object> getProperties() {
         return properties;
     }
 
-    public final void putProperty(final String name, final Object property) {
+    public final ResourceMock putProperty(final String name, final Object property) {
         properties.put(name, property);
+        return this;
     }
 
-    public final void setPath(final String path) {
+    public final ResourceMock setPath(final String path) {
         when(mock.getPath()).thenReturn(path);
         setPathImpl(path);
+        return this;
     }
 
     protected void setPathImpl(final String path) { }
@@ -50,8 +58,9 @@ public class ResourceMock extends ResourceWrapper {
         return StringUtils.substringAfterLast(getPath(), SLASH);
     }
 
-    public final void setParent(final Resource parent) {
+    public final ResourceMock setParent(final Resource parent) {
         when(mock.getParent()).thenReturn(parent);
+        return this;
     }
 
     @Override
@@ -59,12 +68,14 @@ public class ResourceMock extends ResourceWrapper {
         return children.get(name);
     }
 
-    public final void addChild(final String name, final Resource child) {
+    public final ResourceMock addChild(final String name, final Resource child) {
         children.put(name, child);
+        return this;
     }
 
-    public final void addChild(final Resource child) {
+    public final ResourceMock addChild(final Resource child) {
         addChild(child.getName(), child);
+        return this;
     }
 
     @Override

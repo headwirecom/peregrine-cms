@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Created by Andreas Schaefer on 6/28/17.
