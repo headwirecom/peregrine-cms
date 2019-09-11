@@ -1419,12 +1419,7 @@ public final class AdminResourceHandlerService
                 map.remove(JCR_PRIMARY_TYPE);
                 child = createNode(resource, propertyName, NT_UNSTRUCTURED, resourceType);
                 // Now update the child with any remaining properties
-                final ModifiableValueMap newChildProperties = getModifiableProperties(child, false);
-                final Set<Entry> childPropertyEntrySet = map.entrySet();
-                for (final Entry childPropertyEntry: childPropertyEntrySet) {
-                    final Object childPropertyKey = childPropertyEntry.getKey();
-                    newChildProperties.put(String.valueOf(childPropertyKey), childPropertyEntry.getValue());
-                }
+                writeProperties(map, child);
             } else {
                 updateResourceTree(child, map);
             }
@@ -1499,9 +1494,9 @@ public final class AdminResourceHandlerService
                         // Move the child to the correct position
                         if (lastResource == null) {
                             // No saved last resource item so we need to place it as the first entry
-                            Resource first = getFirstChild(parent);
+                            final Resource first = getFirstChild(parent);
                             // If there are no items then ignore it (it will be first
-                            if(first != null) {
+                            if (first != null) {
                                 moveNode(resource, first, false, true);
                             }
                         } else {
@@ -1509,12 +1504,7 @@ public final class AdminResourceHandlerService
                             moveNode(resource, lastResource, false, false);
                         }
                         // Now update the child with any remaining properties
-                        final Set<Map.Entry> entrySet = properties.entrySet();
-                        for (final Map.Entry entry : entrySet) {
-                            final Object key = entry.getKey();
-                            getModifiableProperties(resource, false)
-                                    .put(String.valueOf(key), entry.getValue());
-                        }
+                        writeProperties(properties, resource);
                     } else {
                         final int index = getChildIndex(parent, resource);
                         if (properties.containsKey(DELETION_PROPERTY_NAME)
@@ -1550,6 +1540,15 @@ public final class AdminResourceHandlerService
                 } else {
                     throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
                 }
+            }
+        }
+
+        private void writeProperties(final Map source, final Resource target) {
+            final ModifiableValueMap modifiableProperties = getModifiableProperties(target, false);
+            final Set<Entry> entrySet = source.entrySet();
+            for (final Entry entry : entrySet) {
+                final Object key = entry.getKey();
+                modifiableProperties.put(String.valueOf(key), entry.getValue());
             }
         }
     }
