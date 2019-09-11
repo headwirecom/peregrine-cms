@@ -1425,6 +1425,15 @@ public final class AdminResourceHandlerService
             }
         }
 
+        private void writeProperties(final Map source, final Resource target) {
+            final ModifiableValueMap modifiableProperties = getModifiableProperties(target, false);
+            final Set<Entry> entrySet = source.entrySet();
+            for (final Entry entry : entrySet) {
+                final Object key = entry.getKey();
+                modifiableProperties.put(String.valueOf(key), entry.getValue());
+            }
+        }
+
         private void updateListProperty(
                 final String propertyName,
                 final List list
@@ -1519,15 +1528,8 @@ public final class AdminResourceHandlerService
                 writeProperties(properties, resource);
             } else {
                 final int index = getChildIndex(parent, resource);
-                if (properties.containsKey(DELETION_PROPERTY_NAME)
-                    && isNullOrTrue(properties.get(DELETION_PROPERTY_NAME))) {
-                    try {
-                        logger.trace("Remove List Child: '{}' ('{}')", name, resource.getPath());
-                        resourceResolver.delete(resource);
-                        return lastResource;
-                    } catch (final PersistenceException e) {
-                        throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
-                    }
+                if (deleteIfContainsMarkerProperty(resource, properties)) {
+                    return lastResource;
                 }
 
                 updateResourceTree(resource, properties);
@@ -1550,13 +1552,19 @@ public final class AdminResourceHandlerService
             return resource;
         }
 
-        private void writeProperties(final Map source, final Resource target) {
-            final ModifiableValueMap modifiableProperties = getModifiableProperties(target, false);
-            final Set<Entry> entrySet = source.entrySet();
-            for (final Entry entry : entrySet) {
-                final Object key = entry.getKey();
-                modifiableProperties.put(String.valueOf(key), entry.getValue());
+        private boolean deleteIfContainsMarkerProperty(final Resource resource, final Map properties) throws ManagementException {
+            if (properties.containsKey(DELETION_PROPERTY_NAME)
+                && isNullOrTrue(properties.get(DELETION_PROPERTY_NAME))) {
+                try {
+                    logger.trace("Remove List Child: '{}' ('{}')", resource.getName(), resource.getPath());
+                    resourceResolver.delete(resource);
+                    return true;
+                } catch (final PersistenceException e) {
+                    throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
+                }
             }
+
+            return false;
         }
     }
 
