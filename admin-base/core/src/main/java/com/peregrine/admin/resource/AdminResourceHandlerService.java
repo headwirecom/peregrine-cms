@@ -1484,7 +1484,7 @@ public final class AdminResourceHandlerService
                     final Map incomingItemProperties = (Map) item;
                     final String incomingItemName = getString(incomingItemProperties, NAME);
                     if(isEmpty(incomingItemName)) {
-                        throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
+                        throw new ManagementException(String.format(ITEM_NAME_MISSING, incomingItemProperties, resource.getPath()));
                     }
                     // Get index of the matching resource child to compare with the index in the list
                     Resource resourceListItem = resource.getChild(incomingItemName);
