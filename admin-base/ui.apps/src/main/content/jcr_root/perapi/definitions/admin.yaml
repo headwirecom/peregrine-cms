@@ -744,10 +744,10 @@ paths:
                   properties:
                     name:
                       type: string
-                    path:
-                      type: string
                     title:
                       type: string
+                    roots:
+                      type: object
 definitions:
   Error:
     type: object

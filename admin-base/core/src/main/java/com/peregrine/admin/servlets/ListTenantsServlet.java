@@ -25,6 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.google.common.collect.ImmutableSortedMap;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -33,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -69,6 +70,16 @@ public class ListTenantsServlet extends AbstractBaseServlet {
 
     private static final String SITE_ROOT_MISSING = "The site root '" + SITES_ROOT + "' did not resolve to a resource.";
     private static final String TENANTS = "tenants";
+    public static final String ROOTS = "roots";
+
+    private static final Map<String, String> ROOT_MAP = ImmutableSortedMap.<String, String>naturalOrder()
+            .put("apps", APPS_ROOT)
+            .put("assets", ASSETS_ROOT)
+            .put("felibs", FELIBS_ROOT)
+            .put("objects", OBJECTS_ROOT)
+            .put("sites", SITES_ROOT)
+            .put("templates", TEMPLATES_ROOT)
+            .build();
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -94,13 +105,18 @@ public class ListTenantsServlet extends AbstractBaseServlet {
         for(Resource tenant : tenants) {
             answer.writeObject();
             answer.writeAttribute(NAME, tenant.getName());
-            answer.writeAttribute(PATH, tenant.getPath());
 
             Resource contentResource = tenant.getChild(JCR_CONTENT);
             if(contentResource != null) {
                 ValueMap properties = contentResource.getValueMap();
                 answer.writeAttribute(TITLE, properties.get(JCR_TITLE, String.class));
             }
+            answer.writeObject(ROOTS);
+            for(String key : ROOT_MAP.keySet()) {
+                answer.writeAttribute(key, ROOT_MAP.get(key) + SLASH + tenant.getName());
+            }
+            answer.writeClose();
+
             answer.writeClose();
         }
         answer.writeClose();
