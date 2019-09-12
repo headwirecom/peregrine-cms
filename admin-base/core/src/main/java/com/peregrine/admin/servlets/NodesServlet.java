@@ -148,7 +148,7 @@ public class NodesServlet extends AbstractBaseServlet {
         String path = builder.toString();
         logger.debug("looking up {}", path);
         Resource res = rs.getResource(path);
-        if(res == null) {
+        if(res != null) {
             json.writeAttribute(NAME, res.getName());
             json.writeAttribute(PATH, res.getPath());
             writeProperties(res, json);

@@ -3,7 +3,7 @@ package com.peregrine.it.wrapper;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.commons.test.AbstractTest;
+//import com.peregrine.commons.test.AbstractTest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
  * Created by Andreas Schaefer on 7/5/17.
  */
 public class PageTraversingIT
-    extends AbstractTest
+//    extends AbstractTest
 {
 
     private static final Logger logger = LoggerFactory.getLogger(PageTraversingIT.class.getName());
@@ -373,7 +373,7 @@ public class PageTraversingIT
         return answer;
     }
 
-    @Override
+//    @Override
     public Logger getLogger() {
         return logger;
     }

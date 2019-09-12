@@ -28,12 +28,9 @@ package com.peregrine.admin.servlets;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
-import java.io.IOException;
 
 import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_CONTENT;
 import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
@@ -67,21 +64,18 @@ public class ContentServlet extends AbstractBaseServlet {
 
     private static final String DATA = "=data";
 
-    @Reference
-    private transient ModelFactory modelFactory;
-
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(Request request) {
 
         String suffix = request.getSuffix();
         if(suffix.endsWith(DATA_JSON_EXTENSION)) {
             suffix = suffix.substring(0, suffix.indexOf(DATA_JSON_EXTENSION));
         }
         Resource res = request.getResourceByPath(suffix);
-        RequestDispatcherOptions rdOtions = new RequestDispatcherOptions(
+        RequestDispatcherOptions options = new RequestDispatcherOptions(
             RequestDispatcherOptions.OPT_REPLACE_SELECTORS + DATA
         );
-        return new ForwardResponse(res, rdOtions);
+        return new ForwardResponse(res, options);
     }
 }
 
