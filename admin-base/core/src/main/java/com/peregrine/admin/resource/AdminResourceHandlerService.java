@@ -644,46 +644,48 @@ public final class AdminResourceHandlerService
             final Node node,
             final String variation
     ) throws RepositoryException, ManagementException {
-        final Node parent = node.getParent();
-        final Session session = parent.getSession();
+        final Session session = node.getSession();
         final String componentPath = APPS_ROOT + SLASH + node.getProperty(SLING_RESOURCE_TYPE).getString();
         Node contentNode = getComponentContentNode(session, componentPath);
-        if (contentNode != null) {
-            if (contentNode.hasProperty(VARIATIONS)
-                    && contentNode.getProperty(VARIATIONS).getBoolean()) {
-                boolean useDefault = true;
-                if(isNotEmpty(variation)) {
-                    // Look up the variation node
-                    if(contentNode.hasNode(variation)) {
-                        Node variationNode = contentNode.getNode(variation);
-                        if(variationNode.hasNode(JCR_CONTENT)) {
-                            contentNode = variationNode.getNode(JCR_CONTENT);
-                            useDefault = false;
-                        } else {
-                            logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                            contentNode = null;
-                        }
+        if (contentNode == null) {
+            return;
+        }
+
+        if (contentNode.hasProperty(VARIATIONS)
+                && contentNode.getProperty(VARIATIONS).getBoolean()) {
+            boolean useDefault = true;
+            if (isNotEmpty(variation)) {
+                // Look up the variation node
+                if (contentNode.hasNode(variation)) {
+                    final Node variationNode = contentNode.getNode(variation);
+                    if (variationNode.hasNode(JCR_CONTENT)) {
+                        contentNode = variationNode.getNode(JCR_CONTENT);
+                        useDefault = false;
                     } else {
-                        logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
+                        logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                        contentNode = null;
                     }
-                }
-                if (useDefault && contentNode != null) {
-                    NodeIterator i = contentNode.getNodes();
-                    if(i.hasNext()) {
-                        Node variationNode = i.nextNode();
-                        if(variationNode.hasNode(JCR_CONTENT)) {
-                            contentNode = variationNode.getNode(JCR_CONTENT);
-                        } else {
-                            logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                            contentNode = null;
-                        }
-                    }
+                } else {
+                    logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
                 }
             }
 
-            if (contentNode != null) {
-                copyNode(contentNode, node, true);
+            if (useDefault && contentNode != null) {
+                final NodeIterator i = contentNode.getNodes();
+                if (i.hasNext()) {
+                    final Node variationNode = i.nextNode();
+                    if (variationNode.hasNode(JCR_CONTENT)) {
+                        contentNode = variationNode.getNode(JCR_CONTENT);
+                    } else {
+                        logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                        contentNode = null;
+                    }
+                }
             }
+        }
+
+        if (contentNode != null) {
+            copyNode(contentNode, node, true);
         }
     }
 
