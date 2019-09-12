@@ -25,6 +25,8 @@ public class ResourceMock extends ResourceWrapper {
 
     private final Map<String, Resource> children = new LinkedHashMap<>();
 
+    private final Map<Class, Object> adaptTo = new LinkedHashMap<>();
+
     private ResourceResolver resourceResolver;
 
     public ResourceMock(final String name) {
@@ -111,6 +113,25 @@ public class ResourceMock extends ResourceWrapper {
     @Override
     public boolean hasChildren() {
         return !children.isEmpty();
+    }
+
+    public void addAdapter(final Object adapter) {
+        adaptTo.put(adapter.getClass(), adapter);
+    }
+
+    @Override
+    public <AdapterType> AdapterType adaptTo(final Class<AdapterType> type) {
+        if (adaptTo.containsKey(type)) {
+            return (AdapterType) adaptTo.get(type);
+        }
+
+        for (final Map.Entry<Class, Object> entry : adaptTo.entrySet()) {
+            if (type.isAssignableFrom(entry.getKey())) {
+                return (AdapterType) entry.getValue();
+            }
+        }
+
+        return super.adaptTo(type);
     }
 
     public Node getNode() {
