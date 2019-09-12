@@ -252,6 +252,7 @@ public final class AdminResourceHandlerService
         return resourceResolver.getResource(node.getPath());
     }
 
+    @Override
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException {
         try {
             if(isEmpty(name)) {
@@ -584,17 +585,24 @@ public final class AdminResourceHandlerService
         }
     }
 
-    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
-        Map<String, Object> properties = new HashMap<>();
+    @Override
+    public Resource createNode(
+            final Resource parent,
+            final String name,
+            final String primaryType,
+            final String resourceType
+    ) throws ManagementException {
+        final Map<String, Object> properties = new HashMap<>();
         properties.put(JCR_PRIMARY_TYPE, primaryType);
-        if(isNotEmpty(resourceType)) {
+        if (isNotEmpty(resourceType)) {
             properties.put(SLING_RESOURCE_TYPE, resourceType);
         }
+
         try {
             return parent.getResourceResolver().create(parent, name, properties);
-        } catch(PersistenceException e) {
+        } catch(final PersistenceException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
-        } catch(RuntimeException e) {
+        } catch(final RuntimeException e) {
             logger.debug("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
             throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
         }
