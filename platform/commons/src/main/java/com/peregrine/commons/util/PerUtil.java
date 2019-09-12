@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
@@ -46,18 +47,13 @@ import java.util.*;
 import java.util.Optional;
 
 
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-
-import static com.peregrine.commons.util.PerConstants.DASH;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -728,6 +724,19 @@ public final class PerUtil {
     public static boolean isPropertyPresentAndEqualsTrue(final Node node, final String propertyName) throws RepositoryException {
         return node.hasProperty(propertyName)
                 && node.getProperty(propertyName).getBoolean();
+    }
+
+    public static Node getFirstChild(final Node parent) {
+        try {
+            final NodeIterator iterator = parent.getNodes();
+            if (iterator.hasNext()) {
+                return iterator.nextNode();
+            }
+        } catch (final RepositoryException e) {
+            return null;
+        }
+
+        return null;
     }
 
     /** Resource Check interface **/
