@@ -1,36 +1,44 @@
 package com.peregrine.admin.resource;
 
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.test.SlingResourcesTest;
 import com.peregrine.commons.test.mock.ResourceMock;
+import com.peregrine.rendition.BaseResourceHandler;
+import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import java.util.HashMap;
 import java.util.Map;
 
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public final class AdminResourceHandlerServiceTest {
+public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
 
     public static final String CHILD = "child";
-    public static final String PER_TEST = "per:Test";
-    public static final String TEST_COMPONENT = "test/component";
 
     private final AdminResourceHandlerService model = new AdminResourceHandlerService();
     // private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
 
-    private final ResourceResolver resourceResolver = mock(ResourceResolver.class);
-    private final ResourceMock parent = new ResourceMock();
-    private final ResourceMock resource = new ResourceMock();
+    private final ResourceRelocation resourceRelocation = mock(ResourceRelocation.class);
+    private final BaseResourceHandler baseResourceHandler = mock(BaseResourceHandler.class);
+
+    private final Node resourceNode = resource.getNode();
+    private final ResourceMock child = new ResourceMock();
+    private final Node childNode = child.getNode();
 
     @Before
-    public void setUp() {
-        parent.setResourceResolver(resourceResolver);
-        resource.setResourceResolver(resourceResolver);
+    public void setUp() throws NoSuchFieldException {
+        PrivateAccessor.setField(model, "resourceRelocation", resourceRelocation);
+        PrivateAccessor.setField(model, "baseResourceHandler", baseResourceHandler);
+        init(child);
     }
 
     @Test
@@ -66,7 +74,14 @@ public final class AdminResourceHandlerServiceTest {
     }
 
     @Test
-    public void insertNode() {
+    public void insertNode() throws ManagementException, RepositoryException {
+        final Map<String, Object> properties = new HashMap<>();
+        when(resourceNode.addNode(any(), any())).then(invocation -> {
+            final String path = (String) invocation.getArguments()[0];
+            child.setPath(resource.getPath() + SLASH + path);
+            return childNode;
+        });
+        assertEquals(child, model.insertNode(resource, properties, true, false, null));
     }
 
     @Test
@@ -84,38 +99,38 @@ public final class AdminResourceHandlerServiceTest {
     @Test(expected = ManagementException.class)
     public void createNode_PersistenceException() throws PersistenceException, ManagementException {
         when(resourceResolver.create(any(), any(), any())).thenThrow(PersistenceException.class);
-        model.createNode(parent, CHILD, PER_TEST, TEST_COMPONENT);
+        model.createNode(parent, CHILD, PRIMARY_TYPE, RESOURCE_TYPE);
     }
 
     @Test(expected = ManagementException.class)
     public void createNode_RuntimeException() throws PersistenceException, ManagementException {
         when(resourceResolver.create(any(), any(), any())).thenThrow(RuntimeException.class);
-        model.createNode(parent, CHILD, PER_TEST, TEST_COMPONENT);
+        model.createNode(parent, CHILD, PRIMARY_TYPE, RESOURCE_TYPE);
     }
 
     @Test
     public void createNode_noResourceType() throws PersistenceException, ManagementException {
-        when(resourceResolver.create(any(), any(), any())).then(invocationOnMock ->
+        when(resourceResolver.create(any(), any(), any())).then(invocation ->
         {
-            final Map<String, Object> properties = (Map<String, Object>) invocationOnMock.getArguments()[2];
+            final Map<String, Object> properties = (Map<String, Object>) invocation.getArguments()[2];
             assertFalse(properties.containsKey(SLING_RESOURCE_TYPE));
             return resource;
         });
 
-        assertEquals(resource, model.createNode(parent, CHILD, PER_TEST, EMPTY));
+        assertEquals(resource, model.createNode(parent, CHILD, PRIMARY_TYPE, EMPTY));
     }
 
     @Test
     public void createNode() throws PersistenceException, ManagementException {
-        when(resourceResolver.create(any(), any(), any())).then(invocationOnMock ->
+        when(resourceResolver.create(any(), any(), any())).then(invocation ->
         {
-            final Map<String, Object> properties = (Map<String, Object>) invocationOnMock.getArguments()[2];
+            final Map<String, Object> properties = (Map<String, Object>) invocation.getArguments()[2];
             assertTrue(properties.containsKey(SLING_RESOURCE_TYPE));
-            assertEquals(TEST_COMPONENT, properties.get(SLING_RESOURCE_TYPE));
+            assertEquals(RESOURCE_TYPE, properties.get(SLING_RESOURCE_TYPE));
             return resource;
         });
 
-        assertEquals(resource, model.createNode(parent, CHILD, PER_TEST, TEST_COMPONENT));
+        assertEquals(resource, model.createNode(parent, CHILD, PRIMARY_TYPE, RESOURCE_TYPE));
     }
 
     @Test
