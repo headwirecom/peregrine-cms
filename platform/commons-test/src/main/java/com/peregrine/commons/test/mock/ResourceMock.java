@@ -22,7 +22,7 @@ public class ResourceMock extends ResourceWrapper {
 
     protected final Map<String, Object> properties = new HashMap<>();
 
-    private final Map<String, Resource> children = new TreeMap<>();
+    private final Map<String, Resource> children = new LinkedHashMap<>();
 
     public ResourceMock() {
         super(mock(Resource.class));
