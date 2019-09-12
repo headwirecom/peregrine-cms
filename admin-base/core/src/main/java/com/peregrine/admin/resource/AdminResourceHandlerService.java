@@ -45,6 +45,7 @@ import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.getString;
 import static com.peregrine.commons.util.PerUtil.isNullOrTrue;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static com.peregrine.commons.util.PerUtil.isPropertyPresentAndEqualsTrue;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -651,8 +652,7 @@ public final class AdminResourceHandlerService
             return;
         }
 
-        if (contentNode.hasProperty(VARIATIONS)
-                && contentNode.getProperty(VARIATIONS).getBoolean()) {
+        if (isPropertyPresentAndEqualsTrue(contentNode, VARIATIONS)) {
             boolean useDefault = true;
             if (isNotEmpty(variation)) {
                 // Look up the variation node

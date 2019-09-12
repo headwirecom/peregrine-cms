@@ -38,6 +38,7 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
@@ -722,6 +723,11 @@ public final class PerUtil {
                 .filter(Iterator::hasNext)
                 .map(Iterator::next)
                 .orElse(null);
+    }
+
+    public static boolean isPropertyPresentAndEqualsTrue(final Node node, final String propertyName) throws RepositoryException {
+        return node.hasProperty(propertyName)
+                && node.getProperty(propertyName).getBoolean();
     }
 
     /** Resource Check interface **/
