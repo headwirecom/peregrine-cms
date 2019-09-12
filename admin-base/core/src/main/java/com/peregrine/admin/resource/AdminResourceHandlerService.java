@@ -653,20 +653,7 @@ public final class AdminResourceHandlerService
         }
 
         if (isPropertyPresentAndEqualsTrue(contentNode, VARIATIONS)) {
-            Node variationNode = getVariationOrSelf(contentNode, variation);
-            boolean useDefault = contentNode == variationNode;
-            contentNode = variationNode;
-            if (useDefault && contentNode != null) {
-                variationNode = getFirstChild(contentNode);
-                if (variationNode != null) {
-                    if (variationNode.hasNode(JCR_CONTENT)) {
-                        contentNode = variationNode.getNode(JCR_CONTENT);
-                    } else {
-                        logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                        contentNode = null;
-                    }
-                }
-            }
+            contentNode = getVariationContentOrDefault(contentNode, variation);
         }
 
         if (contentNode != null) {
@@ -714,24 +701,22 @@ public final class AdminResourceHandlerService
         }
     }
 
-    private Node getVariationOrSelf(final Node node, final String variation) throws RepositoryException {
-        if (isEmpty(variation)) {
-            return node;
-        }
-
+    private Node getVariationContentOrDefault(final Node node, final String variation) throws RepositoryException {
         // Look up the variation node
-        if (node.hasNode(variation)) {
-            final Node variationNode = node.getNode(variation);
-            if (variationNode.hasNode(JCR_CONTENT)) {
-                return variationNode.getNode(JCR_CONTENT);
-            } else {
-                logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-            }
+        final Node variationNode;
+        if (isNotEmpty(variation) && node.hasNode(variation)) {
+            variationNode = node.getNode(variation);
         } else {
             logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, node.getPath());
+            variationNode = getFirstChild(node);
         }
 
-        return node;
+        if (variationNode.hasNode(JCR_CONTENT)) {
+            return variationNode.getNode(JCR_CONTENT);
+        }
+
+        logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+        return null;
     }
 
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
