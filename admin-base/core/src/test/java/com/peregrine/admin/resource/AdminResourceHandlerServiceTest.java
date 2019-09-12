@@ -21,6 +21,7 @@ public final class AdminResourceHandlerServiceTest {
     public static final String TEST_COMPONENT = "test/component";
 
     private final AdminResourceHandlerService model = new AdminResourceHandlerService();
+    // private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
 
     private final ResourceResolver resourceResolver = mock(ResourceResolver.class);
     private final ResourceMock parent = new ResourceMock();
