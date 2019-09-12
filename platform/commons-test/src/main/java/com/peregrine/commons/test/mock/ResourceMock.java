@@ -34,6 +34,7 @@ public class ResourceMock extends ResourceWrapper {
         mock = getResource();
         final ValueMap valueMap = new ValueMapDecorator(properties);
         when(mock.getValueMap()).thenReturn(valueMap);
+        addAdapter(node);
     }
 
     public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
