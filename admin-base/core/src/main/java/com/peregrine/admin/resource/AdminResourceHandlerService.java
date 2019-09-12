@@ -383,18 +383,24 @@ public final class AdminResourceHandlerService
     }
 
     @Override
-    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
+    public Resource insertNode(
+            final Resource resource,
+            final Map<String, Object> properties,
+            final boolean addAsChild,
+            final boolean orderBefore,
+            final String variation
+    ) throws ManagementException {
         final Node node = Optional.ofNullable(resource)
                 .map(r -> r.adaptTo(Node.class))
                 .orElse(null);
-        if(node == null) {
+        if (node == null) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
 
         try {
             final Node newNode;
             final ResourceResolver resourceResolver = resource.getResourceResolver();
-            if(addAsChild) {
+            if (addAsChild) {
                 newNode = createNode(node, properties, variation);
                 baseResourceHandler.updateModification(resourceResolver, newNode);
                 if(orderBefore) {
