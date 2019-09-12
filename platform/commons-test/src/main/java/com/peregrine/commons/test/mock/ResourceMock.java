@@ -31,8 +31,9 @@ public class ResourceMock extends ResourceWrapper {
         when(mock.getValueMap()).thenReturn(valueMap);
     }
 
-    public final ResourceMock setResourceResolver(ResourceResolver resourceResolver) {
+    public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
         when(mock.getResourceResolver()).thenReturn(resourceResolver);
+        when(resourceResolver.getResource(getPath())).thenReturn(this);
         return this;
     }
 
