@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-  <span>
+  <span class="__multiselect">
     <vue-multiselect
       :value="mode"
       deselect-label
@@ -39,7 +39,7 @@
         <i class="material-icons" :alt="props.option.title">{{props.option.icon}}</i>
       </template>
       <template slot="singleLabel" slot-scope="props">
-        <i class="material-icons" :alt="props.option.title">{{props.option.icon}}</i>
+        <i class="material-icons btn-floating" :alt="props.option.title">{{props.option.icon}}</i>
       </template>
       <template slot="caret" slot-scope="props"><span></span></template>
     </vue-multiselect>
@@ -74,3 +74,29 @@ export default {
 };
 </script>
 
+<style>
+
+.__multiselect .multiselect__tags {
+  padding: 0;
+  background: transparent;
+  border: inherit;
+}
+
+.__multiselect .material-icons {
+  line-height: 40px;
+  height: 40px;
+  padding-left: 8px;
+  margin-top: -1px;
+  margin-bottom: -4px;
+}
+
+.__multiselect .multiselect__option {
+  padding: 0;
+}
+
+.__multiselect .multiselect--active .btn-floating {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+</style>
