@@ -25,6 +25,8 @@ public class ResourceMock extends ResourceWrapper {
 
     private final Map<String, Resource> children = new LinkedHashMap<>();
 
+    private ResourceResolver resourceResolver;
+
     public ResourceMock() {
         super(mock(Resource.class));
         mock = getResource();
@@ -33,9 +35,16 @@ public class ResourceMock extends ResourceWrapper {
     }
 
     public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
+        this.resourceResolver = resourceResolver;
         when(mock.getResourceResolver()).thenReturn(resourceResolver);
-        when(resourceResolver.getResource(getPath())).thenReturn(this);
+        updateResourceResolverGetResource();
         return this;
+    }
+
+    private void updateResourceResolverGetResource() {
+        if (resourceResolver != null) {
+            when(resourceResolver.getResource(getPath())).thenReturn(this);
+        }
     }
 
     public final Map<String, Object> getProperties() {
@@ -52,6 +61,7 @@ public class ResourceMock extends ResourceWrapper {
         try {
             when(node.getPath()).thenReturn(path);
         } catch (final RepositoryException e) { }
+        updateResourceResolverGetResource();
         setPathImpl(path);
         return this;
     }
