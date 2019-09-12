@@ -4,7 +4,6 @@ import com.peregrine.commons.servlets.AbstractBaseServlet.Request;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestPathInfo;
-import org.apache.sling.api.resource.Resource;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,6 +23,10 @@ public class PeregrineRequestMock
     private Node mockNode;
 
     public static PeregrineRequestMock createInstance(String path, String...parameters) {
+        return createInstance(path, null, null, false, parameters);
+    }
+
+    public static PeregrineRequestMock createInstance(String path, String selector, String suffix, boolean ignore, String...parameters) {
         SlingHttpServletRequest mockSlingHttpServletRequest = mock(SlingHttpServletRequest.class, "SlingHttpServletRequest");
         SlingHttpServletResponse mockSlingHttpServletResponse = mock(SlingHttpServletResponse.class, "SlingHttpServletResponse");
         RequestPathInfo mockRequestPathInfo = mock(RequestPathInfo.class);
@@ -38,18 +42,32 @@ public class PeregrineRequestMock
         Enumeration<String> e = IteratorUtils.asEnumeration(parameterNames.iterator());
         when(mockSlingHttpServletRequest.getParameterNames()).thenReturn(e);
 
-        return new PeregrineRequestMock(mockSlingHttpServletRequest, mockSlingHttpServletResponse, path, parameters);
+        if(selector != null) { when(mockRequestPathInfo.getSelectorString()).thenReturn(selector); }
+        if(suffix != null) {
+            when(mockRequestPathInfo.getSuffix()).thenReturn(suffix);
+        }
+
+        return new PeregrineRequestMock(mockSlingHttpServletRequest, mockSlingHttpServletResponse, path, suffix);
     }
 
-    private PeregrineRequestMock(SlingHttpServletRequest request, SlingHttpServletResponse response, String path, String...parameters) {
+    private PeregrineRequestMock(SlingHttpServletRequest request, SlingHttpServletResponse response, String path, String suffix) {
         super(request, response);
 
         ResourceResolver mockResourceResolver = mock(ResourceResolver.class);
         when(request.getResourceResolver()).thenReturn(mockResourceResolver);
-        Resource mockResource = mock(Resource.class);
-        when(mockResourceResolver.getResource(eq(path))).thenReturn(mockResource);
+        ResourceMock resourceMock = new ResourceMock()
+            .setPath(path);
+        when(mockResourceResolver.getResource(eq(path))).thenReturn(resourceMock);
         mockNode = mock(Node.class);
-        when(mockResource.adaptTo(Node.class)).thenReturn(mockNode);
+
+        if(suffix != null) {
+            if(suffix.endsWith(DATA_JSON_EXTENSION)) {
+                suffix = suffix.substring(0, suffix.indexOf(DATA_JSON_EXTENSION));
+            }
+            ResourceMock suffixResourceMock = new ResourceMock()
+                .setPath(suffix);
+            when(mockResourceResolver.getResource(eq(suffix))).thenReturn(suffixResourceMock);
+        }
     }
 
     public Node getNode() { return mockNode; }

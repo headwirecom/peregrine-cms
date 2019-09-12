@@ -87,7 +87,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         boolean page = false;
         if(resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
             Resource jcrContent = resource.getChild(PerConstants.JCR_CONTENT);
-            if(jcrContent != null) {
+            if(jcrContent == null) {
                 return new ErrorResponse().setErrorCode(404).setErrorMessage("Page with Path: '" + path + "' has no Content Chile Node");
             }
             page = true;
