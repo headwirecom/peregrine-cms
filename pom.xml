@@ -675,6 +675,7 @@
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.commons.testing</artifactId>
                 <version>${org.apache.sling.commons.testing.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- IT Tests Support -->
