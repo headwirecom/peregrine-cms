@@ -19,7 +19,7 @@ import javax.jcr.RepositoryException;
 public class ResourceMock extends ResourceWrapper {
 
     protected final Resource mock;
-    protected final Node node = mock(Node.class);
+    protected final Node node;
 
     protected final Map<String, Object> properties = new HashMap<>();
 
@@ -29,12 +29,17 @@ public class ResourceMock extends ResourceWrapper {
 
     private ResourceResolver resourceResolver;
 
-    public ResourceMock() {
-        super(mock(Resource.class));
+    public ResourceMock(final String name) {
+        super(mock(Resource.class, name));
         mock = getResource();
+        node = mock(Node.class, name);
         final ValueMap valueMap = new ValueMapDecorator(properties);
         when(mock.getValueMap()).thenReturn(valueMap);
         addAdapter(node);
+    }
+
+    public ResourceMock() {
+        this(null);
     }
 
     public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
