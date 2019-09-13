@@ -464,7 +464,6 @@ public final class AdminResourceHandlerService
         }
     }
 
-
     @Override
     public Resource rename(Resource fromResource, String newName) throws ManagementException {
         if(fromResource == null) {
@@ -631,7 +630,7 @@ public final class AdminResourceHandlerService
         // If there is a component then we check the component node and see if there is a child jcr:content node
         // If found we copy this over into our newly created node
         try {
-            if(component.startsWith(SLASH)) {
+            if (component.startsWith(SLASH)) {
                 logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
             } else {
                 copyComponentProperties(newNode, variation);
