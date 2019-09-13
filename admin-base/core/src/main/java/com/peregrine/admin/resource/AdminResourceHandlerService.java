@@ -496,12 +496,6 @@ public class AdminResourceHandlerService
 
         Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
         newNode.setProperty(SLING_RESOURCE_TYPE, component);
-        for (Object key: data.keySet()) {
-            Object val = data.get(key);
-            if(val instanceof String) {
-                newNode.setProperty(key.toString(), (String) val);
-            }
-        }
 
         // If there is a component then we check the component node and see if there is a child jcr:content node
         // If found we copy this over into our newly created node
@@ -589,6 +583,14 @@ public class AdminResourceHandlerService
                 }
             } catch(PathNotFoundException e) {
                 logger.warn("Component: '{}' not found -> ignored", component);
+            }
+        }
+        // If the node is copied with copyNode (see above) then it would overwrite properties previously set
+        // so we move them here
+        for (Object key: data.keySet()) {
+            Object val = data.get(key);
+            if(val instanceof String) {
+                newNode.setProperty(key.toString(), (String) val);
             }
         }
         return newNode;
