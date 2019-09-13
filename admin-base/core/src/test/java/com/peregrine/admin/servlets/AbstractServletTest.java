@@ -37,6 +37,7 @@ public abstract class AbstractServletTest
     Node mockParentNode;
     Node mockNewNode;
     Node mockNewContentNode;
+    Node mockNewSiteNode;
     ResourceMock mockTemplateResource;
     ResourceMock mockNewResource;
 
@@ -78,10 +79,10 @@ public abstract class AbstractServletTest
         int index = path.lastIndexOf('/');
         String parentPath = path.substring(0, index);
         mockResourceResolver = mockRequest.getResourceResolver();
-        mockParentResource = new ResourceMock()
+        mockParentResource = new ResourceMock("Parent")
             .setPath(parentPath);
         when(mockResourceResolver.getResource(eq(parentPath))).thenReturn(mockParentResource);
-        mockParentNode = mock(Node.class, "Parent Node");
+        mockParentNode = mockParentResource.getNode();
 
         // Create Template Resource
         String templatePath = mockRequest.getParameter(TEMPLATE_PATH);

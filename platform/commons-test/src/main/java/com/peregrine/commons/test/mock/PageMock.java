@@ -7,14 +7,20 @@ import static org.mockito.Mockito.when;
 
 public final class PageMock extends ResourceMock {
 
-    private final ResourceMock content = new ResourceMock();
+    private final ResourceMock content;
 
-    public PageMock() {
+    public PageMock(final String name) {
+        super(name);
+        content = new ResourceMock(concatenateToDerivedName(name, "'s ", JCR_CONTENT));
         when(mock.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
         when(mock.isResourceType(PAGE_PRIMARY_TYPE)).thenReturn(true);
 
         addChild(JCR_CONTENT, content);
         content.setParent(this);
+    }
+
+    public PageMock() {
+        this(DEFAULT_NAME);
     }
 
     @Override

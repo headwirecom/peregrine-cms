@@ -26,11 +26,11 @@ public class SlingResourcesTest extends AbstractTest {
     public static final String PRIMARY_TYPE = "per:Type";
     public static final String RESOURCE_TYPE = "per/component";
 
-    protected final ResourceMock root = new ResourceMock();
-    protected final ResourceMock parent = new ResourceMock();
-    protected final PageMock page = new PageMock();
+    protected final ResourceMock root = new ResourceMock("Root");
+    protected final ResourceMock parent = new ResourceMock("Parent");
+    protected final PageMock page = new PageMock("Page");
     protected final ResourceMock content = page.getContent();
-    protected final ResourceMock resource = new ResourceMock();
+    protected final ResourceMock resource = new ResourceMock("Resource");
 
     protected final List<Resource> resources = new LinkedList<>();
 
