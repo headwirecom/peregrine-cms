@@ -79,6 +79,10 @@ public class ResourceMock extends ResourceWrapper {
         return this;
     }
 
+    public Object getProperty(final String name) {
+        return properties.get(name);
+    }
+
     public final ResourceMock setPath(final String path) {
         when(mock.getPath()).thenReturn(path);
         try {
