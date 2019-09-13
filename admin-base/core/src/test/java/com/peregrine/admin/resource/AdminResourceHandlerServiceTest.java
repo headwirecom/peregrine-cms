@@ -21,7 +21,9 @@ import static org.mockito.Mockito.*;
 
 public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
 
-    public static final String CHILD = "child";
+    private static final String CHILD = "child";
+    private static final String STRING = "string";
+    private static final String INT = "int";
 
     // private final AdminResourceHandlerService model = new AdminResourceHandlerService();
     private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
@@ -91,8 +93,12 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     public void insertNode_addAsChild_doNotOrderBefore_nullVariation_slashedComponent() throws ManagementException {
         final String resourceType = SLASH + RESOURCE_TYPE;
         properties.put(COMPONENT, resourceType);
+        properties.put(STRING, STRING);
+        properties.put(INT, 0);
         checkInsertNode(true, false, null);
-        assertEquals(resourceType, child.getProperty(SLING_RESOURCE_TYPE));
+        assertEquals(STRING, child.getProperty(STRING));
+        assertNull(child.getProperty(INT));
+    }
     }
 
     @Test
