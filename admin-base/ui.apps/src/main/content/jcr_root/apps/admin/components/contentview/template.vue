@@ -339,7 +339,7 @@ export default {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if(node.fromTemplate) {
-                    $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
+                    $perAdminApp.notifyUser(this.$i18n('template component'), this.$i18n('This component is part of the template')+ ". " + this.$i18n('Please modify the template in order to change it'), {
                         complete: this.removeEditOverlay
                     })
                 } else {
