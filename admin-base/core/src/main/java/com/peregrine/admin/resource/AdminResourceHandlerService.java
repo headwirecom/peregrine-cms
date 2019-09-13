@@ -33,6 +33,8 @@ import java.util.Map.Entry;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -595,15 +597,65 @@ public class AdminResourceHandlerService
                 logger.warn("Component: '{}' not found -> ignored", component);
             }
         }
-        // If the node is copied with copyNode (see above) then it would overwrite properties previously set
-        // so we move them here
-        for (Object key: data.keySet()) {
-            Object val = data.get(key);
-            if(val instanceof String) {
-                newNode.setProperty(key.toString(), (String) val);
+        applyProperties(newNode, data);
+        return newNode;
+    }
+
+    private void applyProperties(Node node, Map<Object,Object> properties) throws RepositoryException {
+        for(Map.Entry<Object, Object> entry: properties.entrySet()) {
+            String key = entry.getKey() == null ? null : entry.getKey().toString();
+            Object value = entry.getValue();
+            logger.trace("Create Node w Props, handle prop: '{}'='{}', value type: '{}'", key, value, value == null ? "null" : value.getClass());
+            if (!IGNORED_PROPERTIES_FOR_COPY.contains(key)) {
+                if (value instanceof String) {
+                    node.setProperty(key, (String) value);
+                } else if (value instanceof ArrayList) {
+                    // Get sub node
+                    try {
+                        Node subNode = node.getNode(key + "");
+                        ArrayList array = (ArrayList) value;
+                        applyChildProperties(subNode, array);
+                    } catch (PathNotFoundException e) {
+                        logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
+                    }
+                }
             }
         }
-        return newNode;
+    }
+
+    private void applyChildProperties(Node parent, ArrayList childProperties) throws RepositoryException {
+        // Loop over Array
+        for (Object item : childProperties) {
+            if (item instanceof Map) {
+                Map childProps = (Map) item;
+                // Find matching child by name
+                Object temp = childProps.get("name");
+                String name = temp == null ? null : temp.toString();
+                if (isBlank(name)) {
+                    temp = childProps.get("path");
+                    String path = temp == null ? null : temp.toString();
+                    if (isNotBlank(path)) {
+                        int index = path.lastIndexOf('/');
+                        if (index < path.length() - 1) {
+                            name = path.substring(index + 1);
+                        }
+                    }
+                }
+                if (isNotBlank(name)) {
+                    // Apply data
+                    try {
+                        Node childNode = parent.getNode(name);
+                        applyProperties(childNode, childProps);
+                    } catch (PathNotFoundException e) {
+                        logger.warn("Child Node: '{}' not found and so it is ignored", name, e);
+                    }
+                } else {
+                    logger.warn("Neither Name nor Path Found in Object: '{}'", childProps);
+                }
+            } else {
+                logger.warn("Array item: '{}' is not an Object and so ignored", item);
+            }
+        }
     }
 
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
@@ -859,13 +911,13 @@ public class AdminResourceHandlerService
                         logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
                     }
 
-                    if (StringUtils.isNotBlank(fileContent)) {
+                    if (isNotBlank(fileContent)) {
                         String modifiedFileContent = fileContent;
                         for(Resource replacementResource : fileChild.getChildren()) {
                             ValueMap replacementProperties = replacementResource.getValueMap();
                             String pattern = replacementProperties.get("regex", String.class);
                             String replaceWith = replacementProperties.get("replaceWith", String.class);
-                            if(StringUtils.isNotBlank(pattern) && StringUtils.isNotBlank(replaceWith)) {
+                            if(isNotBlank(pattern) && isNotBlank(replaceWith)) {
                                 //"_SITENAME_" is a placeholder for the actual new site name
                                 replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
                                 modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
@@ -976,7 +1028,7 @@ public class AdminResourceHandlerService
         }
         ValueMap contentProperties = siteContentResource.getValueMap();
         String sourceSiteName = contentProperties.get(SOURCE_SITE, String.class);
-        if(StringUtils.isBlank(sourceSiteName)) {
+        if(isBlank(sourceSiteName)) {
             throw new ManagementException(String.format(MISSING_SOURCE_NAME, siteName));
         }
         Resource siteAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + siteName);
