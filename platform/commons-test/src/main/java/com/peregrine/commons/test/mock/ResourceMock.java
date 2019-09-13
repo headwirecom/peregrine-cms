@@ -1,6 +1,8 @@
 package com.peregrine.commons.test.mock;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,8 +14,11 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 public class ResourceMock extends ResourceWrapper {
@@ -34,15 +39,53 @@ public class ResourceMock extends ResourceWrapper {
     public ResourceMock(final String name) {
         super(mock(Resource.class, name));
         mock = getResource();
-        node = mock(Node.class, concatenateToDerivedName(name, " Node"));
+        node = mockNode(name);
         final ValueMap valueMap = new ValueMapDecorator(properties);
         when(mock.getValueMap()).thenReturn(valueMap);
-        addAdapter(node);
     }
 
-    protected static String concatenateToDerivedName(final String... strings) {
+    public ResourceMock() {
+        this(DEFAULT_NAME);
+    }
+
+    private Node mockNode(final String name) {
+        final Node mock = mock(Node.class, concatenateToDerivedName(name, " Node"));
+        addAdapter(mock);
+        final Answer<Property> setPropertyAnswer = invocation -> {
+            final Object[] arguments = invocation.getArguments();
+            final String key = (String) arguments[0];
+            final Object value = arguments[1];
+            properties.put(key, value);
+            return mockNodeProperty(key);
+        };
+        try {
+            when(mock.setProperty(anyString(), anyString())).then(setPropertyAnswer);
+        } catch (final RepositoryException e) { }
+
+        return mock;
+    }
+
+    private Property mockNodeProperty(final String key) {
+        final Property mock = mock(Property.class, concatenateToDerivedName("Property '", key, "'"));
+        try {
+            when(mock.getNode()).thenReturn(node);
+            when(mock.getName()).thenReturn(key);
+            final Object value = properties.get(key);
+            if (value != null) {
+                if (value instanceof String) {
+                    when(mock.getString()).thenReturn((String) value);
+                }
+            }
+
+        } catch (final RepositoryException e) {
+        }
+
+        return mock;
+    }
+
+    protected static final String concatenateToDerivedName(final Object... objects) {
         final StringBuilder builder = new StringBuilder();
-        for (final String s : strings) {
+        for (final Object s : objects) {
             if (s == null) {
                 return DEFAULT_NAME;
             }
@@ -51,10 +94,6 @@ public class ResourceMock extends ResourceWrapper {
         }
 
         return StringUtils.trim(builder.toString());
-    }
-
-    public ResourceMock() {
-        this(DEFAULT_NAME);
     }
 
     public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
