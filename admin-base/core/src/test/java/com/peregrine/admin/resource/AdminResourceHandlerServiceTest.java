@@ -31,14 +31,20 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     private final BaseResourceHandler baseResourceHandler = mock(BaseResourceHandler.class);
 
     private final Node resourceNode = resource.getNode();
-    private final ResourceMock child = new ResourceMock();
-    private final Node childNode = child.getNode();
+    private final ResourceMock child = new ResourceMock("Child");
+
+    private final Map<String, Object> properties = new HashMap<>();
 
     @Before
-    public void setUp() throws NoSuchFieldException {
+    public void setUp() throws NoSuchFieldException, RepositoryException {
         PrivateAccessor.setField(model, "resourceRelocation", resourceRelocation);
         PrivateAccessor.setField(model, "baseResourceHandler", baseResourceHandler);
         init(child);
+        when(resourceNode.addNode(any(), any())).then(invocation -> {
+            final String relPath = (String) invocation.getArguments()[0];
+            child.setPath(resource.getPath() + SLASH + relPath);
+            return child.getNode();
+        });
     }
 
     @Test
@@ -69,19 +75,20 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     public void deleteResource() {
     }
 
-    @Test
-    public void deleteResource1() {
+    private void checkInsertNode(
+            final boolean addAsChild,
+            final boolean orderBefore,
+            final String variation
+    ) throws ManagementException {
+        assertEquals(child, model.insertNode(resource, properties, addAsChild, orderBefore, variation));
     }
 
     @Test
-    public void insertNode() throws ManagementException, RepositoryException {
-        final Map<String, Object> properties = new HashMap<>();
-        when(resourceNode.addNode(any(), any())).then(invocation -> {
-            final String path = (String) invocation.getArguments()[0];
-            child.setPath(resource.getPath() + SLASH + path);
-            return childNode;
-        });
-        assertEquals(child, model.insertNode(resource, properties, true, false, null));
+    public void insertNode_addAsChild_doNotOrderBefore_nullVariation_noComponent() throws ManagementException {
+        checkInsertNode(true, false, null);
+    }
+
+    @Test
     }
 
     @Test
