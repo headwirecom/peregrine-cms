@@ -14,8 +14,7 @@ import javax.jcr.RepositoryException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -89,6 +88,11 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     }
 
     @Test
+    public void insertNode_addAsChild_doNotOrderBefore_nullVariation_slashedComponent() throws ManagementException {
+        final String resourceType = SLASH + RESOURCE_TYPE;
+        properties.put(COMPONENT, resourceType);
+        checkInsertNode(true, false, null);
+        assertEquals(resourceType, child.getProperty(SLING_RESOURCE_TYPE));
     }
 
     @Test
