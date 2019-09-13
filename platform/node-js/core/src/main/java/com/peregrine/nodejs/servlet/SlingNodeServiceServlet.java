@@ -27,7 +27,7 @@ import java.io.StringReader;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.nodejs.servlet.SlingNodeConstants.INSTALL_PACKAGE;
@@ -51,11 +51,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Sling Node Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_PATHS + EQUALS + LIST_PACKAGES,
-        SLING_SERVLET_PATHS + EQUALS + INSTALL_PACKAGE,
-        SLING_SERVLET_PATHS + EQUALS + REMOVE_PACKAGE
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Sling Node Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_PATHS + EQUAL + LIST_PACKAGES,
+        SLING_SERVLET_PATHS + EQUAL + INSTALL_PACKAGE,
+        SLING_SERVLET_PATHS + EQUAL + REMOVE_PACKAGE
     }
 )
 @SuppressWarnings("serial")

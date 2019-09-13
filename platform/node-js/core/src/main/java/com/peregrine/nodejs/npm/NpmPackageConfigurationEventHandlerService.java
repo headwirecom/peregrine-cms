@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getPrimaryType;
@@ -39,12 +39,12 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     service = ResourceChangeListener.class,
     configurationPolicy = ConfigurationPolicy.IGNORE,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "NPM Package Configuration Listener",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        PATHS + EQUALS + "glob:" + NPM_PACKAGE_CONFIG_PATH + "/**",
-        CHANGES + EQUALS + "ADDED",
-        CHANGES + EQUALS + "CHANGED",
-        CHANGES + EQUALS + "REMOVED"
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "NPM Package Configuration Listener",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        PATHS + EQUAL + "glob:" + NPM_PACKAGE_CONFIG_PATH + "/**",
+        CHANGES + EQUAL + "ADDED",
+        CHANGES + EQUAL + "CHANGED",
+        CHANGES + EQUAL + "REMOVED"
     }
 )
 public class NpmPackageConfigurationEventHandlerService

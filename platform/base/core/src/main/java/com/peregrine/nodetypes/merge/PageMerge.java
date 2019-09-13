@@ -26,8 +26,12 @@ package com.peregrine.nodetypes.merge;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peregrine.commons.util.BindingsUseUtil;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
@@ -39,11 +43,7 @@ import org.slf4j.LoggerFactory;
 import javax.script.Bindings;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
@@ -55,160 +55,188 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 /**
  * Created by rr on 5/8/2017.
  */
-@SuppressWarnings("serial")
 public class PageMerge implements Use {
 
     public static final String FROM_TEMPLATE = "fromTemplate";
-    public static final String REQUEST = "request";
-    public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
     public static final String CONTENT_TEMPLATES = "/content/templates/";
-    private final Logger log = LoggerFactory.getLogger(PageMerge.class);
 
-    private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
+    private static final ThreadLocal<RenderContext> renderContext = new ThreadLocal<>();
 
-//    @Reference
-    ModelFactory modelFactory;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private SlingHttpServletRequest request;
+    private ModelFactory modelFactory;
+
+    private Resource resource;
+
+    private ResourceResolver resourceResolver;
 
     public static RenderContext getRenderContext() {
         return renderContext.get();
     }
 
+    @Override
+    public void init(final Bindings bindings) {
+        final SlingHttpServletRequest request = BindingsUseUtil.getRequest(bindings);
+        renderContext.set(new RenderContext(request));
+        resource = request.getResource();
+        resourceResolver = request.getResourceResolver();
+        final SlingScriptHelper sling = BindingsUseUtil.getSling(bindings);
+        modelFactory = sling.getService(ModelFactory.class);
+    }
+
     public String getMerged() {
-        log.debug("merge on {}", request.getResource().getPath());
-        Resource res = request.getResource();
-        if(res.getName().equals(JCR_CONTENT)) {
-            res = res.getParent();
+        log.debug("merge on {}", resource.getPath());
+        if (JCR_CONTENT.equals(resource.getName())) {
+            return toJSON(resource.getParent());
         }
-        return toJSON(getMerged(res));
+
+        return toJSON(resource);
     }
 
     public String getMergedForScript() {
-        log.debug("merge on {}", request.getResource().getPath());
-        Resource res = request.getResource();
-        if(res.getName().equals(JCR_CONTENT)) {
-            res = res.getParent();
-        }
-        String merged = toJSON(getMerged(res));
-        return merged.replaceAll("</script>", "<\\\\/script>");
+        return StringUtils.replace(getMerged(), "</script>", "<\\/script>");
     }
 
-    public Map getMerged(Resource resource) {
-        log.debug("getMerge({})", resource.getPath());
-        try {
-            Resource content = resource.getChild(JCR_CONTENT);
-            if(content == null) return Collections.<String, String> emptyMap();
-            Map page = modelFactory.exportModelForResource(content,
-                    JACKSON, Map.class,
-                    Collections.<String, String> emptyMap());
-            String templatePath = (String) page.get(TEMPLATE);
-            if(templatePath == null) {
-                Resource parent = resource.getParent();
-                if(parent != null && parent.getPath().startsWith(CONTENT_TEMPLATES)) {
-                    // only use the parent as a template of a template if it is in fact a page
-                    if(parent.getResourceType().equals(PAGE_PRIMARY_TYPE)) {
-                        templatePath = parent.getPath();
-                    }
-                }
-            }
-            if(templatePath != null) {
-                Map template = getMerged(request.getResourceResolver().getResource(templatePath));
-                flagFromTemplate(template);
-                return merge(template, page);
-            }
-            return page;
-        } catch (ExportException e) {
-            log.error("not able to export model", e);
-        } catch (MissingExporterException e) {
-            log.error("not able to find exporter for model", e);
-        }
-        return Collections.<String, String> emptyMap();
+    private String toJSON(final Resource page) {
+        return toJSON(findTemplateAndMergeWithPageProperties(page));
     }
 
-    private void flagFromTemplate(Map template) {
-        template.put(FROM_TEMPLATE, Boolean.TRUE);
-        for(Object key: template.keySet()) {
-            Object value = template.get(key);
-            if(value instanceof ArrayList) {
-                ArrayList arr = (ArrayList) value;
-                for(int i = 0; i < arr.size(); i++) {
-                    Object item = arr.get(i);
-                    if(item instanceof Map) {
-                        flagFromTemplate((Map)arr.get(i));
-                    }
-                }
-            }
-        }
-    }
-
-    private Map merge(Map template, Map page) {
-        TreeMap res = new TreeMap();
-        res.putAll(template);
-
-        for (Object key: page.keySet()) {
-            Object value = page.get(key);
-            log.debug("key is {}", key);
-            log.debug("value is {}", value == null ? "null" : value.getClass());
-            if(key.equals(COMPONENT) && value != null && value.equals(NT_UNSTRUCTURED)) continue;
-            if(value instanceof Map) {
-
-            } else if(value instanceof ArrayList) {
-                mergeArrays((ArrayList) res.get(key), (ArrayList) value);
-            } else {
-                res.put(key, value);
-            }
-        }
-        return res;
-    }
-
-    private void mergeArrays(ArrayList target, ArrayList value) {
-        for (Iterator it = value.iterator(); it.hasNext(); ) {
-            Object val = it.next();
-            log.debug("array merge: {}",val.getClass());
-            boolean merged = false;
-            if(val instanceof Map) {
-                Map map = (Map) val;
-                String path = (String) map.get(PATH);
-                if(path != null) {
-                    log.debug("find entry for {}", path);
-                    for (int i = 0; i < target.size(); i++) {
-                        Object t = target.get(i);
-                        if(((Map)t).get(PATH).equals(path)) {
-                            log.debug("found");
-                            target.set(i, merge((Map)t, map));
-                            log.debug("{}", target.get(i));
-                            merged = true;
-                        }
-                    }
-                }
-            }
-
-            if(!target.contains(val) && !merged) {
-                target.add(val);
-            }
-        }
-    }
-
-    private String toJSON(Map template) {
-        StringWriter writer = new StringWriter();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
+    private String toJSON(final Map template) {
+        final ObjectMapper mapper = new ObjectMapper();
+        try (final StringWriter writer = new StringWriter()) {
             mapper.writeValue(writer, template);
-            writer.close();
-        } catch (IOException e) {
+            return writer.toString();
+        } catch (final IOException e) {
             log.error("not able to create string writer", e);
         }
-        return writer.toString();
+
+        return StringUtils.EMPTY;
     }
 
-    @Override
-    public void init(Bindings bindings) {
-        request = (SlingHttpServletRequest) bindings.get(REQUEST);
-        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
-        modelFactory = sling.getService(ModelFactory.class);
-        renderContext.remove();
-        renderContext.set(new RenderContext(request));
+    private Map findTemplateAndMergeWithPageProperties(final Resource page) {
+        log.debug("getMerged({})", page.getPath());
+        try {
+            final Resource content = page.getChild(JCR_CONTENT);
+            if (content == null) {
+            	return emptyMap();
+            }
+
+            final Map properties = modelFactory.exportModelForResource(
+                    content,
+                    JACKSON,
+                    Map.class,
+                    emptyMap());
+            return findTemplateAndMergeWithPageProperties(page, properties);
+        } catch (final ExportException e) {
+            log.error("not able to export model", e);
+        } catch (final MissingExporterException e) {
+            log.error("not able to find exporter for model", e);
+        }
+
+        return emptyMap();
+    }
+
+    private Map<String, String> emptyMap() {
+        return Collections.emptyMap();
+    }
+
+    private Map findTemplateAndMergeWithPageProperties(final Resource page, final Map properties) {
+        String templatePath = (String) properties.get(TEMPLATE);
+        if (StringUtils.isBlank(templatePath)) {
+            templatePath = Optional.of(page)
+                    .map(Resource::getParent)
+                    .filter(parent -> PAGE_PRIMARY_TYPE.equals(parent.getResourceType()))
+                    .map(Resource::getPath)
+                    .filter(path -> path.startsWith(CONTENT_TEMPLATES))
+                    .orElse(null);
+        }
+
+        if (StringUtils.isNotBlank(templatePath)) {
+            final Resource template = resourceResolver.getResource(templatePath);
+            final Map templateProperties = findTemplateAndMergeWithPageProperties(template);
+            flagFromTemplate(templateProperties);
+            return merge(templateProperties, properties);
+        }
+
+        return properties;
+    }
+
+    private void flagFromTemplate(final Map properties) {
+        properties.put(FROM_TEMPLATE, Boolean.TRUE);
+        properties.values().stream()
+                .filter(value -> value instanceof Collection)
+                .forEach(value -> flagFromTemplate((Collection) value));
+    }
+
+    private void flagFromTemplate(final Collection collection) {
+        collection.stream()
+                .filter(item -> item instanceof Map)
+                .forEach(item -> flagFromTemplate((Map)item));
+    }
+
+    private TreeMap merge(final Map target, final Map source) {
+        final TreeMap result = new TreeMap(target);
+        final Set<Map.Entry> entrySet = source.entrySet();
+        for (Map.Entry entry: entrySet) {
+            merge(result, entry);
+        }
+
+        return result;
+    }
+
+    private void merge(final Map target, final Map.Entry source) {
+        final Object key = source.getKey();
+        log.debug("key is {}", key);
+        final Object value = source.getValue();
+        log.debug("value is {}", value == null ? null : value.getClass());
+        if (COMPONENT.equals(key) && NT_UNSTRUCTURED.equals(value)) {
+            return;
+        }
+
+        if (value instanceof List && target.containsKey(key)) {
+            final Object targetValue = target.get(key);
+            if (targetValue instanceof List) {
+                merge((List) targetValue, (List) value);
+            }
+        } else if(!(value instanceof Map)) {
+            target.put(key, value);
+        }
+    }
+
+    private void merge(final List target, final List source) {
+        for (final Object srcItem : source) {
+            log.debug("array merge: {}", srcItem.getClass());
+            boolean merged = false;
+            if (srcItem instanceof Map) {
+                merged = merge(target, (Map)srcItem);
+            }
+
+            if (!merged && !target.contains(srcItem)) {
+                target.add(srcItem);
+            }
+        }
+    }
+
+    private boolean merge(final List target, final Map source) {
+        final String path = (String) source.get(PATH);
+        if (StringUtils.isBlank(path)) {
+            return false;
+        }
+
+        boolean result = false;
+        log.debug("find entry for {}", path);
+        for (int i = 0; i < target.size(); i++) {
+            final Map targetMap = (Map) (target.get(i));
+            if (targetMap.get(PATH).equals(path)) {
+                log.debug("found");
+                final Map merged = merge(targetMap, source);
+                target.set(i, merged);
+                log.debug("{}", merged);
+                result = true;
+            }
+        }
+
+        return result;
     }
 }

@@ -49,7 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Base Class for VIPS Image Transformation made by

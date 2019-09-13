@@ -30,6 +30,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
+import static com.peregrine.it.basic.BasicTestHelpers.convertToList;
 import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
@@ -178,7 +179,8 @@ public class NodesIT
 
         Calendar before = createTimestampAndWait();
         // Replicate the Page and check its new content
-        executeReplication(client, rootFolderPath + "/" + pageName, "local", 200);
+        SlingHttpResponse checkResponse = executeReplication(client, rootFolderPath + "/" + pageName, "local", 200);
+        logger.info("Execute Replication Response: '{}'", convertToMap(checkResponse));
 
         // Check page and template
         jf = new JsonFactory();

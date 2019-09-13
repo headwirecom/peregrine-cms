@@ -46,7 +46,7 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.EQUAL;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -64,10 +64,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Component Definition Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_COMPONENT_DEFINITION
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "Component Definition Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUAL + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUAL + RESOURCE_TYPE_COMPONENT_DEFINITION
     }
 )
 @SuppressWarnings("serial")
@@ -87,7 +87,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         boolean page = false;
         if(resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
             Resource jcrContent = resource.getChild(PerConstants.JCR_CONTENT);
-            if(jcrContent != null) {
+            if(jcrContent == null) {
                 return new ErrorResponse().setErrorCode(404).setErrorMessage("Page with Path: '" + path + "' has no Content Chile Node");
             }
             page = true;
