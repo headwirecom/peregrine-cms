@@ -24,8 +24,8 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
 
     public static final String CHILD = "child";
 
-    private final AdminResourceHandlerService model = new AdminResourceHandlerService();
-    // private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
+    // private final AdminResourceHandlerService model = new AdminResourceHandlerService();
+    private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
 
     private final ResourceRelocation resourceRelocation = mock(ResourceRelocation.class);
     private final BaseResourceHandler baseResourceHandler = mock(BaseResourceHandler.class);

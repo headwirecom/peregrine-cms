@@ -1,5 +1,6 @@
 package com.peregrine.admin.servlets;
 
+import com.peregrine.commons.servlets.AbstractBaseServlet.RedirectResponse;
 import com.peregrine.commons.servlets.AbstractBaseServlet.Response;
 import com.peregrine.commons.servlets.AbstractBaseServlet.TextResponse;
 import com.peregrine.commons.test.mock.PeregrineRequestMock;
@@ -38,5 +39,27 @@ public class AccessServletTest {
         Response response = servlet.handleRequest(mockRequest);
         assertNotNull("No Response from Access Servlet", response);
         assertTrue("Response Type is not of type Text Response", response instanceof TextResponse);
+    }
+
+    @Test
+    public void testIntraCallerException() throws CallException, IOException {
+        String requestPath = "/perapi/admin/createFolder.json";
+        PeregrineRequestMock mockRequest = PeregrineRequestMock.createInstance(requestPath);
+        IntraSlingCaller mockIntraSlingCaller = mock(IntraSlingCaller.class);
+        when(mockIntraSlingCaller.call(any(CallerContext.class))).thenThrow(
+            new IntraSlingCaller.CallException("Test Failure")
+        );
+        CallerContext mockCallerContext = mock(CallerContext.class);
+        when(mockIntraSlingCaller.createContext()).thenReturn(mockCallerContext);
+        when(mockCallerContext.setResourceResolver(any(ResourceResolver.class))).thenReturn(mockCallerContext);
+        when(mockCallerContext.setPath(any(String.class))).thenReturn(mockCallerContext);
+        when(mockCallerContext.setSelectors(any(String.class))).thenReturn(mockCallerContext);
+        when(mockCallerContext.setExtension(any(String.class))).thenReturn(mockCallerContext);
+
+        AccessServlet servlet = new AccessServlet();
+        Whitebox.setInternalState(servlet, "intraSlingCaller", mockIntraSlingCaller);
+        Response response = servlet.handleRequest(mockRequest);
+        assertNotNull("No Response from Access Servlet", response);
+        assertTrue("Response Type is not of type Text Response", response instanceof RedirectResponse);
     }
 }

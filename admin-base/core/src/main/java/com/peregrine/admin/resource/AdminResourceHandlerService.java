@@ -622,7 +622,7 @@ public final class AdminResourceHandlerService
     ) throws RepositoryException, ManagementException {
         properties.remove(PATH);
         final String component = (String) properties.remove(COMPONENT);
-        final Node newNode = createNode(parent, properties);
+        final Node newNode = parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
         if (isEmpty(component)) {
             return newNode;
         }
@@ -640,19 +640,7 @@ public final class AdminResourceHandlerService
             logger.warn("Component: '{}' not found -> ignored", component);
         }
 
-        return newNode;
-    }
-
-    private Node createNode(final Node parent, final Map<String, Object> properties) throws RepositoryException {
-        final Node newNode = parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
-        for (final Entry<String, Object> entry: properties.entrySet()) {
-            final Object val = entry.getValue();
-            if (val instanceof String) {
-                newNode.setProperty(entry.getKey(), (String) val);
-            }
-        }
-
-        return newNode;
+        return writeStringProperties(newNode, properties);
     }
 
     private void copyComponentProperties(
@@ -671,6 +659,7 @@ public final class AdminResourceHandlerService
         }
 
         if (contentNode != null) {
+            logger.trace("Copy Node: '{}' to: '{}'", contentNode, node);
             copyNode(contentNode, node, true);
         }
     }
@@ -731,6 +720,17 @@ public final class AdminResourceHandlerService
 
         logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
         return null;
+    }
+
+    private Node writeStringProperties(final Node target, final Map<String, Object> properties) throws RepositoryException {
+        for (final Entry<String, Object> entry: properties.entrySet()) {
+            final Object val = entry.getValue();
+            if (val instanceof String) {
+                target.setProperty(entry.getKey(), (String) val);
+            }
+        }
+
+        return target;
     }
 
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {

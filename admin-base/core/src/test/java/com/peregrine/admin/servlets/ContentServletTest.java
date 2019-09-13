@@ -23,4 +23,16 @@ public class ContentServletTest {
         assertNotNull("No Response from Servlet", response);
         assertTrue("Response Type is not of type Forward Response", response instanceof ForwardResponse);
     }
+
+    @Test
+    public void testRequestNoExtension() throws Exception {
+        String requestPath = "/perapi/admin/content.json";
+        String contentPath = "/content/test/contentPage";
+        PeregrineRequestMock mockRequest = PeregrineRequestMock.createInstance(requestPath, null, contentPath, false);
+
+        ContentServlet servlet = new ContentServlet();
+        Response response = servlet.handleRequest(mockRequest);
+        assertNotNull("No Response from Servlet", response);
+        assertTrue("Response Type is not of type Forward Response", response instanceof ForwardResponse);
+    }
 }
