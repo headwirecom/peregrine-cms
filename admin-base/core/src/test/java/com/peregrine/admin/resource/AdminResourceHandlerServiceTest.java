@@ -96,9 +96,16 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
         properties.put(STRING, STRING);
         properties.put(INT, 0);
         checkInsertNode(true, false, null);
+        assertEquals(resourceType, child.getProperty(SLING_RESOURCE_TYPE));
         assertEquals(STRING, child.getProperty(STRING));
         assertNull(child.getProperty(INT));
     }
+
+    @Test
+    public void insertNode_addAsChild_doNotOrderBefore_nullVariation() throws ManagementException {
+        properties.put(COMPONENT, RESOURCE_TYPE);
+        checkInsertNode(true, false, null);
+        assertEquals(RESOURCE_TYPE, child.getProperty(SLING_RESOURCE_TYPE));
     }
 
     @Test

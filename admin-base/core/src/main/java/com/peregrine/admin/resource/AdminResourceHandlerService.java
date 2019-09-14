@@ -735,8 +735,8 @@ public final class AdminResourceHandlerService
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
         try {
             // Copy all properties
-            PropertyIterator pi = source.getProperties();
-            while(pi.hasNext()) {
+            final PropertyIterator pi = source.getProperties();
+            while (pi.hasNext()) {
                 Property property = pi.nextProperty();
                 if(!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
                     if(property.isMultiple()) {
