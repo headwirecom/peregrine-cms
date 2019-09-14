@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -31,12 +32,13 @@ public class ResourceMock extends ResourceWrapper {
 
     protected final Map<String, Object> properties = new HashMap<>();
 
-    private final Map<String, Resource> children = new LinkedHashMap<>();
+    private final Map<String, ResourceMock> children = new LinkedHashMap<>();
 
     private final Map<Class, Object> adaptTo = new LinkedHashMap<>();
 
     private String path;
     private ResourceResolver resourceResolver;
+    private Session session;
 
     public ResourceMock(final String name) {
         super(mock(Resource.class, name));
@@ -103,12 +105,29 @@ public class ResourceMock extends ResourceWrapper {
         this.resourceResolver = resourceResolver;
         when(mock.getResourceResolver()).thenReturn(resourceResolver);
         updateResourceResolverGetResource();
+        updateChildren();
         return this;
     }
 
     private void updateResourceResolverGetResource() {
         if (resourceResolver != null) {
             when(resourceResolver.getResource(path)).thenReturn(this);
+        }
+    }
+
+    private void updateChildren() {
+        for (final ResourceMock child : children.values()) {
+            updateChild(child);
+        }
+    }
+
+    private void updateChild(final ResourceMock child) {
+        if (resourceResolver != null) {
+            child.setResourceResolver(resourceResolver);
+        }
+
+        if (session != null) {
+            child.setSession(session);
         }
     }
 
@@ -153,19 +172,20 @@ public class ResourceMock extends ResourceWrapper {
         return children.get(name);
     }
 
-    public final ResourceMock addChild(final String name, final Resource child) {
+    public final ResourceMock addChild(final String name, final ResourceMock child) {
         children.put(name, child);
+        updateChild(child);
         return this;
     }
 
-    public final ResourceMock addChild(final Resource child) {
+    public final ResourceMock addChild(final ResourceMock child) {
         addChild(child.getName(), child);
         return this;
     }
 
     @Override
     public Iterable<Resource> getChildren() {
-        return children.values();
+        return children.values().stream().collect(Collectors.toList());
     }
 
     @Override
@@ -201,12 +221,15 @@ public class ResourceMock extends ResourceWrapper {
         return node;
     }
 
-    public void setSession(final Session session) {
+    public ResourceMock setSession(final Session session) {
+        this.session = session;
         try {
             when(node.getSession()).thenReturn(session);
             when(session.getNode(path)).thenReturn(node);
             when(session.itemExists(path)).thenReturn(true);
             when(session.nodeExists(path)).thenReturn(true);
         } catch (final RepositoryException e) { }
+        updateChildren();
+        return this;
     }
 }
