@@ -102,6 +102,18 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     }
 
     @Test
+    public void insertNode_addAsChild_doNotOrderBefore_nullVariation_loopSuperTypes() throws ManagementException {
+        final ResourceMock component = new ResourceMock("Looped Component");
+        final String resourceType = RESOURCE_TYPE + "_looped";
+        component.setPath(SLASH_APPS_SLASH + resourceType);
+        component.putProperty(SLING_RESOURCE_SUPER_TYPE, resourceType);
+        init(component);
+        properties.put(COMPONENT, resourceType);
+        checkInsertNode(true, false, null);
+        assertEquals(resourceType, child.getProperty(SLING_RESOURCE_TYPE));
+    }
+
+    @Test
     public void insertNode_addAsChild_doNotOrderBefore_nullVariation() throws ManagementException {
         properties.put(COMPONENT, RESOURCE_TYPE);
         checkInsertNode(true, false, null);
