@@ -69,6 +69,7 @@ public class ResourceMock extends ResourceWrapper {
             when(mock.setProperty(anyString(), anyString())).then(setPropertyAnswer);
             when(mock.getProperty(anyString())).then(invocation -> mockNodeProperty((String) invocation.getArguments()[0]));
             when(mock.getProperties()).thenReturn(new PropertyIteratorMock());
+            when(mock.getNodes()).thenReturn(new NodeIteratorMock(children));
             when(mock.hasNode(anyString())).then(invocation -> children.containsKey(invocation.getArguments()[0]));
             when(mock.getNode(anyString())).then(invocation -> children.get(invocation.getArguments()[0]).getNode());
         } catch (final RepositoryException e) { }
@@ -241,16 +242,14 @@ public class ResourceMock extends ResourceWrapper {
 
     private final class PropertyIteratorMock extends PropertyIteratorMockBase {
 
-        private final Iterator<String> keys = properties.keySet().iterator();
+        public PropertyIteratorMock() {
+            super(properties.keySet().iterator());
+        }
 
         @Override
         public Property nextProperty() {
             return mockNodeProperty(keys.next());
         }
-
-        @Override
-        public boolean hasNext() {
-            return keys.hasNext();
-        }
     }
+
 }
