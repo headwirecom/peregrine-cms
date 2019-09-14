@@ -25,8 +25,8 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     private static final String STRING = "string";
     private static final String INT = "int";
 
-    // private final AdminResourceHandlerService model = new AdminResourceHandlerService();
-    private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
+    private final AdminResourceHandlerService model = new AdminResourceHandlerService();
+    // private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
 
     private final ResourceRelocation resourceRelocation = mock(ResourceRelocation.class);
     private final BaseResourceHandler baseResourceHandler = mock(BaseResourceHandler.class);
