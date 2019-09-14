@@ -1,31 +1,33 @@
 package com.peregrine.commons.test.mock;
 
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ResourceMock extends ResourceWrapper {
 
     protected static final String DEFAULT_NAME = null;
+
+    protected final String debugName;
 
     protected final Resource mock;
     protected final Node node;
@@ -40,10 +42,11 @@ public class ResourceMock extends ResourceWrapper {
     private ResourceResolver resourceResolver;
     private Session session;
 
-    public ResourceMock(final String name) {
-        super(mock(Resource.class, name));
+    public ResourceMock(final String debugName) {
+        super(mock(Resource.class, debugName));
+        this.debugName = debugName;
         mock = getResource();
-        node = mockNode(name);
+        node = mockNode(debugName);
         final ValueMap valueMap = new ValueMapDecorator(properties);
         when(mock.getValueMap()).thenReturn(valueMap);
     }
@@ -65,6 +68,9 @@ public class ResourceMock extends ResourceWrapper {
         try {
             when(mock.setProperty(anyString(), anyString())).then(setPropertyAnswer);
             when(mock.getProperty(anyString())).then(invocation -> mockNodeProperty((String) invocation.getArguments()[0]));
+            when(mock.getProperties()).thenReturn(new PropertyIteratorMock());
+            when(mock.hasNode(anyString())).then(invocation -> children.containsKey(invocation.getArguments()[0]));
+            when(mock.getNode(anyString())).then(invocation -> children.get(invocation.getArguments()[0]).getNode());
         } catch (final RepositoryException e) { }
 
         return mock;
@@ -231,5 +237,20 @@ public class ResourceMock extends ResourceWrapper {
         } catch (final RepositoryException e) { }
         updateChildren();
         return this;
+    }
+
+    private final class PropertyIteratorMock extends PropertyIteratorMockBase {
+
+        private final Iterator<String> keys = properties.keySet().iterator();
+
+        @Override
+        public Property nextProperty() {
+            return mockNodeProperty(keys.next());
+        }
+
+        @Override
+        public boolean hasNext() {
+            return keys.hasNext();
+        }
     }
 }
