@@ -1,24 +1,12 @@
 package com.peregrine.commons.test.mock;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import javax.jcr.PropertyIterator;
+import java.util.Iterator;
 
-public abstract class PropertyIteratorMockBase implements PropertyIterator {
+public abstract class PropertyIteratorMockBase extends RangeIteratorMockBase implements PropertyIterator {
 
-    @Override
-    public void skip(long skipNum) {
-        throw new NotImplementedException("Mock not implemented");
-    }
-
-    @Override
-    public long getSize() {
-        throw new NotImplementedException("Mock not implemented");
-    }
-
-    @Override
-    public long getPosition() {
-        throw new NotImplementedException("Mock not implemented");
+    public PropertyIteratorMockBase(final Iterator<String> keys) {
+        super(keys);
     }
 
     @Override
