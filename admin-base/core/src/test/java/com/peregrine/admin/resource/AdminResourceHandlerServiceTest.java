@@ -31,7 +31,6 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     private final ResourceRelocation resourceRelocation = mock(ResourceRelocation.class);
     private final BaseResourceHandler baseResourceHandler = mock(BaseResourceHandler.class);
 
-    private final Node resourceNode = resource.getNode();
     private final ResourceMock child = new ResourceMock("Child");
 
     private final Map<String, Object> properties = new HashMap<>();
@@ -41,6 +40,7 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
         PrivateAccessor.setField(model, "resourceRelocation", resourceRelocation);
         PrivateAccessor.setField(model, "baseResourceHandler", baseResourceHandler);
         init(child);
+        final Node resourceNode = resource.getNode();
         when(resourceNode.addNode(any(), any())).then(invocation -> {
             final String relPath = (String) invocation.getArguments()[0];
             child.setPath(resource.getPath() + SLASH + relPath);
