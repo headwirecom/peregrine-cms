@@ -13,6 +13,7 @@ import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Session;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class SlingResourcesTest extends AbstractTest {
 
     public static final String PRIMARY_TYPE = "per:Type";
     public static final String RESOURCE_TYPE = "per/component";
+    public static final String SLASH_CONTENT = SLASH + "content";
 
     protected final ResourceMock root = new ResourceMock("Root");
     protected final ResourceMock parent = new ResourceMock("Parent");
@@ -34,11 +36,14 @@ public class SlingResourcesTest extends AbstractTest {
 
     protected final List<Resource> resources = new LinkedList<>();
 
-    protected final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class);
-    protected final ResourceResolver resourceResolver = mock(ResourceResolver.class);
+    protected final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName("Resolver Factory"));
+    protected final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName("Resource Resolver"));
+    protected final Session session = mock(Session.class, fullName("Session"));
+
+    protected final ResourceMock component = new ResourceMock("Per Component");
 
     public SlingResourcesTest() {
-        String path = SLASH + "content";
+        String path = SLASH_CONTENT;
         root.setPath(path);
         path += SLASH + "parent";
         parent.setPath(path);
@@ -67,6 +72,9 @@ public class SlingResourcesTest extends AbstractTest {
         resources.add(page);
         resources.add(content);
         resources.add(resource);
+
+        component.setPath("/apps/" + RESOURCE_TYPE);
+        init(component);
     }
 
     public Logger getLogger() {
@@ -75,6 +83,11 @@ public class SlingResourcesTest extends AbstractTest {
 
     protected <Mock extends ResourceMock> Mock init(final Mock mock) {
         mock.setResourceResolver(resourceResolver);
+        mock.setSession(session);
         return mock;
+    }
+
+    private String fullName(final String name) {
+        return SlingResourcesTest.class.getSimpleName() + " " + name;
     }
 }

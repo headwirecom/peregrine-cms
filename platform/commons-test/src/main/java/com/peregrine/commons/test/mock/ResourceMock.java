@@ -20,6 +20,7 @@ import org.mockito.stubbing.Answer;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 public class ResourceMock extends ResourceWrapper {
 
@@ -34,6 +35,7 @@ public class ResourceMock extends ResourceWrapper {
 
     private final Map<Class, Object> adaptTo = new LinkedHashMap<>();
 
+    private String path;
     private ResourceResolver resourceResolver;
 
     public ResourceMock(final String name) {
@@ -60,6 +62,7 @@ public class ResourceMock extends ResourceWrapper {
         };
         try {
             when(mock.setProperty(anyString(), anyString())).then(setPropertyAnswer);
+            when(mock.getProperty(anyString())).then(invocation -> mockNodeProperty((String) invocation.getArguments()[0]));
         } catch (final RepositoryException e) { }
 
         return mock;
@@ -105,7 +108,7 @@ public class ResourceMock extends ResourceWrapper {
 
     private void updateResourceResolverGetResource() {
         if (resourceResolver != null) {
-            when(resourceResolver.getResource(getPath())).thenReturn(this);
+            when(resourceResolver.getResource(path)).thenReturn(this);
         }
     }
 
@@ -123,6 +126,7 @@ public class ResourceMock extends ResourceWrapper {
     }
 
     public final ResourceMock setPath(final String path) {
+        this.path = path;
         when(mock.getPath()).thenReturn(path);
         try {
             when(node.getPath()).thenReturn(path);
@@ -136,7 +140,7 @@ public class ResourceMock extends ResourceWrapper {
 
     @Override
     public final String getName() {
-        return StringUtils.substringAfterLast(getPath(), SLASH);
+        return StringUtils.substringAfterLast(path, SLASH);
     }
 
     public final ResourceMock setParent(final Resource parent) {
@@ -195,5 +199,14 @@ public class ResourceMock extends ResourceWrapper {
 
     public Node getNode() {
         return node;
+    }
+
+    public void setSession(final Session session) {
+        try {
+            when(node.getSession()).thenReturn(session);
+            when(session.getNode(path)).thenReturn(node);
+            when(session.itemExists(path)).thenReturn(true);
+            when(session.nodeExists(path)).thenReturn(true);
+        } catch (final RepositoryException e) { }
     }
 }
