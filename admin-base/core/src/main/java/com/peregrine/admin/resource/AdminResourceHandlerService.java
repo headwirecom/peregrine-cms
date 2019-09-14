@@ -629,14 +629,10 @@ public final class AdminResourceHandlerService
         newNode.setProperty(SLING_RESOURCE_TYPE, component);
         // If there is a component then we check the component node and see if there is a child jcr:content node
         // If found we copy this over into our newly created node
-        try {
-            if (component.startsWith(SLASH)) {
-                logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
-            } else {
-                copyComponentProperties(newNode, variation);
-            }
-        } catch(final PathNotFoundException e) {
-            logger.warn("Component: '{}' not found -> ignored", component);
+        if (component.startsWith(SLASH)) {
+            logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
+        } else {
+            copyComponentProperties(newNode, variation);
         }
 
         return writeStringProperties(newNode, properties);
