@@ -40,7 +40,7 @@ public class SlingResourcesTest extends AbstractTest {
     protected final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName("Resource Resolver"));
     protected final Session session = mock(Session.class, fullName("Session"));
 
-    protected final ResourceMock component = new ResourceMock("Per Component");
+    protected final PageMock component = new PageMock("Per Component");
 
     public SlingResourcesTest() {
         String path = SLASH_CONTENT;
