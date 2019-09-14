@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,6 +141,19 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
         component.putProperty(SLING_RESOURCE_SUPER_TYPE, resourceType);
         init(component);
         properties.put(COMPONENT, resourceType);
+        checkInsertNode(true, false, null);
+        assertEquals(resourceType, child.getProperty(SLING_RESOURCE_TYPE));
+    }
+
+    @Test
+    public void insertNode_addAsChild_doNotOrderBefore_nullVariation_throwExceptionOnSuperType() throws ManagementException, RepositoryException {
+        final ResourceMock derivedComponent = new ResourceMock("Derived Component");
+        final String resourceType = RESOURCE_TYPE + "_derived";
+        derivedComponent.setPath(SLASH_APPS_SLASH + resourceType);
+        derivedComponent.putProperty(SLING_RESOURCE_SUPER_TYPE, RESOURCE_TYPE);
+        init(derivedComponent);
+        properties.put(COMPONENT, resourceType);
+        when(session.getNode(component.getPath())).thenThrow(PathNotFoundException.class);
         checkInsertNode(true, false, null);
         assertEquals(resourceType, child.getProperty(SLING_RESOURCE_TYPE));
     }
