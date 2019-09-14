@@ -5,11 +5,6 @@ import com.peregrine.commons.test.mock.ResourceMock;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +22,7 @@ public class SlingResourcesTest extends AbstractTest {
     public static final String PRIMARY_TYPE = "per:Type";
     public static final String RESOURCE_TYPE = "per/component";
     public static final String SLASH_CONTENT = SLASH + "content";
+    public static final String SLASH_APPS_SLASH = "/apps/";
 
     protected final ResourceMock root = new ResourceMock("Root");
     protected final ResourceMock parent = new ResourceMock("Parent");
@@ -73,7 +69,7 @@ public class SlingResourcesTest extends AbstractTest {
         resources.add(content);
         resources.add(resource);
 
-        component.setPath("/apps/" + RESOURCE_TYPE);
+        component.setPath(SLASH_APPS_SLASH + RESOURCE_TYPE);
         init(component);
     }
 

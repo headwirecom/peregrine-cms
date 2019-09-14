@@ -66,8 +66,11 @@ public class ResourceMock extends ResourceWrapper {
             return mockNodeProperty(key);
         };
         try {
+            when(mock.hasProperty(anyString())).then(invocation ->
+                    properties.containsKey((invocation.getArguments()[0])));
             when(mock.setProperty(anyString(), anyString())).then(setPropertyAnswer);
-            when(mock.getProperty(anyString())).then(invocation -> mockNodeProperty((String) invocation.getArguments()[0]));
+            when(mock.getProperty(anyString())).then(invocation ->
+                    mockNodeProperty((String) invocation.getArguments()[0]));
             when(mock.getProperties()).thenReturn(new PropertyIteratorMock());
             when(mock.getNodes()).thenReturn(new NodeIteratorMock(children));
             when(mock.hasNode(anyString())).then(invocation -> children.containsKey(invocation.getArguments()[0]));
