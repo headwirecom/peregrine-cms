@@ -34,13 +34,14 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_TENANTS;
+import static com.peregrine.admin.util.AdminPathConstants.JSON_EXTENSION;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_LIST_TENANTS;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -51,11 +52,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "List Tenants Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_LIST_TENANTS,
-        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX + "List Tenants Servlet",
+        SERVICE_VENDOR + EQUAL + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUAL + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUAL + RESOURCE_TYPE_LIST_TENANTS,
+        SLING_SERVLET_SELECTORS + EQUAL + JSON_EXTENSION
     }
 )
 @SuppressWarnings("serial")

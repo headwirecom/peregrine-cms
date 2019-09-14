@@ -330,6 +330,18 @@ public class BasicTestHelpers {
         compareJson(expected, actual);
     }
 
+    public static void checkServletByJson(SlingClient client, String path, String expectedJson) throws ClientException, IOException {
+        SlingHttpResponse response = client.doGet(path, 200);
+        assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
+        String jsonResponse = response.getContent();
+        Map expected = convertToMap(expectedJson);
+        Map actual = convertToMap(jsonResponse);
+        logger.info("Expected Map: '{}'", expected);
+        logger.info("Actual Map: '{}'", actual);
+        compareJson(expected, actual);
+
+    }
+
     public static void compareJson(Map<Object, Object> expected, Map actual) throws IOException {
         compareJson(expected, actual, "", false);
     }
