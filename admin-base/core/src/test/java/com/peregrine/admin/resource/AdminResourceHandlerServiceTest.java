@@ -2,6 +2,7 @@ package com.peregrine.admin.resource;
 
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.test.SlingResourcesTest;
+import com.peregrine.commons.test.mock.PageMock;
 import com.peregrine.commons.test.mock.ResourceMock;
 import com.peregrine.rendition.BaseResourceHandler;
 import junitx.util.PrivateAccessor;
@@ -25,6 +26,7 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     private static final String CHILD = "child";
     private static final String STRING = "string";
     private static final String INT = "int";
+    private static final String MY_VARIATION = "myVariation";
 
     private final AdminResourceHandlerService model = new AdminResourceHandlerService();
     // private final AdminResourceHandlerServiceOld model = new AdminResourceHandlerServiceOld();
@@ -35,6 +37,8 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     private final ResourceMock child = new ResourceMock("Child");
 
     private final Map<String, Object> properties = new HashMap<>();
+
+    private final PageMock variation = new PageMock();
 
     @Before
     public void setUp() throws NoSuchFieldException, RepositoryException {
@@ -47,6 +51,8 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
             child.setPath(resource.getPath() + SLASH + relPath);
             return child.getNode();
         });
+
+        init(variation);
     }
 
     @Test
@@ -170,6 +176,17 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
         properties.put(COMPONENT, RESOURCE_TYPE);
         component.getContent().putProperty(VARIATIONS, true);
         checkInsertNode(true, false, null);
+        assertEquals(RESOURCE_TYPE, child.getProperty(SLING_RESOURCE_TYPE));
+    }
+
+    @Test
+    public void insertNode_addAsChild_doNotOrderBefore_missingVariationContent() throws ManagementException, RepositoryException {
+        properties.put(COMPONENT, RESOURCE_TYPE);
+        final ResourceMock content = component.getContent();
+        content.putProperty(VARIATIONS, true);
+        content.addChild("first", variation);
+        when(variation.getNode().hasNode(any())).thenReturn(false);
+        checkInsertNode(true, false, MY_VARIATION);
         assertEquals(RESOURCE_TYPE, child.getProperty(SLING_RESOURCE_TYPE));
     }
 
