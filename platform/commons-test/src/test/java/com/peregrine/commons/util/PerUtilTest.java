@@ -1,16 +1,10 @@
 package com.peregrine.commons.util;
 
-import com.peregrine.commons.test.AbstractTest;
-import com.peregrine.commons.test.mock.PageMock;
-import com.peregrine.commons.test.mock.ResourceMock;
+import com.peregrine.commons.test.SlingResourcesTest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -34,55 +28,14 @@ import static org.mockito.Mockito.when;
 
 public class PerUtilTest
     /* To avoid circular dependencies these test cannot use commons-test **/
-    extends AbstractTest
+    extends SlingResourcesTest
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(PerUtilTest.class.getName());
-
-    public Logger getLogger() {
-        return logger;
-    }
-
-    public static final String PRIMARY_TYPE = "per:Type";
-    public static final String RESOURCE_TYPE = "per/component";
-    private final ResourceMock root = new ResourceMock();
-    private final ResourceMock parent = new ResourceMock();
-    private final PageMock page = new PageMock();
-    private final ResourceMock content = page.getContent();
-    private final ResourceMock resource = new ResourceMock();
-
-    private final List<Resource> resources = new LinkedList<>();
     private final int initialResourcesSize;
-
-    private final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class);
-    private final ResourceResolver resourceResolver = mock(ResourceResolver.class);
 
     private final PerUtil.ResourceChecker resourceChecker = mock(PerUtil.ResourceChecker.class);
 
     public PerUtilTest() {
-        String path = SLASH + "content";
-        root.setPath(path);
-        path += SLASH + "parent";
-        parent.setPath(path);
-        path += SLASH + "page";
-        page.setPath(path);
-        path = content.getPath();
-        path += SLASH + "resource";
-        resource.setPath(path);
-
-        parent.setParent(root);
-        page.setParent(parent);
-        resource.setParent(content);
-
-        root.addChild(parent);
-        parent.addChild(page);
-        content.addChild(resource);
-
-        resources.add(root);
-        resources.add(parent);
-        resources.add(page);
-        resources.add(content);
-        resources.add(resource);
         initialResourcesSize = resources.size();
     }
 
