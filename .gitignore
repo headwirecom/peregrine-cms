@@ -15,3 +15,5 @@ out
 package-lock.json
 npm-debug.log
 .DS_Store
+*.factorypath
+nohup.out

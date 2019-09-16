@@ -210,7 +210,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     walkTreeAndLoad(data)
 
     if(data.description) document.getElementsByTagName('meta').description.content=data.description
-    if(data.tags) document.getElementsByTagName('meta').keywords.content=data.tags
+    if(data.tags) document.getElementsByTagName('meta').keywords.content=data.tags.map( tag => tag.name )
 
     if(data.suffixToParameter) {
         const pathInfo = makePathInfo(path)
@@ -265,37 +265,40 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     })
 }
 
-function loadContentImpl(path, firstTime, fromPopState) {
+function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
 
-    console.log(path)
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
     log.fine(dataUrl)
     getPerView().status = undefined;
-    axios.get(dataUrl).then(function (response) {
-        log.fine('got data for', path)
-
-        // if(response.data.template) {
-        //
-        //     var pageData = response.data
-        //
-        //     axios.get(response.data.template+'.data.json').then(function(response) {
-        //
-        //         var templateData = response.data
-        //         var mergedData = merge(templateData, pageData)
-        //         //merging nav, footer and content together with pageData
-        //         processLoadedContent(mergedData, path, firstTime, fromPopState)
-        //     }).catch(function(error) {
-        //         log.error("error getting %s %j", dataUrl, error);
-        //     })
-        // } else {
-        processLoadedContent(response.data, path, firstTime, fromPopState)
-        // }
-
-    }).catch(function(error) {
-        log.error("error getting %s %j", dataUrl, error);
-    });
+    if(onPage) {
+        processLoadedContent(JSON.parse(document.getElementById('perPage').innerHTML), path, firstTime, fromPopState)
+    } else {
+        axios.get(dataUrl).then(function (response) {
+            log.fine('got data for', path)
+    
+            // if(response.data.template) {
+            //
+            //     var pageData = response.data
+            //
+            //     axios.get(response.data.template+'.data.json').then(function(response) {
+            //
+            //         var templateData = response.data
+            //         var mergedData = merge(templateData, pageData)
+            //         //merging nav, footer and content together with pageData
+            //         processLoadedContent(mergedData, path, firstTime, fromPopState)
+            //     }).catch(function(error) {
+            //         log.error("error getting %s %j", dataUrl, error);
+            //     })
+            // } else {
+            processLoadedContent(response.data, path, firstTime, fromPopState)
+            // }
+    
+        }).catch(function(error) {
+            log.error("error getting %s %j", dataUrl, error);
+        });    
+    }
 }
 
 function isAuthorModeImpl() {
@@ -307,6 +310,15 @@ function isAuthorModeImpl() {
     
 }
 
+function getAdminAppNodeImpl(path) {
+    log.fine('getAdminAppState: ' + path)
+
+    if(window && window.parent && window.parent.$perAdminApp) {
+        return window.parent.$perAdminApp.getNodeFromViewOrNull(path)
+    }
+    return null
+}
+
 var peregrineApp = {
 
     registerView: function(view) {
@@ -315,6 +327,10 @@ var peregrineApp = {
 
     loadContent: function(path, firstTime = false, fromPopState = false) {
         loadContentImpl(path, firstTime, fromPopState)
+    },
+
+    loadContentFrom: function(id, path, firstTime = false, fromPopState = false) {
+        loadContentImpl(path, firstTime, fromPopState, true)
     },
 
     logger: function(name) {
@@ -334,6 +350,16 @@ var peregrineApp = {
 
     getView: function() {
        return getPerView()
+    },
+
+    getAdminAppNode(path) {
+       return getAdminAppNodeImpl(path);
+    },
+
+    isPublicFacingSite() {
+        const server = window.location.hostname;
+        const domains = getPerView().page.domains || [];
+        return (domains.indexOf(server) >= 0)
     }
 
 }

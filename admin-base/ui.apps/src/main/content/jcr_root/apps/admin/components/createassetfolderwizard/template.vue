@@ -49,7 +49,6 @@
         data:
             function() {
                 let formModelAssets = $perAdminApp.getNodeFromView('/state/tools/assets')
-                console.log('formModelAssets: ', formModelAssets)
                 return {
                     formmodel: {
                         path: formModelAssets,
@@ -81,7 +80,6 @@
         methods: {
             onComplete: function() {
                 let payload = { parent: this.formmodel.path, name: this.formmodel.name }
-                console.log('createFolder payload: ', payload)
                 $perAdminApp.stateAction('createAssetFolder', payload)
             },
             nameAvailable(value) {

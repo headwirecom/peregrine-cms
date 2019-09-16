@@ -228,7 +228,7 @@
                     </dl>
                 </template>
                 <div v-else class="no-asset-selected">
-                    <span>no asset selected</span>
+                    <span>{{ $i18n('no asset selected') }}</span>
                     <i class="material-icons">info</i>
                 </div>
             </div>
@@ -274,7 +274,6 @@
                 let nodes = view.admin.pathBrowser
                 if(nodes && this.path) {
                     let nodesFromPath = $perAdminApp.findNodeFromPath(nodes, this.path)
-                    console.log('nodesFromPath: ', nodesFromPath)
                     return nodesFromPath
                 }
                 return {}
@@ -290,16 +289,12 @@
             getImagesLoadedCbs: function() {
               return {
                 progress: (instance, img ) => {
-                  console.log('progress')
                 },
                 always: (instance) => {
-                  console.log('always')
                 },
                 done: (instance) => {
-                  console.log('done')
                 },
                 fail: (instance) => {
-                  console.log('fail')
                 }
               }
             },

@@ -444,6 +444,18 @@ class PerAdminImpl {
         })
     }
 
+    deleteSite(target) {
+        let name = target.name;
+        let root = '/content/sites';
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('name', name);
+            updateWithForm('/admin/deleteSite.json', data)
+                .then( (data) => this.populateNodesForBrowser(root) )
+                .then( () => resolve() )
+        })
+    }
+
     renamePage(path, newName) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
@@ -504,6 +516,15 @@ class PerAdminImpl {
         })
     }
 
+    deleteFile(path) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
+    }
+
     uploadFiles(path, files, cb) {
         var config = {
           onUploadProgress: progressEvent => {
@@ -548,6 +569,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             populateView('/state', 'editorVisible', false)
             populateView('/state', 'rightPanelVisible', true)
+            populateView('/state', 'editor', {})
             resolve()
         })
     }
@@ -563,10 +585,15 @@ class PerAdminImpl {
                     nodeData = component.methods.beforeSave(nodeData)
                 }
             }
+            if(nodeData.path === '/jcr:content') {
+                nodeData['jcr:primaryType'] = 'per:PageContent'
+            } else {
+                nodeData['jcr:primaryType'] = 'nt:unstructured'
+            }
+
             delete nodeData['children']
             delete nodeData['path']
             delete nodeData['component']
-            nodeData['jcr:primaryType'] = 'nt:unstructured'
             if(node.component) {
                 nodeData['sling:resourceType'] = node.component.split('-').join('/')
             }

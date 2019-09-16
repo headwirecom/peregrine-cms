@@ -102,6 +102,27 @@ public class NodesServlet extends AbstractBaseServlet {
         return answer;
     }
 
+    private void convertResource(JsonResponse json, Resource resource, boolean path) throws IOException {
+        Iterable<Resource> children = resource.getChildren();
+        for(Resource child : children) {
+            json.writeObject();
+            json.writeAttribute(NAME, child.getName());
+            if(path) {
+                json.writeAttribute(PATH, child.getPath());
+            }
+            for (String key: child.getValueMap().keySet()) {
+                if(key.indexOf(":") < 0) {
+                    json.writeAttribute(key, child.getValueMap().get(key, String.class));
+                }
+            }
+            json.writeClose();
+        }
+    }
+
+    private void convertResource(JsonResponse json, Resource resource) throws IOException {
+        convertResource(json, resource, false);
+    }
+
     private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
         String path = "";
         for(int i = 1; i <= pos; i++) {
@@ -165,8 +186,18 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             String component = PerUtil.getComponentNameFromResource(content);
             json.writeAttribute(COMPONENT, component);
-        } else {
+            convertNamedChild(json, content, TAGS);
+            convertNamedChild(json, content, METAPROPERTIES);} else {
             logger.debug("No Content Child found for: '{}'", resource.getPath());
+        }
+    }
+
+    private void convertNamedChild(JsonResponse json, Resource content, String name) throws IOException {
+        Resource res = content.getChild(name);
+        if (res != null) {
+            json.writeArray(name);
+            convertResource(json, res, true);
+            json.writeClose();
         }
     }
 

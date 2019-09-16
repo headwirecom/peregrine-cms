@@ -185,4 +185,21 @@ public class ActionModel extends AbstractComponent {
 
     //GEN]
 
-}
+    /* {"type":"string","source":"inject"} */
+    @Inject
+    private String classes;
+
+    /* {"type":"string","source":"inject"} */
+    public String getClasses() {
+      return classes;
+      }
+
+      /* {"type":"string","source":"inject"} */
+    @Inject
+    private String visibility;
+
+    /* {"type":"string","source":"inject"} */
+    public String getVisibility() {
+      return visibility;
+      }
+    }

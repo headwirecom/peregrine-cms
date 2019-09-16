@@ -7,6 +7,28 @@
     "placeholder": "brand name"
   },
   {
+    "type": "pathbrowser",
+    "browserRoot": "/content/assets",
+    "placeholder": "icon location",
+    "label": "Site Icons Location",
+    "model": "siteIcons"
+  },
+  {
+    "type": "collection",
+    "title": "Prefetch Hostnames",
+    "model": "prefetchDNS",
+    "multifield": false,
+    "fields" : [
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "Domain Name to resolve",
+        "model": "prefetchDNS"
+      }
+    ],
+    "items": []
+  },
+  {
     "type": "collection",
     "title": "Site JS Files",
     "model": "siteJS",

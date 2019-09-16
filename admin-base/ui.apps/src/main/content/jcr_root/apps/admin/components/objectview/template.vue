@@ -28,7 +28,7 @@
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
-                        title="rename object"
+                        v-bind:title="$i18n('rename object')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameObject">
                         <admin-components-iconrename></admin-components-iconrename>
@@ -44,7 +44,7 @@
                 <!--</li>-->
                 <li>
                     <a  href="#!"
-                        title="delete object"
+                        v-bind:title="$i18n('delete object')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="deleteObject">
                         <i class="material-icons">delete</i>
@@ -52,13 +52,13 @@
                 </li>
                 <li>
                     <a  v-if="!edit"
-                        title="edit object" 
+                        v-bind:title="$i18n('edit object')"
                         class="waves-effect waves-light" 
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
                     </a>
                     <a  v-else
-                        title="preview object" 
+                        v-bind:title="$i18n('preview object')"
                         class="waves-effect waves-light" 
                         v-on:click.stop.prevent="onCancel">
                         <i class="material-icons">info</i>
@@ -88,7 +88,7 @@
                     <button  
                         v-if="edit"
                         type="button"
-                        title="save object" 
+                        v-bind:title="$i18n('save object')"
                         v-bind:disabled="!valid" 
                         class="btn btn-raised waves-effect waves-light right" 
                         v-on:click.stop.prevent="onOk">
@@ -99,7 +99,7 @@
         </template>
 
         <div v-if="currentObject === undefined || schema === undefined" class="explorer-preview-empty">
-            <span>no object selected</span>
+            <span>{{ $i18n('no object selected') }}</span>
             <i class="material-icons">info</i>
         </div>
     </div>
@@ -174,7 +174,7 @@
           },
           onOk: function() {
             let {data,show} = this.currentObject;
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
 
             //Find child nodes with subchildren for our edited object
             for ( const key in data) {
@@ -225,7 +225,6 @@
                 const type = 'folder'
                 const assetPath = $perAdminApp.getNodeFromView('/state/tools/object').show
                 const selectedPath = assetPath.substr(0, assetPath.lastIndexOf('/'))
-                console.log(selectedPath)
                 let currentPath
                 // is selectedPath the root dir?
                 selectedPath === root
@@ -237,7 +236,6 @@
                     current: currentPath,
                     selected: selectedPath
                 }
-                console.log(initModalState)
                 const options = {
                     complete: () => {
                         const newPath = $perAdminApp.getNodeFromView('/state/pathbrowser/selected')

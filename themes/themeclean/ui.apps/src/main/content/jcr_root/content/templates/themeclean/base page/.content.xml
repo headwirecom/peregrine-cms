@@ -60,7 +60,7 @@
             bgcolor="#eeeeee"
             bottompadding="0"
             colorscheme="light"
-            copyright="Copyright 2017 Peregrine - All Rights Reserved"
+            copyright="Copyright 2019 Peregrine - All Rights Reserved"
             logo="/content/assets/themeclean/images/peregrine-logo.png"
             logosize="60"
             logourl="http://www.peregrine-cms.com"
@@ -81,11 +81,6 @@
                     title="Location"/>
             </columns>
             <icons jcr:primaryType="nt:unstructured">
-                <icons0 jcr:primaryType="nt:unstructured" url="https://www.facebook.com/" icon="fontAwesome:fa fa-facebook:"/>
-                <icons1 jcr:primaryType="nt:unstructured" url="https://twitter.com/" icon="fontAwesome:fa fa-twitter:"/>
-                <icons2 jcr:primaryType="nt:unstructured" url="https://www.instagram.com/" icon="fontAwesome:fa fa-instagram:"/>
-                <icons3 jcr:primaryType="nt:unstructured" url="https://www.pinterest.com/" icon="fontAwesome:fa fa-pinterest-p:"/>
-                <icons4 jcr:primaryType="nt:unstructured" url="https://www.youtube.com/" icon="fontAwesome:fa fa-youtube-play:"/>
             </icons>
         </footer>
     </jcr:content>
