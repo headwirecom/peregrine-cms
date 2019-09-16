@@ -754,6 +754,10 @@ public final class PerUtil {
         return object == null ? null : object.toString();
     }
 
+    public static Object getClassOrNull(final Object value) {
+        return value == null ? null : value.getClass();
+    }
+
     /** Resource Check interface **/
     public interface ResourceChecker {
         /** @return True if the resource checks out **/

@@ -7,13 +7,16 @@ import com.peregrine.commons.test.mock.ResourceMock;
 import com.peregrine.rendition.BaseResourceHandler;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.*;
@@ -83,12 +86,14 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     public void deleteResource() {
     }
 
-    private void checkInsertNode(
+    private ResourceMock checkInsertNode(
             final boolean addAsChild,
             final boolean orderBefore,
             final String variation
     ) throws ManagementException {
-        assertEquals(child, model.insertNode(resource, properties, addAsChild, orderBefore, variation));
+        final ResourceMock result = (ResourceMock) model.insertNode(this.resource, properties, addAsChild, orderBefore, variation);
+        assertEquals(child, result);
+        return result;
     }
 
     @Test
@@ -191,13 +196,79 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     }
 
     @Test
-    public void insertNode_addAsChild_doNotOrderBefore_properVariation() throws ManagementException, RepositoryException {
-        properties.put(COMPONENT, RESOURCE_TYPE);
+    public void insertNode_addAsChild_doNotOrderBefore_properVariation() throws ManagementException {
         final ResourceMock content = component.getContent();
         content.putProperty(VARIATIONS, true);
         content.addChild(MY_VARIATION, variation);
-        checkInsertNode(true, false, MY_VARIATION);
+
+        properties.put(COMPONENT, RESOURCE_TYPE);
+        properties.put(JCR_PRIMARY_TYPE, NT_UNSTRUCTURED);
+        final String samplePropertyKey = "x";
+        final String samplePropertyValue = "y";
+        properties.put(samplePropertyKey, samplePropertyValue);
+        final String intPropertyKey = "int";
+        properties.put(intPropertyKey, 0);
+        final String nullPropertyKey = "null";
+        properties.put(nullPropertyKey, null);
+
+        properties.put("missing-grandchild", new ArrayList<>());
+
+        ResourceMock grandchild = init(new ResourceMock("Grand Child"));
+        final String grandchildName = "grandchild";
+        child.addChild(grandchildName, grandchild);
+        final List grandchildList = new ArrayList<>();
+        grandchildList.add(null);
+        grandchildList.add(0);
+        properties.put(grandchildName, grandchildList);
+
+        final String namedGreatGrandchildName = "named-great-grandchild";
+        ResourceMock greatGrandchild = init(new ResourceMock("Great Grand Child (Named)"));
+        grandchild.addChild(namedGreatGrandchildName, greatGrandchild);
+        Map<String, Object> greatGrandchildProperties = new HashMap<>();
+        grandchildList.add(greatGrandchildProperties);
+        greatGrandchildProperties.put(NAME, namedGreatGrandchildName);
+        greatGrandchildProperties.put(samplePropertyKey, samplePropertyValue);
+
+        final String pathGreatGrandchildName = "path-great-grandchild";
+        greatGrandchild = init(new ResourceMock("Great Grand Child (path)"));
+        grandchild.addChild(pathGreatGrandchildName, greatGrandchild);
+        greatGrandchildProperties = new HashMap<>();
+        grandchildList.add(greatGrandchildProperties);
+        greatGrandchildProperties.put(PATH, SLASH_APPS_SLASH + pathGreatGrandchildName);
+        greatGrandchildProperties.put(samplePropertyKey, samplePropertyValue);
+
+        final String missingGreatGrandchildName = "missing-great-grandchild";
+        greatGrandchildProperties = new HashMap<>();
+        grandchildList.add(greatGrandchildProperties);
+        greatGrandchildProperties.put(NAME, missingGreatGrandchildName);
+
+        greatGrandchildProperties = new HashMap<>();
+        grandchildList.add(greatGrandchildProperties);
+        greatGrandchildProperties.put(NAME, EMPTY);
+
+        greatGrandchildProperties = new HashMap<>();
+        grandchildList.add(greatGrandchildProperties);
+
+        final ResourceMock result = checkInsertNode(true, false, MY_VARIATION);
+
         assertEquals(RESOURCE_TYPE, child.getProperty(SLING_RESOURCE_TYPE));
+        assertNull(child.getProperty(JCR_PRIMARY_TYPE));
+        assertEquals(samplePropertyValue, child.getProperty(samplePropertyKey));
+        assertNull(child.getProperty(intPropertyKey));
+        assertNull(child.getProperty(nullPropertyKey));
+
+        assertTrue(result.hasChild(grandchildName));
+        grandchild = result.getChild(grandchildName);
+
+        assertTrue(grandchild.hasChild(namedGreatGrandchildName));
+        greatGrandchild = grandchild.getChild(namedGreatGrandchildName);
+        assertEquals(samplePropertyValue, greatGrandchild.getProperty(samplePropertyKey));
+
+        assertTrue(grandchild.hasChild(pathGreatGrandchildName));
+        greatGrandchild = grandchild.getChild(pathGreatGrandchildName);
+        assertEquals(samplePropertyValue, greatGrandchild.getProperty(samplePropertyKey));
+
+        assertFalse(grandchild.hasChild(missingGreatGrandchildName));
     }
 
     @Test

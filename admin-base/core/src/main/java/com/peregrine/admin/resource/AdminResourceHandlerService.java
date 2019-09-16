@@ -66,6 +66,7 @@ import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -705,48 +706,39 @@ public final class AdminResourceHandlerService
     }
 
     private void applyProperties(final Node node, final Map properties) throws RepositoryException {
-        final Set<Map.Entry> set = properties.entrySet();
-        for (final Map.Entry entry: set) {
+        Set<Map.Entry> entrySet = properties.entrySet();
+        entrySet = entrySet.stream()
+                .filter(e -> !IGNORED_PROPERTIES_FOR_COPY.contains(e.getKey()))
+                .collect(Collectors.toSet());
+        for (final Map.Entry entry: entrySet) {
             final String key = toStringOrNull(entry.getKey());
             final Object value = entry.getValue();
-            logger.trace("Create Node w Props, handle prop: '{}'='{}', value type: '{}'", key, value, value == null ? "null" : value.getClass());
-            if (!IGNORED_PROPERTIES_FOR_COPY.contains(key)) {
-                if (value instanceof String) {
-                    node.setProperty(key, (String) value);
-                }
-
-                if (value instanceof ArrayList) {
-                    // Get sub node
-                    try {
-                        final Node subNode = node.getNode(String.valueOf(key));
-                        final ArrayList array = (ArrayList) value;
-                        applyChildProperties(subNode, array);
-                    } catch (final PathNotFoundException e) {
-                        logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
-                    }
+            logger.trace("Create Node w Props, handle prop: '{}'='{}', value type: '{}'", key, value, getClassOrNull(value));
+            if (value instanceof String) {
+                node.setProperty(key, (String) value);
+            } else if (value instanceof List && node.hasNode(key)) {
+                // Get sub node
+                try {
+                    applyChildProperties(node.getNode(key), (List) value);
+                } catch (final PathNotFoundException e) {
+                    logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
                 }
             }
         }
     }
 
-    private void applyChildProperties(final Node parent, final ArrayList childProperties) throws RepositoryException {
+    private void applyChildProperties(final Node parent, final List childProperties) throws RepositoryException {
         // Loop over Array
         for (final Object item : childProperties) {
             if (item instanceof Map) {
                 final Map childProps = (Map) item;
                 // Find matching child by name
-                String name = toStringOrNull(childProps.get("name"));
-                if (isBlank(name)) {
-                    final String path = toStringOrNull(childProps.get("path"));
-                    name = extractName(path);
-                }
-
-                if (isNotBlank(name)) {
+                final String name = extractName(childProps);
+                if (isNotBlank(name) && parent.hasNode(name)) {
                     // Apply data
                     try {
-                        final Node childNode = parent.getNode(name);
-                        applyProperties(childNode, childProps);
-                    } catch (PathNotFoundException e) {
+                        applyProperties(parent.getNode(name), childProps);
+                    } catch (final PathNotFoundException e) {
                         logger.warn("Child Node: '{}' not found and so it is ignored", name, e);
                     }
                 } else {
@@ -756,6 +748,17 @@ public final class AdminResourceHandlerService
                 logger.warn("Array item: '{}' is not an Object and so ignored", item);
             }
         }
+    }
+
+    private String extractName(final Map properties) {
+        final String name = toStringOrNull(properties.get(NAME));
+        if (isNotBlank(name)) {
+            return name;
+        }
+
+        final String path = toStringOrNull(properties.get(PATH));
+        return PerUtil.extractName(path);
+
     }
 
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
