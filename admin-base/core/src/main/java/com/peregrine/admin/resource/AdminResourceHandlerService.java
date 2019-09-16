@@ -36,21 +36,8 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getChildIndex;
-import static com.peregrine.commons.util.PerUtil.getComponentVariableNameFromString;
-import static com.peregrine.commons.util.PerUtil.getFirstChild;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.getString;
-import static com.peregrine.commons.util.PerUtil.isNullOrTrue;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
-import static com.peregrine.commons.util.PerUtil.isPropertyPresentAndEqualsTrue;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isAnyBlank;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -635,7 +622,8 @@ public final class AdminResourceHandlerService
             copyComponentProperties(newNode, variation);
         }
 
-        return writeStringProperties(newNode, properties);
+        applyProperties(newNode, properties);
+        return newNode;
     }
 
     private void copyComponentProperties(
@@ -717,16 +705,60 @@ public final class AdminResourceHandlerService
         return null;
     }
 
-    private Node writeStringProperties(final Node target, final Map<String, Object> properties) throws RepositoryException {
-        for (final Entry<String, Object> entry: properties.entrySet()) {
-            final Object val = entry.getValue();
-            if (val instanceof String) {
-                target.setProperty(entry.getKey(), (String) val);
+    private void applyProperties(final Node node, final Map properties) throws RepositoryException {
+        final Set<Map.Entry> set = properties.entrySet();
+        for (final Map.Entry entry: set) {
+            final String key = toStringOrNull(entry.getKey());
+            final Object value = entry.getValue();
+            logger.trace("Create Node w Props, handle prop: '{}'='{}', value type: '{}'", key, value, value == null ? "null" : value.getClass());
+            if (!IGNORED_PROPERTIES_FOR_COPY.contains(key)) {
+                if (value instanceof String) {
+                    node.setProperty(key, (String) value);
+                }
+
+                if (value instanceof ArrayList) {
+                    // Get sub node
+                    try {
+                        final Node subNode = node.getNode(String.valueOf(key));
+                        final ArrayList array = (ArrayList) value;
+                        applyChildProperties(subNode, array);
+                    } catch (final PathNotFoundException e) {
+                        logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
+                    }
+                }
             }
         }
-
-        return target;
     }
+
+    private void applyChildProperties(final Node parent, final ArrayList childProperties) throws RepositoryException {
+        // Loop over Array
+        for (final Object item : childProperties) {
+            if (item instanceof Map) {
+                final Map childProps = (Map) item;
+                // Find matching child by name
+                String name = toStringOrNull(childProps.get("name"));
+                if (isBlank(name)) {
+                    final String path = toStringOrNull(childProps.get("path"));
+                    name = extractName(path);
+                }
+
+                if (isNotBlank(name)) {
+                    // Apply data
+                    try {
+                        final Node childNode = parent.getNode(name);
+                        applyProperties(childNode, childProps);
+                    } catch (PathNotFoundException e) {
+                        logger.warn("Child Node: '{}' not found and so it is ignored", name, e);
+                    }
+                } else {
+                    logger.warn("Neither Name nor Path Found in Object: '{}'", childProps);
+                }
+            } else {
+                logger.warn("Array item: '{}' is not an Object and so ignored", item);
+            }
+        }
+    }
+
 
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
         try {

@@ -141,7 +141,9 @@ public class InsertNodeAt extends AbstractBaseServlet {
         String data = request.getParameter(CONTENT);
         if(data != null && !data.isEmpty()) {
             ObjectMapper mapper = new ObjectMapper();
-            properties.putAll(mapper.readValue(data, Map.class));
+            Map contentProperties = mapper.readValue(data, Map.class);
+            logger.trace("Content Properties from Caller: '{}'", contentProperties);
+            properties.putAll(contentProperties);
         }
         if(component != null && !component.isEmpty()) {
             // Component overrides the JSon component if provided

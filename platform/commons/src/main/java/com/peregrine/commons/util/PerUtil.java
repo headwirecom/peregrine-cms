@@ -49,11 +49,7 @@ import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -256,6 +252,17 @@ public final class PerUtil {
             }
         }
         return answer;
+    }
+
+    public static String extractName(final String path) {
+        if (isNotBlank(path)) {
+            final int index = path.lastIndexOf('/');
+            if (index < path.length() - 1) {
+                return path.substring(index + 1);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -737,6 +744,10 @@ public final class PerUtil {
         }
 
         return null;
+    }
+
+    public static String toStringOrNull(final Object object) {
+        return object == null ? null : object.toString();
     }
 
     /** Resource Check interface **/
