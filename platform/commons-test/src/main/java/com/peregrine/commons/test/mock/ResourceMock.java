@@ -90,6 +90,10 @@ public class ResourceMock extends ResourceWrapper {
                 if (value instanceof String) {
                     when(mock.getString()).thenReturn((String) value);
                 }
+
+                if (value instanceof Boolean) {
+                    when(mock.getBoolean()).thenReturn((Boolean) value);
+                }
             }
 
         } catch (final RepositoryException e) {
