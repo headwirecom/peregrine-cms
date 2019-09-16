@@ -23,6 +23,7 @@ public class SlingResourcesTest extends AbstractTest {
     public static final String RESOURCE_TYPE = "per/component";
     public static final String SLASH_CONTENT = SLASH + "content";
     public static final String SLASH_APPS_SLASH = "/apps/";
+    public static final String PROPERTY_NAME = "perProperty";
 
     protected final ResourceMock root = new ResourceMock("Root");
     protected final ResourceMock parent = new ResourceMock("Parent");
