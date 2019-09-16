@@ -12,10 +12,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -73,8 +70,13 @@ public class ResourceMock extends ResourceWrapper {
                     mockNodeProperty((String) invocation.getArguments()[0]));
             when(mock.getProperties()).then(invocation -> new PropertyIteratorMock());
             when(mock.getNodes()).then(invocation -> new NodeIteratorMock(children));
-            when(mock.hasNode(anyString())).then(invocation -> children.containsKey(invocation.getArguments()[0]));
-            when(mock.getNode(anyString())).then(invocation -> children.get(invocation.getArguments()[0]).getNode());
+            when(mock.hasNode(anyString())).then(invocation -> hasChild(invocation.getArguments()[0]));
+            when(mock.getNode(anyString())).then(invocation ->
+                    Optional.ofNullable(invocation.getArguments()[0])
+                            .map(a -> getChild((String) a))
+                            .map(ResourceMock::getNode)
+                            .orElse(null)
+            );
         } catch (final RepositoryException e) { }
 
         return mock;
@@ -182,7 +184,7 @@ public class ResourceMock extends ResourceWrapper {
     }
 
     @Override
-    public final Resource getChild(final String name) {
+    public final ResourceMock getChild(final String name) {
         return children.get(name);
     }
 
@@ -210,6 +212,10 @@ public class ResourceMock extends ResourceWrapper {
     @Override
     public boolean hasChildren() {
         return !children.isEmpty();
+    }
+
+    public boolean hasChild(final Object name) {
+        return children.containsKey(name);
     }
 
     public void addAdapter(final Object adapter) {
