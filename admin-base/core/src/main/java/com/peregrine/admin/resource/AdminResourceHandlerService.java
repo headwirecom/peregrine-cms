@@ -697,11 +697,10 @@ public final class AdminResourceHandlerService
             variationNode = getFirstChild(node);
         }
 
-        if (variationNode.hasNode(JCR_CONTENT)) {
+        if (variationNode != null && variationNode.hasNode(JCR_CONTENT)) {
             return variationNode.getNode(JCR_CONTENT);
         }
 
-        logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
         return null;
     }
 
@@ -758,7 +757,6 @@ public final class AdminResourceHandlerService
             }
         }
     }
-
 
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
         try {

@@ -159,8 +159,16 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     }
 
     @Test
-    public void insertNode_addAsChild_doNotOrderBefore_nullVariation() throws ManagementException {
+    public void insertNode_addAsChild_doNotOrderBefore_skipVariations() throws ManagementException {
         properties.put(COMPONENT, RESOURCE_TYPE);
+        checkInsertNode(true, false, null);
+        assertEquals(RESOURCE_TYPE, child.getProperty(SLING_RESOURCE_TYPE));
+    }
+
+    @Test
+    public void insertNode_addAsChild_doNotOrderBefore_misleadingVariationsProperty() throws ManagementException {
+        properties.put(COMPONENT, RESOURCE_TYPE);
+        component.getContent().putProperty(VARIATIONS, true);
         checkInsertNode(true, false, null);
         assertEquals(RESOURCE_TYPE, child.getProperty(SLING_RESOURCE_TYPE));
     }
