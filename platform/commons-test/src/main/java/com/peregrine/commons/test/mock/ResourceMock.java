@@ -4,10 +4,7 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -16,24 +13,61 @@ import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
 public class ResourceMock extends ResourceWrapper {
 
+    protected static final String DEFAULT_NAME = null;
+
     protected final Resource mock;
+    protected final Node node;
 
     protected final Map<String, Object> properties = new HashMap<>();
 
-    private final Map<String, Resource> children = new TreeMap<>();
+    private final Map<String, Resource> children = new LinkedHashMap<>();
 
-    public ResourceMock() {
-        super(mock(Resource.class));
+    private final Map<Class, Object> adaptTo = new LinkedHashMap<>();
+
+    private ResourceResolver resourceResolver;
+
+    public ResourceMock(final String name) {
+        super(mock(Resource.class, name));
         mock = getResource();
+        node = mock(Node.class, concatenateToDerivedName(name, " Node"));
         final ValueMap valueMap = new ValueMapDecorator(properties);
         when(mock.getValueMap()).thenReturn(valueMap);
+        addAdapter(node);
     }
 
-    public final ResourceMock setResourceResolver(ResourceResolver resourceResolver) {
+    protected static String concatenateToDerivedName(final String... strings) {
+        final StringBuilder builder = new StringBuilder();
+        for (final String s : strings) {
+            if (s == null) {
+                return DEFAULT_NAME;
+            }
+
+            builder.append(s);
+        }
+
+        return StringUtils.trim(builder.toString());
+    }
+
+    public ResourceMock() {
+        this(DEFAULT_NAME);
+    }
+
+    public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
+        this.resourceResolver = resourceResolver;
         when(mock.getResourceResolver()).thenReturn(resourceResolver);
+        updateResourceResolverGetResource();
         return this;
+    }
+
+    private void updateResourceResolverGetResource() {
+        if (resourceResolver != null) {
+            when(resourceResolver.getResource(getPath())).thenReturn(this);
+        }
     }
 
     public final Map<String, Object> getProperties() {
@@ -47,6 +81,10 @@ public class ResourceMock extends ResourceWrapper {
 
     public final ResourceMock setPath(final String path) {
         when(mock.getPath()).thenReturn(path);
+        try {
+            when(node.getPath()).thenReturn(path);
+        } catch (final RepositoryException e) { }
+        updateResourceResolverGetResource();
         setPathImpl(path);
         return this;
     }
@@ -91,5 +129,28 @@ public class ResourceMock extends ResourceWrapper {
     @Override
     public boolean hasChildren() {
         return !children.isEmpty();
+    }
+
+    public void addAdapter(final Object adapter) {
+        adaptTo.put(adapter.getClass(), adapter);
+    }
+
+    @Override
+    public <AdapterType> AdapterType adaptTo(final Class<AdapterType> type) {
+        if (adaptTo.containsKey(type)) {
+            return (AdapterType) adaptTo.get(type);
+        }
+
+        for (final Map.Entry<Class, Object> entry : adaptTo.entrySet()) {
+            if (type.isAssignableFrom(entry.getKey())) {
+                return (AdapterType) entry.getValue();
+            }
+        }
+
+        return super.adaptTo(type);
+    }
+
+    public Node getNode() {
+        return node;
     }
 }
