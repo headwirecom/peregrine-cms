@@ -728,9 +728,13 @@ public final class PerUtil {
                 .orElse(null);
     }
 
-    public static boolean isPropertyPresentAndEqualsTrue(final Node node, final String propertyName) throws RepositoryException {
-        return node.hasProperty(propertyName)
-                && node.getProperty(propertyName).getBoolean();
+    public static boolean isPropertyPresentAndEqualsTrue(final Node node, final String propertyName) {
+        try {
+            return node.hasProperty(propertyName)
+                    && node.getProperty(propertyName).getBoolean();
+        } catch (final RepositoryException e) {
+            return false;
+        }
     }
 
     public static Node getFirstChild(final Node parent) {
