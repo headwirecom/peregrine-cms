@@ -41,11 +41,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_INSERT_NODE;
 import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
 import static com.peregrine.admin.util.AdminConstants.INTO;
 import static com.peregrine.admin.util.AdminConstants.MODEL_JSON;
 import static com.peregrine.admin.util.AdminConstants.NOT_PROVIDED;
+import static com.peregrine.admin.util.AdminPathConstants.RESOURCE_TYPE_INSERT_NODE;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.CONTENT;
