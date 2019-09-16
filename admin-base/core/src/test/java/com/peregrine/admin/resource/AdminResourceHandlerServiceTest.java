@@ -191,6 +191,16 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     }
 
     @Test
+    public void insertNode_addAsChild_doNotOrderBefore_properVariation() throws ManagementException, RepositoryException {
+        properties.put(COMPONENT, RESOURCE_TYPE);
+        final ResourceMock content = component.getContent();
+        content.putProperty(VARIATIONS, true);
+        content.addChild(MY_VARIATION, variation);
+        checkInsertNode(true, false, MY_VARIATION);
+        assertEquals(RESOURCE_TYPE, child.getProperty(SLING_RESOURCE_TYPE));
+    }
+
+    @Test
     public void moveNode() {
     }
 
