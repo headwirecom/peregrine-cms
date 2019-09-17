@@ -72,7 +72,6 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -719,7 +718,8 @@ public final class AdminResourceHandlerService
     }
 
     private void applyProperties(final Node node, final Map properties) throws RepositoryException, ManagementException {
-        logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyPrintJson(properties));
+        String prettyJson = prettyPrintJson(properties);
+        logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyJson);
         Set<Map.Entry> entrySet = properties.entrySet();
         entrySet = entrySet.stream()
                 .filter(e -> !IGNORED_PROPERTIES_FOR_COPY.contains(e.getKey()))
@@ -727,7 +727,8 @@ public final class AdminResourceHandlerService
         for (final Map.Entry entry: entrySet) {
             final String key = toStringOrNull(entry.getKey());
             final Object value = entry.getValue();
-            logger.trace("Apply Props, handle prop: '{}'='{}', value type: '{}'", key, prettyPrintJson(value), getClassOrNull(value));
+            prettyJson = prettyPrintJson(value);
+            logger.trace("Apply Props, handle prop: '{}'='{}', value type: '{}'", key, prettyJson, getClassOrNull(value));
             if (value instanceof String) {
                 node.setProperty(key, (String) value);
             } else if (value instanceof List) {
