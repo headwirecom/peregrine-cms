@@ -733,14 +733,10 @@ public final class AdminResourceHandlerService
             } else if (value instanceof List) {
                 final List list = (List) value;
                 // Get sub node
-                try {
-                    if (node.hasNode(key)) {
-                        applyChildProperties(node.getNode(key), list);
-                    } else {
-                        applyChildProperties(node, list);
-                    }
-                } catch (final PathNotFoundException e) {
-                    logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
+                if (node.hasNode(key)) {
+                    applyChildProperties(node.getNode(key), list);
+                } else {
+                    applyChildProperties(node, list);
                 }
             }
         }
@@ -810,38 +806,38 @@ public final class AdminResourceHandlerService
      * @throws RepositoryException A node operation failed but that should not happen
      */
     private Node findSourceByPath(final Node start, final String[] segments) throws RepositoryException {
-        String startName = start.getName();
-        for(int i = 0; i < segments.length; i++) {
-            String segment = segments[i];
-            if(segment != null && !segment.isEmpty()) {
-                if(segment.equals(startName)) {
-                    if (i + 1 == segment.length()) {
-                        // It is last entry so we found it
-                        return start;
-                    } else {
-                        Node child = start;
-                        for (i++; i < segments.length; i++) {
-                            String childNodeSegment = segments[i];
-                            if (child.hasNode(childNodeSegment)) {
-                                child = child.getNode(childNodeSegment);
-                            } else {
-                                child = null;
-                                break;
-                            }
-                        }
-                        return child;
-                    }
-                }
+        final String startName = start.getName();
+        final int length = segments.length;
+        int i = 0;
+        for (; i < length - 1; i++) {
+            if (StringUtils.equals(segments[i], startName)) {
+                break;
             }
         }
 
-        // No child found -> go to parent and try again
-        try {
-            final Node parent = start.getParent();
-            return parent == null ? null : findSourceByPath(parent, segments);
-        } catch (final ItemNotFoundException e) {
-            return null;
+        if (i < length - 1) {
+            Node child = start;
+            while (++i < length) {
+                final String segment = segments[i];
+                if (child.hasNode(segment)) {
+                    child = child.getNode(segment);
+                } else {
+                    return null;
+                }
+            }
+
+            return child;
         }
+
+        final String segment = segments[length - 1];
+        if (StringUtils.equals(segment, startName)) {
+            // It is last entry so we found it
+            return start;
+        }
+
+        // No child found -> go to parent and try again
+        final Node parent = start.getParent();
+        return parent == null ? null : findSourceByPath(parent, segments);
     }
 
     private String extractName(final Map properties) {
@@ -1770,7 +1766,7 @@ public final class AdminResourceHandlerService
         }
     }
 
-    private String prettyPrintJson(Object object) {
+    private String prettyPrintJson(final Object object) {
         try {
             return mapper.writeValueAsString(object);
         } catch (final JsonProcessingException e) {
