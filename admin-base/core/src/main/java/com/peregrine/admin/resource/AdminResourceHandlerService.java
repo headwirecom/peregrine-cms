@@ -1,54 +1,5 @@
 package com.peregrine.admin.resource;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.peregrine.adaption.PerAsset;
-import com.peregrine.commons.util.PerUtil;
-import com.peregrine.rendition.BaseResourceHandler;
-import com.peregrine.replication.ImageMetadataSelector;
-import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.JcrConstants;
-import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.jcr.Binary;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
@@ -72,6 +23,7 @@ import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -84,30 +36,69 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
-/**
- * Created by Andreas Schaefer on 7/6/17.
- */
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.jcr.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.peregrine.commons.util.PerUtil;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.peregrine.adaption.PerAsset;
+import com.peregrine.rendition.BaseResourceHandler;
+import com.peregrine.replication.ImageMetadataSelector;
+
 @Component(
     service = AdminResourceHandler.class,
     immediate = true
 )
-public class AdminResourceHandlerService
-    implements AdminResourceHandler
-{
+public final class AdminResourceHandlerService
+        implements AdminResourceHandler {
+
     public static final String DELETION_PROPERTY_NAME = "_opDelete";
     public static final String MODE_PROPERTY = "mode";
 
     private static final String PARENT_NOT_FOUND = "Could not find %s Parent Resource. Path: '%s', name: '%s'";
-    private static final String RESOURCE_TYPE_UNEDEFINED = "Resource Type is not provided. Path: '%s', name: '%s'";
+    private static final String RESOURCE_TYPE_UNDEFINED = "Resource Type is not provided. Path: '%s', name: '%s'";
     private static final String NAME_UNDEFINED = "%s Name is not provided. Parent Path: '%s'";
     private static final String TEMPLATE_NOT_FOUND = "Could not find template with path: '%s'";
 
@@ -117,7 +108,6 @@ public class AdminResourceHandlerService
     private static final String FAILED_TO_DELETE = "Failed to Delete Resource: '%s'";
 
     private static final String INSERT_RESOURCE_MISSING = "To Insert a New Node the Reference Resource must be provided";
-    private static final String INSERT_RESOURCE_PROPERTIES_MISSING = "To Insert a New Node the Node Properties must be provided";
     private static final String FAILED_TO_INSERT = "Failed to insert node at: '%s'";
 
     private static final String MOVE_FROM_RESOURCE_MISSING = "To Move a Node the Source Resource must be provided";
@@ -134,15 +124,14 @@ public class AdminResourceHandlerService
     private static final String CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Content Type must be provided to create Asset";
     private static final String INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Input Stream must be provided to create Asset";
     private static final String FAILED_TO_CREATE = "Failed to Create %s in Parent: '%s', name: '%s'";
-    private static final String FAILED_TO_CREATE_RENDITION = "Failed to Create %s Rendition in Parent: '%s', name: '%s'";
     private static final String FAILED_TO_COPY = "Failed to copy source: '%s' on target parent: '%s'";
     private static final String RESOURCE_NOT_FOUND = "Resource not found, Path: '%s'";
     private static final String NO_CONTENT_PROVIDED = "No Content provided, Path: '%s'";
     private static final String FAILED_TO_PARSE_JSON = "Failed to parse Json Content: '%s'";
 
     private static final String FAILED_TO_DELETE_CHILD = "Failed to delete child resource: '%s'";
-    private static final String OJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE = "Object List had an unsupported first entry: '%s' (type: '%s')";
-    private static final String OJECT_ITEM_WITH_UNSUPPORTED_TYPE = "Object List was a single list but had an unsupported entry: '%s' (type: '%s')";
+    private static final String OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE = "Object List had an unsupported first entry: '%s' (type: '%s')";
+    private static final String OBJECT_ITEM_WITH_UNSUPPORTED_TYPE = "Object List was a single list but had an unsupported entry: '%s' (type: '%s')";
     private static final String ITEM_NAME_MISSING = "Item: '%s' does not have a name (parent: '%s'";
     private static final String OBJECT_LIST_WITH_UNSUPPORTED_ITEM = "Object List was a full list but had an unsupported entry: '%s' (type: '%s')";
 
@@ -159,8 +148,6 @@ public class AdminResourceHandlerService
     private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
     private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
 
-    private static final String PACKAGES_PATH = "/etc/packages";
-
     public static final String MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY = "Resource Resolver must be provide to copy a Site";
     public static final String MISSING_PARENT_RESOURCE_FOR_COPY_SITES = "Sites Parent Resource was not provided or does not exist";
     public static final String MISSING_SOURCE_SITE_NAME = "Source Name must be provide";
@@ -169,6 +156,9 @@ public class AdminResourceHandlerService
     public static final String SOURCE_SITE_DOES_NOT_EXIST = "Source Site: '%s' was not provided or does not exist";
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
     public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
+    public static final String COPY_FAILED = "Copy of %s: '%s' failed";
+    private static final String IMAGE_METADATA_TAG_NAME = "Image Metadata Tag Name: '{}'";
+    private static final String ADD_TAG_CATEGORY_TAG_NAME_VALUE = "Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'";
 
     //Package creation constants
     private static final String PACKAGE_SUFFIX = "-full-package";
@@ -197,11 +187,16 @@ public class AdminResourceHandlerService
         IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED_BY);
     }
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /** JSon Mapper for pretty print of JSon text **/
+    private ObjectMapper mapper =new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     @Reference
-    ResourceRelocation resourceRelocation;
+    private ResourceRelocation resourceRelocation;
+
     @Reference
-    BaseResourceHandler baseResourceHandler;
+    private BaseResourceHandler baseResourceHandler;
 
     private List<ImageMetadataSelector> imageMetadataSelectors = new ArrayList<>();
     @Reference(
@@ -211,55 +206,60 @@ public class AdminResourceHandlerService
     void addImageMetadataSelector(ImageMetadataSelector selector)    { imageMetadataSelectors.add(selector); }
     void removeImageMetadataSelector(ImageMetadataSelector selector) { imageMetadataSelectors.remove(selector); }
 
-    /** JSon Mapper for pretty print of JSon text **/
-    private ObjectMapper mapper =new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            if(isEmpty(name)) {
+                throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
+            }
+
+            final Node parent = getNode(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
-                throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
-            }
-            Node parentNode =  parent.adaptTo(Node.class);
-            if(parentNode == null) { throw new ManagementException("Unable to adapt parent: '" + parent + "' to Node"); }
-            Node newFolder = parentNode.addNode(name, SLING_ORDERED_FOLDER);
+
+            Node newFolder = parent.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newFolder);
-            return resourceResolver.getResource(newFolder.getPath());
+            return adaptNodeToResource(resourceResolver, newFolder);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Folder. Parent Path: '{}', Name: '{}'", parentPath, name);
-            logger.error("Failed to create Folder", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, FOLDER, parentPath, name), e);
         }
     }
 
+    private Resource adaptNodeToResource(final ResourceResolver resourceResolver, final Node node) throws RepositoryException {
+        if (node == null) {
+            return null;
+        }
+
+        return resourceResolver.getResource(node.getPath());
+    }
+
+    @Override
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            if(isEmpty(name)) {
+                throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
+            }
+
+            if(isEmpty(resourceType)) {
+                throw new ManagementException(String.format(RESOURCE_TYPE_UNDEFINED, parentPath, name));
+            }
+
+            final Node parent = getNode(resourceResolver, parentPath);
+
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
-                throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
-            }
-            if(resourceType == null || resourceType.isEmpty()) {
-                throw new ManagementException(String.format(RESOURCE_TYPE_UNEDEFINED, parentPath, name));
-            }
-            Node parentNode = parent.adaptTo(Node.class);
-            if(parentNode == null) { throw new ManagementException("Unable to adapt parent: '" + parent + "' to Node"); }
-            Node newObject = parentNode.addNode(name, OBJECT_PRIMARY_TYPE);
+
+            Node newObject = parent.addNode(name, OBJECT_PRIMARY_TYPE);
             newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newObject);
-            return resourceResolver.getResource(newObject.getPath());
+            return adaptNodeToResource(resourceResolver, newObject);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
-            logger.error("Failed to create Object", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
         }
     }
@@ -267,23 +267,22 @@ public class AdminResourceHandlerService
     @Override
     public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            Resource parent = getResource(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, PAGE, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
+            if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, PAGE, parentPath));
             }
-            Resource templateResource = PerUtil.getResource(resourceResolver, templatePath + "/" + JCR_CONTENT);
+            Resource templateResource = getResource(resourceResolver, templatePath + "/" + JCR_CONTENT);
             if(templateResource == null) {
                 throw new ManagementException(String.format(TEMPLATE_NOT_FOUND, templatePath));
             }
             String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
             Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath);
-            return resourceResolver.getResource(newPage.getPath());
+            return adaptNodeToResource(resourceResolver, newPage);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
-            logger.error("Failed to create Page", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, PAGE, parentPath, name), e);
         }
     }
@@ -291,11 +290,11 @@ public class AdminResourceHandlerService
     @Override
     public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException {
         try {
-            Resource parent = PerUtil.getResource(resourceResolver, parentPath);
+            Resource parent = getResource(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, TEMPLATE, parentPath, name));
             }
-            if(name == null || name.isEmpty()) {
+            if(isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, TEMPLATE, parentPath));
             }
             Node newPage = createPageOrTemplate(parent, name, component, null);
@@ -303,29 +302,33 @@ public class AdminResourceHandlerService
             // If found we copy this over into our newly created node
             if(isNotEmpty(component)) {
                 logger.trace("Component: '{}' provided for template. Copy its properties over if there is a JCR Content Node", component);
-                try {
-                    if(component.startsWith("/")) {
-                        logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
-                    } else {
-                        String componentPath = APPS_ROOT + SLASH + component;
-                        if(newPage.getSession().itemExists(componentPath)) {
-                            Node componentNode = newPage.getSession().getNode("/apps/" + component);
-                            if(componentNode.hasNode(JCR_CONTENT)) {
-                                Node source = componentNode.getNode(JCR_CONTENT);
-                                Node target = newPage.getNode(JCR_CONTENT);
-                                copyNode(source, target, true);
-                            }
-                        }
-                    }
-                } catch(PathNotFoundException e) {
-                    logger.warn("Component (for template)t: '{}' not found -> ignored", component);
-                }
+                copyAppsComponentToNewTemplate(component, newPage);
             }
-            return resourceResolver.getResource(newPage.getPath());
+            return adaptNodeToResource(resourceResolver, newPage);
         } catch(RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
-            logger.error("Failed to create Template", e);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, TEMPLATE, parentPath, name), e);
+        }
+    }
+
+    private void copyAppsComponentToNewTemplate(final String component, final Node template) throws RepositoryException, ManagementException {
+        try {
+            if(component.startsWith(SLASH)) {
+                logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
+            } else if (template != null) {
+                String componentPath = APPS_ROOT + SLASH + component;
+                final Session session = template.getSession();
+                if(session.itemExists(componentPath)) {
+                    Node componentNode = session.getNode(componentPath);
+                    if(componentNode.hasNode(JCR_CONTENT)) {
+                        Node source = componentNode.getNode(JCR_CONTENT);
+                        Node target = template.getNode(JCR_CONTENT);
+                        copyNode(source, target, true);
+                    }
+                }
+            }
+        } catch(PathNotFoundException e) {
+            logger.warn("Component (for template)t: '{}' not found -> ignored", component);
         }
     }
 
@@ -336,21 +339,23 @@ public class AdminResourceHandlerService
 
     @Override
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException {
-        Resource resource = PerUtil.getResource(resourceResolver, path);
-        if(resource == null) {
+        final Resource resource = getResource(resourceResolver, path);
+        if (resource == null) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
+
         try {
-            String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, String.class);
-            if(primaryType != null && !primaryType.isEmpty() && !primaryType.equals(primaryTypeValue)) {
+            final String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, EMPTY);
+            if (isNotEmpty(primaryType) && !primaryTypeValue.equals(primaryType)) {
                 throw new ManagementException(String.format(PRIMARY_TYPE_ASKEW_FOR_DELETION, path, primaryType, primaryTypeValue));
             }
-            Resource parent = resource.getParent();
-            DeletionResponse response = new DeletionResponse()
+
+            final Resource parent = resource.getParent();
+            final DeletionResponse response = new DeletionResponse()
                 .setName(resource.getName())
                 .setPath(resource.getPath())
                 .setParentPath(parent != null ? parent.getPath() : "")
-                .setType(resource.getValueMap().get(JCR_PRIMARY_TYPE, "not-found"));
+                .setType(StringUtils.defaultIfEmpty(primaryTypeValue, "not-found"));
             resourceResolver.delete(resource);
             return response;
         } catch (PersistenceException e) {
@@ -359,47 +364,47 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
-        Resource answer = null;
-        if(resource == null) {
+    public Resource insertNode(
+            final Resource resource,
+            final Map<String, Object> properties,
+            final boolean addAsChild,
+            final boolean orderBefore,
+            final String variation
+    ) throws ManagementException {
+        final Node node = getNode(resource);
+        if (node == null) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
+
         try {
-            Node node = resource.adaptTo(Node.class);
-            if(node == null) { throw new ManagementException("Unable to adapt resource: '" + resource + "' to Node"); }
-            Node newNode;
-            if(addAsChild) {
-                Resource firstChild = null;
-                if(orderBefore) {
-                    Iterator<Resource> i = resource.listChildren();
-                    if(i.hasNext()) { firstChild = i.next(); }
-                }
-                logger.trace("Properties for Resource: '{}': '{}'", resource, prettyPrintJson(properties));
+            final Node newNode;
+            final ResourceResolver resourceResolver = resource.getResourceResolver();
+            if (addAsChild) {
                 newNode = createNode(node, properties, variation);
-                baseResourceHandler.updateModification(resource.getResourceResolver(), newNode);
-                if(firstChild != null) {
-                    resourceRelocation.reorder(resource, newNode.getName(), firstChild.getName(), true);
+                baseResourceHandler.updateModification(resourceResolver, newNode);
+                if(orderBefore) {
+                    final Iterator<Resource> i = resource.listChildren();
+                    if(i.hasNext()) {
+                        resourceRelocation.reorder(resource, newNode.getName(), i.next().getName(), true);
+                    }
                 }
-                answer = resource.getResourceResolver().getResource(newNode.getPath());
-                baseResourceHandler.updateModification(answer);
             } else {
                 Node parent = node.getParent();
                 newNode = createNode(parent, properties, variation);
-                baseResourceHandler.updateModification(resource.getResourceResolver(), newNode);
+                baseResourceHandler.updateModification(resourceResolver, newNode);
                 resourceRelocation.reorder(resource.getParent(), newNode.getName(), node.getName(), orderBefore);
-                answer = resource.getResourceResolver().getResource(newNode.getPath());
-                baseResourceHandler.updateModification(answer);
             }
+
+            final Resource answer = adaptNodeToResource(resourceResolver, newNode);
+            baseResourceHandler.updateModification(answer);
+            return answer;
         } catch (RepositoryException e) {
-            logger.trace("Failed to insert node at: " + resource.getPath(), e);
             throw new ManagementException(String.format(FAILED_TO_INSERT, resource.getPath()), e);
         }
-        return answer;
     }
 
     @Override
     public Resource moveNode(Resource fromResource, Resource toResource, boolean addAsChild, boolean orderBefore) throws ManagementException {
-        Resource answer = null;
         if(fromResource == null) {
             throw new ManagementException(MOVE_FROM_RESOURCE_MISSING);
         }
@@ -407,7 +412,7 @@ public class AdminResourceHandlerService
             throw new ManagementException(MOVE_TO_RESOURCE_MISSING);
         }
         try {
-            answer = fromResource;
+            Resource answer = fromResource;
             if(addAsChild) {
                 boolean sameParent = resourceRelocation.isChildOfParent(fromResource, toResource);
                 if(!sameParent) {
@@ -431,382 +436,355 @@ public class AdminResourceHandlerService
                 resourceRelocation.reorder(toResource.getParent(), fromResource.getName(), toResource.getName(), orderBefore);
                 baseResourceHandler.updateModification(answer);
             }
+
+            return answer;
         } catch (Exception e) {
-            logger.error("problems while moving", e);
             throw new ManagementException(String.format(FAILED_TO_MOVE, fromResource.getPath(), toResource.getPath()), e);
         }
-        return answer;
     }
-
 
     @Override
     public Resource rename(Resource fromResource, String newName) throws ManagementException {
-        Resource answer = null;
         if(fromResource == null) {
             throw new ManagementException(RENAME_RESOURCE_MISSING);
         }
-        if(newName == null || newName.isEmpty()) {
+        if(isEmpty(newName)) {
             throw new ManagementException(NAME_TO_BE_RENAMED_TO_MUST_BE_PROVIDED);
         }
         if(newName.indexOf('/') >= 0) {
             throw new ManagementException(NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH);
         }
         try {
-            answer = resourceRelocation.rename(fromResource, newName, true);
+            final Resource answer = resourceRelocation.rename(fromResource, newName, true);
             baseResourceHandler.updateModification(answer);
+            return answer;
         } catch (Exception e) {
-            logger.error("problems while moving", e);
             throw new ManagementException(String.format(FAILED_TO_RENAME, fromResource.getPath(), newName), e);
         }
-        return answer;
     }
 
     @Override
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
-        Resource answer = null;
-        if(parent == null) {
-            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
-        }
-        if(assetName == null || assetName.isEmpty()) {
+        if(isEmpty(assetName)) {
             throw new ManagementException(ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
-        if(contentType == null || contentType.isEmpty()) {
+        if(isEmpty(contentType)) {
             throw new ManagementException(CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         if(inputStream == null) {
             throw new ManagementException(INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
+
+        final Node parentNode = getNode(parent);
+        if(parentNode == null) {
+            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+        }
         try {
-            Node parentNode = parent.adaptTo(Node.class);
             Node newAsset = parentNode.addNode(assetName, ASSET_PRIMARY_TYPE);
             Node content = newAsset.addNode(JCR_CONTENT, ASSET_CONTENT_TYPE);
             Binary data = parentNode.getSession().getValueFactory().createBinary(inputStream);
             content.setProperty(JCR_DATA, data);
             content.setProperty(JCR_MIME_TYPE, contentType);
-            baseResourceHandler.updateModification(parent.getResourceResolver(), newAsset);
-
-            answer = parent.getResourceResolver().getResource(newAsset.getPath());
-            PerAsset perAsset = answer.adaptTo(PerAsset.class);
-            try {
-                Metadata metadata = ImageMetadataReader.readMetadata(perAsset.getRenditionStream((Resource) null));
-                for(Directory directory : metadata.getDirectories()) {
-                    String directoryName = directory.getName();
-                    logger.trace("Image Metadata Directory: '{}'", directoryName);
-                    ImageMetadataSelector selector = null;
-                    for(ImageMetadataSelector item : imageMetadataSelectors) {
-                        String temp = item.acceptCategory(directoryName);
-                        if(temp != null) {
-                            selector = item;
-                            directoryName = temp;
-                        }
-                    }
-                    boolean asJson = selector != null && selector.asJsonProperty();
-                    String json = "{";
-                    for(Tag tag : directory.getTags()) {
-                        String name = tag.getTagName();
-                        logger.trace("Image Metadata Tag Name: '{}'", name);
-                        String tagName = selector != null ? selector.acceptTag(name) : name;
-                        if(tagName != null) {
-                            logger.trace("Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'", new Object[]{directoryName, tagName, tag.getDescription()});
-                            if(asJson) {
-                                json += "\"" + tagName + "\":\"" + tag.getDescription() + "\",";
-                            } else {
-                                perAsset.addTag(directoryName, tagName, tag.getDescription());
-                            }
-                        }
-                    }
-                    if(asJson) {
-                        if(json.length() > 1) {
-                            json = json.substring(0, json.length() - 1);
-                            json += "}";
-                            perAsset.addTag(directoryName, RAW_TAGS, json);
-                        }
-                    }
-                }
-                // Obtain the Asset Dimension and store directly in the meta data folder
-                try {
-                    handleAssetDimensions(perAsset);
-                } catch(IOException e) {
-                    logger.warn("Was not able to obtain Width/Height from Image", e);
-                }
-            } catch(ImageProcessingException e) {
-                throw new ManagementException(String.format(FAILED_TO_CREATE_RENDITION, ASSET, parent.getPath(), assetName), e);
+            final ResourceResolver resourceResolver = parent.getResourceResolver();
+            baseResourceHandler.updateModification(resourceResolver, newAsset);
+            final Resource answer = adaptNodeToResource(resourceResolver, newAsset);
+            if (answer != null) {
+                processNewAsset(answer.adaptTo(PerAsset.class));
             }
+
+            return answer;
         } catch(RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);
         } catch(IOException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, RENDITION, parent.getPath(), assetName), e);
         }
-        return answer;
     }
 
-    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(JCR_PRIMARY_TYPE, primaryType);
-        if(resourceType != null && !resourceType.isEmpty()) {
-            properties.put(SLING_RESOURCE_TYPE, resourceType);
+    private void processNewAsset(final PerAsset asset) throws IOException, RepositoryException {
+        if (asset == null) {
+            return;
         }
+
         try {
-            return parent.getResourceResolver().create(parent, name, properties);
-        } catch(PersistenceException e) {
-//            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
-//            logger.trace("Failure Exception", e);
-            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
-        } catch(RuntimeException e) {
-            logger.trace("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
-            logger.trace("Failure Exception", e);
-            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
-        }
-    }
-
-    // todo: needs deep clone
-    private Node createNode(Node parent, Map data, String variation) throws RepositoryException, ManagementException {
-        data.remove(PATH);
-        String component = (String) data.remove(COMPONENT);
-
-        Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
-        newNode.setProperty(SLING_RESOURCE_TYPE, component);
-
-        // If there is a component then we check the component node and see if there is a child jcr:content node
-        // If found we copy this over into our newly created node
-        if(isNotEmpty(component)) {
-            try {
-                if(component.startsWith("/")) {
-                    logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
-                } else {
-                    Node contentNode = handleComponent(parent, component, variation);
-                    if(contentNode != null) {
-                        logger.trace("Copy Node: '{}' to: '{}'", contentNode, newNode);
-                        copyNode(contentNode, newNode, true);
+            final Metadata metadata = ImageMetadataReader.readMetadata(asset.getRenditionStream((Resource) null));
+            for(Directory directory : metadata.getDirectories()) {
+                String directoryName = directory.getName();
+                logger.trace("Image Metadata Directory: '{}'", directoryName);
+                ImageMetadataSelector selector = null;
+                for(ImageMetadataSelector item : imageMetadataSelectors) {
+                    String temp = item.acceptCategory(directoryName);
+                    if(temp != null) {
+                        selector = item;
+                        directoryName = temp;
                     }
                 }
-            } catch(PathNotFoundException e) {
-                logger.warn("Component: '{}' not found -> ignored", component);
+                if (selector != null && selector.asJsonProperty()) {
+                    addTagsToNewAssetAsJson(asset, directory, directoryName, selector);
+                } else {
+                    addTagsToNewAsset(asset, directory, directoryName, selector);
+                }
+            }
+            // Obtain the Asset Dimension and store directly in the meta data folder
+            handleAssetDimensions(asset);
+        } catch(ImageProcessingException e) {
+            logger.debug(EMPTY, e);
+        }
+    }
+
+    private void addTagsToNewAssetAsJson(PerAsset asset, Directory directory, String directoryName, ImageMetadataSelector selector) throws PersistenceException, RepositoryException {
+        final StringBuilder json = new StringBuilder("{");
+        for(final Tag tag : directory.getTags()) {
+            final String name = tag.getTagName();
+            logger.trace(IMAGE_METADATA_TAG_NAME, name);
+            final String tagName = selector != null ? selector.acceptTag(name) : name;
+            if(tagName != null) {
+                logger.trace(ADD_TAG_CATEGORY_TAG_NAME_VALUE, directoryName, tagName, tag.getDescription());
+                json.append("\"");
+                json.append(tagName);
+                json.append("\":\"");
+                json.append(tag.getDescription());
+                json.append("\",");
             }
         }
-        applyProperties(newNode, data);
+
+        final int length = json.length();
+        if(length > 1) {
+            json.deleteCharAt(length - 1);
+            json.append("}");
+            asset.addTag(directoryName, RAW_TAGS, json.toString());
+        }
+    }
+
+    private void addTagsToNewAsset(PerAsset asset, Directory directory, String directoryName, ImageMetadataSelector selector) throws PersistenceException, RepositoryException {
+        for(final Tag tag : directory.getTags()) {
+            final String name = tag.getTagName();
+            logger.trace(IMAGE_METADATA_TAG_NAME, name);
+            final String tagName = selector != null ? selector.acceptTag(name) : name;
+            if(tagName != null) {
+                logger.trace(ADD_TAG_CATEGORY_TAG_NAME_VALUE, directoryName, tagName, tag.getDescription());
+                asset.addTag(directoryName, tagName, tag.getDescription());
+            }
+        }
+    }
+
+    @Override
+    public Resource createNode(
+            final Resource parent,
+            final String name,
+            final String primaryType,
+            final String resourceType
+    ) throws ManagementException {
+        final Map<String, Object> properties = new HashMap<>();
+        properties.put(JCR_PRIMARY_TYPE, primaryType);
+        if (isNotEmpty(resourceType)) {
+            properties.put(SLING_RESOURCE_TYPE, resourceType);
+        }
+
+        try {
+            return parent.getResourceResolver().create(parent, name, properties);
+        } catch(final PersistenceException e) {
+            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
+        } catch(final RuntimeException e) {
+            logger.debug("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
+        }
+    }
+
+    // TODO: needs deep clone
+    private Node createNode(
+            final Node parent,
+            final Map<String, Object> properties,
+            final String variation
+    ) throws RepositoryException, ManagementException {
+        properties.remove(PATH);
+        final String component = (String) properties.remove(COMPONENT);
+        final Node newNode = addNewNode(parent);
+        if (isEmpty(component)) {
+            return newNode;
+        }
+
+        newNode.setProperty(SLING_RESOURCE_TYPE, component);
+        // If there is a component then we check the component node and see if there is a child jcr:content node
+        // If found we copy this over into our newly created node
+        if (component.startsWith(SLASH)) {
+            logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
+        } else {
+            copyPropertiesFromComponentVariation(newNode, variation);
+        }
+
+        applyProperties(newNode, properties);
         return newNode;
     }
 
-    private void applyProperties(Node node, Map<Object,Object> properties) throws RepositoryException, ManagementException {
-        logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyPrintJson(properties));
-        int counter = -1;
-        for(Map.Entry<Object, Object> entry: properties.entrySet()) {
-            counter++;
-            String key = entry.getKey() == null ? null : entry.getKey().toString();
-            Object value = entry.getValue();
-            logger.trace("Apply Props, handle prop: '{}'='{}', value type: '{}'", key, prettyPrintJson(value), value == null ? "null" : value.getClass());
-            if (!IGNORED_PROPERTIES_FOR_COPY.contains(key)) {
-                if (value instanceof String) {
-                    node.setProperty(key, (String) value);
-                } else if (value instanceof ArrayList) {
-                    ArrayList array = (ArrayList) value;
-                    // Get sub node
-                    try {
-                        if(node.hasNode(key)) {
-                            Node subNode = node.getNode(key);
-                            applyChildProperties(subNode, array);
-                        } else {
-                            applyChildProperties(node, array);
-                        }
-                    } catch (PathNotFoundException e) {
-                        logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
-                    }
-//
-//                    if("children".equals(key) && !node.hasNode(key)) {
-//                        // No name or matching path name (auto generated IDs) -> use position to find target
-//                        Node subNode = null;
-//                        NodeIterator i = node.getNodes();
-//                        int targetCounter = 0;
-//                        while(i.hasNext()) {
-//                            if(targetCounter == counter) {
-//                                subNode = i.nextNode();
-//                                break;
-//                            }
-//                            targetCounter++;
-//                        }
-//                        logger.trace("Handle Children, sub node: '{}', counter: '{}', target counter: '{}'", subNode, counter, targetCounter);
-//                        if(subNode == null) {
-//                            // No Sub Node found -> create a node and then apply its properties
-//
-//                            String nodeId = array.get()
-//                            Node newNode = node.addNode(, NT_UNSTRUCTURED);
-//                        }
-//                        if(subNode != null) {
-//                            logger.trace("AP, Found Target by position: '{}'", subNode.getPath());
-//                            applyChildProperties(subNode, array);
-//                        } else {
-//                            //
-//                        }
-//                        applyChildProperties(node, array);
-//                    } else {
-//                        // Get sub node
-//                        try {
-//                            Node subNode = node.getNode(key);
-//                            applyChildProperties(subNode, array);
-//                        } catch (PathNotFoundException e) {
-//                            logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
-//                        }
-//                    }
+    private Node addNewNode(final Node parent) throws RepositoryException {
+        return parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
+    }
+
+    private void copyPropertiesFromComponentVariation(
+            final Node node,
+            final String variation
+    ) throws RepositoryException, ManagementException {
+        final String componentPath = APPS_ROOT + SLASH + node.getProperty(SLING_RESOURCE_TYPE).getString();
+        copyPropertiesFromComponentVariation(node, componentPath, variation);
+    }
+
+    private void copyPropertiesFromComponentVariation(
+            final Node node,
+            final String componentPath,
+            final String variation
+    ) throws RepositoryException, ManagementException {
+        final Session session = node.getSession();
+        Node contentNode = getComponentContentNode(session, componentPath);
+        if (contentNode == null) {
+            return;
+        }
+
+        if (isPropertyPresentAndEqualsTrue(contentNode, VARIATIONS)) {
+            contentNode = getVariationContentOrDefault(contentNode, variation);
+        }
+
+        if (contentNode != null) {
+            logger.trace("Copy Node: '{}' to: '{}'", contentNode, node);
+            copyNode(contentNode, node, true);
+        }
+    }
+
+    private Node getComponentContentNode(final Session session, final String path) throws RepositoryException {
+        if (!session.itemExists(path)) {
+            return null;
+        }
+
+        final List<String> alreadyVisitedNodes = new ArrayList<>();
+        Node component = session.getNode(path);
+        while (true) {
+            // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
+            if (component.hasNode(JCR_CONTENT)) {
+                return component.getNode(JCR_CONTENT);
+            }
+
+            // If we already visited that node then exit to avoid an endless loop
+            String componentPath = component.getPath();
+            if (alreadyVisitedNodes.contains(componentPath)) {
+                return null;
+            }
+
+            alreadyVisitedNodes.add(componentPath);
+            if (!component.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
+                return null;
+            }
+
+            final String resourceSuperType = component.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
+            if (isEmpty(resourceSuperType)) {
+                return null;
+            }
+
+            componentPath = APPS_ROOT + SLASH + resourceSuperType;
+            try {
+                component = session.getNode(componentPath);
+                logger.trace("Found Resource Super Type: '{}'", componentPath);
+            } catch (final PathNotFoundException e) {
+                logger.warn("Could not find Resource Super Type Component: " + componentPath + " -> ignore component", e);
+                return null;
+            }
+        }
+    }
+
+    private Node getVariationContentOrDefault(final Node node, final String variation) throws RepositoryException {
+        // Look up the variation node
+        final Node variationNode;
+        if (isNotEmpty(variation) && node.hasNode(variation)) {
+            variationNode = node.getNode(variation);
+        } else {
+            logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, node.getPath());
+            variationNode = getFirstChild(node);
+        }
+
+        if (variationNode != null && variationNode.hasNode(JCR_CONTENT)) {
+            return variationNode.getNode(JCR_CONTENT);
+        }
+
+        return null;
+    }
+
+    private void applyProperties(final Node node, final Map properties) throws RepositoryException, ManagementException {
+        String prettyJson = prettyPrintJson(properties);
+        logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyJson);
+        Set<Map.Entry> entrySet = properties.entrySet();
+        entrySet = entrySet.stream()
+                .filter(e -> !IGNORED_PROPERTIES_FOR_COPY.contains(e.getKey()))
+                .collect(Collectors.toSet());
+        for (final Map.Entry entry: entrySet) {
+            final String key = toStringOrNull(entry.getKey());
+            final Object value = entry.getValue();
+            prettyJson = prettyPrintJson(value);
+            logger.trace("Apply Props, handle prop: '{}'='{}', value type: '{}'", key, prettyJson, getClassOrNull(value));
+            if (value instanceof String) {
+                node.setProperty(key, (String) value);
+            } else if (value instanceof List) {
+                final List list = (List) value;
+                // Get sub node
+                if (node.hasNode(key)) {
+                    applyChildProperties(node.getNode(key), list);
+                } else {
+                    applyChildProperties(node, list);
                 }
             }
         }
     }
 
-    private void applyChildProperties(Node parent, ArrayList childProperties) throws RepositoryException, ManagementException {
+    private void applyChildProperties(final Node parent, final List childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
         int counter = 0;
-        for (Object item : childProperties) {
+        for (final Object item : childProperties) {
             if (item instanceof Map) {
-                Map childProps = (Map) item;
-                // Find matching child by name
-                String name = getPropsFromMap(childProps, "name", null);
-                if (isBlank(name)) {
-                    String path = getPropsFromMap(childProps, "path", null);
-                    if (isNotBlank(path)) {
-                        int index = path.lastIndexOf('/');
-                        if (index < path.length() - 1) {
-                            name = path.substring(index + 1);
-                        }
-                    }
-                }
-                if (isNotBlank(name)) {
-                    // Apply data
-                    try {
-                        if(parent.hasNode(name)) {
-                            Node childNode = parent.getNode(name);
-                            applyProperties(childNode, childProps);
-                        } else {
-                            // No name or matching path name (auto generated IDs) -> use position to find target
-                            Node target = null;
-                            NodeIterator i = parent.getNodes();
-                            int targetCounter = 0;
-                            while(i.hasNext()) {
-                                if(targetCounter == counter) {
-                                    target = i.nextNode();
-                                    break;
-                                }
-                                targetCounter++;
-                            }
-                            if(target != null) {
-                                logger.trace("Found Target by position: '{}'", target.getPath());
-                                // Check if component matches
-                                Object sourceComponent = childProps.get(COMPONENT);
-                                Object targetComponent = target.getProperty(COMPONENT).getString();
-                                if(sourceComponent == null || !sourceComponent.equals(targetComponent)) {
-                                    logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
-                                } else {
-                                    applyProperties(target, childProps);
-                                }
-                            } else {
-                                String path = getPropsFromMap(childProps, "path", null);
-                                Node sourceNode = findSourceByPath(parent, path.split("/"));
-                                logger.trace("Child Props parent: '{}', source node: '{}'", parent, sourceNode);
-                                if(sourceNode != null) {
-                                    String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
-                                    Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
-                                    newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
-
-                                    Node contentNode = handleComponent(parent, componentName, null);
-                                    if (contentNode != null) {
-                                        logger.trace("Copy Node: '{}' to: '{}'", contentNode, newNode);
-                                        copyNode(contentNode, newNode, true);
-                                    }
-                                    applyProperties(newNode, childProps);
-                                }
-                            }
-                        }
-                    } catch (PathNotFoundException e) {
-                        // Never happens
-                    }
-                } else {
-                    logger.warn("Neither Name nor Path Found in Object: '{}'", childProps);
-                }
+                applyChildProperties(parent, (Map) item, counter);
             } else {
                 logger.warn("Array item: '{}' is not an Object and so ignored", item);
             }
+
             counter++;
         }
     }
 
-    private Node handleComponent(Node node, String componentName, String variation) throws RepositoryException {
-        String componentPath = APPS_ROOT + SLASH + componentName;
-        Node contentNode = null;
-        if(node.getSession().itemExists(componentPath)) {
-            Node componentNode = node.getSession().getNode(componentPath);
-            if (componentNode != null) {
-                if (componentNode.hasNode(JCR_CONTENT)) {
-                    contentNode = componentNode.getNode(JCR_CONTENT);
-                } else {
-                    // Loop for a sling:resourceSuperType and copy this one in instead
-                    Node superTypeNode = componentNode;
-                    List<String> alreadyVisitedNodes = new ArrayList<>();
-                    while (true) {
-                        // If we already visited that node then exit to avoid an endless loop
-                        if (alreadyVisitedNodes.contains(superTypeNode.getPath())) {
-                            break;
-                        }
-                        alreadyVisitedNodes.add(superTypeNode.getPath());
-                        if (superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
-                            String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-                            if (isNotEmpty(resourceSuperType)) {
-                                try {
-                                    superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
-                                    logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
-                                    // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
-                                    if (superTypeNode.hasNode(JCR_CONTENT)) {
-                                        contentNode = superTypeNode.getNode(JCR_CONTENT);
-                                        logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), contentNode.getPath());
-                                        break;
-                                    }
-                                } catch (PathNotFoundException e) {
-                                    logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (contentNode != null) {
-                    boolean isVariations = false;
-                    if (contentNode.hasProperty(VARIATIONS)) {
-                        isVariations = contentNode.getProperty(VARIATIONS).getBoolean();
-                    }
-                    if (isVariations) {
-                        boolean useDefault = true;
-                        if (isNotEmpty(variation)) {
-                            // Look up the variation node
-                            if (contentNode.hasNode(variation)) {
-                                Node variationNode = contentNode.getNode(variation);
-                                if (variationNode.hasNode(JCR_CONTENT)) {
-                                    contentNode = variationNode.getNode(JCR_CONTENT);
-                                    useDefault = false;
-                                } else {
-                                    logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                                    contentNode = null;
-                                    useDefault = false;
-                                }
-                            } else {
-                                logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
-                            }
-                        }
-                        if (useDefault) {
-                            NodeIterator i2 = contentNode.getNodes();
-                            if (i2.hasNext()) {
-                                Node variationNode = i2.nextNode();
-                                if (variationNode.hasNode(JCR_CONTENT)) {
-                                    contentNode = variationNode.getNode(JCR_CONTENT);
-                                } else {
-                                    logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                                    contentNode = null;
-                                }
-                            }
-                        }
-                    }
-                }
+    private void applyChildProperties(final Node parent, final Map properties, final int position) throws RepositoryException, ManagementException {
+        // Find matching child by name
+        final String name = extractName(properties);
+        if (isBlank(name)) {
+            logger.warn("Neither Name nor Path Found in Object: '{}'", properties);
+            return;
+        }
+
+        // Apply data
+        if (parent.hasNode(name)) {
+            applyProperties(parent.getNode(name), properties);
+            return;
+        }
+
+        // No name or matching path name (auto generated IDs) -> use position to find target
+        final Node target = getNodeAtPosition(parent, position);
+        if (target != null) {
+            logger.trace("Found Target by position: '{}'", target.getPath());
+            // Check if component matches
+            final Object sourceComponent = properties.get(COMPONENT);
+            final Object targetComponent = target.getProperty(COMPONENT).getString();
+            if (sourceComponent == null || !sourceComponent.equals(targetComponent)) {
+                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
+            } else {
+                applyProperties(target, properties);
+            }
+        } else {
+            final String path = getPropsFromMap(properties, PATH, EMPTY);
+            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
+            logger.trace("Child Props parent: '{}', source node: '{}'", parent, sourceNode);
+            if (sourceNode != null) {
+                String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
+                Node newNode = addNewNode(parent);
+                newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
+
+                copyPropertiesFromComponentVariation(parent, componentName, null);
+                applyProperties(newNode, properties);
             }
         }
-        return contentNode;
     }
 
     /**
@@ -817,46 +795,57 @@ public class AdminResourceHandlerService
      * @return The node that matches the last segment if a matching node is found or null if not found
      * @throws RepositoryException A node operation failed but that should not happen
      */
-    private Node findSourceByPath(Node start, String[] segments) throws RepositoryException {
-        String startName = start.getName();
-        for(int i = 0; i < segments.length; i++) {
-            String segment = segments[i];
-            if(segment != null && !segment.isEmpty()) {
-                if(segment.equals(startName)) {
-                    if (i + 1 == segment.length()) {
-                        // It is last entry so we found it
-                        return start;
-                    } else {
-                        Node child = start;
-                        for (i++; i < segments.length; i++) {
-                            String childNodeSegment = segments[i];
-                            if (child.hasNode(childNodeSegment)) {
-                                child = child.getNode(childNodeSegment);
-                            } else {
-                                child = null;
-                                break;
-                            }
-                        }
-                        return child;
-                    }
-                }
+    private Node findSourceByPath(final Node start, final String[] segments) throws RepositoryException {
+        final String startName = start.getName();
+        final int length = segments.length;
+        int i = 0;
+        for (; i < length - 1; i++) {
+            if (StringUtils.equals(segments[i], startName)) {
+                break;
             }
         }
-        // No child found -> go to parent and try again
-        Node parent;
-        try {
-            parent = start.getParent();
-            return findSourceByPath(parent, segments);
-        } catch(ItemNotFoundException e) {
-            return null;
+
+        if (i < length - 1) {
+            Node child = start;
+            while (++i < length) {
+                final String segment = segments[i];
+                if (child.hasNode(segment)) {
+                    child = child.getNode(segment);
+                } else {
+                    return null;
+                }
+            }
+
+            return child;
         }
+
+        final String segment = segments[length - 1];
+        if (StringUtils.equals(segment, startName)) {
+            // It is last entry so we found it
+            return start;
+        }
+
+        // No child found -> go to parent and try again
+        final Node parent = start.getParent();
+        return parent == null ? null : findSourceByPath(parent, segments);
+    }
+
+    private String extractName(final Map properties) {
+        final String name = toStringOrNull(properties.get(NAME));
+        if (isNotBlank(name)) {
+            return name;
+        }
+
+        final String path = toStringOrNull(properties.get(PATH));
+        return PerUtil.extractName(path);
+
     }
 
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException {
         try {
             // Copy all properties
-            PropertyIterator pi = source.getProperties();
-            while(pi.hasNext()) {
+            final PropertyIterator pi = source.getProperties();
+            while (pi.hasNext()) {
                 Property property = pi.nextProperty();
                 if(!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
                     if(property.isMultiple()) {
@@ -877,132 +866,129 @@ public class AdminResourceHandlerService
             }
             return target;
         } catch(RepositoryException e) {
-            logger.trace("Failed to copy components node", e);
             throw new ManagementException(String.format(FAILED_TO_COPY, source, target), e);
         }
     }
 
     @Override
-    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException {
-        // Check the given parameters and make sure everything is correct
-        if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
-        Resource parentResource = getResource(resourceResolver, sitesParentPath);
+    public Resource copySite(
+            final ResourceResolver resourceResolver,
+            final String sitesParentPath,
+            final String fromName,
+            final String targetName) throws ManagementException {
+        checkCopySiteParameters(resourceResolver, sitesParentPath, fromName, targetName);
+
+        final Resource parentResource = getResource(resourceResolver, sitesParentPath);
         if(parentResource == null) { throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES); }
-        if(isEmpty(fromName)) { throw new ManagementException(MISSING_SOURCE_SITE_NAME); }
-        if(fromName.equals(targetName)) { throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName); }
-        Resource source = getResource(parentResource, fromName);
+        final Resource source = getResource(parentResource, fromName);
         if(source == null) { throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, fromName)); }
-        if(isEmpty(targetName)) { throw new ManagementException(MISSING_NEW_SITE_NAME); }
-        Resource answer = getResource(parentResource, targetName);
-        if(answer != null) { throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName)); }
         // Ensure the Site Resource is a page
         if(!isPrimaryType(source, PAGE_PRIMARY_TYPE)) { throw new ManagementException(String.format(SOURCE_SITE_IS_NOT_A_PAGE, fromName)); }
 
-        ArrayList<String> superTypes = new ArrayList<>();
+        Resource answer = getResource(parentResource, targetName);
+        if(answer != null) { throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName)); }
 
-        List<String> packagePaths = new ArrayList<>();
+        final ArrayList<Resource> resourcesToPackage = new ArrayList<>();
+        final ArrayList<String> superTypes = new ArrayList<>();
 
-        Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + fromName);
-        if(appsSource != null) {
-            Resource appsTarget = getResource(resourceResolver, APPS_ROOT + SLASH + targetName);
-            if(appsTarget == null) {
-                appsTarget = copyFolder(appsSource, appsSource.getParent(), targetName);
-                if(appsTarget != null) {
-                    packagePaths.add(appsTarget.getPath());
-                }
-            }
-            if(appsTarget != null) {
-                // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-                // with the sling:resourceSuperType set to the <fromSite> component
-                copyStubs(appsSource, appsTarget, COMPONENTS, superTypes);
-                // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
-                // with the sling:resourceSuperType set to the <fromSite> object
-                copyStubs(appsSource, appsTarget, OBJECTS, null);
-            }
-        }
-
+        final StructureCopier copier = new StructureCopier(resourceResolver);
+        copier.setToName(targetName);
+        copier.setFromName(fromName);
+        resourcesToPackage.add(copier.copyApps(superTypes));
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
-        Resource sourceResource = getResource(resourceResolver, ASSETS_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, null, targetName);
-            }
-        }
+        copier.setFromName(null);
+        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
+        copier.setFromName(fromName);
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
-        sourceResource = getResource(resourceResolver, OBJECTS_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
-            }
-        }
+        resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
-        sourceResource = getResource(resourceResolver, TEMPLATES_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
-            }
-        }
+        resourcesToPackage.add(copier.copyFromRoot(TEMPLATES_ROOT));
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
-        sourceResource = getResource(resourceResolver, SITES_ROOT + SLASH + fromName);
-        if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
-                updateStringsInFiles(targetResource, fromName, targetName);
-            }
-            answer = targetResource;
+        answer = copier.copyFromRoot(SITES_ROOT);
+        resourcesToPackage.add(answer);
+        if (answer != null) {
+            updateStringsInFiles(answer, targetName);
         }
+
         // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
-        sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
+        final Resource sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
-            if(targetResource != null) {
-                packagePaths.add(targetResource.getPath());
-                logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
-                ValueMap properties = getModifiableProperties(targetResource, false);
-                logger.trace("Copied Felibs Properties: '{}'", properties);
-                if (properties != null) {
-                    String[] dependencies = properties.get(DEPENDENCIES, String[].class);
-                    if (dependencies == null) {
-                        dependencies = new String[]{sourceResource.getPath()};
-                    } else {
-                        String[] newDependencies = new String[dependencies.length + 1];
-                        System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
-                        newDependencies[dependencies.length] = sourceResource.getPath();
-                        dependencies = newDependencies;
-                    }
-                    properties.put(DEPENDENCIES, dependencies);
+            final Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            resourcesToPackage.add(targetResource);
+            logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
+            final ValueMap properties = getModifiableProperties(targetResource, false);
+            logger.trace("Copied Felibs Properties: '{}'", properties);
+            if (properties != null) {
+                String[] dependencies = properties.get(DEPENDENCIES, String[].class);
+                if(dependencies == null) {
+                    dependencies = new String[]{ sourceResource.getPath() };
+                } else {
+                    final String[] newDependencies = new String[dependencies.length + 1];
+                    System.arraycopy(dependencies, 0, newDependencies, 0, dependencies.length);
+                    newDependencies[dependencies.length] = sourceResource.getPath();
+                    dependencies = newDependencies;
                 }
 
-                StringBuilder mappings = new StringBuilder();
-                for (String superType : superTypes) {
-                    String componentSourceName = PerUtil.getComponentVariableNameFromString(superType);
-                    String componentDestName = PerUtil.getComponentVariableNameFromString(superType.replace(fromName + "/", targetName + "/"));
-                    mappings.append("var ");
-                    mappings.append(componentDestName);
-                    mappings.append(" = ");
-                    mappings.append(componentSourceName);
-                    mappings.append('\n');
-                }
-                createResourceFromString(resourceResolver, targetResource, "mapping.js", mappings.toString());
-                createResourceFromString(resourceResolver, targetResource, "js.txt", "mapping.js\n");
+                properties.put(DEPENDENCIES, dependencies);
             }
+
+            createResourceFromString(targetResource, "mapping.js", assembleMappingsJs(superTypes, fromName, targetName));
+            createResourceFromString(targetResource, "js.txt", "mapping.js\n");
         }
 
         try {
+            final List<String> packagePaths = resourcesToPackage.stream()
+                    .filter(Objects::nonNull)
+                    .map(Resource::getPath)
+                    .collect(Collectors.toList());
             createSitePackage(resourceResolver, targetName, packagePaths);
         } catch (PersistenceException e) {
             logger.error("Failed to create package for site " + targetName, e);
         }
 
         return answer;
+    }
+
+    private void checkCopySiteParameters(
+            final ResourceResolver resourceResolver,
+            final String sitesParentPath,
+            final String fromName,
+            final String targetName) throws ManagementException {
+        // Check the given parameters and make sure everything is correct
+        if (resourceResolver == null) {
+            throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY);
+        }
+
+        if (isBlank(sitesParentPath)) {
+            throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
+        }
+
+        if (isEmpty(fromName)) {
+            throw new ManagementException(MISSING_SOURCE_SITE_NAME);
+        }
+
+        if (fromName.equals(targetName)) {
+            throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName);
+        }
+
+        if (isEmpty(targetName)) {
+            throw new ManagementException(MISSING_NEW_SITE_NAME);
+        }
+    }
+
+    private String assembleMappingsJs(final List<String> superTypes, final String fromName, final String targetName) {
+        final StringBuilder builder = new StringBuilder();
+        for (final String superType : superTypes) {
+            String sourceName = getComponentVariableNameFromString(superType);
+            String destName = getComponentVariableNameFromString(superType.replace(fromName + SLASH, targetName + SLASH));
+            builder.append("var ");
+            builder.append(destName);
+            builder.append(" = ");
+            builder.append(sourceName);
+            builder.append('\n');
+        }
+
+        return builder.toString();
     }
 
     private void createSitePackage(ResourceResolver resourceResolver, String siteName, List<String> packagePaths) throws PersistenceException {
@@ -1033,11 +1019,8 @@ public class AdminResourceHandlerService
             filename = packageName + DASH + version + ZIP_EXTENSION;
             packageResource = groupResource.getChild(filename);
             if(version >= MAXIMUM_VERSION) {
-                logger.error(
-                    "{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.",
-                    version,
-                    packageResource == null ? "NOT FOUND" : packageResource.getPath()
-                );
+                final String path = getPath(packageResource);
+                logger.error("{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.", version, path);
                 return;
             }
         }
@@ -1077,67 +1060,70 @@ public class AdminResourceHandlerService
 
     }
 
-    private void updateStringsInFiles(Resource targetResource, String fromName, String targetName) {
-        Resource contentResource = targetResource.getChild("jcr:content");
-        if (contentResource == null) {
-            logger.error("No jcr:content resource for resource '{}'", targetResource.getPath());
-            return;
-        }
-        Resource replacementsResource = contentResource.getChild("replacements");
-        if(replacementsResource == null) {
-            logger.info("No replacements defined for resource '{}'", targetResource.getPath());
+    private void updateStringsInFiles(final Resource target, final String siteName) {
+        final Resource content = target.getChild(JCR_CONTENT);
+        if (content == null) {
+            logger.error("No jcr:content resource for resource '{}'", target.getPath());
             return;
         }
 
-        for(Resource fileChild : replacementsResource.getChildren()) {
-            //If the file resource doesn't have children, we don't need to do anything
-            //since the children define the actual replacements
-            if(fileChild.hasChildren()) {
-                String filename = fileChild.getName();
-                Resource fileResource = targetResource.getChild(filename);
-                if (fileResource != null) {
-                    String fileContent = null;
-                    try {
-                        fileContent = getFileContentAsString(fileResource);
-                    } catch (IOException e) {
-                        logger.error("Exception getting contents of file:" + fileResource.getPath(), e);
-                    }
+        final Resource replacements = content.getChild("replacements");
+        if (replacements == null) {
+            logger.info("No replacements defined for resource '{}'", target.getPath());
+            return;
+        }
 
-                    if (isNotBlank(fileContent)) {
-                        String modifiedFileContent = fileContent;
-                        for(Resource replacementResource : fileChild.getChildren()) {
-                            ValueMap replacementProperties = replacementResource.getValueMap();
-                            String pattern = replacementProperties.get("regex", String.class);
-                            String replaceWith = replacementProperties.get("replaceWith", String.class);
-                            if(isNotBlank(pattern) && isNotBlank(replaceWith)) {
-                                //"_SITENAME_" is a placeholder for the actual new site name
-                                replaceWith = replaceWith.replaceAll("_SITENAME_", targetName);
-                                modifiedFileContent = modifiedFileContent.replaceAll(pattern, replaceWith);
-                            }
-                        }
-                        try {
-                            replaceFileContent(fileResource, modifiedFileContent);
-                        } catch (IOException e) {
-                            logger.error("IOException replacing contents of file " + fileResource.getPath(), e);
-                        } catch (RepositoryException e) {
-                            logger.error("RepositoryException replacing contents of file " + fileResource.getPath(), e);
-                        }
-                    }
+        for (final Resource replacement : replacements.getChildren()) {
+            // If the file resource doesn't have children, we don't need to do anything
+            // since the children define the actual replacements
+            if (replacement.hasChildren()) {
+                final String fileName = replacement.getName();
+                final Resource file = target.getChild(fileName);
+                if (file != null) {
+                    updateStringsInFile(file, replacement, siteName);
                 }
             }
         }
     }
 
-    private String getFileContentAsString(Resource fileResource) throws IOException {
-        InputStream is = fileResource.adaptTo(InputStream.class);
-        try {
-            String manifestContent = IOUtils.toString(is, StandardCharsets.UTF_8.name());
-            return manifestContent;
-        } finally {
-            if(is != null) {
-                is.close();
-            }
+    private void updateStringsInFile(final Resource file, final Resource replacements, final String siteName) {
+        String content = getFileContentAsString(file);
+        if (isBlank(content)) {
+            return;
         }
+
+        for (final Resource replacement : replacements.getChildren()) {
+            content = replaceSiteName(content, replacement.getValueMap(), siteName);
+        }
+
+        try {
+            replaceFileContent(file, content);
+        } catch (final IOException e) {
+            logger.error("IOException replacing contents of file " + file.getPath(), e);
+        } catch (RepositoryException e) {
+            logger.error("RepositoryException replacing contents of file " + file.getPath(), e);
+        }
+    }
+
+    private String getFileContentAsString(final Resource file) {
+        try (final InputStream is = file.adaptTo(InputStream.class)) {
+            return IOUtils.toString(is, StandardCharsets.UTF_8.name());
+        } catch (final IOException e) {
+            logger.error("Exception getting contents of file:" + file.getPath(), e);
+            return null;
+        }
+    }
+
+    private String replaceSiteName(final String text, final ValueMap regexMap, final String siteName) {
+        final String regex = regexMap.get("regex", EMPTY);
+        String replaceWith = regexMap.get("replaceWith", EMPTY);
+        if (isAnyBlank(regex, replaceWith)) {
+            return text;
+        }
+
+        // "_SITENAME_" is a placeholder for the actual new site name
+        replaceWith = replaceWith.replace("_SITENAME_", siteName);
+        return text.replaceAll(regex, replaceWith);
     }
 
     private void replaceFileContent(Resource fileResource, String newContent) throws IOException, RepositoryException {
@@ -1161,17 +1147,20 @@ public class AdminResourceHandlerService
         JcrUtils.putFile(fileNode.getParent(), fileNode.getName(), mimeType, newContentStream);
     }
 
-    private void createResourceFromString(ResourceResolver resourceResolver, Resource parent, String name, String data) throws ManagementException {
+    private void createResourceFromString(Resource parent, String name, String data) throws ManagementException {
+        final String parentPathDisplay = getPath(parent);
+        final Node parentNode = getNode(parent);
+        if (parentNode == null) {
+            throw new ManagementException(String.format(FAILED_TO_CREATE, name, parentPathDisplay, name));
+        }
+
         try {
-            Node parentNode = parent.adaptTo(Node.class);
-            if(parentNode == null) { throw new ManagementException("Parent: '" + parent.getPath() + "' could not be adapted to a Node"); }
             Node newAsset = parentNode.addNode(name, NT_FILE);
             Node content = newAsset.addNode(JCR_CONTENT, NT_RESOURCE);
             content.setProperty(JCR_DATA, data);
             content.setProperty(JCR_MIME_TYPE, TEXT_MIME_TYPE);
         } catch(RepositoryException e) {
-            logger.error("failed to create resource {}", name, e);
-            throw new ManagementException(String.format(FAILED_TO_CREATE, name, parent.getPath(), name), e);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, name, parentPathDisplay, name), e);
         }
     }
 
@@ -1213,7 +1202,8 @@ public class AdminResourceHandlerService
             try {
                 resourceResolver.delete(resource);
             } catch (PersistenceException e) {
-                throw new ManagementException(String.format("not able to delete {}", resource.getPath()));
+                final String message = String.format("not able to delete %s", resource.getPath());
+                throw new ManagementException(message);
             }
         }
     }
@@ -1230,7 +1220,7 @@ public class AdminResourceHandlerService
             target = source.getResourceResolver().create(targetParent, toName, newProperties);
             updateTitle(target, toName);
         } catch(PersistenceException e) {
-            logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
+            logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
             return null;
         }
         logger.trace("New Resource Properties: '{}'", target.getValueMap());
@@ -1256,332 +1246,475 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName) {
-        // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
-        // while child assets will use the name from the source; otherwise every asset has the same name
-        copyChildResources(source, deep, target, fromName, toName, 0);
-    }
+    private final class StructureCopier {
 
-    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName, int depth) {
-        logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
-        for(Resource child: source.getChildren()) {
-            logger.trace("Child handling started: '{}'", child.getPath());
-            Map<String, Object> newProperties = copyProperties(child.getValueMap());
-            try {
-                if(isNotEmpty(fromName)) {
-                    String pattern1 = SLASH + fromName;
-                    String pattern2 = fromName + SLASH;
-                    for(Entry<String, Object> entry : newProperties.entrySet()) {
-                        String key = entry.getKey();
-                        Object temp = entry.getValue();
-                        if(temp instanceof String) {
-                            String value = (String) temp;
-                            int index = value.indexOf(pattern1);
-                            String newValue = null;
-                            if(value.startsWith("/content/") && index > 0) {
-                                // Check if the string ends or if the next character is a slash to avoid collisions
-                                logger.trace("Value Length: {}, Index: {}, Pattern Length: {}", value.length(), index, pattern1.length());
-                                if(index + pattern1.length() == value.length()) {
-                                    newValue = value.substring(0, index) + SLASH + toName;
-                                } else if(value.charAt(index + pattern1.length()) == '/') {
-                                    newValue = value.substring(0, index) + SLASH + toName + SLASH + value.substring(index + pattern1.length() + 1);
-                                }
-                            } else if(value.startsWith(pattern2)) {
-                                newValue = toName + SLASH + value.substring(pattern2.length());
-                            }
-                            if(newValue != null) {
-                                entry.setValue(newValue);
-                                logger.trace("Updated Properties: '{}'", newProperties);
-                            }
-                        }
+        private final ResourceResolver resourceResolver;
+
+        private String fromName;
+        private String toName;
+
+        private String patternSlashName;
+        private String patternNameSlash;
+        private int patternLength;
+
+        public StructureCopier(final ResourceResolver resourceResolver) {
+            this.resourceResolver = resourceResolver;
+        }
+
+        public void setFromName(final String fromName) {
+            this.fromName = fromName;
+            if (isEmpty(fromName)) {
+                patternSlashName = null;
+                patternNameSlash = null;
+                patternLength = 0;
+            } else {
+                patternSlashName = SLASH + fromName;
+                patternNameSlash = fromName + SLASH;
+                patternLength = patternSlashName.length();
+            }
+        }
+
+        public void setToName(final String toName) {
+            this.toName = toName;
+        }
+
+        public Resource copyApps(final List<String> superTypes) {
+            final String pathPrefix = APPS_ROOT + SLASH;
+            final Resource source = getResource(resourceResolver, pathPrefix + fromName);
+            if (source != null) {
+                Resource target = getResource(resourceResolver, pathPrefix + toName);
+                Resource answer = null;
+                if (target == null) {
+                    target = copyFolder(source, source.getParent(), toName);
+                    answer = target;
+                }
+
+                if (target != null) {
+                    // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
+                    // with the sling:resourceSuperType set to the <fromSite> component
+                    superTypes.addAll(copyStubs(source, target, COMPONENTS));
+                    // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
+                    // with the sling:resourceSuperType set to the <fromSite> object
+                    copyStubs(source, target, OBJECTS);
+                }
+
+                return answer;
+            }
+
+            return null;
+        }
+
+        public Resource copyFromRoot(final String rootPath) {
+            final Resource source = getResource(resourceResolver, rootPath + SLASH + fromName);
+            if (source != null) {
+                final Resource target = copyResources(source, source.getParent(), toName);
+                if (target != null) {
+                    // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
+                    // while child assets will use the name from the source; otherwise every asset has the same name
+                    copyChildren(source, target, 0);
+                }
+
+                return target;
+            }
+
+            return null;
+        }
+
+        private void copyChildren(final Resource source, final Resource target, final int depth) {
+            logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
+            for (Resource child : source.getChildren()) {
+                logger.trace("Child handling started: '{}'", child.getPath());
+                try {
+                    copyChild(child, target, depth);
+                } catch (PersistenceException e) {
+                    logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
+                    return;
+                }
+                logger.trace("Child handled: '{}'", child.getPath());
+            }
+        }
+
+        private void copyChild(final Resource sourceChild, final Resource targetParent, final int depth) throws PersistenceException {
+            Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
+            if (patternLength > 0) {
+                updatePaths(newProperties);
+            }
+
+            Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
+            updateTitle(childTarget, ((depth > 0) && newProperties.containsKey(JCR_TITLE)) ? (String) newProperties.get(JCR_TITLE) : toName);
+            final String childTargetPathDisplay = getPath(childTarget);
+            logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
+            // Copy grandchildren
+            copyChildren(sourceChild, childTarget, depth + 1);
+        }
+
+        private void updatePaths(final Map<String, Object> properties) {
+            for (final Entry<String, Object> entry : properties.entrySet()) {
+                final Object temp = entry.getValue();
+                if (temp instanceof String) {
+                    String newValue = updatePath((String) temp);
+                    if (newValue != null) {
+                        entry.setValue(newValue);
+                        logger.trace("Updated Properties: '{}'", properties);
                     }
                 }
-                Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
-                updateTitle(childTarget, (((depth > 0) && (newProperties.get(JCR_TITLE) != null)) ?  (String) newProperties.get(JCR_TITLE) : toName));
-
-                logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
-                // Copy grandchildren
-                if(deep) {
-                    copyChildResources(child, true, childTarget, fromName, toName, depth + 1);
-                }
-            } catch(PersistenceException e) {
-                logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
-                return;
             }
-            logger.trace("Child handled: '{}'", child.getPath());
         }
-    }
 
-    private void copyStubs(Resource source, Resource target, String folderName, List superTypes) throws ManagementException {
-        Resource appsSource = getResource(source, folderName);
-        if(appsSource != null) {
-            Resource appsTarget = getResource(source.getResourceResolver(), target.getPath() + SLASH + folderName);
-            if(appsTarget == null) {
-                appsTarget = copyFolder(appsSource, target, folderName);
-                if(appsTarget == null) { return; }
-            }
-            for(Resource child : appsSource.getChildren()) {
-                ValueMap properties = child.getValueMap();
-                Map<String, Object> newProperties = new HashMap<>(properties);
-                String originalAppsPath = child.getPath();
-                originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
-                if(superTypes != null) {
-                    superTypes.add(originalAppsPath);
+        private String updatePath(final String value) {
+            int index = value.indexOf(patternSlashName);
+            if (value.startsWith("/content/") && index > 0) {
+                // Check if the string ends or if the next character is a slash to avoid collisions
+                logger.trace("Value Length: {}, Index: {}, Pattern Length: {}", value.length(), index, patternLength);
+                if (index + patternLength == value.length()) {
+                    return value.substring(0, index) + SLASH + toName;
+                } else if (value.charAt(index + patternLength) == '/') {
+                    return value.substring(0, index) + SLASH + toName + SLASH + value.substring(index + patternLength + 1);
                 }
+            } else if (value.startsWith(patternNameSlash)) {
+                return toName + SLASH + value.substring(patternLength);
+            }
+
+            return null;
+        }
+
+        private Resource copyFolder(final Resource folder, final Resource targetParent, final String folderName) {
+            final Map<String, Object> newProperties = copyProperties(folder.getValueMap());
+            logger.trace("Resource Properties: '{}'", newProperties);
+            try {
+                return resourceResolver.create(targetParent, folderName, newProperties);
+            } catch(final PersistenceException e) {
+                logger.warn(String.format(COPY_FAILED, folder.getName(), folder.getPath()), e);
+            }
+
+            return null;
+        }
+
+        private List<String> copyStubs(final Resource source, final Resource target, final String folderName) {
+            final List<String> superTypes = new ArrayList<>();
+            final Resource appsSource = getResource(source, folderName);
+            if (appsSource == null) {
+                return superTypes;
+            }
+
+            Resource appsTarget = getResource(resourceResolver, target.getPath() + SLASH + folderName);
+            if (appsTarget == null) {
+                appsTarget = copyFolder(appsSource, target, folderName);
+                if (appsTarget == null) {
+                    return superTypes;
+                }
+            }
+
+            for (final Resource child : appsSource.getChildren()) {
+                final ValueMap properties = child.getValueMap();
+                final Map<String, Object> newProperties = new HashMap<>(properties);
+                final String originalAppsPath = child.getPath().substring(APPS_ROOT.length() + 1);
+                superTypes.add(originalAppsPath);
                 newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
                 try {
-                    source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
+                    resourceResolver.create(appsTarget, child.getName(), newProperties);
                 } catch(PersistenceException e) {
-                    logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                    logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
                 }
             }
-        }
-    }
 
-    private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
-        Resource answer = null;
-        Map<String, Object> newProperties = copyProperties(folder.getValueMap());
-        logger.trace("Resource Properties: '{}'", newProperties);
-        try {
-            answer = folder.getResourceResolver().create(targetParent, folderName, newProperties);
-        } catch(PersistenceException e) {
-            logger.warn("Copy of " + folder.getName() + ": '" + folder.getPath() + "' failed", e);
+            return superTypes;
         }
-        return answer;
     }
 
     @Override
-    public Resource updateResource(ResourceResolver resourceResolver, String path, String jsonContent) throws ManagementException {
-        Resource answer = null;
+    public Resource updateResource(final ResourceResolver resourceResolver, final String path, final String jsonContent) throws ManagementException {
+        if (isEmpty(jsonContent)) {
+            throw new ManagementException(String.format(NO_CONTENT_PROVIDED, path));
+        }
+
         try {
-            answer = getResource(resourceResolver, path);
-            if(answer == null) {
+            final Resource answer = getResource(resourceResolver, path);
+            if (answer == null) {
                 throw new ManagementException(String.format(RESOURCE_NOT_FOUND, path));
             }
-            if(jsonContent == null || jsonContent.isEmpty()) {
-                throw new ManagementException(String.format(NO_CONTENT_PROVIDED, path));
-            }
-            Map content = convertToMap(jsonContent);
-            //AS TODO: Check if we could add some guards here to avoid misplaced updates (JCR Primary Type / Sling Resource Type)
-            updateResourceTree(answer, content);
-        } catch(IOException e) {
+
+            // AS TODO: Check if we could add some guards here to avoid misplaced updates (JCR Primary Type / Sling Resource Type)
+            final ResourceUpdater updater = new ResourceUpdater(resourceResolver, answer);
+            updater.updateResourceTree(convertToMap(jsonContent));
+            return answer;
+        } catch(final IOException e) {
             throw new ManagementException(String.format(FAILED_TO_PARSE_JSON, jsonContent));
         }
-        return answer;
     }
 
-    private void updateResourceTree(Resource resource, Map<String, Object> properties) throws ManagementException {
-        // Handle Deletion:
-        // 1) Delete property with either 'true' or null as value -> remove the given resource
-        // 2) Delete Property's value converted to string and then looked up as child of the given resource
-        //    - If found delete that resource
-        //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
-        if(properties.containsKey(DELETION_PROPERTY_NAME)) {
-            Object value = properties.get(DELETION_PROPERTY_NAME);
-            if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
-                // This indicates that this node shall be removed
+    private final class ResourceUpdater {
+
+        private final ResourceResolver resourceResolver;
+        private final Resource resource;
+
+        public ResourceUpdater(
+                final ResourceResolver resourceResolver,
+                final Resource resource
+        ) {
+            this.resourceResolver = resourceResolver;
+            this.resource = resource;
+        }
+
+        public void updateResourceTree(final Map<String, Object> properties) throws ManagementException {
+            updateResourceTree(resource, properties);
+        }
+
+        private void updateResourceTree(final Resource resource, final Map<String, Object> properties) throws ManagementException {
+            // Handle Deletion:
+            // 1) Delete property with either 'true' or null as value -> remove the given resource
+            // 2) Delete Property's value converted to string and then looked up as child of the given resource
+            //    - If found delete that resource
+            //    - If properties have an entry with that name and it is a Map -> remove it to avoid re-adding it during the processing of the properties
+            if (deleteIfContainsMarkerProperty(properties)) {
+                return;
+            }
+
+            for (final Entry<String, Object> entry: properties.entrySet()) {
+                final String name = entry.getKey();
+                final Object value = entry.getValue();
+                if (value instanceof Map) {
+                    updateMapProperty(name, (Map) value);
+                } else if (value instanceof List) {
+                    updateListProperty(name, (List) value);
+                } else {
+                    getModifiableProperties(resource, false).put(name, value);
+                }
+            }
+
+            baseResourceHandler.updateModification(resource);
+        }
+
+        private boolean deleteIfContainsMarkerProperty(
+                final Map<String, Object> properties
+        ) throws ManagementException {
+            if (properties.containsKey(DELETION_PROPERTY_NAME)) {
+                final Object value = properties.get(DELETION_PROPERTY_NAME);
+                if (isNullOrTrue(value)) {
+                    // This indicates that this node shall be removed
+                    try {
+                        resourceResolver.delete(resource);
+                        // This resource is gone so there is noting left that can be done here
+                        return true;
+                    } catch(final PersistenceException e) {
+                        throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
+                    }
+                } else {
+                    deleteChild(properties, value.toString());
+                }
+            }
+
+            return false;
+        }
+
+        private void deleteChild(
+                final Map<String, Object> properties,
+                final String childName
+        ) throws ManagementException {
+            final Resource child = resource.getChild(childName);
+            if (child != null) {
                 try {
-                    resource.getResourceResolver().delete(resource);
-                    // This resource is gone so there is noting left that can be done here
-                    return;
-                } catch(PersistenceException e) {
+                    resourceResolver.delete(child);
+                    if (properties.containsKey(childName)) {
+                        final Object value = properties.get(childName);
+                        if (value instanceof Map) {
+                            properties.remove(childName);
+                        }
+                    }
+                } catch(final PersistenceException e) {
+                    throw new ManagementException(String.format(FAILED_TO_DELETE_CHILD, child.getPath()), e);
+                }
+            }
+        }
+
+        private void updateMapProperty(
+                final String propertyName,
+                final Map map
+        ) throws ManagementException {
+            final String childPath = (String) map.get(PATH);
+            Resource child = resourceResolver.getResource(childPath);
+            if (child == null) {
+                child = resource.getChild(propertyName);
+            }
+
+            // If child is missing then create it
+            if (child == null) {
+                final String resourceType = (String) map.get(SLING_RESOURCE_TYPE);
+                map.remove(NAME);
+                map.remove(SLING_RESOURCE_TYPE);
+                map.remove(JCR_PRIMARY_TYPE);
+                child = createNode(resource, propertyName, NT_UNSTRUCTURED, resourceType);
+                // Now update the child with any remaining properties
+                writeProperties(map, child);
+            } else {
+                updateResourceTree(child, map);
+            }
+        }
+
+        private void writeProperties(final Map source, final Resource target) {
+            final ModifiableValueMap modifiableProperties = getModifiableProperties(target, false);
+            final Set<Entry> entrySet = source.entrySet();
+            for (final Entry entry : entrySet) {
+                final Object key = entry.getKey();
+                modifiableProperties.put(String.valueOf(key), entry.getValue());
+            }
+        }
+
+        private void updateListProperty(
+                final String propertyName,
+                final List list
+        ) throws ManagementException {
+            if (list.isEmpty()) {
+                return;
+            }
+
+            final Object first = list.get(0);
+            if (first instanceof Map) {
+                Resource child = resource.getChild(propertyName);
+                if(child == null) {
+                    child = createNode(resource, propertyName, NT_UNSTRUCTURED, null);
+                }
+
+                // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
+                // for which we have to get all the values in a list and then afterwards if such values were found update
+                // them as a property
+                updateObjectList(list, child);
+            } else if (first instanceof String) {
+                updateObjectSingleList(propertyName, list);
+            } else {
+                throw new ManagementException(String.format(OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
+            }
+        }
+
+        private void updateObjectSingleList(String name, List incomingList) throws ManagementException {
+            List<String> newSingleList = new ArrayList<>();
+            for(Object item : incomingList) {
+                if(item instanceof String) {
+                    String listItem = item.toString();
+                    if(listItem.isEmpty()) {
+                        continue;
+                    }
+                    newSingleList.add(listItem);
+                } else {
+                    throw new ManagementException(String.format(OBJECT_ITEM_WITH_UNSUPPORTED_TYPE, item, (item == null ? "null" : item.getClass().getName())));
+                }
+            }
+
+            getModifiableProperties(resource, false).put(name, newSingleList.toArray(new String[newSingleList.size()]));
+        }
+
+        private void updateObjectList(
+                final List list,
+                final Resource parent
+        ) throws ManagementException {
+            Resource lastResource = null;
+            for (int i = 0; i < list.size(); i++) {
+                final Object item = list.get(i);
+                if (item instanceof Map) {
+                    lastResource = updateObject(parent, (Map) item, lastResource, i);
+                } else {
+                    throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
+                }
+            }
+        }
+
+        private Resource updateObject(
+                final Resource parent,
+                final Map properties,
+                final Resource lastResource,
+                final int position
+        ) throws ManagementException {
+            final String name = getString(properties, NAME);
+            if (isEmpty(name)) {
+                throw new ManagementException(String.format(ITEM_NAME_MISSING, properties, parent.getPath()));
+            }
+
+            // Get index of the matching resource child to compare with the index in the list
+            Resource child = parent.getChild(name);
+            // Handle new item
+            if (child == null) {
+                final String resourceType = (String) properties.get(SLING_RESOURCE_TYPE);
+                properties.remove(NAME);
+                properties.remove(SLING_RESOURCE_TYPE);
+                properties.remove(JCR_PRIMARY_TYPE);
+                child = createNode(parent, name, NT_UNSTRUCTURED, resourceType);
+                // Move the child to the correct position
+                positionNewChild(child, lastResource);
+                // Now update the child with any remaining properties
+                writeProperties(properties, child);
+            } else {
+                final int index = getChildIndex(parent, child);
+                if (deleteIfContainsMarkerProperty(child, properties)) {
+                    return lastResource;
+                }
+
+                updateResourceTree(child, properties);
+                // Check order
+                if (position != index) {
+                    positionOldChild(child, lastResource);
+                }
+            }
+
+            return child;
+        }
+
+        private void positionNewChild(
+                final Resource child,
+                final Resource lastResource
+        ) throws ManagementException {
+            if (lastResource == null) {
+                // No saved last resource item so we need to place it as the first entry
+                final Resource first = getFirstChild(child.getParent());
+                // If there are no items then ignore it (it will be first
+                if (first != null) {
+                    moveNode(child, first, false, true);
+                }
+            } else {
+                // There is a resource item -> move the new one after the last one
+                moveNode(child, lastResource, false, false);
+            }
+        }
+
+        private boolean deleteIfContainsMarkerProperty(final Resource resource, final Map properties) throws ManagementException {
+            if (properties.containsKey(DELETION_PROPERTY_NAME)
+                    && isNullOrTrue(properties.get(DELETION_PROPERTY_NAME))) {
+                try {
+                    logger.trace("Remove List Child: '{}' ('{}')", resource.getName(), resource.getPath());
+                    resourceResolver.delete(resource);
+                    return true;
+                } catch (final PersistenceException e) {
                     throw new ManagementException(String.format(FAILED_TO_DELETE, resource.getPath()), e);
                 }
-            } else {
-                String name = value.toString();
-                Resource child = resource.getChild(name);
-                if(child != null) {
-                    try {
-                        resource.getResourceResolver().delete(child);
-                        if(properties.containsKey(name)) {
-                            value = properties.get(name);
-                            if(value instanceof Map) {
-                                properties.remove(name);
-                            }
-                        }
-                    } catch(PersistenceException e) {
-                        throw new ManagementException(String.format(FAILED_TO_DELETE_CHILD, child.getPath()), e);
-                    }
-                }
             }
+
+            return false;
         }
-        ModifiableValueMap updateProperties = getModifiableProperties(resource, false);
-        for(Entry<String, Object> entry: properties.entrySet()) {
-            String name = entry.getKey();
-            Object value = entry.getValue();
-            if(value instanceof Map) {
-                Map childProperties = (Map) value;
-                String childPath = (String) childProperties.get(PATH); 
-                Resource child = resource.getResourceResolver().getResource(childPath);
-                if(child == null) child = resource.getChild(name);
 
-
-                // If child is missing then create it
-                if(child == null) {
-                    Object val = childProperties.get(SLING_RESOURCE_TYPE);
-                    String resourceType = val == null ? null : (String) val;
-                    childProperties.remove(NAME);
-                    childProperties.remove(SLING_RESOURCE_TYPE);
-                    childProperties.remove(JCR_PRIMARY_TYPE);
-                    child = createNode(resource, name, NT_UNSTRUCTURED, resourceType);
-                    // Now update the child with any remaining properties
-                    ModifiableValueMap newChildProperties = getModifiableProperties(child, false);
-                    for(Object childPropertyKey : childProperties.keySet()) {
-                        newChildProperties.put(childPropertyKey + "", childProperties.get(childPropertyKey));
-                    }
-                } else {
-                    updateResourceTree(child, childProperties);
+        private void positionOldChild(
+                final Resource child,
+                final Resource lastResource
+        ) throws ManagementException {
+            final Resource first = getFirstChild(child.getParent());
+            if (first != null) {
+                if (lastResource == null) {
+                    // No saved last resource item so we need to place it as the first entry
+                    // If there are no items then ignore it (it will be first
+                    moveNode(child, first, false, true);
+                } else if (!lastResource.getName().equals(first.getName())) {
+                    // We only have to move if this wasn't already the first item due to deletion
+                    moveNode(child, lastResource, false, false);
                 }
-            } else if(value instanceof List) {
-                List list = (List) value;
-                int type = 0;
-                Object first = null;
-                if(!list.isEmpty()) {
-                    first = list.get(0);
-                    type = first instanceof Map ? 2 :
-                        first instanceof String ? 1 :
-                            -1;
-                }
-                if(type == 2) {
-                    Resource child = resource.getChild(name);
-                    if(child == null) {
-                        child = createNode(resource, name, NT_UNSTRUCTURED, null);
-                    }
-                    // We support either a List of Objects (Maps) or list of Strings which are stored as multi-valued String property
-                    // for which we have to get all the values in a list and then afterwards if such values were found update
-                    // them as a property
-                    updateObjectList(list, child);
-                } else if(type == 1) {
-                    updateObjectSingleList(name, list, resource);
-                } else if(type < 0) {
-                    throw new ManagementException(String.format(OJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE, first, (first == null ? "null" : first.getClass().getName())));
-                }
-            } else {
-                updateProperties.put(name, value);
-            }
-        }
-        baseResourceHandler.updateModification(resource);
-    }
-
-    private void updateObjectSingleList(String name, List incomingList, Resource resource) throws ManagementException {
-        List<String> newSingleList = new ArrayList<>();
-        for(Object item : incomingList) {
-            if(item instanceof String) {
-                String listItem = item.toString();
-                if(listItem.isEmpty()) {
-                    continue;
-                }
-                newSingleList.add(listItem);
-            } else {
-                throw new ManagementException(String.format(OJECT_ITEM_WITH_UNSUPPORTED_TYPE, item, (item == null ? "null" : item.getClass().getName())));
-            }
-        }
-        ModifiableValueMap childProperties = getModifiableProperties(resource, false);
-        childProperties.put(name, newSingleList.toArray(new String[newSingleList.size()]));
-    }
-
-    private void updateObjectList(List incomingList, Resource resource) throws ManagementException {
-        Resource lastResourceItem = null;
-        for(int i = 0; i < incomingList.size(); i++) {
-            Object item = incomingList.get(i);
-            if(item instanceof Map) {
-                Map incomingItemProperties = (Map) item;
-                Object temp = incomingItemProperties.get(NAME);
-                String incomingItemName = null;
-                if(temp != null) {
-                    incomingItemName = temp.toString();
-                }
-                if(incomingItemName == null || incomingItemName.isEmpty()) {
-                    throw new ManagementException(String.format(ITEM_NAME_MISSING, item, resource.getPath()));
-                }
-                // Get index of the matching resource child to compare with the index in the list
-                int index = -1;
-                Resource resourceListItem = null;
-                for(Resource tempResource: resource.getChildren()) {
-                    index++;
-                    if(incomingItemName.equals(tempResource.getName())) {
-                        resourceListItem = tempResource;
-                        break;
-                    }
-                }
-                // Handle new item
-                if(resourceListItem == null) {
-                    Object val = incomingItemProperties.get(SLING_RESOURCE_TYPE);
-                    String resourceType = val == null ? null : (String) val;
-                    incomingItemProperties.remove(NAME);
-                    incomingItemProperties.remove(SLING_RESOURCE_TYPE);
-                    incomingItemProperties.remove(JCR_PRIMARY_TYPE);
-                    resourceListItem = createNode(resource, incomingItemName, NT_UNSTRUCTURED, resourceType);
-                    // Move the child to the correct position
-                    if(lastResourceItem == null) {
-                        // No saved last resource item so we need to place it as the first entry
-                        Iterator<Resource> it = resource.getChildren().iterator();
-                        Resource first = it.hasNext() ? it.next() : null;
-                        // If there are no items then ignore it (it will be first
-                        if(first != null) {
-                            moveNode(resourceListItem, first, false, true);
-                        }
-                    } else {
-                        // There is a resource item -> move the new one after the last one
-                        moveNode(resourceListItem, lastResourceItem, false, false);
-                    }
-                    // Now update the child with any remaining properties
-                    ModifiableValueMap newChildProperties = getModifiableProperties(resourceListItem, false);
-                    for(Object childPropertyKey : incomingItemProperties.keySet()) {
-                        newChildProperties.put(childPropertyKey + "", incomingItemProperties.get(childPropertyKey));
-                    }
-                } else {
-                    if(incomingItemProperties.containsKey(DELETION_PROPERTY_NAME)) {
-                        Object value = incomingItemProperties.get(DELETION_PROPERTY_NAME);
-                        if(value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
-                            try {
-                                logger.trace("Remove List Child: '{}' ('{}')", incomingItemName, resourceListItem.getPath());
-                                resource.getResourceResolver().delete(resourceListItem);
-                                continue;
-                            } catch(PersistenceException e) {
-                                throw new ManagementException(String.format(FAILED_TO_DELETE, resourceListItem.getPath()), e);
-                            }
-                        }
-                    }
-                    updateResourceTree(resourceListItem, incomingItemProperties);
-                    // Check order
-                    if(i != index) {
-                        if(lastResourceItem == null) {
-                            // No saved last resource item so we need to place it as the first entry
-                            Iterator<Resource> it = resource.getChildren().iterator();
-                            Resource first = it.hasNext() ? it.next() : null;
-                            // If there are no items then ignore it (it will be first
-                            if(first != null) {
-                                moveNode(resourceListItem, first, false, true);
-                            }
-                        } else {
-                            // We only have to move if this wasn't already the first item due to deletion
-                            boolean doMove = false;
-                            Iterator<Resource> ir = resource.getChildren().iterator();
-                            if(ir.hasNext()) {
-                                if(!lastResourceItem.getName().equals(ir.next().getName())) {
-                                    doMove = true;
-                                    break;
-                                }
-                            }
-                            if(doMove) {
-                                moveNode(resourceListItem, lastResourceItem, false, false);
-                            }
-                        }
-                    }
-                }
-                lastResourceItem = resourceListItem;
-            } else {
-                throw new ManagementException(String.format(OBJECT_LIST_WITH_UNSUPPORTED_ITEM, item, (item == null ? "null" : item.getClass().getName())));
             }
         }
     }
 
-    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException, ManagementException {
-        Node parentNode = parent.adaptTo(Node.class);
-        if(parentNode == null) { throw new ManagementException("Resource: '" + parent.getPath() + "' could not be adapted to a Node"); }
-        Node newPage = null;
-        newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
+    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
+        final Node parentNode = getNode(parent);
+        if (parentNode == null) {
+            return null;
+        }
+
+        Node newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
         Node content = newPage.addNode(JCR_CONTENT);
         content.setPrimaryType(PAGE_CONTENT_TYPE);
         content.setProperty(SLING_RESOURCE_TYPE, templateComponent);
@@ -1612,23 +1745,11 @@ public class AdminResourceHandlerService
         }
     }
 
-    private String getPropsFromMap(Map source, String key, String defaultValue) {
-        String answer = defaultValue;
-        Object temp = source.get(key);
-        if(temp != null) {
-            String value = temp.toString();
-            if(isNotBlank(value)) {
-                answer = value;
-            }
-        }
-        return answer;
-    }
-
-    private String prettyPrintJson(Object object) {
+    private String prettyPrintJson(final Object object) {
         try {
             return mapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            return object == null ? "null" : object.toString();
+        } catch (final JsonProcessingException e) {
+            return toStringOrNull(object);
         }
     }
 }

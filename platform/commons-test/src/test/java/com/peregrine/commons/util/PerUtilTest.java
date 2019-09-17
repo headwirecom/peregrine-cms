@@ -6,6 +6,8 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.junit.Test;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -353,5 +355,17 @@ public class PerUtilTest
     public void convertToMap() throws IOException {
         assertTrue(PerUtil.convertToMap(null).isEmpty());
         assertEquals(5, PerUtil.convertToMap("{\"property\": 5}").get("property"));
+    }
+
+    @Test
+    public void isPropertyPresentAndEqualsTrue() throws RepositoryException {
+        final Node node = resource.getNode();
+        assertFalse(PerUtil.isPropertyPresentAndEqualsTrue(node, PROPERTY_NAME));
+        resource.putProperty(PROPERTY_NAME, false);
+        assertFalse(PerUtil.isPropertyPresentAndEqualsTrue(node, PROPERTY_NAME));
+        resource.putProperty(PROPERTY_NAME, true);
+        assertTrue(PerUtil.isPropertyPresentAndEqualsTrue(node, PROPERTY_NAME));
+        when(node.hasProperty(any())).thenThrow(RepositoryException.class);
+        assertFalse(PerUtil.isPropertyPresentAndEqualsTrue(node, PROPERTY_NAME));
     }
 }
