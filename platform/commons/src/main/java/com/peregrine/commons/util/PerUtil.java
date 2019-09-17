@@ -758,6 +758,25 @@ public final class PerUtil {
         return value == null ? null : value.getClass();
     }
 
+    public static String getPropsFromMap(final Map source, final String key, final String defaultValue) {
+        return defaultIfBlank(toStringOrNull(source.get(key)), defaultValue);
+    }
+
+    public static Node getNodeAtPosition(final Node parent, final int position) throws RepositoryException {
+        final NodeIterator i = parent.getNodes();
+        int counter = 0;
+        while (i.hasNext()) {
+            if (counter == position) {
+                return i.nextNode();
+            }
+
+            i.nextNode();
+            counter++;
+        }
+
+        return null;
+    }
+
     /** Resource Check interface **/
     public interface ResourceChecker {
         /** @return True if the resource checks out **/

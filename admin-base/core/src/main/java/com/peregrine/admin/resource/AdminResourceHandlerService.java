@@ -57,15 +57,11 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
+import javax.jcr.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +72,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -192,6 +189,11 @@ public final class AdminResourceHandlerService
         IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED_BY);
     }
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /** JSon Mapper for pretty print of JSon text **/
+    private ObjectMapper mapper =new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+
     @Reference
     private ResourceRelocation resourceRelocation;
 
@@ -206,7 +208,6 @@ public final class AdminResourceHandlerService
     void addImageMetadataSelector(ImageMetadataSelector selector)    { imageMetadataSelectors.add(selector); }
     void removeImageMetadataSelector(ImageMetadataSelector selector) { imageMetadataSelectors.remove(selector); }
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
         try {
@@ -609,7 +610,7 @@ public final class AdminResourceHandlerService
     ) throws RepositoryException, ManagementException {
         properties.remove(PATH);
         final String component = (String) properties.remove(COMPONENT);
-        final Node newNode = parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
+        final Node newNode = addNewNode(parent);
         if (isEmpty(component)) {
             return newNode;
         }
@@ -620,19 +621,31 @@ public final class AdminResourceHandlerService
         if (component.startsWith(SLASH)) {
             logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
         } else {
-            copyComponentProperties(newNode, variation);
+            copyPropertiesFromComponentVariation(newNode, variation);
         }
 
         applyProperties(newNode, properties);
         return newNode;
     }
 
-    private void copyComponentProperties(
+    private Node addNewNode(final Node parent) throws RepositoryException {
+        return parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
+    }
+
+    private void copyPropertiesFromComponentVariation(
             final Node node,
             final String variation
     ) throws RepositoryException, ManagementException {
-        final Session session = node.getSession();
         final String componentPath = APPS_ROOT + SLASH + node.getProperty(SLING_RESOURCE_TYPE).getString();
+        copyPropertiesFromComponentVariation(node, componentPath, variation);
+    }
+
+    private void copyPropertiesFromComponentVariation(
+            final Node node,
+            final String componentPath,
+            final String variation
+    ) throws RepositoryException, ManagementException {
+        final Session session = node.getSession();
         Node contentNode = getComponentContentNode(session, componentPath);
         if (contentNode == null) {
             return;
@@ -705,7 +718,8 @@ public final class AdminResourceHandlerService
         return null;
     }
 
-    private void applyProperties(final Node node, final Map properties) throws RepositoryException {
+    private void applyProperties(final Node node, final Map properties) throws RepositoryException, ManagementException {
+        logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyPrintJson(properties));
         Set<Map.Entry> entrySet = properties.entrySet();
         entrySet = entrySet.stream()
                 .filter(e -> !IGNORED_PROPERTIES_FOR_COPY.contains(e.getKey()))
@@ -713,13 +727,18 @@ public final class AdminResourceHandlerService
         for (final Map.Entry entry: entrySet) {
             final String key = toStringOrNull(entry.getKey());
             final Object value = entry.getValue();
-            logger.trace("Create Node w Props, handle prop: '{}'='{}', value type: '{}'", key, value, getClassOrNull(value));
+            logger.trace("Apply Props, handle prop: '{}'='{}', value type: '{}'", key, prettyPrintJson(value), getClassOrNull(value));
             if (value instanceof String) {
                 node.setProperty(key, (String) value);
-            } else if (value instanceof List && node.hasNode(key)) {
+            } else if (value instanceof List) {
+                final List list = (List) value;
                 // Get sub node
                 try {
-                    applyChildProperties(node.getNode(key), (List) value);
+                    if (node.hasNode(key)) {
+                        applyChildProperties(node.getNode(key), list);
+                    } else {
+                        applyChildProperties(node, list);
+                    }
                 } catch (final PathNotFoundException e) {
                     logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
                 }
@@ -727,26 +746,101 @@ public final class AdminResourceHandlerService
         }
     }
 
-    private void applyChildProperties(final Node parent, final List childProperties) throws RepositoryException {
+    private void applyChildProperties(final Node parent, final List childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
+        int counter = 0;
         for (final Object item : childProperties) {
             if (item instanceof Map) {
-                final Map childProps = (Map) item;
-                // Find matching child by name
-                final String name = extractName(childProps);
-                if (isNotBlank(name) && parent.hasNode(name)) {
-                    // Apply data
-                    try {
-                        applyProperties(parent.getNode(name), childProps);
-                    } catch (final PathNotFoundException e) {
-                        logger.warn("Child Node: '{}' not found and so it is ignored", name, e);
-                    }
-                } else {
-                    logger.warn("Neither Name nor Path Found in Object: '{}'", childProps);
-                }
+                applyChildProperties(parent, (Map) item, counter);
             } else {
                 logger.warn("Array item: '{}' is not an Object and so ignored", item);
             }
+
+            counter++;
+        }
+    }
+
+    private void applyChildProperties(final Node parent, final Map properties, final int position) throws RepositoryException, ManagementException {
+        // Find matching child by name
+        final String name = extractName(properties);
+        if (isBlank(name)) {
+            logger.warn("Neither Name nor Path Found in Object: '{}'", properties);
+            return;
+        }
+
+        // Apply data
+        if (parent.hasNode(name)) {
+            applyProperties(parent.getNode(name), properties);
+            return;
+        }
+
+        // No name or matching path name (auto generated IDs) -> use position to find target
+        final Node target = getNodeAtPosition(parent, position);
+        if (target != null) {
+            logger.trace("Found Target by position: '{}'", target.getPath());
+            // Check if component matches
+            final Object sourceComponent = properties.get(COMPONENT);
+            final Object targetComponent = target.getProperty(COMPONENT).getString();
+            if (sourceComponent == null || !sourceComponent.equals(targetComponent)) {
+                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
+            } else {
+                applyProperties(target, properties);
+            }
+        } else {
+            final String path = getPropsFromMap(properties, PATH, EMPTY);
+            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
+            logger.trace("Child Props parent: '{}', source node: '{}'", parent, sourceNode);
+            if (sourceNode != null) {
+                String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
+                Node newNode = addNewNode(parent);
+                newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
+
+                copyPropertiesFromComponentVariation(parent, componentName, null);
+                applyProperties(newNode, properties);
+            }
+        }
+    }
+
+    /**
+     * Finds a node that is connected by a parent and that parent is part of the segments
+     *
+     * @param start Starting Node. If no match is found we call this method with its parent if there is one
+     * @param segments A full or partial path split into its node names (String.split())
+     * @return The node that matches the last segment if a matching node is found or null if not found
+     * @throws RepositoryException A node operation failed but that should not happen
+     */
+    private Node findSourceByPath(final Node start, final String[] segments) throws RepositoryException {
+        String startName = start.getName();
+        for(int i = 0; i < segments.length; i++) {
+            String segment = segments[i];
+            if(segment != null && !segment.isEmpty()) {
+                if(segment.equals(startName)) {
+                    if (i + 1 == segment.length()) {
+                        // It is last entry so we found it
+                        return start;
+                    } else {
+                        Node child = start;
+                        for (i++; i < segments.length; i++) {
+                            String childNodeSegment = segments[i];
+                            if (child.hasNode(childNodeSegment)) {
+                                child = child.getNode(childNodeSegment);
+                            } else {
+                                child = null;
+                                break;
+                            }
+                        }
+                        return child;
+                    }
+                }
+            }
+        }
+
+        // No child found -> go to parent and try again
+        try {
+            final Node parent = start.getParent();
+            return parent == null ? null : findSourceByPath(parent, segments);
+        } catch (final ItemNotFoundException e) {
+            return null;
         }
     }
 
@@ -1673,6 +1767,14 @@ public final class AdminResourceHandlerService
                 perAsset.addTag("per-data", "height", height);
                 break;
             }
+        }
+    }
+
+    private String prettyPrintJson(Object object) {
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (final JsonProcessingException e) {
+            return toStringOrNull(object);
         }
     }
 }

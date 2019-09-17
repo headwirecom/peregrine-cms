@@ -5,6 +5,9 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
@@ -28,13 +31,13 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.jcr.Binary;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -46,7 +49,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import static org.apache.commons.lang3.StringUtils.*;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
@@ -86,6 +88,10 @@ import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -205,6 +211,8 @@ public class AdminResourceHandlerServiceOld
     void addImageMetadataSelector(ImageMetadataSelector selector)    { imageMetadataSelectors.add(selector); }
     void removeImageMetadataSelector(ImageMetadataSelector selector) { imageMetadataSelectors.remove(selector); }
 
+    /** JSon Mapper for pretty print of JSon text **/
+    private ObjectMapper mapper =new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -366,6 +374,7 @@ public class AdminResourceHandlerServiceOld
                     Iterator<Resource> i = resource.listChildren();
                     if(i.hasNext()) { firstChild = i.next(); }
                 }
+                logger.trace("Properties for Resource: '{}': '{}'", resource, prettyPrintJson(properties));
                 newNode = createNode(node, properties, variation);
                 baseResourceHandler.updateModification(resource.getResourceResolver(), newNode);
                 if(firstChild != null) {
@@ -565,83 +574,10 @@ public class AdminResourceHandlerServiceOld
                 if(component.startsWith("/")) {
                     logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
                 } else {
-                    String componentPath = APPS_ROOT + SLASH + component;
-                    Node contentNode = null;
-                    if(parent.getSession().itemExists(componentPath)) {
-                        Node componentNode = parent.getSession().getNode(componentPath);
-                        if(componentNode != null) {
-                            if(componentNode.hasNode(JCR_CONTENT)) {
-                                contentNode = componentNode.getNode(JCR_CONTENT);
-                            } else {
-                                // Loop for a sling:resourceSuperType and copy this one in instead
-                                Node superTypeNode = componentNode;
-                                List<String> alreadyVisitedNodes = new ArrayList<>();
-                                while(true) {
-                                    // If we already visited that node then exit to avoid an endless loop
-                                    if(alreadyVisitedNodes.contains(superTypeNode.getPath())) { break; }
-                                    alreadyVisitedNodes.add(superTypeNode.getPath());
-                                    if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
-                                        String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
-                                        if(isNotEmpty(resourceSuperType)) {
-                                            try {
-                                                superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
-                                                logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
-                                                // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
-                                                if(superTypeNode.hasNode(JCR_CONTENT)) {
-                                                    contentNode = superTypeNode.getNode(JCR_CONTENT);
-                                                    logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), contentNode.getPath());
-                                                    break;
-                                                }
-                                            } catch(PathNotFoundException e) {
-                                                logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if(contentNode != null) {
-                                boolean isVariations = false;
-                                if(contentNode.hasProperty(VARIATIONS)) {
-                                    isVariations = contentNode.getProperty(VARIATIONS).getBoolean();
-                                }
-                                if(isVariations) {
-                                    boolean useDefault = true;
-                                    if(isNotEmpty(variation)) {
-                                        // Look up the variation node
-                                        if(contentNode.hasNode(variation)) {
-                                            Node variationNode = contentNode.getNode(variation);
-                                            if(variationNode.hasNode(JCR_CONTENT)) {
-                                                contentNode = variationNode.getNode(JCR_CONTENT);
-                                                useDefault = false;
-                                            } else {
-                                                logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                                                contentNode = null;
-                                                useDefault = false;
-                                            }
-                                        } else {
-                                            logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
-                                        }
-                                    }
-                                    if(useDefault) {
-                                        NodeIterator i = contentNode.getNodes();
-                                        if(i.hasNext()) {
-                                            Node variationNode = i.nextNode();
-                                            if(variationNode.hasNode(JCR_CONTENT)) {
-                                                contentNode = variationNode.getNode(JCR_CONTENT);
-                                            } else {
-                                                logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
-                                                contentNode = null;
-                                            }
-                                        }
-                                    }
-                                }
-                                if(contentNode != null) {
-                                    logger.trace("Copy Node: '{}' to: '{}'", contentNode, newNode);
-                                    copyNode(contentNode, newNode, true);
-                                }
-                            }
-                        }
+                    Node contentNode = handleComponent(parent, component, variation);
+                    if(contentNode != null) {
+                        logger.trace("Copy Node: '{}' to: '{}'", contentNode, newNode);
+                        copyNode(contentNode, newNode, true);
                     }
                 }
             } catch(PathNotFoundException e) {
@@ -652,39 +588,81 @@ public class AdminResourceHandlerServiceOld
         return newNode;
     }
 
-    private void applyProperties(Node node, Map<Object,Object> properties) throws RepositoryException {
+    private void applyProperties(Node node, Map<Object,Object> properties) throws RepositoryException, ManagementException {
+        logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyPrintJson(properties));
+        int counter = -1;
         for(Map.Entry<Object, Object> entry: properties.entrySet()) {
+            counter++;
             String key = entry.getKey() == null ? null : entry.getKey().toString();
             Object value = entry.getValue();
-            logger.trace("Create Node w Props, handle prop: '{}'='{}', value type: '{}'", key, value, value == null ? "null" : value.getClass());
+            logger.trace("Apply Props, handle prop: '{}'='{}', value type: '{}'", key, prettyPrintJson(value), value == null ? "null" : value.getClass());
             if (!IGNORED_PROPERTIES_FOR_COPY.contains(key)) {
                 if (value instanceof String) {
                     node.setProperty(key, (String) value);
                 } else if (value instanceof ArrayList) {
+                    ArrayList array = (ArrayList) value;
                     // Get sub node
                     try {
-                        Node subNode = node.getNode(key + "");
-                        ArrayList array = (ArrayList) value;
-                        applyChildProperties(subNode, array);
+                        if(node.hasNode(key)) {
+                            Node subNode = node.getNode(key);
+                            applyChildProperties(subNode, array);
+                        } else {
+                            applyChildProperties(node, array);
+                        }
                     } catch (PathNotFoundException e) {
                         logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
                     }
+//
+//                    if("children".equals(key) && !node.hasNode(key)) {
+//                        // No name or matching path name (auto generated IDs) -> use position to find target
+//                        Node subNode = null;
+//                        NodeIterator i = node.getNodes();
+//                        int targetCounter = 0;
+//                        while(i.hasNext()) {
+//                            if(targetCounter == counter) {
+//                                subNode = i.nextNode();
+//                                break;
+//                            }
+//                            targetCounter++;
+//                        }
+//                        logger.trace("Handle Children, sub node: '{}', counter: '{}', target counter: '{}'", subNode, counter, targetCounter);
+//                        if(subNode == null) {
+//                            // No Sub Node found -> create a node and then apply its properties
+//
+//                            String nodeId = array.get()
+//                            Node newNode = node.addNode(, NT_UNSTRUCTURED);
+//                        }
+//                        if(subNode != null) {
+//                            logger.trace("AP, Found Target by position: '{}'", subNode.getPath());
+//                            applyChildProperties(subNode, array);
+//                        } else {
+//                            //
+//                        }
+//                        applyChildProperties(node, array);
+//                    } else {
+//                        // Get sub node
+//                        try {
+//                            Node subNode = node.getNode(key);
+//                            applyChildProperties(subNode, array);
+//                        } catch (PathNotFoundException e) {
+//                            logger.warn("Sub Node: '{}' not found and so it is ignored", key, e);
+//                        }
+//                    }
                 }
             }
         }
     }
 
-    private void applyChildProperties(Node parent, ArrayList childProperties) throws RepositoryException {
+    private void applyChildProperties(Node parent, ArrayList childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
+        int counter = 0;
         for (Object item : childProperties) {
             if (item instanceof Map) {
                 Map childProps = (Map) item;
                 // Find matching child by name
-                Object temp = childProps.get("name");
-                String name = temp == null ? null : temp.toString();
+                String name = getPropsFromMap(childProps, "name", null);
                 if (isBlank(name)) {
-                    temp = childProps.get("path");
-                    String path = temp == null ? null : temp.toString();
+                    String path = getPropsFromMap(childProps, "path", null);
                     if (isNotBlank(path)) {
                         int index = path.lastIndexOf('/');
                         if (index < path.length() - 1) {
@@ -695,10 +673,51 @@ public class AdminResourceHandlerServiceOld
                 if (isNotBlank(name)) {
                     // Apply data
                     try {
-                        Node childNode = parent.getNode(name);
-                        applyProperties(childNode, childProps);
+                        if(parent.hasNode(name)) {
+                            Node childNode = parent.getNode(name);
+                            applyProperties(childNode, childProps);
+                        } else {
+                            // No name or matching path name (auto generated IDs) -> use position to find target
+                            Node target = null;
+                            NodeIterator i = parent.getNodes();
+                            int targetCounter = 0;
+                            while(i.hasNext()) {
+                                if(targetCounter == counter) {
+                                    target = i.nextNode();
+                                    break;
+                                }
+                                targetCounter++;
+                            }
+                            if(target != null) {
+                                logger.trace("Found Target by position: '{}'", target.getPath());
+                                // Check if component matches
+                                Object sourceComponent = childProps.get(COMPONENT);
+                                Object targetComponent = target.getProperty(COMPONENT).getString();
+                                if(sourceComponent == null || !sourceComponent.equals(targetComponent)) {
+                                    logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
+                                } else {
+                                    applyProperties(target, childProps);
+                                }
+                            } else {
+                                String path = getPropsFromMap(childProps, "path", null);
+                                Node sourceNode = findSourceByPath(parent, path.split("/"));
+                                logger.trace("Child Props parent: '{}', source node: '{}'", parent, sourceNode);
+                                if(sourceNode != null) {
+                                    String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
+                                    Node newNode = parent.addNode("n"+ UUID.randomUUID(), NT_UNSTRUCTURED);
+                                    newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
+
+                                    Node contentNode = handleComponent(parent, componentName, null);
+                                    if (contentNode != null) {
+                                        logger.trace("Copy Node: '{}' to: '{}'", contentNode, newNode);
+                                        copyNode(contentNode, newNode, true);
+                                    }
+                                    applyProperties(newNode, childProps);
+                                }
+                            }
+                        }
                     } catch (PathNotFoundException e) {
-                        logger.warn("Child Node: '{}' not found and so it is ignored", name, e);
+                        // Never happens
                     }
                 } else {
                     logger.warn("Neither Name nor Path Found in Object: '{}'", childProps);
@@ -706,6 +725,130 @@ public class AdminResourceHandlerServiceOld
             } else {
                 logger.warn("Array item: '{}' is not an Object and so ignored", item);
             }
+            counter++;
+        }
+    }
+
+    private Node handleComponent(Node node, String componentName, String variation) throws RepositoryException {
+        String componentPath = APPS_ROOT + SLASH + componentName;
+        Node contentNode = null;
+        if(node.getSession().itemExists(componentPath)) {
+            Node componentNode = node.getSession().getNode(componentPath);
+            if (componentNode != null) {
+                if (componentNode.hasNode(JCR_CONTENT)) {
+                    contentNode = componentNode.getNode(JCR_CONTENT);
+                } else {
+                    // Loop for a sling:resourceSuperType and copy this one in instead
+                    Node superTypeNode = componentNode;
+                    List<String> alreadyVisitedNodes = new ArrayList<>();
+                    while (true) {
+                        // If we already visited that node then exit to avoid an endless loop
+                        if (alreadyVisitedNodes.contains(superTypeNode.getPath())) {
+                            break;
+                        }
+                        alreadyVisitedNodes.add(superTypeNode.getPath());
+                        if (superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
+                            String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
+                            if (isNotEmpty(resourceSuperType)) {
+                                try {
+                                    superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
+                                    logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
+                                    // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
+                                    if (superTypeNode.hasNode(JCR_CONTENT)) {
+                                        contentNode = superTypeNode.getNode(JCR_CONTENT);
+                                        logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), contentNode.getPath());
+                                        break;
+                                    }
+                                } catch (PathNotFoundException e) {
+                                    logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (contentNode != null) {
+                    boolean isVariations = false;
+                    if (contentNode.hasProperty(VARIATIONS)) {
+                        isVariations = contentNode.getProperty(VARIATIONS).getBoolean();
+                    }
+                    if (isVariations) {
+                        boolean useDefault = true;
+                        if (isNotEmpty(variation)) {
+                            // Look up the variation node
+                            if (contentNode.hasNode(variation)) {
+                                Node variationNode = contentNode.getNode(variation);
+                                if (variationNode.hasNode(JCR_CONTENT)) {
+                                    contentNode = variationNode.getNode(JCR_CONTENT);
+                                    useDefault = false;
+                                } else {
+                                    logger.trace("Found variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                                    contentNode = null;
+                                    useDefault = false;
+                                }
+                            } else {
+                                logger.trace("Variation: '{}' is given but no such child node found under: '{}' -> use first one", variation, contentNode.getPath());
+                            }
+                        }
+                        if (useDefault) {
+                            NodeIterator i2 = contentNode.getNodes();
+                            if (i2.hasNext()) {
+                                Node variationNode = i2.nextNode();
+                                if (variationNode.hasNode(JCR_CONTENT)) {
+                                    contentNode = variationNode.getNode(JCR_CONTENT);
+                                } else {
+                                    logger.trace("Found default variation node: '{}' but it did not contain a jcr:content child -> ignore", variationNode.getPath());
+                                    contentNode = null;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return contentNode;
+    }
+
+    /**
+     * Finds a node that is connected by a parent and that parent is part of the segments
+     *
+     * @param start Starting Node. If no match is found we call this method with its parent if there is one
+     * @param segments A full or partial path split into its node names (String.split())
+     * @return The node that matches the last segment if a matching node is found or null if not found
+     * @throws RepositoryException A node operation failed but that should not happen
+     */
+    private Node findSourceByPath(Node start, String[] segments) throws RepositoryException {
+        String startName = start.getName();
+        for(int i = 0; i < segments.length; i++) {
+            String segment = segments[i];
+            if(segment != null && !segment.isEmpty()) {
+                if(segment.equals(startName)) {
+                    if (i + 1 == segment.length()) {
+                        // It is last entry so we found it
+                        return start;
+                    } else {
+                        Node child = start;
+                        for (i++; i < segments.length; i++) {
+                            String childNodeSegment = segments[i];
+                            if (child.hasNode(childNodeSegment)) {
+                                child = child.getNode(childNodeSegment);
+                            } else {
+                                child = null;
+                                break;
+                            }
+                        }
+                        return child;
+                    }
+                }
+            }
+        }
+        // No child found -> go to parent and try again
+        Node parent;
+        try {
+            parent = start.getParent();
+            return findSourceByPath(parent, segments);
+        } catch(ItemNotFoundException e) {
+            return null;
         }
     }
 
@@ -1466,6 +1609,26 @@ public class AdminResourceHandlerServiceOld
                 perAsset.addTag("per-data", "height", height);
                 break;
             }
+        }
+    }
+
+    private String getPropsFromMap(Map source, String key, String defaultValue) {
+        String answer = defaultValue;
+        Object temp = source.get(key);
+        if(temp != null) {
+            String value = temp.toString();
+            if(isNotBlank(value)) {
+                answer = value;
+            }
+        }
+        return answer;
+    }
+
+    private String prettyPrintJson(Object object) {
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            return object == null ? "null" : object.toString();
         }
     }
 }
