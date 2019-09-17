@@ -8,6 +8,7 @@ import com.peregrine.commons.test.mock.ResourceMock;
 import com.peregrine.rendition.BaseResourceHandler;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.models.factory.ModelFactory;
 import org.mockito.internal.util.reflection.Whitebox;
 
 import javax.jcr.Node;
@@ -40,6 +41,8 @@ public abstract class AbstractServletTest
     Node mockNewSiteNode;
     ResourceMock mockTemplateResource;
     ResourceMock mockNewResource;
+    ModelFactory mockModelFactory;
+    AdminResourceHandler adminResourceHandler;
 
     void setupCreation(String requestPath, String...parameters) throws RepositoryException {
         mockRequest = PeregrineRequestMock.createInstance(requestPath, parameters);
@@ -130,9 +133,15 @@ public abstract class AbstractServletTest
     }
 
     void setupServlet(Object servlet) {
-        AdminResourceHandler adminResourceHandler = new AdminResourceHandlerService();
-        BaseResourceHandler mockBaseResourceHandler = mock(BaseResourceHandler.class);
-        Whitebox.setInternalState(adminResourceHandler, "baseResourceHandler", mockBaseResourceHandler);
-        Whitebox.setInternalState(servlet, "resourceManagement", adminResourceHandler);
+        try {
+            adminResourceHandler = new AdminResourceHandlerService();
+            Whitebox.setInternalState(servlet, "resourceManagement", adminResourceHandler);
+            BaseResourceHandler mockBaseResourceHandler = mock(BaseResourceHandler.class);
+            Whitebox.setInternalState(adminResourceHandler, "baseResourceHandler", mockBaseResourceHandler);
+        } catch(RuntimeException e) {}
+        mockModelFactory = mock(ModelFactory.class);
+        try {
+            Whitebox.setInternalState(servlet, "modelFactory", mockModelFactory);
+        } catch(RuntimeException e) {}
     }
 }

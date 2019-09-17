@@ -56,8 +56,9 @@ public class PeregrineRequestMock
         ResourceResolver mockResourceResolver = mock(ResourceResolver.class);
         when(request.getResourceResolver()).thenReturn(mockResourceResolver);
         ResourceMock resourceMock = new ResourceMock()
-            .setPath(path);
-        when(mockResourceResolver.getResource(eq(path))).thenReturn(resourceMock);
+            .setPath(path)
+            .setResourceResolver(mockResourceResolver);
+        when(request.getResource()).thenReturn(resourceMock);
         mockNode = mock(Node.class);
 
         if(suffix != null) {
