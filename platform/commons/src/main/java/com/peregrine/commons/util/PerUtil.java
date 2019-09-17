@@ -27,6 +27,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
@@ -37,31 +38,18 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Optional;
 
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
-import static com.peregrine.commons.util.PerConstants.DASH;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -264,6 +252,17 @@ public final class PerUtil {
             }
         }
         return answer;
+    }
+
+    public static String extractName(final String path) {
+        if (isNotBlank(path)) {
+            final int index = path.lastIndexOf('/');
+            if (index < path.length() - 1) {
+                return path.substring(index + 1);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -683,6 +682,119 @@ public final class PerUtil {
             }
         }
         return answer;
+    }
+
+    public static boolean isNullOrTrue(final Object value) {
+        return value == null || Boolean.TRUE.toString().equalsIgnoreCase(String.valueOf(value));
+    }
+
+    public static String getString(final Map map, final Object key) {
+        final Object value = map.get(key);
+        if (value == null) {
+            return null;
+        }
+
+        return value.toString();
+    }
+
+    public static int getChildIndex(final Resource parent, final Resource child) {
+        if (parent == null || child == null) {
+            return -1;
+        }
+
+        final String path = child.getPath();
+        if (!StringUtils.equals(getParent(path), parent.getPath())) {
+            return -1;
+        }
+
+        int index = 0;
+        for (final Resource resource: parent.getChildren()) {
+            if (path.equals(resource.getPath())) {
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
+    }
+
+    public static Resource getFirstChild(final Resource parent) {
+        return Optional.ofNullable(parent)
+                .map(Resource::getChildren)
+                .map(Iterable::iterator)
+                .filter(Iterator::hasNext)
+                .map(Iterator::next)
+                .orElse(null);
+    }
+
+    public static boolean isPropertyPresentAndEqualsTrue(final Node node, final String propertyName) {
+        try {
+            return node.hasProperty(propertyName)
+                    && node.getProperty(propertyName).getBoolean();
+        } catch (final RepositoryException e) {
+            return false;
+        }
+    }
+
+    public static Node getFirstChild(final Node parent) {
+        try {
+            final NodeIterator iterator = parent.getNodes();
+            if (iterator.hasNext()) {
+                return iterator.nextNode();
+            }
+        } catch (final RepositoryException e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    public static String toStringOrNull(final Object object) {
+        return object == null ? null : object.toString();
+    }
+
+    public static Object getClassOrNull(final Object value) {
+        return value == null ? null : value.getClass();
+    }
+
+    public static String getPropsFromMap(final Map source, final String key, final String defaultValue) {
+        return defaultIfBlank(toStringOrNull(source.get(key)), defaultValue);
+    }
+
+    public static Node getNodeAtPosition(final Node parent, final int position) throws RepositoryException {
+        final NodeIterator i = parent.getNodes();
+        int counter = 0;
+        while (i.hasNext()) {
+            if (counter == position) {
+                return i.nextNode();
+            }
+
+            i.nextNode();
+            counter++;
+        }
+
+        return null;
+    }
+
+    public static Node getNode(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(r -> r.adaptTo(Node.class))
+                .orElse(null);
+    }
+
+    public static Node getNode(final ResourceResolver resourceResolver, final String path) {
+        return getNode(
+                Optional.ofNullable(path)
+                .map(p -> getResource(resourceResolver, p))
+                .orElse(null)
+        );
+    }
+
+    public static String getPath(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getPath)
+                .orElse(null);
     }
 
     /** Resource Check interface **/
