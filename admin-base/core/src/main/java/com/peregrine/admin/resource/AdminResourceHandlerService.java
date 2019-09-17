@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -214,10 +213,7 @@ public final class AdminResourceHandlerService
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
 
-            final Node parent = Optional.ofNullable(parentPath)
-                    .map(p -> getResource(resourceResolver, p))
-                    .map(r -> r.adaptTo(Node.class))
-                    .orElse(null);
+            final Node parent = getNode(resourceResolver, parentPath);
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
             }
@@ -251,10 +247,7 @@ public final class AdminResourceHandlerService
                 throw new ManagementException(String.format(RESOURCE_TYPE_UNDEFINED, parentPath, name));
             }
 
-            final Node parent = Optional.ofNullable(parentPath)
-                    .map(p -> getResource(resourceResolver, p))
-                    .map(r -> r.adaptTo(Node.class))
-                    .orElse(null);
+            final Node parent = getNode(resourceResolver, parentPath);
 
             if(parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
@@ -378,9 +371,7 @@ public final class AdminResourceHandlerService
             final boolean orderBefore,
             final String variation
     ) throws ManagementException {
-        final Node node = Optional.ofNullable(resource)
-                .map(r -> r.adaptTo(Node.class))
-                .orElse(null);
+        final Node node = getNode(resource);
         if (node == null) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
@@ -484,9 +475,7 @@ public final class AdminResourceHandlerService
             throw new ManagementException(INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
 
-        final Node parentNode = Optional.ofNullable(parent)
-                .map(r -> r.adaptTo(Node.class))
-                .orElse(null);
+        final Node parentNode = getNode(parent);
         if(parentNode == null) {
             throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
@@ -1030,9 +1019,7 @@ public final class AdminResourceHandlerService
             filename = packageName + DASH + version + ZIP_EXTENSION;
             packageResource = groupResource.getChild(filename);
             if(version >= MAXIMUM_VERSION) {
-                final String path = Optional.ofNullable(packageResource)
-                        .map(Resource::getPath)
-                        .orElse(null);
+                final String path = getPath(packageResource);
                 logger.error("{} versions of the full site package already exist for '{}'. Stopping so we don't get stuck in an infinite loop.", version, path);
                 return;
             }
@@ -1161,13 +1148,8 @@ public final class AdminResourceHandlerService
     }
 
     private void createResourceFromString(Resource parent, String name, String data) throws ManagementException {
-        final Optional<Resource> optionalParent = Optional.ofNullable(parent);
-        final String parentPathDisplay = optionalParent
-                .map(Resource::getPath)
-                .orElse(null);
-        final Node parentNode = optionalParent
-                .map(r -> r.adaptTo(Node.class))
-                .orElse(null);
+        final String parentPathDisplay = getPath(parent);
+        final Node parentNode = getNode(parent);
         if (parentNode == null) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, name, parentPathDisplay, name));
         }
@@ -1360,9 +1342,7 @@ public final class AdminResourceHandlerService
 
             Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
             updateTitle(childTarget, ((depth > 0) && newProperties.containsKey(JCR_TITLE)) ? (String) newProperties.get(JCR_TITLE) : toName);
-            final String childTargetPathDisplay = Optional.ofNullable(childTarget)
-                    .map(Resource::getPath)
-                    .orElse(null);
+            final String childTargetPathDisplay = getPath(childTarget);
             logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
             // Copy grandchildren
             copyChildren(sourceChild, childTarget, depth + 1);
@@ -1729,9 +1709,7 @@ public final class AdminResourceHandlerService
     }
 
     private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
-        final Node parentNode = Optional.ofNullable(parent)
-                .map(r -> r.adaptTo(Node.class))
-                .orElse(null);
+        final Node parentNode = getNode(parent);
         if (parentNode == null) {
             return null;
         }

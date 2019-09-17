@@ -777,6 +777,26 @@ public final class PerUtil {
         return null;
     }
 
+    public static Node getNode(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(r -> r.adaptTo(Node.class))
+                .orElse(null);
+    }
+
+    public static Node getNode(final ResourceResolver resourceResolver, final String path) {
+        return getNode(
+                Optional.ofNullable(path)
+                .map(p -> getResource(resourceResolver, p))
+                .orElse(null)
+        );
+    }
+
+    public static String getPath(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getPath)
+                .orElse(null);
+    }
+
     /** Resource Check interface **/
     public interface ResourceChecker {
         /** @return True if the resource checks out **/
