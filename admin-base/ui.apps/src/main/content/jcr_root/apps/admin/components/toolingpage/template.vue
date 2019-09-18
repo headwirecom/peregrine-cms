@@ -47,7 +47,10 @@ export default {
             $perAdminApp.stateAction('editPreview', target)
         },
         editPage: function(me, target) {
-        }
+        },
+        addSite: function(me, target) {
+            $perAdminApp.stateAction('createSiteWizard', '/content/sites')
+        },
     }
 }
 </script>
