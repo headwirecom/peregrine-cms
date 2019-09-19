@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,9 +33,13 @@ import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -54,6 +59,9 @@ public class BasicTestHelpers {
 
     private static final Logger logger = LoggerFactory.getLogger(BasicTestHelpers.class.getName());
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    private static final List<String> PROPERTIES_NOT_TO_CHECK = Arrays.asList(
+        JCR_CREATED, JCR_CREATED_BY, JCR_LAST_MODIFIED, JCR_LAST_MODIFIED_BY, JCR_UUID
+    );
 
 
     public static Map listResourceAsJson(SlingClient client, String path, int level) throws ClientException, IOException {
@@ -317,17 +325,79 @@ public class BasicTestHelpers {
         return answer;
     }
 
-//    public static enum CheckType { allProvided, everythingMatches, }
+    public static void checkTwoResources(SlingClient client, String firstResourcePath, String secondResourcePath, int levels, String...removeItems) throws ClientException, IOException {
+        Map firstResource = getResourcesJson(client, firstResourcePath, levels);
+        Map secondResource = getResourcesJson(client, secondResourcePath, levels);
+        cleanUpMap(firstResource, PROPERTIES_NOT_TO_CHECK);
+        cleanUpMap(secondResource, PROPERTIES_NOT_TO_CHECK);
+        for(String removeItem: removeItems) {
+            cleanMapByPath(firstResource, removeItem);
+            cleanMapByPath(secondResource, removeItem);
+        }
+        logger.info("First Map: '{}'", firstResource);
+        logger.info("Second Map: '{}'", secondResource);
+        compareJson(firstResource, secondResource);
+    }
+
     public static void checkResourceByJson(SlingClient client, String path, int levels, String expectedJson, boolean checkProvided) throws ClientException, IOException {
-        SlingHttpResponse response = client.doGet(path + "." + levels + ".json", 200);
-        assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
-        String jsonResponse = response.getContent();
-//        ObjectMapper mapper = new ObjectMapper();
         Map expected = convertToMap(expectedJson);
-        Map actual = convertToMap(jsonResponse);
+        Map actual = getResourcesJson(client, path, levels);
         logger.info("Expected Map: '{}'", expected);
         logger.info("Actual Map: '{}'", actual);
         compareJson(expected, actual);
+    }
+
+    private static Map getResourcesJson(SlingClient client, String path, int levels) throws ClientException, IOException {
+        SlingHttpResponse response = client.doGet(path + "." + levels + ".json", 200);
+        assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
+        String jsonResponse = response.getContent();
+        return convertToMap(jsonResponse);
+    }
+
+    private static void cleanMapByPath(Map<Object,Object> map, String pathToBeDeleted) {
+        String[] segments = pathToBeDeleted.split("/");
+        Map<Object,Object> current = map;
+        for(int i = 0; i < segments.length; i++) {
+            String segment = segments[i];
+            if(i + 1 == segments.length) {
+                // Last item -> remove it
+                current.remove(segment);
+            } else {
+                // Traverse the map
+                Object item = current.get(segment);
+                if(item instanceof Map) {
+                    current = (Map) item;
+                } else {
+                    // Child Map not found -> exit as path cannot be matched
+                    break;
+                }
+            }
+        }
+    }
+
+    private static void cleanUpMap(Map<Object,Object> map, final List<String> removeProperties) {
+        map.entrySet()
+            .removeIf(e -> removeProperties.contains(e.getKey()));
+        for(Entry<Object,Object> entry: map.entrySet()) {
+            Object value = entry.getValue();
+            if(value instanceof List) {
+                List list = (List) value;
+                for(Object item: list) {
+                    if(item instanceof Map) {
+                        cleanUpMap((Map) item, removeProperties);
+                    }
+                }
+            } else if(value instanceof Object[]) {
+                Object[] list = (Object[]) value;
+                for(Object item: list) {
+                    if(item instanceof Map) {
+                        cleanUpMap((Map) item, removeProperties);
+                    }
+                }
+            } else if(value instanceof Map) {
+                cleanUpMap((Map) value, removeProperties);
+            }
+        }
     }
 
     public static void compareJson(Map<Object, Object> expected, Map actual) throws IOException {

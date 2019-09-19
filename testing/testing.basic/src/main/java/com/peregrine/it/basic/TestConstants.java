@@ -12,4 +12,7 @@ public class TestConstants {
     public static final String EXAMPLE_CAROUSEL_ITEM_TYPE_PATH = "example/components/carouselItem";
 
     public static final String EXAMPLE_OBJECT_TYPE_PATH = "example/objects/sample";
+
+    public static final String THEMECLEAN_PAGE_TYPE_PATH = "themeclean/components/page";
+    public static final String THEMECLWAN_TEMPLATE_PATH = "/content/templates/themeclean";
 }

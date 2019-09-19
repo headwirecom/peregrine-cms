@@ -689,12 +689,25 @@ public final class PerUtil {
     }
 
     public static String getString(final Map map, final Object key) {
-        final Object value = map.get(key);
-        if (value == null) {
-            return null;
-        }
+        return getString(map, key, null);
+    }
 
-        return value.toString();
+    public static String getString(final Map map, final Object key, final String defaultValue) {
+        String answer = defaultValue;
+        final Object value = map.get(key);
+        if (value != null && !value.toString().isEmpty()) {
+            answer = value.toString();
+        }
+        return answer;
+    }
+
+    public static boolean getBoolean(final Map map, final Object key, boolean defaultValue) {
+        boolean answer = defaultValue;
+        final Object value = map.get(key);
+        if (value != null && !value.toString().isEmpty()) {
+            answer = "true".equalsIgnoreCase(value.toString());
+        }
+        return answer;
     }
 
     public static int getChildIndex(final Resource parent, final Resource child) {

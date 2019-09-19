@@ -1,0 +1,94 @@
+{
+  "jcr:description": "Test Site Root",
+  "jcr:primaryType": "per:Page",
+  "jcr:title": "it-test-site",
+  "jcr:content": {
+    "brand": "it-tests",
+    "jcr:primaryType": "per:PageContent",
+    "jcr:title": "test-site",
+    "sling:resourceType": "themeclean/components/page",
+    "template": "/content/templates/themeclean"
+  },
+  "Test-Sites": {
+    "jcr:primaryType": "per:Page",
+    "Site-1": {
+      "jcr:primaryType": "per:Page",
+      "jcr:content": {
+        "jcr:primaryType": "nt:unstructured",
+        "jcr:title": "Site 1",
+        "name": "Site 1",
+        "sling:resourceType": "themeclean/components/page",
+        "template": "/content/templates/themeclean/base page",
+        "templatePath": "/content/templates/themeclean/base page"
+      },
+      "Child-1": {
+        "jcr:primaryType": "per:Page",
+        "jcr:content": {
+          "jcr:primaryType": "nt:unstructured",
+          "jcr:title": "Child 1",
+          "name": "Child 1",
+          "sling:resourceType": "themeclean/components/page",
+          "template": "/content/templates/themeclean/base page",
+          "templatePath": "/content/templates/themeclean/base page"
+        },
+        "Child-1-Sub-1": {
+          "jcr:primaryType": "per:Page"
+        },
+        "Child-1-Sub-2": {
+          "jcr:primaryType": "per:Page"
+        },
+        "Child-1-Sub-3": {
+          "jcr:primaryType": "per:Page"
+        }
+      },
+      "Child-2": {
+        "jcr:primaryType": "per:Page",
+        "jcr:content": {
+          "jcr:title": "Child 2",
+          "name": "Child 2",
+          "sling:resourceType": "themeclean/components/page",
+          "template": "/content/templates/themeclean/base page",
+          "templatePath": "/content/templates/themeclean/base page"
+        },
+        "Child-2-Sub-1": {
+          "jcr:primaryType": "per:Page"
+        },
+        "Child-2-Sub-2": {
+          "jcr:primaryType": "per:Page"
+        },
+        "Child-2-Sub-3": {
+          "jcr:primaryType": "per:Page"
+        }
+      }
+    },
+    "jcr:content": {
+      "jcr:primaryType": "nt:unstructured",
+      "jcr:title": "Test Sites",
+      "name": "Test Sites",
+      "sling:resourceType": "themeclean/components/page",
+      "template": "/content/templates/themeclean",
+      "templatePath": "/content/templates/themeclean"
+    },
+    "Site-2": {
+      "jcr:primaryType": "per:Page",
+      "jcr:content": {
+        "jcr:title": "Site 2",
+        "name": "Site 2",
+        "sling:resourceType": "themeclean/components/page",
+        "template": "/content/templates/themeclean",
+        "templatePath": "/content/templates/themeclean"
+      }
+    }
+  },
+  "index": {
+    "jcr:primaryType": "per:Page",
+    "jcr:content": {
+      "jcr:primaryType": "nt:unstructured",
+      "jcr:title": "index",
+      "name": "index",
+      "sling:resourceType": "themeclean/components/page",
+      "template": "/content/templates/themeclean/base page",
+      "templatePath": "/content/templates/themeclean/base page"
+    }
+  }
+}

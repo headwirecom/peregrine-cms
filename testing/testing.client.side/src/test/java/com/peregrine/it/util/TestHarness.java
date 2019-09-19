@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static com.peregrine.commons.util.PerConstants.FROM_SITE_NAME;
+import static com.peregrine.commons.util.PerConstants.TO_SITE_NAME;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolder;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -133,6 +135,15 @@ public class TestHarness {
     public static SlingHttpResponse createTemplate(SlingClient client, String path, String name, String component, int expectedStatus) throws ClientException {
         String url = ADMIN_PREFIX_URL + "createTemplate.json" + path;
         HttpEntity formEntry = FormEntityBuilder.create().addParameter("name", name).addParameter("component", component).build();
+        return client.doPost(url, formEntry, expectedStatus);
+    }
+
+    public static SlingHttpResponse createSite(SlingClient client, String fromName, String toName, int expectedStatus) throws ClientException {
+        String url = ADMIN_PREFIX_URL + "createSite.json";
+        HttpEntity formEntry = FormEntityBuilder.create()
+            .addParameter(FROM_SITE_NAME, fromName)
+            .addParameter(TO_SITE_NAME, toName)
+            .build();
         return client.doPost(url, formEntry, expectedStatus);
     }
 
