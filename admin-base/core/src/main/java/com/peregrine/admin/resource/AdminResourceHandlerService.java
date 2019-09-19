@@ -139,6 +139,8 @@ public class AdminResourceHandlerService
     private static final String ROOT_PROPERTY = "root";
     private static final String RULES_PROPERTY = "rules";
 
+    private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
+
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -154,6 +156,8 @@ public class AdminResourceHandlerService
     ResourceRelocation resourceRelocation;
     @Reference
     BaseResourceHandler baseResourceHandler;
+    @Reference
+    NodeNameValidation nodeNameValidation;
 
     private List<ImageMetadataSelector> imageMetadataSelectors = new ArrayList<>();
     @Reference(
@@ -167,6 +171,9 @@ public class AdminResourceHandlerService
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
@@ -188,6 +195,9 @@ public class AdminResourceHandlerService
     }
 
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
@@ -214,6 +224,9 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException {
+        if(!nodeNameValidation.isValidPageName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
@@ -238,6 +251,9 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             Resource parent = PerUtil.getResource(resourceResolver, parentPath);
             if(parent == null) {
@@ -387,6 +403,9 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource rename(Resource fromResource, String newName) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(newName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, newName));
+        }
         Resource answer = null;
         if(fromResource == null) {
             throw new ManagementException(RENAME_RESOURCE_MISSING);
@@ -409,6 +428,9 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(assetName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, assetName));
+        }
         Resource answer = null;
         if(parent == null) {
             throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
@@ -483,6 +505,9 @@ public class AdminResourceHandlerService
     }
 
     public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         Map<String, Object> properties = new HashMap<>();
         properties.put(JCR_PRIMARY_TYPE, primaryType);
         if(resourceType != null && !resourceType.isEmpty()) {
@@ -690,6 +715,9 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException {
+        if(!nodeNameValidation.isValidSiteName(targetName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, targetName));
+        }
         // Check the given parameters and make sure everything is correct
         if(resourceResolver == null) { throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY); }
         Resource parentResource = getResource(resourceResolver, sitesParentPath);
