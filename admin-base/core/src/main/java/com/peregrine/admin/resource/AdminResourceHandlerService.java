@@ -424,6 +424,11 @@ public class AdminResourceHandlerService
         }
         try {
             Node parentNode = parent.adaptTo(Node.class);
+            if(parentNode.hasNode(assetName)) {
+                // Node already exists -> delete it
+                Node existingNode = parentNode.getNode(assetName);
+                existingNode.remove();
+            }
             Node newAsset = parentNode.addNode(assetName, ASSET_PRIMARY_TYPE);
             Node content = newAsset.addNode(JCR_CONTENT, ASSET_CONTENT_TYPE);
             Binary data = parentNode.getSession().getValueFactory().createBinary(inputStream);
