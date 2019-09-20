@@ -9,8 +9,6 @@ import org.osgi.service.component.annotations.Component;
 )
 public class NodeNameValidationService implements NodeNameValidation {
 
-
-
     @Override
     public boolean isValidPageName(String name) {
         return isValidNodeName(name) && !name.contains(".");

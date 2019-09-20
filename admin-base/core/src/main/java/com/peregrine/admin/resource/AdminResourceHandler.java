@@ -63,7 +63,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Page Resource
      * @throws ManagementException If the creation failed
      */
-    public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException;
+    public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath, String title) throws ManagementException;
 
     /**
      * Creates an Peregrine Object Resource
@@ -76,7 +76,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Template Resource
      * @throws ManagementException If the creation failed
      */
-    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException;
+    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component, String title) throws ManagementException;
 
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
 
@@ -176,7 +176,7 @@ public interface AdminResourceHandler {
      * @return Resource of the Target Copy
      * @throws ManagementException
      */
-    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException;
+    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException;
 
 
     /**

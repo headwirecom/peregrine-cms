@@ -171,7 +171,7 @@ public class AdminResourceHandlerService
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
-        if(!nodeNameValidation.isValidNodeName(name)) {
+        if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
         try {
@@ -195,7 +195,7 @@ public class AdminResourceHandlerService
     }
 
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException {
-        if(!nodeNameValidation.isValidNodeName(name)) {
+        if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
         try {
@@ -223,7 +223,7 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException {
+    public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath, String title) throws ManagementException {
         if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
@@ -240,7 +240,7 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(TEMPLATE_NOT_FOUND, templatePath));
             }
             String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
-            Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath);
+            Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath, title);
             return resourceResolver.getResource(newPage.getPath());
         } catch(RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
@@ -250,8 +250,8 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException {
-        if(!nodeNameValidation.isValidNodeName(name)) {
+    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component, String title) throws ManagementException {
+        if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
         try {
@@ -262,7 +262,7 @@ public class AdminResourceHandlerService
             if(name == null || name.isEmpty()) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, TEMPLATE, parentPath));
             }
-            Node newPage = createPageOrTemplate(parent, name, component, null);
+            Node newPage = createPageOrTemplate(parent, name, component, null, title);
             // If there is a component then we check the component node and see if there is a child jcr:content node
             // If found we copy this over into our newly created node
             if(isNotEmpty(component)) {
@@ -714,7 +714,7 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException {
+    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException {
         if(!nodeNameValidation.isValidSiteName(targetName)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, targetName));
         }
@@ -754,37 +754,37 @@ public class AdminResourceHandlerService
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
         Resource sourceResource = getResource(resourceResolver, ASSETS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName, title);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, null, targetName);
+                copyChildResources(sourceResource, true, targetResource, null, targetName, title);
             }
         }
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
         sourceResource = getResource(resourceResolver, OBJECTS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName, title);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                copyChildResources(sourceResource, true, targetResource, fromName, targetName, title);
             }
         }
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
         sourceResource = getResource(resourceResolver, TEMPLATES_ROOT + SLASH + fromName);
         if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName, title);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                copyChildResources(sourceResource, true, targetResource, fromName, targetName, title);
             }
         }
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
         sourceResource = getResource(resourceResolver, SITES_ROOT + SLASH + fromName);
         if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName, title);
             if(targetResource != null) {
                 packagePaths.add(targetResource.getPath());
-                copyChildResources(sourceResource, true, targetResource, fromName, targetName);
+                copyChildResources(sourceResource, true, targetResource, fromName, targetName, title);
                 updateStringsInFiles(targetResource, fromName, targetName);
                 Resource jcrContentResource = targetResource.getChild(JCR_CONTENT);
                 if(jcrContentResource != null) {
@@ -797,7 +797,7 @@ public class AdminResourceHandlerService
         // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
         sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if(sourceResource != null) {
-            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName, title);
             packagePaths.add(targetResource.getPath());
             logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
             ValueMap properties = getModifiableProperties(targetResource, false);
@@ -1097,7 +1097,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Resource copyResources(Resource source, Resource targetParent, String toName) {
+    private Resource copyResources(Resource source, Resource targetParent, String toName, String title) {
         Resource target = getResource(targetParent, toName);
         if(target != null) {
             logger.warn("Target Resource: '{}' already exist -> copy is ignored", target.getPath());
@@ -1107,7 +1107,7 @@ public class AdminResourceHandlerService
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
             target = source.getResourceResolver().create(targetParent, toName, newProperties);
-            updateTitle(target, toName);
+            updateTitle(target, title);
         } catch(PersistenceException e) {
             logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
             return null;
@@ -1135,13 +1135,13 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName) {
+    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName, String title) {
         // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
         // while child assets will use the name from the source; otherwise every asset has the same name
-        copyChildResources(source, deep, target, fromName, toName, 0);
+        copyChildResources(source, deep, target, fromName, toName, 0, title);
     }
 
-    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName, int depth) {
+    private void copyChildResources(Resource source, boolean deep, Resource target, String fromName, String toName, int depth, String title) {
         logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
         for(Resource child: source.getChildren()) {
             logger.trace("Child handling started: '{}'", child.getPath());
@@ -1176,12 +1176,12 @@ public class AdminResourceHandlerService
                     }
                 }
                 Resource childTarget = source.getResourceResolver().create(target, child.getName(), newProperties);
-                updateTitle(childTarget, (((depth > 0) && (newProperties.get(JCR_TITLE) != null)) ?  (String) newProperties.get(JCR_TITLE) : toName));
+                updateTitle(childTarget, (((depth > 0) && (newProperties.get(JCR_TITLE) != null)) ?  (String) newProperties.get(JCR_TITLE) : title));
 
                 logger.trace("Child Target Created: '{}'", childTarget == null ? "null" : childTarget.getPath());
                 // Copy grandchildren
                 if(deep) {
-                    copyChildResources(child, true, childTarget, fromName, toName, depth + 1);
+                    copyChildResources(child, true, childTarget, fromName, toName, depth + 1, title);
                 }
             } catch(PersistenceException e) {
                 logger.warn("Copy of " + source.getName() + ": '" + source.getPath() + "' failed", e);
@@ -1466,14 +1466,14 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
+    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath, String title) throws RepositoryException {
         Node parentNode = parent.adaptTo(Node.class);
         Node newPage = null;
         newPage = parentNode.addNode(name, PAGE_PRIMARY_TYPE);
         Node content = newPage.addNode(JCR_CONTENT);
         content.setPrimaryType(PAGE_CONTENT_TYPE);
         content.setProperty(SLING_RESOURCE_TYPE, templateComponent);
-        content.setProperty(JCR_TITLE, name);
+        content.setProperty(JCR_TITLE, title);
         if(templatePath != null) {
             content.setProperty(TEMPLATE, templatePath);
         }
