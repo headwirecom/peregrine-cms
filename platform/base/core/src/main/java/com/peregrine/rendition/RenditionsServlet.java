@@ -42,6 +42,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUAL;
@@ -117,11 +118,13 @@ public class RenditionsServlet extends AbstractBaseServlet {
         // TODO: If the path changes because of a Mapping then this will fail loading the image
         String resourceName = resource.getName();
         String requestName = request.getRequestPath();
+        requestName = URLDecoder.decode(requestName);
         int index = requestName.lastIndexOf("/");
         if(index >= 0) {
             requestName = requestName.substring(index + 1);
         }
         if(!"rendition".equals(selector) && !resourceName.equals(requestName)) {
+            logger.trace("Redirect as this is not an rendition (selector: '{}') or resource name: '{}' odes not match request: '{}'", selector, resourceName, requestName);
             redirectServlet.service(request.getRequest(), request.getResponse());
             return new ResponseHandledResponse();
         }
