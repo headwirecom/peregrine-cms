@@ -512,6 +512,11 @@ public final class AdminResourceHandlerService
             throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         try {
+            if(parentNode.hasNode(assetName)) {
+                // Node already exists -> delete it
+                Node existingNode = parentNode.getNode(assetName);
+                existingNode.remove();
+            }
             Node newAsset = parentNode.addNode(assetName, ASSET_PRIMARY_TYPE);
             Node content = newAsset.addNode(JCR_CONTENT, ASSET_CONTENT_TYPE);
             Binary data = parentNode.getSession().getValueFactory().createBinary(inputStream);
