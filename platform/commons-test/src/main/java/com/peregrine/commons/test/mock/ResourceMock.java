@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,11 +28,13 @@ public class ResourceMock extends ResourceWrapper {
     protected static final String DEFAULT_NAME = null;
 
     protected final String debugName;
+    protected String name;
 
     protected final Resource mock;
     protected final Node node;
 
     protected final Map<String, Object> properties = new HashMap<>();
+//    protected final ValueMap valueMap = mock(ValueMap.class);
 
     private final Map<String, ResourceMock> children = new LinkedHashMap<>();
 
@@ -125,6 +130,12 @@ public class ResourceMock extends ResourceWrapper {
         return this;
     }
 
+    public final ResourceMock setResourceType(final String resourceType) {
+        when(mock.getResourceType()).thenReturn(resourceType);
+        putProperty(SLING_RESOURCE_TYPE, resourceType);
+        return this;
+    }
+
     private void updateResourceResolverGetResource() {
         if (resourceResolver != null) {
             when(resourceResolver.getResource(path)).thenReturn(this);
@@ -153,6 +164,7 @@ public class ResourceMock extends ResourceWrapper {
 
     public final ResourceMock putProperty(final String name, final Object property) {
         properties.put(name, property);
+
         return this;
     }
 
@@ -168,6 +180,12 @@ public class ResourceMock extends ResourceWrapper {
         } catch (final RepositoryException e) { }
         updateResourceResolverGetResource();
         setPathImpl(path);
+        name = StringUtils.substringAfterLast(path, SLASH);
+        when(mock.getName()).thenReturn(name);
+        try {
+            when(node.getName()).thenReturn(name);
+        } catch (RepositoryException e) {
+        }
         return this;
     }
 
@@ -175,7 +193,7 @@ public class ResourceMock extends ResourceWrapper {
 
     @Override
     public final String getName() {
-        return StringUtils.substringAfterLast(path, SLASH);
+        return name;
     }
 
     public final ResourceMock setParent(final Resource parent) {

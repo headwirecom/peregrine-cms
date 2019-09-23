@@ -146,9 +146,9 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
 
     private @NotNull Response findAndOutputToWriterAsJSON(@NotNull Request request, @NotNull String query) throws IOException {
         JsonResponse answer = new JsonResponse();
-        if(query.length() == 0) {
-            answer.writeAttribute(CURRENT, 1).writeAttribute(MORE, false).writeArray(DATA).writeClose();
-        } else {
+//        if(query.length() == 0) {
+//            answer.writeAttribute(CURRENT, 1).writeAttribute(MORE, false).writeArray(DATA).writeClose();
+//        } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             try {
                 if (session != null && query.trim().length() > 0) {
@@ -173,7 +173,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
             } catch(Exception e) {
                 answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UNABLE_TO_GET_QUERY_MANAGER).setException(e);
             }
-        }
+//        }
         return answer;
     }
 

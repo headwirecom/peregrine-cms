@@ -143,12 +143,12 @@ public final class AdminResourceHandlerService
     private static final String FAILED_TO_INSERT = "Failed to insert node at: '%s'";
 
     private static final String MOVE_FROM_RESOURCE_MISSING = "To Move a Node the Source Resource must be provided";
-    private static final String MOVE_TO_RESOURCE_MISSING = "To Move a Node the Reference Resource must be provided";
+    public static final String MOVE_TO_RESOURCE_MISSING = "To Move a Node the Reference Resource must be provided";
     private static final String FAILED_TO_MOVE = "Failed to Move Resource. From: '%s' to: '%s'";
 
     private static final String RENAME_RESOURCE_MISSING = "To Rename a Node a Resource must be provided";
     private static final String NAME_TO_BE_RENAMED_TO_MUST_BE_PROVIDED = "Name to be renamed to must be provided";
-    private static final String NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH = "Name to be renamed to cannot contain a slash";
+    public static final String NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH = "Name to be renamed to cannot contain a slash";
     private static final String FAILED_TO_RENAME = "Failed to Rename Resource. From: '%s' to: '%s'";
 
     private static final String PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Parent Resource must be provided to create Asset";

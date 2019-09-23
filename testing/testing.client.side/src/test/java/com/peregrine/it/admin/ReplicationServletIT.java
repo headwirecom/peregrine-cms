@@ -37,7 +37,7 @@ import static com.peregrine.commons.util.PerUtil.getStringOrNull;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFile;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderAndCreate;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
-import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
+import static com.peregrine.it.basic.BasicTestHelpers.convertResponseToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createOSGiServiceConfiguration;
 import static com.peregrine.it.basic.BasicTestHelpers.findFolderByPath;
@@ -510,7 +510,7 @@ public class ReplicationServletIT
 
     private void checkReplicationResponse(SlingHttpResponse response, String sourceName, String sourcePath) throws IOException {
         // Ensure that each item is only replicated once
-        Map responseMap = convertToMap(response);
+        Map responseMap = convertResponseToMap(response);
         logger.info("Replication Response: '{}'", responseMap);
         assertEquals("Wrong Replication Source Name", sourceName, responseMap.get("sourceName"));
         assertEquals("Wrong Replication Source Path", sourcePath, responseMap.get("sourcePath"));

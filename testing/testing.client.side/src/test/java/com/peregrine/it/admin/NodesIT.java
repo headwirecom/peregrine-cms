@@ -31,7 +31,7 @@ import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.convertToList;
-import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
+import static com.peregrine.it.basic.BasicTestHelpers.convertResponseToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.BasicTestHelpers.getDateDifferenceInMillis;
@@ -110,7 +110,7 @@ public class NodesIT
         json.close();
         checkResourceByJson(client, pageFolder + "/" + pageName, 2, writer.toString(), true);
         SlingHttpResponse response = getNodes(client, pageFolder + "/" + pageName, 200);
-        Map data = convertToMap(response);
+        Map data = convertResponseToMap(response);
         logger.info("Nodes.json response: '{}'", data);
         // Look for the node and then check the page data
         Map<String, Object> page = traverse((Map<String, Object>) data, pageFolder + "/" + pageName);
@@ -180,7 +180,7 @@ public class NodesIT
         Calendar before = createTimestampAndWait();
         // Replicate the Page and check its new content
         SlingHttpResponse checkResponse = executeReplication(client, rootFolderPath + "/" + pageName, "local", 200);
-        logger.info("Execute Replication Response: '{}'", convertToMap(checkResponse));
+        logger.info("Execute Replication Response: '{}'", convertResponseToMap(checkResponse));
 
         // Check page and template
         jf = new JsonFactory();
@@ -213,7 +213,7 @@ public class NodesIT
         //END Now we start testing Nodes
 
         SlingHttpResponse response = getNodes(client, rootFolderPath + "/" + pageName, 200);
-        Map data = convertToMap(response);
+        Map data = convertResponseToMap(response);
         logger.info("Nodes.json response: '{}'", data);
         // Look for the node and then check the page data
         Map<String, Object> page = traverse((Map<String, Object>) data, rootFolderPath + "/" + pageName);

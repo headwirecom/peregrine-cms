@@ -16,7 +16,7 @@ import java.util.Map;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.it.basic.BasicTestHelpers.compareJson;
 import static com.peregrine.it.basic.BasicTestHelpers.convertToList;
-import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;
+import static com.peregrine.it.basic.BasicTestHelpers.convertResponseToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.loadFile;
 
 public class ExportModelIT
@@ -59,9 +59,9 @@ public class ExportModelIT
         SlingHttpResponse response = client.doGet(rootFolderPath + SLASH + objectName + ".model.json", 200);
         String responseContent = response.getContent();
         logger.info("Data JSon Response: '{}'", responseContent);
-        Map actual = convertToMap(responseContent);
+        Map actual = convertResponseToMap(responseContent);
         byte[] resultFileBytes = loadFile("src/test/resources/results/exportModel", "export.one.sub.model.json", "Failed to read Expected Export One Export");
-        Map expected = convertToMap(new String(resultFileBytes));
+        Map expected = convertResponseToMap(new String(resultFileBytes));
         compareJson(expected, actual, true);
     }
 
@@ -86,9 +86,9 @@ public class ExportModelIT
         SlingHttpResponse response = client.doGet(ROOT_PATH + SLASH + objectName + ".data.json", 200);
         String responseContent = response.getContent();
         logger.info("Data JSon Response: '{}'", responseContent);
-        Map actual = convertToMap(responseContent);
+        Map actual = convertResponseToMap(responseContent);
         byte[] resultFileBytes = loadFile("src/test/resources/results/exportModel", "expected.fields.with.children.data.json", "Failed to read Expected Fields With Children file");
-        Map expected = convertToMap(new String(resultFileBytes));
+        Map expected = convertResponseToMap(new String(resultFileBytes));
         compareJson(expected, actual);
     }
 

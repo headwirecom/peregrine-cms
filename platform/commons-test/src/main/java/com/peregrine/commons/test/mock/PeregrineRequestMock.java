@@ -21,6 +21,7 @@ public class PeregrineRequestMock
     extends Request
 {
     private Node mockNode;
+    private ResourceMock resourceMock;
 
     public static PeregrineRequestMock createInstance(String path, String...parameters) {
         return createInstance(path, null, null, false, parameters);
@@ -55,7 +56,7 @@ public class PeregrineRequestMock
 
         ResourceResolver mockResourceResolver = mock(ResourceResolver.class);
         when(request.getResourceResolver()).thenReturn(mockResourceResolver);
-        ResourceMock resourceMock = new ResourceMock()
+        resourceMock = new ResourceMock(path)
             .setPath(path)
             .setResourceResolver(mockResourceResolver);
         when(request.getResource()).thenReturn(resourceMock);
@@ -72,4 +73,8 @@ public class PeregrineRequestMock
     }
 
     public Node getNode() { return mockNode; }
+
+    public ResourceMock getRequestMock() {
+        return resourceMock;
+    }
 }

@@ -1,7 +1,14 @@
 package com.peregrine.admin.servlets;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandlerService;
+import com.peregrine.commons.servlets.AbstractBaseServlet.ErrorResponse;
+import com.peregrine.commons.servlets.AbstractBaseServlet.JsonResponse;
+import com.peregrine.commons.servlets.AbstractBaseServlet.RedirectResponse;
+import com.peregrine.commons.servlets.AbstractBaseServlet.Response;
+import com.peregrine.commons.servlets.AbstractBaseServlet.TextResponse;
 import com.peregrine.commons.test.AbstractTest;
 import com.peregrine.commons.test.mock.PeregrineRequestMock;
 import com.peregrine.commons.test.mock.ResourceMock;
@@ -14,8 +21,14 @@ import org.mockito.internal.util.reflection.Whitebox;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import static com.peregrine.commons.servlets.AbstractBaseServlet.MESSAGE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -23,6 +36,13 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATE_PATH;
+import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -143,5 +163,45 @@ public abstract class AbstractServletTest
         try {
             Whitebox.setInternalState(servlet, "modelFactory", mockModelFactory);
         } catch(RuntimeException e) {}
+    }
+
+    void checkJsonResponse(Response response, String...fileValuePairs) throws IOException {
+        assertNotNull("No Response from Servlet", response);
+        assertEquals("Response Type is not of type Json Response", JsonResponse.class.getName(), response.getClass().getName());
+        assertFalse("Response Type is must not be of type Error Response", response instanceof ErrorResponse);
+        JsonNode node = new ObjectMapper().readTree(response.getContent());
+        int pairs = fileValuePairs.length / 2;
+        for(int i = 0; i < pairs; i++) {
+            String key = fileValuePairs[2*i];
+            String value = fileValuePairs[2*i + 1];
+            JsonNode childNode = node.get(key);
+            assertNotNull("Node Field not found", childNode);
+            assertEquals("Wrong Field Value", value, childNode.asText());
+        }
+    }
+
+    void checkErrorResponse(Response response, String expectedErrorResponse) throws IOException {
+        assertNotNull("No Response from Servlet", response);
+        assertEquals("Response Type is not of type Error Response", ErrorResponse.class.getName(), response.getClass().getName());
+        JsonNode node = new ObjectMapper().readTree(response.getContent());
+        String message = node.get(MESSAGE).asText();
+        assertEquals("Wrong Error Response", expectedErrorResponse, message);
+    }
+
+    void checkTextResponse(Response response, String expectedText, String expectedMimeType) {
+        assertNotNull("No Response from Servlet", response);
+        assertEquals("Response Type is not of type Text Response", TextResponse.class.getName(), response.getClass().getName());
+        TextResponse textResponse = (TextResponse) response;
+        assertEquals("Wrong Mime Type", expectedMimeType, textResponse.getMimeType());
+        String text = textResponse.getContent();
+        assertEquals("Wrong Text Response", expectedText, text);
+    }
+
+    void checkRedirectResponse(Response response, String expectedRedirectToPath) {
+        assertNotNull("No Response from Servlet", response);
+        assertEquals("Response Type is not of type Redirect Response", RedirectResponse.class.getName(), response.getClass().getName());
+        RedirectResponse redirectResponse = (RedirectResponse) response;
+        String redirectTo = (String) Whitebox.getInternalState(redirectResponse, "redirectTo");
+        assertEquals("Wrong Redirect Path", expectedRedirectToPath, redirectTo);
     }
 }

@@ -68,9 +68,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class NodeServlet extends AbstractBaseServlet {
 
     @Reference
-    private transient ModelFactory modelFactory;
-
-    @Reference
     @SuppressWarnings("unused")
     private transient IntraSlingCaller intraSlingCaller;
 
