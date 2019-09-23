@@ -146,34 +146,30 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
 
     private @NotNull Response findAndOutputToWriterAsJSON(@NotNull Request request, @NotNull String query) throws IOException {
         JsonResponse answer = new JsonResponse();
-//        if(query.length() == 0) {
-//            answer.writeAttribute(CURRENT, 1).writeAttribute(MORE, false).writeArray(DATA).writeClose();
-//        } else {
-            Session session = request.getResourceResolver().adaptTo(Session.class);
-            try {
-                if (session != null && query.trim().length() > 0) {
-                    QueryManager qm = session.getWorkspace().getQueryManager();
-                    Query q = qm.createQuery(query, Query.SQL);
-                    q.setLimit(ROWS_PER_PAGE+1);
-                    String pageParam = request.getParameter("page");
-                    int page = 0;
-                    if(pageParam != null) {
-                        page = Integer.parseInt(pageParam);
-                    }
-                    q.setOffset(page*ROWS_PER_PAGE);
-
-                    QueryResult res = q.execute();
-                    NodeIterator nodes = res.getNodes();
-                    answer.writeAttribute(CURRENT, 1);
-                    answer.writeAttribute(MORE, nodes.getSize() > ROWS_PER_PAGE);
-                    answer.writeArray(DATA);
-                    writeNodesToJSON(nodes, answer);
-                    answer.writeClose();
+        Session session = request.getResourceResolver().adaptTo(Session.class);
+        try {
+            if (session != null && query.trim().length() > 0) {
+                QueryManager qm = session.getWorkspace().getQueryManager();
+                Query q = qm.createQuery(query, Query.SQL);
+                q.setLimit(ROWS_PER_PAGE+1);
+                String pageParam = request.getParameter("page");
+                int page = 0;
+                if(pageParam != null) {
+                    page = Integer.parseInt(pageParam);
                 }
-            } catch(Exception e) {
-                answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UNABLE_TO_GET_QUERY_MANAGER).setException(e);
+                q.setOffset(page*ROWS_PER_PAGE);
+
+                QueryResult res = q.execute();
+                NodeIterator nodes = res.getNodes();
+                answer.writeAttribute(CURRENT, 1);
+                answer.writeAttribute(MORE, nodes.getSize() > ROWS_PER_PAGE);
+                answer.writeArray(DATA);
+                writeNodesToJSON(nodes, answer);
+                answer.writeClose();
             }
-//        }
+        } catch(Exception e) {
+            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UNABLE_TO_GET_QUERY_MANAGER).setException(e);
+        }
         return answer;
     }
 

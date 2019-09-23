@@ -82,6 +82,7 @@ public class ResourceMock extends ResourceWrapper {
                             .map(ResourceMock::getNode)
                             .orElse(null)
             );
+            when(mock.getIdentifier()).thenReturn(name);
         } catch (final RepositoryException e) { }
 
         return mock;
@@ -198,6 +199,9 @@ public class ResourceMock extends ResourceWrapper {
 
     public final ResourceMock setParent(final Resource parent) {
         when(mock.getParent()).thenReturn(parent);
+        if(parent instanceof ResourceMock && !((ResourceMock) parent).hasChild(getName())) {
+            ((ResourceMock) parent).addChild(this);
+        }
         return this;
     }
 
