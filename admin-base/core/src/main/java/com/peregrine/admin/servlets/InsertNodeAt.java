@@ -88,7 +88,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-public class InsertNodeAt extends AbstractBaseServlet {
+public class  InsertNodeAt extends AbstractBaseServlet {
 
     public static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     public static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";

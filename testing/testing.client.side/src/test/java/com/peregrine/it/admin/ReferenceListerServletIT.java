@@ -18,10 +18,11 @@ import org.slf4j.LoggerFactory;
 import java.io.StringWriter;
 import java.util.Map;
 
+import static com.peregrine.commons.test.TestUtil.compareJson;
+import static com.peregrine.commons.test.TestUtil.convertJsonTextToMap;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
-import static com.peregrine.it.basic.BasicTestHelpers.compareJson;
 import static com.peregrine.it.basic.BasicTestHelpers.convertResponseToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.TestConstants.EXAMPLE_PAGE_TYPE_PATH;
@@ -89,7 +90,7 @@ public class ReferenceListerServletIT
         json.writeEndObject();
         json.close();
         SlingHttpResponse response = getReferenceList(client, pagesPath + "/" + pageName, 200);
-        Map expected = convertResponseToMap(writer.toString());
+        Map expected = convertJsonTextToMap(writer.toString());
         Map actual = convertResponseToMap(response);
         compareJson(expected, actual);
     }
@@ -139,7 +140,7 @@ public class ReferenceListerServletIT
         json.writeEndObject();
         json.close();
         SlingHttpResponse response = getReferenceList(client, pagesPath + "/" + pageName, 200);
-        Map expected = convertResponseToMap(writer.toString());
+        Map expected = convertJsonTextToMap(writer.toString());
         Map actual = convertResponseToMap(response);
         logger.info("Reference List, Actual: '{}', Expoected: '{}'", actual, expected);
         compareJson(expected, actual);

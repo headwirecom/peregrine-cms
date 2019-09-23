@@ -30,7 +30,6 @@ import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
-import static com.peregrine.it.basic.BasicTestHelpers.convertToList;
 import static com.peregrine.it.basic.BasicTestHelpers.convertResponseToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;

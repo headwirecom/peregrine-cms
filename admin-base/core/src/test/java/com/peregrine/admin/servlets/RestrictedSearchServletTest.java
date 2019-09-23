@@ -134,7 +134,7 @@ public class RestrictedSearchServletTest
             "  \"data\" : [" +
             "    {" +
             "      \"name\" : \"templates\"," +
-            "      \"path\" : \"/content/test/restricted/search\"," +
+            "      \"path\" : \"" + contentPath + "\"," +
             "      \"nodeType\" : \"per:Component\"" +
             "    }" +
             "  ]" +
@@ -201,14 +201,14 @@ public class RestrictedSearchServletTest
             "  \"data\" : [" +
             "    {" +
             "      \"name\" : \"components\"," +
-            "      \"path\" : \"/content/test/restricted/search/components\"," +
+            "      \"path\" : \"" + contentPath + "\"," +
             "      \"variation\" : \"thumbnail.png\"," +
             "      \"variationPath\" : \"thumbnail.png\"," +
             "      \"nodeType\" : \"per:Component\"" +
             "    }," +
             "    {" +
             "      \"name\" : \"components\"," +
-            "      \"path\" : \"/content/test/restricted/search/components\"," +
+            "      \"path\" : \"" + contentPath + "\"," +
             "      \"variation\" : \"variations1\"," +
             "      \"variationPath\" : \"variation1\"," +
             "      \"title\" : \"variations1\"," +
@@ -217,7 +217,7 @@ public class RestrictedSearchServletTest
             "    }," +
             "    {" +
             "      \"name\" : \"components\"," +
-            "      \"path\" : \"/content/test/restricted/search/components\"," +
+            "      \"path\" : \"" + contentPath + "\"," +
             "      \"variation\" : \"variations2\"," +
             "      \"variationPath\" : \"variation2\"," +
             "      \"title\" : \"variations2\"," +

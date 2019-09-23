@@ -20,12 +20,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static com.peregrine.commons.test.TestUtil.compareJson;
+import static com.peregrine.commons.test.TestUtil.convertJsonTextToMap;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.it.basic.BasicTestHelpers.checkLastModified;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
-import static com.peregrine.it.basic.BasicTestHelpers.compareJson;
-import static com.peregrine.it.basic.BasicTestHelpers.convertResponseToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.createFolderStructure;
 import static com.peregrine.it.basic.BasicTestHelpers.createTimestampAndWait;
 import static com.peregrine.it.basic.BasicTestHelpers.extractChildNodes;
@@ -218,7 +218,7 @@ public class InsertNodeAtServletIT
                             .addProperties(new Prop("grandchild2Prop1", "grandchild2Value1"), new Prop("grandchild2Prop2", "grandchild2Value2"))
                     )
             );
-        Map expected = convertResponseToMap(componentObject.toJSon());
+        Map expected = convertJsonTextToMap(componentObject.toJSon());
         Map actual = (Map) children.values().iterator().next();
         logger.info("Expected Map: '{}'", expected);
         logger.info("Actual Map: '{}'", actual);
@@ -249,7 +249,7 @@ public class InsertNodeAtServletIT
         NoNameObject componentObject = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType("it/components/testvariation")
             .addProperties(new Prop("v2-prop-1", "v2-value-1"), new Prop("v2-prop-2", "v2-value-2")
         );
-        Map expected = convertResponseToMap(componentObject.toJSon());
+        Map expected = convertJsonTextToMap(componentObject.toJSon());
         Map actual = (Map) children.values().iterator().next();
         logger.info("Expected Map: '{}'", expected);
         logger.info("Actual Map: '{}'", actual);
@@ -280,7 +280,7 @@ public class InsertNodeAtServletIT
         NoNameObject componentObject = (NoNameObject) new NoNameObject(NT_UNSTRUCTURED).addSlingResourceType("it/components/testvariation")
             .addProperties(new Prop("v1-prop-1", "v1-value-1"), new Prop("v1-prop-2", "v1-value-2")
         );
-        Map expected = convertResponseToMap(componentObject.toJSon());
+        Map expected = convertJsonTextToMap(componentObject.toJSon());
         Map actual = (Map) children.values().iterator().next();
         logger.info("Expected Map: '{}'", expected);
         logger.info("Actual Map: '{}'", actual);

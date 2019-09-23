@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.peregrine.commons.test.TestUtil.compareJson;
+import static com.peregrine.commons.test.TestUtil.convertJsonTextToList;
+import static com.peregrine.commons.test.TestUtil.convertJsonTextToMap;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.it.basic.BasicTestHelpers.compareJson;
-import static com.peregrine.it.basic.BasicTestHelpers.convertToList;
-import static com.peregrine.it.basic.BasicTestHelpers.convertResponseToMap;
 import static com.peregrine.it.basic.BasicTestHelpers.loadFile;
 
 public class ExportModelIT
@@ -39,11 +39,11 @@ public class ExportModelIT
         SlingHttpResponse response = client.doGet(ROOT_PATH + SLASH + objectName + ".export.json", 200);
         String responseContent = response.getContent();
         logger.info("Data JSon Response: '{}'", responseContent);
-        List actual = convertToList(responseContent);
+        List actual = convertJsonTextToList(responseContent);
         Map actualMap = new HashMap();
         actualMap.put("list", actual);
         byte[] resultFileBytes = loadFile("src/test/resources/results/exportModel", "export.one.export.json", "Failed to read Expected Export One Export");
-        List expected = convertToList(new String(resultFileBytes));
+        List expected = convertJsonTextToList(new String(resultFileBytes));
         Map expectedMap = new HashMap();
         expectedMap.put("list", expected);
         compareJson(expectedMap, actualMap, true);
@@ -59,9 +59,9 @@ public class ExportModelIT
         SlingHttpResponse response = client.doGet(rootFolderPath + SLASH + objectName + ".model.json", 200);
         String responseContent = response.getContent();
         logger.info("Data JSon Response: '{}'", responseContent);
-        Map actual = convertResponseToMap(responseContent);
+        Map actual = convertJsonTextToMap(responseContent);
         byte[] resultFileBytes = loadFile("src/test/resources/results/exportModel", "export.one.sub.model.json", "Failed to read Expected Export One Export");
-        Map expected = convertResponseToMap(new String(resultFileBytes));
+        Map expected = convertJsonTextToMap(new String(resultFileBytes));
         compareJson(expected, actual, true);
     }
 
@@ -86,9 +86,9 @@ public class ExportModelIT
         SlingHttpResponse response = client.doGet(ROOT_PATH + SLASH + objectName + ".data.json", 200);
         String responseContent = response.getContent();
         logger.info("Data JSon Response: '{}'", responseContent);
-        Map actual = convertResponseToMap(responseContent);
+        Map actual = convertJsonTextToMap(responseContent);
         byte[] resultFileBytes = loadFile("src/test/resources/results/exportModel", "expected.fields.with.children.data.json", "Failed to read Expected Fields With Children file");
-        Map expected = convertResponseToMap(new String(resultFileBytes));
+        Map expected = convertJsonTextToMap(new String(resultFileBytes));
         compareJson(expected, actual);
     }
 
