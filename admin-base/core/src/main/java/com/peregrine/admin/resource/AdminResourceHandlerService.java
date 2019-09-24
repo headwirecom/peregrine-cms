@@ -784,7 +784,7 @@ public final class AdminResourceHandlerService
     }
 
     private void applyChildProperties(@NotNull final Node parent, @NotNull final Map properties, final int position) throws RepositoryException, ManagementException {
-                // Find matching child by name
+        // Find matching child by name
         final String name = extractName(properties);
         if (isBlank(name)) {
             logger.warn("Neither Name nor Path Found in Object: '{}'", properties);
@@ -812,13 +812,15 @@ public final class AdminResourceHandlerService
         } else {
             final String path = getPropsFromMap(properties, PATH, EMPTY);
             final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
-            logger.trace("Child Props parent: '{}', source node: '{}'", parent, sourceNode);
             if(sourceNode != null) {
-                String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
                 Node newNode = addNewNode(parent);
-                newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
-
-                copyPropertiesFromComponentVariation(parent, APPS_ROOT + SLASH + componentName, null);
+                if(sourceNode.hasProperty(SLING_RESOURCE_TYPE)) {
+                    String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
+                    newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
+                    logger.trace("Copy Props from Component Variation, component name: '{}'", componentName);
+                    copyPropertiesFromComponentVariation(newNode, APPS_ROOT + SLASH + componentName, null);
+                }
+                logger.trace("Apply Properties to node: '{}', props: '{}'", newNode, properties);
                 applyProperties(newNode, properties);
             }
         }
