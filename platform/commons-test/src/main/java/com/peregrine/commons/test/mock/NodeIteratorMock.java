@@ -3,6 +3,7 @@ package com.peregrine.commons.test.mock;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public final class NodeIteratorMock extends RangeIteratorMockBase implements NodeIterator {
 
@@ -15,7 +16,11 @@ public final class NodeIteratorMock extends RangeIteratorMockBase implements Nod
 
     @Override
     public Node nextNode() {
-        return nodes.get(keys.next()).getNode();
+        if(keys.hasNext()) {
+            return nodes.get(keys.next()).getNode();
+        } else {
+            throw new NoSuchElementException("No More Nodes available");
+        }
     }
 
     @Override

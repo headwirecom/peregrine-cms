@@ -21,6 +21,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -628,8 +629,8 @@ public final class AdminResourceHandlerService
 
     // TODO: needs deep clone
     private Node createNode(
-            final Node parent,
-            final Map<String, Object> properties,
+            @NotNull final Node parent,
+            @NotNull final Map<String, Object> properties,
             final String variation
     ) throws RepositoryException, ManagementException {
         properties.remove(PATH);
@@ -743,7 +744,7 @@ public final class AdminResourceHandlerService
         return null;
     }
 
-    private void applyProperties(final Node node, final Map properties) throws RepositoryException, ManagementException {
+    private void applyProperties(@NotNull final Node node, @NotNull final Map properties) throws RepositoryException, ManagementException {
         String prettyJson = prettyPrintJson(properties);
         logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyJson);
         Set<Entry> entrySet = properties.entrySet();
@@ -755,21 +756,21 @@ public final class AdminResourceHandlerService
             final Object value = entry.getValue();
             prettyJson = prettyPrintJson(value);
             logger.trace("Apply Props, handle prop: '{}'='{}', value type: '{}'", key, prettyJson, getClassOrNull(value));
-                if (value instanceof String) {
-                    node.setProperty(key, (String) value);
+            if (value instanceof String) {
+                node.setProperty(key, (String) value);
             } else if (value instanceof List) {
                 final List list = (List) value;
                 // Get sub node
-                    if(node.hasNode(key)) {
-                        applyChildProperties(node.getNode(key), list);
-                    } else {
-                        applyChildProperties(node, list);
-                    }
+                if(node.hasNode(key)) {
+                    applyChildProperties(node.getNode(key), list);
+                } else {
+                    applyChildProperties(node, list);
+                }
             }
         }
     }
 
-    private void applyChildProperties(final Node parent, final List childProperties) throws RepositoryException, ManagementException {
+    private void applyChildProperties(@NotNull final Node parent, @NotNull final List childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
         int counter = 0;
         for (final Object item : childProperties) {
@@ -782,7 +783,7 @@ public final class AdminResourceHandlerService
         }
     }
 
-    private void applyChildProperties(final Node parent, final Map properties, final int position) throws RepositoryException, ManagementException {
+    private void applyChildProperties(@NotNull final Node parent, @NotNull final Map properties, final int position) throws RepositoryException, ManagementException {
                 // Find matching child by name
         final String name = extractName(properties);
         if (isBlank(name)) {

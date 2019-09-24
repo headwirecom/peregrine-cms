@@ -83,17 +83,18 @@ public class TestUtil {
                             String name = (String) expectedListMap.get("name");
                             if(name == null) {
                                 fail("Expected List Map entry has no name: " + expectedListMap);
-                            }
-                            for(Object temp2 : actualList2) {
-                                if(temp2 instanceof Map) {
-                                    Map tempMap = (Map) temp2;
-                                    String name2 = (String) tempMap.get("name");
-                                    if(name == null) {
-                                        fail("Given List Map entry has no name: " + tempMap);
-                                    }
-                                    if(name.equals(name2)) {
-                                        actualListMap = tempMap;
-                                        break;
+                            } else {
+                                for (Object temp2 : actualList2) {
+                                    if (temp2 instanceof Map) {
+                                        Map tempMap = (Map) temp2;
+                                        String name2 = (String) tempMap.get("name");
+                                        if (name2 == null) {
+                                            fail("Given List Map entry has no name: " + tempMap);
+                                        }
+                                        if (name.equals(name2)) {
+                                            actualListMap = tempMap;
+                                            break;
+                                        }
                                     }
                                 }
                             }
