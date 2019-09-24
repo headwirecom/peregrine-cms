@@ -1,7 +1,7 @@
 package com.peregrine.nodejs.npm;
 
-import com.peregrine.nodejs.process.ExternalProcessException;
 import com.peregrine.nodejs.util.NodeConstants;
+import com.peregrine.process.ExternalProcessException;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;

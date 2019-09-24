@@ -36,6 +36,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 
+import static com.peregrine.process.ProcessContext.NO_EXIT_CODE;
+
 /**
  * Executes an External Process defined by a list of commands (command followed by 0+ arguments)
  *
@@ -95,7 +97,7 @@ public class ProcessRunner {
         pb.redirectOutput(Redirect.to(output));
         pb.redirectError(Redirect.to(error));
 
-        int exitCode = ProcessContext.NO_EXIT_CODE;
+        int exitCode = NO_EXIT_CODE;
         try {
             final Process p = pb.start();
             try {

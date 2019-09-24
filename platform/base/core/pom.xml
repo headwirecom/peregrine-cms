@@ -54,6 +54,7 @@
                             com.peregrine.adaption,
                             com.peregrine.nodetypes.*,
                             com.peregrine.intra,
+                            com.peregrine.process,
                             com.peregrine.render,
                             com.peregrine.rendition,
                             com.peregrine.replication,

@@ -1,7 +1,7 @@
 package com.peregrine.nodejs.npm;
 
-import com.peregrine.nodejs.process.ExternalProcessException;
-import com.peregrine.nodejs.process.ProcessContext;
+import com.peregrine.process.ExternalProcessException;
+import com.peregrine.process.ProcessContext;
 
 /**
  * Node Package Manager service intefae to

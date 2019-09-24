@@ -1,9 +1,9 @@
 package com.peregrine.nodejs.servlet;
 
 import com.peregrine.nodejs.npm.NpmExternalProcess;
-import com.peregrine.nodejs.process.ExternalProcessException;
-import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.util.ObjectConverter;
+import com.peregrine.process.ExternalProcessException;
+import com.peregrine.process.ProcessContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;

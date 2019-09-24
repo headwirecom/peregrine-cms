@@ -1,9 +1,9 @@
 package com.peregrine.nodejs.npm;
 
 import com.peregrine.nodejs.j2v8.J2V8ProcessExecution;
-import com.peregrine.nodejs.process.ExternalProcessException;
-import com.peregrine.nodejs.process.ProcessContext;
 import com.peregrine.nodejs.process.ProcessRunner;
+import com.peregrine.process.ExternalProcessException;
+import com.peregrine.process.ProcessContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;

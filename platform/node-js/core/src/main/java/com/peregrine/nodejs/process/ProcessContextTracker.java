@@ -1,5 +1,6 @@
 package com.peregrine.nodejs.process;
 
+import com.peregrine.process.ProcessContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
