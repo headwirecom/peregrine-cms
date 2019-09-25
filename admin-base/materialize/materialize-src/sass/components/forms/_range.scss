@@ -16,7 +16,7 @@ input[type=range] {
   background-color: transparent;
   border: none;
   outline: none;
-  width: 100%;
+  width: calc(100% - 5px);
   margin: 15px 0;
   padding: 0;
 
