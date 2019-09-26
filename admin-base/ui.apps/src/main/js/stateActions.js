@@ -29,6 +29,7 @@ let actions = []
 
 import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
+import createPageFromBoilerplate from './stateActions/createPageFromBoilerplate'
 import createPageWizard from './stateActions/createPageWizard'
 import createSiteWizard from './stateActions/createSiteWizard'
 import createSite from './stateActions/createSite'
@@ -84,6 +85,7 @@ actions['createSiteWizard'] = createSiteWizard
 actions['createSite'] = createSite
 actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
+actions['createPageFromBoilerplate'] = createPageFromBoilerplate
 actions['deletePage'] = deletePage
 actions['deleteSite'] = deleteSite
 actions['renamePage'] = renamePage

@@ -41,6 +41,18 @@
                             <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
                         </li>
                     </ul>
+                    <div v-if="boilerplatePages">
+                        OR<br/>
+                        <label>Select Boilerplate Page</label>
+                        <ul class="collection">
+                            <li class="collection-item"
+                                v-for="boilerplatePage in boilerplatePages"
+                                v-on:click.stop.prevent="selectBoilerplatePage(null, boilerplatePage.path)"
+                                v-bind:class="isSelected(boilerplatePage.path) ? 'active' : ''">
+                                <admin-components-action v-bind:model="{ command: 'selectBoilerplatePage', target: boilerplatePage.path, title: boilerplatePage.name }"></admin-components-action>
+                            </li>
+                        </ul>
+                    </div>
                     <div v-if="formErrors.unselectedTemplateError" class="errors">
                         <span track-by="index">selection required</span>
                     </div>
@@ -56,12 +68,9 @@
             </vue-form-generator>
         </tab-content>
         <tab-content title="verify">
-            <vue-form-generator :model="formmodel"
-                                :schema="pageSchema"
-                                :options="formOptions"
-                                ref="nameTab">
-
-            </vue-form-generator>
+            Creating Page `{{formmodel.name}}` from
+            <span v-if="formmodel.templatePath">template `{{formmodel.templatePath}}`</span>
+            <span v-else-if="formmodel.boilerplatePagePath">boilerplate page `{{formmodel.boilerplatePagePath}}`</span>
         </tab-content>
     </form-wizard>
 </div>
@@ -79,8 +88,8 @@
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
-                        templatePath: ''
-
+                        templatePath: '',
+                        boilerplatePagePath: ''
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -126,6 +135,14 @@
                 siteRootParts[2] = 'templates'
                 const siteRoot = siteRootParts.join('/')
                 return templates.filter( (item) => item.path.startsWith(siteRoot))
+            },
+            boilerplatePages: function() {
+                const siteRoot = this.formmodel.path.split('/').slice(0,4).join('/') + '/boilerplates'
+                const boilerplateRoot = $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, siteRoot)
+                if(boilerplateRoot) {
+                    return boilerplateRoot.children
+                }
+                return {}
             }
         }
         ,
@@ -133,22 +150,40 @@
             selectTemplate: function(me, target){
                 if(me === null) me = this
                 me.formmodel.templatePath = target
+                me.formmodel.boilerplatePagePath = ''
+                this.validateTabOne(me);
+            },
+            selectBoilerplatePage: function(me, target){
+                if(me === null) me = this
+                me.formmodel.boilerplatePagePath = target
+                me.formmodel.templatePath = ''
                 this.validateTabOne(me);
             },
             isSelected: function(target) {
-                return this.formmodel.templatePath === target
+                return this.formmodel.templatePath === target || this.formmodel.boilerplatePagePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
+                if(this.formmodel.templatePath) {
+                    $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
+                }
+                else {
+                    $perAdminApp.stateAction('createPageFromBoilerplate', { parent: this.formmodel.path, name: this.formmodel.name, boilerplatePagePath: this.formmodel.boilerplatePagePath, data: this.formmodel })
+                }
             },
             validateTabOne: function(me) {
-                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath);
+                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath && '' === '' + me.formmodel.boilerplatePagePath);
 
                 return !me.formErrors.unselectedTemplateError;
             },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
                     $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
+                }
+                if('' !== ''+this.formmodel.boilerplatePagePath) {
+                    const boilerplatePage = this.boilerplatePages.find(bp => {
+                        return bp.path == this.formmodel.boilerplatePagePath
+                    })
+                    $perAdminApp.getApi().populateComponentDefinitionFromNode(boilerplatePage.templatePath)
                 }
 
                 return this.validateTabOne(this);
