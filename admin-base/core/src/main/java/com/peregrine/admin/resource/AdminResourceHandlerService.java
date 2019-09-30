@@ -957,9 +957,8 @@ public class AdminResourceHandlerService
         copier.setFromName(fromName);
         resourcesToPackage.add(copier.copyApps(superTypes));
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
-        copier.setFromName(null);
-        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
         copier.setFromName(fromName);
+        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
         resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
