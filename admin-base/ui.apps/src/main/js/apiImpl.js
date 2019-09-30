@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,10 +24,10 @@
  */
 // var axios = require('axios')
 
-import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
+import {LoggerFactory} from './logger'
+import {get, stripNulls} from './utils'
 
-import { stripNulls} from './utils'
+let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
 const API_BASE = '/perapi'
 const postConfig = {
@@ -145,6 +145,18 @@ function populateView(path, name, data) {
         resolve()
     })
 
+}
+
+function updateExplorerDialog() {
+    const view = callbacks.getView()
+    const page = get(view, '/state/tools/page', '')
+    const template = get(view, '/state/tools/template', '')
+    if (page) {
+        $perAdminApp.stateAction('showPageInfo', {selected: page})
+    }
+    if (template) {
+        $perAdminApp.stateAction('showPageInfo', {selected: template})
+    }
 }
 
 
@@ -272,19 +284,27 @@ class PerAdminImpl {
                                 })
                                 promises.push(promise)
                             }
+                                }
                             let visible = data.model.fields[i].visible
                             if(visible) {
-                                data.model.fields[i].visible = function(model) { 
+                                data.model.fields[i].visible = function(model) {
                                     return exprEval.Parser.evaluate( visible, this );
-                                } 
+                                }
+                            }
+                            const field = data.model.fields[i];
+                            if (field) {
+                                if (field.label) {
+                                    data.model.fields[i].label = Vue.prototype.$i18n(field.label);
+                                }
+                                if (field.placeholder) {
+                                    data.model.fields[i].placeholder = Vue.prototype.$i18n(field.placeholder);
+                                }
                             }
                         }
-                    }
-                    Promise.all(promises).then( () => {
+                        Promise.all(promises).then( () => {
                             populateView('/admin/componentDefinitions', data.name, data.model)
                             resolve(name)
-                        }
-                    )
+                        })
                 })
                 .catch ( error => {
                     reject(error)
@@ -334,6 +354,7 @@ class PerAdminImpl {
     populateI18N(language) {
         return new Promise( (resolve, reject) => {
             axios.get('/i18n/admin/'+language+'.infinity.json').then( (response) => {
+                updateExplorerDialog();
                 populateView('/admin/i18n', language, response.data).then( () => {
                     resolve()
                 })
