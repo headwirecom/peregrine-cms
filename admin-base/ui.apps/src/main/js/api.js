@@ -22,7 +22,8 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger'
+import {LoggerFactory} from './logger'
+
 let log = LoggerFactory.logger('api').setLevelDebug()
 
 let impl = null
@@ -83,7 +84,7 @@ class PerApi {
     }
 
 
-        populateObject(path, target, name) {
+    populateObject(path, target, name) {
         return impl.populateObject(path, target, name)
     }
 
@@ -100,10 +101,10 @@ class PerApi {
     }
 
     populateByName(name) {
-        if(name === '/admin/tools') return this.populateTools()
-        if(name === '/admin/toolsConfig') return this.populateToolsConfig()
-        if(name === '/admin/components') return this.populateComponents()
-        return Promise.reject('populateByName for '+name+' is not defined')
+        if (name === '/admin/tools') return this.populateTools()
+        if (name === '/admin/toolsConfig') return this.populateToolsConfig()
+        if (name === '/admin/components') return this.populateComponents()
+        return Promise.reject('populateByName for ' + name + ' is not defined')
     }
 
     populateI18N(language) {

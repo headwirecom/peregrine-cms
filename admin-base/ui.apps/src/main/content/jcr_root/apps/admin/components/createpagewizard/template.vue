@@ -32,29 +32,41 @@
         <tab-content title="select template" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
-                    <label>Select Template</label>
-                    <ul class="collection">
-                        <li class="collection-item"
-                            v-for="template in templates"
-                            v-on:click.stop.prevent="selectTemplate(null, template.path)"
-                            v-bind:class="isSelected(template.path) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
-                        </li>
-                    </ul>
-                    <div v-if="boilerplatePages">
-                        OR<br/>
-                        <label>Select Boilerplate Page</label>
-                        <ul class="collection">
-                            <li class="collection-item"
-                                v-for="boilerplatePage in boilerplatePages"
-                                v-on:click.stop.prevent="selectBoilerplatePage(null, boilerplatePage.path)"
-                                v-bind:class="isSelected(boilerplatePage.path) ? 'active' : ''">
-                                <admin-components-action v-bind:model="{ command: 'selectBoilerplatePage', target: boilerplatePage.path, title: boilerplatePage.name }"></admin-components-action>
-                            </li>
-                        </ul>
-                    </div>
-                    <div v-if="formErrors.unselectedTemplateError" class="errors">
-                        <span track-by="index">selection required</span>
+                    <div class="row">
+                        <div class="col s6">
+                            <label>Select Template</label>
+                            <ul class="collection">
+                                <li class="collection-item"
+                                    v-for="template in templates"
+                                    v-on:click.stop.prevent="selectTemplate(null, template.path)"
+                                    v-bind:class="isSelected(template.path) ? 'active' : ''">
+                                    <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
+                                </li>
+                            </ul>
+                            <div v-if="boilerplatePages && boilerplatePages.length > 0">
+                                OR<br/>
+                                <label>Select Boilerplate Page</label>
+                                <ul class="collection">
+                                    <li class="collection-item"
+                                        v-for="boilerplatePage in boilerplatePages"
+                                        v-on:click.stop.prevent="selectBoilerplatePage(null, boilerplatePage.path)"
+                                        v-bind:class="isSelected(boilerplatePage.path) ? 'active' : ''">
+                                        <admin-components-action v-bind:model="{ command: 'selectBoilerplatePage', target: boilerplatePage.path, title: boilerplatePage.name }"></admin-components-action>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div v-if="formErrors.unselectedTemplateError" class="errors">
+                                <span track-by="index">selection required</span>
+                            </div>
+                        </div>
+                        <div class="col s6">
+                            <div class="iframe-container">
+                                <iframe v-if="formmodel.boilerplatePagePath"
+                                        v-bind:src="formmodel.boilerplatePagePath + '.html'">
+
+                                </iframe>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </fieldset>
@@ -142,7 +154,7 @@
                 if(boilerplateRoot) {
                     return boilerplateRoot.children
                 }
-                return {}
+                return []
             }
         }
         ,
@@ -208,3 +220,23 @@
         }
     }
 </script>
+
+<style>
+.iframe-container {
+    overflow: hidden;
+    padding-top: 56.25%;
+    position: relative;
+}
+
+.iframe-container iframe {
+    border: 0;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    transform: scale(0.5);
+}
+
+
+</style>
