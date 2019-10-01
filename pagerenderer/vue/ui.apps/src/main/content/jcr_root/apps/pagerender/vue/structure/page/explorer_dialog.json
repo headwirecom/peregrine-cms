@@ -87,7 +87,7 @@
           "name": "name",
           "value": "value"
         },
-        "values": [ 
+        "values": [
           {"name": "property", "value": "property" },
           {"name": "name", "value": "name" }
         ],
