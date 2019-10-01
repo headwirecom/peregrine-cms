@@ -57,6 +57,9 @@
                 <a v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
             </li>
             <li>
+                <a v-bind:title="$i18n('about')" href="#" v-on:click="onShowAbout">{{$i18n('about')}}</a>
+            </li>
+            <li>
                  <vue-multiselect
                     :value="language"
                     deselect-label=""
@@ -108,6 +111,9 @@ export default {
         },
         onShowHelp () {
             $perAdminApp.action(this, 'showTour', '')
+        },
+        onShowAbout () {
+            $('#aboutPeregrine').modal('open');
         }
     }
 }
