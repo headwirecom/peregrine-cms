@@ -82,12 +82,12 @@ function updateWithForm(path, data) {
 
     logger.fine('Update with Form, path: ' + path + ', data: ' + data)
     return axios.post(API_BASE+path, data, postConfig)
-        .then( (response) => {
-            return new Promise( (resolve, reject) => {
-                logger.fine('Update with Form, response data: ' + response.data)
-                resolve(response.data)
-            })
-        })
+        .then( (response) => response.data )
+        //     return new Promise( (resolve, reject) => {
+        //         logger.fine('Update with Form, response data: ' + response.data)
+        //         resolve(response.data)
+        //     })
+        // })
         .catch( (error) => {
             logger.error('Update with Form request to', error.response.request.path, 'failed')
             throw error
@@ -435,24 +435,18 @@ class PerAdminImpl {
     }
 
     deletePage(path) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            updateWithForm('/admin/deletePage.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        const data = new FormData()
+        return updateWithForm('/admin/deletePage.json'+path, data)
+                .then( () => this.populateNodesForBrowser(path) )
     }
 
     deleteSite(target) {
-        let name = target.name;
-        let root = '/content/sites';
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('name', name);
-            updateWithForm('/admin/deleteSite.json', data)
-                .then( (data) => this.populateNodesForBrowser(root) )
-                .then( () => resolve() )
-        })
+        const name = target.name;
+        const root = '/content/sites'
+        const data = new FormData()
+        data.append('name', name)
+        return updateWithForm('/admin/deleteSite.json', data)
+                .then( () => this.populateNodesForBrowser(root) )
     }
 
     renamePage(path, newName) {
