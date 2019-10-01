@@ -34,7 +34,7 @@
           :placeholder="schema.placeholder"
           :readonly="schema.readonly"
           @input="value = $event.target.value" />
-        <button v-on:click.stop.prevent="browse" class="btn-flat">
+        <button :disabled="disabled" v-on:click.stop.prevent="browse" class="btn-flat" v-bind:class="{hide: schema.readonly}">
           <i class="material-icons">insert_drive_file</i>
         </button>
         <img v-if="isImage(value)" :src="sanitizedValue" />
