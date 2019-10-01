@@ -147,6 +147,10 @@ function populateView(path, name, data) {
 
 }
 
+function $i18n(key) {
+  return Vue.prototype.$i18n(key);
+}
+
 function updateExplorerDialog() {
     const view = callbacks.getView()
     const page = get(view, '/state/tools/page', '')
@@ -294,13 +298,24 @@ class PerAdminImpl {
                             const field = data.model.fields[i];
                             if (field) {
                                 if (field.label) {
-                                    data.model.fields[i].label = Vue.prototype.$i18n(field.label);
+                                        data.model.fields[i].label = $i18n(field.label);
                                 }
                                 if (field.placeholder) {
-                                    data.model.fields[i].placeholder = Vue.prototype.$i18n(field.placeholder);
+                                        data.model.fields[i].placeholder = $i18n(field.placeholder);
                                 }
                                 if (field.hint) {
-                                    data.model.fields[i].placeholder = Vue.prototype.$i18n(field.hint);
+                                        let split = field.hint.split('. ');
+                                        if (split.length <= 1) {
+                                            data.model.fields[i].hint = $i18n(field.hint);
+                                        } else {
+                                            for (let j = 0; j < split.length; j++) {
+                                                let item = split[j];
+                                                if (item.length > 0) {
+                                                    split[j] = $i18n(item);
+                                                }
+                                            }
+                                            data.model.fields[i].hint = split.join('. ');
+                                        }
                                 }
                             }
                         }
