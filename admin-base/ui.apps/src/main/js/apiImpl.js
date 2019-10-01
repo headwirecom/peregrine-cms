@@ -223,7 +223,7 @@ class PerAdminImpl {
 
     populateBoilerplates(path, target = 'nodes', includeParents = false) {
         const boilerplatePath = path.split('/').slice(0,4).join('/')+'/boilerplates'
-        this.populateNodesForBrowser(boilerplatePath, target, includeParents)
+        return this.populateNodesForBrowser(boilerplatePath, target, includeParents)
     }
 
     populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
