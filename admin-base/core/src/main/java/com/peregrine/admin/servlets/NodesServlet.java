@@ -38,7 +38,9 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
 import static com.peregrine.commons.util.PerConstants.*;
@@ -154,6 +156,26 @@ public class NodesServlet extends AbstractBaseServlet {
                         json.writeAttribute(MIME_TYPE, mimeType);
                         json.writeAttribute(TITLE, title);
                         json.writeAttribute("description", description);
+
+                        Resource tags = child.getChild("jcr:content/tags");
+                        List<Tag> answer = new ArrayList<Tag>();
+                        if(tags != null) {
+                            for(Resource tag: tags.getChildren()) {
+                                answer.add(new Tag(tag));
+                            }
+                        }
+                        if(answer.size() > 0) {
+                            json.writeArray("tags");
+                            for (Tag tag : answer) {
+                                json.writeObject();
+                                json.writeAttribute(PATH, tag.getPath());
+                                json.writeAttribute(NAME, tag.getName());
+                                json.writeAttribute("value", tag.getValue());
+                                json.writeClose();
+                            }
+                            json.writeClose();
+                        }
+                    
                     }
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);
@@ -242,5 +264,25 @@ public class NodesServlet extends AbstractBaseServlet {
         }
         return data;
     }
+
+    class Tag {
+        private String path;
+        private String name;
+        private String value;
+
+        public Tag(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
+            this.name = r.getName();
+            this.value = r.getValueMap().get("value", String.class);
+        }
+
+        public String getName() { return name; }
+        public String getValue() { return value; }
+        public String getPath() { return path; }
+        @Override
+        public String toString() { return name; }
+    }
+
 }
 
