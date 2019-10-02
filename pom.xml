@@ -657,6 +657,12 @@
                 <version>${org.apache.sling.junit.teleporter.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>16.0.2</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
