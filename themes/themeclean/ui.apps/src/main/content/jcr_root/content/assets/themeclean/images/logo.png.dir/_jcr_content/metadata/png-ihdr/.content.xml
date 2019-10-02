@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-    jcr:primaryType="sling:Folder"
-    raw_tags="\{&quot;image_width&quot;:&quot;100&quot;,&quot;image_height&quot;:&quot;124&quot;,&quot;bits_per_sample&quot;:&quot;8&quot;,&quot;color_type&quot;:&quot;True Color with Alpha&quot;,&quot;compression_type&quot;:&quot;Deflate&quot;,&quot;filter_method&quot;:&quot;Adaptive&quot;,&quot;interlace_method&quot;:&quot;No Interlace&quot;}"/>

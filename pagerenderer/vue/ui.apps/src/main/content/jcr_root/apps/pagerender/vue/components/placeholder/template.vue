@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-    <div v-if="isEditMode" style="border: 1px solid #c0c0c0; clear: both; padding: 4px; margin: 4px; text-align: center; width: 100%;"
+    <div v-if="isEditMode" class="per-drop-target"
         v-on:allowDrop="allowDrop" v-on:drop="drop" v-bind:data-per-path="model.path" data-per-droptarget="true" v-bind:data-per-location="model.location">
         {{componentName}}
     </div>
@@ -61,3 +61,17 @@ export default {
     }
 }
 </script>
+
+<style>
+    .per-drop-target {
+        border: 1px solid #c0c0c0;
+        clear: both;
+        padding: 4px;
+        margin: 4px;
+        text-align: center;
+        width: calc(100% - 8px);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+</style>

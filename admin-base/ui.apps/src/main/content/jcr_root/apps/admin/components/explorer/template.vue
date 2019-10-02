@@ -41,7 +41,7 @@
                             v-bind:model="{
                             target: null,
                             command: 'selectParent',
-                            tooltipTitle: $i18n('select parent')
+                            tooltipTitle: $i18n('back to parent directory')
                         }"><i class="material-icons">folder_open</i> ..
                     </admin-components-action>
                 </li>
@@ -64,7 +64,7 @@
                                              v-bind:model="{
                                 target: child,
                                 command: 'selectPath',
-                                tooltipTitle: `select '${child.title || child.name}'`
+                                tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
                         </span><i class="material-icons">folder</i>
                     </admin-components-action>
@@ -75,7 +75,7 @@
                             command: 'editPage',
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
-                            tooltipTitle: `edit '${child.title || child.name}'`
+                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
@@ -83,7 +83,7 @@
                         v-bind:model="{
                             target: child,
                             command: 'selectPath',
-                            tooltipTitle: `select '${child.title || child.name}'`
+                            tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                         }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
@@ -94,7 +94,16 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'editPage',
-                                tooltipTitle: `edit '${child.title || child.name}'`
+                                tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                            }">
+                            <admin-components-iconeditpage></admin-components-iconeditpage>
+                        </admin-components-action>
+
+                        <admin-components-action v-if="composumEditable(child)"
+                            v-bind:model="{
+                                target: child.path,
+                                command: 'editFile',
+                                tooltipTitle: `${$i18n('edit file')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
@@ -103,7 +112,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'replicate',
-                                tooltipTitle: `replicate '${child.title || child.name}'`
+                                tooltipTitle: `${$i18n('replicate')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons" v-bind:class="replicatedClass(child)">public</i>
                         </admin-components-action>
@@ -112,7 +121,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'showInfo',
-                                tooltipTitle: `'${child.title || child.name}' info`
+                                tooltipTitle: `'${child.title || child.name}' ${$i18n('info')}`
                             }">
                             <i class="material-icons">info</i>
                         </admin-components-action>
@@ -122,7 +131,7 @@
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
-                                v-bind:title="`view '${child.title || child.name}' in new tab`"
+                                v-bind:title="`${$i18n('view')} '${child.title || child.name}' ${$i18n('in new tab')}`"
                                 >
                                 <i class="material-icons">visibility</i>
                             </a>
@@ -131,8 +140,8 @@
                         <admin-components-action
                             v-bind:model="{
                                 target: child,
-                                command: 'deletePage',
-                                tooltipTitle: `delete '${child.title || child.name}'`
+                                command: 'deleteSiteOrPage',
+                                tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
@@ -141,11 +150,10 @@
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.startsWith('/content/assets')">
-                    This folder is empty, use the navigation bar to add an asset or drag and drop an asset
-                    from the file system onto the browser.
+                    {{ $i18n('This folder is empty') }}, {{ $i18n('use the navigation bar to add an asset or drag and drop an asset from the file system onto the browser') }}.
                 </div>
                 <div v-else>
-                    This folder is empty, use the navigation bar to add content...
+                    {{ $i18n('This folder is empty') }}, {{ $i18n('use the navigation bar to add content') }}...
                 </div>
             </div>
 
@@ -403,6 +411,9 @@
             editable: function(child) {
                 return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
             },
+            composumEditable: function(child) {
+                return ['nt:file'].indexOf(child.resourceType) >= 0
+            },
             viewable: function(child) {
                 return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
@@ -499,19 +510,40 @@
             addObject: function(me, target) {
                 $perAdminApp.stateAction('createObjectWizard', { path: me.pt.path, target: target })
             },
-            deletePage: function(me, target) {
-                const really = confirm('Are you sure to delete this node and all its children?')
-                if(!really) return
-                const resourceType = target.resourceType
-                if(resourceType === 'per:Object') {
-                    $perAdminApp.stateAction('deleteObject', target.path)
-                } else if(resourceType === 'per:Asset') {
-                        $perAdminApp.stateAction('deleteAsset', target.path)
-                } else if(resourceType === 'sling:OrderedFolder') {
-                    $perAdminApp.stateAction('deleteFolder', target.path)
-                } else {
-                    $perAdminApp.stateAction('deletePage', target.path)
+            deleteSiteOrPage: function(me, target) {
+                if(me.path == '/content/sites') {
+                    me.deleteSite(me, target)
                 }
+                else {
+                    me.deletePage(me, target)
+                }
+            },
+            deletePage: function(me, target) {
+                $perAdminApp.askUser('Delete Page', me.$i18n('Are you sure you want to delete this node and all its children?'), {
+                    yes() {
+                        const resourceType = target.resourceType
+                        if(resourceType === 'per:Object') {
+                            $perAdminApp.stateAction('deleteObject', target.path)
+                        } else if(resourceType === 'per:Asset') {
+                                $perAdminApp.stateAction('deleteAsset', target.path)
+                        } else if(resourceType === 'sling:OrderedFolder') {
+                            $perAdminApp.stateAction('deleteFolder', target.path)
+                        } else if(resourceType === 'per:Page') {
+                            $perAdminApp.stateAction('deletePage', target.path)
+                        } else if(resourceType === 'nt:file') {
+                            $perAdminApp.stateAction('deleteFile', target.path)
+                        }else {
+                            $perAdminApp.stateAction('deleteFolder', target.path)
+                        }
+                    }
+                })
+            },
+            deleteSite: function(me, target) {
+                $perAdminApp.askUser('Delete Site', me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'), {
+                    yes() {
+                        $perAdminApp.stateAction('deleteSite', target)
+                    }
+                })
             },
             editPage: function(me, target) {
                 const path = me.pt.path
@@ -524,7 +556,11 @@
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }
+            },
+            editFile: function(me, target) {
+                window.open(`/bin/cpm/edit/code.html${target}`, 'composum')
             }
+
         }
 
     }

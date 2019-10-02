@@ -305,7 +305,7 @@
                         </dl>
                     </template>
                     <div v-else class="no-asset-selected">
-                        <span>no asset selected</span>
+                        <span>{{ $i18n('no asset selected') }}</span>
                         <i class="material-icons">info</i>
                     </div>
                 </div>
@@ -520,6 +520,7 @@
                         this.previewType = 'current'
                         this.setCurrentPath(item.path)
                         if(this.tab === 'cards' && this.list.length > 0) this.updateIsotopeLayout('masonry')
+                        this.selectItem(item)
                     })
             },
             selectItem(item) {

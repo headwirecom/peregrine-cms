@@ -25,6 +25,7 @@ package com.peregrine.pagerender.vue.models;
  * #L%
  */
 
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
@@ -120,8 +121,6 @@ public class PageModel
     @Inject private String[] loaders;
 
     @Inject private String[] suffixToParameter;
-
-    @Inject private String tags;
 
     @Inject private String description;
 
@@ -241,32 +240,93 @@ public class PageModel
     }
 
     public List<Tag> getTags() {
-        ArrayList<Tag> ret = new ArrayList<Tag>();
         Resource tags = getResource().getChild("tags");
-        Iterable<Resource> children = tags.getChildren();
-        for (Resource child :children) {
-            ValueMap values = child.getValueMap();
-            String name = values.get("name", String.class);
-            String value = values.get("value", String.class);
-            ret.add(new Tag(name, value));
+        List<Tag> answer = new ArrayList<Tag>();
+        if(tags != null) {
+            for(Resource tag: tags.getChildren()) {
+                answer.add(new Tag(tag));
+            }
         }
-        return ret;
+        return answer;
+    }
+
+    public List<String> getRenderedTags() {
+        Resource tags = getResource().getChild("tags");
+        List<String> answer = new ArrayList<String>();
+        if(tags != null) {
+            for(Resource tag: tags.getChildren()) {
+                answer.add(new Tag(tag).getName());
+            }
+        }
+        return answer;
+    }
+
+    public List<MetaProperty> getMetaproperties() {
+        Resource metaproperties = getResource().getChild(PerConstants.METAPROPERTIES);
+        List<MetaProperty> answer = new ArrayList<>();
+        if(metaproperties != null) {
+            for(Resource metaproperty : metaproperties.getChildren()) {
+                MetaProperty metaProperty = new MetaProperty(metaproperty);
+                if( metaProperty.isProperty()) answer.add(metaProperty);
+            }
+        }
+        return answer;
+    }
+
+    public List<MetaProperty> getMetanames() {
+        Resource metaproperties = getResource().getChild(PerConstants.METAPROPERTIES);
+        List<MetaProperty> answer = new ArrayList<>();
+        if(metaproperties != null) {
+            for(Resource metaproperty : metaproperties.getChildren()) {
+                MetaProperty metaProperty = new MetaProperty(metaproperty);
+                if( metaProperty.isName()) answer.add(metaProperty);
+            }
+        }
+        return answer;
     }
 
     public String getDescription() {
         return description;
     }
 
-    static class Tag {
+    class Tag {
+        private String path;
         private String name;
         private String value;
 
-        public Tag(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }        
+        public Tag(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
+            this.name = r.getName();
+            this.value = r.getValueMap().get("value", String.class);
+        }
 
         public String getName() { return name; }
         public String getValue() { return value; }
+        public String getPath() { return path; }
+        @Override
+        public String toString() { return name; }
+    }
+
+    public class MetaProperty {
+        public String path;
+        public String metatype;
+        public String key;
+        public String value;
+
+        public MetaProperty(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
+            this.metatype = r.getValueMap().get("metatype", String.class);
+            this.key = r.getValueMap().get("key", String.class);
+            this.value = r.getValueMap().get("value", String.class);
+        }
+
+        public String getPath() { return path; }
+        public String getMetaType() { return metatype; }
+        public String getKey() { return key; }
+        public String getValue() { return value; }
+        public Boolean isProperty() { return "property".equalsIgnoreCase(metatype); }
+        public Boolean isName() { return "name".equalsIgnoreCase(metatype); }
     }
 }

@@ -210,7 +210,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
     walkTreeAndLoad(data)
 
     if(data.description) document.getElementsByTagName('meta').description.content=data.description
-    if(data.tags) document.getElementsByTagName('meta').keywords.content=data.tags
+    if(data.tags) document.getElementsByTagName('meta').keywords.content=data.tags.map( tag => tag.name )
 
     if(data.suffixToParameter) {
         const pathInfo = makePathInfo(path)
@@ -267,7 +267,6 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
 function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
 
-    console.log(path)
     log.fine('loading content for', path, firstTime, fromPopState)
 
     var dataUrl = pagePathToDataPath(path);
@@ -355,7 +354,14 @@ var peregrineApp = {
 
     getAdminAppNode(path) {
        return getAdminAppNodeImpl(path);
+    },
+
+    isPublicFacingSite() {
+        const server = window.location.hostname;
+        const domains = getPerView().page.domains || [];
+        return (domains.indexOf(server) >= 0)
     }
+
 }
 
 /**

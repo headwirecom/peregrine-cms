@@ -28,7 +28,7 @@
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
-                        title="rename asset"
+                        v-bind:title="$i18n('rename asset')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameAsset">
                         <admin-components-iconrename></admin-components-iconrename>
@@ -36,7 +36,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        title="move asset"
+                        v-bind:title="$i18n('move asset')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="moveAsset">
                         <i class="material-icons">compare_arrows</i>
@@ -44,7 +44,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        title="delete asset"
+                        v-bind:title="$i18n('delete asset')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="deleteAsset">
                         <i class="material-icons">delete</i>
@@ -53,14 +53,14 @@
                 <li>
                     <a  v-if="!edit"
                         href="#!"
-                        title="edit"
+                        v-bind:title="$i18n('edit')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
                     </a>
                     <a  v-else
                         href="#!"
-                        title="edit"
+                        v-bind:title="$i18n('edit')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onCancel">
                         <i class="material-icons">info</i>
@@ -68,7 +68,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        title="references"
+                        v-bind:title="$i18n('references')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="onReferences">
                         <i class="material-icons">list</i>
@@ -101,7 +101,7 @@
                 <div class="explorer-confirm-dialog">
                     <button 
                         type="button"
-                        title="save page properties"
+                        v-bind:title="$i18n('save page properties')"
                         v-bind:disabled="!valid"
                         class="btn btn-raised waves-effect waves-light right"
                         v-on:click.stop.prevent="onOk">
@@ -132,7 +132,7 @@
 
         </template>
         <div v-else class="explorer-preview-empty">
-            <span>no asset selected</span>
+            <span>{{ $i18n('no asset selected') }}</span>
             <i class="material-icons">info</i>
         </div>
 
@@ -251,7 +251,6 @@
             //                 "placeholder": "enter a description for this asset"
             //             }
             //         ]}
-
             //     }
             },
             referencedBy() {
@@ -261,6 +260,7 @@
                 if(!this.schema) return {}
                 const roSchema = JSON.parse(JSON.stringify(this.schema))
                 roSchema.fields.forEach( (field) => {
+                    field.preview = true
                     field.readonly = true
                     if(field.fields) {
                         field.fields.forEach( (field) => {

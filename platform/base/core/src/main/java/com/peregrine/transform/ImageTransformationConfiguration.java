@@ -37,7 +37,6 @@ import java.util.Map;
  */
 public class ImageTransformationConfiguration {
 
-    public static final String RENDITION_TYPE_FORMAT_HAS_NO_NAME = "Rendition Type format has no name. Configuration must start with '<name>|'";
     public static final String IMAGE_CONFIGURATION_NAME_IS_NOT_PROVIDED = "Image Configuration's name is not provided, configuration: '";
     public static final String IMAGE_CONFIGURATION_HAS_NO_ENTRIES = "Image Configuration has no entries, configuration: '";
     public static final String RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_IS_NOT_PROVIDED = "Rendition Type format's transformation name is not provided, configuration: '";
@@ -50,36 +49,28 @@ public class ImageTransformationConfiguration {
 
     /** Name of the Image Transformation Setup this configuration belongs to **/
     private String name;
+    /** Path this transformation applies to **/
+    private String path;
     /** Name of the Image Transformation this configuration configures **/
     private String transformationName;
     /** Optional parameters for the Image Transformation **/
     private Map<String, String> parameters = new HashMap<>();
 
-    public ImageTransformationConfiguration(String format) {
-        int index = format.indexOf('|');
-        if(index <= 0 || index == format.length() - 1) {
-            throw new IllegalArgumentException(RENDITION_TYPE_FORMAT_HAS_NO_NAME);
-        }
-        String name = format.substring(0, index);
-        String configuration = format.substring(index + 1);
-        init(name, configuration);
+    public ImageTransformationConfiguration(String name, String path, String configuration) {
+        init(name, path, configuration);
     }
 
-    public ImageTransformationConfiguration(String name, String configuration) {
-        init(name, configuration);
-    }
-
-    private void init(String name, String configuration) {
+    private void init(String name, String path, String configuration) {
         if(name == null || name.isEmpty()) {
             throw new IllegalArgumentException(IMAGE_CONFIGURATION_NAME_IS_NOT_PROVIDED + configuration);
         }
         this.name = name;
+        this.path = path == null || path.isEmpty() ? "/" : path;
         String[] tokens = configuration.split("\\|");
         if(tokens.length == 0) {
             throw new IllegalArgumentException(IMAGE_CONFIGURATION_HAS_NO_ENTRIES + configuration + "'. " + getConfigurationFormat());
         }
         String temp = tokens[0];
-//        this.transformationName = temp;
         if(temp == null || temp.isEmpty()) {
             throw new IllegalArgumentException(RENDITION_TYPE_FORMAT_TRANSFORMATION_NAME_IS_NOT_PROVIDED + configuration + "'. " + getConfigurationFormat());
         } else {
@@ -116,6 +107,8 @@ public class ImageTransformationConfiguration {
         return name;
     }
 
+    /** @return Path of the Image Transformation Setup this Configuration is applicable on **/
+    public String getPath() { return path; }
     /** @return Name of the Image Transformation this configuration configures **/
     public String getTransformationName() {
         return transformationName;
@@ -138,6 +131,6 @@ public class ImageTransformationConfiguration {
 
     @Override
     public String toString() {
-        return "ImageTransformationConfiguration[name: " + name + ", transformation name: " + transformationName + ", parameters: " + parameters + "]";
+        return "ImageTransformationConfiguration[name: " + name + ", path: " + path + ", transformation name: " + transformationName + ", parameters: " + parameters + "]";
     }
 }

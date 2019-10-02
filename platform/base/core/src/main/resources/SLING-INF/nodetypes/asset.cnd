@@ -24,7 +24,7 @@
  */
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-[per:Asset] > sling:Resource, mix:lastModified
+[per:Asset] > sling:Resource, mix:created, mix:lastModified
   primaryitem jcr:content
   + jcr:content (per:AssetContent) = per:AssetContent
   + * (nt:base) = nt:base version

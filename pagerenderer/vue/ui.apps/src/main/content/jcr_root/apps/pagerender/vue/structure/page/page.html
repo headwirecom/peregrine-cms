@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#c0c0c0">
     <meta name="description" content="${helper.model.description}">
-    <meta name="keywords" content="${helper.model.tags}">
+    <meta name="keywords" content="${helper.model.renderedTags}">
+    <sly data-sly-list="${helper.model.metanames}"><meta name="${item.key}" content="${item.value}">
+    </sly>
+    <sly data-sly-list="${helper.model.metaproperties}"><meta property="${item.key}" content="${item.value}">
+    </sly>
 
     <title>${resource.jcr:title}</title>
     <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="dns-prefetch" href="${item}"></sly>
@@ -20,7 +24,7 @@
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
-            document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
+            document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');
     </script>
 
     <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>
