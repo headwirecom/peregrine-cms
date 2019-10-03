@@ -66,7 +66,7 @@
                 currentPath: '/content/assets',
                 selectedPath: null,
                 altText: null,
-                linkTitle: null,
+                linkTitle: '',
                 withLinkTab: true,
                 newWindow: false,
                 isOpen: false,
