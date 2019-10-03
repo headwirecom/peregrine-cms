@@ -290,7 +290,7 @@ function processLoaders(loaders) {
 /**
  * Implementation of the loadContent function of the $perAdminApp interface.
  *
- * checks if user is logged in then laods the data for the given page and processes the tree
+ * checks if user is logged in then loads the data for the given page and processes the tree
  * for all loaders and component registration. Finally updates the history and applies the
  * changes to the view
  *
@@ -316,7 +316,7 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
     api.populateUser()
         .then(function() {
             api.populateContent(dataUrl)
-                .then( function (data) {
+                .then( function () {
                     logger.fine('got data for', path)
                     walkTreeAndLoad(view.adminPageStaged).then( function() {
                         suffixParamsToModel(pathInfo.suffixParams, view.adminPageStaged.suffixToParameter)
@@ -415,7 +415,7 @@ function actionImpl(component, command, target) {
  *
  * @type {Array}
  */
-let beforeStateActions = new Array()
+let beforeStateActions = []
 
 function beforeStateActionImpl(fun) {
     beforeStateActions.push(fun)
@@ -430,9 +430,9 @@ function runBeforeStateActions(name) {
         }
     }
 
-    return new Promise( (resolve, reject) => {
+    return new Promise( (resolve) => {
         Promise.all(actions).then( () => {
-            beforeStateActions = new Array()
+            beforeStateActions = []
             resolve()
         })
     });
@@ -440,6 +440,24 @@ function runBeforeStateActions(name) {
 
     // // clear the actions
     // return true
+}
+
+const waitStack = []
+
+function enterWaitState() {
+    waitStack.push('wait')
+    setTimeout( function() {
+        if(waitStack.length > 0) {
+            document.getElementById('waitMask').style.display = 'inherit'
+        }
+    }, 100)
+}
+
+function exitWaitState() {
+    waitStack.pop()
+    if(waitStack.length === 0) {
+        document.getElementById('waitMask').style.display = 'none'
+    }
 }
 
 /**
@@ -451,11 +469,13 @@ function runBeforeStateActions(name) {
  */
 function stateActionImpl(name, target) {
 
+    enterWaitState()
     return new Promise( (resolve, reject) => {
         runBeforeStateActions(name).then( () => {
             try {
                 const stateAction = StateActions(name)
                 Promise.resolve(stateAction($perAdminApp, target)).then(result => {
+                    exitWaitState()
                     if(result && result.startsWith('Uncaught (in promise')) {
                         notifyUserImpl('error', result)
                         reject()
@@ -463,14 +483,16 @@ function stateActionImpl(name, target) {
                         resolve()
                     }
                 }).catch(error => {
+                    exitWaitState()
                     notifyUserImpl('error', error)
                     reject()
                 })
             } catch(error) {
+                exitWaitState()
                 console.log('error', error)
                 reject(error)
             }
-        }) 
+        })
     })
 
 }
