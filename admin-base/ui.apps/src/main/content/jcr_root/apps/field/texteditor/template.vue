@@ -116,15 +116,12 @@
                                 self.browserType = isImage ? 'asset' : 'page';
                                 self.browserRoot = isImage ? '/content/assets' : '/content/sites';
                                 self.currentPath = isImage ? '/content/assets' : '/content/sites';
-                                let documentSelection = trumbowyg.doc.getSelection();
-                                let text = new XMLSerializer().serializeToString(documentSelection.getRangeAt(0).cloneContents());
-
                                 self.browse();
 
                                 //Setup pathbrowser select event to call trumbowyg cmd callback
                                 self.onSelect = function() {
                                     cmd( !isImage ? {
-                                        text,
+                                        text: fields.text.value,
                                         title: self.linkTitle,
                                         target: self.newWindow ? "_blank" : "_self",
                                         url: self.selectedPath,
