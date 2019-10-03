@@ -162,7 +162,7 @@ class PerAdminImpl {
     populateUser() {
         return fetch('/admin/access.json?'+(new Date()).getTime())
             .then( (data) => {
-                populateView('/state', 'user', data.userID).then( () => {
+                return populateView('/state', 'user', data.userID).then( () => {
                     if(data.userID === 'anonymous') {
                         alert('please login to continue')
                         window.location = '/'
@@ -267,9 +267,7 @@ class PerAdminImpl {
     populateObject(path, target, name) {
         return this.populateComponentDefinitionFromNode(path)
             .then( () => {
-                fetch('/admin/getObject.json'+path).then( (data) => {
-                    populateView(target, name, data)
-                })
+                return fetch('/admin/getObject.json'+path).then( (data) => populateView(target, name, data) )
             })
     }
 
@@ -280,9 +278,7 @@ class PerAdminImpl {
 
     populateI18N(language) {
         return axios.get('/i18n/admin/'+language+'.infinity.json')
-            .then( (response) => {
-                populateView('/admin/i18n', language, response.data)
-            })
+            .then( (response) => populateView('/admin/i18n', language, response.data) )
     }
 
     createSite(fromName, toName) {
@@ -333,7 +329,7 @@ class PerAdminImpl {
         data.append('to', to)
         data.append('type', type)
         return updateWithForm('/admin/move.json'+path, data)
-            .then( (data) => this.populateNodesForBrowser(path) )
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     moveObject(path, to, type) {
@@ -440,7 +436,7 @@ class PerAdminImpl {
             var data = new FormData()
             data.append(name, response.data, name)
 
-            updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
+            return updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
                 .then( () => this.populateNodesForBrowser(path) )
         })
     }
