@@ -130,6 +130,8 @@
                                         url: self.selectedPath,
                                         alt: self.altText
                                     })
+                                    trumbowyg.syncCode(),
+                                    trumbowyg.$c.trigger("tbwchange"),
                                     self.isOpen = false;
                                 }
                             }
