@@ -123,6 +123,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 )
 public class AdminResourceHandlerService
     implements AdminResourceHandler {
+    //test
     public static final String DELETION_PROPERTY_NAME = "_opDelete";
     public static final String MODE_PROPERTY = "mode";
 
