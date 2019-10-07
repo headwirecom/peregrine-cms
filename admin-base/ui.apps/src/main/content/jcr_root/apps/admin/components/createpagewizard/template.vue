@@ -39,7 +39,8 @@
                                 <li class="collection-item"
                                     v-for="template in templates"
                                     v-on:click.stop.prevent="selectTemplate(null, template.path)"
-                                    v-bind:class="isSelected(template.path) ? 'active' : ''">
+                                    v-bind:class="isSelected(template.path) ? 'active' : ''"
+                                    v-bind:key="template.path">
                                     <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
                                 </li>
                             </ul>
@@ -50,7 +51,8 @@
                                     <li class="collection-item"
                                         v-for="boilerplatePage in boilerplatePages"
                                         v-on:click.stop.prevent="selectBoilerplatePage(null, boilerplatePage.path)"
-                                        v-bind:class="isSelected(boilerplatePage.path) ? 'active' : ''">
+                                        v-bind:class="isSelected(boilerplatePage.path) ? 'active' : ''"
+                                        v-bind:key="boilerplatePage.path">
                                         <admin-components-action v-bind:model="{ command: 'selectBoilerplatePage', target: boilerplatePage.path, title: boilerplatePage.name }"></admin-components-action>
                                     </li>
                                 </ul>
@@ -62,8 +64,10 @@
                         <div class="col s6">
                             <div class="iframe-container">
                                 <iframe v-if="formmodel.boilerplatePagePath"
-                                        v-bind:src="formmodel.boilerplatePagePath + '.html'">
-
+                                        v-bind:src="formmodel.boilerplatePagePath + '.html'" data-per-mode="preview">
+                                </iframe>
+                                <iframe v-if="formmodel.templatePath"
+                                        v-bind:src="formmodel.templatePath + '.html'" data-per-mode="preview">
                                 </iframe>
                             </div>
                         </div>
