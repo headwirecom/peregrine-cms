@@ -113,23 +113,45 @@
                             trumbowyg.openModalInsert = function(title, fields, cmd) {
                                 //Setup state of pathbrowser and open pathbrowser
                                 let isImage = fields.hasOwnProperty('alt');
+                                let url = fields.url.value;
+
                                 self.browserType = isImage ? 'asset' : 'page';
                                 self.browserRoot = isImage ? '/content/assets' : '/content/sites';
-                                self.currentPath = isImage ? '/content/assets' : '/content/sites';
+                                //Internal Link
+                                if(url && url.startsWith('/')) {
+                                    const parts = url.split('/');
+                                    parts.pop();
+                                    self.currentPath = parts.join('/');
+                                    self.selectedPath = url.split('.')[0];
+                                }
+                                else if( url && url.startsWith('http')) {
+                                    self.currentPath = self.browserRoot;
+                                    self.selectedPath = url;
+                                }
+                                else {
+                                    self.currentPath = self.browserRoot;
+                                    self.selectedPath = null;
+                                }
                                 self.browse();
 
                                 //Setup pathbrowser select event to call trumbowyg cmd callback
                                 self.onSelect = function() {
-                                    cmd( !isImage ? {
-                                        text: fields.text.value,
-                                        title: self.linkTitle,
-                                        target: self.newWindow ? "_blank" : "_self",
-                                        url: self.selectedPath,
-                                    }:
-                                    {
-                                        url: self.selectedPath,
-                                        alt: self.altText
-                                    })
+                                    if(isImage) {
+                                        cmd({
+                                            url: self.selectedPath,
+                                            alt: self.altText
+                                        })
+                                    }
+                                    else {
+                                        let url = self.selectedPath;
+                                        if(!url.startsWith('http')) url += '.html';
+                                        cmd({
+                                            text: fields.text.value,
+                                            title: self.linkTitle,
+                                            target: self.newWindow ? "_blank" : "_self",
+                                            url: url,
+                                        })
+                                    }
                                     trumbowyg.syncCode(),
                                     trumbowyg.$c.trigger("tbwchange"),
                                     self.isOpen = false;
