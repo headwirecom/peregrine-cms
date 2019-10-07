@@ -412,7 +412,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('to', newName)
-            updateWithForm('/admin/rename.json'+path, data)
+            updateWithForm('/admin/asset/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -444,7 +444,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('to', newName)
-            updateWithForm('/admin/rename.json'+path, data)
+            updateWithForm('/admin/object/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -475,7 +475,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('to', newName)
-            updateWithForm('/admin/rename.json'+path, data)
+            updateWithForm('/admin/page/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
