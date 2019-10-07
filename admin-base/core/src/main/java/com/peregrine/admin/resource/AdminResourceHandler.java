@@ -1,13 +1,10 @@
 package com.peregrine.admin.resource;
 
-import com.peregrine.transform.ImageContext;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import java.io.InputStream;
 import java.util.Map;
+import javax.jcr.Node;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 /**
  * Defines the Interface for the Admin Resource
@@ -28,7 +25,7 @@ public interface AdminResourceHandler {
      * @return Newly created JCR Resource
      * @throws ManagementException If the creation failed
      */
-    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException;
+    Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException;
 
     /**
      * Creates a Sling Order Folder Resource Node
@@ -39,7 +36,7 @@ public interface AdminResourceHandler {
      * @return Newly created JCR Resource Folder
      * @throws ManagementException If the creation failed
      */
-    public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException;
+    Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException;
 
     /**
      * Creates an Peregrine Object Resource
@@ -51,7 +48,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Object Resource
      * @throws ManagementException If the creation failed
      */
-    public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException;
+    Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException;
 
     /**
      * Creates an Peregrine Object Resource
@@ -63,7 +60,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Page Resource
      * @throws ManagementException If the creation failed
      */
-    public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException;
+    Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException;
 
     /**
      * Creates an Peregrine Object Resource
@@ -76,9 +73,9 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Template Resource
      * @throws ManagementException If the creation failed
      */
-    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException;
+    Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException;
 
-    public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
+    DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
 
     /**
      * Deletes a resource
@@ -88,7 +85,7 @@ public interface AdminResourceHandler {
      * @return A Response for Deletion
      * @throws ManagementException If the deletion failed
      */
-    public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException;
+    DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException;
 
     /**
      * Updates a given resource based on the given JSon Content
@@ -101,7 +98,7 @@ public interface AdminResourceHandler {
      * @return Resource that was updated
      * @throws ManagementException If the update failed
      */
-    public Resource updateResource(ResourceResolver resourceResolver, String path, String jsonContent) throws ManagementException;
+    Resource updateResource(ResourceResolver resourceResolver, String path, String jsonContent) throws ManagementException;
 
     /**
      * Inserts another resource to the given resource
@@ -117,7 +114,7 @@ public interface AdminResourceHandler {
      * @return Newly created Resource
      * @throws ManagementException If the creation / reorder failed
      */
-    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException;
+    Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException;
 
     /**
      * Moves an existing resource to a new place
@@ -132,7 +129,7 @@ public interface AdminResourceHandler {
      * @return Moved Resource
      * @throws ManagementException If the move / reorder failed
      */
-    public Resource moveNode(Resource fromResource, Resource toResource, boolean addAsChild, boolean orderBefore) throws ManagementException;
+    Resource moveNode(Resource fromResource, Resource toResource, boolean addAsChild, boolean orderBefore) throws ManagementException;
 
     /**
      * Renames a given resource node name
@@ -142,7 +139,7 @@ public interface AdminResourceHandler {
      * @return Renamed Resource
      * @throws ManagementException If the rename failed
      */
-    public Resource rename(Resource fromResource, String newName) throws ManagementException;
+    Resource rename(Resource fromResource, String newName) throws ManagementException;
 
     /**
      * Create an Asset Resource which the given Byte Input Stream
@@ -154,7 +151,7 @@ public interface AdminResourceHandler {
      * @return New created Asset Resource
      * @throws ManagementException If the creation failed
      */
-    public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException;
+    Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException;
 
     /**
      * Copies the Content of a given Node to another Node
@@ -162,7 +159,7 @@ public interface AdminResourceHandler {
      * @param target Target Node which must exit
      * @param deep If true child resources are created and copied over, too
      * @return Target Node
-     * @throws ManagementException
+     * @throws ManagementException If a management error occurs
      */
     public Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
 
@@ -174,9 +171,9 @@ public interface AdminResourceHandler {
      * @param fromName Name of the source Site which must exist
      * @param targetName Name of the target Site which cannot be null and must not exist
      * @return Resource of the Target Copy
-     * @throws ManagementException
+     * @throws ManagementException If a management error occurs
      */
-    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException;
+    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException;
 
 
     /**
@@ -190,7 +187,16 @@ public interface AdminResourceHandler {
      */
     public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
 
-    public class ManagementException
+    /**
+     * Update a peregrine cms site's components and felibs from its source site
+     *
+     * @param resourceResolver Resource Resolver to obtain the resources
+     * @param siteName The name of the site to update
+     * @throws ManagementException
+     */
+    void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException;
+
+    class ManagementException
         extends Exception
     {
         public ManagementException(String message) {
@@ -202,7 +208,7 @@ public interface AdminResourceHandler {
         }
     }
 
-    public class DeletionResponse {
+    class DeletionResponse {
         private String name;
         private String path;
         private String parentPath;

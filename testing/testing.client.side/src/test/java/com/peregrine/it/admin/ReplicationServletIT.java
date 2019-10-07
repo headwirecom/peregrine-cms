@@ -16,6 +16,7 @@ import org.apache.sling.testing.clients.osgi.OsgiConsoleClient;
 import org.apache.sling.testing.junit.rules.SlingInstanceRule;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -342,6 +343,7 @@ public class ReplicationServletIT
     }
 
     @Test
+    @Ignore("S3 Access Tokens are hard to keep secret in an OSS project ")
     public void testRemoteS3AssetReplication() throws Exception {
         checkFolderAndCreate(LOCAL_FOLDER, true);
         SlingClient client = slingInstanceRule.getAdminClient();
@@ -388,6 +390,7 @@ public class ReplicationServletIT
     }
 
     @Test
+    @Ignore("S3 Access Tokens are hard to keep secret in an OSS project ")
     public void testRemoteS3ObjectReplication() throws Exception {
         checkFolderAndCreate(LOCAL_FOLDER, true);
         SlingClient client = slingInstanceRule.getAdminClient();

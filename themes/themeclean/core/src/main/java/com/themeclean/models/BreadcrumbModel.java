@@ -1,9 +1,10 @@
 package com.themeclean.models;
 
-import com.peregrine.nodetypes.merge.PageMerge;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -13,11 +14,6 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.ArrayList;
-
-import javax.inject.Inject;
 
 /*
     //GEN[:DATA
@@ -354,14 +350,18 @@ public class BreadcrumbModel extends AbstractComponent {
 	/* Method to recursively get child page links, given a root page path */
     public List<TextLink> getLinks(){
       
-    	links = new ArrayList<TextLink>();
-    	if(Integer.parseInt(getLevel()) > 0) {
-        Resource page = getRootResource();
-        LOG.debug("page: {}", page);
-    		return getDeepLinks(page != null ? page : getResource());
-    	} else {
-    		return null;
-    	}
+      links = new ArrayList<TextLink>();
+      try {
+        if(Integer.parseInt(getLevel()) > 0) {
+          Resource page = getRootResource();
+          LOG.debug("page: {}", page);
+          return getDeepLinks(page != null ? page : getResource());
+        } else {
+          return null;
+        }
+      } catch(NumberFormatException nfe) {
+        return null;
+      }
     	
     }
     
