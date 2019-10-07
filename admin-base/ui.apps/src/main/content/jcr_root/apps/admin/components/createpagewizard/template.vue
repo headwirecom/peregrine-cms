@@ -62,6 +62,7 @@
                             </div>
                         </div>
                         <div class="col s6">
+                            <label>Preview</label>
                             <div class="iframe-container">
                                 <iframe v-if="formmodel.boilerplatePagePath"
                                         v-bind:src="formmodel.boilerplatePagePath + '.html'" data-per-mode="preview">
@@ -234,12 +235,12 @@
 
 .iframe-container iframe {
     border: 0;
-    height: 100%;
+    height: 200%;
     left: 0;
     position: absolute;
     top: 0;
-    width: 100%;
-    transform: scale(0.5);
+    width: 200%;
+    transform: scale(0.5) translate(-50%, -50%);
 }
 
 
