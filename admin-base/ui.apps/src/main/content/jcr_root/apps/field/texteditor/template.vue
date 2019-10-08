@@ -145,7 +145,7 @@
                                     }
                                     else {
                                         let url = self.selectedPath;
-                                        if(!url.startsWith('http')) url += '.html';
+                                        if(!url.match(/^(https?:)?\/\//)) url += '.html';
                                         cmd({
                                             text: fields.text.value,
                                             title: self.linkTitle,
