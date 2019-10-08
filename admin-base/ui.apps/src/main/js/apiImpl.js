@@ -391,7 +391,6 @@ class PerAdminImpl {
                             }
                             translateFields(data.ogTags.fields);
                         }
-                    }
                         Promise.all(promises).then( () => {
                             populateView('/admin/componentDefinitions', data.name, data.model)
                             resolve(name)
@@ -400,6 +399,8 @@ class PerAdminImpl {
                 .catch ( error => {
                     reject(error)
                 } )
+            }
+        );
     }
 
     populateExplorerDialog(path) {
