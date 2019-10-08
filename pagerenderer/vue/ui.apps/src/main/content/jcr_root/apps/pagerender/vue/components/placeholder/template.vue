@@ -34,6 +34,9 @@ export default {
     props: ['model'],
     computed: {
         isEditMode: function() {
+            if(window.$peregrineApp) {
+                return window.$peregrineApp.isAuthorMode()
+            }
             if(window.parent) {
                 if(window.parent.$perAdminApp && window.parent !== window) {
                     return this.$root.view !== 'preview'
