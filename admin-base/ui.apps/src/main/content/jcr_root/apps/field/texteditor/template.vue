@@ -118,15 +118,15 @@
                                 self.browserType = isImage ? 'asset' : 'page';
                                 self.browserRoot = isImage ? '/content/assets' : '/content/sites';
                                 //Internal Link
-                                if(url && url.startsWith('/')) {
+                                if( url && url.match(/^(https?:)?\/\//)) {
+                                    self.currentPath = self.browserRoot;
+                                    self.selectedPath = url;
+                                }
+                                else if(url && url.startsWith('/')) {
                                     const parts = url.split('/');
                                     parts.pop();
                                     self.currentPath = parts.join('/');
                                     self.selectedPath = isImage ? url : url.split('.')[0];
-                                }
-                                else if( url && url.match(/^(https?:)?\/\//)) {
-                                    self.currentPath = self.browserRoot;
-                                    self.selectedPath = url;
                                 }
                                 else {
                                     self.currentPath = self.browserRoot;
