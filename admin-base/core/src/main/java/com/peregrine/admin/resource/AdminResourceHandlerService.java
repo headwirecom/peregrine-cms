@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -986,7 +987,10 @@ public class AdminResourceHandlerService
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
         resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT, title));
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
-        resourcesToPackage.add(copier.copyFromRoot(TEMPLATES_ROOT, title));
+        Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT);
+        // Update css paths stored in /content/sites in the template
+        updateTemplateCssPaths(templatesCopy, fromName, targetName);
+        resourcesToPackage.add(templatesCopy);
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
         answer = copier.copyFromRoot(SITES_ROOT, title);
         resourcesToPackage.add(answer);
@@ -1156,6 +1160,24 @@ public class AdminResourceHandlerService
             resourceResolver.create(filterResource, "f" + i, propertiesMap);
         }
 
+    }
+
+    private void updateTemplateCssPaths(final Resource templateResource, String oldSiteName, String newSiteName) {
+        final Resource templateContent = templateResource.getChild(JCR_CONTENT);
+        if(templateContent == null) {
+            logger.error("No jcr:content resource for resource '{}'", templateResource.getPath());
+            return;
+        }
+
+        ValueMap templateContentProperties = templateContent.getValueMap();
+        String[] siteCssProperty = templateContentProperties.get("siteCSS", String[].class);
+        if(siteCssProperty != null && siteCssProperty.length > 0) {
+            String[] cssReplacements = Arrays.stream(siteCssProperty)
+                    .map(css -> css.replace(SITES_ROOT + SLASH + oldSiteName, SITES_ROOT + SLASH + newSiteName))
+                    .toArray(String[]::new);
+            ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
+            modifiableProperties.put("siteCSS", cssReplacements);
+        }
     }
 
     private void updateStringsInFiles(final Resource target, final String siteName) {
