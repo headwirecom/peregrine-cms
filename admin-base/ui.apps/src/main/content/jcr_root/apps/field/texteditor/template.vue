@@ -157,6 +157,10 @@
                                     trumbowyg.$c.trigger("tbwchange"),
                                     self.isOpen = false;
                                 }
+                                self.onCancel = function() {
+                                    trumbowyg.restoreRange();
+                                    self.isOpen = false;
+                                }
                             }
                         }
                     }
@@ -197,9 +201,6 @@
             },
             isObjectAndNotEmpty(p) {
                 return typeof p === 'object' && Object.entries(p).length > 0
-            },
-            onCancel(){
-                this.isOpen = false
             },
             toggleNewWindow() {
                 this.newWindow = !this.newWindow;
