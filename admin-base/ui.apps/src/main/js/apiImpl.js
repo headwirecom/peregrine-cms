@@ -357,22 +357,24 @@ class PerAdminImpl {
         })
     }
 
-    createSite(fromName, toName) {
+    createSite(fromName, toName, title) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('fromSite', fromName)
             data.append('toSite', toName)
+            data.append('title', title)
             updateWithForm('/admin/createSite.json', data)
                 .then( (data) => this.populateNodesForBrowser(callbacks.getView().state.tools.pages) )
                 .then( () => resolve() )
         })
     }
 
-    createPage(parentPath, name, templatePath) {
+    createPage(parentPath, name, templatePath, title) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('name', name)
             data.append('templatePath', templatePath)
+            data.append('title', title)
             updateWithForm('/admin/createPage.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
@@ -501,11 +503,12 @@ class PerAdminImpl {
         })
     }
 
-    createTemplate(parentPath, name, component) {
+    createTemplate(parentPath, name, component, title) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('name', name)
             data.append('component', component)
+            data.append('title', title)
             updateWithForm('/admin/createTemplate.json'+parentPath, data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )

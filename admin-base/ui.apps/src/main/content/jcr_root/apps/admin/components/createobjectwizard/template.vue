@@ -81,7 +81,7 @@
                             label: "Object Name",
                             model: "name",
                             required: true,
-                            validator: this.nameAvailable
+                            validator: [this.nameAvailable, this.validObjectName]
                         }
                         ]
                     }
@@ -158,6 +158,15 @@
                     }
                     return []
                 }
+            },
+            validObjectName(value) {
+                if(!value || value.length === 0) {
+                    return ['name is required']
+                }
+                if(value.match(/[^0-9a-zA-Z_-]/)) {
+                    return ['object names may only contain letters, numbers, underscores, and dashes']
+                }
+                return [];
             },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.objectPath) {
