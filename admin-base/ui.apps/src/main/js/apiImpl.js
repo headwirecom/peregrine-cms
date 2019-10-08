@@ -272,17 +272,33 @@ class PerAdminImpl {
                             if(from) {
                                 data.model.fields[i].values = []
                                 let promise = axios.get(from).then( (response) => {
-                                    for(var key in response.data) {
-                                        if(response.data[key]['jcr:title']) {
-                                            const nodeName = key
-                                            const val = from.replace('.infinity.json', '/'+nodeName)
-                                            let name = response.data[key].name
+                                    const toProcess = []
+                                    for(let key in response.data) {
+                                        toProcess.push({ key, data : response.data[key] })
+                                    }
+
+                                    let next = toProcess.shift()
+                                    while(next) {
+                                        if(next.data['jcr:title']) {
+                                            const nodeName = next.key
+                                            const val = next.data.path ? next.data.path + '/' + nodeName : from.replace('.infinity.json', '/'+nodeName)
+                                            let name = next.data.name
                                             if(!name) {
-                                                name = response.data[key]['jcr:title']
+                                                name = next.data['jcr:title']
+                                            }
+                                            if(next.parent) {
+                                                name = next.parent + '-' + name;
                                             }
                                             data.model.fields[i].values.push({ value: val, name: name })
+                                            for(let k in next.data) {
+                                                if(next.data[k] instanceof Object && next.data[k]['sling:resourceType'] === 'admin/objects/tag') {
+                                                    toProcess.push( { key: k, parent: name, data: next.data[k]})
+                                                }
+                                            }
                                         }
+                                        next = toProcess.shift()
                                     }
+
                                 }).catch( (error) => {
                                     logger.error('missing node', data.model.fields[i].valuesFrom, 'for list population in dialog', error)
                                 })
@@ -435,7 +451,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('to', newName)
-            updateWithForm('/admin/rename.json'+path, data)
+            updateWithForm('/admin/asset/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -467,7 +483,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('to', newName)
-            updateWithForm('/admin/rename.json'+path, data)
+            updateWithForm('/admin/object/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -498,7 +514,7 @@ class PerAdminImpl {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('to', newName)
-            updateWithForm('/admin/rename.json'+path, data)
+            updateWithForm('/admin/page/rename.json'+path, data)
                 .then( (data) => this.populateNodesForBrowser(path) )
                 .then( () => resolve() )
         })
@@ -668,13 +684,15 @@ class PerAdminImpl {
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
             stripNulls(nodeData)
-            delete nodeData['jcr:created']
-            delete nodeData['jcr:createdBy']
-            delete nodeData['jcr:lastModified']
-            delete nodeData['jcr:lastModifiedBy']
+            delete nodeData['name']
+            delete nodeData['path']
+            delete nodeData['created']
+            delete nodeData['createdBy']
+            delete nodeData['lastModified']
+            delete nodeData['lastModifiedBy']
             formData.append('content', json(nodeData))
 
-            updateWithForm('/admin/updateResource.json'+ node.path, formData)
+            updateWithForm('/admin/updateResource.json'+ node.path+'/jcr:content', formData)
                 .then( () => resolve() )
         })
     }
