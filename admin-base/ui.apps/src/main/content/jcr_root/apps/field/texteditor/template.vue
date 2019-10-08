@@ -136,6 +136,7 @@
                                 self.browse();
                                 //Setup pathbrowser select event to call trumbowyg cmd callback
                                 self.onSelect = function() {
+                                    trumbowyg.restoreRange();
                                     if(isImage) {
                                         cmd({
                                             url: self.selectedPath,
