@@ -122,9 +122,9 @@
                                     const parts = url.split('/');
                                     parts.pop();
                                     self.currentPath = parts.join('/');
-                                    self.selectedPath = url.split('.')[0];
+                                    self.selectedPath = isImage ? url : url.split('.')[0];
                                 }
-                                else if( url && url.startsWith('http')) {
+                                else if( url && url.match(/^(https?:)?\/\//)) {
                                     self.currentPath = self.browserRoot;
                                     self.selectedPath = url;
                                 }
@@ -132,8 +132,8 @@
                                     self.currentPath = self.browserRoot;
                                     self.selectedPath = null;
                                 }
-                                self.browse();
 
+                                self.browse();
                                 //Setup pathbrowser select event to call trumbowyg cmd callback
                                 self.onSelect = function() {
                                     if(isImage) {
