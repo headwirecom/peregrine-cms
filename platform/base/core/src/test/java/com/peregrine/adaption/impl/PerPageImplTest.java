@@ -66,16 +66,16 @@ public class PerPageImplTest {
         PerPage child21 = createPage(child2, "child-2-1");
         PerPage child22 = createPage(child2, "child-2-2");
 
-        checkPrevious("Child-2 was not return as previous of Root", child2, root);
-        checkPrevious("Child-22 was not return as previous of Child-2", child22, child2);
         checkPrevious("Child-21 was not return as previous of Child-22", child21, child22);
-        checkPrevious("Child-1 was not return as previous of Child-21", child1, child21);
-        checkPrevious("Child-13 was not return as previous of Child-1", child13, child1);
+        checkPrevious("Child-2 was not return as previous of Child-21", child2, child21);
+        checkPrevious("Child-13 was not return as previous of Child-2", child13, child2);
         checkPrevious("Child-12 was not return as previous of Child-13", child12, child13);
-        checkPrevious("Child-11 was not return as previous of Child-12", child11, child12);
-        checkPrevious("Child-112 was not return as previous of Child-11", child112, child11);
-        checkPrevious("Child-112 was not return as previous of Child-11", child111, child112);
-        assertNull("Child-111 must not return a page", child111.getPrevious());
+        checkPrevious("Child-112 was not return as previous of Child-12", child112, child12);
+        checkPrevious("Child-111 was not return as previous of Child-112", child111, child112);
+        checkPrevious("Child-11 was not return as previous of Child-111", child11, child111);
+        checkPrevious("Child-1 was not return as previous of Child-11", child1, child11);
+        checkPrevious("root was not return as previous of Child-1", root, child1);
+//        assertNull("Child-111 must not return a page", root.getPrevious());
     }
 
     private void checkPrevious(String message, PerPage expected, PerPage start) {

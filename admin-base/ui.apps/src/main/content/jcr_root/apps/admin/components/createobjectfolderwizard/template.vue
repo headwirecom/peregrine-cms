@@ -49,7 +49,6 @@
         data:
             function() {
                 let formModelAssets = $perAdminApp.getNodeFromView('/state/tools/objects')
-                console.log('formModelAssets: ', formModelAssets)
                 return {
                     formmodel: {
                         path: formModelAssets,
@@ -69,7 +68,7 @@
                             placeholder: "Folder Name",
                             model: "name",
                             required: true,
-                            validator: this.nameAvailable
+                            validator: [this.nameAvailable, this.validFolderName]
                         }]
                     }
                 }
@@ -81,7 +80,6 @@
         methods: {
             onComplete: function() {
                 let payload = { parent: this.formmodel.path, name: this.formmodel.name }
-                console.log('createFolder payload: ', payload)
                 $perAdminApp.stateAction('createObjectFolder', payload)
             },
             nameAvailable(value) {
@@ -97,6 +95,15 @@
                     return []
                 }
                 return true
+            },
+            validFolderName(value) {
+                if(!value || value.length === 0) {
+                    return ['name is required']
+                }
+                if(value.match(/[^0-9a-zA-Z_-]/)) {
+                    return ['folder names may only contain letters, numbers, underscores, and dashes']
+                }
+                return [];
             },
             leaveTabOne: function() {
                 return this.$refs.nameTab.validate()

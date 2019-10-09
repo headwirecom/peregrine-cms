@@ -79,6 +79,7 @@
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
+                        title: '',
                         templatePath: ''
 
                     },
@@ -88,15 +89,31 @@
                         validateAfterChanged: true,
                         focusFirstField: true
                     },
+                    nameChanged: false,
                     nameSchema: {
                       fields: [
+                          {
+                              type: "input",
+                              inputType: "text",
+                              label: "Site Title",
+                              model: "title",
+                              required: true,
+                              onChanged: (model, newVal, oldVal, field) => {
+                                  if(!this.nameChanged) {
+                                      this.formmodel.name = $perAdminApp.normalizeString(newVal, '_');
+                                  }
+                              }
+                          },
                         {
                             type: "input",
                             inputType: "text",
                             label: "Site Name",
                             model: "name",
                             required: true,
-                            validator: this.nameAvailable
+                            onChanged: (model, newVal, oldVal, field) => {
+                                this.nameChanged = true;
+                            },
+                            validator: [this.nameAvailable, this.validSiteName]
                         }
                       ]
                     }
@@ -109,17 +126,6 @@
         },
         computed: {
             pageSchema: function() {
-//                console.log('getting schema')
-//                if(this.formmodel.templatePath !== '') {
-//                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-//                    if(definitions) {
-//                        // todo: component should be resolved through the template
-//                        const comp = 'pagerender-vue-structure-page'
-//                        const def = $perAdminApp.getNodeFromView('/admin/componentDefinitions')[comp]
-//                        console.log(def)
-//                        return def
-//                    }
-//                }
             },
             themes: function() {
                 const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content/sites').children
@@ -137,7 +143,7 @@
                 return this.formmodel.templatePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name })
+                $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name, title: this.formmodel.title })
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);
@@ -163,6 +169,15 @@
                     }
                     return []
                 }
+            },
+            validSiteName(value) {
+                if(!value || value.length === 0) {
+                    return ['name is required']
+                }
+                if(value.match(/[^0-9a-z_]/)) {
+                    return ['site names may only contain lowercase letters, numbers, and underscores']
+                }
+                return [];
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()

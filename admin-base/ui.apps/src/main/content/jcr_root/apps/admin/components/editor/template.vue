@@ -32,7 +32,7 @@
             </vue-form-generator>
         </div>
         <div class="editor-panel-buttons">
-            <button class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
+            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
                 <i class="material-icons">delete</i>
             </button>
             <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
@@ -48,10 +48,10 @@
 <script>
     export default {
       props: ['model'],
-    updated: function() {
-        let stateTools = $perAdminApp.getNodeFromView("/state/tools");
-        stateTools._deleted = {};
-    },
+        updated: function() {
+            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
+            stateTools._deleted = {};
+        },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
       },
@@ -82,6 +82,9 @@
             if(this.schema) return true
             return false
         },
+        isRootComponent: function() {
+            return $perAdminApp.getView().state.editor.path == '/jcr:content'
+        },
           title: function() {
               var view = $perAdminApp.getView()
               var componentName = view.state.editor.component.split('-').join('/')
@@ -97,7 +100,7 @@
       methods: {
         onOk(e) {
             let data = JSON.parse(JSON.stringify(this.dataModel));
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
 
             //Merge _deleted child items back into the object that we need to save.
             //Loop through the model for this object/page/asset and find objects that have children

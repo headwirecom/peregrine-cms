@@ -33,9 +33,10 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -68,29 +69,33 @@ public class ImageTransformationConfigurationProvider {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<String, List<ImageTransformationConfiguration>> imageTransformationSetups = new HashMap<String, List<ImageTransformationConfiguration>>();
+//    private final Map<String, List<ImageTransformationConfiguration>> imageTransformationSetups = new HashMap<String, List<ImageTransformationConfiguration>>();
+//    private final List<ImageTransformationConfiguration> imageTransformationSetups = new ArrayList<>();
+    private List<ImageTransformationSetup> imageTransformationSetupList = new ArrayList<>();
 
-    public boolean isImageTransformationConfigurationEnabled(String name) {
-        boolean answer = false;
-        List<ImageTransformationConfiguration> imageTransformationConfigurationList = getImageTransformationConfigurations(name);
-        if(!imageTransformationConfigurationList.isEmpty()) {
-            boolean ok = true;
-            for(ImageTransformationConfiguration configuration: imageTransformationConfigurationList) {
-                ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(configuration.getTransformationName());
-                if(imageTransformation == null) {
-                    ok = false;
-                    break;
-                } else {
-                    if(!imageTransformation.isValid()) {
-                        ok = false;
-                        break;
-                    }
-                }
-            }
-            answer = ok;
-        }
-        return answer;
-    }
+//    public boolean isImageTransformationConfigurationEnabled(String name, String path) {
+//        boolean answer = false;
+//        List<ImageTransformationConfiguration> imageTransformationConfigurationList = imageTransformationSetups.stream()
+//            .filter(p -> p.getName().equals(name) && path.startsWith(p.getPath()))
+//            .collect(Collectors.toList());
+//        if(!imageTransformationConfigurationList.isEmpty()) {
+//            boolean ok = true;
+//            for(ImageTransformationConfiguration configuration: imageTransformationConfigurationList) {
+//                ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(configuration.getTransformationName());
+//                if(imageTransformation == null) {
+//                    ok = false;
+//                    break;
+//                } else {
+//                    if(!imageTransformation.isValid()) {
+//                        ok = false;
+//                        break;
+//                    }
+//                }
+//            }
+//            answer = ok;
+//        }
+//        return answer;
+//    }
 
     /**
      * Provides the Image Transformation Configurations for a given Setup
@@ -98,13 +103,27 @@ public class ImageTransformationConfigurationProvider {
      * @return List of Image Transformation Configurations that belong to that Setup Name. If name is empty or no setup
      *         found the <code>null</code> is returned
      */
-    public List<ImageTransformationConfiguration> getImageTransformationConfigurations(String name) {
+    public List<ImageTransformationConfiguration> getImageTransformationConfigurations(String name, String path) {
         List<ImageTransformationConfiguration> answer = null;
         if(isNotEmpty(name)) {
-            logger.trace("Obtain Image Transformation Configuration with Name: '{}', found in Map: '{}'", name, imageTransformationSetups.containsKey(name));
-            logger.trace("Image Transformation Setup Keys: '{}'", imageTransformationSetups.keySet());
-            answer = imageTransformationSetups.get(name);
-            logger.trace("Image Transformation Setup returned: '{}'", answer);
+            logger.trace("Obtain Image Transformation Configuration with Name: '{}', with path: '{}'", name, path);
+            // Find the best matching
+            Optional<ImageTransformationSetup> setup = imageTransformationSetupList.stream()
+                .filter(p -> p.getName().equals(name) && path.startsWith(p.getPath()))
+                .sorted((e1, e2) -> e1.getPath().length() > e2.getPath().length() ? -1 : 1)
+                .findFirst();
+            if(setup.isPresent()) {
+                answer = setup.get().getImageTransformationConfigurations()
+                    .stream()
+                    .filter(p ->
+                        {
+                            ImageTransformation imageTransformation = imageTransformationProvider.getImageTransformation(p.getTransformationName());
+                            return imageTransformation != null && imageTransformation.isEnabled();
+                        }
+                    )
+                    .collect(Collectors.toList());
+            }
+            logger.trace("Applicable Image Transformation Setup Keys: '{}'", answer);
         } else {
             logger.warn("Tried to obtain an Image Transformation Setup with an empty name");
         }
@@ -118,13 +137,13 @@ public class ImageTransformationConfigurationProvider {
     )
     @SuppressWarnings("unused")
     void bindImageTransformationConfiguration(ImageTransformationSetup imageTransformationSetup) {
-        imageTransformationSetups.put(imageTransformationSetup.getName(), imageTransformationSetup.getImageTransformationConfigurations());
+        imageTransformationSetupList.add(imageTransformationSetup);
         logger.info("Image Transformation Setup added '{}', Image Transformation Configurations: '{}'", imageTransformationSetup.getName(), imageTransformationSetup.getImageTransformationConfigurations());
     }
 
     @SuppressWarnings("unused")
     void unbindImageTransformationConfiguration(ImageTransformationSetup imageTransformationSetup) {
-        imageTransformationSetups.remove(imageTransformationSetup);
-        logger.info("Image Transformation Setup removed '{}'", imageTransformationSetup.getName());
+        imageTransformationSetupList.remove(imageTransformationSetup);
+        logger.info("Image Transformation Setup removed, name '{}', path: '{}'", imageTransformationSetup.getName(), imageTransformationSetup.getPath());
     }
 }

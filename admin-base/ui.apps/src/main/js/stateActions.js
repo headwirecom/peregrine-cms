@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -33,6 +33,7 @@ import createPageWizard from './stateActions/createPageWizard'
 import createSiteWizard from './stateActions/createSiteWizard'
 import createSite from './stateActions/createSite'
 import deletePage from './stateActions/deletePage'
+import deleteSite from './stateActions/deleteSite'
 import renamePage from './stateActions/renamePage'
 import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
@@ -41,6 +42,7 @@ import sourceImageWizard from './stateActions/sourceImageWizard'
 import fetchExternalAsset from './stateActions/fetchExternalAsset'
 import createFolder from './stateActions/createFolder'
 import deleteFolder from './stateActions/deleteFolder'
+import deleteFile from './stateActions/deleteFile'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
 import editTemplate from './stateActions/editTemplate'
@@ -60,6 +62,8 @@ import createObject from './stateActions/createObject'
 import createObjectWizard from './stateActions/createObjectWizard'
 import selectAsset from './stateActions/selectAsset'
 import unselectAsset from './stateActions/unselectAsset'
+import unselectPage from './stateActions/unselectPage'
+import unselectTemplate from './stateActions/unselectTemplate'
 import deleteAsset from './stateActions/deleteAsset'
 import renameAsset from './stateActions/renameAsset'
 import moveAsset from './stateActions/moveAsset'
@@ -81,12 +85,14 @@ actions['createSite'] = createSite
 actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['deletePage'] = deletePage
+actions['deleteSite'] = deleteSite
 actions['renamePage'] = renamePage
 actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
 actions['createFolder'] = createFolder
 actions['deleteFolder'] = deleteFolder
+actions['deleteFile'] = deleteFile
 actions['uploadFiles'] = uploadFiles
 actions['sourceImageWizard'] = sourceImageWizard
 actions['fetchExternalAsset'] = fetchExternalAsset
@@ -109,6 +115,8 @@ actions['createObjectWizard'] = createObjectWizard
 actions['selectAsset'] = selectAsset
 actions['showPageInfo'] = showPageInfo
 actions['unselectAsset'] = unselectAsset
+actions['unselectPage'] = unselectPage
+actions['unselectTemplate'] = unselectTemplate
 actions['deleteAsset'] = deleteAsset
 actions['renameAsset'] = renameAsset
 actions['moveAsset'] = moveAsset

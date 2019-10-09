@@ -30,7 +30,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>${resource.jcr:title}</title>
-    
+
     <sly data-sly-include="styles.html"></sly>
 
     <sly data-sly-list="${helper.model.siteCSS}">
@@ -43,8 +43,13 @@
     <link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" type="text/css">
 
     <script type="text/javascript">
-        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
-            document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
+        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
+            document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');
+        }
+        
+        if('ResizeObserver' in window === false) {
+            document.write('<script src="/etc/felibs/admin/polyfills/ResizeObserver.global.js"><\/script>');
+        }
     </script>
 
 </head>
@@ -72,6 +77,7 @@
         $perAdminApp.loadComponent('admin-components-iconaction')
         $perAdminApp.loadComponent('admin-components-action')
         $perAdminApp.loadComponent('admin-components-notifyuser')
+        $perAdminApp.loadComponent('admin-components-askuser')
         $perAdminApp.loadComponent('admin-components-pathbrowser')
         $perAdminApp.loadComponent('admin-components-logo')
         $perAdminApp.loadComponent('admin-components-extensions')
@@ -97,6 +103,7 @@
         $perAdminApp.loadComponent('field-material-range')
         $perAdminApp.loadComponent('field-listselection')
         $perAdminApp.loadComponent('field-iconbrowser')
+        $perAdminApp.loadComponent('field-headline')
 
         $perAdminApp.loadComponent('admin-components-iconeditpage')
         $perAdminApp.loadComponent('admin-components-iconopenfolder')

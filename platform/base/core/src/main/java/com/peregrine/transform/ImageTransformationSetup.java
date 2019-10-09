@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -77,10 +78,17 @@ public class ImageTransformationSetup {
     @interface Configuration {
         @AttributeDefinition(
             name = "Name",
-            description = "Name of the Setup. Cannot be the same as an Image Transformation Service",
+            description = "Name of the Setup. Cannot be the same as an Image Transformation Service. The extension of this name defines the format of the rendition",
             required = true
         )
         String setupName();
+
+        @AttributeDefinition(
+            name = "Path",
+            description = "The root path of nodes that are handled with this setup. If empty or not specified then the root is '/'. If provided the path must be absolute",
+            required = false
+        )
+        String path();
 
         @AttributeDefinition(
             name = "Configuration",
@@ -90,10 +98,15 @@ public class ImageTransformationSetup {
     }
 
     private String name;
+    private String path;
     private List<ImageTransformationConfiguration> imageTransformationConfigurations = new ArrayList<>();
 
     public String getName() {
         return name;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public List<ImageTransformationConfiguration> getImageTransformationConfigurations() {
@@ -114,12 +127,19 @@ public class ImageTransformationSetup {
 
     private void setup(Configuration configuration) {
         name = configuration.setupName();
-        logger.trace("Image Configuration Name: '{}', Image Transformation Configurations: '{}'", name,
+        String temp = configuration.path();
+        path = temp == null || temp.isEmpty() ? "/" : temp;
+        if(path.charAt(0) != '/') {
+            throw new IllegalArgumentException("Path must be absolute but was: " + path);
+        }
+        logger.trace("Image Configuration Name: '{}', Path: '{}', Image Transformation Configurations: '{}'", name, path,
             configuration.imageTransformationConfigurations() == null ?
                 null : Arrays.asList(configuration.imageTransformationConfigurations())
             );
+        // Remove all existing Image Transformation Configuration with the name of this Setup
+        imageTransformationConfigurations.removeIf(p -> p.getName().equals(name));
         for(String imageTransformationConfiguration: configuration.imageTransformationConfigurations()) {
-            imageTransformationConfigurations.add(new ImageTransformationConfiguration(name, imageTransformationConfiguration));
+            imageTransformationConfigurations.add(new ImageTransformationConfiguration(name, path, imageTransformationConfiguration));
         }
     }
 

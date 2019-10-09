@@ -112,8 +112,10 @@ public class IconactionModel
     /* {"type":"string","source":"inject"} */
     @Inject private String action;
 
-
     //GEN]
+
+    @Inject private String target;
+
 
     //GEN[:GETTERS
     /* {"type":"string","source":"inject","sourceName":"jcr:title"} */
@@ -134,4 +136,7 @@ public class IconactionModel
 
     //GEN]
 
+    public String getTarget() {
+      return target;
+  }
 }

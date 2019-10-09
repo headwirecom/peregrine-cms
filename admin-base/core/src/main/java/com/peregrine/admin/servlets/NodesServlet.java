@@ -38,7 +38,9 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
 import static com.peregrine.commons.util.PerConstants.*;
@@ -102,6 +104,27 @@ public class NodesServlet extends AbstractBaseServlet {
         return answer;
     }
 
+    private void convertResource(JsonResponse json, Resource resource, boolean path) throws IOException {
+        Iterable<Resource> children = resource.getChildren();
+        for(Resource child : children) {
+            json.writeObject();
+            json.writeAttribute(NAME, child.getName());
+            if(path) {
+                json.writeAttribute(PATH, child.getPath());
+            }
+            for (String key: child.getValueMap().keySet()) {
+                if(key.indexOf(":") < 0) {
+                    json.writeAttribute(key, child.getValueMap().get(key, String.class));
+                }
+            }
+            json.writeClose();
+        }
+    }
+
+    private void convertResource(JsonResponse json, Resource resource) throws IOException {
+        convertResource(json, resource, false);
+    }
+
     private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
         String path = "";
         for(int i = 1; i <= pos; i++) {
@@ -126,8 +149,33 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeAttribute(PATH,child.getPath());
                     writeProperties(child, json);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
-                        String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
+                        ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
+                        String mimeType = props.get(JCR_MIME_TYPE, String.class);
+                        String title = props.get(TITLE, String.class);
+                        String description = props.get("description", String.class);
                         json.writeAttribute(MIME_TYPE, mimeType);
+                        json.writeAttribute(TITLE, title);
+                        json.writeAttribute("description", description);
+
+                        Resource tags = child.getChild("jcr:content/tags");
+                        List<Tag> answer = new ArrayList<Tag>();
+                        if(tags != null) {
+                            for(Resource tag: tags.getChildren()) {
+                                answer.add(new Tag(tag));
+                            }
+                        }
+                        if(answer.size() > 0) {
+                            json.writeArray("tags");
+                            for (Tag tag : answer) {
+                                json.writeObject();
+                                json.writeAttribute(PATH, tag.getPath());
+                                json.writeAttribute(NAME, tag.getName());
+                                json.writeAttribute("value", tag.getValue());
+                                json.writeClose();
+                            }
+                            json.writeClose();
+                        }
+                    
                     }
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);
@@ -144,6 +192,8 @@ public class NodesServlet extends AbstractBaseServlet {
                             }
                             String component = PerUtil.getComponentNameFromResource(content);
                             json.writeAttribute(COMPONENT, component);
+                            convertNamedChild(json, content, TAGS);
+                            convertNamedChild(json, content, METAPROPERTIES);
                         } else {
                             logger.debug("No Content Child found for: '{}'", child.getPath());
                         }
@@ -153,6 +203,15 @@ public class NodesServlet extends AbstractBaseServlet {
             }
         }
         json.writeClose();
+    }
+
+    private void convertNamedChild(JsonResponse json, Resource content, String name) throws IOException {
+        Resource res = content.getChild(name);
+        if (res != null) {
+            json.writeArray(name);
+            convertResource(json, res, true);
+            json.writeClose();
+        }
     }
 
     private void writeProperties(Resource resource, JsonResponse json) throws IOException {
@@ -205,5 +264,25 @@ public class NodesServlet extends AbstractBaseServlet {
         }
         return data;
     }
+
+    class Tag {
+        private String path;
+        private String name;
+        private String value;
+
+        public Tag(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
+            this.name = r.getName();
+            this.value = r.getValueMap().get("value", String.class);
+        }
+
+        public String getName() { return name; }
+        public String getValue() { return value; }
+        public String getPath() { return path; }
+        @Override
+        public String toString() { return name; }
+    }
+
 }
 

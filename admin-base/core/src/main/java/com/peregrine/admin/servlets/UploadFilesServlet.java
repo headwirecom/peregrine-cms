@@ -38,6 +38,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +96,8 @@ public class UploadFilesServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
+        String characterEncoding = request.getRequest().getCharacterEncoding();
+        logger.trace("Current Character Encoding: '{}'", characterEncoding);
         String path = request.getParameter(PATH);
         try {
             Resource resource = request.getResourceByPath(path);
@@ -102,6 +105,11 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             List<Resource> assets = new ArrayList<>();
             for (Part part : request.getParts()) {
                 String assetName = part.getName();
+                if(!characterEncoding.equalsIgnoreCase(StandardCharsets.UTF_8.toString())) {
+                    String originalName = assetName;
+                    assetName = new String(originalName.getBytes (characterEncoding), StandardCharsets.UTF_8);
+                    logger.trace("Asset Name, original: '{}', converted: '{}'", originalName, assetName);
+                }
                 String contentType = part.getContentType();
                 logger.debug("part type {}",contentType);
                 logger.debug("part name {}",assetName);

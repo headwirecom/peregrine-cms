@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -37,12 +38,7 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_TEMPLATE;
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.CREATED;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.STATUS;
-import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -85,8 +81,12 @@ public class CreateTemplateServlet extends AbstractBaseServlet {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         String component = request.getParameter(COMPONENT);
+        String title = request.getParameterUtf8(TITLE);
+        if(StringUtils.isBlank(title)) {
+            title = name;
+        }
         try {
-            Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component);
+            Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component, title);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, TEMPLATE).writeAttribute(STATUS, CREATED)

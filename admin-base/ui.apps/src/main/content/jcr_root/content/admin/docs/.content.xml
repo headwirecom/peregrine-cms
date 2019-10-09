@@ -45,17 +45,29 @@
 
                     <pages1 jcr:primaryType="nt:unstructured" jcr:title="For Authors" sling:resourceType="admin/components/iconaction"
                            jcr:description="Learn about how to use peregrine-cms in day to day editing."
-                           action="http://www.peregrine-cms.com/docs.html"/>
+                           action="http://www.peregrine-cms.com/docs.html">
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Für Autoren" description="Erfahre wie man peregrine-cms auf einer täglichen Basis nutzt"/>
+                        </experiences>
+                    </pages1>
 
 
                     <pages2 jcr:primaryType="nt:unstructured" jcr:title="For Developers" sling:resourceType="admin/components/iconaction"
                            jcr:description="Get ready to build and enhance peregrine-cms"
-                           action="http://www.peregrine-cms.com/docs/sitedev.html"/>
+                           action="http://www.peregrine-cms.com/docs/sitedev.html">
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Für Entwickler" description="Bereite dich darauf vor peregrine-cms zu bauen und zu erweitern"/>
+                        </experiences>
+                    </pages2>
 
 
                     <pages3 jcr:primaryType="nt:unstructured" jcr:title="For Administrators" sling:resourceType="admin/components/iconaction"
                            jcr:description="Learn on how to manage peregrine-cms instances"
-                           action="http://www.peregrine-cms.com/docs.html"/>
+                           action="http://www.peregrine-cms.com/docs.html">
+                        <experiences jcr:primaryType="nt:unstructured">
+                            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Für Administratoren" description="Erfahre wie man peregrine-cms Instanzen verwaltet"/>
+                        </experiences>
+                    </pages3>
 
             </row>
 
