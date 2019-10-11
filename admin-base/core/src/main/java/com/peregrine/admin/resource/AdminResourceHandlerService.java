@@ -1634,7 +1634,16 @@ public class AdminResourceHandlerService
             if (value instanceof Map) {
                 applyChildProperties(resource, name, (Map) value);
             } else if (value instanceof List) {
-                applyListProperties(resource, name, (List) value);
+                List list = (List)value;
+                //If the node already has a property with the same name as the empty list,
+                //treat it as a deletion request
+                if(list.isEmpty() && updateProperties.containsKey(name)) {
+                    updateProperties.remove(name);
+                }
+                else
+                {
+                    applyListProperties(resource, name, list);
+                }
             } else {
                 updateProperties.put(name, value);
             }
