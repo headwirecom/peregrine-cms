@@ -35,9 +35,6 @@ import java.util.List;
 @Component(service = SiteMapExtractor.class)
 public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
-    private static final String UTF_8 = "utf-8";
-    private static final String APPLICATION_XML = "application/xml";
-
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
     private static final String URLSET_START_TAG = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\n" +
             "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +

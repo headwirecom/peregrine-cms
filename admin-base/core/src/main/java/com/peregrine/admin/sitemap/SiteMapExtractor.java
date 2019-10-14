@@ -31,4 +31,3 @@ public interface SiteMapExtractor {
 
     String extractSiteMap(final Resource root);
 }
-

@@ -52,6 +52,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 )
 public final class SiteMapServlet extends SlingAllMethodsServlet {
 
+    private static final String UTF_8 = "utf-8";
+    private static final String APPLICATION_XML = "application/xml";
+
     @Reference
     private SiteMapExtractor siteMapExtractor;
 
@@ -62,4 +65,3 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
         response.getWriter().write(siteMapExtractor.extractSiteMap(request.getResource()));
     }
 }
-
