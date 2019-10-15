@@ -207,6 +207,7 @@ function processLoaders(loaders) {
 }
 
 function processLoadedContent(data, path, firstTime, fromPopState) {
+    data = window.$perProcessData !== undefined ? window.$perProcessData(data) : data
     walkTreeAndLoad(data)
 
     if(data.description) document.getElementsByTagName('meta').description.content=data.description
