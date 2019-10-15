@@ -26,7 +26,6 @@ package com.peregrine.admin.sitemap;
  */
 
 import org.apache.sling.api.resource.Resource;
-import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 
 import java.util.LinkedList;
@@ -42,48 +41,59 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private static final String URLSET_END_TAG = "</urlset>";
 
     @Override
-    public String extractSiteMap(final Resource root) {
+    public String extractSiteMap(final Resource root, final String domain) {
         final StringBuilder result = new StringBuilder(XML_VERSION);
         result.append(URLSET_START_TAG);
-        for (final Resource page : extractSubPages(root)) {
-            result.append(toUrl(page));
+        for (final Page page : extractSubPages(new Page(root))) {
+            result.append(toUrl(page, domain));
         }
 
         result.append(URLSET_END_TAG);
         return result.toString();
     }
 
-    private List<Resource> extractSubPages(final Resource root) {
-        final List<Resource> result = new LinkedList<>();
+    private List<Page> extractSubPages(final Page root) {
+        final List<Page> result = new LinkedList<>();
+        if (!isPage(root)) {
+            return result;
+        }
+
+        result.add(root);
         for (final Resource child: root.getChildren()) {
-            if (isPage(child)) {
-                result.add(child);
-                result.addAll(extractSubPages(child));
+            final Page childPage = new Page(child);
+            if (isPage(childPage)) {
+                result.addAll(extractSubPages(childPage));
             }
         }
 
         return result;
     }
 
-    private boolean isPage(final Resource resource) {
-        if (!resource.isResourceType("per:Page")) {
+    private boolean isPage(final Page candidate) {
+        if (!candidate.isResourceType("per:Page")) {
             return false;
         }
 
-        final Resource content = resource.getChild("jcr:content");
-        if (content == null) {
+        if (!candidate.hasContent()) {
             return false;
         }
 
-        return content.getValueMap().containsKey("sling:resourceType");
+        return candidate.containsProperty("sling:resourceType");
     }
 
-    private String toUrl(final Resource page) {
-        return "    <url>\n" +
-                "        <loc>http://example.com/" + page.getPath() + ".html</loc>\n" +
-                "        <lastmod>2006-11-18</lastmod>\n" +
-                "        <changefreq>always</changefreq>\n" +
-                "        <priority>0.5</priority>\n" +
-                "    </url>\n";
+    private String toUrl(final Page page, final String domain) {
+        final StringBuilder result = new StringBuilder("<url>");
+
+        result.append("<loc>");
+        result.append(domain);
+        result.append(page.getPath());
+        result.append(".html");
+        result.append("</loc>");
+
+        result.append("<changefreq>always</changefreq>");
+        result.append("<priority>0.5</priority>");
+
+        result.append("</url>");
+        return result.toString();
     }
 }

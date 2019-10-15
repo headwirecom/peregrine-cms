@@ -27,6 +27,7 @@ package com.peregrine.admin.sitemap;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -62,6 +63,9 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_XML);
         response.setCharacterEncoding(UTF_8);
-        response.getWriter().write(siteMapExtractor.extractSiteMap(request.getResource()));
+        final String domain = "http://example.com";
+        final Resource resource = request.getResource();
+        final String siteMap = siteMapExtractor.extractSiteMap(resource, domain);
+        response.getWriter().write(siteMap);
     }
 }
