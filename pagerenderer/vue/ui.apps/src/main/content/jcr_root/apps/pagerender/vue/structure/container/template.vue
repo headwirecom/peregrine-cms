@@ -24,7 +24,7 @@
   -->
 <template>
 <div class="container">
-    <div v-for="child in model.children">
+    <div v-for="child in model.children" v-bind:key="child.path">
         <component v-bind:is="child.component" v-bind:model="child"></component>
     </div>
     <pagerender-vue-components-placeholder v-bind:model="{ path: model.path, component: model.component }"></pagerender-vue-components-placeholder>
