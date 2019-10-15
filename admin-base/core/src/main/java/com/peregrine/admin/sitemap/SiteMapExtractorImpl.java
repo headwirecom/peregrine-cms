@@ -28,6 +28,9 @@ package com.peregrine.admin.sitemap;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,6 +42,8 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
             "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
             "   xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n";
     private static final String URLSET_END_TAG = "</urlset>";
+
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
     @Override
     public String extractSiteMap(final Resource root, final String domain) {
@@ -89,6 +94,13 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         result.append(page.getPath());
         result.append(".html");
         result.append("</loc>");
+
+        final Date lastModified = page.getLastModifiedDate();
+        if (lastModified != null) {
+            result.append("<lastmod>");
+            result.append(DATE_FORMAT.format(lastModified));
+            result.append("</lastmod>");
+        }
 
         result.append("<changefreq>always</changefreq>");
         result.append("<priority>0.5</priority>");

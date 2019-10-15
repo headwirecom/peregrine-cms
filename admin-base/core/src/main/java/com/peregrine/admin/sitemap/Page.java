@@ -1,9 +1,13 @@
 package com.peregrine.admin.sitemap;
 
 import com.peregrine.commons.util.PerConstants;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public final class Page extends ResourceWrapper {
 
@@ -28,5 +32,28 @@ public final class Page extends ResourceWrapper {
         }
 
         return properties.containsKey(name);
+    }
+
+    public Object getProperty(final String name) {
+        if (contentProperties != null && contentProperties.containsKey(name)) {
+            return contentProperties.get(name);
+        }
+
+        return properties.get(name);
+    }
+
+    public <Type> Type getProperty(final String name, final Class<Type> type) {
+        final Object value = getProperty(name);
+        return value == null ? null : type.cast(value);
+    }
+
+    public Calendar getLastModified() {
+        final Calendar calendar = getProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.class);
+        return calendar == null ? getProperty(JcrConstants.JCR_CREATED, Calendar.class) : calendar;
+    }
+
+    public Date getLastModifiedDate() {
+        final Calendar calendar = getLastModified();
+        return calendar == null ? null : calendar.getTime();
     }
 }
