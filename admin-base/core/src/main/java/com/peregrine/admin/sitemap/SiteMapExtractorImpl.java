@@ -47,6 +47,9 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
     @Reference
+    private PageRecognizer pageRecognizer;
+
+    @Reference
     private UrlShortener urlShortener;
 
     @Override
@@ -63,31 +66,19 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private List<Page> extractSubPages(final Page root) {
         final List<Page> result = new LinkedList<>();
-        if (!isPage(root)) {
+        if (!pageRecognizer.isPage(root)) {
             return result;
         }
 
         result.add(root);
         for (final Resource child: root.getChildren()) {
             final Page childPage = new Page(child);
-            if (isPage(childPage)) {
+            if (pageRecognizer.isPage(childPage)) {
                 result.addAll(extractSubPages(childPage));
             }
         }
 
         return result;
-    }
-
-    private boolean isPage(final Page candidate) {
-        if (!candidate.isResourceType("per:Page")) {
-            return false;
-        }
-
-        if (!candidate.hasContent()) {
-            return false;
-        }
-
-        return candidate.containsProperty("sling:resourceType");
     }
 
     private String toUrl(final Page page) {
