@@ -25,9 +25,7 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 
 import java.text.DateFormat;
@@ -48,11 +46,11 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
     @Override
-    public String extractSiteMap(final Resource root, final String domain) {
+    public String extractSiteMap(final Resource root) {
         final StringBuilder result = new StringBuilder(XML_VERSION);
         result.append(URLSET_START_TAG);
         for (final Page page : extractSubPages(new Page(root))) {
-            result.append(toUrl(page, domain));
+            result.append(toUrl(page));
         }
 
         result.append(URLSET_END_TAG);
@@ -88,11 +86,11 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         return candidate.containsProperty("sling:resourceType");
     }
 
-    private String toUrl(final Page page, final String domain) {
+    private String toUrl(final Page page) {
         final StringBuilder result = new StringBuilder("<url>");
 
         result.append("<loc>");
-        result.append(getUrl(domain, page));
+        result.append(getUrl(page));
         result.append("</loc>");
 
         final Date lastModified = page.getLastModifiedDate();
@@ -109,13 +107,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         return result.toString();
     }
 
-    private String getUrl(final String domain, final Page page) {
-        final ResourceResolver resourceResolver = page.getResourceResolver();
-        final String url = resourceResolver.map(page.getPath() + ".html");
-        if (StringUtils.equals(domain + "/", url)) {
-            return domain;
-        }
-
-        return url;
+    private String getUrl(final Page page) {
+        return page.getResourceResolver().map(page.getPath() + ".html");
     }
 }

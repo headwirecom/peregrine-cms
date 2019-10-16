@@ -63,9 +63,8 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_XML);
         response.setCharacterEncoding(UTF_8);
-        final String domain = "http://example.com";
         final Resource resource = request.getResource();
-        final String siteMap = siteMapExtractor.extractSiteMap(resource, domain);
+        final String siteMap = siteMapExtractor.extractSiteMap(resource);
         response.getWriter().write(siteMap);
     }
 }

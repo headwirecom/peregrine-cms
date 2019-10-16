@@ -29,5 +29,5 @@ import org.apache.sling.api.resource.Resource;
 
 public interface SiteMapExtractor {
 
-    String extractSiteMap(final Resource root, final String domain);
+    String extractSiteMap(final Resource root);
 }
