@@ -1634,7 +1634,7 @@ public class AdminResourceHandlerService
             if (value instanceof Map) {
                 applyChildProperties(resource, name, (Map) value);
             } else if (value instanceof List) {
-                applyListProperties(resource, name, (List) value);
+                applyListProperties(resource, name, (List)value);
             } else {
                 updateProperties.put(name, value);
             }
@@ -1708,6 +1708,12 @@ public class AdminResourceHandlerService
         final List list
     ) throws ManagementException {
         if (list.isEmpty()) {
+            ModifiableValueMap properties = getModifiableProperties(resource, false);
+            //If the node already has a property with the same name as the empty list,
+            //treat it as a deletion request
+            if(properties.containsKey(childName)) {
+                properties.remove(childName);
+            }
             return;
         }
         final Object first = list.get(0);
