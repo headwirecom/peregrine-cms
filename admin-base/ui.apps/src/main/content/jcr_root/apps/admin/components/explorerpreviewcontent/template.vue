@@ -222,16 +222,20 @@
         return this.currentObject.split('/').length > 4;
       },
       schema() {
+        if (!this.node) {
+          return null;
+        }
         const view = $perAdminApp.getView();
         const component = this.node.component;
         return view.admin.componentDefinitions[component].model;
       },
       ogTagSchema() {
-        const view = $perAdminApp.getView();
-        if (this.node) {
-          const component = this.node.component;
-          return view.admin.componentDefinitions[component].ogTags;
+        if (!this.node) {
+          return null;
         }
+        const view = $perAdminApp.getView();
+        const component = this.node.component;
+        return view.admin.componentDefinitions[component].ogTags;
       }
     },
     methods: {
