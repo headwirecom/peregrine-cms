@@ -73,7 +73,7 @@
             v-bind:options="options">
         </vue-form-generator>
       </div>
-      <div v-else-if="isTab(Tab.INFO)">
+      <div v-if="isTab(Tab.INFO)">
         <vue-form-generator
             class="vfg-preview"
             v-on:validated="onValidated"
@@ -161,7 +161,10 @@
       return {
         Tab: Tab,
         activeTab: Tab.INFO,
-        valid: true,
+        valid: {
+          state: true,
+          errors: null
+        },
         isOpen: false,
         selectedPath: null,
         options: {
@@ -246,7 +249,8 @@
         Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true);
       },
       onValidated(isValid, errors) {
-        this.valid = isValid;
+        this.valid.state = isValid;
+        this.valid.errors = errors;
       },
       renameNode() {
         let newName = prompt('new name for ' + this.node.name);
