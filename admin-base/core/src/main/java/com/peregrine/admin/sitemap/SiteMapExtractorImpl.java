@@ -25,7 +25,9 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 
 import java.text.DateFormat;
@@ -90,9 +92,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         final StringBuilder result = new StringBuilder("<url>");
 
         result.append("<loc>");
-        result.append(domain);
-        result.append(page.getPath());
-        result.append(".html");
+        result.append(getUrl(domain, page));
         result.append("</loc>");
 
         final Date lastModified = page.getLastModifiedDate();
@@ -107,5 +107,15 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
         result.append("</url>");
         return result.toString();
+    }
+
+    private String getUrl(final String domain, final Page page) {
+        final ResourceResolver resourceResolver = page.getResourceResolver();
+        final String url = resourceResolver.map(page.getPath() + ".html");
+        if (StringUtils.equals(domain + "/", url)) {
+            return domain;
+        }
+
+        return url;
     }
 }
