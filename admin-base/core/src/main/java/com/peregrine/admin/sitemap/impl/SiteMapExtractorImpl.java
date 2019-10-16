@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.admin.sitemap.impl;
 
 /*-
  * #%L
@@ -25,6 +25,10 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
+import com.peregrine.admin.sitemap.Page;
+import com.peregrine.admin.sitemap.PageRecognizer;
+import com.peregrine.admin.sitemap.SiteMapExtractor;
+import com.peregrine.admin.sitemap.UrlShortener;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

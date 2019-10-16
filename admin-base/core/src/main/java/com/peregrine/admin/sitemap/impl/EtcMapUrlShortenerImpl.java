@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.admin.sitemap.impl;
 
 /*-
  * #%L
@@ -25,20 +25,14 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
+import com.peregrine.admin.sitemap.UrlShortener;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
-@Component(service = PageRecognizer.class)
-public final class PerPageRecognizerImpl implements PageRecognizer {
+@Component(service = UrlShortener.class)
+public final class EtcMapUrlShortenerImpl implements UrlShortener {
 
-    public boolean isPage(final Page candidate) {
-        if (!candidate.isResourceType("per:Page")) {
-            return false;
-        }
-
-        if (!candidate.hasContent()) {
-            return false;
-        }
-
-        return candidate.containsProperty("sling:resourceType");
+    public String map(final Resource page) {
+        return page.getResourceResolver().map(page.getPath() + ".html");
     }
 }
