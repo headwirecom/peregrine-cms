@@ -154,9 +154,16 @@
       },
       currentObject() {
         const obj = $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
-        return this.nodeType === NodeType.ASSET && !obj.hasOwnProperty('show')? null : obj;
+        if (this.nodeType === NodeType.ASSET) {
+          if (obj && obj.hasOwnProperty('show')) {
+            return obj.show;
+          }
+          return null;
+        }
+        return obj;
       },
       node() {
+
         return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
       },
       allowOperations() {
