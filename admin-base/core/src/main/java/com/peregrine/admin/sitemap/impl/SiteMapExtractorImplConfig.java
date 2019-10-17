@@ -25,26 +25,12 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.Page;
-import com.peregrine.admin.sitemap.PageRecognizer;
-import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(service = PageRecognizer.class)
-public final class PerPageRecognizerImpl implements PageRecognizer {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface SiteMapExtractorImplConfig {
 
-    public String getName() {
-        return PerPageRecognizerImpl.class.getName();
-    }
-
-    public boolean isPage(final Page candidate) {
-        if (!candidate.isResourceType("per:Page")) {
-            return false;
-        }
-
-        if (!candidate.hasContent()) {
-            return false;
-        }
-
-        return candidate.containsProperty("sling:resourceType");
-    }
+    @AttributeDefinition(name = "%pageRecognizer.name", description = "%pageRecognizer.description")
+    String pageRecognizer();
 }

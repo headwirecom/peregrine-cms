@@ -29,9 +29,16 @@ import com.peregrine.admin.sitemap.Page;
 import com.peregrine.admin.sitemap.PageRecognizer;
 import com.peregrine.admin.sitemap.SiteMapExtractor;
 import com.peregrine.admin.sitemap.UrlShortener;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.Designate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -40,6 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Component(service = SiteMapExtractor.class)
+@Designate(ocd = SiteMapExtractorImplConfig.class)
 public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
@@ -51,10 +59,26 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
     @Reference
+    private UrlShortener urlShortener;
+
     private PageRecognizer pageRecognizer;
 
-    @Reference
-    private UrlShortener urlShortener;
+    @Activate
+    public void activate(final ComponentContext context, final SiteMapExtractorImplConfig config) {
+        try {
+            final BundleContext bundleContext = context.getBundleContext();
+            for (final ServiceReference<PageRecognizer> reference : bundleContext.getServiceReferences(PageRecognizer.class, null)) {
+                final PageRecognizer service = bundleContext.getService(reference);
+                if (StringUtils.equals(config.pageRecognizer(), service.getName())) {
+                    pageRecognizer = service;
+                    break;
+                } else {
+                    bundleContext.ungetService(reference);
+                }
+            }
+        } catch (final InvalidSyntaxException e) {
+        }
+    }
 
     @Override
     public String extractSiteMap(final Resource root) {
