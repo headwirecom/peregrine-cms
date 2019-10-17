@@ -51,49 +51,25 @@
           </admin-components-explorerpreviewnavitem>
         </ul>
       </div>
-      <template v-if="!edit">
-        <vue-form-generator
-            v-if="isTab(Tab.OG_TAGS)"
-            class="vfg-preview"
-            :schema="readOnlyOgTagSchema"
-            :model="node"
-            :options="options"
-            @validated="onValidated">
-        </vue-form-generator>
-        <vue-form-generator
-            v-if="isTab(Tab.INFO)"
-            class="vfg-preview"
-            :schema="readOnlySchema"
-            :model="node"
-            :options="options"
-            @validated="onValidated">
-        </vue-form-generator>
-      </template>
 
-      <template v-else>
-        <vue-form-generator
-            v-if="isTab(Tab.OG_TAGS)"
-            :schema="ogTagSchema"
-            :model="node"
-            :options="options">
-        </vue-form-generator>
-        <vue-form-generator
-            v-else-if="isTab(Tab.INFO)"
-            :schema="schema"
-            :model="node"
-            :options="options">
-        </vue-form-generator>
-        <div class="explorer-confirm-dialog">
-          <button
-              class="btn btn-raised waves-effect waves-light right"
-              type="button"
-              :title="`save ${nodeType} properties`"
-              :disabled="!valid"
-              @click.stop.prevent="save()">
-            <i class="material-icons">check</i>
-          </button>
-        </div>
-      </template>
+      <vue-form-generator
+          :class="{'vfg-preview': !edit}"
+          :schema="getSchemaByActiveTab()"
+          :model="node"
+          :options="options"
+          @validated="onValidated()">
+      </vue-form-generator>
+
+      <div v-if="edit" class="explorer-confirm-dialog">
+        <button
+            class="btn btn-raised waves-effect waves-light right"
+            type="button"
+            :title="`save ${nodeType} properties`"
+            :disabled="!valid"
+            @click.stop.prevent="save()">
+          <i class="material-icons">check</i>
+        </button>
+      </div>
     </template>
 
     <template v-else>
@@ -127,6 +103,11 @@
     OG_TAGS: 'og-tags'
   };
 
+  const SchemaKey = {
+    MODEL: 'model',
+    OG_TAGS: 'ogTags'
+  };
+
   export default {
     props: {
       model: {
@@ -150,6 +131,7 @@
       return {
         Icon: Icon,
         Tab: Tab,
+        SchemaKey: SchemaKey,
         activeTab: Tab.INFO,
         valid: {
           state: true,
@@ -171,38 +153,6 @@
       edit() {
         return $perAdminApp.getNodeFromView('/state/tools').edit;
       },
-      readOnlySchema() {
-        if (!this.schema) {
-          return {};
-        }
-        const roSchema = JSON.parse(JSON.stringify(this.schema));
-        roSchema.fields.forEach((field) => {
-          field.preview = true;
-          field.readonly = true;
-          if (field.fields) {
-            field.fields.forEach((field) => {
-              field.readonly = true;
-            })
-          }
-        });
-        return roSchema;
-      },
-      readOnlyOgTagSchema() {
-        if (!this.ogTagSchema) {
-          return {};
-        }
-        const roSchema = JSON.parse(JSON.stringify(this.ogTagSchema));
-        roSchema.fields.forEach((field) => {
-          field.preview = true;
-          field.readonly = true;
-          if (field.fields) {
-            field.fields.forEach((field) => {
-              field.readonly = true;
-            })
-          }
-        });
-        return roSchema;
-      },
       currentObject() {
         return $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
       },
@@ -211,25 +161,43 @@
       },
       allowOperations() {
         return this.currentObject.split('/').length > 4;
-      },
-      schema() {
-        if (!this.node) {
-          return null;
-        }
-        const view = $perAdminApp.getView();
-        const component = this.node.component;
-        return view.admin.componentDefinitions[component].model;
-      },
-      ogTagSchema() {
-        if (!this.node) {
-          return null;
-        }
-        const view = $perAdminApp.getView();
-        const component = this.node.component;
-        return view.admin.componentDefinitions[component].ogTags;
       }
     },
     methods: {
+      getSchema(schemaKey) {
+        if (!this.node) {
+          return null;
+        }
+        const view = $perAdminApp.getView();
+        const component = this.node.component;
+        let schema = view.admin.componentDefinitions[component][schemaKey];
+        if (this.edit) {
+          return schema;
+        }
+        if (!schema) {
+          return {};
+        }
+        schema = JSON.parse(JSON.stringify(schema));
+        schema.fields.forEach((field) => {
+          field.preview = true;
+          field.readonly = true;
+          if (field.fields) {
+            field.fields.forEach((field) => {
+              field.readonly = true;
+            });
+          }
+        });
+        return schema;
+      },
+      getSchemaByActiveTab() {
+        if (this.activeTab === Tab.INFO) {
+          return this.getSchema(SchemaKey.MODEL);
+        } else if (this.activeTab === Tab.OG_TAGS) {
+          return this.getSchema(SchemaKey.OG_TAGS);
+        } else {
+          return {};
+        }
+      },
       capFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
@@ -237,6 +205,9 @@
         Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true);
       },
       onValidated(isValid, errors) {
+        if (this.edit) {
+          return;
+        }
         this.valid.state = isValid;
         this.valid.errors = errors;
       },
