@@ -96,7 +96,7 @@
 </template>
 
 <script>
-  import {Icon} from '../../../../../../js/constants';
+  import {Icon, NodeType} from '../../../../../../js/constants';
 
   const Tab = {
     INFO: 'info',
@@ -154,7 +154,8 @@
         return $perAdminApp.getNodeFromView('/state/tools').edit;
       },
       currentObject() {
-        return $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
+        const obj = $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
+        return this.nodeType === NodeType.ASSET && !obj.hasOwnProperty('show')? null : obj;
       },
       node() {
         return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
@@ -270,7 +271,15 @@
       },
       isTab(tab) {
         return this.activeTab === tab;
-      }
+      },
+      isImage: function(path) {
+        const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path);
+        if(!node)  {
+          return false;
+        }
+        const mime = node.mimeType;
+        return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(mime) >= 0
+      },
     }
   }
 </script>
