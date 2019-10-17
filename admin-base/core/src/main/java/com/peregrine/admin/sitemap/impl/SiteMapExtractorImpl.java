@@ -25,10 +25,7 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.Page;
-import com.peregrine.admin.sitemap.PageRecognizer;
-import com.peregrine.admin.sitemap.SiteMapExtractor;
-import com.peregrine.admin.sitemap.UrlShortener;
+import com.peregrine.admin.sitemap.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
@@ -65,19 +62,24 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     @Activate
     public void activate(final ComponentContext context, final SiteMapExtractorImplConfig config) {
+        final BundleContext bundleContext = context.getBundleContext();
+        pageRecognizer = getNamedService(bundleContext, PageRecognizer.class, config.pageRecognizer());
+    }
+
+    private <S extends HasName> S getNamedService(final BundleContext context, final Class<S> clazz, final String name) {
         try {
-            final BundleContext bundleContext = context.getBundleContext();
-            for (final ServiceReference<PageRecognizer> reference : bundleContext.getServiceReferences(PageRecognizer.class, null)) {
-                final PageRecognizer service = bundleContext.getService(reference);
-                if (StringUtils.equals(config.pageRecognizer(), service.getName())) {
-                    pageRecognizer = service;
-                    break;
+            for (final ServiceReference<S> reference : context.getServiceReferences(clazz, null)) {
+                final S service = context.getService(reference);
+                if (StringUtils.equals(name, service.getName())) {
+                    return service;
                 } else {
-                    bundleContext.ungetService(reference);
+                    context.ungetService(reference);
                 }
             }
         } catch (final InvalidSyntaxException e) {
         }
+
+        return null;
     }
 
     @Override
