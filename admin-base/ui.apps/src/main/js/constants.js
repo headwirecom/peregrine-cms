@@ -69,3 +69,14 @@ export const NodeType = {
   TEMPLATE: 'template',
   ASSET: 'asset'
 }
+
+export const MimeType = {
+  Image: {
+    PNG: 'image/png',
+    JPG: 'image/jpg',
+    JPEG: 'image/jpeg',
+    GIF: 'image/gif',
+    TIFF: 'image/tiff',
+    SVG: 'image/svg+xml'
+  }
+}
