@@ -32,6 +32,10 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = UrlShortener.class)
 public final class EtcMapUrlShortenerImpl implements UrlShortener {
 
+    public String getName() {
+        return getClass().getName();
+    }
+
     public String map(final Resource page) {
         return page.getResourceResolver().map(page.getPath() + ".html");
     }

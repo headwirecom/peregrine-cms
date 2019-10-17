@@ -27,7 +27,7 @@ package com.peregrine.admin.sitemap;
 
 import org.apache.sling.api.resource.Resource;
 
-public interface UrlShortener {
+public interface UrlShortener extends HasName {
 
     String map(Resource page);
 }

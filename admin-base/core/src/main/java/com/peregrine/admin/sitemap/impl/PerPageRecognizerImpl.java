@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 public final class PerPageRecognizerImpl implements PageRecognizer {
 
     public String getName() {
-        return PerPageRecognizerImpl.class.getName();
+        return getClass().getName();
     }
 
     public boolean isPage(final Page candidate) {

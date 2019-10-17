@@ -55,15 +55,15 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
-    @Reference
-    private UrlShortener urlShortener;
-
     private PageRecognizer pageRecognizer;
+
+    private UrlShortener urlShortener;
 
     @Activate
     public void activate(final ComponentContext context, final SiteMapExtractorImplConfig config) {
         final BundleContext bundleContext = context.getBundleContext();
         pageRecognizer = getNamedService(bundleContext, PageRecognizer.class, config.pageRecognizer());
+        urlShortener = getNamedService(bundleContext, UrlShortener.class, config.urlShortener());
     }
 
     private <S extends HasName> S getNamedService(final BundleContext context, final Class<S> clazz, final String name) {
