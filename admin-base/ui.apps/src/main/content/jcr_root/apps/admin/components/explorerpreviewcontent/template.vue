@@ -278,7 +278,7 @@
           return false;
         }
         const mime = node.mimeType;
-        return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(mime) >= 0
+        return ['image/png','image/jpeg','image/jpg','image/gif','image/tiff', 'image/svg+xml'].indexOf(mime) >= 0
       },
     }
   }
