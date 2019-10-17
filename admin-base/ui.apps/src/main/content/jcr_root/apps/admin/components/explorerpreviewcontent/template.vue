@@ -1,120 +1,107 @@
 <template>
   <div :class="['explorer-preview-content', `preview-${nodeType}`]">
 
-    <div v-if="currentObject" class="explorer-preview-nav">
-      <ul class="nav-left">
-        <li>
-          <a title="og-tags"
-             class="waves-effect waves-light"
-             :class="{'active': isTab(Tab.OG_TAGS)}"
-             v-on:click.stop.prevent="onTabClick(Tab.OG_TAGS)">
-            <i class="editor-icon material-icons">label</i>
-          </a>
-        </li>
-        <li>
-          <a :title="`${nodeType}-info`"
-             class="waves-effect waves-light"
-             :class="{'active': isTab(Tab.INFO)}"
-             v-on:click.stop.prevent="onTabClick(Tab.INFO)">
-            <i class="editor-icon material-icons">settings</i>
-          </a>
-        </li>
-      </ul>
+    <template v-if="currentObject">
+      <div class="explorer-preview-nav">
+        <ul class="nav-left">
+          <admin-components-explorerpreviewnavitem
+              :icon="Icon.SETTINGS"
+              :title="`${nodeType}-info`"
+              :class="{'active': isTab(Tab.INFO)}"
+              @click="setActiveTab(Tab.INFO)">
+          </admin-components-explorerpreviewnavitem>
+          <admin-components-explorerpreviewnavitem
+              :icon="Icon.LABEL"
+              :title="'og-tags'"
+              :class="{'active': isTab(Tab.OG_TAGS)}"
+              @click="setActiveTab(Tab.OG_TAGS)">
+          </admin-components-explorerpreviewnavitem>
+        </ul>
 
-      <ul class="nav-right">
-        <li v-if="allowOperations">
-          <a href="#!"
-             :title="`rename ${nodeType}`"
-             class="waves-effect waves-light"
-             v-on:click.stop.prevent="renameNode">
-            <i class="svg-icons svg-icon-rename"></i>
-          </a>
-        </li>
-        <li v-if="allowOperations">
-          <a href="#!"
-             :title="`move ${nodeType}`"
-             class="icon-list-btn waves-effect waves-light"
-             v-on:click.stop.prevent="moveNode">
-            <i class="material-icons">compare_arrows</i>
-          </a>
-        </li>
-        <li v-if="allowOperations">
-          <a href="#!"
-             :title="`delete ${nodeType}`"
-             class="icon-list-btn waves-effect waves-light"
-             v-on:click.stop.prevent="deleteNode">
-            <i class="material-icons">delete</i>
-          </a>
-        </li>
-        <li v-if="edit">
-          <a title="cancel edit"
-             class="icon-list-btn waves-effect waves-light"
-             v-on:click.stop.prevent="onCancel">
-            <i class="editor-icon material-icons">info</i>
-          </a>
-        </li>
-        <li v-if="!edit">
-          <a :title="`edit ${nodeType} properties`"
-             class="icon-list-btn waves-effect waves-light"
-             v-on:click.stop.prevent="onEdit">
-            <i class="editor-icon material-icons">edit</i>
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <div v-if="!edit" class="show-overflow">
-      <div v-if="isTab(Tab.OG_TAGS)">
+        <ul class="nav-right">
+          <template v-if="allowOperations">
+            <admin-components-explorerpreviewnavitem
+                :icon="Icon.RENAME"
+                :isSvg="true"
+                :title="`rename ${nodeType}`"
+                @click="renameNode()">
+            </admin-components-explorerpreviewnavitem>
+            <admin-components-explorerpreviewnavitem
+                :icon="Icon.COMPARE_ARROWS"
+                :title="`move ${nodeType}`"
+                @click="moveNode()">
+            </admin-components-explorerpreviewnavitem>
+            <admin-components-explorerpreviewnavitem
+                :icon="Icon.DELETE"
+                :title="`delete ${nodeType}`"
+                @click="deleteNode()">
+            </admin-components-explorerpreviewnavitem>
+          </template>
+          <admin-components-explorerpreviewnavitem
+              v-if="edit"
+              :icon="Icon.INFO"
+              :title="`cancel edit`"
+              @click="onCancel()">
+          </admin-components-explorerpreviewnavitem>
+          <admin-components-explorerpreviewnavitem
+              v-else
+              :icon="Icon.EDIT"
+              :title="`cancel edit`"
+              @click="onEdit()">
+          </admin-components-explorerpreviewnavitem>
+        </ul>
+      </div>
+      <template v-if="!edit">
         <vue-form-generator
+            v-if="isTab(Tab.OG_TAGS)"
             class="vfg-preview"
-            v-on:validated="onValidated"
-            v-bind:schema="readOnlyOgTagSchema"
-            v-bind:model="node"
-            v-bind:options="options">
+            :schema="readOnlyOgTagSchema"
+            :model="node"
+            :options="options"
+            @validated="onValidated">
         </vue-form-generator>
-      </div>
-      <div v-if="isTab(Tab.INFO)">
         <vue-form-generator
+            v-if="isTab(Tab.INFO)"
             class="vfg-preview"
-            v-on:validated="onValidated"
-            v-bind:schema="readOnlySchema"
-            v-bind:model="node"
-            v-bind:options="options">
+            :schema="readOnlySchema"
+            :model="node"
+            :options="options"
+            @validated="onValidated">
         </vue-form-generator>
-      </div>
-    </div>
+      </template>
 
-    <div v-if="edit" class="show-overflow">
-      <div v-if="isTab(Tab.OG_TAGS)" class="show-overflow">
+      <template v-else>
         <vue-form-generator
-            v-bind:schema="ogTagSchema"
-            v-bind:model="node"
-            v-bind:options="options">
+            v-if="isTab(Tab.OG_TAGS)"
+            :schema="ogTagSchema"
+            :model="node"
+            :options="options">
         </vue-form-generator>
-      </div>
-      <div v-else-if="isTab(Tab.INFO)" class="show-overflow">
         <vue-form-generator
-            v-bind:schema="schema"
-            v-bind:model="node"
-            v-bind:options="options">
+            v-else-if="isTab(Tab.INFO)"
+            :schema="schema"
+            :model="node"
+            :options="options">
         </vue-form-generator>
-      </div>
-      <div class="explorer-confirm-dialog">
-        <button
-            type="button"
-            :title="`save ${nodeType} properties`"
-            v-bind:disabled="!valid"
-            class="btn btn-raised waves-effect waves-light right"
-            v-on:click.stop.prevent="onOk">
-          <i class="material-icons">check</i>
-        </button>
-      </div>
-    </div>
+        <div class="explorer-confirm-dialog">
+          <button
+              class="btn btn-raised waves-effect waves-light right"
+              type="button"
+              :title="`save ${nodeType} properties`"
+              :disabled="!valid"
+              @click.stop.prevent="save()">
+            <i class="material-icons">check</i>
+          </button>
+        </div>
+      </template>
+    </template>
 
-    <div v-if="!currentObject" class="explorer-preview-empty">
-      <span>{{ $i18n(`no ${nodeType} selected`) }}</span>
-      <i class="material-icons">info</i>
-    </div>
+    <template v-else>
+      <div v-if="!currentObject" class="explorer-preview-empty">
+        <span>{{ $i18n(`no ${nodeType} selected`) }}</span>
+        <i class="material-icons">info</i>
+      </div>
+    </template>
 
     <admin-components-pathbrowser
         v-if="isOpen"
@@ -133,6 +120,8 @@
 </template>
 
 <script>
+  import {Icon} from '../../../../../../js/constants';
+
   const Tab = {
     INFO: 'info',
     OG_TAGS: 'og-tags'
@@ -157,8 +146,9 @@
         required: true
       }
     },
-    data: function () {
+    data() {
       return {
+        Icon: Icon,
         Tab: Tab,
         activeTab: Tab.INFO,
         valid: {
@@ -196,7 +186,6 @@
           }
         });
         return roSchema;
-
       },
       readOnlyOgTagSchema() {
         if (!this.ogTagSchema) {
@@ -213,7 +202,6 @@
           }
         });
         return roSchema;
-
       },
       currentObject() {
         return $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
@@ -298,7 +286,7 @@
         $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
         this.isOpen = false;
       },
-      onOk() {
+      save() {
         $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
         $perAdminApp.getNodeFromView('/state/tools').edit = false;
       },
@@ -306,7 +294,7 @@
         $perAdminApp.stateAction(`show${this.uNodeType}Info`, {selected: this.node.path});
         $perAdminApp.getNodeFromView('/state/tools').edit = false;
       },
-      onTabClick(clickedTab) {
+      setActiveTab(clickedTab) {
         this.activeTab = clickedTab;
       },
       isTab(tab) {
@@ -316,15 +304,6 @@
   }
 </script>
 <style scoped>
-
-  .active {
-    background-color: #37474f;
-    color: #cfd8dc;
-  }
-
-  .show-overflow {
-    overflow: auto;
-  }
 
   .editor-icon {
     height: 44px;
@@ -341,41 +320,5 @@
 
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left {
     margin-right: auto;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li {
-    border-left: 1px solid #eceff1;
-    border-right: 1px solid #b0bec5;
-    height: 100%;
-    line-height: 45px;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li:first-child,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li:first-child {
-    border-left: none;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a:hover,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a:focus,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a:active,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li > a:hover,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li > a:focus,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li > a:active {
-    background-color: #b0bec5;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li > a {
-    padding: 0 0.75rem;
-    height: 100%;
-    display: inline-block;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a .material-icons,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li > a .material-icons,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a .svg-icon,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li > a .svg-icon {
-    line-height: 45px;
   }
 </style>
