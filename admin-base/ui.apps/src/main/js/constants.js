@@ -57,7 +57,7 @@ export const Field = {
 export const Icon = {
   LABEL: 'label',
   SETTINGS: 'settings',
-  RENAME: 'rename',
+  TEXT_FORMAT: 'text_format',
   COMPARE_ARROWS: 'compare_arrows',
   DELETE: 'delete',
   INFO: 'info',

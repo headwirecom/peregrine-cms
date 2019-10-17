@@ -21,8 +21,7 @@
         <ul class="nav-right">
           <template v-if="allowOperations">
             <admin-components-explorerpreviewnavitem
-                :icon="Icon.RENAME"
-                :isSvg="true"
+                :icon="Icon.TEXT_FORMAT"
                 :title="`rename ${nodeType}`"
                 @click="renameNode()">
             </admin-components-explorerpreviewnavitem>
