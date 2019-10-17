@@ -63,3 +63,9 @@ export const Icon = {
   INFO: 'info',
   EDIT: 'edit'
 }
+
+export const NodeType = {
+  PAGE: 'page',
+  TEMPLATE: 'template',
+  ASSET: 'asset'
+}
