@@ -3,7 +3,6 @@
     <a :title="title"
        class="waves-effect waves-light"
        v-on:click.stop.prevent="onClick">
-      <i v-if="isSvg" :class="['svg-icons', `svg-icon-${icon}`]"></i>
       <i v-else class="editor-icon material-icons">{{ icon }}</i>
     </a>
   </li>
