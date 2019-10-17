@@ -96,7 +96,7 @@
 </template>
 
 <script>
-  import {Icon, NodeType} from '../../../../../../js/constants';
+  import {Icon, MimeType, NodeType} from '../../../../../../js/constants';
 
   const Tab = {
     INFO: 'info',
@@ -278,7 +278,7 @@
           return false;
         }
         const mime = node.mimeType;
-        return ['image/png','image/jpeg','image/jpg','image/gif','image/tiff', 'image/svg+xml'].indexOf(mime) >= 0
+        return MimeType.Image.values().indexOf(mime) >= 0
       },
     }
   }
