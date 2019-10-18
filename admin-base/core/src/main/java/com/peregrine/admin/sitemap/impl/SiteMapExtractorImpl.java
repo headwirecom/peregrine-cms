@@ -31,6 +31,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +52,8 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Reference
     private NamedServiceRetriever serviceRetriever;
 
@@ -59,8 +63,18 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     @Activate
     public void activate(final SiteMapExtractorImplConfig config) {
-        pageRecognizer = serviceRetriever.getNamedService(PageRecognizer.class, config.pageRecognizer());
-        urlShortener = serviceRetriever.getNamedService(UrlShortener.class, config.urlShortener());
+        pageRecognizer = getNamedService(PageRecognizer.class, config.pageRecognizer());
+        urlShortener = getNamedService(UrlShortener.class, config.urlShortener());
+    }
+
+    private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
+        final S service = serviceRetriever.getNamedService(clazz, name);
+        if (service == null) {
+            logger.error("The service '{}' of type {} was not found. Please check your configuration.", clazz.getName());
+        }
+
+        return service;
+    }
     }
 
     @Override
