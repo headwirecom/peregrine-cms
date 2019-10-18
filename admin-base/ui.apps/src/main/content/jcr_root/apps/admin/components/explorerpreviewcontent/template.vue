@@ -3,7 +3,7 @@
 
     <template v-if="currentObject">
       <div class="explorer-preview-nav">
-        <ul class="nav-left">
+        <ul class="nav-left" v-if="hasOgTags">
           <admin-components-explorerpreviewnavitem
               :icon="Icon.SETTINGS"
               :title="`${nodeType}-info`"
@@ -36,18 +36,27 @@
                 @click="deleteNode()">
             </admin-components-explorerpreviewnavitem>
           </template>
+          <template>
+            <admin-components-explorerpreviewnavitem
+                v-if="edit"
+                :icon="Icon.INFO"
+                :title="`cancel edit`"
+                @click="onCancel()">
+            </admin-components-explorerpreviewnavitem>
+            <admin-components-explorerpreviewnavitem
+                v-else
+                :icon="Icon.EDIT"
+                :title="`cancel edit`"
+                @click="onEdit()">
+            </admin-components-explorerpreviewnavitem>
+          </template>
           <admin-components-explorerpreviewnavitem
-              v-if="edit"
-              :icon="Icon.INFO"
-              :title="`cancel edit`"
-              @click="onCancel()">
+              v-if="nodeType === NodeType.ASSET"
+              :icon="Icon.LIST"
+              :title="'references'"
+              @click="onReferences">
           </admin-components-explorerpreviewnavitem>
-          <admin-components-explorerpreviewnavitem
-              v-else
-              :icon="Icon.EDIT"
-              :title="`cancel edit`"
-              @click="onEdit()">
-          </admin-components-explorerpreviewnavitem>
+
         </ul>
       </div>
 
@@ -131,6 +140,7 @@
         Icon: Icon,
         Tab: Tab,
         SchemaKey: SchemaKey,
+        NodeType: NodeType,
         activeTab: Tab.INFO,
         valid: {
           state: true,
@@ -168,6 +178,9 @@
       },
       allowOperations() {
         return this.currentObject.split('/').length > 4;
+      },
+      hasOgTags() {
+        return [NodeType.PAGE, NodeType.TEMPLATE].indexOf(this.nodeType) > -1;
       }
     },
     methods: {
@@ -210,6 +223,10 @@
       },
       onEdit: function () {
         Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true);
+      },
+      onCancel: function () {
+        $perAdminApp.stateAction(`show${this.uNodeType}Info`, {selected: this.node.path});
+        $perAdminApp.getNodeFromView('/state/tools').edit = false;
       },
       onValidated(isValid, errors) {
         if (this.edit) {
@@ -268,24 +285,20 @@
         $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
         $perAdminApp.getNodeFromView('/state/tools').edit = false;
       },
-      onCancel: function () {
-        $perAdminApp.stateAction(`show${this.uNodeType}Info`, {selected: this.node.path});
-        $perAdminApp.getNodeFromView('/state/tools').edit = false;
-      },
       setActiveTab(clickedTab) {
         this.activeTab = clickedTab;
       },
       isTab(tab) {
         return this.activeTab === tab;
       },
-      isImage: function(path) {
+      isImage: function (path) {
         const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path);
-        if(!node)  {
+        if (!node) {
           return false;
         }
         const mime = node.mimeType;
         return MimeType.Image.values().indexOf(mime) >= 0
-      },
+      }
     }
   }
 </script>
