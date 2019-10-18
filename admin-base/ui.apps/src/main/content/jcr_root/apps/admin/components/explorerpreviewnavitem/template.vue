@@ -52,6 +52,10 @@
     border-left: none;
   }
 
+  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li:first-child {
+    border-left: 1px solid #b0bec5
+  }
+
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a:hover,
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a:focus,
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li > a:active,
