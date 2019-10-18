@@ -62,7 +62,7 @@
       </div>
 
       <template v-if="isTab([Tab.INFO, Tab.OG_TAGS])">
-        <div v-if="hasInfoView"
+        <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
                :src="currentObject"
@@ -240,7 +240,6 @@
     watch: {
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
-        console.log('updated state/tools/edit to: ', newVal)
       }
     },
     methods: {
@@ -249,7 +248,10 @@
           return null;
         }
         const view = $perAdminApp.getView();
-        const component = this.node.component;
+        let component = this.node.component;
+        if (this.nodeType === NodeType.ASSET) {
+          component = 'admin-components-assetview';
+        }
         let schema = view.admin.componentDefinitions[component][schemaKey];
         if (this.edit) {
           return schema;
