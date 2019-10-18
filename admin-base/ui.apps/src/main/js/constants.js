@@ -61,7 +61,8 @@ export const Icon = {
   COMPARE_ARROWS: 'compare_arrows',
   DELETE: 'delete',
   INFO: 'info',
-  EDIT: 'edit'
+  EDIT: 'edit',
+  LIST: list
 }
 
 export const NodeType = {
