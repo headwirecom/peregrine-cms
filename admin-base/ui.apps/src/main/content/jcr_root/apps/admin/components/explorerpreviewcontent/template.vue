@@ -62,6 +62,17 @@
       </div>
 
       <template v-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+        <div v-if="hasInfoView"
+             :class="`${nodeType}-info-view`">
+          <img v-if="isImage"
+               :src="currentObject"
+               class="info-view-image"/>
+          <iframe
+              v-else
+              :src="currentObject.show"
+              class="info-view-iframe">
+          </iframe>
+        </div>
         <vue-form-generator
             :class="{'vfg-preview': !edit}"
             :schema="getSchemaByActiveTab()"
@@ -212,6 +223,18 @@
       },
       referencedBy() {
         return $perAdminApp.getView().state.referencedBy.referencedBy
+      },
+      isImage() {
+        const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes,
+            this.currentObject);
+        if (!node) {
+          return false;
+        }
+        const mime = node.mimeType;
+        return Object.values(MimeType.Image).indexOf(mime) >= 0
+      },
+      hasInfoView() {
+        return [NodeType.ASSET].indexOf(this.nodeType) > -1;
       }
     },
     watch: {
@@ -335,14 +358,6 @@
           return arg.indexOf(this.activeTab) > -1;
         }
         return this.activeTab === arg;
-      },
-      isImage(path) {
-        const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path);
-        if (!node) {
-          return false;
-        }
-        const mime = node.mimeType;
-        return MimeType.Image.values().indexOf(mime) >= 0
       }
     }
   }
@@ -364,5 +379,15 @@
 
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left {
     margin-right: auto;
+  }
+
+  .info-view-image {
+    margin-top: 1em;
+  }
+
+  .info-view-iframe {
+    width: 100%;
+    height: 60%;
+    margin-top: 1em;
   }
 </style>
