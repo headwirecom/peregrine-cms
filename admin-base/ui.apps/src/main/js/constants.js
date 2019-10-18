@@ -69,7 +69,8 @@ export const Icon = {
 export const NodeType = {
   PAGE: 'page',
   TEMPLATE: 'template',
-  ASSET: 'asset'
+  ASSET: 'asset',
+  OBJECT: 'object'
 }
 
 export const MimeType = {
