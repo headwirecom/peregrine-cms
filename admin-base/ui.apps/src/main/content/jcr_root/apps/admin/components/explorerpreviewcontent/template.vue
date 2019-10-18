@@ -221,10 +221,10 @@
       capFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
-      onEdit: function () {
+      onEdit() {
         Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true);
       },
-      onCancel: function () {
+      onCancel() {
         $perAdminApp.stateAction(`show${this.uNodeType}Info`, {selected: this.node.path});
         $perAdminApp.getNodeFromView('/state/tools').edit = false;
       },
@@ -291,7 +291,7 @@
       isTab(tab) {
         return this.activeTab === tab;
       },
-      isImage: function (path) {
+      isImage(path) {
         const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path);
         if (!node) {
           return false;
