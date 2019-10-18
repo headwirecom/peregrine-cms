@@ -191,7 +191,8 @@
         },
         nodeTypeGroups: {
           ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
-          references: [NodeType.ASSET]
+          references: [NodeType.ASSET],
+          select: [NodeType.ASSET, NodeType.OBJECT]
         }
       }
     },
@@ -206,6 +207,10 @@
             return obj.show;
           }
           return null;
+        } else if (this.nodeType === NodeType.OBJECT) {
+          if (obj) {
+            return obj.data;
+          }
         }
         return obj;
       },
@@ -252,6 +257,9 @@
         if (this.nodeType === NodeType.ASSET) {
           component = 'admin-components-assetview';
         }
+        if (this.nodeType === NodeType.OBJECT && !component) {
+          component = this.currentObject['sling:resourceType']
+        }
         let schema = view.admin.componentDefinitions[component][schemaKey];
         if (this.edit) {
           return schema;
@@ -289,7 +297,7 @@
       onCancel() {
         let payload = {selected: this.node.path};
         this.edit = false;
-        if (this.nodeType === NodeType.ASSET) {
+        if (this.nodeTypeGroups.select.indexOf(this.nodeType) > -1) {
           $perAdminApp.stateAction(`select${this.uNodeType}`, payload)
         } else {
           $perAdminApp.stateAction(`show${this.uNodeType}Info`, payload);
