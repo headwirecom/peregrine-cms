@@ -31,6 +31,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @ObjectClassDefinition(name = "%config.name", description = "%config.description")
 public @interface SiteMapExtractorImplConfig {
 
+    @AttributeDefinition(name = "%pathRegex.name", description = "%pathRegex.description")
+    String pathRegex();
+
     @AttributeDefinition(name = "%pageRecognizer.name", description = "%pageRecognizer.description")
     String pageRecognizer();
 

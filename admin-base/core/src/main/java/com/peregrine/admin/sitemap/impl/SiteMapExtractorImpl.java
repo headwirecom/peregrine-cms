@@ -29,6 +29,7 @@ import com.peregrine.admin.sitemap.*;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
@@ -39,9 +40,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-@Component(service = SiteMapExtractor.class)
-@Designate(ocd = SiteMapExtractorImplConfig.class)
+@Component(service = SiteMapExtractor.class, immediate = true)
+@Designate(ocd = SiteMapExtractorImplConfig.class, factory = true)
 public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
@@ -57,14 +60,48 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     @Reference
     private NamedServiceRetriever serviceRetriever;
 
+    @Reference
+    private SiteMapExtractorsContainer siteMapExtractorsContainer;
+
+    private Pattern pattern;
+
     private PageRecognizer pageRecognizer;
 
     private UrlShortener urlShortener;
 
     @Activate
     public void activate(final SiteMapExtractorImplConfig config) {
+        try {
+            pattern = Pattern.compile(config.pathRegex());
+        } catch (final PatternSyntaxException e) {
+            logger.error("The path regex is not valid.", e);
+        }
+
         pageRecognizer = getNamedService(PageRecognizer.class, config.pageRecognizer());
         urlShortener = getNamedService(UrlShortener.class, config.urlShortener());
+        if (isValid()) {
+            siteMapExtractorsContainer.add(this);
+        }
+    }
+
+    private boolean isValid() {
+        return pattern != null && pageRecognizer != null && urlShortener != null;
+    }
+
+    @Deactivate
+    public void deactivate() {
+        if (isValid()) {
+            siteMapExtractorsContainer.remove(this);
+        }
+
+        urlShortener = null;
+        pageRecognizer = null;
+        pattern = null;
+    }
+
+    @Override
+    public boolean appliesTo(final Resource root) {
+        return pattern.matcher(root.getPath()).matches();
     }
 
     private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
@@ -75,7 +112,6 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         }
 
         return service;
-    }
     }
 
     @Override

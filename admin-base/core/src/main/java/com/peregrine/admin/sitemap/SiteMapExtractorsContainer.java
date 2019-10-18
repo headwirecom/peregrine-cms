@@ -27,10 +27,11 @@ package com.peregrine.admin.sitemap;
 
 import org.apache.sling.api.resource.Resource;
 
-public interface SiteMapExtractor {
+public interface SiteMapExtractorsContainer {
 
-    boolean appliesTo(Resource root);
+    boolean add(SiteMapExtractor item);
 
-    String extractSiteMap(Resource root);
+    boolean remove(SiteMapExtractor item);
 
+    SiteMapExtractor findFirstFor(Resource resource);
 }
