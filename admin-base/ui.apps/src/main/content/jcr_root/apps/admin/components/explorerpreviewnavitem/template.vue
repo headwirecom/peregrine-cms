@@ -48,7 +48,6 @@
     line-height: 45px;
   }
 
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right > li:first-child,
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left > li:first-child {
     border-left: none;
   }
