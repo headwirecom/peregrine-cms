@@ -62,7 +62,8 @@ export const Icon = {
   DELETE: 'delete',
   INFO: 'info',
   EDIT: 'edit',
-  LIST: list
+  LIST: 'list',
+  CHECK: 'check'
 }
 
 export const NodeType = {

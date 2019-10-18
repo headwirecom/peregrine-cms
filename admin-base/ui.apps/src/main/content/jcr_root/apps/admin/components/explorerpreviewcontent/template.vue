@@ -3,7 +3,7 @@
 
     <template v-if="currentObject">
       <div class="explorer-preview-nav">
-        <ul class="nav-left" v-if="hasOgTags">
+        <ul class="nav-left">
           <admin-components-explorerpreviewnavitem
               :icon="Icon.SETTINGS"
               :title="`${nodeType}-info`"
@@ -11,10 +11,18 @@
               @click="setActiveTab(Tab.INFO)">
           </admin-components-explorerpreviewnavitem>
           <admin-components-explorerpreviewnavitem
+              v-if="hasOgTags"
               :icon="Icon.LABEL"
               :title="'og-tags'"
               :class="{'active': isTab(Tab.OG_TAGS)}"
               @click="setActiveTab(Tab.OG_TAGS)">
+          </admin-components-explorerpreviewnavitem>
+          <admin-components-explorerpreviewnavitem
+              v-if="hasReferences"
+              :icon="Icon.LIST"
+              :title="'references'"
+              :class="{'active': isTab(Tab.REFERENCES)}"
+              @click="setActiveTab(Tab.REFERENCES)">
           </admin-components-explorerpreviewnavitem>
         </ul>
 
@@ -50,34 +58,49 @@
                 @click="onEdit()">
             </admin-components-explorerpreviewnavitem>
           </template>
-          <admin-components-explorerpreviewnavitem
-              v-if="nodeType === NodeType.ASSET"
-              :icon="Icon.LIST"
-              :title="'references'"
-              @click="onReferences">
-          </admin-components-explorerpreviewnavitem>
-
         </ul>
       </div>
 
-      <vue-form-generator
-          :class="{'vfg-preview': !edit}"
-          :schema="getSchemaByActiveTab()"
-          :model="node"
-          :options="options"
-          @validated="onValidated()">
-      </vue-form-generator>
+      <template v-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+        <vue-form-generator
+            :class="{'vfg-preview': !edit}"
+            :schema="getSchemaByActiveTab()"
+            :model="node"
+            :options="options"
+            @validated="onValidated()">
+        </vue-form-generator>
+        <div v-if="edit" class="explorer-confirm-dialog">
+          <button
+              class="btn btn-raised waves-effect waves-light right"
+              type="button"
+              :title="`save ${nodeType} properties`"
+              :disabled="!valid"
+              @click.stop.prevent="save()">
+            <i class="material-icons">{{Icon.CHECK}}</i>
+          </button>
+        </div>
+      </template>
 
-      <div v-if="edit" class="explorer-confirm-dialog">
-        <button
-            class="btn btn-raised waves-effect waves-light right"
-            type="button"
-            :title="`save ${nodeType} properties`"
-            :disabled="!valid"
-            @click.stop.prevent="save()">
-          <i class="material-icons">check</i>
-        </button>
-      </div>
+      <template v-else-if="isTab(Tab.REFERENCES)">
+        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
+          <li class="collection-header">
+            referenced in {{referencedBy.length}} locations
+          </li>
+          <li class="collection-item" v-for="item in referencedBy">
+              <span>
+                <admin-components-action
+                    v-bind:model="{
+                      target: item.path,
+                      command: 'editPage',
+                      tooltipTitle: `edit '${item.name}'`
+                    }">
+                    <admin-components-iconeditpage></admin-components-iconeditpage>
+                </admin-components-action>
+              </span>
+            <span class="right">{{item.path}}</span>
+          </li>
+        </ul>
+      </template>
     </template>
 
     <template v-else>
@@ -108,7 +131,8 @@
 
   const Tab = {
     INFO: 'info',
-    OG_TAGS: 'og-tags'
+    OG_TAGS: 'og-tags',
+    REFERENCES: 'references'
   };
 
   const SchemaKey = {
@@ -142,6 +166,7 @@
         SchemaKey: SchemaKey,
         NodeType: NodeType,
         activeTab: Tab.INFO,
+        edit: false,
         valid: {
           state: true,
           errors: null
@@ -152,15 +177,16 @@
           validateAfterLoad: true,
           validateAfterChanged: true,
           focusFirstField: true
+        },
+        nodeTypeGroups: {
+          ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
+          references: [NodeType.ASSET]
         }
       }
     },
     computed: {
       uNodeType() {
         return this.capFirstLetter(this.nodeType);
-      },
-      edit() {
-        return $perAdminApp.getNodeFromView('/state/tools').edit;
       },
       currentObject() {
         const obj = $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
@@ -173,14 +199,25 @@
         return obj;
       },
       node() {
-
         return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
       },
       allowOperations() {
         return this.currentObject.split('/').length > 4;
       },
       hasOgTags() {
-        return [NodeType.PAGE, NodeType.TEMPLATE].indexOf(this.nodeType) > -1;
+        return this.nodeTypeGroups.ogTags.indexOf(this.nodeType) > -1;
+      },
+      hasReferences() {
+        return this.nodeTypeGroups.references.indexOf(this.nodeType) > -1;
+      },
+      referencedBy() {
+        return $perAdminApp.getView().state.referencedBy.referencedBy
+      }
+    },
+    watch: {
+      edit(newVal) {
+        $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+        console.log('updated state/tools/edit to: ', newVal)
       }
     },
     methods: {
@@ -222,11 +259,16 @@
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
       onEdit() {
-        Vue.set($perAdminApp.getNodeFromView('/state/tools'), 'edit', true);
+        this.edit = true;
       },
       onCancel() {
-        $perAdminApp.stateAction(`show${this.uNodeType}Info`, {selected: this.node.path});
-        $perAdminApp.getNodeFromView('/state/tools').edit = false;
+        let payload = {selected: this.node.path};
+        this.edit = false;
+        if (this.nodeType === NodeType.ASSET) {
+          $perAdminApp.stateAction(`select${this.uNodeType}`, payload)
+        } else {
+          $perAdminApp.stateAction(`show${this.uNodeType}Info`, payload);
+        }
       },
       onValidated(isValid, errors) {
         if (this.edit) {
@@ -283,13 +325,16 @@
       },
       save() {
         $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
-        $perAdminApp.getNodeFromView('/state/tools').edit = false;
+        this.edit = false;
       },
       setActiveTab(clickedTab) {
         this.activeTab = clickedTab;
       },
-      isTab(tab) {
-        return this.activeTab === tab;
+      isTab(arg) {
+        if (Array.isArray(arg)) {
+          return arg.indexOf(this.activeTab) > -1;
+        }
+        return this.activeTab === arg;
       },
       isImage(path) {
         const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path);
