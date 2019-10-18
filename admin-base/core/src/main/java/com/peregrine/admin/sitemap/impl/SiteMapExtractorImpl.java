@@ -70,7 +70,8 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
         final S service = serviceRetriever.getNamedService(clazz, name);
         if (service == null) {
-            logger.error("The service '{}' of type {} was not found. Please check your configuration.", clazz.getName());
+            logger.error("The service '{}' of type {} was not found. Please check your configuration.",
+                    name, clazz.getName());
         }
 
         return service;
