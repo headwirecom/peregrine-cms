@@ -26,12 +26,7 @@ package com.peregrine.admin.sitemap.impl;
  */
 
 import com.peregrine.admin.sitemap.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -55,31 +50,17 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
+    @Reference
+    private NamedServiceRetriever serviceRetriever;
+
     private PageRecognizer pageRecognizer;
 
     private UrlShortener urlShortener;
 
     @Activate
-    public void activate(final ComponentContext context, final SiteMapExtractorImplConfig config) {
-        final BundleContext bundleContext = context.getBundleContext();
-        pageRecognizer = getNamedService(bundleContext, PageRecognizer.class, config.pageRecognizer());
-        urlShortener = getNamedService(bundleContext, UrlShortener.class, config.urlShortener());
-    }
-
-    private <S extends HasName> S getNamedService(final BundleContext context, final Class<S> clazz, final String name) {
-        try {
-            for (final ServiceReference<S> reference : context.getServiceReferences(clazz, null)) {
-                final S service = context.getService(reference);
-                if (StringUtils.equals(name, service.getName())) {
-                    return service;
-                } else {
-                    context.ungetService(reference);
-                }
-            }
-        } catch (final InvalidSyntaxException e) {
-        }
-
-        return null;
+    public void activate(final SiteMapExtractorImplConfig config) {
+        pageRecognizer = serviceRetriever.getNamedService(PageRecognizer.class, config.pageRecognizer());
+        urlShortener = serviceRetriever.getNamedService(UrlShortener.class, config.urlShortener());
     }
 
     @Override
