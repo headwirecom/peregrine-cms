@@ -30,4 +30,5 @@ import org.apache.sling.api.resource.Resource;
 public interface UrlShortener extends HasName {
 
     String map(Resource page);
+
 }

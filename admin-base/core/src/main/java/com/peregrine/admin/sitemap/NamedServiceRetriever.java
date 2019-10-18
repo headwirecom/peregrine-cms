@@ -27,6 +27,6 @@ package com.peregrine.admin.sitemap;
 
 public interface NamedServiceRetriever {
 
-    <S extends HasName> S getNamedService(final Class<S> clazz, final String name);
+    <S extends HasName> S getNamedService(Class<S> clazz, String name);
 
 }
