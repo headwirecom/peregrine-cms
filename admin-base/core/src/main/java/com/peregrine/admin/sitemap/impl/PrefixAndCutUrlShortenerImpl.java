@@ -26,17 +26,39 @@ package com.peregrine.admin.sitemap.impl;
  */
 
 import com.peregrine.admin.sitemap.UrlShortener;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.Designate;
 
-@Component(service = UrlShortener.class)
-public final class EtcMapUrlShortenerImpl implements UrlShortener {
+@Component(service = UrlShortener.class, immediate = true)
+@Designate(ocd = PrefixAndCutUrlShortenerImplConfig.class, factory = true)
+public final class PrefixAndCutUrlShortenerImpl implements UrlShortener {
+
+    public static final String SLASH = "/";
+    private PrefixAndCutUrlShortenerImplConfig config;
+
+    @Activate
+    public void activate(final PrefixAndCutUrlShortenerImplConfig config) {
+        this.config = config;
+    }
 
     public String getName() {
-        return getClass().getName();
+        return config.name();
     }
 
     public String map(final Resource page) {
-        return page.getResourceResolver().map(page.getPath() + DOT_HTML);
+        String path = page.getPath();
+        for (int i = 0; StringUtils.isNotBlank(path) && i < config.cutCount(); i++) {
+            path = StringUtils.substring(path, 1);
+            path = SLASH + StringUtils.substringAfter(path, SLASH);
+        }
+
+        if (SLASH.equals(path)) {
+            return config.prefix();
+        }
+
+        return config.prefix() + path + DOT_HTML;
     }
 }

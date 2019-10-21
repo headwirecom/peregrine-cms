@@ -29,6 +29,8 @@ import org.apache.sling.api.resource.Resource;
 
 public interface UrlShortener extends HasName {
 
+    String DOT_HTML = ".html";
+
     String map(Resource page);
 
 }

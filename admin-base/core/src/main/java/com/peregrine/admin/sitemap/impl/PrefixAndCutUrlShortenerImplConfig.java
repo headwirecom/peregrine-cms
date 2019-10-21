@@ -25,18 +25,18 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.UrlShortener;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(service = UrlShortener.class)
-public final class EtcMapUrlShortenerImpl implements UrlShortener {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface PrefixAndCutUrlShortenerImplConfig {
 
-    public String getName() {
-        return getClass().getName();
-    }
+    @AttributeDefinition(name = "%name.name", description = "%name.description")
+    String name();
 
-    public String map(final Resource page) {
-        return page.getResourceResolver().map(page.getPath() + DOT_HTML);
-    }
+    @AttributeDefinition(name = "%prefix.name", description = "%prefix.description")
+    String prefix();
+
+    @AttributeDefinition(name = "%cutCount.name", description = "%cutCount.description")
+    int cutCount();
 }
