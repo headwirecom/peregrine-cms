@@ -3,7 +3,7 @@
 
     <template v-if="currentObject">
       <div class="explorer-preview-nav">
-        <ul class="nav-left">
+        <ul class="nav-left" v-if="hasMultipleTabs">
           <admin-components-explorerpreviewnavitem
               :icon="Icon.SETTINGS"
               :title="`${nodeType}-info`"
@@ -34,6 +34,7 @@
                 @click="renameNode()">
             </admin-components-explorerpreviewnavitem>
             <admin-components-explorerpreviewnavitem
+                v-if="allowMove"
                 :icon="Icon.COMPARE_ARROWS"
                 :title="`move ${nodeType}`"
                 @click="moveNode()">
@@ -192,7 +193,9 @@
         nodeTypeGroups: {
           ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
           references: [NodeType.ASSET],
-          select: [NodeType.ASSET, NodeType.OBJECT]
+          selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
+          showProp: [NodeType.ASSET, NodeType.OBJECT],
+          allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
         }
       }
     },
@@ -200,37 +203,37 @@
       uNodeType() {
         return this.capFirstLetter(this.nodeType);
       },
+      rawCurrentObject() {
+        return $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
+      },
       currentObject() {
-        const obj = $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
-        if (this.nodeType === NodeType.ASSET) {
+        const obj = this.rawCurrentObject;
+        if (this.nodeTypeGroups.showProp.indexOf(this.nodeType) > -1) {
           if (obj && obj.hasOwnProperty('show')) {
             return obj.show;
-          }
-          return null;
-        } else if (this.nodeType === NodeType.OBJECT) {
-          if (obj && obj.data) {
-            return obj.data;
+          } else {
+            return null;
           }
         }
         return obj;
       },
       node() {
-        if (this.nodeType === NodeType.OBJECT) {
-          return this.objectNode;
-        }
         return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
       },
-      objectNode() {
-        return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject.path);
-      },
       allowOperations() {
-        return this.nodeType === NodeType.OBJECT || this.currentObject.split('/').length > 4;
+        return this.currentObject.split('/').length > 4;
+      },
+      allowMove() {
+        return this.nodeTypeGroups.allowMove.indexOf(this.nodeType) > -1;
       },
       hasOgTags() {
         return this.nodeTypeGroups.ogTags.indexOf(this.nodeType) > -1;
       },
       hasReferences() {
         return this.nodeTypeGroups.references.indexOf(this.nodeType) > -1;
+      },
+      hasMultipleTabs() {
+        return this.hasOgTags || this.hasReferences;
       },
       referencedBy() {
         return $perAdminApp.getView().state.referencedBy.referencedBy
@@ -263,8 +266,8 @@
         if (this.nodeType === NodeType.ASSET) {
           component = 'admin-components-assetview';
         }
-        if (this.nodeType === NodeType.OBJECT && !component) {
-          component = this.currentObject['sling:resourceType']
+        if (this.nodeType === NodeType.OBJECT) {
+          component = this.getObjectComponent();
         }
         let schema = view.admin.componentDefinitions[component][schemaKey];
         if (this.edit) {
@@ -294,6 +297,13 @@
           return {};
         }
       },
+      getObjectComponent() {
+        let resourceType = this.rawCurrentObject.data['component'];
+        if (!resourceType) {
+          resourceType = this.rawCurrentObject.data['sling:resourceType'];
+        }
+        return resourceType.split('/').join('-');
+      },
       capFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
@@ -301,9 +311,9 @@
         this.edit = true;
       },
       onCancel() {
-        let payload = {selected: this.node.path};
+        const payload = {selected: this.currentObject};
         this.edit = false;
-        if (this.nodeTypeGroups.select.indexOf(this.nodeType) > -1) {
+        if (this.nodeTypeGroups.selectStateAction.indexOf(this.nodeType) > -1) {
           $perAdminApp.stateAction(`select${this.uNodeType}`, payload)
         } else {
           $perAdminApp.stateAction(`show${this.uNodeType}Info`, payload);
@@ -320,15 +330,10 @@
         let newName = prompt('new name for ' + this.node.name);
         if (newName) {
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
-            path: this.node.path,
+            path: this.currentObject,
             name: newName
           });
-          let newPath = this.currentObject.split('/');
-          newPath.pop();
-          newPath.push(newName);
-          $perAdminApp.stateAction(`show${this.uNodeType}Info`, {
-            selected: newPath.join('/')
-          });
+          $perAdminApp.getNodeFromView('/state/tools')[this.nodeType] = null;
         }
       },
       moveNode() {
@@ -340,9 +345,12 @@
         });
       },
       deleteNode() {
-        $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path);
-        $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
-        this.isOpen = false;
+        const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
+        if (really) {
+          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path);
+          $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
+          this.isOpen = false;
+        }
       },
       setCurrentPath(path) {
         this.currentPath = path;
@@ -370,11 +378,14 @@
         this.edit = false;
       },
       saveObject() {
-        let {data, show} = this.currentObject;
+        let {data, show} = this.currentRawObject;
         let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
 
         //Find child nodes with subchildren for our edited object
         for (const key in data) {
+          if (!data.hasOwnProperty(key)) {
+            continue;
+          }
           //If node (or deleted node) is an array of objects then we have a child node
           if ((Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') ||
               (Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0]
@@ -383,22 +394,28 @@
             let node = data[key];
 
             //loop through children
-            let targetNode = {}
+            let targetNode = {};
             //Insert deleted children
             for (const j in _deleted[key]) {
-              const deleted = _deleted[key][j]
+              if (!_deleted[key].hasOwnProperty(j)) {
+                continue;
+              }
+              const deleted = _deleted[key][j];
               targetNode[deleted.name] = deleted;
             }
             //Insert children
             for (const i in node) {
-              const child = node[i]
+              if (!node.hasOwnProperty(i)) {
+                continue;
+              }
+              const child = node[i];
               targetNode[child.name] = child;
             }
             data[key] = targetNode;
           }
         }
 
-        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show})
+        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show});
         $perAdminApp.stateAction('selectObject', {selected: show})
       },
       setActiveTab(clickedTab) {
