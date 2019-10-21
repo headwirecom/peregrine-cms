@@ -959,6 +959,13 @@ var PerAdminApp = {
 
     beforeStateAction(fun) {
         beforeStateActionImpl(fun)
+    },
+
+    normalizeString(val, separator='-') {
+        return val.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\W/g, separator)
+            .toLowerCase();
     }
 
 }

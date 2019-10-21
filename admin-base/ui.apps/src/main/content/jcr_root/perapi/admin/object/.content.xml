@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  peregrine vuejs page renderer - UI Apps
+  admin base - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -22,17 +23,7 @@
   under the License.
   #L%
   -->
-<template>
-<div class="container">
-    <div v-for="child in model.children" v-bind:key="child.path">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </div>
-    <pagerender-vue-components-placeholder v-bind:model="{ path: model.path, component: model.component }"></pagerender-vue-components-placeholder>
-</div>
-</template>
 
-<script>
-export default {
-    props: [ 'model' ]
-}
-</script>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="sling:Folder">
+</jcr:root>

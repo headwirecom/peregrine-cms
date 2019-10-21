@@ -338,14 +338,20 @@
 				}
 			}
 			.modal-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
 				background-color: #fff;
-				.selected-path {
-					float: left;
-					margin: 6px 0 6px 6px;
-					line-height: 36px;
-					color: color("blue-grey", "darken-2");
-				}
+				color: color("blue-grey", "darken-2");
 			}
+		}
+		
+		.pathbrowser-footer-details {
+			flex-grow: 1;
+			padding-right: 10px;
+			padding-left: 5px;
+			display: flex;
+			justify-content: space-between;
 		}
 
 		/* tablet styles */

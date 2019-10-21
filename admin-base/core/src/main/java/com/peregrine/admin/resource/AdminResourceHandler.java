@@ -60,7 +60,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Page Resource
      * @throws ManagementException If the creation failed
      */
-    Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException;
+    Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath, String title) throws ManagementException;
 
     /**
      * Creates an Peregrine Object Resource
@@ -73,7 +73,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Template Resource
      * @throws ManagementException If the creation failed
      */
-    Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException;
+    Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component, String title) throws ManagementException;
 
     DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
 
@@ -161,7 +161,7 @@ public interface AdminResourceHandler {
      * @return Target Node
      * @throws ManagementException If a management error occurs
      */
-    public Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
+    Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
 
     /**
      * Copies the Content of a given Site to another Site which includes
@@ -173,7 +173,7 @@ public interface AdminResourceHandler {
      * @return Resource of the Target Copy
      * @throws ManagementException If a management error occurs
      */
-    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException;
+    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException;
 
 
     /**
@@ -185,7 +185,7 @@ public interface AdminResourceHandler {
      * @return
      * @throws ManagementException
      */
-    public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
+    void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
 
     /**
      * Update a peregrine cms site's components and felibs from its source site

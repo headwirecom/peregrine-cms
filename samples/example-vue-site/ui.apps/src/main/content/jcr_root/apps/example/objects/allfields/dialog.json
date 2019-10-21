@@ -1,5 +1,18 @@
 { "fields":[
   {
+    "type": "material-checklist",
+    "label": "Roles",
+    "model": "roles",
+    "values": [
+        { "value": "admin", "name": "Administrator"},
+        { "value": "moderator", "name": "Moderator"},
+        { "value": "user", "name": "Registered User"},
+        { "value": "visitor", "name": "Visitor"}
+    ],
+    "listBox": true,
+    "placeholder": "Roles"
+  },
+  {
     "type": "input",
     "inputType": "color",
     "label": "Color field",
