@@ -24,16 +24,34 @@
   #L%
   -->
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="per:Page"
 >
     <jcr:content
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
-            jcr:title="example vuejs site"
-            brand="example brand"
-            description="this is an example brand site"
+            jcr:title="Kontakt"
             template="/content/templates/example"
-    />
+    >
+        <content jcr:primaryType="nt:unstructured"
+                 sling:resourceType="example/components/container">
+
+            <row jcr:primaryType="nt:unstructured"
+                 sling:resourceType="example/components/row">
+
+                <col1 jcr:primaryType="nt:unstructured"
+                     sling:resourceType="example/components/col"
+                    classes="col-md-12"
+                >
+
+                    <text2 jcr:primaryType="nt:unstructured"
+                           sling:resourceType="example/components/text"
+                           text="To jest strona 'Kontakt'"/>
+                </col1>
+
+            </row>
+
+        </content>
+
+    </jcr:content>
 </jcr:root>

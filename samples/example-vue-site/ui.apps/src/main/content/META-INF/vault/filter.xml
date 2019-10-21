@@ -47,7 +47,18 @@
     <filter root="/content/templates/example"/>
     <filter root="/conf/sites/example"/>
     <filter root="/etc/felibs/examplesite"/>
+
     <filter root="/etc/map/http/example.com"/>
+    <filter root="/etc/map/http/example.us"/>
+    <filter root="/etc/map/http/example.de"/>
+    <filter root="/etc/map/http/example.pl"/>
+
+    <filter root="/content/sites/sample"/>
+
+    <filter root="/etc/map/http/sample.com"/>
+    <filter root="/etc/map/http/sample.us"/>
+    <filter root="/etc/map/http/sample.de"/>
+    <filter root="/etc/map/http/sample.pl"/>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
         as it is in the '/apps/example/install' folder (see the 'all'

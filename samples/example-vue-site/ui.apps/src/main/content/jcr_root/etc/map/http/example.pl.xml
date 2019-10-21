@@ -24,16 +24,13 @@
   #L%
   -->
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Page"
->
-    <jcr:content
-            jcr:primaryType="per:PageContent"
-            sling:resourceType="example/components/page"
-            jcr:title="example vuejs site"
-            brand="example brand"
-            description="this is an example brand site"
-            template="/content/templates/example"
-    />
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        jcr:primaryType="sling:Mapping"
+        sling:internalRedirect="/content/sites/example/pl">
+    <home jcr:primaryType="sling:Mapping"
+        sling:match="$"
+        sling:internalRedirect="/content/sites/example/pl.html" />
+    <redirect jcr:primaryType="sling:Mapping"
+        sling:match="(.+)$"
+        sling:internalRedirect="[/content/sites/example/pl/$1,$1]" />
 </jcr:root>

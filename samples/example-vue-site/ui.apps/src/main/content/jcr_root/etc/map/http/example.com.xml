@@ -25,12 +25,8 @@
   -->
 
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
-        jcr:primaryType="sling:Mapping"
-        sling:internalRedirect="/content/sites/example">
+        jcr:primaryType="sling:Mapping">
     <home jcr:primaryType="sling:Mapping"
         sling:match="$"
         sling:internalRedirect="/content/sites/example.html" />
-    <redirect jcr:primaryType="sling:Mapping"
-        sling:match="(.+)$"
-        sling:internalRedirect="[/content/sites/example/$1,$1]" />
 </jcr:root>
