@@ -3,7 +3,7 @@
     <a :title="title"
        class="waves-effect waves-light"
        v-on:click.stop.prevent="onClick">
-      <i v-else class="editor-icon material-icons">{{ icon }}</i>
+      <i class="editor-icon material-icons">{{ icon }}</i>
     </a>
   </li>
 </template>
