@@ -2,7 +2,7 @@ package com.peregrine.sitemap;
 
 /*-
  * #%L
- * admin base - Core
+ * platform base - Core
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
