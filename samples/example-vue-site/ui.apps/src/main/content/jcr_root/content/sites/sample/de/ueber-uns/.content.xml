@@ -33,46 +33,5 @@
             jcr:title="Über uns"
             description="Das is die 'Über uns' Seite Beschreibung des Example Projekts"
             template="/content/templates/example"
-    >
-        <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/container">
-
-            <row jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/row">
-
-                <col1 jcr:primaryType="nt:unstructured"
-                     sling:resourceType="example/components/col"
-                    classes="col-md-12"
-                >
-
-                    <carousel jcr:primaryType="nt:unstructured"
-                            sling:resourceType="example/components/carousel"
-                            interval="5000"
-                            pause="hover"
-                            ride="true"
-                            indicators="true"
-                            controls="true"
-                            wrap="true"
-                            keyboard="true"
-                           >
-                        <slide1 jcr:primaryType="nt:unstructured"
-                                imagePath="/etc/felibs/admin/images/tesla.jpg"
-                                sling:resourceType="example/components/carouselItem"
-                                name="slide1"/>
-                        <slide2 jcr:primaryType="nt:unstructured"
-                                imagePath="/etc/felibs/admin/images/tesla1.jpg"
-                                sling:resourceType="example/components/carouselItem"
-                                name="slide2"/>
-                    </carousel>
-
-                    <text2 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="Das is die 'Über uns' Seite"/>
-                </col1>
-
-            </row>
-
-        </content>
-
-    </jcr:content>
+    />
 </jcr:root>

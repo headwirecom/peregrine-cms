@@ -28,12 +28,17 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PageRecognizer;
 import com.peregrine.sitemap.TypedPerPageRecognizer;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
+
 @Component(service = PageRecognizer.class)
-public final class PerPageRecognizerImpl extends TypedPerPageRecognizer {
+public final class NonEmptyPerPageRecognizerImpl extends TypedPerPageRecognizer {
 
     protected boolean isPageImpl(final Page candidate) {
-        return true;
+        final Resource content = candidate.getContent();
+        return content.hasChildren();
     }
 }

@@ -1,4 +1,4 @@
-package com.peregrine.sitemap.impl;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,15 +25,30 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.Page;
-import com.peregrine.sitemap.PageRecognizer;
-import com.peregrine.sitemap.TypedPerPageRecognizer;
-import org.osgi.service.component.annotations.Component;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
 
-@Component(service = PageRecognizer.class)
-public final class PerPageRecognizerImpl extends TypedPerPageRecognizer {
+public abstract class TypedPerPageRecognizer implements PageRecognizer {
 
-    protected boolean isPageImpl(final Page candidate) {
-        return true;
+    public String getName() {
+        return getClass().getName();
     }
+
+    public final boolean isPage(final Page candidate) {
+        if(!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE)) {
+            return false;
+        }
+
+        if (!candidate.hasContent()) {
+            return false;
+        }
+
+        if(!isPropertyEqual(candidate.getContent(), JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE)) {
+            return false;
+        }
+
+        return candidate.containsProperty(SLING_RESOURCE_TYPE) && isPageImpl(candidate);
+    }
+
+    protected abstract boolean isPageImpl(final Page candidate);
 }
