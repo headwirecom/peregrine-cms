@@ -573,7 +573,7 @@ public class PerUtil {
                 .orElse(null);
     }
 
-    private static boolean isPropertyEqual(final Resource resource, final String propertyName, final String value) {
+    public static boolean isPropertyEqual(final Resource resource, final String propertyName, final String value) {
         return Optional.ofNullable(resource)
                 .map(r -> getProperties(r, false))
                 .map(p -> p.get(propertyName, String.class))

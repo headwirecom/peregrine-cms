@@ -51,6 +51,10 @@ public final class Page extends ResourceWrapper {
         return content != null;
     }
 
+    public Resource getContent() {
+        return content;
+    }
+
     public boolean containsProperty(final String name) {
         if (contentProperties != null && contentProperties.containsKey(name)) {
             return true;

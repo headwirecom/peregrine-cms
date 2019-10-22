@@ -29,6 +29,9 @@ import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PageRecognizer;
 import org.osgi.service.component.annotations.Component;
 
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
+
 @Component(service = PageRecognizer.class)
 public final class PerPageRecognizerImpl implements PageRecognizer {
 
@@ -37,7 +40,7 @@ public final class PerPageRecognizerImpl implements PageRecognizer {
     }
 
     public boolean isPage(final Page candidate) {
-        if (!candidate.isResourceType("per:Page")) {
+        if(!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE)) {
             return false;
         }
 
@@ -45,6 +48,10 @@ public final class PerPageRecognizerImpl implements PageRecognizer {
             return false;
         }
 
-        return candidate.containsProperty("sling:resourceType");
+        if(!isPropertyEqual(candidate.getContent(), JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE)) {
+            return false;
+        }
+
+        return candidate.containsProperty(SLING_RESOURCE_TYPE);
     }
 }
