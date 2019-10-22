@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,12 +25,8 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+public interface HasName {
 
-public interface UrlShortener extends HasName {
-
-    String DOT_HTML = ".html";
-
-    String map(Resource page);
+    String getName();
 
 }

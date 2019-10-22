@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,8 +25,18 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
-public interface NamedServiceRetriever {
+import com.peregrine.sitemap.UrlShortener;
+import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Component;
 
-    <S extends HasName> S getNamedService(Class<S> clazz, String name);
+@Component(service = UrlShortener.class)
+public final class EtcMapUrlShortenerImpl implements UrlShortener {
 
+    public String getName() {
+        return getClass().getName();
+    }
+
+    public String map(final Resource page) {
+        return page.getResourceResolver().map(page.getPath() + DOT_HTML);
+    }
 }

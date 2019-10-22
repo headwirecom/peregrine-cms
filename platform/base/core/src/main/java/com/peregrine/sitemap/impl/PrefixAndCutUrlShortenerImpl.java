@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap.impl;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.UrlShortener;
+import com.peregrine.sitemap.UrlShortener;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;

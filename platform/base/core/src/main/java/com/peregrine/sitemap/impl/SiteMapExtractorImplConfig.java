@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,12 +25,18 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-public interface SiteMapExtractor {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface SiteMapExtractorImplConfig {
 
-    boolean appliesTo(Resource root);
+    @AttributeDefinition(name = "%pathRegex.name", description = "%pathRegex.description")
+    String pathRegex();
 
-    String extractSiteMap(Resource root);
+    @AttributeDefinition(name = "%pageRecognizer.name", description = "%pageRecognizer.description")
+    String pageRecognizer();
 
+    @AttributeDefinition(name = "%urlShortener.name", description = "%urlShortener.description")
+    String urlShortener();
 }

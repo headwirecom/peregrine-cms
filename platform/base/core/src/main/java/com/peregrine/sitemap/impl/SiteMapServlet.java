@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap.impl;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,8 +25,8 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.SiteMapExtractor;
-import com.peregrine.admin.sitemap.SiteMapExtractorsContainer;
+import com.peregrine.sitemap.SiteMapExtractor;
+import com.peregrine.sitemap.SiteMapExtractorsContainer;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;

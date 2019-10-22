@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,8 +25,8 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
-public interface HasName {
+public interface NamedServiceRetriever {
 
-    String getName();
+    <Service extends HasName> Service getNamedService(Class<Service> clazz, String name);
 
 }

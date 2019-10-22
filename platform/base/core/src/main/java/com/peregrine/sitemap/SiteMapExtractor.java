@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap.impl;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,18 +25,12 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.apache.sling.api.resource.Resource;
 
-@ObjectClassDefinition(name = "%config.name", description = "%config.description")
-public @interface PrefixAndCutUrlShortenerImplConfig {
+public interface SiteMapExtractor {
 
-    @AttributeDefinition(name = "%name.name", description = "%name.description")
-    String name();
+    boolean appliesTo(Resource root);
 
-    @AttributeDefinition(name = "%prefix.name", description = "%prefix.description")
-    String prefix();
+    String extractSiteMap(Resource root);
 
-    @AttributeDefinition(name = "%cutCount.name", description = "%cutCount.description")
-    int cutCount();
 }

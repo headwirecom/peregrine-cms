@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap.impl;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.*;
+import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

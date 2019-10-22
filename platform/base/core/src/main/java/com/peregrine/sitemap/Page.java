@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.sitemap;
 
 import com.peregrine.commons.util.PerConstants;
 import org.apache.jackrabbit.JcrConstants;

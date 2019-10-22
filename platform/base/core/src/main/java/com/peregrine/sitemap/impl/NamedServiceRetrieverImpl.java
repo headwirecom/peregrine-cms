@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap.impl;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,13 +25,12 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.HasName;
-import com.peregrine.admin.sitemap.NamedServiceRetriever;
+import com.peregrine.sitemap.HasName;
+import com.peregrine.sitemap.NamedServiceRetriever;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -46,10 +45,10 @@ public final class NamedServiceRetrieverImpl implements NamedServiceRetriever {
     }
 
     @Override
-    public <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
+    public <Service extends HasName> Service getNamedService(final Class<Service> clazz, final String name) {
         try {
-            for (final ServiceReference<S> reference : context.getServiceReferences(clazz, null)) {
-                final S service = context.getService(reference);
+            for (final ServiceReference<Service> reference : context.getServiceReferences(clazz, null)) {
+                final Service service = context.getService(reference);
                 if (StringUtils.equals(name, service.getName())) {
                     return service;
                 } else {

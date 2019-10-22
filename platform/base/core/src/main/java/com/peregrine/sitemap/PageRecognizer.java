@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,13 +25,8 @@ package com.peregrine.admin.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+public interface PageRecognizer extends HasName {
 
-public interface SiteMapExtractorsContainer {
+    boolean isPage(Page candidate);
 
-    boolean add(SiteMapExtractor item);
-
-    boolean remove(SiteMapExtractor item);
-
-    SiteMapExtractor findFirstFor(Resource resource);
 }

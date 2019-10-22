@@ -1,4 +1,4 @@
-package com.peregrine.admin.sitemap.impl;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,26 +25,18 @@ package com.peregrine.admin.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.admin.sitemap.Page;
-import com.peregrine.admin.sitemap.PageRecognizer;
-import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(service = PageRecognizer.class)
-public final class PerPageRecognizerImpl implements PageRecognizer {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface PrefixAndCutUrlShortenerImplConfig {
 
-    public String getName() {
-        return getClass().getName();
-    }
+    @AttributeDefinition(name = "%name.name", description = "%name.description")
+    String name();
 
-    public boolean isPage(final Page candidate) {
-        if (!candidate.isResourceType("per:Page")) {
-            return false;
-        }
+    @AttributeDefinition(name = "%prefix.name", description = "%prefix.description")
+    String prefix();
 
-        if (!candidate.hasContent()) {
-            return false;
-        }
-
-        return candidate.containsProperty("sling:resourceType");
-    }
+    @AttributeDefinition(name = "%cutCount.name", description = "%cutCount.description")
+    int cutCount();
 }
