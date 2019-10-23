@@ -25,18 +25,15 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import com.peregrine.sitemap.Page;
+import com.peregrine.sitemap.PageRecognizer;
+import com.peregrine.sitemap.TypedPerPageRecognizer;
+import org.osgi.service.component.annotations.Component;
 
-@ObjectClassDefinition(name = "%config.name", description = "%config.description")
-public @interface PrefixAndCutUrlShortenerImplConfig {
+@Component(service = PageRecognizer.class)
+public final class PerPageRecognizer extends TypedPerPageRecognizer {
 
-    @AttributeDefinition(name = "%name.name", description = "%name.description")
-    String name();
-
-    @AttributeDefinition(name = "%prefix.name", description = "%prefix.description")
-    String prefix();
-
-    @AttributeDefinition(name = "%cutCount.name", description = "%cutCount.description")
-    int cutCount();
+    protected boolean isPageImpl(final Page candidate) {
+        return true;
+    }
 }

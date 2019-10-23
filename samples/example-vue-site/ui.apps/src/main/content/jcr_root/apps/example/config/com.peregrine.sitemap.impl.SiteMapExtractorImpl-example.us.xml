@@ -26,6 +26,6 @@
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
     jcr:primaryType="sling:OsgiConfig"
     pathRegex="/content/sites/example/en"
-    pageRecognizer="com.peregrine.sitemap.impl.NonEmptyPerPageRecognizerImpl"
+    pageRecognizer="com.peregrine.sitemap.impl.NonEmptyPerPageRecognizer"
     urlShortener="example.us"
 />

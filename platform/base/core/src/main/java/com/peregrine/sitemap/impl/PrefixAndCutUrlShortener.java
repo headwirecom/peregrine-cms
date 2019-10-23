@@ -33,14 +33,14 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
 @Component(service = UrlShortener.class, immediate = true)
-@Designate(ocd = PrefixAndCutUrlShortenerImplConfig.class, factory = true)
-public final class PrefixAndCutUrlShortenerImpl implements UrlShortener {
+@Designate(ocd = PrefixAndCutUrlShortenerConfig.class, factory = true)
+public final class PrefixAndCutUrlShortener implements UrlShortener {
 
     public static final String SLASH = "/";
-    private PrefixAndCutUrlShortenerImplConfig config;
+    private PrefixAndCutUrlShortenerConfig config;
 
     @Activate
-    public void activate(final PrefixAndCutUrlShortenerImplConfig config) {
+    public void activate(final PrefixAndCutUrlShortenerConfig config) {
         this.config = config;
     }
 

@@ -25,18 +25,20 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.UrlShortener;
+import com.peregrine.sitemap.Page;
+import com.peregrine.sitemap.PageRecognizer;
+import com.peregrine.sitemap.TypedPerPageRecognizer;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
-@Component(service = UrlShortener.class)
-public final class EtcMapUrlShortenerImpl implements UrlShortener {
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
 
-    public String getName() {
-        return getClass().getName();
-    }
+@Component(service = PageRecognizer.class)
+public final class NonEmptyPerPageRecognizer extends TypedPerPageRecognizer {
 
-    public String map(final Resource page) {
-        return page.getResourceResolver().map(page.getPath() + DOT_HTML);
+    protected boolean isPageImpl(final Page candidate) {
+        final Resource content = candidate.getContent();
+        return content.hasChildren();
     }
 }
