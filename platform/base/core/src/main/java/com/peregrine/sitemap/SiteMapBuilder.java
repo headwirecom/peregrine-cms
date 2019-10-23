@@ -29,10 +29,8 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
 
-public interface SiteMapExtractor {
+public interface SiteMapBuilder {
 
-    boolean appliesTo(Resource root);
-
-    Collection<SiteMapEntry> extract(Resource root);
+    String build(Collection<SiteMapEntry> entries);
 
 }

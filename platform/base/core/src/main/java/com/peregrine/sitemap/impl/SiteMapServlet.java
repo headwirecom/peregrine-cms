@@ -25,6 +25,8 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.sitemap.SiteMapBuilder;
+import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapExtractor;
 import com.peregrine.sitemap.SiteMapExtractorsContainer;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -37,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.sling.api.servlets.ServletResolverConstants.*;
@@ -62,6 +65,9 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
+    @Reference
+    private SiteMapBuilder siteMapBuilder;
+
     @Override
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_XML);
@@ -73,7 +79,8 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
             return;
         }
 
-        final String siteMap = extractor.extractSiteMap(resource);
-        response.getWriter().write(siteMap);
+        final Collection<SiteMapEntry> entries = extractor.extract(resource);
+        final String string = siteMapBuilder.build(entries);
+        response.getWriter().write(string);
     }
 }

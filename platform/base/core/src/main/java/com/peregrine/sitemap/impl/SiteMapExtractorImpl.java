@@ -35,9 +35,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -46,14 +43,6 @@ import java.util.regex.PatternSyntaxException;
 @Component(service = SiteMapExtractor.class, immediate = true)
 @Designate(ocd = SiteMapExtractorImplConfig.class, factory = true)
 public final class SiteMapExtractorImpl implements SiteMapExtractor {
-
-    private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-    private static final String URLSET_START_TAG = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\n" +
-            "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "   xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n";
-    private static final String URLSET_END_TAG = "</urlset>";
-
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -115,52 +104,31 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     }
 
     @Override
-    public String extractSiteMap(final Resource root) {
-        final StringBuilder result = new StringBuilder(XML_VERSION);
-        result.append(URLSET_START_TAG);
-        for (final Page page : extractSubPages(new Page(root))) {
-            result.append(toUrl(page));
-        }
-
-        result.append(URLSET_END_TAG);
-        return result.toString();
+    public List<SiteMapEntry> extract(final Resource root) {
+        return extract(new Page(root));
     }
 
-    private List<Page> extractSubPages(final Page root) {
-        final List<Page> result = new LinkedList<>();
+    private List<SiteMapEntry> extract(final Page root) {
+        final List<SiteMapEntry> result = new LinkedList<>();
         if (!pageRecognizer.isPage(root)) {
             return result;
         }
 
-        result.add(root);
+        result.add(createEntry(root));
         for (final Resource child: root.getChildren()) {
             final Page childPage = new Page(child);
             if (pageRecognizer.isPage(childPage)) {
-                result.addAll(extractSubPages(childPage));
+                result.addAll(extract(childPage));
             }
         }
 
         return result;
     }
 
-    private String toUrl(final Page page) {
-        final StringBuilder result = new StringBuilder("<url>");
-
-        result.append("<loc>");
-        result.append(urlShortener.map(page));
-        result.append("</loc>");
-
-        final Date lastModified = page.getLastModifiedDate();
-        if (lastModified != null) {
-            result.append("<lastmod>");
-            result.append(DATE_FORMAT.format(lastModified));
-            result.append("</lastmod>");
-        }
-
-        result.append("<changefreq>always</changefreq>");
-        result.append("<priority>0.5</priority>");
-
-        result.append("</url>");
-        return result.toString();
+    private SiteMapEntry createEntry(final Page page) {
+        final SiteMapEntry entry = new SiteMapEntry(page);
+        entry.setUrl(urlShortener.map(page));
+        return entry;
     }
+
 }
