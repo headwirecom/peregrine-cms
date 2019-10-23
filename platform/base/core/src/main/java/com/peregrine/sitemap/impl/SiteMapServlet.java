@@ -35,6 +35,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.Designate;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
@@ -57,6 +58,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SLING_SERVLET_EXTENSIONS + EQUALS + "xml"
     }
 )
+@Designate(ocd = SiteMapServletConfig.class)
 public final class SiteMapServlet extends SlingAllMethodsServlet {
 
     private static final String UTF_8 = "utf-8";
