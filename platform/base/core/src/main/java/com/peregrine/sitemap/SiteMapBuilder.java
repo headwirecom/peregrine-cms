@@ -25,12 +25,14 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
-
 import java.util.Collection;
 
 public interface SiteMapBuilder {
 
     String build(Collection<SiteMapEntry> entries);
+
+    int getSize(SiteMapEntry entry);
+
+    int getBaseSiteMapLength();
 
 }

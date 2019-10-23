@@ -52,7 +52,15 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
     private static final String CHANGE_FREQ = "changefreq";
     private static final String PRIORITY = "priority";
 
+    private static final int TAG_SYMBOLS_LENGTH = 5;
+    private static final int BASE_SITE_MAP_LENGTH = XML_VERSION.length()
+            + URL_SET_START_TAG.length() + URL_SET_END_TAG.length();
+    private static final int BASE_ENTRY_LENGTH = baseTagLength(URL) + baseTagLength(LOC);
+
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
+    public static final int DATE_LENGTH = 28;
+    public static final String ALWAYS = "always";
+    public static final String PRIORITY_0_5 = "0.5";
 
     private static String open(final String tagName) {
         return "<" + tagName + ">";
@@ -60,6 +68,10 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
 
     private static String close(final String tagName) {
         return "</" + tagName + ">";
+    }
+
+    private static int baseTagLength(final String tagName) {
+        return TAG_SYMBOLS_LENGTH + 2 * tagName.length();
     }
 
     @Override
@@ -89,8 +101,8 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
             append(result, LAST_MOD, DATE_FORMAT.format(lastModified));
         }
 
-        append(result, CHANGE_FREQ, "always");
-        append(result, PRIORITY, "0.5");
+        append(result, CHANGE_FREQ, ALWAYS);
+        append(result, PRIORITY, PRIORITY_0_5);
 
         result.append(close(URL));
         return result.toString();
@@ -104,5 +116,30 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
         builder.append(open(tagName));
         builder.append(content);
         builder.append(close(tagName));
+    }
+
+    @Override
+    public int getSize(final SiteMapEntry entry) {
+        if (isEmpty(entry)) {
+            return 0;
+        }
+
+        int length = BASE_ENTRY_LENGTH;
+        length += entry.getUrl().length();
+
+        final Date lastModified = entry.getPage().getLastModifiedDate();
+        if (lastModified != null) {
+            length += baseTagLength(LAST_MOD) + DATE_LENGTH;
+        }
+
+        length += baseTagLength(CHANGE_FREQ) + ALWAYS.length();
+        length += baseTagLength(PRIORITY) + PRIORITY_0_5.length();
+
+        return length;
+    }
+
+    @Override
+    public int getBaseSiteMapLength() {
+        return BASE_SITE_MAP_LENGTH;
     }
 }

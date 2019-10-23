@@ -25,14 +25,12 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.SiteMapBuilder;
-import com.peregrine.sitemap.SiteMapEntry;
-import com.peregrine.sitemap.SiteMapExtractor;
-import com.peregrine.sitemap.SiteMapExtractorsContainer;
+import com.peregrine.sitemap.*;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
@@ -41,6 +39,8 @@ import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.sling.api.servlets.ServletResolverConstants.*;
@@ -70,6 +70,13 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     @Reference
     private SiteMapBuilder siteMapBuilder;
 
+    private SiteMapServletConfig config;
+
+    @Activate
+    public void activate(final SiteMapServletConfig config) {
+        this.config = config;
+    }
+
     @Override
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_XML);
@@ -81,8 +88,33 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
             return;
         }
 
+
         final Collection<SiteMapEntry> entries = extractor.extract(resource);
-        final String string = siteMapBuilder.build(entries);
+        final List<List<SiteMapEntry>> splitEntries = splitEntries(entries);
+        final String string = siteMapBuilder.build(splitEntries.get(0));
         response.getWriter().write(string);
+    }
+
+    private List<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
+        final List<List<SiteMapEntry>> result = new LinkedList<>();
+        int index = 0;
+        int size = siteMapBuilder.getBaseSiteMapLength();
+        List<SiteMapEntry> split = new LinkedList<>();
+        result.add(split);
+        for (final SiteMapEntry entry : entries) {
+            final int entrySize = siteMapBuilder.getSize(entry);
+            if (index < config.maxEntriesCount() && size + entrySize <= config.maxFileSize()) {
+                split.add(entry);
+                index++;
+                size += entrySize;
+            } else {
+                index = 0;
+                size = siteMapBuilder.getBaseSiteMapLength();
+                split = new LinkedList<>();
+                result.add(split);
+            }
+        }
+
+        return result;
     }
 }
