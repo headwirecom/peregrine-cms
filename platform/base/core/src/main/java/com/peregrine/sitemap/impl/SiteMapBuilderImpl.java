@@ -27,6 +27,7 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.SiteMapBuilder;
 import com.peregrine.sitemap.SiteMapEntry;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 
 import java.text.DateFormat;
@@ -38,43 +39,70 @@ import java.util.Date;
 public final class SiteMapBuilderImpl implements SiteMapBuilder {
 
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-    private static final String URLSET_START_TAG = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\n" +
-            "   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "   xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n";
-    private static final String URLSET_END_TAG = "</urlset>";
+
+    private static final String URL_SET = "urlset";
+    private static final String URL_SET_START_TAG = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"" +
+            " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+            " xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">";
+    private static final String URL_SET_END_TAG = close(URL_SET);
+
+    private static final String URL = "url";
+    private static final String LOC = "loc";
+    private static final String LAST_MOD = "lastmod";
+    private static final String CHANGE_FREQ = "changefreq";
+    private static final String PRIORITY = "priority";
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
+
+    private static String open(final String tagName) {
+        return "<" + tagName + ">";
+    }
+
+    private static String close(final String tagName) {
+        return "</" + tagName + ">";
+    }
 
     @Override
     public String build(final Collection<SiteMapEntry> entries) {
         final StringBuilder result = new StringBuilder(XML_VERSION);
-        result.append(URLSET_START_TAG);
+        result.append(URL_SET_START_TAG);
         for (final SiteMapEntry entry : entries) {
-            result.append(toUrl(entry));
+            if (!isEmpty(entry)) {
+                result.append(toUrl(entry));
+            }
         }
 
-        result.append(URLSET_END_TAG);
+        result.append(URL_SET_END_TAG);
         return result.toString();
     }
 
-    private String toUrl(final SiteMapEntry entry) {
-        final StringBuilder result = new StringBuilder("<url>");
+    private boolean isEmpty(final SiteMapEntry entry) {
+        return StringUtils.isBlank(entry.getUrl());
+    }
 
-        result.append("<loc>");
-        result.append(entry.getUrl());
-        result.append("</loc>");
+    private String toUrl(final SiteMapEntry entry) {
+        final StringBuilder result = new StringBuilder(open(URL));
+        append(result, LOC, entry.getUrl());
 
         final Date lastModified = entry.getPage().getLastModifiedDate();
         if (lastModified != null) {
-            result.append("<lastmod>");
-            result.append(DATE_FORMAT.format(lastModified));
-            result.append("</lastmod>");
+            append(result, LAST_MOD, DATE_FORMAT.format(lastModified));
         }
 
-        result.append("<changefreq>always</changefreq>");
-        result.append("<priority>0.5</priority>");
+        append(result, CHANGE_FREQ, "always");
+        append(result, PRIORITY, "0.5");
 
-        result.append("</url>");
+        result.append(close(URL));
         return result.toString();
+    }
+
+    private void append(final StringBuilder builder, final String tagName, final String content) {
+        if (StringUtils.isBlank(content)) {
+            return;
+        }
+
+        builder.append(open(tagName));
+        builder.append(content);
+        builder.append(close(tagName));
     }
 }
