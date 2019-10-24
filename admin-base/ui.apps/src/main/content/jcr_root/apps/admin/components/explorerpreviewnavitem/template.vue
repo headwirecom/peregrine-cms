@@ -3,7 +3,8 @@
     <a :title="title"
        class="waves-effect waves-light"
        v-on:click.stop.prevent="onClick">
-      <i v-else class="editor-icon material-icons">{{ icon }}</i>
+      <i v-if="icon" class="editor-icon material-icons">{{ icon }}</i>
+      <slot></slot>
     </a>
   </li>
 </template>
@@ -17,7 +18,7 @@
       },
       icon: {
         type: String,
-        required: true
+        required: false
       }
     },
     data: function () {
