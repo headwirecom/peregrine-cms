@@ -360,37 +360,6 @@ class PerAdminImpl {
                             }
                             translateFields(data.model.fields);
                         }
-                        if (data.ogTags) {
-                            for(let i = 0; i < data.ogTags.fields.length; i++) {
-                                let from = data.ogTags.fields[i].valuesFrom
-                                if(from) {
-                                  data.ogTags.fields[i].values = []
-                                  let promise = axios.get(from).then( (response) => {
-                                      for(var key in response.data) {
-                                          if(response.data[key]['jcr:title']) {
-                                              const nodeName = key
-                                              const val = from.replace('.infinity.json', '/'+nodeName)
-                                              let name = response.data[key].name
-                                              if(!name) {
-                                                  name = response.data[key]['jcr:title']
-                                              }
-                                              data.ogTags.fields[i].values.push({ value: val, name: name })
-                                          }
-                                      }
-                                  }).catch( (error) => {
-                                    logger.error('missing node', data.ogTags.fields[i].valuesFrom, 'for list population in dialog', error)
-                                  })
-                                  promises.push(promise)
-                                }
-                                let visible = data.ogTags.fields[i].visible
-                                if(visible) {
-                                    data.ogTags.fields[i].visible = function(ogTags) {
-                                        return exprEval.Parser.evaluate( visible, this );
-                                    }
-                                }
-                            }
-                            translateFields(data.ogTags.fields);
-                        }
                         Promise.all(promises).then( () => {
                             populateView('/admin/componentDefinitions', data.name, data.model)
                             resolve(name)
