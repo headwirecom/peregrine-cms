@@ -29,14 +29,8 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
 
-public interface SiteMapBuilder {
+public interface SiteMapUrlBuilder {
 
-    String buildUrlSet(Collection<SiteMapEntry> entries);
-
-    String buildSiteMapIndex(Resource siteMapRoot, SiteMapUrlBuilder urlBuilder, int numberOfParts);
-
-    int getSize(SiteMapEntry entry);
-
-    int getBaseSiteMapLength();
+    String buildSiteMapUrl(Resource siteMapRoot, int index);
 
 }

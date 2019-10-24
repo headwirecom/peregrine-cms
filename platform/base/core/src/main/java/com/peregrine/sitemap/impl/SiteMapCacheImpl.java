@@ -52,6 +52,8 @@ public final class SiteMapCacheImpl implements SiteMapCache {
 
     @Activate
     public void activate(final SiteMapCacheImplConfig config) {
+        cache.clear();
+
         maxEntriesCount = config.maxEntriesCount();
         if (maxEntriesCount <= 0) {
             maxEntriesCount = Integer.MAX_VALUE;
@@ -64,7 +66,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     @Override
-    public String get(final Resource root, final int index) {
+    public String get(final Resource root, final int index, final SiteMapUrlBuilder siteMapUrlBuilder) {
         final String path = root.getPath();
         if (!cache.containsKey(path)) {
             final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(root);
@@ -76,18 +78,13 @@ public final class SiteMapCacheImpl implements SiteMapCache {
             final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
             final ArrayList<String> strings = new ArrayList<>();
             cache.put(path, strings);
-            if (splitEntries.size() > 1) {
-                strings.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                        "<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n" +
-                        "   <sitemap>\n" +
-                        "      <loc>http://www.example.com/sitemap1.xml.gz</loc>\n" +
-                        "      <lastmod>2014-10-01T18:23:17+00:00</lastmod>\n" +
-                        "   </sitemap>\n" +
-                        "</sitemapindex>");
+            final int numberOfParts = splitEntries.size();
+            if (numberOfParts > 1) {
+                strings.add(siteMapBuilder.buildSiteMapIndex(root, siteMapUrlBuilder, numberOfParts));
             }
 
             for (final List<SiteMapEntry> list : splitEntries) {
-                strings.add(siteMapBuilder.build(list));
+                strings.add(siteMapBuilder.buildUrlSet(list));
             }
         }
 

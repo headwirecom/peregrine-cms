@@ -27,7 +27,9 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.SiteMapBuilder;
 import com.peregrine.sitemap.SiteMapEntry;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
 import java.text.DateFormat;
@@ -75,7 +77,7 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
     }
 
     @Override
-    public String build(final Collection<SiteMapEntry> entries) {
+    public String buildUrlSet(final Collection<SiteMapEntry> entries) {
         final StringBuilder result = new StringBuilder(XML_VERSION);
         result.append(URL_SET_START_TAG);
         for (final SiteMapEntry entry : entries) {
@@ -141,5 +143,25 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
     @Override
     public int getBaseSiteMapLength() {
         return BASE_SITE_MAP_LENGTH;
+    }
+
+    @Override
+    public String buildSiteMapIndex(final Resource root, SiteMapUrlBuilder urlBuilder, int numberOfParts) {
+        final StringBuilder result = new StringBuilder(XML_VERSION);
+        result.append("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+        for (int part = 1; part <= numberOfParts; part++) {
+            final String url = urlBuilder.buildSiteMapUrl(root, part);
+            result.append("<sitemap>");
+            append(result, LOC, url);
+            final Date lastModified = new Date(System.currentTimeMillis());
+            if (lastModified != null) {
+                append(result, LAST_MOD, DATE_FORMAT.format(lastModified));
+            }
+
+            result.append("</sitemap>");
+        }
+
+        result.append("</sitemapindex>");
+        return result.toString();
     }
 }
