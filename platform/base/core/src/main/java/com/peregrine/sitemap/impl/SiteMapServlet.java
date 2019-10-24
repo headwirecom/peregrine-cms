@@ -25,22 +25,18 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.*;
+import com.peregrine.sitemap.SiteMapCache;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.Designate;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.sling.api.servlets.ServletResolverConstants.*;
@@ -58,63 +54,25 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SLING_SERVLET_EXTENSIONS + EQUALS + "xml"
     }
 )
-@Designate(ocd = SiteMapServletConfig.class)
 public final class SiteMapServlet extends SlingAllMethodsServlet {
 
     private static final String UTF_8 = "utf-8";
     private static final String APPLICATION_XML = "application/xml";
 
     @Reference
-    private SiteMapExtractorsContainer siteMapExtractorsContainer;
-
-    @Reference
-    private SiteMapBuilder siteMapBuilder;
-
-    private SiteMapServletConfig config;
-
-    @Activate
-    public void activate(final SiteMapServletConfig config) {
-        this.config = config;
-    }
+    private SiteMapCache cache;
 
     @Override
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
-        response.setContentType(APPLICATION_XML);
-        response.setCharacterEncoding(UTF_8);
         final Resource resource = request.getResource();
-        final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(resource);
-        if (extractor == null) {
+        final String string = cache.get(resource);
+        if (StringUtils.isBlank(string)) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-
-        final Collection<SiteMapEntry> entries = extractor.extract(resource);
-        final List<List<SiteMapEntry>> splitEntries = splitEntries(entries);
-        final String string = siteMapBuilder.build(splitEntries.get(0));
+        response.setContentType(APPLICATION_XML);
+        response.setCharacterEncoding(UTF_8);
         response.getWriter().write(string);
-    }
-
-    private List<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
-        final List<List<SiteMapEntry>> result = new LinkedList<>();
-        int index = 0;
-        int size = siteMapBuilder.getBaseSiteMapLength();
-        List<SiteMapEntry> split = new LinkedList<>();
-        result.add(split);
-        for (final SiteMapEntry entry : entries) {
-            final int entrySize = siteMapBuilder.getSize(entry);
-            if (index < config.maxEntriesCount() && size + entrySize <= config.maxFileSize()) {
-                split.add(entry);
-                index++;
-                size += entrySize;
-            } else {
-                index = 0;
-                size = siteMapBuilder.getBaseSiteMapLength();
-                split = new LinkedList<>();
-                result.add(split);
-            }
-        }
-
-        return result;
     }
 }

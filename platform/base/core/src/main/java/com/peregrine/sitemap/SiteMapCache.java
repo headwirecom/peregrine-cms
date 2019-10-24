@@ -1,4 +1,4 @@
-package com.peregrine.sitemap.impl;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,15 +25,10 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.apache.sling.api.resource.Resource;
 
-@ObjectClassDefinition(name = "%config.name", description = "%config.description")
-public @interface SiteMapServletConfig {
+public interface SiteMapCache {
 
-    @AttributeDefinition(name = "%maxFileSize.name", description = "%maxFileSize.description")
-    int maxFileSize() default 52428800;
+    String get(Resource root);
 
-    @AttributeDefinition(name = "%maxEntriesCount.name", description = "%maxEntriesCount.description")
-    int maxEntriesCount() default 50000;
 }
