@@ -214,6 +214,7 @@ function processLoaders(loaders) {
 }
 
 function processLoadedContent(data, path, firstTime, fromPopState) {
+    data = window.$perProcessData !== undefined ? window.$perProcessData(data) : data
     walkTreeAndLoad(data)
 
     if(data.description) document.getElementsByTagName('meta').description.content=data.description
@@ -364,7 +365,7 @@ var peregrineApp = {
     },
 
     isPublicFacingSite() {
-        const server = window.location.hostname;
+        const server = window.location.protocol + '//' + window.location.hostname;
         const domains = getPerView().page.domains || [];
         return (domains.indexOf(server) >= 0)
     }

@@ -25,9 +25,10 @@
 <template>
     <div class="tooling-page">
         <template v-for="child in model.children">
-            <component v-bind:is="child.component" v-bind:model="child"></component>
+            <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
         </template>
         <admin-components-notifyuser></admin-components-notifyuser>
+        <admin-components-askuser></admin-components-askuser>
     </div>
 </template>
 

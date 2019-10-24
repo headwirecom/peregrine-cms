@@ -277,7 +277,7 @@
                         <p v-else class="flow-text">{{getEmptyText()}}</p>
                     </template>
                     <template v-if="withLinkTab && tab === 'link' && !search">
-                        <p>
+                        <div class="form-group">
                             <label for="pathBrowserLink">URL</label>
                             <input
                                 id="pathBrowserLink"
@@ -285,11 +285,31 @@
                                 placeholder="https://"
                                 :value="selectedPath"
                                 @input="selectLink" />
-                            <template v-if="!isBrowserTypeImage">
-                                <input type="checkbox" id="newWindow" />
-                                <label for="newWindow">Open in new window?</label>
-                            </template>
-                        </p>
+                        </div>
+                        <div class="form-group" v-if="altText !== undefined">
+                            <label for="altText">Image Alternate Text</label>
+                            <input 
+                                id="altText" 
+                                type="text" 
+                                placeholder="Alt Text" 
+                                :value="altText"
+                                @input="setAltText" />
+                        </div>
+                        <div class="form-group" v-if="linkTitle !== undefined">
+                            <label for="linkTitle">Link Title</label>
+                            <input 
+                                id="linkTitle" 
+                                type="text" 
+                                placeholder="Link Title" 
+                                :value="linkTitle"
+                                @input="setLinkTitle" />
+                        </div>
+                        <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
+                            @click="toggleNewWindow" 
+                            @keyup.space="toggleNewWindow">  
+                            <input type="checkbox" id="newWindow" :checked="newWindow"/>
+                            <label for="newWindow">Open in new window?</label>
+                        </div>
                     </template>
                 </div>
                 <div class="col-preview">
@@ -320,15 +340,20 @@
             </div>
 
             <div class="modal-footer">
-                <span class="selected-path">{{selectedPath}}</span>
-                <button v-on:click="onCancel"
-                        class="modal-action waves-effect waves-light btn-flat">
-                        cancel
-                </button>
-                <button v-on:click="onSelect"
-                        class="modal-action waves-effect waves-light btn-flat">
-                        select
-                </button>
+
+                <div class="pathbrowser-footer-details">
+                    <span class="pathbrowser-selected-path">{{selectedPath}}</span>
+                </div>
+                    <div class="pathbrowser-buttons">
+                        <button v-on:click="onCancel"
+                                class="modal-action waves-effect waves-light btn-flat">
+                                cancel
+                        </button>
+                        <button v-on:click="onSelect" 
+                                class="modal-action waves-effect waves-light btn-flat">
+                                select
+                        </button>
+                </div>
             </div>
         </div>
         </div>
@@ -341,16 +366,22 @@
 
     export default {
         props: [
-            'isOpen',
-            'browserRoot',
-            'browserType',
-            'currentPath',
-            'selectedPath',
-            'withLinkTab',
-            'setCurrentPath',
-            'setSelectedPath',
-            'onCancel',
-            'onSelect'
+            'isOpen', 
+            'browserRoot', 
+            'browserType', 
+            'currentPath', 
+            'selectedPath', 
+            'withLinkTab', 
+            'newWindow',
+            'toggleNewWindow',
+            'setCurrentPath', 
+            'setSelectedPath', 
+            'linkTitle',
+            'setLinkTitle',
+            'altText',
+            'setAltText',
+            'onCancel', 
+            'onSelect',
         ],
         watch: {
             cardSize: function (newCardSize) {
@@ -359,7 +390,7 @@
         },
         mounted(){
             // set initial tab
-            if(this.withLinkTab && this.selectedPath && this.selectedPath.includes('http')){
+            if(this.withLinkTab && this.selectedPath && this.selectedPath.match(/^(https?:)?\/\//)){
                 this.tab = 'link'
             } else {
                 this.tab = 'browse'
@@ -535,6 +566,7 @@
                         this.previewType = 'current'
                         this.setCurrentPath(item.path)
                         if(this.tab === 'cards' && this.list.length > 0) this.updateIsotopeLayout('masonry')
+                        this.selectItem(item)
                     })
             },
             selectItem(item) {

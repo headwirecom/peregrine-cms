@@ -41,9 +41,3 @@ export const PathBrowser = {
     IMAGE: 'image'
   }
 }
-
-export const IgnoreContainers = {
-  ENABLED: 'ignore-containers',
-  ON_HOLD: 'on-hold',
-  DISABLED: ''
-}

@@ -61,8 +61,11 @@
                 border-bottom: 0;
                 .select-wrapper .dropdown-content.active,
                 .checklist-dropdown.expanded .dropdown-content {
-                    top: auto !important;
-                    bottom: -1px;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    display: block;
+                    opacity: 1;
                 }
             }
         }
@@ -102,10 +105,6 @@
             .field-wrap {
                 input {
                     margin: 0;
-                }
-                button {
-                    margin: 0;
-                    padding: 0;
                 }
             }
             &.field-input {
