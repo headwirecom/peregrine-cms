@@ -65,7 +65,8 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     @Override
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         final Resource resource = request.getResource();
-        final String string = cache.get(resource);
+        final int index = getIndexFromSuffix(request.getRequestPathInfo().getSuffix());
+        final String string = index >= 0 ? cache.get(resource, index) : null;
         if (StringUtils.isBlank(string)) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -75,4 +76,22 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
         response.setCharacterEncoding(UTF_8);
         response.getWriter().write(string);
     }
+
+    private int getIndexFromSuffix(final String suffix) {
+        if (StringUtils.isBlank(suffix)) {
+            return 0;
+        }
+
+        final String string = StringUtils.substringAfter(suffix, "/");
+        if (StringUtils.isBlank(string)) {
+            return 0;
+        }
+
+        if (StringUtils.isNumeric(string)) {
+            return Integer.parseInt(string);
+        }
+
+        return -1;
+    }
+
 }

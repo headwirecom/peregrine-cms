@@ -32,17 +32,14 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component(service = SiteMapCache.class)
 @Designate(ocd = SiteMapCacheImplConfig.class)
 public final class SiteMapCacheImpl implements SiteMapCache {
 
-    private final Map<String, String> cache = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> cache = new ConcurrentHashMap<>();
 
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
@@ -67,7 +64,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     @Override
-    public String get(final Resource root) {
+    public String get(final Resource root, final int index) {
         final String path = root.getPath();
         if (!cache.containsKey(path)) {
             final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(root);
@@ -76,16 +73,30 @@ public final class SiteMapCacheImpl implements SiteMapCache {
             }
 
             final Collection<SiteMapEntry> entries = extractor.extract(root);
-            final List<List<SiteMapEntry>> splitEntries = splitEntries(entries);
-            final String string = siteMapBuilder.build(splitEntries.get(0));
-            cache.put(path, string);
+            final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
+            final ArrayList<String> strings = new ArrayList<>();
+            cache.put(path, strings);
+            if (splitEntries.size() > 1) {
+                strings.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n" +
+                        "   <sitemap>\n" +
+                        "      <loc>http://www.example.com/sitemap1.xml.gz</loc>\n" +
+                        "      <lastmod>2014-10-01T18:23:17+00:00</lastmod>\n" +
+                        "   </sitemap>\n" +
+                        "</sitemapindex>");
+            }
+
+            for (final List<SiteMapEntry> list : splitEntries) {
+                strings.add(siteMapBuilder.build(list));
+            }
         }
 
-        return cache.get(path);
+        final List<String> strings = cache.get(path);
+        return index >= 0 && index < strings.size() ? strings.get(index) : null;
     }
 
-    private List<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
-        final List<List<SiteMapEntry>> result = new LinkedList<>();
+    private LinkedList<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
+        final LinkedList<List<SiteMapEntry>> result = new LinkedList<>();
         int index = 0;
         int size = siteMapBuilder.getBaseSiteMapLength();
         List<SiteMapEntry> split = new LinkedList<>();

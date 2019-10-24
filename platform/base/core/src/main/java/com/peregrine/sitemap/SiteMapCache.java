@@ -29,6 +29,6 @@ import org.apache.sling.api.resource.Resource;
 
 public interface SiteMapCache {
 
-    String get(Resource root);
+    String get(Resource root, int index);
 
 }
