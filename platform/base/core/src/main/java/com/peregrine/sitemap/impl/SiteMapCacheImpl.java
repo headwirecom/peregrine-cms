@@ -80,7 +80,8 @@ public final class SiteMapCacheImpl implements SiteMapCache {
             cache.put(path, strings);
             final int numberOfParts = splitEntries.size();
             if (numberOfParts > 1) {
-                strings.add(siteMapBuilder.buildSiteMapIndex(root, siteMapUrlBuilder, numberOfParts));
+                final SiteMapUrlBuilder shortUrlBuilder = extractor.getSiteMapUrlBuilder(root.getResourceResolver(), siteMapUrlBuilder);
+                strings.add(siteMapBuilder.buildSiteMapIndex(root, shortUrlBuilder, numberOfParts));
             }
 
             for (final List<SiteMapEntry> list : splitEntries) {

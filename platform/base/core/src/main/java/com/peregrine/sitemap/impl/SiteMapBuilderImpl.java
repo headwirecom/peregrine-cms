@@ -146,7 +146,7 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
     }
 
     @Override
-    public String buildSiteMapIndex(final Resource root, SiteMapUrlBuilder urlBuilder, int numberOfParts) {
+    public String buildSiteMapIndex(final Resource root, final SiteMapUrlBuilder urlBuilder, final int numberOfParts) {
         final StringBuilder result = new StringBuilder(XML_VERSION);
         result.append("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
         for (int part = 1; part <= numberOfParts; part++) {

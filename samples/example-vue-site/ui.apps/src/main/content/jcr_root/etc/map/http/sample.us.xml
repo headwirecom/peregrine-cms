@@ -33,4 +33,11 @@
     <redirect jcr:primaryType="sling:Mapping"
         sling:match="(.+)$"
         sling:internalRedirect="[/content/sites/sample/en/$1,$1]" />
+    <sitemap jcr:primaryType="sling:Mapping"
+             sling:match="sitemap.xml"
+             sling:internalRedirect="/content/sites/sample/en.sitemap.xml">
+        <chunks jcr:primaryType="sling:Mapping"
+                sling:match="sitemap.xml/(.+)"
+                sling:internalRedirect="/content/sites/sample/en.sitemap.xml/$1" />
+    </sitemap>
 </jcr:root>

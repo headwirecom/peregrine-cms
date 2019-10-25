@@ -35,7 +35,7 @@ public abstract class TypedPerPageRecognizer implements PageRecognizer {
     }
 
     public final boolean isPage(final Page candidate) {
-        if(!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE)) {
+        if (!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE)) {
             return false;
         }
 
@@ -43,7 +43,7 @@ public abstract class TypedPerPageRecognizer implements PageRecognizer {
             return false;
         }
 
-        if(!isPropertyEqual(candidate.getContent(), JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE)) {
+        if (!isPropertyEqual(candidate.getContent(), JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE)) {
             return false;
         }
 

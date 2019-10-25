@@ -1,4 +1,4 @@
-package com.peregrine.sitemap.impl;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -13,9 +13,9 @@ package com.peregrine.sitemap.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,20 +26,15 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.UrlShortener;
-import com.peregrine.sitemap.UrlShortenerBase;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.service.component.annotations.Component;
+import org.apache.sling.api.resource.Resource;
 
-@Component(service = UrlShortener.class)
-public final class EtcMapUrlShortener extends UrlShortenerBase {
+public abstract class UrlShortenerBase implements UrlShortener {
 
-    @Override
-    public String getName() {
-        return getClass().getName();
-    }
+    private static final String DOT_HTML = ".html";
 
     @Override
-    public String map(final ResourceResolver resourceResolver, final String url) {
-        return resourceResolver.map(url);
+    public String map(final Resource page) {
+        return map(page.getResourceResolver(), page.getPath() + DOT_HTML);
     }
+
 }

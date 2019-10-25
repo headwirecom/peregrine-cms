@@ -29,4 +29,11 @@
     <home jcr:primaryType="sling:Mapping"
         sling:match="$"
         sling:internalRedirect="/content/sites/example.html" />
+    <sitemap jcr:primaryType="sling:Mapping"
+        sling:match="sitemap.xml"
+        sling:internalRedirect="/content/sites/example.sitemap.xml">
+        <chunks jcr:primaryType="sling:Mapping"
+            sling:match="sitemap.xml/(.+)"
+            sling:internalRedirect="/content/sites/example.sitemap.xml/$1" />
+    </sitemap>
 </jcr:root>

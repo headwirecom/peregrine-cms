@@ -26,11 +26,12 @@ package com.peregrine.sitemap;
  */
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public interface UrlShortener extends HasName {
 
-    String DOT_HTML = ".html";
-
     String map(Resource page);
+
+    String map(ResourceResolver resourceResolver, String url);
 
 }

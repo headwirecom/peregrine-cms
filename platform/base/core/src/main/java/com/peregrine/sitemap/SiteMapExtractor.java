@@ -26,6 +26,7 @@ package com.peregrine.sitemap;
  */
 
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.Collection;
 
@@ -34,5 +35,7 @@ public interface SiteMapExtractor {
     boolean appliesTo(Resource root);
 
     Collection<SiteMapEntry> extract(Resource root);
+
+    SiteMapUrlBuilder getSiteMapUrlBuilder(ResourceResolver resourceResolver, SiteMapUrlBuilder basicBuilder);
 
 }

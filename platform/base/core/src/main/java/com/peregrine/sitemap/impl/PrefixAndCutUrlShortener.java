@@ -26,39 +26,54 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.UrlShortener;
+import com.peregrine.sitemap.UrlShortenerBase;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
 @Component(service = UrlShortener.class, immediate = true)
 @Designate(ocd = PrefixAndCutUrlShortenerConfig.class, factory = true)
-public final class PrefixAndCutUrlShortener implements UrlShortener {
+public final class PrefixAndCutUrlShortener extends UrlShortenerBase {
 
-    public static final String SLASH = "/";
+    private static final String SLASH = "/";
+
     private PrefixAndCutUrlShortenerConfig config;
+    private int cutCount;
+    private int siteMapPosition;
+    private String prefix;
 
     @Activate
     public void activate(final PrefixAndCutUrlShortenerConfig config) {
         this.config = config;
+        cutCount = config.cutCount();
+        siteMapPosition = cutCount - 1;
+        prefix = config.prefix();
     }
 
+    @Override
     public String getName() {
         return config.name();
     }
 
-    public String map(final Resource page) {
-        String path = page.getPath();
-        for (int i = 0; StringUtils.isNotBlank(path) && i < config.cutCount(); i++) {
-            path = StringUtils.substring(path, 1);
-            path = SLASH + StringUtils.substringAfter(path, SLASH);
+    @Override
+    public String map(final ResourceResolver resourceResolver, final String url) {
+        final String[] split = StringUtils.split(url, SLASH);
+        final int length = split.length;
+        int start = cutCount;
+        if (siteMapPosition < length && length <= siteMapPosition + 2 && split[siteMapPosition].endsWith(".sitemap.xml")) {
+            start = siteMapPosition;
+            split[start] = "sitemap.xml";
         }
 
-        if (SLASH.equals(path)) {
-            return config.prefix();
+        StringBuilder result = new StringBuilder(prefix);
+        for (int i = start; i < split.length; i++) {
+            result.append(SLASH);
+            result.append(split[i]);
         }
 
-        return config.prefix() + path + DOT_HTML;
+        return result.toString();
     }
+
 }
