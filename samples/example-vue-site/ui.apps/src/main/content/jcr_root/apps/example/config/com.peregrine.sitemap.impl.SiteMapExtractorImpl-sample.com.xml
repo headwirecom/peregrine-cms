@@ -27,5 +27,4 @@
     jcr:primaryType="sling:OsgiConfig"
     pathRegex="/content/sites/sample(()|(/.+))"
     pageRecognizer="com.peregrine.sitemap.impl.NonEmptyPerPageRecognizer"
-    urlShortener="com.peregrine.sitemap.impl.EtcMapUrlShortener"
 />

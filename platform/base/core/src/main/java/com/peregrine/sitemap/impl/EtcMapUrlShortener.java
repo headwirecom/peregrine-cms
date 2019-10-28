@@ -30,7 +30,7 @@ import com.peregrine.sitemap.UrlShortenerBase;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 
-@Component(service = UrlShortener.class)
+@Component(service = { UrlShortener.class, EtcMapUrlShortener.class })
 public final class EtcMapUrlShortener extends UrlShortenerBase {
 
     @Override

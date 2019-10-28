@@ -53,6 +53,9 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
+    @Reference
+    private EtcMapUrlShortener defaultUrlShortener;
+
     private Pattern pattern;
 
     private PageRecognizer pageRecognizer;
@@ -69,6 +72,10 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
         pageRecognizer = getNamedService(PageRecognizer.class, config.pageRecognizer());
         urlShortener = getNamedService(UrlShortener.class, config.urlShortener());
+        if (urlShortener == null) {
+            urlShortener = defaultUrlShortener;
+        }
+
         if (isValid()) {
             siteMapExtractorsContainer.add(this);
         }
