@@ -26,20 +26,25 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
-import org.apache.sling.api.resource.Resource;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 
 @Component(service = SiteMapCache.class)
 @Designate(ocd = SiteMapCacheImplConfig.class)
 public final class SiteMapCacheImpl implements SiteMapCache {
 
-    private final Map<String, List<String>> cache = new ConcurrentHashMap<>();
+    private final Map<String, Object> authenticationInfo = new HashMap<>();
 
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
@@ -47,12 +52,16 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     @Reference
     private SiteMapBuilder siteMapBuilder;
 
+    @Reference
+    private ResourceResolverFactory resourceResolverFactory;
+
     private int maxEntriesCount;
     private int maxFileSize;
+    private String location;
 
     @Activate
     public void activate(final SiteMapCacheImplConfig config) {
-        cache.clear();
+        authenticationInfo.put(ResourceResolverFactory.SUBSERVICE, config.sling_service_subservice());
 
         maxEntriesCount = config.maxEntriesCount();
         if (maxEntriesCount <= 0) {
@@ -63,34 +72,75 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         if (maxFileSize <= 0) {
             maxFileSize = Integer.MAX_VALUE;
         }
+
+        location = config.location();
     }
 
     @Override
     public String get(final Resource root, final int index, final SiteMapUrlBuilder siteMapUrlBuilder) {
-        final String path = root.getPath();
-        if (!cache.containsKey(path)) {
-            final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(root);
-            if (extractor == null) {
+        try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver(authenticationInfo)) {
+            final String path = location + root.getPath();
+            final Resource resource = getOrCreateCacheResource(resourceResolver, path);
+            if (resource == null) {
                 return null;
             }
 
-            final Collection<SiteMapEntry> entries = extractor.extract(root);
-            final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
-            final ArrayList<String> strings = new ArrayList<>();
-            cache.put(path, strings);
-            final int numberOfParts = splitEntries.size();
-            if (numberOfParts > 1) {
-                final SiteMapUrlBuilder shortUrlBuilder = extractor.getSiteMapUrlBuilder(root.getResourceResolver(), siteMapUrlBuilder);
-                strings.add(siteMapBuilder.buildSiteMapIndex(root, shortUrlBuilder, numberOfParts));
+            final ValueMap properties = resource.getValueMap();
+            final String key = Integer.toString(index);
+            if (!properties.containsKey(key)) {
+                final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(root);
+                if (extractor == null) {
+                    return null;
+                }
+
+                final Collection<SiteMapEntry> entries = extractor.extract(root);
+                final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
+                final ArrayList<String> strings = new ArrayList<>();
+                final int numberOfParts = splitEntries.size();
+                if (numberOfParts > 1) {
+                    final SiteMapUrlBuilder shortUrlBuilder = extractor.getSiteMapUrlBuilder(resourceResolver, siteMapUrlBuilder);
+                    strings.add(siteMapBuilder.buildSiteMapIndex(root, shortUrlBuilder, numberOfParts));
+                }
+
+                for (final List<SiteMapEntry> list : splitEntries) {
+                    strings.add(siteMapBuilder.buildUrlSet(list));
+                }
+
+                final ModifiableValueMap modifiableValueMap = resource.adaptTo(ModifiableValueMap.class);
+                for (int i = 0; i < strings.size(); i++) {
+                    modifiableValueMap.put(Integer.toString(i), strings.get(i));
+                }
+
+                resourceResolver.commit();
             }
 
-            for (final List<SiteMapEntry> list : splitEntries) {
-                strings.add(siteMapBuilder.buildUrlSet(list));
-            }
+            return properties.get(key, String.class);
+        } catch (final LoginException | RepositoryException | PersistenceException e) {
+            return null;
+        }
+    }
+
+    private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path) throws RepositoryException {
+        String existingPath = path;
+        Resource resource = null;
+        final List<String> missing = new ArrayList<>();
+        while (StringUtils.isNotBlank(existingPath) &&
+                (resource = resourceResolver.getResource(existingPath)) == null) {
+            missing.add(0, StringUtils.substringAfterLast(existingPath, SLASH));
+            existingPath = StringUtils.substringBeforeLast(existingPath, SLASH);
         }
 
-        final List<String> strings = cache.get(path);
-        return index >= 0 && index < strings.size() ? strings.get(index) : null;
+        if (resource == null) {
+            resource = resourceResolver.getResource(SLASH);
+        }
+
+        Node node = resource.adaptTo(Node.class);
+        for (final String name : missing) {
+            node = node.addNode(name, SLING_FOLDER);
+        }
+
+        node.getSession().save();
+        return resourceResolver.getResource(node.getPath());
     }
 
     private LinkedList<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
