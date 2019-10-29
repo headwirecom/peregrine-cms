@@ -28,7 +28,6 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.sitemap.ResourceResolverFactoryProxy;
 import com.peregrine.sitemap.SiteMapCache;
 import com.peregrine.sitemap.Utils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -37,11 +36,9 @@ import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
 
 @Component(service = JobConsumer.class, immediate = true, property = {
         JobConsumer.PROPERTY_TOPICS + "=" + SiteMapResourceChangeJobConsumer.TOPIC })
@@ -59,22 +56,17 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
 
     @Override
     public JobResult process(final Job job) {
-        final Set<String> affectedPaths = new HashSet<>();
         final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         final Set<String> allowedPrimaryTypes = job.getProperty(PN_PRIMARY_TYPES, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             for (final String path : initialPaths) {
                 final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
                 if (resource != null && allowedPrimaryTypes.contains(resource.getValueMap().get(JCR_PRIMARY_TYPE))) {
-                    affectedPaths.add(resource.getPath());
+                    cache.rebuild(resource.getPath());
                 }
             }
         } catch (final LoginException e) {
             return JobResult.CANCEL;
-        }
-
-        for (final String path : affectedPaths) {
-            cache.rebuild(path);
         }
 
         return JobResult.OK;
