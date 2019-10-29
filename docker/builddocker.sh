@@ -39,7 +39,6 @@ case $1 in
     exit 1
 esac
 
-
 echo "Removing old build artifacts..."
 rm files/*.zip files/*.xz files/*.jar
 

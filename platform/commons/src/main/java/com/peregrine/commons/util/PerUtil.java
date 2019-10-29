@@ -43,13 +43,20 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
-import java.util.*;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static org.apache.commons.lang3.StringUtils.*;
+import static com.peregrine.commons.util.PerConstants.DASH;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -72,11 +79,16 @@ public final class PerUtil {
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
+    public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
     private PerUtil() {
         throw new UnsupportedOperationException();
+    }
+
+    /** @return True if the given text is both not null and not empty **/
+    public static boolean isNotEmpty(String text) {
+        return text != null && !text.isEmpty();
     }
 
     /**
@@ -171,38 +183,40 @@ public final class PerUtil {
      * @param parameterSeparator The separator between the parts of the parameter value. If null then there is no splitting
      * @return Map of the split entries
      */
-    public static Map<String, Map<String, String>> splitIntoParameterMap(
-            final String[] entries,
-            final String keySeparator,
-            final String valueSeparator,
-            final String parameterSeparator) {
-        final Map<String, Map<String, String>> answer = new LinkedHashMap<>();
-        if (entries == null || isEmpty(keySeparator)) {
-            return answer;
-        }
-
-        for (final String entry: entries) {
-            if (isEmpty(entry)) {
-                continue;
+    public static Map<String, Map<String, String>> splitIntoParameterMap(String[] entries, String keySeparator, String valueSeparator, String parameterSeparator) {
+        Map<String, Map<String, String>> answer = new LinkedHashMap<>();
+        if(entries != null && isNotEmpty(keySeparator)) {
+            for(String entry: entries) {
+                if(isNotEmpty(entry)) {
+                    List<String> keyValue = split(entry, keySeparator);
+                    switch(keyValue.size()) {
+                        case 0:
+                            continue;
+                        case 1:
+                            String key = keyValue.get(0);
+                            Map<String, String> parameters = new LinkedHashMap<>();
+                            answer.put(key, parameters);
+                            break;
+                        case 2:
+                            key = keyValue.get(0);
+                            String value = keyValue.get(1);
+                            List<String> values = split(value, valueSeparator);
+                            parameters = new LinkedHashMap<>();
+                            answer.put(key, parameters);
+                            for(String aValue: values) {
+                                List<String> parameterList = split(aValue, parameterSeparator);
+                                if(parameterList.size() != 2) {
+                                    throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, aValue, entries));
+                                }
+                                parameters.put(parameterList.get(0), parameterList.get(1));
+                            }
+                            break;
+                        default:
+                            throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, entry, entries));
+                    }
+                }
             }
-
-            final List<String> entrySplit = split(entry, keySeparator);
-            switch(entrySplit.size()) {
-                case 0:
-                    break;
-                case 1:
-                    answer.put(entrySplit.get(0), new LinkedHashMap<>());
-                    break;
-                case 2:
-                    final String key = entrySplit.get(0);
-                    final List<String> values = split(entrySplit.get(1), valueSeparator);
-                    answer.put(key, splitValueIntoParameterMap(values, parameterSeparator));
-                    break;
-                default:
-                    throw new IllegalArgumentException(String.format(ENTRY_NOT_KEY_VALUE_PAIR, entry, entries));
-            }
         }
-
         return answer;
     }
 
@@ -412,7 +426,6 @@ public final class PerUtil {
                 // Hit the source -> done with loop
                 return answer;
             }
-
             answer.add(parent);
             parent = parent.getParent();
         }
@@ -610,7 +623,6 @@ public final class PerUtil {
                 answer = temp.toString();
             }
         }
-
         return answer;
     }
 
@@ -820,7 +832,7 @@ public final class PerUtil {
 
     /** Checks all resources that are either missing or are outdated on the target **/
     public static class MissingOrOutdatedResourceChecker
-            implements ResourceChecker
+        implements ResourceChecker
     {
         private final Resource source;
         private final Resource target;
@@ -869,7 +881,7 @@ public final class PerUtil {
      * as on the source)
      */
     public static class MatchingResourceChecker
-            implements ResourceChecker
+        implements ResourceChecker
     {
         private final Resource source;
         private final Resource target;
@@ -892,7 +904,7 @@ public final class PerUtil {
 
     /** Checks all resources **/
     public static class AddAllResourceChecker
-            implements ResourceChecker
+        implements ResourceChecker
     {
         @Override
         public boolean doAdd(final Resource resource) {

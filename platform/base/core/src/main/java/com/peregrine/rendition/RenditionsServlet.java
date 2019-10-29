@@ -146,11 +146,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
             ImageContext imageContext = null;
             try {
                 imageContext = renditionHandler.createRendition(resource, renditionName, sourceMimeType);
-                if(imageContext != null && imageContext.canBeStored()) {
-                    request.getResourceResolver().commit();
-                } else {
-                    request.getResourceResolver().revert();
-                }
+                request.getResourceResolver().commit();
             } catch(HandlerException e) {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }
@@ -158,10 +154,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
                 // Got a output stream -> send it back
                 answer = new StreamResponse(imageContext.getTargetMimeType(), imageContext.getImageStream());
             } else {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(
-                    "Failed to create a rendition of image: " + asset.getName() + ", rendition: " + renditionName
-                    + ". Most likely due to misspelt or non-existing Rendition"
-                );
+                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Failed to create a rendition of image: " + asset.getName() + ", rendition: " + renditionName);
             }
         } else {
             // This was not a request for a rendition but just the original asset -> load and send it back

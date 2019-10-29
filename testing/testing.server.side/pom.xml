@@ -25,7 +25,7 @@
     <parent>
         <groupId>com.peregrine-cms</groupId>
         <artifactId>testing.parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -149,128 +149,56 @@
                             <portNames>
                                 <!-- used port name must be stored in property because it must be used for the base url -->
                                 <portName>http.port</portName>
-                                <portName>sling.control.port</portName>
                             </portNames>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Taken from Apache Sling Module: org.apache.sling.scripting.sightly.testing -->
             <plugin>
+                <!-- the Sling instance is provisioned from the model in src/main/provisioning/model.txt -->
                 <groupId>org.apache.sling</groupId>
                 <artifactId>slingstart-maven-plugin</artifactId>
-                <version>1.7.16</version>
+                <version>1.7.6</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
-                        <id>default-prepare-package</id>
-                        <phase>prepare-package</phase>
+                        <id>prepare-launchpad-package</id>
                         <goals>
                             <goal>prepare-package</goal>
                         </goals>
-                        <configuration>
-                            <usePomDependencies>true</usePomDependencies>
-                            <servers>
-                                <server>
-                                    <port>${http.port}</port>
-                                    <controlPort>${sling.control.port}</controlPort>
-                                    <runmode>oak_tar</runmode>
-                                    <contextPath />
-                                    <debug />
-                                </server>
-                            </servers>
-                        </configuration>
                     </execution>
                     <execution>
-                        <id>default-attach-slingfeature</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-slingfeature</goal>
-                        </goals>
-                        <configuration>
-                            <usePomDependencies>true</usePomDependencies>
-                            <servers>
-                                <server>
-                                    <port>${http.port}</port>
-                                    <controlPort>${sling.control.port}</controlPort>
-                                    <runmode>oak_tar</runmode>
-                                    <contextPath />
-                                    <debug />
-                                </server>
-                            </servers>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-package</id>
-                        <phase>package</phase>
+                        <id>build-launchpad-package</id>
                         <goals>
                             <goal>package</goal>
                         </goals>
-                        <configuration>
-                            <usePomDependencies>true</usePomDependencies>
-                            <servers>
-                                <server>
-                                    <port>${http.port}</port>
-                                    <controlPort>${sling.control.port}</controlPort>
-                                    <runmode>oak_tar</runmode>
-                                    <contextPath />
-                                    <debug />
-                                </server>
-                            </servers>
-                        </configuration>
                     </execution>
                     <execution>
-                        <id>start-container</id>
+                        <id>start-container-before-IT</id>
                         <goals>
                             <goal>start</goal>
                         </goals>
-                        <configuration>
-                            <usePomDependencies>true</usePomDependencies>
-                            <servers>
-                                <server>
-                                    <port>${http.port}</port>
-                                    <controlPort>${sling.control.port}</controlPort>
-                                    <runmode>oak_tar</runmode>
-                                    <contextPath />
-                                    <debug />
-                                </server>
-                            </servers>
-                        </configuration>
                     </execution>
                     <execution>
-                        <id>stop-container</id>
+                        <id>stop-container-after-IT</id>
                         <goals>
                             <goal>stop</goal>
                         </goals>
                         <configuration>
-                            <usePomDependencies>true</usePomDependencies>
-                            <servers>
-                                <server>
-                                    <port>${http.port}</port>
-                                    <controlPort>${sling.control.port}</controlPort>
-                                    <runmode>oak_tar</runmode>
-                                    <contextPath />
-                                    <debug />
-                                </server>
-                            </servers>
                             <!-- Let the Test Server run to manually verify the setup. TODO: remove later -->
                             <shouldBlockUntilKeyIsPressed>${block.sling.at.the.end}</shouldBlockUntilKeyIsPressed>
                         </configuration>
                     </execution>
+
                 </executions>
                 <configuration>
-                    <usePomDependencies>true</usePomDependencies>
                     <servers>
                         <server>
+                            <id>singleinstance</id>
                             <port>${http.port}</port>
-                            <controlPort>${sling.control.port}</controlPort>
-                            <runmode>oak_tar</runmode>
-                            <contextPath />
-                            <debug />
+                            <vmOpts>${sling.vm.options}</vmOpts>
                         </server>
                     </servers>
-                    <skipLaunchpad>${skipTests}</skipLaunchpad>
                 </configuration>
             </plugin>
 
@@ -311,11 +239,9 @@
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
                     <serviceURL>${targetServiceUrl}</serviceURL>
-                    <skip>${skipTests}</skip>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>install-packages</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>install</goal>
@@ -367,12 +293,6 @@
                                 <packageFile>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>example-vue.ui.apps</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>zip</type>
-                                </packageFile>
-                                <packageFile>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
                                     <version>${project.version}</version>
                                     <type>zip</type>
                                 </packageFile>

@@ -32,4 +32,5 @@ public class AdminPathConstants {
     public static final String RESOURCE_TYPE_SEARCH = API_PREFIX + "search";
     public static final String RESOURCE_TYPE_UPDATE_RESOURCE = API_PREFIX + "updateResource";
     public static final String RESOURCE_TYPE_UPLOAD_FILES = API_PREFIX + "uploadFiles";
+    public static final String RESOURCE_TYPE_UPDATE_SITE = API_PREFIX + "updateSite";
 }

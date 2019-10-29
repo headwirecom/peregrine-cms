@@ -18,6 +18,7 @@ import javax.jcr.RepositoryException;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 
@@ -187,8 +188,13 @@ public class ResourceRelocationService
         // Update the references
         for(com.peregrine.replication.Reference reference : references) {
             Resource propertyResource = reference.getPropertyResource();
-            properties = PerUtil.getModifiableProperties(propertyResource);
-            if(properties.containsKey(reference.getPropertyName())) {
+            if(propertyResource.getChild(JCR_CONTENT) != null) {
+                properties = PerUtil.getModifiableProperties(propertyResource, true);
+            }
+            else {
+                properties = PerUtil.getModifiableProperties(propertyResource, false);
+            }
+            if(properties != null && properties.containsKey(reference.getPropertyName())) {
                 properties.put(reference.getPropertyName(), answer.getPath());
             }
         }

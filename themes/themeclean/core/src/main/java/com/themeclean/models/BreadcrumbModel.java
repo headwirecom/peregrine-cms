@@ -351,14 +351,18 @@ public class BreadcrumbModel extends AbstractComponent {
 	/* Method to recursively get child page links, given a root page path */
     public List<TextLink> getLinks(){
       
-    	links = new ArrayList<TextLink>();
-    	if(Integer.parseInt(getLevel()) > 0) {
-        Resource page = getRootResource();
-        LOG.debug("page: {}", page);
-    		return getDeepLinks(page != null ? page : getResource());
-    	} else {
-    		return null;
-    	}
+      links = new ArrayList<TextLink>();
+      try {
+        if(Integer.parseInt(getLevel()) > 0) {
+          Resource page = getRootResource();
+          LOG.debug("page: {}", page);
+          return getDeepLinks(page != null ? page : getResource());
+        } else {
+          return null;
+        }
+      } catch(NumberFormatException nfe) {
+        return null;
+      }
     	
     }
     

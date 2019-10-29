@@ -61,7 +61,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Page Resource
      * @throws ManagementException If the creation failed
      */
-    Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException;
+    Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath, String title) throws ManagementException;
 
     /**
      * Creates an Peregrine Object Resource
@@ -74,7 +74,7 @@ public interface AdminResourceHandler {
      * @return Newly created Peregrine Template Resource
      * @throws ManagementException If the creation failed
      */
-    Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException;
+    Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component, String title) throws ManagementException;
 
     DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
 
@@ -140,7 +140,7 @@ public interface AdminResourceHandler {
      * @return Renamed Resource
      * @throws ManagementException If the rename failed
      */
-    Resource rename(Resource fromResource, String newName) throws ManagementException;
+    public Resource rename(Resource fromResource, String newName) throws ManagementException;
 
     /**
      * Create an Asset Resource which the given Byte Input Stream
@@ -160,9 +160,9 @@ public interface AdminResourceHandler {
      * @param target Target Node which must exit
      * @param deep If true child resources are created and copied over, too
      * @return Target Node
-     * @throws ManagementException If a management error occurs 
+     * @throws ManagementException If a management error occurs
      */
-    public Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
+    Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
 
     /**
      * Copies the Content of a given Site to another Site which includes
@@ -172,9 +172,9 @@ public interface AdminResourceHandler {
      * @param fromName Name of the source Site which must exist
      * @param targetName Name of the target Site which cannot be null and must not exist
      * @return Resource of the Target Copy
-     * @throws ManagementException If a management error occurs 
+     * @throws ManagementException If a management error occurs
      */
-    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException;
+    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException;
 
 
     /**
@@ -183,9 +183,19 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver to obtain the resources
      * @param sitesParentPath Absolute Path to Sites
      * @param name Name of the Site to delete
+     * @return Resource of the Target Copy
      * @throws ManagementException If a management error occurs 
      */
     void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
+
+    /**
+     * Update a peregrine cms site's components and felibs from its source site
+     *
+     * @param resourceResolver Resource Resolver to obtain the resources
+     * @param siteName The name of the site to update
+     * @throws ManagementException
+     */
+    void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException;
 
     class ManagementException
         extends Exception

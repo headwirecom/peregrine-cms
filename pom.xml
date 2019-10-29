@@ -103,7 +103,7 @@
         <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</repositoryUrl>
         <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
         <snapshotRepositoryUrl>https://oss.sonatype.org/content/repositories/snapshots</snapshotRepositoryUrl>
-        <gpg.useagent>false</gpg.useagent>
+        <gpg.useagent>true</gpg.useagent>
 
         <noContent>true</noContent>
 
@@ -153,8 +153,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- TODO: Deploy Javadocs to Peregrine -->
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -173,7 +171,6 @@
                     <destDir>cms</destDir>
                 </configuration>
             </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -259,10 +256,6 @@
                     <destFile>${sonar.jacoco.reportPath}</destFile>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.sonarsource.scanner.maven</groupId>-->
-<!--                <artifactId>sonar-maven-plugin</artifactId>-->
-<!--            </plugin>-->
         </plugins>
 
         <!-- Project Plugin Management -->
@@ -412,6 +405,11 @@
                             <vue>xml</vue>
                         </extraExtensions>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -848,7 +846,6 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>autoInstallPackage</id>
             <properties>
@@ -940,12 +937,12 @@
 
     <distributionManagement>
         <repository>
-            <id>ossrh</id>
+            <id>peregrine.releases.https</id>
             <name>${repositoryName}</name>
             <url>${repositoryUrl}</url>
         </repository>
         <snapshotRepository>
-            <id>ossrh</id>
+            <id>peregrine.snapshots.https</id>
             <name>${snapshotRepositoryName}</name>
             <url>${snapshotRepositoryUrl}</url>
         </snapshotRepository>

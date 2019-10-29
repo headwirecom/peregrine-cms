@@ -56,8 +56,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = ImageTransformation.class,
     property = {
-        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX +  "Convert Image Transformation (transformation name: vips:convert",
-        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX +  "Copy Image Transformation (transformation name: vips:convert",
+        SERVICE_DESCRIPTION + EQUAL + PER_PREFIX +  "Convert Image Transformation (transformation name: vips:convert)",
         SERVICE_VENDOR + EQUAL + PER_VENDOR
     }
 )

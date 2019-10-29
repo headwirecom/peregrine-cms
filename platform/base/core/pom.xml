@@ -17,15 +17,14 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.peregrine-cms</groupId>
         <artifactId>base.parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -60,7 +59,7 @@
                             com.peregrine.replication,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
-                            com.peregrine.commons.*
+                            com.peregrine.commons.util
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.nodetypes.models</Sling-Model-Packages>
@@ -71,15 +70,13 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
-                        <Sling-Initial-Content>
-                            SLING-INF/jcr_root;overwriteProperties:=true
-                        </Sling-Initial-Content>
 
                         <Sling-Namespaces>
                             per=http://www.peregrine-cms.com/jcr/cms/1.0
                         </Sling-Namespaces>
 
                         <Sling-Nodetypes>
+                            SLING-INF/nodetypes/replication.cnd,
                             SLING-INF/nodetypes/asset.cnd,
                             SLING-INF/nodetypes/pagecontent.cnd,
                             SLING-INF/nodetypes/page.cnd,
@@ -87,7 +84,6 @@
                             SLING-INF/nodetypes/felib.cnd,
                             SLING-INF/nodetypes/npmpackageconfig.cnd,
                             SLING-INF/nodetypes/object.cnd,
-                            SLING-INF/nodetypes/replication.cnd,
                             SLING-INF/nodetypes/objectdefinition.cnd,
                             SLING-INF/nodetypes/extension.cnd
                         </Sling-Nodetypes>
@@ -127,7 +123,12 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -140,10 +141,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.metatype.annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
         </dependency>
 
         <dependency>
@@ -166,6 +163,11 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.engine</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.sling</groupId>-->
+            <!--<artifactId>org.apache.sling.commons.testing</artifactId>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.servlet-helpers</artifactId>
@@ -183,8 +185,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -196,9 +198,22 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
             <artifactId>guava</artifactId>
             <groupId>com.google.guava</groupId>
         </dependency>
+
+        <!--AS TODO: Is that really needed -->
+        <!--<dependency>-->
+            <!--<artifactId>org.apache.felix.http.jetty</artifactId>-->
+            <!--<version>3.4.2</version>-->
+            <!--<groupId>org.apache.felix</groupId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

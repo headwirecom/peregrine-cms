@@ -25,9 +25,34 @@
 <template>
     <div>
         <div v-if="!schema.preview" class="wrapper wysiwygeditor">
-            <trumbowyg :config="config" v-model="value"></trumbowyg>
+            <trumbowyg :config="config" v-model="value" ref="editor"></trumbowyg>
         </div>
         <p v-else v-html="value"></p>
+        <admin-components-pathbrowser 
+            v-if="isOpen"
+            :isOpen="isOpen && browserType === 'asset'" 
+            :browserRoot="browserRoot" 
+            :browserType="browserType" 
+            :withLinkTab="withLinkTab"
+            :altText="altText" :setAltText="setAltText"
+            :currentPath="currentPath" :setCurrentPath="setCurrentPath"
+            :selectedPath="selectedPath" :setSelectedPath="setSelectedPath"
+            :onCancel="onCancel"
+            :onSelect="onSelect">
+        </admin-components-pathbrowser>
+        <admin-components-pathbrowser 
+            v-if="isOpen && browserType === 'page'"
+            :isOpen="isOpen" 
+            :browserRoot="browserRoot" 
+            :browserType="browserType" 
+            :withLinkTab="withLinkTab"
+            :newWindow="newWindow" :toggleNewWindow="toggleNewWindow"
+            :linkTitle="linkTitle" :setLinkTitle="setLinkTitle"
+            :currentPath="currentPath" :setCurrentPath="setCurrentPath"
+            :selectedPath="selectedPath" :setSelectedPath="setSelectedPath"
+            :onCancel="onCancel"
+            :onSelect="onSelect">
+        </admin-components-pathbrowser>
     </div>
 </template>
 
@@ -36,6 +61,15 @@
         mixins: [ VueFormGenerator.abstractField ],
         data () {
             return {
+                browserRoot: '/content/assets',
+                browserType: 'asset',
+                currentPath: '/content/assets',
+                selectedPath: null,
+                altText: null,
+                linkTitle: '',
+                withLinkTab: true,
+                newWindow: false,
+                isOpen: false,
                 default: {
                     config: {
                         svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
@@ -69,6 +103,69 @@
                     }
                 }
             }
+        },
+        beforeCreate() {
+            var self = this;
+            $.extend(true, $.trumbowyg, {
+                plugins: {
+                    modalOverride: {
+                        init: function(trumbowyg) {
+                            trumbowyg.openModalInsert = function(title, fields, cmd) {
+                                //Setup state of pathbrowser and open pathbrowser
+                                let isImage = fields.hasOwnProperty('alt');
+                                let url = fields.url.value;
+
+                                self.browserType = isImage ? 'asset' : 'page';
+                                self.browserRoot = isImage ? '/content/assets' : '/content/sites';
+                                //Internal Link
+                                if( url && url.match(/^(https?:)?\/\//)) {
+                                    self.currentPath = self.browserRoot;
+                                    self.selectedPath = url;
+                                }
+                                else if(url && url.startsWith('/')) {
+                                    const parts = url.split('/');
+                                    parts.pop();
+                                    self.currentPath = parts.join('/');
+                                    self.selectedPath = isImage ? url : url.split('.')[0];
+                                }
+                                else {
+                                    self.currentPath = self.browserRoot;
+                                    self.selectedPath = null;
+                                }
+
+                                self.browse();
+                                //Setup pathbrowser select event to call trumbowyg cmd callback
+                                self.onSelect = function() {
+                                    trumbowyg.restoreRange();
+                                    if(isImage) {
+                                        cmd({
+                                            url: self.selectedPath,
+                                            alt: self.altText
+                                        })
+                                    }
+                                    else {
+                                        let url = self.selectedPath;
+                                        if(!url.match(/^(https?:)?\/\//)) url += '.html';
+                                        cmd({
+                                            text: fields.text.value,
+                                            title: self.linkTitle,
+                                            target: self.newWindow ? "_blank" : "_self",
+                                            url: url,
+                                        })
+                                    }
+                                    trumbowyg.syncCode(),
+                                    trumbowyg.$c.trigger("tbwchange"),
+                                    self.isOpen = false;
+                                }
+                                self.onCancel = function() {
+                                    trumbowyg.restoreRange();
+                                    self.isOpen = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            })
         },
         computed: {
             isValidBtns() {
@@ -104,6 +201,35 @@
             },
             isObjectAndNotEmpty(p) {
                 return typeof p === 'object' && Object.entries(p).length > 0
+            },
+            toggleNewWindow() {
+                this.newWindow = !this.newWindow;
+            },
+            setAltText(e) {
+                this.altText = e.target.value;
+            },
+            setLinkTitle(e) {
+                this.linkTitle = e.target.value;
+            },
+            setCurrentPath(path){
+                this.currentPath = path
+            },
+            setSelectedPath(path){
+                this.selectedPath = path
+            },
+            isImage(path) {
+                return /\.(jpg|png|gif)$/.test(path);
+            },
+            isValidPath(path, root){
+                return path && path !== root && path.includes(root)
+            },
+            browse() {
+                $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
+                    .then( () => {
+                        this.isOpen = true
+                    }).catch( (err) => {
+                        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+                    })
             }
         }
     }
