@@ -44,8 +44,6 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 @Designate(ocd = SiteMapCacheImplConfig.class)
 public final class SiteMapCacheImpl implements SiteMapCache {
 
-    private final Map<String, Object> authenticationInfo = new HashMap<>();
-
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
@@ -61,8 +59,6 @@ public final class SiteMapCacheImpl implements SiteMapCache {
 
     @Activate
     public void activate(final SiteMapCacheImplConfig config) {
-        authenticationInfo.put(ResourceResolverFactory.SUBSERVICE, config.sling_service_subservice());
-
         maxEntriesCount = config.maxEntriesCount();
         if (maxEntriesCount <= 0) {
             maxEntriesCount = Integer.MAX_VALUE;
@@ -78,7 +74,8 @@ public final class SiteMapCacheImpl implements SiteMapCache {
 
     @Override
     public String get(final Resource root, final int index, final SiteMapUrlBuilder siteMapUrlBuilder) {
-        try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver(authenticationInfo)) {
+        try (final ResourceResolver resourceResolver
+                     = resourceResolverFactory.getServiceResourceResolver(SiteMapConstants.getAuthenticationInfoMap())) {
             final String path = location + root.getPath();
             final Resource resource = getOrCreateCacheResource(resourceResolver, path);
             if (resource == null) {

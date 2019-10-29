@@ -31,9 +31,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @ObjectClassDefinition(name = "%config.name", description = "%config.description")
 public @interface SiteMapCacheImplConfig {
 
-    @AttributeDefinition(name = "%sling.service.subservice.name", description = "%sling.service.subservice.description")
-    String sling_service_subservice() default "sitemapscache";
-
     @AttributeDefinition(name = "%location.name", description = "%location.description")
     String location() default "/var/sitemaps";
 
