@@ -25,13 +25,12 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.sitemap.ResourceResolverFactoryProxy;
 import com.peregrine.sitemap.SiteMapCache;
-import com.peregrine.sitemap.SiteMapConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
@@ -52,7 +51,7 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
     public static final String PN_PRIMARY_TYPES = "primaryTypes";
 
     @Reference
-    private ResourceResolverFactory resourceResolverFactory;
+    private ResourceResolverFactoryProxy resourceResolverFactory;
 
     @Reference
     private SiteMapCache cache;
@@ -62,8 +61,7 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
         final Set<String> affectedPaths = new HashSet<>();
         final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         final Set<String> allowedPrimaryTypes = job.getProperty(PN_PRIMARY_TYPES, Set.class);
-        try (final ResourceResolver resourceResolver
-                     = resourceResolverFactory.getServiceResourceResolver(SiteMapConstants.getAuthenticationInfoMap())) {
+        try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             for (final String path : initialPaths) {
                 final Resource resource = getAffectedResource(resourceResolver, path);
                 if (resource != null && allowedPrimaryTypes.contains(resource.getValueMap().get(JCR_PRIMARY_TYPE))) {

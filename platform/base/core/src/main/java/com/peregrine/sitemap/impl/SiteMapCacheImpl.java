@@ -37,7 +37,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
@@ -55,7 +58,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     private SiteMapBuilder siteMapBuilder;
 
     @Reference
-    private ResourceResolverFactory resourceResolverFactory;
+    private ResourceResolverFactoryProxy resourceResolverFactory;
 
     private int maxEntriesCount;
     private int maxFileSize;
@@ -78,8 +81,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
 
     @Override
     public String get(final Resource root, final int index, final SiteMapUrlBuilder siteMapUrlBuilder) {
-        try (final ResourceResolver resourceResolver
-                     = resourceResolverFactory.getServiceResourceResolver(SiteMapConstants.getAuthenticationInfoMap())) {
+        try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             final String path = location + root.getPath();
             final Resource resource = getOrCreateCacheResource(resourceResolver, path);
             if (resource == null) {
