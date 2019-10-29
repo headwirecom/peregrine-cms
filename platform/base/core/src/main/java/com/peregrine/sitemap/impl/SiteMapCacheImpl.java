@@ -32,6 +32,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -43,6 +45,8 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 @Component(service = SiteMapCache.class)
 @Designate(ocd = SiteMapCacheImplConfig.class)
 public final class SiteMapCacheImpl implements SiteMapCache {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
@@ -161,5 +165,9 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         }
 
         return result;
+    }
+
+    public void rebuild(final String path) {
+        logger.error(path);
     }
 }

@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,12 +25,18 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-public interface SiteMapCache {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface SiteMapResourceChangeListenerConfig {
 
-    String get(Resource root, int index, SiteMapUrlBuilder siteMapUrlBuilder);
+    @AttributeDefinition(name = "%paths.name", description = "%paths.description")
+    String[] resource_paths() default "/content";
 
-    void rebuild(String path);
+    @AttributeDefinition(name = "%changes.name", description = "%changes.description")
+    String[] resource_change_types() default { "ADDED", "CHANGED", "REMOVED" };
 
+    @AttributeDefinition(name = "%primaryTypes.name", description = "%primaryTypes.description")
+    String[] primaryTypes();
 }

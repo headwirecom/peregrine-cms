@@ -173,6 +173,10 @@
         <!--</dependency>-->
         <dependency>
             <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.event</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.servlet-helpers</artifactId>
             <scope>compile</scope>
         </dependency>
