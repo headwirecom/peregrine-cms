@@ -124,26 +124,22 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path) throws RepositoryException {
-        String existingPath = path;
-        Resource resource = null;
-        final List<String> missing = new ArrayList<>();
-        while (StringUtils.isNotBlank(existingPath) &&
-                (resource = resourceResolver.getResource(existingPath)) == null) {
-            missing.add(0, StringUtils.substringAfterLast(existingPath, SLASH));
-            existingPath = StringUtils.substringBeforeLast(existingPath, SLASH);
-        }
-
+        final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
+        final String missingPath;
         if (resource == null) {
-            resource = resourceResolver.getResource(SLASH);
+            missingPath = path;
+        } else {
+            missingPath = StringUtils.substringAfter(path, resource.getPath());
         }
 
+        final String[] missing = StringUtils.split(missingPath, SLASH);
         Node node = resource.adaptTo(Node.class);
         for (final String name : missing) {
             node = node.addNode(name, SLING_FOLDER);
         }
 
         node.getSession().save();
-        return resourceResolver.getResource(node.getPath());
+        return resourceResolver.getResource(path);
     }
 
     private LinkedList<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
