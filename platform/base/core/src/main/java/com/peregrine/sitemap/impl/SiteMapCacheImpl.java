@@ -37,10 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
@@ -51,6 +48,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
 
     private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
     private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
+    private static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -111,7 +109,11 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     private String getCachePath(final Resource rootPage) {
-        return location + rootPage.getPath();
+        return getCachePath(rootPage.getPath());
+    }
+
+    private String getCachePath(final String rootPagePath) {
+        return location + rootPagePath;
     }
 
     private Resource saveCache(final ResourceResolver resourceResolver, final Resource rootPage) {
@@ -140,7 +142,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
                 modifiableValueMap.put(Integer.toString(i), strings.get(i));
             }
 
-            removeCachedItems(modifiableValueMap, stringsSize);
+            removeCachedItemsAboveIndex(modifiableValueMap, stringsSize);
 
             resourceResolver.commit();
             return cache;
@@ -150,7 +152,8 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         }
     }
 
-    private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path) throws RepositoryException {
+    private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path)
+            throws RepositoryException {
         final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
         final String missingPath;
         if (resource == null) {
@@ -192,7 +195,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         return result;
     }
 
-    private void removeCachedItems(final ModifiableValueMap modifiableValueMap, final int startItemIndex) {
+    private void removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int startItemIndex) {
         int i = startItemIndex;
         String key = Integer.toString(i);
         for (; modifiableValueMap.containsKey(key); i++) {
@@ -204,13 +207,40 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     @Override
     public void rebuild(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            cleanRemovedChildren(resourceResolver, rootPagePath);
             saveCache(resourceResolver, rootPagePath);
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+        } catch (final RepositoryException e) {
+            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
     }
 
-    private Resource saveCache(final ResourceResolver resourceResolver, final String rootPagePath) {
-        return saveCache(resourceResolver, resourceResolver.getResource(rootPagePath));
+    private void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
+            throws RepositoryException {
+        final Resource cache = resourceResolver.getResource(getCachePath(rootPagePath));
+        final Resource rootPage = resourceResolver.getResource(rootPagePath);
+        cleanRemovedChildren(cache, rootPage);
+    }
+
+    private void cleanRemovedChildren(final Resource cache, final Resource rootPage)
+            throws RepositoryException {
+        if (cache == null) {
+            return;
+        }
+
+        if (rootPage == null) {
+            cache.adaptTo(Node.class).remove();
+        } else {
+            final Iterator<Resource> iterator = cache.listChildren();
+            while (iterator.hasNext()) {
+                final Resource child = iterator.next();
+                cleanRemovedChildren(child, rootPage.getChild(child.getName()));
+            }
+        }
+    }
+
+    private void saveCache(final ResourceResolver resourceResolver, final String rootPagePath) {
+        saveCache(resourceResolver, resourceResolver.getResource(rootPagePath));
     }
 }
