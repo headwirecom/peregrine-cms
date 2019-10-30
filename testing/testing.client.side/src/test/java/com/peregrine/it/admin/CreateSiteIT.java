@@ -43,8 +43,8 @@ public class CreateSiteIT
     extends AbstractTest
 {
 //    public static final String ROOT_PATH = "/content/sites/it-test/Test-Sites";
-    public static final String FROM_SITE_1_NAME = "it-test";
-    public static final String TO_SITE_1_NAME = "it-test-copy";
+    public static final String FROM_SITE_1_NAME = "itTest";
+    public static final String TO_SITE_1_NAME = "itTestCopy";
 
     private static final Logger logger = LoggerFactory.getLogger(CreateSiteIT.class.getName());
 

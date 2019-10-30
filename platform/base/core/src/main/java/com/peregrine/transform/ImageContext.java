@@ -44,6 +44,8 @@ public class ImageContext {
     private String targetMimeType = sourceMimeType;
     /** Image Input Stream **/
     private InputStream imageStream;
+    /** Indicates if an Image Transformation was not executed and hence the rendition should not be stored **/
+    private boolean preventStorage = false;
 
     /**
      * Image Context where source and target mime type of the same
@@ -100,6 +102,17 @@ public class ImageContext {
      */
     public InputStream getImageStream() {
         return imageStream;
+    }
+
+    /**
+     * Marks an Image Transformation as flawed and so the rendition is not stored
+     */
+    public void markAsFlawed() {
+        preventStorage = true;
+    }
+
+    public boolean canBeStored() {
+        return !preventStorage;
     }
 
     /**

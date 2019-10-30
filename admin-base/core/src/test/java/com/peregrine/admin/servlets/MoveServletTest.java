@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.peregrine.admin.resource.AdminResourceHandlerService.MOVE_TO_RESOURCE_MISSING;
+import static com.peregrine.admin.resource.AdminResourceHandlerService.NAME_CONSTRAINT_VIOLATION;
 import static com.peregrine.admin.resource.AdminResourceHandlerService.NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH;
 import static com.peregrine.admin.servlets.MoveServlet.TARGET_PATH;
 import static com.peregrine.admin.servlets.MoveServlet.TO;
@@ -146,6 +147,6 @@ public class MoveServletTest
         when(mockResourceRelocation.rename(any(Resource.class), anyString(), anyBoolean())).thenReturn(mockTo);
 
         Response response = servlet.handleRequest(mockRequest);
-        checkErrorResponse(response, NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH);
+        checkErrorResponse(response, String.format(NAME_CONSTRAINT_VIOLATION, toPath));
     }
 }

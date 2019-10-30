@@ -83,7 +83,7 @@ public class CreateTemplateServlet extends AbstractCreateServlet {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         String component = request.getParameter(COMPONENT);
-        return resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component);
+        return resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component, name);
     }
 }
 

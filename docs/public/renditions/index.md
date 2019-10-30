@@ -15,6 +15,9 @@ To learn more on how to install **libvips**:
 
 [libvips Wiki Page](https://github.com/jcupitt/libvips/wiki)
 
+For Mac OS X **Homebrew** seems to be the easiest installation
+(https://github.com/jcupitt/libvips/wiki/Build-for-macOS).
+
 ## Linux (Ubuntu)
 
 If you have an apt-get based Linux system, run the following command:
@@ -43,6 +46,38 @@ which should yield something like this:
 
     vips-8.5.5-Tue May 16 10:44:23 BST 2017
 
+**Attention**: as of 7/26/2019 Peregrine will just bypass the image if
+VIPS is not installed instead of failing. With that the Image Transformations
+are enabled by default and ready to use w/o any configuration except the
+Generic Image Transformation which needs a configuration as there are no
+good defaults.
+
+# Short Introduction
+
+An Image Rendition is done with this:
+```
+/content/assets/test.png.rendition.json/thumbnail.png
+```
+The path to the asset is appended with **.rendition.json/&lt;IT Setup>**.
+The **IT Setup** name is then used to find the IT Configuration
+which provides the name to the **Image Transformation** (IT), an optional
+path to limit the application of the IT and a list of parameters to be
+provided to the IT.
+The **path** will limit to which assets the rendition can be applied to.
+The most common application is to have multiple IT Setups that are applied
+to different parts of the JCR tree. For example if there are different
+customer having their own sub folder with assets then an IT Setup can be
+created which gives each customer their own renditions.
+**IT Setup** can chain **ITs** to combine the image transformation. For
+example the Greyscale and Thumbnail IT can be used to make a greyscaled
+thumbnail rendition of an image.
+The **Image Transformation** is a class that encapsulates the execution of
+the underlying image handling commands like **VIPS**. It defines a name
+which is referenced in the **IT Setup** and some IT specific parameters.
+The **IT** services that cannot be executed due to missing dependencies
+like **VIPS** are handing down the image unchanged and **will not store**
+the image in the asset's renditions node.
+
 # Image Transformation Structure
 
 The basic image handling is done by the **Image Transformation** which are referenced by their
@@ -68,9 +103,9 @@ Peregrine provides these Image Transformation Services:
 
 * Thumbnail: creates a smaller version the original image with or without cropping
 * Greyscale: creates a grey image of the original image
-
-All services in Peregrine are disabled by default because
-Peregrine cannot assume that VIPS is installed.
+* Convert: just converts an image from a given type to another
+* Generic: enables the configurator to setup a wide variety of image transformations
+           not covered here 
 
 ### Thumbnail Configuration
 
@@ -87,10 +122,40 @@ Peregrine cannot assume that VIPS is installed.
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
+|Enabled|enabled|yes|boolean|false|Flag to indicate if the Service can be used or not|
+|Name|name|yes|String|vips:true|Name of the Image Transformation used for the Setup|
+
+![Image Transformation Configuration for Greyscale](renditions.image.transformation.configuration.greyscale.png)
+
+### Convert Configuration
+
+|Name|Parameter|Required|Type|Default|Description|
+|:---|:--------|:-------|:---|:------|:----------|
 |Enabled|enabled|yes|boolean|true|Flag to indicate if the Service can be used or not|
 |Name|name|yes|String|vips:greyscale|Name of the Image Transformation used for the Setup|
 
-![Image Transformation Configuration for Greyscale](renditions.image.transformation.configuration.greyscale.png)
+![Image Transformation Configuration for Convert](renditions.image.transformation.configuration.convert.png)
+
+### Generic Configuration
+
+|Name|Parameter|Required|Type|Default|Description|
+|:---|:--------|:-------|:---|:------|:----------|
+|Enabled|enabled|yes|boolean|true|Flag to indicate if the Service can be used or not|
+|Name|name|yes|String|vips:greyscale|Name of the Image Transformation used for the Setup|
+|Command|command|yes|String|generic|Name of the command|
+|Command Line|cli|no|String[]|..|List of Parameters with or without placeholders|
+
+**Rules for Placeholders**:
+1. A placeholder is enclosed by double curly brackets: **{{placeholder}}**
+2. A parameter name can be added to the placeholder to make it conditional like
+   **{{--test-param||test}}** in which parameter **--test-param** is only added to
+   the command when value for **test** is provided in IT Setup which is added as second parameter
+3. A parameter can be added as prefix or suffix to a placeholder: **--test-this={{test}}**
+   which will become a single parameter if **test** is provided in IT Setup and that
+   value is then filled in
+4. Options 2. and 3. cannot be mixed. It is either one of the other
+
+![Image Transformation Configuration for Convert](renditions.image.transformation.configuration.generic.png)
 
 # Image Transformation Setup
 
@@ -112,6 +177,16 @@ For example if there is a need for a greyscale thumbnail you can execute a greys
 to generated the desired image.
 
 ![Image Transformation Setup Confiuration for Greyscale Thumbnail](renditions.image.transformation.setup.configuration.greyThumbnail.png)
+
+And this is an example of the Generic **vipsthumbnail** IT Setup that is using **vipsthumbnail**
+instead of **vips thumbnail** which size and optional cropping:
+
+![Image Transformation Setup Confiuration for Greyscale Thumbnail](renditions.image.transformation.setup.configuration.vipsthumbnailCrop.png)
+
+and this is the same but without cropping:
+
+![Image Transformation Setup Confiuration for Greyscale Thumbnail](renditions.image.transformation.setup.configuration.vipsthumbnail.png)
+
 
 # Renditions
 

@@ -219,7 +219,7 @@ public final class AdminResourceHandlerService
     private static final String ROOT_PROPERTY = "root";
     private static final String RULES_PROPERTY = "rules";
 
-    private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
+    public static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
 
     static {
@@ -988,9 +988,11 @@ public final class AdminResourceHandlerService
         resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT, title));
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
         Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT, title);
-        // Update css paths stored in /content/sites in the template
-        updateTemplateCssPaths(templatesCopy, fromName, targetName);
-        resourcesToPackage.add(templatesCopy);
+        if(templatesCopy != null) {
+            // Update css paths stored in /content/sites in the template
+            updateTemplateCssPaths(templatesCopy, fromName, targetName);
+            resourcesToPackage.add(templatesCopy);
+        }
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
         answer = copier.copyFromRoot(SITES_ROOT, title);
         resourcesToPackage.add(answer);
@@ -1943,7 +1945,7 @@ public final class AdminResourceHandlerService
         return newPage;
     }
 
-    public void handleAssetDimensions(PerAsset perAsset) throws RepositoryException, IOException {
+    public static void handleAssetDimensions(PerAsset perAsset) throws RepositoryException, IOException {
         InputStream is = perAsset.getRenditionStream((String) null);
         // Ignore images that do not have a jcr:data element aka stream
         if (is != null) {

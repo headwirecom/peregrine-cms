@@ -309,7 +309,7 @@ public class PageTraversingIT {
 
     private Resource createChildPage(AdminResourceHandler resourceManagement, Resource parent, String childPageName) throws ManagementException, IOException {
         Resource newPage = resourceManagement.createPage(
-            parent.getResourceResolver(), parent.getPath(), childPageName, EXAMPLE_TEMPLATE_PATH
+            parent.getResourceResolver(), parent.getPath(), childPageName, EXAMPLE_TEMPLATE_PATH, childPageName
         );
         logger.info("New Page: '{}'", newPage == null ? "null" : newPage.getPath());
         assertNotNull("No Page was created", newPage);

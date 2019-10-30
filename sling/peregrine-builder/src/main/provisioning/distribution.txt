@@ -24,4 +24,5 @@
 [artifacts startLevel=20]
     org.apache.jackrabbit.vault/org.apache.jackrabbit.vault/3.1.42
     org.apache.sling/org.apache.sling.distribution.api/0.3.0
-    org.apache.sling/org.apache.sling.distribution.core/0.2.10
+    org.apache.sling/org.apache.sling.distribution.core/0.4.0
+    org.apache.sling/org.apache.sling.distribution.sample/0.1.6

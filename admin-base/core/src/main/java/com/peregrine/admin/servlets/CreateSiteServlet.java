@@ -85,7 +85,7 @@ public class CreateSiteServlet extends AbstractCreateServlet {
     protected Resource doAction(Request request) throws ManagementException {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
-        return resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite);
+        return resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite, toSite);
     }
 
     @Override

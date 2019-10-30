@@ -47,9 +47,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.DASH;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
@@ -57,6 +59,12 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -79,8 +87,8 @@ public final class PerUtil {
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
-    public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
-    public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private PerUtil() {
         throw new UnsupportedOperationException();

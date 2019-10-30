@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandlerService;
+import com.peregrine.admin.resource.NodeNameValidationService;
 import com.peregrine.commons.servlets.AbstractBaseServlet.ErrorResponse;
 import com.peregrine.commons.servlets.AbstractBaseServlet.JsonResponse;
 import com.peregrine.commons.servlets.AbstractBaseServlet.RedirectResponse;
@@ -155,6 +156,7 @@ public abstract class AbstractServletTest
     void setupServlet(Object servlet) {
         try {
             adminResourceHandler = new AdminResourceHandlerService();
+            Whitebox.setInternalState(adminResourceHandler, "nodeNameValidation", new NodeNameValidationService());
             Whitebox.setInternalState(servlet, "resourceManagement", adminResourceHandler);
             BaseResourceHandler mockBaseResourceHandler = mock(BaseResourceHandler.class);
             Whitebox.setInternalState(adminResourceHandler, "baseResourceHandler", mockBaseResourceHandler);

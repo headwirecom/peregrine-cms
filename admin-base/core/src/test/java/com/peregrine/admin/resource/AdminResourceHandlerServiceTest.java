@@ -47,6 +47,7 @@ public final class AdminResourceHandlerServiceTest extends SlingResourcesTest {
     public void setUp() throws NoSuchFieldException, RepositoryException {
         PrivateAccessor.setField(model, "resourceRelocation", resourceRelocation);
         PrivateAccessor.setField(model, "baseResourceHandler", baseResourceHandler);
+        PrivateAccessor.setField(model, "nodeNameValidation", new NodeNameValidationService());
         init(child);
         final Node resourceNode = resource.getNode();
         when(resourceNode.addNode(any(), any())).then(invocation -> {

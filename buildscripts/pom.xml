@@ -25,11 +25,12 @@
     <parent>
         <groupId>com.peregrine-cms</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>buildscripts</artifactId>
+    <packaging>pom</packaging>
 
     <name>Peregrine CMS - Admin - Build Scripts</name>
     <description>

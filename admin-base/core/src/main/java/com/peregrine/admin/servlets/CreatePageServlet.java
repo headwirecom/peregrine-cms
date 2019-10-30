@@ -27,8 +27,6 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrixne.commons.servlets.AbstractBaseServlet;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -86,7 +84,7 @@ public class CreatePageServlet extends AbstractCreateServlet {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         String templatePath = request.getParameter(TEMPLATE_PATH);
-        return resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath);
+        return resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath, name);
     }
 
     @Override
