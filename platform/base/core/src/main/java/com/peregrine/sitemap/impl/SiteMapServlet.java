@@ -55,16 +55,16 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SLING_SERVLET_EXTENSIONS + EQUALS + SiteMapServlet.EXTENSION
     }
 )
-public final class SiteMapServlet extends SlingAllMethodsServlet implements SiteMapUrlBuilder {
+public final class SiteMapServlet extends SlingAllMethodsServlet {
 
     public static final String SELECTOR = "sitemap";
     public static final String EXTENSION = "xml";
 
-    private static final String SLASH = "/";
-    private static final String DOT = ".";
-
     private static final String UTF_8 = "utf-8";
     private static final String APPLICATION_XML = "application/xml";
+
+    @Reference
+    private SiteMapUrlBuilder urlBuilder;
 
     @Reference
     private SiteMapCache cache;
@@ -72,8 +72,8 @@ public final class SiteMapServlet extends SlingAllMethodsServlet implements Site
     @Override
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         final Resource resource = request.getResource();
-        final int index = getIndexFromSuffix(request.getRequestPathInfo().getSuffix());
-        final String string = index >= 0 ? cache.get(resource, index, this) : null;
+        final int index = urlBuilder.getIndex(request);
+        final String string = index >= 0 ? cache.get(resource, index) : null;
         if (StringUtils.isBlank(string)) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -82,28 +82,6 @@ public final class SiteMapServlet extends SlingAllMethodsServlet implements Site
         response.setContentType(APPLICATION_XML);
         response.setCharacterEncoding(UTF_8);
         response.getWriter().write(string);
-    }
-
-    @Override
-    public String buildSiteMapUrl(final Resource root, final int index) {
-        return root.getPath() + DOT + SELECTOR + DOT + EXTENSION + SLASH + index;
-    }
-
-    private int getIndexFromSuffix(final String suffix) {
-        if (StringUtils.isBlank(suffix)) {
-            return 0;
-        }
-
-        final String string = StringUtils.substringAfter(suffix, SLASH);
-        if (StringUtils.isBlank(string)) {
-            return 0;
-        }
-
-        if (StringUtils.isNumeric(string)) {
-            return Integer.parseInt(string);
-        }
-
-        return -1;
     }
 
 }

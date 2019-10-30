@@ -25,12 +25,13 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-
-import java.util.Collection;
 
 public interface SiteMapUrlBuilder {
 
     String buildSiteMapUrl(Resource siteMapRoot, int index);
+
+    int getIndex(SlingHttpServletRequest request);
 
 }

@@ -60,6 +60,9 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     @Reference
     private ResourceResolverFactoryProxy resourceResolverFactory;
 
+    @Reference
+    private SiteMapUrlBuilder siteMapUrlBuilder;
+
     private int maxEntriesCount;
     private int maxFileSize;
     private String location;
@@ -80,7 +83,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     @Override
-    public String get(final Resource root, final int index, final SiteMapUrlBuilder siteMapUrlBuilder) {
+    public String get(final Resource root, final int index) {
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             final String path = location + root.getPath();
             final Resource resource = getOrCreateCacheResource(resourceResolver, path);
@@ -101,8 +104,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
                 final ArrayList<String> strings = new ArrayList<>();
                 final int numberOfParts = splitEntries.size();
                 if (numberOfParts > 1) {
-                    final SiteMapUrlBuilder shortUrlBuilder = extractor.getSiteMapUrlBuilder(resourceResolver, siteMapUrlBuilder);
-                    strings.add(siteMapBuilder.buildSiteMapIndex(root, shortUrlBuilder, numberOfParts));
+                    strings.add(siteMapBuilder.buildSiteMapIndex(root, extractor, numberOfParts));
                 }
 
                 for (final List<SiteMapEntry> list : splitEntries) {

@@ -26,8 +26,8 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -55,6 +55,9 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     @Reference
     private EtcMapUrlShortener defaultUrlShortener;
+
+    @Reference
+    private SiteMapUrlBuilder basicUrlBuilder;
 
     private Pattern pattern;
 
@@ -140,11 +143,14 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     }
 
     @Override
-    public SiteMapUrlBuilder getSiteMapUrlBuilder(final ResourceResolver resourceResolver, final SiteMapUrlBuilder basicBuilder) {
-        return (siteMapRoot, index) -> {
-            final String url = basicBuilder.buildSiteMapUrl(siteMapRoot, index);
-            return urlShortener.map(resourceResolver, url);
-        };
+    public String buildSiteMapUrl(final Resource siteMapRoot, final int index) {
+        final String url = basicUrlBuilder.buildSiteMapUrl(siteMapRoot, index);
+        return urlShortener.map(siteMapRoot.getResourceResolver(), url);
+    }
+
+    @Override
+    public int getIndex(final SlingHttpServletRequest request) {
+        return basicUrlBuilder.getIndex(request);
     }
 
 }
