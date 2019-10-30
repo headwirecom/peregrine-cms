@@ -49,6 +49,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
     private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
     private static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
+    private static final String MAIN_SITE_MAP_KEY = Integer.toString(0);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -209,12 +210,27 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     public void rebuild(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, rootPagePath);
-            saveCache(resourceResolver, rootPagePath);
+            String path = rootPagePath;
+            while (StringUtils.isNotBlank(path)) {
+                if (isCached(resourceResolver, path)) {
+                    saveCache(resourceResolver, path);
+                }
+
+                path = StringUtils.substringBeforeLast(path, SLASH);
+            }
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final RepositoryException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
+    }
+
+    private boolean isCached(final ResourceResolver resourceResolver, final String path) {
+        return Optional.of(resourceResolver)
+                .map(rr -> rr.getResource(getCachePath(path)))
+                .map(Resource::getValueMap)
+                .map(vm -> vm.containsKey(MAIN_SITE_MAP_KEY))
+                .orElse(false);
     }
 
     private void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
