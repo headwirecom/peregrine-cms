@@ -173,23 +173,24 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     private LinkedList<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
+        final int baseSiteMapLength = siteMapBuilder.getBaseSiteMapLength();
         final LinkedList<List<SiteMapEntry>> result = new LinkedList<>();
         int index = 0;
-        int size = siteMapBuilder.getBaseSiteMapLength();
+        int size = baseSiteMapLength;
         List<SiteMapEntry> split = new LinkedList<>();
         result.add(split);
         for (final SiteMapEntry entry : entries) {
             final int entrySize = siteMapBuilder.getSize(entry);
             if (index < maxEntriesCount && size + entrySize <= maxFileSize) {
-                split.add(entry);
                 index++;
                 size += entrySize;
             } else {
-                index = 0;
-                size = siteMapBuilder.getBaseSiteMapLength();
-                split = new LinkedList<>();
-                result.add(split);
+                index = 1;
+                size = baseSiteMapLength;
+                result.add(split = new LinkedList<>());
             }
+
+            split.add(entry);
         }
 
         return result;
@@ -198,9 +199,9 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     private void removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int startItemIndex) {
         int i = startItemIndex;
         String key = Integer.toString(i);
-        for (; modifiableValueMap.containsKey(key); i++) {
+        while (modifiableValueMap.containsKey(key)) {
             modifiableValueMap.remove(key);
-            key = Integer.toString(i);
+            key = Integer.toString(++i);
         }
     }
 
