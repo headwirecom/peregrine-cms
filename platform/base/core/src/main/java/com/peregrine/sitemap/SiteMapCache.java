@@ -29,7 +29,7 @@ import org.apache.sling.api.resource.Resource;
 
 public interface SiteMapCache {
 
-    String get(Resource root, int index);
+    String get(Resource rootPage, int index);
 
     void rebuild(String path);
 

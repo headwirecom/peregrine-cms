@@ -49,6 +49,9 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 @Designate(ocd = SiteMapCacheImplConfig.class)
 public final class SiteMapCacheImpl implements SiteMapCache {
 
+    private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
+    private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
@@ -83,44 +86,66 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     @Override
-    public String get(final Resource root, final int index) {
-        try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
-            final String path = location + root.getPath();
-            final Resource resource = getOrCreateCacheResource(resourceResolver, path);
-            if (resource == null) {
+    public String get(final Resource rootPage, final int index) {
+        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            final String cachePath = getCachePath(rootPage);
+            Resource cache = resourceResolver.getResource(cachePath);
+            if (cache == null) {
+                cache = saveCache(resourceResolver, rootPage);
+                if (cache == null) {
+                    return null;
+                }
+            }
+
+            final ValueMap properties = cache.getValueMap();
+            final String key = Integer.toString(index);
+            return properties.get(key, String.class);
+        } catch (final LoginException e) {
+            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+            return null;
+        }
+    }
+
+    private ResourceResolver getServiceResourceResolver() throws LoginException {
+        return resourceResolverFactory.getServiceResourceResolver();
+    }
+
+    private String getCachePath(final Resource rootPage) {
+        return location + rootPage.getPath();
+    }
+
+    private Resource saveCache(final ResourceResolver resourceResolver, final Resource rootPage) {
+        try {
+            final Resource cache = getOrCreateCacheResource(resourceResolver, getCachePath(rootPage));
+            final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
+            if (extractor == null) {
                 return null;
             }
 
-            final ValueMap properties = resource.getValueMap();
-            final String key = Integer.toString(index);
-            if (!properties.containsKey(key)) {
-                final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(root);
-                if (extractor == null) {
-                    return null;
-                }
-
-                final Collection<SiteMapEntry> entries = extractor.extract(root);
-                final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
-                final ArrayList<String> strings = new ArrayList<>();
-                final int numberOfParts = splitEntries.size();
-                if (numberOfParts > 1) {
-                    strings.add(siteMapBuilder.buildSiteMapIndex(root, extractor, numberOfParts));
-                }
-
-                for (final List<SiteMapEntry> list : splitEntries) {
-                    strings.add(siteMapBuilder.buildUrlSet(list));
-                }
-
-                final ModifiableValueMap modifiableValueMap = resource.adaptTo(ModifiableValueMap.class);
-                for (int i = 0; i < strings.size(); i++) {
-                    modifiableValueMap.put(Integer.toString(i), strings.get(i));
-                }
-
-                resourceResolver.commit();
+            final Collection<SiteMapEntry> entries = extractor.extract(rootPage);
+            final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
+            final ArrayList<String> strings = new ArrayList<>();
+            final int numberOfParts = splitEntries.size();
+            if (numberOfParts > 1) {
+                strings.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, numberOfParts));
             }
 
-            return properties.get(key, String.class);
-        } catch (final LoginException | RepositoryException | PersistenceException e) {
+            for (final List<SiteMapEntry> list : splitEntries) {
+                strings.add(siteMapBuilder.buildUrlSet(list));
+            }
+
+            final ModifiableValueMap modifiableValueMap = cache.adaptTo(ModifiableValueMap.class);
+            final int stringsSize = strings.size();
+            for (int i = 0; i < stringsSize; i++) {
+                modifiableValueMap.put(Integer.toString(i), strings.get(i));
+            }
+
+            removeCachedItems(modifiableValueMap, stringsSize);
+
+            resourceResolver.commit();
+            return cache;
+        } catch (final RepositoryException | PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             return null;
         }
     }
@@ -167,7 +192,25 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         return result;
     }
 
-    public void rebuild(final String path) {
-        logger.error(path);
+    private void removeCachedItems(final ModifiableValueMap modifiableValueMap, final int startItemIndex) {
+        int i = startItemIndex;
+        String key = Integer.toString(i);
+        for (; modifiableValueMap.containsKey(key); i++) {
+            modifiableValueMap.remove(key);
+            key = Integer.toString(i);
+        }
+    }
+
+    @Override
+    public void rebuild(final String rootPagePath) {
+        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            saveCache(resourceResolver, rootPagePath);
+        } catch (final LoginException e) {
+            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+        }
+    }
+
+    private Resource saveCache(final ResourceResolver resourceResolver, final String rootPagePath) {
+        return saveCache(resourceResolver, resourceResolver.getResource(rootPagePath));
     }
 }
