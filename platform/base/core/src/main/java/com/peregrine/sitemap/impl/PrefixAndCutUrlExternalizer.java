@@ -25,27 +25,27 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.UrlShortener;
-import com.peregrine.sitemap.UrlShortenerBase;
+import com.peregrine.sitemap.UrlExternalizer;
+import com.peregrine.sitemap.UrlExternalizerBase;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
-@Component(service = UrlShortener.class, immediate = true)
-@Designate(ocd = PrefixAndCutUrlShortenerConfig.class, factory = true)
-public final class PrefixAndCutUrlShortener extends UrlShortenerBase {
+@Component(service = UrlExternalizer.class, immediate = true)
+@Designate(ocd = PrefixAndCutUrlExternalizerConfig.class, factory = true)
+public final class PrefixAndCutUrlExternalizer extends UrlExternalizerBase {
 
     private static final String SLASH = "/";
 
-    private PrefixAndCutUrlShortenerConfig config;
+    private PrefixAndCutUrlExternalizerConfig config;
     private int cutCount;
     private int siteMapPosition;
     private String prefix;
 
     @Activate
-    public void activate(final PrefixAndCutUrlShortenerConfig config) {
+    public void activate(final PrefixAndCutUrlExternalizerConfig config) {
         this.config = config;
         cutCount = config.cutCount();
         siteMapPosition = cutCount - 1;

@@ -27,5 +27,5 @@
     jcr:primaryType="sling:OsgiConfig"
     pathRegex="/content/sites/example/de"
     pageRecognizer="com.peregrine.sitemap.impl.PerPageRecognizer"
-    urlShortener="example.de"
+    urlExternalizer="example.de"
 />

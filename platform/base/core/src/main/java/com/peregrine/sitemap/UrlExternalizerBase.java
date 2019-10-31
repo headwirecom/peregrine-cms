@@ -1,4 +1,4 @@
-package com.peregrine.sitemap.impl;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -13,9 +13,9 @@ package com.peregrine.sitemap.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,18 +25,15 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.apache.sling.api.resource.Resource;
 
-@ObjectClassDefinition(name = "%config.name", description = "%config.description")
-public @interface PrefixAndCutUrlShortenerConfig {
+public abstract class UrlExternalizerBase implements UrlExternalizer {
 
-    @AttributeDefinition(name = "%name.name", description = "%name.description")
-    String name();
+    private static final String DOT_HTML = ".html";
 
-    @AttributeDefinition(name = "%prefix.name", description = "%prefix.description")
-    String prefix();
+    @Override
+    public String map(final Resource page) {
+        return map(page.getResourceResolver(), page.getPath() + DOT_HTML);
+    }
 
-    @AttributeDefinition(name = "%cutCount.name", description = "%cutCount.description")
-    int cutCount();
 }

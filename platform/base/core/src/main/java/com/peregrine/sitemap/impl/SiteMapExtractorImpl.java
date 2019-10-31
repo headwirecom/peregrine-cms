@@ -54,7 +54,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
     @Reference
-    private EtcMapUrlShortener defaultUrlShortener;
+    private EtcMapUrlExternalizer defaultUrlExternalizer;
 
     @Reference
     private SiteMapUrlBuilder basicUrlBuilder;
@@ -63,7 +63,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private PageRecognizer pageRecognizer;
 
-    private UrlShortener urlShortener;
+    private UrlExternalizer urlExternalizer;
 
     @Activate
     public void activate(final SiteMapExtractorImplConfig config) {
@@ -74,9 +74,9 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         }
 
         pageRecognizer = getNamedService(PageRecognizer.class, config.pageRecognizer());
-        urlShortener = getNamedService(UrlShortener.class, config.urlShortener());
-        if (urlShortener == null) {
-            urlShortener = defaultUrlShortener;
+        urlExternalizer = getNamedService(UrlExternalizer.class, config.urlExternalizer());
+        if (urlExternalizer == null) {
+            urlExternalizer = defaultUrlExternalizer;
         }
 
         if (isValid()) {
@@ -85,7 +85,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     }
 
     private boolean isValid() {
-        return pattern != null && pageRecognizer != null && urlShortener != null;
+        return pattern != null && pageRecognizer != null && urlExternalizer != null;
     }
 
     @Deactivate
@@ -94,7 +94,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
             siteMapExtractorsContainer.remove(this);
         }
 
-        urlShortener = null;
+        urlExternalizer = null;
         pageRecognizer = null;
         pattern = null;
     }
@@ -138,14 +138,14 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private SiteMapEntry createEntry(final Page page) {
         final SiteMapEntry entry = new SiteMapEntry(page);
-        entry.setUrl(urlShortener.map(page));
+        entry.setUrl(urlExternalizer.map(page));
         return entry;
     }
 
     @Override
     public String buildSiteMapUrl(final Resource siteMapRoot, final int index) {
         final String url = basicUrlBuilder.buildSiteMapUrl(siteMapRoot, index);
-        return urlShortener.map(siteMapRoot.getResourceResolver(), url);
+        return urlExternalizer.map(siteMapRoot.getResourceResolver(), url);
     }
 
     @Override

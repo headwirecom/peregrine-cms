@@ -37,6 +37,6 @@ public @interface SiteMapExtractorImplConfig {
     @AttributeDefinition(name = "%pageRecognizer.name", description = "%pageRecognizer.description")
     String pageRecognizer();
 
-    @AttributeDefinition(name = "%urlShortener.name", description = "%urlShortener.description")
-    String urlShortener();
+    @AttributeDefinition(name = "%urlExternalizer.name", description = "%urlExternalizer.description")
+    String urlExternalizer();
 }
