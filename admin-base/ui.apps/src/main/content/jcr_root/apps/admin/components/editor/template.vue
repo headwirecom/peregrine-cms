@@ -32,13 +32,16 @@
             </vue-form-generator>
         </div>
         <div class="editor-panel-buttons">
-            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
+            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('delete component')" v-on:click.stop.prevent="onDelete">
                 <i class="material-icons">delete</i>
             </button>
-            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
+            <button class="waves-effect waves-light btn btn-raised" v-bind:title="$i18n('cancel')"
+                    v-on:click.stop.prevent="onCancel">
                 <i class="material-icons">close</i>
             </button>
-            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
+            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('save')" v-on:click.stop.prevent="onOk">
                 <i class="material-icons">check</i>
             </button>
         </div>
