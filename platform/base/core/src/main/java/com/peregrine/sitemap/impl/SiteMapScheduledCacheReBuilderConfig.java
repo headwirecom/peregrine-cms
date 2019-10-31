@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,14 +25,12 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-public interface SiteMapCache {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface SiteMapScheduledCacheReBuilderConfig {
 
-    String get(Resource rootPage, int index);
-
-    void rebuild(String path);
-
-    void rebuildAll();
-
+    @AttributeDefinition(name = "%scheduler.expression.name", description = "%scheduler.expression.description")
+    String scheduler_expression() default "0 0 3 1/1 * ? *";
 }

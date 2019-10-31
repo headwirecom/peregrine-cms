@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,14 +25,21 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+import com.peregrine.sitemap.SiteMapCache;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.Designate;
 
-public interface SiteMapCache {
+@Component(service = Runnable.class, immediate = true)
+@Designate(ocd = SiteMapScheduledCacheReBuilderConfig.class)
+public final class SiteMapScheduledCacheReBuilder implements Runnable {
 
-    String get(Resource rootPage, int index);
+    @Reference
+    private SiteMapCache cache;
 
-    void rebuild(String path);
-
-    void rebuildAll();
+    @Override
+    public void run() {
+        cache.rebuildAll();
+    }
 
 }

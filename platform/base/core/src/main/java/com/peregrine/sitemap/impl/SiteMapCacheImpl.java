@@ -63,12 +63,14 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     private SiteMapBuilder siteMapBuilder;
 
     private String location;
+    private String locationWithSlash;
     private int maxEntriesCount;
     private int maxFileSize;
 
     @Activate
     public void activate(final SiteMapCacheImplConfig config) {
         location = config.location();
+        locationWithSlash = location + SLASH;
 
         maxEntriesCount = config.maxEntriesCount();
         if (maxEntriesCount <= 0) {
@@ -113,6 +115,12 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         final String cachePath = getCachePath(path);
         return Optional.of(resourceResolver)
                 .map(rr -> rr.getResource(cachePath))
+                .map(r -> containsCacheAlready(r))
+                .orElse(false);
+    }
+
+    private boolean containsCacheAlready(final Resource cache) {
+        return Optional.ofNullable(cache)
                 .map(Resource::getValueMap)
                 .map(vm -> vm.containsKey(MAIN_SITE_MAP_KEY))
                 .orElse(false);
@@ -126,33 +134,50 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         return location + rootPagePath;
     }
 
+    private String getOriginalPath(final Resource cache) {
+        return getOriginalPath(cache.getPath());
+    }
+
+    private String getOriginalPath(final String cachePath) {
+        if (!StringUtils.startsWith(cachePath, locationWithSlash)) {
+            return null;
+        }
+
+        return StringUtils.substringAfter(cachePath, location);
+    }
+
     private Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         try {
-            final Resource cache = getOrCreateCacheResource(resourceResolver, getCachePath(rootPage));
-            final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
-            if (extractor == null) {
-                return null;
-            }
-
-            final Collection<SiteMapEntry> entries = extractor.extract(rootPage);
-            final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
-            final ArrayList<String> siteMaps = new ArrayList<>();
-            final int numberOfParts = splitEntries.size();
-            if (numberOfParts > 1) {
-                siteMaps.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, numberOfParts));
-            }
-
-            for (final List<SiteMapEntry> list : splitEntries) {
-                siteMaps.add(siteMapBuilder.buildUrlSet(list));
-            }
-
-            putSiteMapsInCache(siteMaps, cache);
-
-            return cache;
+            final String cachePath = getCachePath(rootPage);
+            final Resource cache = getOrCreateCacheResource(resourceResolver, cachePath);
+            return buildCache(rootPage, cache);
         } catch (final RepositoryException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             return null;
         }
+    }
+
+    private Resource buildCache(final Resource rootPage, final Resource cache) {
+        final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
+        if (extractor == null) {
+            return null;
+        }
+
+        final Collection<SiteMapEntry> entries = extractor.extract(rootPage);
+        final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
+        final ArrayList<String> siteMaps = new ArrayList<>();
+        final int numberOfParts = splitEntries.size();
+        if (numberOfParts > 1) {
+            siteMaps.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, numberOfParts));
+        }
+
+        for (final List<SiteMapEntry> list : splitEntries) {
+            siteMaps.add(siteMapBuilder.buildUrlSet(list));
+        }
+
+        putSiteMapsInCache(siteMaps, cache);
+
+        return cache;
     }
 
     private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path)
@@ -265,5 +290,36 @@ public final class SiteMapCacheImpl implements SiteMapCache {
 
     private void buildCache(final ResourceResolver resourceResolver, final String rootPagePath) {
         buildCache(resourceResolver, resourceResolver.getResource(rootPagePath));
+    }
+
+    @Override
+    public void rebuildAll() {
+        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            cleanRemovedChildren(resourceResolver, SLASH);
+            final String cacheRoot = getCachePath(StringUtils.EMPTY);
+            final Resource root = resourceResolver.getResource(cacheRoot);
+            if (root != null) {
+                rebuildCacheInTree(resourceResolver, root);
+            }
+
+            resourceResolver.commit();
+        } catch (final LoginException e) {
+            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+        } catch (final RepositoryException | PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
+        }
+    }
+
+    private void rebuildCacheInTree(final ResourceResolver resourceResolver, final Resource cache) {
+        final Iterator<Resource> iterator = cache.listChildren();
+        if (containsCacheAlready(cache)) {
+            final String rootPagePath = getOriginalPath(cache);
+            final Resource rootPage = resourceResolver.getResource(rootPagePath);
+            buildCache(rootPage, cache);
+        }
+
+        while (iterator.hasNext()) {
+            rebuildCacheInTree(resourceResolver, iterator.next());
+        }
     }
 }
