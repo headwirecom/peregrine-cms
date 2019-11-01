@@ -39,4 +39,7 @@ public @interface SiteMapCacheImplConfig {
 
     @AttributeDefinition(name = "%maxEntriesCount.name", description = "%maxEntriesCount.description")
     int maxEntriesCount() default 50000;
+
+    @AttributeDefinition(name = "%debounceInterval.name", description = "%debounceInterval.description")
+    int debounceInterval() default 0;
 }

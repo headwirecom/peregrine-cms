@@ -25,6 +25,8 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.concurrent.Callback;
+import com.peregrine.concurrent.DeBouncer;
 import com.peregrine.sitemap.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.*;
@@ -44,7 +46,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 
 @Component(service = SiteMapCache.class)
 @Designate(ocd = SiteMapCacheImplConfig.class)
-public final class SiteMapCacheImpl implements SiteMapCache {
+public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
 
     private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
     private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
@@ -62,6 +64,8 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     @Reference
     private SiteMapBuilder siteMapBuilder;
 
+    private DeBouncer<String> deBouncer;
+
     private String location;
     private String locationWithSlash;
     private int maxEntriesCount;
@@ -69,6 +73,8 @@ public final class SiteMapCacheImpl implements SiteMapCache {
 
     @Activate
     public void activate(final SiteMapCacheImplConfig config) {
+        deBouncer = new DeBouncer<>(this, config.debounceInterval());
+
         location = config.location();
         locationWithSlash = location + SLASH;
 
@@ -158,14 +164,15 @@ public final class SiteMapCacheImpl implements SiteMapCache {
     }
 
     private Resource buildCache(final Resource rootPage, final Resource cache) {
+        final ArrayList<String> siteMaps = new ArrayList<>();
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (extractor == null) {
+            putSiteMapsInCache(siteMaps, cache);
             return null;
         }
 
         final Collection<SiteMapEntry> entries = extractor.extract(rootPage);
         final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
-        final ArrayList<String> siteMaps = new ArrayList<>();
         final int numberOfParts = splitEntries.size();
         if (numberOfParts > 1) {
             siteMaps.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, numberOfParts));
@@ -250,7 +257,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
             String path = rootPagePath;
             while (StringUtils.isNotBlank(path)) {
                 if (isCached(resourceResolver, path)) {
-                    buildCache(resourceResolver, path);
+                    deBouncer.call(path);
                 }
 
                 path = StringUtils.substringBeforeLast(path, SLASH);
@@ -299,7 +306,7 @@ public final class SiteMapCacheImpl implements SiteMapCache {
             final String cacheRoot = getCachePath(StringUtils.EMPTY);
             final Resource root = resourceResolver.getResource(cacheRoot);
             if (root != null) {
-                rebuildCacheInTree(resourceResolver, root);
+                rebuildCacheInTree(root);
             }
 
             resourceResolver.commit();
@@ -310,16 +317,28 @@ public final class SiteMapCacheImpl implements SiteMapCache {
         }
     }
 
-    private void rebuildCacheInTree(final ResourceResolver resourceResolver, final Resource cache) {
+    private void rebuildCacheInTree(final Resource cache) {
         final Iterator<Resource> iterator = cache.listChildren();
         if (containsCacheAlready(cache)) {
             final String rootPagePath = getOriginalPath(cache);
-            final Resource rootPage = resourceResolver.getResource(rootPagePath);
-            buildCache(rootPage, cache);
+            deBouncer.call(rootPagePath);
         }
 
         while (iterator.hasNext()) {
-            rebuildCacheInTree(resourceResolver, iterator.next());
+            rebuildCacheInTree(iterator.next());
         }
+    }
+
+    @Override
+    public void call(final String rootPagePath) {
+        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            buildCache(resourceResolver, rootPagePath);
+            resourceResolver.commit();
+        } catch (final LoginException e) {
+            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+        } catch (final PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
+        }
+
     }
 }
