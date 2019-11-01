@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
@@ -87,6 +88,13 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         if (maxFileSize <= 0) {
             maxFileSize = Integer.MAX_VALUE;
         }
+
+        rebuildAll();
+    }
+
+    @Deactivate
+    public void deactivate() {
+        deBouncer.terminate();
     }
 
     @Override
