@@ -32,13 +32,16 @@
             </vue-form-generator>
         </div>
         <div class="editor-panel-buttons">
-            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
+            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('delete component')" v-on:click.stop.prevent="onDelete">
                 <i class="material-icons">delete</i>
             </button>
-            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
+            <button class="waves-effect waves-light btn btn-raised" v-bind:title="$i18n('cancel')"
+                    v-on:click.stop.prevent="onCancel">
                 <i class="material-icons">close</i>
             </button>
-            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
+            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('save')" v-on:click.stop.prevent="onOk">
                 <i class="material-icons">check</i>
             </button>
         </div>
@@ -48,10 +51,10 @@
 <script>
     export default {
       props: ['model'],
-    updated: function() {
-        let stateTools = $perAdminApp.getNodeFromView("/state/tools");
-        stateTools._deleted = {};
-    },
+        updated: function() {
+            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
+            stateTools._deleted = {};
+        },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
       },
@@ -100,7 +103,7 @@
       methods: {
         onOk(e) {
             let data = JSON.parse(JSON.stringify(this.dataModel));
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
+            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
 
             //Merge _deleted child items back into the object that we need to save.
             //Loop through the model for this object/page/asset and find objects that have children

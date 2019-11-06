@@ -37,7 +37,7 @@
     "model": "lastModified",
     "label": "Last Modified",
     "readonly": true,
-    "placeholder": "lastModified"
+    "placeholder": "Last Modified"
   },
   {
     "type": "input",
@@ -45,7 +45,7 @@
     "model": "lastModifiedBy",
     "label": "Last Modified By",
     "readonly": true,
-    "placeholder": "lastModifiedBy"
+    "placeholder": "Last Modified By"
   },
   {
     "type": "material-multiselect",
@@ -59,7 +59,8 @@
       "searchable": true,
       "clearOnSelect": true,
       "closeOnSelect": false,
-      "taggable": true
+      "taggable": true,
+      "placeholder": "Select option"
     },
     "valuesFrom": "/content/objects/tags.infinity.json"
   },
@@ -70,5 +71,46 @@
     "label": "Description",
     "rows": 10,
     "placeholder": "enter a description for this page"
+  },
+  {
+    "type": "collection",
+    "multifield": true,
+    "fieldLabel": [
+      "property",
+      "value"
+    ],
+    "fields": [
+      {
+        "type": "material-select",
+        "label": "Type",
+        "model": "metatype",
+        "selectOptions": {
+          "name": "name",
+          "value": "value"
+        },
+        "values": [
+          {"name": "property", "value": "property" },
+          {"name": "name", "value": "name" }
+        ],
+        "required": true,
+        "validator": "required"
+      },
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "og:title",
+        "label": "meta property",
+        "model": "key"
+      },
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "title",
+        "label": "meta content",
+        "model": "value"
+      }
+    ],
+    "label": "Meta Properties",
+    "model": "metaproperties"
   }
 ]}
