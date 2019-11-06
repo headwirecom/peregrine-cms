@@ -30,7 +30,7 @@ import com.peregrine.sitemap.PageRecognizer;
 import com.peregrine.sitemap.TypedPerPageRecognizer;
 import org.osgi.service.component.annotations.Component;
 
-@Component(service = PageRecognizer.class)
+@Component(service = { PageRecognizer.class, PerPageRecognizer.class })
 public final class PerPageRecognizer extends TypedPerPageRecognizer {
 
     protected boolean isPageImpl(final Page candidate) {

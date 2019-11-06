@@ -54,16 +54,7 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
     @Reference
-    private EtcMapUrlExternalizer defaultUrlExternalizer;
-
-    @Reference
-    private LastModPropertyProvider defaultLastModPropertyProvider;
-
-    @Reference
-    private ChangeFreqPropertyProvider defaultChangeFreqPropertyProvider;
-
-    @Reference
-    private PriorityPropertyProvider defaultPriorityPropertyProvider;
+    private DefaultSiteMapExtractor defaultSiteMapExtractor;
 
     private Pattern pattern;
 
@@ -78,7 +69,7 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
         pageRecognizer = getNamedService(PageRecognizer.class, config.pageRecognizer());
         urlExternalizer = getNamedService(UrlExternalizer.class, config.urlExternalizer());
         if (isNull(urlExternalizer)) {
-            urlExternalizer = defaultUrlExternalizer;
+            urlExternalizer = defaultSiteMapExtractor.getUrlExternalizer();
         }
 
         final String[] propertyProviders = config.propertyProviders();
@@ -86,9 +77,9 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
             setPropertyProviders(propertyProviders);
         }
 
-        addPropertyProvider(defaultLastModPropertyProvider);
-        addPropertyProvider(defaultChangeFreqPropertyProvider);
-        addPropertyProvider(defaultPriorityPropertyProvider);
+        addPropertyProvider(defaultSiteMapExtractor.getLastModPropertyProvider());
+        addPropertyProvider(defaultSiteMapExtractor.getChangeFreqPropertyProvider());
+        addPropertyProvider(defaultSiteMapExtractor.getPriorityPropertyProvider());
 
         if (isValid()) {
             siteMapExtractorsContainer.add(this);
