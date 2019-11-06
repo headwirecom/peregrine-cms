@@ -8,9 +8,9 @@ import java.util.Set;
 
 public final class SiteMapEntry {
 
+    private final Map<String, String> properties = new LinkedHashMap<>();
     private final Page page;
     private String url;
-    private final Map<String, String> properties = new LinkedHashMap<>();
 
     public SiteMapEntry(final Page page) {
         this.page = page;

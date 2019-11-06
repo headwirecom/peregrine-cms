@@ -25,9 +25,6 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
-
 public abstract class TypedPropertyProvider implements PropertyProvider {
 
     private final String propertyName;

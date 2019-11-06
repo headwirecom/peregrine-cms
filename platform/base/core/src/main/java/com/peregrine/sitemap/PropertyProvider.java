@@ -25,8 +25,6 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
-
 public interface PropertyProvider extends HasName {
 
     String getPropertyName();

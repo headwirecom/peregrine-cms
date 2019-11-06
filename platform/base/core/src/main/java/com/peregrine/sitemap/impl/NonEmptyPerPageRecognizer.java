@@ -31,9 +31,6 @@ import com.peregrine.sitemap.TypedPerPageRecognizer;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
-
 @Component(service = PageRecognizer.class)
 public final class NonEmptyPerPageRecognizer extends TypedPerPageRecognizer {
 
