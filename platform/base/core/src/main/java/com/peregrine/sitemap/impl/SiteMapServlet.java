@@ -27,7 +27,6 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.SiteMapCache;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -40,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.peregrine.commons.util.PerUtil.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.sling.api.servlets.ServletResolverConstants.*;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -74,7 +74,7 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
         final Resource resource = request.getResource();
         final int index = urlBuilder.getIndex(request);
         final String string = index >= 0 ? cache.get(resource, index) : null;
-        if (StringUtils.isBlank(string)) {
+        if (isBlank(string)) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }

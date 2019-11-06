@@ -46,6 +46,8 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 @Component(service = SiteMapCache.class)
 @Designate(ocd = SiteMapCacheImplConfig.class)
@@ -265,12 +267,12 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, rootPagePath);
             String path = rootPagePath;
-            while (StringUtils.isNotBlank(path)) {
+            while (isNotBlank(path)) {
                 if (isCached(resourceResolver, path)) {
                     deBouncer.call(path);
                 }
 
-                path = StringUtils.substringBeforeLast(path, SLASH);
+                path = substringBeforeLast(path, SLASH);
             }
 
             resourceResolver.commit();

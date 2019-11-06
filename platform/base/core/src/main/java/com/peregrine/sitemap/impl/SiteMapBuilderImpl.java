@@ -28,7 +28,6 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.sitemap.SiteMapBuilder;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
@@ -40,6 +39,7 @@ import java.util.Map;
 
 import static com.peregrine.sitemap.SiteMapConstants.*;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component(service = SiteMapBuilder.class)
 public final class SiteMapBuilderImpl implements SiteMapBuilder {
@@ -85,7 +85,7 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
     }
 
     private boolean isEmpty(final SiteMapEntry entry) {
-        return StringUtils.isBlank(entry.getUrl());
+        return isBlank(entry.getUrl());
     }
 
     private String toUrl(final SiteMapEntry entry) {
@@ -101,7 +101,7 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
     }
 
     private void append(final StringBuilder builder, final String tagName, final String content) {
-        if (StringUtils.isBlank(content)) {
+        if (isBlank(content)) {
             return;
         }
 

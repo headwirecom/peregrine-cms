@@ -1,10 +1,10 @@
 package com.peregrine.sitemap;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class SiteMapEntry {
 
@@ -29,11 +29,11 @@ public final class SiteMapEntry {
     }
 
     public String putProperty(final String name, final String value) {
-        if (StringUtils.isBlank(name)) {
+        if (isBlank(name)) {
             return null;
         }
 
-        if (StringUtils.isBlank(value)) {
+        if (isBlank(value)) {
             return properties.remove(name);
         }
 

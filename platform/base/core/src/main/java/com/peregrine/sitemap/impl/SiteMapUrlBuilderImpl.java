@@ -35,6 +35,8 @@ import static com.peregrine.commons.util.PerConstants.DOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.sitemap.impl.SiteMapServlet.EXTENSION;
 import static com.peregrine.sitemap.impl.SiteMapServlet.SELECTOR;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 @Component(service = SiteMapUrlBuilder.class)
 public final class SiteMapUrlBuilderImpl implements SiteMapUrlBuilder {
@@ -55,16 +57,16 @@ public final class SiteMapUrlBuilderImpl implements SiteMapUrlBuilder {
     @Override
     public int getIndex(final SlingHttpServletRequest request) {
         final String suffix = request.getRequestPathInfo().getSuffix();
-        if (StringUtils.isBlank(suffix)) {
+        if (isBlank(suffix)) {
             return 0;
         }
 
         final String string = StringUtils.substringAfter(suffix, SLASH);
-        if (StringUtils.isBlank(string)) {
+        if (isBlank(string)) {
             return 0;
         }
 
-        if (StringUtils.isNumeric(string)) {
+        if (isNumeric(string)) {
             return Integer.parseInt(string);
         }
 
