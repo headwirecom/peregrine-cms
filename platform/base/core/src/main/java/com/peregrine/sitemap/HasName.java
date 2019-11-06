@@ -27,6 +27,8 @@ package com.peregrine.sitemap;
 
 public interface HasName {
 
-    String getName();
+    default String getName() {
+        return getClass().getName();
+    }
 
 }

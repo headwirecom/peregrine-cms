@@ -30,10 +30,6 @@ import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
 
 public abstract class TypedPerPageRecognizer implements PageRecognizer {
 
-    public String getName() {
-        return getClass().getName();
-    }
-
     public final boolean isPage(final Page candidate) {
         if (!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE)) {
             return false;

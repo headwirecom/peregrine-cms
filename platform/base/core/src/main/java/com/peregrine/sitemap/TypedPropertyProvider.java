@@ -36,10 +36,6 @@ public abstract class TypedPropertyProvider implements PropertyProvider {
         this.propertyName = propertyName;
     }
 
-    public String getName() {
-        return getClass().getName();
-    }
-
     @Override
     public String getPropertyName() {
         return propertyName;

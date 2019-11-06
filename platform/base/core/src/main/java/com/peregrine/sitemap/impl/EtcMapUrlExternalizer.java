@@ -34,11 +34,6 @@ import org.osgi.service.component.annotations.Component;
 public final class EtcMapUrlExternalizer extends UrlExternalizerBase {
 
     @Override
-    public String getName() {
-        return getClass().getName();
-    }
-
-    @Override
     public String map(final ResourceResolver resourceResolver, final String url) {
         return resourceResolver.map(url);
     }
