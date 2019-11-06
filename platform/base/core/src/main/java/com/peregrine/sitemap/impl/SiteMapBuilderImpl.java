@@ -36,33 +36,26 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
+
+import static com.peregrine.sitemap.SiteMapConstants.*;
 
 @Component(service = SiteMapBuilder.class)
 public final class SiteMapBuilderImpl implements SiteMapBuilder {
 
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 
-    private static final String URL_SET = "urlset";
     private static final String URL_SET_START_TAG = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"" +
             " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
             " xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">";
     private static final String URL_SET_END_TAG = close(URL_SET);
-
-    private static final String URL = "url";
-    private static final String LOC = "loc";
-    private static final String LAST_MOD = "lastmod";
-    private static final String CHANGE_FREQ = "changefreq";
-    private static final String PRIORITY = "priority";
 
     private static final int TAG_SYMBOLS_LENGTH = 5;
     private static final int BASE_SITE_MAP_LENGTH = XML_VERSION.length()
             + URL_SET_START_TAG.length() + URL_SET_END_TAG.length();
     private static final int BASE_ENTRY_LENGTH = baseTagLength(URL) + baseTagLength(LOC);
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.sXXX");
-    public static final int DATE_LENGTH = 28;
-    public static final String ALWAYS = "always";
-    public static final String PRIORITY_0_5 = "0.5";
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 
     private static String open(final String tagName) {
         return "<" + tagName + ">";
