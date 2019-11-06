@@ -349,6 +349,34 @@ paths:
           description: If the path did not resolve to a resource
           schema:
             $ref: "#/definitions/Error"
+  '/updateSite.json':
+    post:
+      description: Updates a site's components and frontend libs from its source site
+      parameters:
+        - name: name
+          type: string
+          in: formData
+          description: The Name of the site to update
+          required: true
+      responses:
+        200:
+          description: returns the path of the new site and the path to the source
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Type set to 'site'
+              status:
+                type: string
+                description: Status set to 'updated'
+              name:
+                type: string
+                description: Name of the updated site
+        400:
+          description: If the name was not a valid site name
+          schema:
+            $ref: "#/definitions/Error"
   '/deleteSite.json':
     post:
       description: Delete a Site

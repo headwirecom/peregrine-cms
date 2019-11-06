@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -37,17 +38,8 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_PAGE;
-import static com.peregrine.commons.util.PerConstants.CREATED;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PAGE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.STATUS;
-import static com.peregrine.commons.util.PerConstants.TEMPLATE_PATH;
-import static com.peregrine.commons.util.PerConstants.TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.POST;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -84,8 +76,12 @@ public class CreatePageServlet extends AbstractBaseServlet {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         String templatePath = request.getParameter(TEMPLATE_PATH);
+        String title = request.getParameterUtf8(TITLE);
+        if(StringUtils.isBlank(title)) {
+            title = name;
+        }
         try {
-            Resource newPage = resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath);
+            Resource newPage = resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath, title);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, PAGE).writeAttribute(STATUS, CREATED)

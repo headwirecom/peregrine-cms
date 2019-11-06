@@ -201,7 +201,10 @@ export default {
             const iframeDoc = ev.target.contentWindow.document
             this.setIframeScrollState(this.viewMode)
             iframeDoc.body.style.position = 'relative'
-            this.createHeightChangeListener(iframeDoc)
+
+            const heightChangeObserver = new ResizeObserver(this.updateOverlay);
+            heightChangeObserver.observe(iframeDoc.body);
+
         },
 
         setIframeScrollState(viewMode) {
@@ -225,23 +228,6 @@ export default {
                     this.setEditableStyle(targetBox, 'selected')
                 }
             })
-        },
-
-        createHeightChangeListener(iframeDoc){
-            var heightChangeListener = iframeDoc.createElement('iframe')
-            heightChangeListener.id = 'height_change_listener'
-            heightChangeListener.setAttribute('tabindex', '-1')
-            heightChangeListener.style.position = 'absolute'
-            heightChangeListener.style.top = '0'
-            heightChangeListener.style.bottom = '0'
-            heightChangeListener.style.left = '0'
-            heightChangeListener.style.height = '100%'
-            heightChangeListener.style.width = '100%'
-            heightChangeListener.style.border = '0'
-            heightChangeListener.style['z-index'] = '-1'
-            heightChangeListener.style['background-color'] = 'transparent'
-            iframeDoc.body.appendChild(heightChangeListener)
-            heightChangeListener.contentWindow.addEventListener("resize", this.updateOverlay)
         },
 
         /*  Overlay (editviewoverlay) methods ======
@@ -414,19 +400,25 @@ export default {
                 var targetBox = this.getBoundingClientRect(targetEl)
                 var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
 
+                var isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path')).fromTemplate === true
+
                 if(isDropTarget) {
                     var dropLocation = targetEl.getAttribute('data-per-location')
-                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after') {
+                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
-                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before') {
+                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before' && !isRoot) {
                         this.dropPosition = 'before'
                         this.setEditableStyle(targetBox, 'drop-top')
                     } else if(dropLocation) {
                         this.dropPosition = 'into-'+dropLocation
                         this.setEditableStyle(targetBox, 'selected')
+                    } else {
+                        this.dropPosition = 'none'
+                        this.leftOverlayArea()
                     }
-                } else {
+                } else if(!isRoot) {
+                    
                     var y = pos.y - targetBox.top
                     if(y < targetBox.height/2) {
                         this.dropPosition = 'before'
@@ -435,6 +427,9 @@ export default {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
                     }
+                } else {
+                    this.dropPosition = 'none'
+                    this.leftOverlayArea()
                 }
             } else {
                 this.dropPosition = 'none'

@@ -6,6 +6,9 @@ branches:
 services:
 - docker
 
+jdk:
+  - openjdk8
+
 env:
   global:
   - DOCKER_IMAGE=peregrinecms/peregrine-cms

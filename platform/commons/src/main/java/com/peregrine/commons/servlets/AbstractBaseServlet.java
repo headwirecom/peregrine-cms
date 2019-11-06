@@ -5,12 +5,14 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.tika.parser.txt.CharsetDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,6 +147,13 @@ public abstract class AbstractBaseServlet
         public String getParameter(String name, String defaultValue) {
             String answer = parameters.get(name);
             return answer == null ? defaultValue : answer;
+        }
+
+        public String getParameterUtf8(String name) {
+            String rawParam = getParameter(name);
+            if(StringUtils.isBlank(rawParam)) return rawParam;
+            CharsetDetector detector = new CharsetDetector();
+            return detector.getString(rawParam.getBytes(), "utf-8");
         }
 
         public int getIntParameter(String name, int defaultValue) {
