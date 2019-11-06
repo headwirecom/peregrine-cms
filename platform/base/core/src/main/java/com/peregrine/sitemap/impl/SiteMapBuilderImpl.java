@@ -91,15 +91,9 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
         final StringBuilder result = new StringBuilder(open(URL));
         append(result, LOC, entry.getUrl());
 
-        final Date lastModified = entry.getPage().getLastModifiedDate();
-        if (lastModified != null) {
-            append(result, LAST_MOD, DATE_FORMAT.format(lastModified));
         for (final Map.Entry<String, String> e : entry.getProperties()) {
             append(result, e.getKey(), e.getValue());
         }
-
-        append(result, CHANGE_FREQ, ALWAYS);
-        append(result, PRIORITY, PRIORITY_0_5);
 
         result.append(close(URL));
         return result.toString();
@@ -124,15 +118,9 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
         int length = BASE_ENTRY_LENGTH;
         length += entry.getUrl().length();
 
-        final Date lastModified = entry.getPage().getLastModifiedDate();
-        if (lastModified != null) {
-            length += baseTagLength(LAST_MOD) + DATE_LENGTH;
         for (final Map.Entry<String, String> e : entry.getProperties()) {
             length += baseTagLength(e.getKey()) + e.getValue().length();
         }
-
-        length += baseTagLength(CHANGE_FREQ) + ALWAYS.length();
-        length += baseTagLength(PRIORITY) + PRIORITY_0_5.length();
 
         return length;
     }

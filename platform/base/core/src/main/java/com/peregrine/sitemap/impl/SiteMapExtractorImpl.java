@@ -64,6 +64,15 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private EtcMapUrlExternalizer defaultUrlExternalizer;
 
     @Reference
+    private LastModPropertyProvider defaultLastModPropertyProvider;
+
+    @Reference
+    private ChangeFreqPropertyProvider defaultChangeFreqPropertyProvider;
+
+    @Reference
+    private PriorityPropertyProvider defaultPriorityPropertyProvider;
+
+    @Reference
     private SiteMapUrlBuilder basicUrlBuilder;
 
     private Pattern pattern;
@@ -90,6 +99,10 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         if (nonNull(propertyProviders)) {
             setPropertyProviders(propertyProviders);
         }
+
+        addPropertyProvider(defaultLastModPropertyProvider);
+        addPropertyProvider(defaultChangeFreqPropertyProvider);
+        addPropertyProvider(defaultPriorityPropertyProvider);
 
         if (isValid()) {
             siteMapExtractorsContainer.add(this);
