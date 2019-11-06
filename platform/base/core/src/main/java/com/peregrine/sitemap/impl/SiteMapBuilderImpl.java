@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.Map;
 
 import static com.peregrine.sitemap.SiteMapConstants.*;
+import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapBuilder.class)
 public final class SiteMapBuilderImpl implements SiteMapBuilder {
@@ -139,7 +140,7 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
             result.append("<sitemap>");
             append(result, LOC, url);
             final Date lastModified = new Date(System.currentTimeMillis());
-            if (lastModified != null) {
+            if (nonNull(lastModified)) {
                 append(result, LAST_MOD, DATE_FORMAT.format(lastModified));
             }
 

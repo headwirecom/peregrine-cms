@@ -5,6 +5,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static java.util.Objects.isNull;
 
 public final class Utils {
 
@@ -20,7 +21,7 @@ public final class Utils {
             existingPath = StringUtils.substringBeforeLast(existingPath, SLASH);
         }
 
-        if (resource == null) {
+        if (isNull(resource)) {
             resource = resourceResolver.getResource(SLASH);
         }
 

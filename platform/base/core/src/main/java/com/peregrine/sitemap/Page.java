@@ -34,6 +34,9 @@ import org.apache.sling.api.resource.ValueMap;
 import java.util.Calendar;
 import java.util.Date;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 public final class Page extends ResourceWrapper {
 
     private final ValueMap properties;
@@ -44,11 +47,11 @@ public final class Page extends ResourceWrapper {
         super(resource);
         properties = resource.getValueMap();
         content = resource.getChild(PerConstants.JCR_CONTENT);
-        contentProperties = content == null ? null : content.getValueMap();
+        contentProperties = isNull(content) ? null : content.getValueMap();
     }
 
     public boolean hasContent() {
-        return content != null;
+        return nonNull(content);
     }
 
     public Resource getContent() {
@@ -56,7 +59,7 @@ public final class Page extends ResourceWrapper {
     }
 
     public boolean containsProperty(final String name) {
-        if (contentProperties != null && contentProperties.containsKey(name)) {
+        if (nonNull(contentProperties) && contentProperties.containsKey(name)) {
             return true;
         }
 
@@ -64,7 +67,7 @@ public final class Page extends ResourceWrapper {
     }
 
     public Object getProperty(final String name) {
-        if (contentProperties != null && contentProperties.containsKey(name)) {
+        if (nonNull(contentProperties) && contentProperties.containsKey(name)) {
             return contentProperties.get(name);
         }
 
@@ -73,16 +76,16 @@ public final class Page extends ResourceWrapper {
 
     public <Type> Type getProperty(final String name, final Class<Type> type) {
         final Object value = getProperty(name);
-        return value == null ? null : type.cast(value);
+        return isNull(value) ? null : type.cast(value);
     }
 
     public Calendar getLastModified() {
         final Calendar calendar = getProperty(JcrConstants.JCR_LASTMODIFIED, Calendar.class);
-        return calendar == null ? getProperty(JcrConstants.JCR_CREATED, Calendar.class) : calendar;
+        return isNull(calendar) ? getProperty(JcrConstants.JCR_CREATED, Calendar.class) : calendar;
     }
 
     public Date getLastModifiedDate() {
         final Calendar calendar = getLastModified();
-        return calendar == null ? null : calendar.getTime();
+        return isNull(calendar) ? null : calendar.getTime();
     }
 }

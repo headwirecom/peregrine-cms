@@ -44,6 +44,8 @@ import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapCache.class)
 @Designate(ocd = SiteMapCacheImplConfig.class)
@@ -174,7 +176,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
     private Resource buildCache(final Resource rootPage, final Resource cache) {
         final ArrayList<String> siteMaps = new ArrayList<>();
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
-        if (extractor == null) {
+        if (isNull(extractor)) {
             putSiteMapsInCache(siteMaps, cache);
             return null;
         }
@@ -199,7 +201,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
             throws RepositoryException {
         final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
         final String missingPath;
-        if (resource == null) {
+        if (isNull(resource)) {
             missingPath = path;
         } else {
             missingPath = StringUtils.substringAfter(path, resource.getPath());
@@ -288,11 +290,11 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
 
     private void cleanRemovedChildren(final Resource cache, final Resource rootPage)
             throws RepositoryException {
-        if (cache == null) {
+        if (isNull(cache)) {
             return;
         }
 
-        if (rootPage == null) {
+        if (isNull(rootPage)) {
             cache.adaptTo(Node.class).remove();
         } else {
             final Iterator<Resource> iterator = cache.listChildren();
@@ -313,7 +315,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
             cleanRemovedChildren(resourceResolver, SLASH);
             final String cacheRoot = getCachePath(StringUtils.EMPTY);
             final Resource root = resourceResolver.getResource(cacheRoot);
-            if (root != null) {
+            if (nonNull(root)) {
                 rebuildCacheInTree(root);
             }
 

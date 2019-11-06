@@ -39,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static java.util.Objects.nonNull;
 
 @Component(service = JobConsumer.class, immediate = true, property = {
         JobConsumer.PROPERTY_TOPICS + "=" + SiteMapResourceChangeJobConsumer.TOPIC })
@@ -61,7 +62,7 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             for (final String path : initialPaths) {
                 final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
-                if (resource != null && allowedPrimaryTypes.contains(resource.getValueMap().get(JCR_PRIMARY_TYPE))) {
+                if (nonNull(resource) && allowedPrimaryTypes.contains(resource.getValueMap().get(JCR_PRIMARY_TYPE))) {
                     cache.rebuild(resource.getPath());
                 }
             }
