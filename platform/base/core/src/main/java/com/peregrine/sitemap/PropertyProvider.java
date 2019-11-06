@@ -1,4 +1,4 @@
-package com.peregrine.sitemap.impl;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,21 +25,12 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.apache.sling.api.resource.Resource;
 
-@ObjectClassDefinition(name = "%config.name", description = "%config.description")
-public @interface SiteMapExtractorImplConfig {
+public interface PropertyProvider extends HasName {
 
-    @AttributeDefinition(name = "%pathRegex.name", description = "%pathRegex.description")
-    String pathRegex();
+    String getPropertyName();
 
-    @AttributeDefinition(name = "%pageRecognizer.name", description = "%pageRecognizer.description")
-    String pageRecognizer();
+    String extractValue(Page page);
 
-    @AttributeDefinition(name = "%urlExternalizer.name", description = "%urlExternalizer.description")
-    String urlExternalizer();
-
-    @AttributeDefinition(name = "%propertyProviders.name", description = "%propertyProviders.description")
-    String[] propertyProviders();
 }

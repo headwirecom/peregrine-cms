@@ -36,16 +36,23 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapExtractor.class, immediate = true)
 @Designate(ocd = SiteMapExtractorImplConfig.class, factory = true)
 public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Map<String, PropertyProvider> propertyProviders = new LinkedHashMap<>();
 
     @Reference
     private NamedServiceRetriever serviceRetriever;
@@ -75,12 +82,45 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
 
         pageRecognizer = getNamedService(PageRecognizer.class, config.pageRecognizer());
         urlExternalizer = getNamedService(UrlExternalizer.class, config.urlExternalizer());
-        if (urlExternalizer == null) {
+        if (isNull(urlExternalizer)) {
             urlExternalizer = defaultUrlExternalizer;
+        }
+
+        final String[] propertyProviders = config.propertyProviders();
+        if (nonNull(propertyProviders)) {
+            setPropertyProviders(propertyProviders);
         }
 
         if (isValid()) {
             siteMapExtractorsContainer.add(this);
+        }
+    }
+
+    private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
+        final S service = serviceRetriever.getNamedService(clazz, name);
+        if (service == null) {
+            logger.error("The service '{}' of type {} was not found. Please check your configuration.",
+                    name, clazz.getName());
+        }
+
+        return service;
+    }
+
+    private void setPropertyProviders(final String[] names) {
+        for (final String name: names) {
+            final PropertyProvider provider = getNamedService(PropertyProvider.class, name);
+            addPropertyProvider(provider);
+        }
+    }
+
+    private void addPropertyProvider(final PropertyProvider provider) {
+        if (isNull(provider)) {
+            return;
+        }
+
+        final String propertyName = provider.getPropertyName();
+        if (!propertyProviders.containsKey(propertyName)) {
+            propertyProviders.put(propertyName, provider);
         }
     }
 
@@ -94,6 +134,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
             siteMapExtractorsContainer.remove(this);
         }
 
+        propertyProviders.clear();
         urlExternalizer = null;
         pageRecognizer = null;
         pattern = null;
@@ -102,16 +143,6 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     @Override
     public boolean appliesTo(final Resource root) {
         return pattern.matcher(root.getPath()).matches();
-    }
-
-    private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
-        final S service = serviceRetriever.getNamedService(clazz, name);
-        if (service == null) {
-            logger.error("The service '{}' of type {} was not found. Please check your configuration.",
-                    name, clazz.getName());
-        }
-
-        return service;
     }
 
     @Override
@@ -139,6 +170,10 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     private SiteMapEntry createEntry(final Page page) {
         final SiteMapEntry entry = new SiteMapEntry(page);
         entry.setUrl(urlExternalizer.map(page));
+        for (final Map.Entry<String, PropertyProvider> e : propertyProviders.entrySet()) {
+            entry.putProperty(e.getKey(), e.getValue().extractValue(page));
+        }
+
         return entry;
     }
 

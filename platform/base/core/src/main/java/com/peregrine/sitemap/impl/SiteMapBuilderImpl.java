@@ -101,6 +101,8 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
         final Date lastModified = entry.getPage().getLastModifiedDate();
         if (lastModified != null) {
             append(result, LAST_MOD, DATE_FORMAT.format(lastModified));
+        for (final Map.Entry<String, String> e : entry.getProperties()) {
+            append(result, e.getKey(), e.getValue());
         }
 
         append(result, CHANGE_FREQ, ALWAYS);
@@ -132,6 +134,8 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
         final Date lastModified = entry.getPage().getLastModifiedDate();
         if (lastModified != null) {
             length += baseTagLength(LAST_MOD) + DATE_LENGTH;
+        for (final Map.Entry<String, String> e : entry.getProperties()) {
+            length += baseTagLength(e.getKey()) + e.getValue().length();
         }
 
         length += baseTagLength(CHANGE_FREQ) + ALWAYS.length();
