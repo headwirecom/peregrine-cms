@@ -26,7 +26,6 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
-import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -36,10 +35,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -48,11 +43,9 @@ import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapExtractor.class, immediate = true)
 @Designate(ocd = SiteMapExtractorImplConfig.class, factory = true)
-public final class SiteMapExtractorImpl implements SiteMapExtractor {
+public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Map<String, PropertyProvider> propertyProviders = new LinkedHashMap<>();
 
     @Reference
     private NamedServiceRetriever serviceRetriever;
@@ -72,14 +65,7 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
     @Reference
     private PriorityPropertyProvider defaultPriorityPropertyProvider;
 
-    @Reference
-    private SiteMapUrlBuilder basicUrlBuilder;
-
     private Pattern pattern;
-
-    private PageRecognizer pageRecognizer;
-
-    private UrlExternalizer urlExternalizer;
 
     @Activate
     public void activate(final SiteMapExtractorImplConfig config) {
@@ -126,17 +112,6 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
         }
     }
 
-    private void addPropertyProvider(final PropertyProvider provider) {
-        if (isNull(provider)) {
-            return;
-        }
-
-        final String propertyName = provider.getPropertyName();
-        if (!propertyProviders.containsKey(propertyName)) {
-            propertyProviders.put(propertyName, provider);
-        }
-    }
-
     private boolean isValid() {
         return nonNull(pattern) && nonNull(pageRecognizer) && nonNull(urlExternalizer);
     }
@@ -147,58 +122,13 @@ public final class SiteMapExtractorImpl implements SiteMapExtractor {
             siteMapExtractorsContainer.remove(this);
         }
 
-        propertyProviders.clear();
-        urlExternalizer = null;
-        pageRecognizer = null;
+        clear();
         pattern = null;
     }
 
     @Override
     public boolean appliesTo(final Resource root) {
         return pattern.matcher(root.getPath()).matches();
-    }
-
-    @Override
-    public List<SiteMapEntry> extract(final Resource root) {
-        return extract(new Page(root));
-    }
-
-    private List<SiteMapEntry> extract(final Page root) {
-        final List<SiteMapEntry> result = new LinkedList<>();
-        if (!pageRecognizer.isPage(root)) {
-            return result;
-        }
-
-        result.add(createEntry(root));
-        for (final Resource child: root.getChildren()) {
-            final Page childPage = new Page(child);
-            if (pageRecognizer.isPage(childPage)) {
-                result.addAll(extract(childPage));
-            }
-        }
-
-        return result;
-    }
-
-    private SiteMapEntry createEntry(final Page page) {
-        final SiteMapEntry entry = new SiteMapEntry(page);
-        entry.setUrl(urlExternalizer.map(page));
-        for (final Map.Entry<String, PropertyProvider> e : propertyProviders.entrySet()) {
-            entry.putProperty(e.getKey(), e.getValue().extractValue(page));
-        }
-
-        return entry;
-    }
-
-    @Override
-    public String buildSiteMapUrl(final Resource siteMapRoot, final int index) {
-        final String url = basicUrlBuilder.buildSiteMapUrl(siteMapRoot, index);
-        return urlExternalizer.map(siteMapRoot.getResourceResolver(), url);
-    }
-
-    @Override
-    public int getIndex(final SlingHttpServletRequest request) {
-        return basicUrlBuilder.getIndex(request);
     }
 
 }
