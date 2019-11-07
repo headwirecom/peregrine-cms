@@ -342,7 +342,7 @@ export default {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if(node.fromTemplate) {
-                    $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
+                    $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                         complete: this.removeEditOverlay
                     })
                 } else {
@@ -504,7 +504,7 @@ export default {
 
                 if(this.selectedComponent) {
                     var path = this.selectedComponent.getAttribute('data-per-path')
-                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                     if(node && node.fromTemplate) {
                         editable.style['border-color'] = 'orange'
                     } else {
