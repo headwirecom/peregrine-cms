@@ -53,6 +53,25 @@ export default {
             }
             return 'navright'
         }
+    },
+    methods: {
+        isEditor: function() {
+            return this.$root.$data.adminPage.title === "editor"
+        },
+        getPath: function(){
+            if( this.$root.$data.pageView){
+                if( this.$root.$data.pageView.path ){
+                    return this.$root.$data.pageView.path;
+                } else {
+                    return "";
+                }
+            } else {
+                return "";
+            }
+        },
+        getDownloadPath(){
+            return this.getPath().split('/').reverse()[0];
+        }
     }
 }
 </script>
