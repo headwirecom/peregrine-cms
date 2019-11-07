@@ -32,6 +32,7 @@
             sling:resourceType="example/components/page"
             jcr:title="Bedienungen"
             template="/content/templates/example"
+            excludeFromSitemap="{Boolean}true"
     >
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="example/components/container">

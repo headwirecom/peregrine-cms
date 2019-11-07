@@ -25,6 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PropertyProvider;
 import com.peregrine.sitemap.SiteMapConstants;
@@ -40,7 +41,7 @@ public final class ChangeFreqPropertyProvider extends TypedPropertyProvider {
 
     @Override
     public String extractValue(final Page page) {
-        return "always";
+        return page.getProperty(PerConstants.CHANGE_FREQUENCY, "weekly");
     }
 
 }

@@ -25,6 +25,8 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import com.peregrine.commons.util.PerConstants;
+
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
 
@@ -43,7 +45,15 @@ public abstract class TypedPerPageRecognizer implements PageRecognizer {
             return false;
         }
 
-        return candidate.containsProperty(SLING_RESOURCE_TYPE) && isPageImpl(candidate);
+        if (!candidate.containsProperty(SLING_RESOURCE_TYPE)) {
+            return false;
+        }
+
+        if (candidate.getProperty(PerConstants.EXCLUDE_FROM_SITEMAP, false)) {
+            return false;
+        }
+
+        return isPageImpl(candidate);
     }
 
     protected abstract boolean isPageImpl(final Page candidate);

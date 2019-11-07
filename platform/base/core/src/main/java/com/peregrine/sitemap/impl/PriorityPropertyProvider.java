@@ -25,6 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PropertyProvider;
 import com.peregrine.sitemap.SiteMapConstants;
@@ -40,7 +41,7 @@ public final class PriorityPropertyProvider extends TypedPropertyProvider {
 
     @Override
     public String extractValue(final Page page) {
-        return "0.5";
+        return page.getProperty(PerConstants.PRIORITY, "0.5");
     }
 
 }
