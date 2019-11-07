@@ -28,7 +28,7 @@
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('rename asset')"
+                        v-bind:title="$i18n('renameAsset')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameAsset">
                         <admin-components-iconrename></admin-components-iconrename>
@@ -36,7 +36,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('move asset')"
+                        v-bind:title="$i18n('moveAsset')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="moveAsset">
                         <i class="material-icons">compare_arrows</i>
@@ -44,7 +44,7 @@
                 </li>
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('delete asset')"
+                        v-bind:title="$i18n('deleteAsset')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="deleteAsset">
                         <i class="material-icons">delete</i>
@@ -101,7 +101,7 @@
                 <div class="explorer-confirm-dialog">
                     <button 
                         type="button"
-                        v-bind:title="$i18n('save page properties')"
+                        v-bind:title="$i18n('savePageProperties')"
                         v-bind:disabled="!valid"
                         class="btn btn-raised waves-effect waves-light right"
                         v-on:click.stop.prevent="onOk">
@@ -132,7 +132,7 @@
 
         </template>
         <div v-else class="explorer-preview-empty">
-            <span>{{ $i18n('no asset selected') }}</span>
+            <span>{{ $i18n('noAssetSelected') }}</span>
             <i class="material-icons">info</i>
         </div>
 

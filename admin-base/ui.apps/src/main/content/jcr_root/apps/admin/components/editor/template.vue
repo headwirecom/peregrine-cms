@@ -33,7 +33,7 @@
         </div>
         <div class="editor-panel-buttons">
             <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
-                    v-bind:title="$i18n('delete component')" v-on:click.stop.prevent="onDelete">
+                    v-bind:title="$i18n('deleteComponent')" v-on:click.stop.prevent="onDelete">
                 <i class="material-icons">delete</i>
             </button>
             <button class="waves-effect waves-light btn btn-raised" v-bind:title="$i18n('cancel')"

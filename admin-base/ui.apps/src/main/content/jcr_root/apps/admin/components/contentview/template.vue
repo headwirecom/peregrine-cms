@@ -57,7 +57,7 @@
                                 </a>
                             </li>
                             <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
-                              <a href="#" v-bind:title="$i18n('delete component')"
+                              <a href="#" v-bind:title="$i18n('deleteComponent')"
                                  v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>

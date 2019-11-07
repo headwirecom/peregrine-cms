@@ -70,7 +70,7 @@
             </vue-form-generator>
         </template>
         <div v-else class="explorer-preview-empty">
-            <span>{{ $i18n('no template selected') }}</span>
+            <span>{{ $i18n('noTemplateSelected') }}</span>
             <i class="material-icons">info</i>
         </div>
 
