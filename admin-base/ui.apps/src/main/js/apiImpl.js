@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -247,10 +247,11 @@ class PerAdminImpl {
                     let component = callbacks.getComponentByName(name)
                     if(component && component.methods && component.methods.augmentEditorSchema) {
                         data.model = component.methods.augmentEditorSchema(data.model)
+                        data.ogTags = component.methods.augmentEditorSchema(data.ogTags)
                     }
 
                     let promises = []
-                    if(data && data.model) {
+                    if(data && data.model && data.ogTags) {
                         for(let i = 0; i < data.model.fields.length; i++) {
                             let from = data.model.fields[i].valuesFrom
                             if(from) {
@@ -290,14 +291,42 @@ class PerAdminImpl {
                             }
                             let visible = data.model.fields[i].visible
                             if(visible) {
-                                data.model.fields[i].visible = function(model) { 
+                                data.model.fields[i].visible = function(model) {
                                     return exprEval.Parser.evaluate( visible, this );
-                                } 
+                                }
                             }
+                        }
+                        for(let i = 0; i < data.ogTags.fields.length; i++) {
+                          let from = data.ogTags.fields[i].valuesFrom
+                          if(from) {
+                            data.ogTags.fields[i].values = []
+                            let promise = axios.get(from).then( (response) => {
+                              for(var key in response.data) {
+                                if(response.data[key]['jcr:title']) {
+                                  const nodeName = key
+                                  const val = from.replace('.infinity.json', '/'+nodeName)
+                                  let name = response.data[key].name
+                                  if(!name) {
+                                    name = response.data[key]['jcr:title']
+                                  }
+                                  data.ogTags.fields[i].values.push({ value: val, name: name })
+                                }
+                              }
+                            }).catch( (error) => {
+                              logger.error('missing node', data.ogTags.fields[i].valuesFrom, 'for list population in dialog', error)
+                            })
+                            promises.push(promise)
+                          }
+                          let visible = data.ogTags.fields[i].visible
+                          if(visible) {
+                            data.ogTags.fields[i].visible = function(ogTags) {
+                              return exprEval.Parser.evaluate( visible, this );
+                            }
+                          }
                         }
                     }
                     Promise.all(promises).then( () => {
-                            populateView('/admin/componentDefinitions', data.name, data.model)
+                            populateView('/admin/componentDefinitions', data.name, data)
                             resolve(name)
                         }
                     )
