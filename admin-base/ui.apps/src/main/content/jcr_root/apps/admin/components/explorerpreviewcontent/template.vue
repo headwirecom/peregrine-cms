@@ -11,6 +11,13 @@
               @click="setActiveTab(Tab.INFO)">
           </admin-components-explorerpreviewnavitem>
           <admin-components-explorerpreviewnavitem
+              v-if="hasOgTags"
+              :icon="Icon.LABEL"
+              :title="'og-tags'"
+              :class="{'active': isTab(Tab.OG_TAGS)}"
+              @click="setActiveTab(Tab.OG_TAGS)">
+          </admin-components-explorerpreviewnavitem>
+          <admin-components-explorerpreviewnavitem
               v-if="hasReferences"
               :icon="Icon.LIST"
               :title="'references'"
@@ -22,9 +29,9 @@
         <ul class="nav-right">
           <template v-if="allowOperations">
             <admin-components-explorerpreviewnavitem
+                :icon="Icon.TEXT_FORMAT"
                 :title="`rename ${nodeType}`"
                 @click="renameNode()">
-              <admin-components-iconrename></admin-components-iconrename>
             </admin-components-explorerpreviewnavitem>
             <admin-components-explorerpreviewnavitem
                 v-if="allowMove"
@@ -55,7 +62,7 @@
         </ul>
       </div>
 
-      <template v-if="isTab([Tab.INFO])">
+      <template v-if="isTab([Tab.INFO, Tab.OG_TAGS])">
         <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
@@ -136,11 +143,13 @@
 
   const Tab = {
     INFO: 'info',
+    OG_TAGS: 'og-tags',
     REFERENCES: 'references'
   };
 
   const SchemaKey = {
     MODEL: 'model',
+    OG_TAGS: 'ogTags'
   };
 
   export default {
@@ -182,6 +191,7 @@
           focusFirstField: true
         },
         nodeTypeGroups: {
+          ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
           references: [NodeType.ASSET],
           selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
           showProp: [NodeType.ASSET, NodeType.OBJECT],
@@ -216,11 +226,14 @@
       allowMove() {
         return this.nodeTypeGroups.allowMove.indexOf(this.nodeType) > -1;
       },
+      hasOgTags() {
+        return this.nodeTypeGroups.ogTags.indexOf(this.nodeType) > -1;
+      },
       hasReferences() {
         return this.nodeTypeGroups.references.indexOf(this.nodeType) > -1;
       },
       hasMultipleTabs() {
-        return this.hasReferences;
+        return this.hasOgTags || this.hasReferences;
       },
       referencedBy() {
         return $perAdminApp.getView().state.referencedBy.referencedBy
@@ -244,7 +257,7 @@
       }
     },
     methods: {
-      getSchema() {
+      getSchema(schemaKey) {
         if (!this.node) {
           return null;
         }
@@ -256,7 +269,7 @@
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
         }
-        let schema = view.admin.componentDefinitions[component];
+        let schema = view.admin.componentDefinitions[component][schemaKey];
         if (this.edit) {
           return schema;
         }
@@ -277,7 +290,9 @@
       },
       getSchemaByActiveTab() {
         if (this.activeTab === Tab.INFO) {
-          return this.getSchema();
+          return this.getSchema(SchemaKey.MODEL);
+        } else if (this.activeTab === Tab.OG_TAGS) {
+          return this.getSchema(SchemaKey.OG_TAGS);
         } else {
           return {};
         }
