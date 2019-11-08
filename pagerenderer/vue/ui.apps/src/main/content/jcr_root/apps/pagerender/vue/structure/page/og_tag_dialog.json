@@ -46,7 +46,6 @@
       "browserRoot": "/content/assets",
       "browserType": "image",
       "label": "og:image",
-      "readonly": true,
       "placeholder": "og:image",
       "model": "ogImage"
     },
