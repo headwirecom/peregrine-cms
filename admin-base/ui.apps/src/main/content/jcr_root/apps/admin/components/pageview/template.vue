@@ -97,7 +97,7 @@
             </template>
         </template>
         <div v-else class="explorer-preview-empty">
-            <span>{{$i18n('no page selected')}}</span>
+            <span>{{$i18n('noPageSelected')}}</span>
             <i class="material-icons">info</i>
         </div>
 
