@@ -31,13 +31,14 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.nonNull;
 
 @Component(service = DefaultSiteMapExtractor.class)
 public final class DefaultSiteMapExtractor extends SiteMapExtractorBase {
+
+    @Reference
+    private SiteMapUrlBuilder urlBuilder;
 
     @Reference
     private PerPageRecognizer perPageRecognizer;
@@ -66,6 +67,10 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase {
     @Deactivate
     public void deactivate() {
         clear();
+    }
+
+    public SiteMapUrlBuilder getUrlBuilder() {
+        return urlBuilder;
     }
 
     @Override

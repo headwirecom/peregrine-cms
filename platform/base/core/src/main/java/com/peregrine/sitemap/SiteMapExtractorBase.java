@@ -27,7 +27,6 @@ package com.peregrine.sitemap;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import java.util.LinkedHashMap;
@@ -37,13 +36,9 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 
-@Component
 public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     private final Map<String, PropertyProvider> propertyProviders = new LinkedHashMap<>();
-
-    @Reference
-    private SiteMapUrlBuilder urlBuilder;
 
     protected PageRecognizer pageRecognizer;
 
@@ -98,15 +93,17 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
         return entry;
     }
 
+    protected abstract SiteMapUrlBuilder getUrlBuilder();
+
     @Override
     public String buildSiteMapUrl(final Resource siteMapRoot, final int index) {
-        final String url = urlBuilder.buildSiteMapUrl(siteMapRoot, index);
+        final String url = getUrlBuilder().buildSiteMapUrl(siteMapRoot, index);
         return urlExternalizer.map(siteMapRoot.getResourceResolver(), url);
     }
 
     @Override
     public int getIndex(final SlingHttpServletRequest request) {
-        return urlBuilder.getIndex(request);
+        return getUrlBuilder().getIndex(request);
     }
 
 }
