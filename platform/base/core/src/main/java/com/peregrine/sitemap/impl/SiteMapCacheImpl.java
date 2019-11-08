@@ -71,6 +71,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
 
     private DeBouncer<String> deBouncer;
 
+    private SiteMapCacheImplConfig config;
     private String location;
     private String locationWithSlash;
     private int maxEntriesCount;
@@ -78,6 +79,8 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
 
     @Activate
     public void activate(final SiteMapCacheImplConfig config) {
+        this.config = config;
+
         deBouncer = new DeBouncer<>(this, config.debounceInterval());
 
         location = config.location();
@@ -315,17 +318,31 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
     public void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, SLASH);
-            final String cacheRoot = getCachePath(StringUtils.EMPTY);
-            final Resource root = resourceResolver.getResource(cacheRoot);
-            if (nonNull(root)) {
-                rebuildCacheInTree(root);
-            }
-
+            rebuildMandatoryContent();
+            rebuildExistingCache(resourceResolver);
             resourceResolver.commit();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final RepositoryException | PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
+        }
+    }
+
+    private void rebuildMandatoryContent() {
+        if (isNull(config) || isNull(config.mandatoryCachedRootPaths())) {
+            return;
+        }
+
+        for (final String path : config.mandatoryCachedRootPaths()) {
+            deBouncer.call(path);
+        }
+    }
+
+    private void rebuildExistingCache(final ResourceResolver resourceResolver) {
+        final String cacheRoot = getCachePath(StringUtils.EMPTY);
+        final Resource root = resourceResolver.getResource(cacheRoot);
+        if (nonNull(root)) {
+            rebuildCacheInTree(root);
         }
     }
 

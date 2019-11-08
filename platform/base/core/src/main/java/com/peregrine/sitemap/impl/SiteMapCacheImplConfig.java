@@ -42,4 +42,7 @@ public @interface SiteMapCacheImplConfig {
 
     @AttributeDefinition(name = "%debounceInterval.name", description = "%debounceInterval.description")
     int debounceInterval() default 0;
+
+    @AttributeDefinition(name = "%mandatoryCachedRootPaths.name", description = "%mandatoryCachedRootPaths.description")
+    String[] mandatoryCachedRootPaths() default { };
 }
