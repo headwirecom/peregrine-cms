@@ -109,8 +109,8 @@
             //Loop through the model for this object/page/asset and find objects that have children
             for ( const key in data) {
                 //If data[key] or deleted[key] is an array of objects
-                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
-                    ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+                if (( data && Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
+                    ( _delted && Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
 
                     let node = data[key];
 
