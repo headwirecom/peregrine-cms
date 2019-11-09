@@ -27,7 +27,7 @@
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
-        <template v-if="isEditor()">
+        <!-- <template v-if="isEditor()">
             <admin-components-separator></admin-components-separator>
             <admin-components-action
                 v-bind:model="{
@@ -39,7 +39,7 @@
                   type: 'download'
                 }"
             ></admin-components-action>
-        </template>
+        </template> -->
     </div>
 </template>
 
