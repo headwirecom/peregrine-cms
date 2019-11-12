@@ -25,10 +25,10 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+public interface CacheBuilder {
 
-public interface SiteMapCache extends CacheBuilder {
+    void rebuild(String path);
 
-    String get(Resource rootPage, int index);
+    void rebuildAll();
 
 }
