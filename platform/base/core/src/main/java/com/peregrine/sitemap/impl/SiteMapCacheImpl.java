@@ -38,12 +38,9 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
+import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -56,7 +53,13 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
     private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
     private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
     private static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
+
+    private static final Map<String, Object> CACHE_NODE_PROPERTIES = new HashMap<>();
     private static final String MAIN_SITE_MAP_KEY = Integer.toString(0);
+
+    static {
+        CACHE_NODE_PROPERTIES.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
+    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -172,7 +175,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
             final String cachePath = getCachePath(rootPage);
             final Resource cache = getOrCreateCacheResource(resourceResolver, cachePath);
             return buildCache(rootPage, cache);
-        } catch (final RepositoryException e) {
+        } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             return null;
         }
@@ -203,8 +206,8 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
     }
 
     private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path)
-            throws RepositoryException {
-        final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
+            throws PersistenceException {
+        Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
         final String missingPath;
         if (isNull(resource)) {
             missingPath = path;
@@ -213,12 +216,10 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         }
 
         final String[] missing = StringUtils.split(missingPath, SLASH);
-        Node node = resource.adaptTo(Node.class);
         for (final String name : missing) {
-            node = node.addNode(name, SLING_FOLDER);
+            resource = resourceResolver.create(resource, name, CACHE_NODE_PROPERTIES);
         }
 
-        node.getSession().save();
         return resourceResolver.getResource(path);
     }
 
@@ -246,7 +247,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         return result;
     }
 
-    private void putSiteMapsInCache(ArrayList<String> source, Resource target) {
+    private void putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
         final ModifiableValueMap modifiableValueMap = target.adaptTo(ModifiableValueMap.class);
         final int siteMapsSize = source.size();
         for (int i = 0; i < siteMapsSize; i++) {
@@ -281,26 +282,26 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
             resourceResolver.commit();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-        } catch (final RepositoryException | PersistenceException e) {
+        } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
     }
 
     private void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
-            throws RepositoryException {
+            throws PersistenceException {
         final Resource cache = resourceResolver.getResource(getCachePath(rootPagePath));
         final Resource rootPage = resourceResolver.getResource(rootPagePath);
         cleanRemovedChildren(cache, rootPage);
     }
 
     private void cleanRemovedChildren(final Resource cache, final Resource rootPage)
-            throws RepositoryException {
+            throws PersistenceException {
         if (isNull(cache)) {
             return;
         }
 
         if (isNull(rootPage)) {
-            cache.adaptTo(Node.class).remove();
+            cache.getResourceResolver().delete(cache);
         } else {
             final Iterator<Resource> iterator = cache.listChildren();
             while (iterator.hasNext()) {
@@ -323,7 +324,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
             resourceResolver.commit();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-        } catch (final RepositoryException | PersistenceException e) {
+        } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
     }
