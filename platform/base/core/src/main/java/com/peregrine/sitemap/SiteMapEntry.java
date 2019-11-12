@@ -9,23 +9,13 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public final class SiteMapEntry {
 
     private final Map<String, String> properties = new LinkedHashMap<>();
-    private final Page page;
-    private String url;
-
-    public SiteMapEntry(final Page page) {
-        this.page = page;
-    }
-
-    public Page getPage() {
-        return page;
-    }
 
     public String getUrl() {
-        return url;
+        return properties.get(SiteMapConstants.LOC);
     }
 
     public void setUrl(final String url) {
-        this.url = url;
+        putProperty(SiteMapConstants.LOC, url);
     }
 
     public String putProperty(final String name, final String value) {

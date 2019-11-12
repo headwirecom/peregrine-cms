@@ -29,8 +29,14 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(name = "%config.name", description = "%config.description")
-public @interface SiteMapScheduledCacheReBuilderConfig {
+public @interface SiteMapFilesCacheImplConfig {
 
-    @AttributeDefinition(name = "%scheduler.expression.name", description = "%scheduler.expression.description")
-    String scheduler_expression() default "0 0 3 1/1 * ? *";
+    @AttributeDefinition(name = "%location.name", description = "%location.description")
+    String location() default "/var/sitemaps/files";
+
+    @AttributeDefinition(name = "%maxFileSize.name", description = "%maxFileSize.description")
+    int maxFileSize() default 52428800;
+
+    @AttributeDefinition(name = "%maxEntriesCount.name", description = "%maxEntriesCount.description")
+    int maxEntriesCount() default 50000;
 }

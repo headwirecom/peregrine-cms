@@ -27,7 +27,7 @@ package com.peregrine.sitemap;
 
 import org.apache.sling.api.resource.Resource;
 
-public interface SiteMapCache extends CacheBuilder {
+public interface SiteMapFilesCache extends CacheBuilder {
 
     String get(Resource rootPage, int index);
 

@@ -26,7 +26,7 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.ResourceResolverFactoryProxy;
-import com.peregrine.sitemap.SiteMapCache;
+import com.peregrine.sitemap.SiteMapStructureCache;
 import com.peregrine.sitemap.Utils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -53,7 +53,7 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
     private ResourceResolverFactoryProxy resourceResolverFactory;
 
     @Reference
-    private SiteMapCache cache;
+    private SiteMapStructureCache cache;
 
     @Override
     public JobResult process(final Job job) {

@@ -25,14 +25,11 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.concurrent.Callback;
-import com.peregrine.concurrent.DeBouncer;
 import com.peregrine.sitemap.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
@@ -46,9 +43,9 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
-@Component(service = SiteMapCache.class)
-@Designate(ocd = SiteMapCacheImplConfig.class)
-public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
+@Component(service = SiteMapFilesCache.class)
+@Designate(ocd = SiteMapFilesCacheImplConfig.class)
+public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
 
     private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
     private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
@@ -67,25 +64,21 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
     private ResourceResolverFactoryProxy resourceResolverFactory;
 
     @Reference
+    private SiteMapStructureCache structureCache;
+
+    @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
     @Reference
     private SiteMapBuilder siteMapBuilder;
 
-    private DeBouncer<String> deBouncer;
-
-    private SiteMapCacheImplConfig config;
     private String location;
     private String locationWithSlash;
     private int maxEntriesCount;
     private int maxFileSize;
 
     @Activate
-    public void activate(final SiteMapCacheImplConfig config) {
-        this.config = config;
-
-        deBouncer = new DeBouncer<>(this, config.debounceInterval());
-
+    public void activate(final SiteMapFilesCacheImplConfig config) {
         location = config.location();
         locationWithSlash = location + SLASH;
 
@@ -100,11 +93,6 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         }
 
         rebuildAll();
-    }
-
-    @Deactivate
-    public void deactivate() {
-        deBouncer.terminate();
     }
 
     @Override
@@ -182,17 +170,17 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
     }
 
     private Resource buildCache(final Resource rootPage, final Resource cache) {
-        final ArrayList<String> siteMaps = new ArrayList<>();
-        final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
-        if (isNull(extractor)) {
-            putSiteMapsInCache(siteMaps, cache);
+        final Collection<SiteMapEntry> entries = structureCache.get(rootPage);
+        if (isNull(entries)) {
+            putSiteMapsInCache(null, cache);
             return null;
         }
 
-        final Collection<SiteMapEntry> entries = extractor.extract(rootPage);
+        final ArrayList<String> siteMaps = new ArrayList<>();
         final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
         final int numberOfParts = splitEntries.size();
         if (numberOfParts > 1) {
+            final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
             siteMaps.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, numberOfParts));
         }
 
@@ -249,7 +237,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
 
     private void putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
         final ModifiableValueMap modifiableValueMap = target.adaptTo(ModifiableValueMap.class);
-        final int siteMapsSize = source.size();
+        final int siteMapsSize = nonNull(source) ? source.size() : 0;
         for (int i = 0; i < siteMapsSize; i++) {
             modifiableValueMap.put(Integer.toString(i), source.get(i));
         }
@@ -273,7 +261,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
             String path = rootPagePath;
             while (isNotBlank(path)) {
                 if (isCached(resourceResolver, path)) {
-                    deBouncer.call(path);
+                    buildCache(path);
                 }
 
                 path = substringBeforeLast(path, SLASH);
@@ -319,23 +307,12 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
     public void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, SLASH);
-            rebuildMandatoryContent();
             rebuildExistingCache(resourceResolver);
             resourceResolver.commit();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
-        }
-    }
-
-    private void rebuildMandatoryContent() {
-        if (isNull(config) || isNull(config.mandatoryCachedRootPaths())) {
-            return;
-        }
-
-        for (final String path : config.mandatoryCachedRootPaths()) {
-            deBouncer.call(path);
         }
     }
 
@@ -351,7 +328,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         final Iterator<Resource> iterator = cache.listChildren();
         if (containsCacheAlready(cache)) {
             final String rootPagePath = getOriginalPath(cache);
-            deBouncer.call(rootPagePath);
+            buildCache(rootPagePath);
         }
 
         while (iterator.hasNext()) {
@@ -359,8 +336,7 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         }
     }
 
-    @Override
-    public void call(final String rootPagePath) {
+    public void buildCache(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             buildCache(resourceResolver, rootPagePath);
             resourceResolver.commit();
@@ -369,6 +345,5 @@ public final class SiteMapCacheImpl implements SiteMapCache, Callback<String> {
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
-
     }
 }

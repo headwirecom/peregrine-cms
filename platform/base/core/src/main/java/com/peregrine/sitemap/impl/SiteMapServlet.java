@@ -25,7 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.SiteMapCache;
+import com.peregrine.sitemap.SiteMapFilesCache;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -67,7 +67,7 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     private SiteMapUrlBuilder urlBuilder;
 
     @Reference
-    private SiteMapCache cache;
+    private SiteMapFilesCache cache;
 
     @Override
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {

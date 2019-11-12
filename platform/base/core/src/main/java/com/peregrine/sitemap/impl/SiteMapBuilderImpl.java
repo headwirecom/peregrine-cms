@@ -90,8 +90,6 @@ public final class SiteMapBuilderImpl implements SiteMapBuilder {
 
     private String toUrl(final SiteMapEntry entry) {
         final StringBuilder result = new StringBuilder(open(URL));
-        append(result, LOC, entry.getUrl());
-
         for (final Map.Entry<String, String> e : entry.getProperties()) {
             append(result, e.getKey(), e.getValue());
         }

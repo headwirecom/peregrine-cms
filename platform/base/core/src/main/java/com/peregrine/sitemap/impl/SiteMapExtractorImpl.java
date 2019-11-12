@@ -41,12 +41,7 @@ import java.util.regex.PatternSyntaxException;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-@Component(service = SiteMapExtractor.class, immediate = true,
-    reference = @Reference(
-            name = "urlBuilder",
-            field = "urlBuilder",
-            service = SiteMapUrlBuilder.class
-    ))
+@Component(service = SiteMapExtractor.class, immediate = true)
 @Designate(ocd = SiteMapExtractorImplConfig.class, factory = true)
 public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
 
