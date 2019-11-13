@@ -55,12 +55,6 @@ public final class SiteMapStructureCacheImpl implements SiteMapStructureCache, C
     private static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
     public static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
 
-    private static final Map<String, Object> CACHE_NODE_PROPERTIES = new HashMap<>();
-
-    static {
-        CACHE_NODE_PROPERTIES.put(JCR_PRIMARY_TYPE, SLING_ORDERED_FOLDER);
-    }
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
@@ -177,7 +171,7 @@ public final class SiteMapStructureCacheImpl implements SiteMapStructureCache, C
     private Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         try {
             final String cachePath = getCachePath(rootPage);
-            final Resource cache = getOrCreateCacheResource(resourceResolver, cachePath);
+            final Resource cache = Utils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
             return buildCache(rootPage, cache);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
@@ -196,24 +190,6 @@ public final class SiteMapStructureCacheImpl implements SiteMapStructureCache, C
         putSiteMapsInCache(entries, cache);
 
         return cache;
-    }
-
-    private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path)
-            throws PersistenceException {
-        Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
-        final String missingPath;
-        if (isNull(resource)) {
-            missingPath = path;
-        } else {
-            missingPath = StringUtils.substringAfter(path, resource.getPath());
-        }
-
-        final String[] missing = StringUtils.split(missingPath, SLASH);
-        for (final String name : missing) {
-            resource = resourceResolver.create(resource, name, CACHE_NODE_PROPERTIES);
-        }
-
-        return resourceResolver.getResource(path);
     }
 
     private void putSiteMapsInCache(final Collection<SiteMapEntry> source, final Resource target) throws PersistenceException {

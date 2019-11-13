@@ -51,12 +51,7 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
     private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
     private static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
 
-    private static final Map<String, Object> CACHE_NODE_PROPERTIES = new HashMap<>();
     private static final String MAIN_SITE_MAP_KEY = Integer.toString(0);
-
-    static {
-        CACHE_NODE_PROPERTIES.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -161,7 +156,7 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
     private Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         try {
             final String cachePath = getCachePath(rootPage);
-            final Resource cache = getOrCreateCacheResource(resourceResolver, cachePath);
+            final Resource cache = Utils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
             return buildCache(rootPage, cache);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
@@ -191,24 +186,6 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
         putSiteMapsInCache(siteMaps, cache);
 
         return cache;
-    }
-
-    private Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final String path)
-            throws PersistenceException {
-        Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
-        final String missingPath;
-        if (isNull(resource)) {
-            missingPath = path;
-        } else {
-            missingPath = StringUtils.substringAfter(path, resource.getPath());
-        }
-
-        final String[] missing = StringUtils.split(missingPath, SLASH);
-        for (final String name : missing) {
-            resource = resourceResolver.create(resource, name, CACHE_NODE_PROPERTIES);
-        }
-
-        return resourceResolver.getResource(path);
     }
 
     private LinkedList<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
