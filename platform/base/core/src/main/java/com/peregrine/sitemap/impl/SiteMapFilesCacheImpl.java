@@ -32,28 +32,17 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 @Component(service = SiteMapFilesCache.class)
 @Designate(ocd = SiteMapFilesCacheImplConfig.class)
-public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
-
-    private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
-    private static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
-    private static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
+public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements SiteMapFilesCache {
 
     private static final String MAIN_SITE_MAP_KEY = Integer.toString(0);
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -67,15 +56,12 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
     @Reference
     private SiteMapFileContentBuilder siteMapBuilder;
 
-    private String location;
-    private String locationWithSlash;
     private int maxEntriesCount;
     private int maxFileSize;
 
     @Activate
     public void activate(final SiteMapFilesCacheImplConfig config) {
-        location = config.location();
-        locationWithSlash = location + SLASH;
+        setLocation(config.location());
 
         maxEntriesCount = config.maxEntriesCount();
         if (maxEntriesCount <= 0) {
@@ -114,38 +100,22 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
         }
     }
 
-    private ResourceResolver getServiceResourceResolver() throws LoginException {
+    protected ResourceResolver getServiceResourceResolver() throws LoginException {
         return resourceResolverFactory.getServiceResourceResolver();
     }
 
-    private boolean isCached(final ResourceResolver resourceResolver, final String path) {
-        final String cachePath = getCachePath(path);
-        return Optional.of(resourceResolver)
-                .map(rr -> rr.getResource(cachePath))
-                .map(r -> containsCacheAlready(r))
-                .orElse(false);
-    }
-
-    private boolean containsCacheAlready(final Resource cache) {
+    protected boolean containsCacheAlready(final Resource cache) {
         return Optional.ofNullable(cache)
                 .map(Resource::getValueMap)
                 .map(vm -> vm.containsKey(MAIN_SITE_MAP_KEY))
                 .orElse(false);
     }
 
-    private String getCachePath(final Resource rootPage) {
-        return getCachePath(rootPage.getPath());
-    }
-
-    private String getCachePath(final String rootPagePath) {
+    protected String getCachePath(final String rootPagePath) {
         return location + rootPagePath;
     }
 
-    private String getOriginalPath(final Resource cache) {
-        return getOriginalPath(cache.getPath());
-    }
-
-    private String getOriginalPath(final String cachePath) {
+    protected String getOriginalPath(final String cachePath) {
         if (!StringUtils.startsWith(cachePath, locationWithSlash)) {
             return null;
         }
@@ -153,18 +123,7 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
         return StringUtils.substringAfter(cachePath, location);
     }
 
-    private Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
-        try {
-            final String cachePath = getCachePath(rootPage);
-            final Resource cache = Utils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
-            return buildCache(rootPage, cache);
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
-            return null;
-        }
-    }
-
-    private Resource buildCache(final Resource rootPage, final Resource cache) {
+    protected Resource buildCache(final Resource rootPage, final Resource cache) {
         final Collection<SiteMapEntry> entries = structureCache.get(rootPage);
         if (isNull(entries)) {
             putSiteMapsInCache(null, cache);
@@ -232,95 +191,7 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
     }
 
     @Override
-    public void rebuild(final String rootPagePath) {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            cleanRemovedChildren(resourceResolver, rootPagePath);
-            String path = rootPagePath;
-            while (isNotBlank(path)) {
-                if (isCached(resourceResolver, path)) {
-                    buildCache(path);
-                }
-
-                path = substringBeforeLast(path, SLASH);
-            }
-
-            resourceResolver.commit();
-        } catch (final LoginException e) {
-            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
-        }
-    }
-
-    private void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
-            throws PersistenceException {
-        final Resource cache = resourceResolver.getResource(getCachePath(rootPagePath));
-        final Resource rootPage = resourceResolver.getResource(rootPagePath);
-        cleanRemovedChildren(cache, rootPage);
-    }
-
-    private void cleanRemovedChildren(final Resource cache, final Resource rootPage)
-            throws PersistenceException {
-        if (isNull(cache)) {
-            return;
-        }
-
-        if (isNull(rootPage)) {
-            cache.getResourceResolver().delete(cache);
-        } else {
-            final Iterator<Resource> iterator = cache.listChildren();
-            while (iterator.hasNext()) {
-                final Resource child = iterator.next();
-                cleanRemovedChildren(child, rootPage.getChild(child.getName()));
-            }
-        }
-    }
-
-    private void buildCache(final ResourceResolver resourceResolver, final String rootPagePath) {
-        buildCache(resourceResolver, resourceResolver.getResource(rootPagePath));
-    }
-
-    @Override
-    public void rebuildAll() {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            cleanRemovedChildren(resourceResolver, SLASH);
-            rebuildExistingCache(resourceResolver);
-            resourceResolver.commit();
-        } catch (final LoginException e) {
-            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
-        }
-    }
-
-    private void rebuildExistingCache(final ResourceResolver resourceResolver) {
-        final String cacheRoot = getCachePath(StringUtils.EMPTY);
-        final Resource root = resourceResolver.getResource(cacheRoot);
-        if (nonNull(root)) {
-            rebuildCacheInTree(root);
-        }
-    }
-
-    private void rebuildCacheInTree(final Resource cache) {
-        final Iterator<Resource> iterator = cache.listChildren();
-        if (containsCacheAlready(cache)) {
-            final String rootPagePath = getOriginalPath(cache);
-            buildCache(rootPagePath);
-        }
-
-        while (iterator.hasNext()) {
-            rebuildCacheInTree(iterator.next());
-        }
-    }
-
-    public void buildCache(final String rootPagePath) {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            buildCache(resourceResolver, rootPagePath);
-            resourceResolver.commit();
-        } catch (final LoginException e) {
-            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
-        }
+    protected void rebuildImpl(final String rootPagePath) {
+        buildCache(rootPagePath);
     }
 }
