@@ -65,7 +65,7 @@ public final class SiteMapFilesCacheImpl implements SiteMapFilesCache {
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
     @Reference
-    private SiteMapBuilder siteMapBuilder;
+    private SiteMapFileContentBuilder siteMapBuilder;
 
     private String location;
     private String locationWithSlash;

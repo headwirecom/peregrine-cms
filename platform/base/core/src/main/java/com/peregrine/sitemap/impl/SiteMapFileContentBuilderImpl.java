@@ -25,7 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.SiteMapBuilder;
+import com.peregrine.sitemap.SiteMapFileContentBuilder;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.apache.sling.api.resource.Resource;
@@ -41,8 +41,8 @@ import static com.peregrine.sitemap.SiteMapConstants.*;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-@Component(service = SiteMapBuilder.class)
-public final class SiteMapBuilderImpl implements SiteMapBuilder {
+@Component(service = SiteMapFileContentBuilder.class)
+public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder {
 
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 

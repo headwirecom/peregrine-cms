@@ -29,7 +29,7 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
 
-public interface SiteMapBuilder {
+public interface SiteMapFileContentBuilder {
 
     String buildUrlSet(Collection<SiteMapEntry> entries);
 
