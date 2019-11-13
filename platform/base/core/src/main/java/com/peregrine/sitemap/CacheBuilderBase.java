@@ -25,22 +25,19 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import com.peregrine.concurrent.Callback;
-import com.peregrine.concurrent.DeBouncer;
-import com.peregrine.sitemap.impl.SiteMapStructureCacheImplConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.*;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.Designate;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Optional;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -57,24 +54,24 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     protected String location;
     protected String locationWithSlash;
 
-    protected void setLocation(final String location) {
+    protected final void setLocation(final String location) {
         this.location = location;
         locationWithSlash = location + SLASH;
     }
 
-    protected String getCachePath(final Resource rootPage) {
+    protected final String getCachePath(final Resource rootPage) {
         return getCachePath(rootPage.getPath());
     }
 
     protected abstract String getCachePath(String rootPagePath);
 
-    protected String getOriginalPath(final Resource cache) {
+    protected final String getOriginalPath(final Resource cache) {
         return getOriginalPath(cache.getPath());
     }
 
     protected abstract String getOriginalPath(String cachePath);
 
-    protected Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
+    protected final Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         try {
             final String cachePath = getCachePath(rootPage);
             final Resource cache = Utils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
@@ -88,7 +85,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     protected abstract Resource buildCache(Resource rootPage, Resource cache) throws PersistenceException;
 
     @Override
-    public void rebuild(final String rootPagePath) {
+    public final void rebuild(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, rootPagePath);
             String path = rootPagePath;
@@ -110,7 +107,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
 
     protected abstract ResourceResolver getServiceResourceResolver() throws LoginException;
 
-    protected void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
+    protected final void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
             throws PersistenceException {
         final Resource cache = resourceResolver.getResource(getCachePath(rootPagePath));
         final Resource rootPage = resourceResolver.getResource(rootPagePath);
@@ -137,7 +134,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     protected abstract void rebuildImpl(final String rootPagePath);
 
     @Override
-    public void rebuildAll() {
+    public final void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, SLASH);
             rebuildMandatoryContent();
@@ -172,7 +169,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         }
     }
 
-    protected boolean isCached(final ResourceResolver resourceResolver, final String path) {
+    protected final boolean isCached(final ResourceResolver resourceResolver, final String path) {
         final String cachePath = getCachePath(path);
         return Optional.of(resourceResolver)
                 .map(rr -> rr.getResource(cachePath))
@@ -184,7 +181,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         return nonNull(cache);
     }
 
-    protected void buildCache(final String rootPagePath) {
+    protected final void buildCache(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             buildCache(resourceResolver, rootPagePath);
             resourceResolver.commit();

@@ -120,14 +120,17 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
         return entry;
     }
 
+    @Override
     protected ResourceResolver getServiceResourceResolver() throws LoginException {
         return resourceResolverFactory.getServiceResourceResolver();
     }
 
+    @Override
     protected String getCachePath(final String rootPagePath) {
         return location + rootPagePath + SLASH_JCR_CONTENT;
     }
 
+    @Override
     protected String getOriginalPath(final String cachePath) {
         if (!StringUtils.startsWith(cachePath, locationWithSlash)) {
             return null;
@@ -142,6 +145,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
         return result;
     }
 
+    @Override
     protected Resource buildCache(final Resource rootPage, final Resource cache) throws PersistenceException {
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(extractor)) {
@@ -197,6 +201,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
         deBouncer.call(rootPagePath);
     }
 
+    @Override
     protected void rebuildMandatoryContent() {
         if (isNull(config) || isNull(config.mandatoryCachedRootPaths())) {
             return;

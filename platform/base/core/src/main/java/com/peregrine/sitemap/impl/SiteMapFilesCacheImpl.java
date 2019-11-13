@@ -100,10 +100,12 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
         }
     }
 
+    @Override
     protected ResourceResolver getServiceResourceResolver() throws LoginException {
         return resourceResolverFactory.getServiceResourceResolver();
     }
 
+    @Override
     protected boolean containsCacheAlready(final Resource cache) {
         return Optional.ofNullable(cache)
                 .map(Resource::getValueMap)
@@ -111,10 +113,12 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
                 .orElse(false);
     }
 
+    @Override
     protected String getCachePath(final String rootPagePath) {
         return location + rootPagePath;
     }
 
+    @Override
     protected String getOriginalPath(final String cachePath) {
         if (!StringUtils.startsWith(cachePath, locationWithSlash)) {
             return null;
@@ -123,6 +127,7 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
         return StringUtils.substringAfter(cachePath, location);
     }
 
+    @Override
     protected Resource buildCache(final Resource rootPage, final Resource cache) {
         final Collection<SiteMapEntry> entries = structureCache.get(rootPage);
         if (isNull(entries)) {
