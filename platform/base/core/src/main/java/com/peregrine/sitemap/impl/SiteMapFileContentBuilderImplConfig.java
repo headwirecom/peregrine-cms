@@ -25,14 +25,12 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.PageRecognizerBase;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import static com.peregrine.commons.util.PerConstants.*;
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface SiteMapFileContentBuilderImplConfig {
 
-public abstract class PerPageRecognizerBase extends PageRecognizerBase {
-
-    public PerPageRecognizerBase() {
-        super(PAGE_PRIMARY_TYPE, PAGE_CONTENT_TYPE, EXCLUDE_FROM_SITEMAP);
-    }
-
+    @AttributeDefinition(name = "%xmlnsMappings.name", description = "%xmlnsMappings.description")
+    String[] xmlnsMappings();
 }

@@ -28,8 +28,11 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.sitemap.SiteMapFileContentBuilder;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.Designate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,21 +45,45 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component(service = SiteMapFileContentBuilder.class)
+@Designate(ocd = SiteMapFileContentBuilderImplConfig.class)
 public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder {
 
-    private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+    private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
-    private static final String URL_SET_START_TAG = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"" +
-            " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
-            " xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">";
+    private static final String EQ = "=";
     private static final String URL_SET_END_TAG = close(URL_SET);
 
     private static final int TAG_SYMBOLS_LENGTH = 5;
-    private static final int BASE_SITE_MAP_LENGTH = XML_VERSION.length()
-            + URL_SET_START_TAG.length() + URL_SET_END_TAG.length();
     private static final int BASE_ENTRY_LENGTH = baseTagLength(URL) + baseTagLength(LOC);
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+
+    private String urlSetStartTag;
+    private int baseSiteMapLength;
+
+    @Activate
+    public void activate(final SiteMapFileContentBuilderImplConfig config) {
+        urlSetStartTag = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"" +
+                " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                " xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\"";
+
+        final String[] xmlnsMappings = config.xmlnsMappings();
+        if (nonNull(xmlnsMappings)) {
+            for (final String mapping : xmlnsMappings) {
+                if (StringUtils.contains(mapping, EQ)) {
+                    urlSetStartTag += " xmlns:";
+                    urlSetStartTag += StringUtils.substringBefore(mapping, EQ);
+                    urlSetStartTag += "=\"";
+                    urlSetStartTag += StringUtils.substringAfter(mapping, EQ);
+                    urlSetStartTag += "\"";
+                }
+            }
+        }
+
+        urlSetStartTag += ">";
+        baseSiteMapLength = XML_VERSION.length()
+                + urlSetStartTag.length() + URL_SET_END_TAG.length();
+    }
 
     private static String open(final String tagName) {
         return "<" + tagName + ">";
@@ -73,7 +100,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     @Override
     public String buildUrlSet(final Collection<SiteMapEntry> entries) {
         final StringBuilder result = new StringBuilder(XML_VERSION);
-        result.append(URL_SET_START_TAG);
+        result.append(urlSetStartTag);
         for (final SiteMapEntry entry : entries) {
             if (!isEmpty(entry)) {
                 result.append(toUrl(entry));
@@ -126,7 +153,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
 
     @Override
     public int getBaseSiteMapLength() {
-        return BASE_SITE_MAP_LENGTH;
+        return baseSiteMapLength;
     }
 
     @Override
@@ -139,7 +166,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
             append(result, LOC, url);
             final Date lastModified = new Date(System.currentTimeMillis());
             if (nonNull(lastModified)) {
-                append(result, LAST_MOD, DATE_FORMAT.format(lastModified));
+                append(result, LAST_MOD, dateFormat.format(lastModified));
             }
 
             result.append("</sitemap>");
