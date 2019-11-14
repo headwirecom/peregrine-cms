@@ -44,9 +44,12 @@ import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapStructureCache.class, immediate = true)
 @Designate(ocd = SiteMapStructureCacheImplConfig.class)
-public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements SiteMapStructureCache, Callback<String> {
+public final class SiteMapStructureCacheImpl extends CacheBuilderBase
+        implements SiteMapStructureCache, Callback<String> {
 
     public static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
+
+    private final Set<RefreshListener> refreshListeners = new HashSet<>();
 
     @Reference
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -144,16 +147,18 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(extractor)) {
             putSiteMapsInCache(null, cache);
+            notifyCacheRefreshed(rootPage, null);
             return null;
         }
 
-        final Collection<SiteMapEntry> entries = extractor.extract(rootPage);
+        final List<SiteMapEntry> entries = extractor.extract(rootPage);
         putSiteMapsInCache(entries, cache);
+        notifyCacheRefreshed(rootPage, entries);
 
         return cache;
     }
 
-    private void putSiteMapsInCache(final Collection<SiteMapEntry> source, final Resource target) throws PersistenceException {
+    private void putSiteMapsInCache(final List<SiteMapEntry> source, final Resource target) throws PersistenceException {
         final int siteMapsSize = nonNull(source) ? source.size() : 0;
         final Iterator<SiteMapEntry> iterator = source.iterator();
         final ResourceResolver resourceResolver = target.getResourceResolver();
@@ -176,6 +181,14 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
         }
 
         removeCachedItemsAboveIndex(target, siteMapsSize);
+    }
+
+    private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
+        new Thread(() -> {
+            for (final RefreshListener listener : refreshListeners) {
+                listener.onCacheRefreshed(rootPage, entries);
+            }
+        }).start();
     }
 
     private void removeCachedItemsAboveIndex(final Resource target, final int startItemIndex) throws PersistenceException {
@@ -203,6 +216,20 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
 
         for (final String path : config.mandatoryCachedRootPaths()) {
             rebuildImpl(path);
+        }
+    }
+
+    @Override
+    public void addRefreshListener(final RefreshListener listener) {
+        synchronized (refreshListeners) {
+            refreshListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeRefreshListener(final RefreshListener listener) {
+        synchronized (refreshListeners) {
+            refreshListeners.remove(listener);
         }
     }
 

@@ -27,23 +27,23 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 
 import java.util.*;
 
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapFilesCache.class)
 @Designate(ocd = SiteMapFilesCacheImplConfig.class)
-public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements SiteMapFilesCache {
+public final class SiteMapFilesCacheImpl extends CacheBuilderBase
+        implements SiteMapFilesCache, SiteMapStructureCache.RefreshListener {
 
     private static final String MAIN_SITE_MAP_KEY = Integer.toString(0);
 
@@ -64,6 +64,8 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
 
     @Activate
     public void activate(final SiteMapFilesCacheImplConfig config) {
+        structureCache.addRefreshListener(this);
+
         setLocation(config.location());
 
         maxEntriesCount = config.maxEntriesCount();
@@ -77,6 +79,11 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
         }
 
         rebuildAll();
+    }
+
+    @Deactivate
+    public void deactivate() {
+        structureCache.removeRefreshListener(this);
     }
 
     @Override
@@ -123,7 +130,11 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
 
     @Override
     protected Resource buildCache(final Resource rootPage, final Resource cache) {
-        final Collection<SiteMapEntry> entries = structureCache.get(rootPage);
+        final List<SiteMapEntry> entries = structureCache.get(rootPage);
+        return buildCache(rootPage, entries, cache);
+    }
+
+    private Resource buildCache(final Resource rootPage, final List<SiteMapEntry> entries, final Resource cache) {
         if (isNull(entries)) {
             putSiteMapsInCache(null, cache);
             return null;
@@ -193,4 +204,18 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
     protected void rebuildImpl(final String rootPagePath) {
         buildCache(rootPagePath);
     }
+
+    @Override
+    public void onCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
+        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            final Resource cache = getOrCreateCacheResource(resourceResolver, rootPage);
+            buildCache(rootPage, entries, cache);
+            resourceResolver.commit();
+        } catch (final LoginException e) {
+            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+        } catch (final PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
+        }
+    }
+
 }

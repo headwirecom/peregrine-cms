@@ -105,13 +105,17 @@ public abstract class CacheBuilderBase implements CacheBuilder {
 
     protected final Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         try {
-            final String cachePath = getCachePath(rootPage);
-            final Resource cache = Utils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
+            final Resource cache = getOrCreateCacheResource(resourceResolver, rootPage);
             return buildCache(rootPage, cache);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             return null;
         }
+    }
+
+    protected final Resource getOrCreateCacheResource(ResourceResolver resourceResolver, Resource rootPage) throws PersistenceException {
+        final String cachePath = getCachePath(rootPage);
+        return Utils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
     }
 
     protected abstract Resource buildCache(Resource rootPage, Resource cache) throws PersistenceException;
