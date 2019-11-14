@@ -27,7 +27,7 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PropertyProvider;
-import com.peregrine.sitemap.TypedPropertyProvider;
+import com.peregrine.sitemap.PropertyProviderBase;
 import org.osgi.service.component.annotations.Component;
 
 import java.text.DateFormat;
@@ -39,7 +39,7 @@ import static com.peregrine.sitemap.SiteMapConstants.LAST_MOD;
 import static java.util.Objects.nonNull;
 
 @Component(service = { PropertyProvider.class, LastModPropertyProvider.class })
-public final class LastModPropertyProvider extends TypedPropertyProvider {
+public final class LastModPropertyProvider extends PropertyProviderBase {
 
     private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 

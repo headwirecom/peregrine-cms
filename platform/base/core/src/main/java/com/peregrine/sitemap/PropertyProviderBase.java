@@ -25,11 +25,11 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-public abstract class TypedPropertyProvider implements PropertyProvider {
+public abstract class PropertyProviderBase implements PropertyProvider {
 
     private final String propertyName;
 
-    protected TypedPropertyProvider(final String propertyName) {
+    protected PropertyProviderBase(final String propertyName) {
         this.propertyName = propertyName;
     }
 

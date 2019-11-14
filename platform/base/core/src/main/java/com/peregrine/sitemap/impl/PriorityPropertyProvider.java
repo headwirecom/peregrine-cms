@@ -29,11 +29,11 @@ import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PropertyProvider;
 import com.peregrine.sitemap.SiteMapConstants;
-import com.peregrine.sitemap.TypedPropertyProvider;
+import com.peregrine.sitemap.PropertyProviderBase;
 import org.osgi.service.component.annotations.Component;
 
 @Component(service = { PropertyProvider.class, PriorityPropertyProvider.class })
-public final class PriorityPropertyProvider extends TypedPropertyProvider {
+public final class PriorityPropertyProvider extends PropertyProviderBase {
 
     public PriorityPropertyProvider() {
         super(SiteMapConstants.PRIORITY);
