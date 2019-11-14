@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,16 +25,13 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-public abstract class PropertyProviderBase implements PropertyProvider {
+import com.peregrine.sitemap.PageRecognizerBase;
 
-    private final String propertyName;
+import static com.peregrine.commons.util.PerConstants.*;
 
-    protected PropertyProviderBase(final String propertyName) {
-        this.propertyName = propertyName;
-    }
+public abstract class PerPageRecognizerBase extends PageRecognizerBase {
 
-    @Override
-    public final String getPropertyName() {
-        return propertyName;
+    public PerPageRecognizerBase() {
+        super(PAGE_PRIMARY_TYPE, PAGE_CONTENT_TYPE, EXCLUDE_FROM_SITEMAP);
     }
 }

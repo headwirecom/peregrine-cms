@@ -30,7 +30,20 @@ import com.peregrine.commons.util.PerConstants;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
 
-public abstract class TypedPerPageRecognizer implements PageRecognizer {
+public abstract class PageRecognizerBase implements PageRecognizer {
+
+    private final String pagePrimaryType;
+    private final String pageContentPrimaryType;
+    private final String excludeFromSiteMapPropertyName;
+
+    protected PageRecognizerBase(
+            final String pagePrimaryType,
+            final String pageContentPrimaryType,
+            final String excludeFromSiteMapPropertyName) {
+        this.pagePrimaryType = pagePrimaryType;
+        this.pageContentPrimaryType = pageContentPrimaryType;
+        this.excludeFromSiteMapPropertyName = excludeFromSiteMapPropertyName;
+    }
 
     public final boolean isPage(final Page candidate) {
         if (!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE)) {
