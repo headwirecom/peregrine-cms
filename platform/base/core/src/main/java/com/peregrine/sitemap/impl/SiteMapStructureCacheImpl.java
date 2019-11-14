@@ -46,8 +46,6 @@ import static java.util.Objects.nonNull;
 @Designate(ocd = SiteMapStructureCacheImplConfig.class)
 public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements SiteMapStructureCache, Callback<String> {
 
-    private static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
-    private static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
     public static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
 
     @Reference
@@ -56,17 +54,15 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
-    private DeBouncer<String> deBouncer;
-
     private SiteMapStructureCacheImplConfig config;
+
+    private DeBouncer<String> deBouncer;
 
     @Activate
     public void activate(final SiteMapStructureCacheImplConfig config) {
         this.config = config;
         setLocation(config.location());
-
         deBouncer = new DeBouncer<>(this, config.debounceInterval());
-
         rebuildAll();
     }
 
@@ -78,21 +74,14 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
     @Override
     public List<SiteMapEntry> get(final Resource rootPage) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            final Resource cache;
-            if (isCached(resourceResolver, rootPage.getPath())) {
-                final String cachePath = getCachePath(rootPage);
-                cache = resourceResolver.getResource(cachePath);
-            } else {
-                cache = buildCache(resourceResolver, rootPage);
-                resourceResolver.commit();
+            final Resource cache = getCache(resourceResolver, rootPage);
+            if (isNull(cache)) {
+                return null;
             }
 
             return extractEntriesFromChildren(cache);
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-            return null;
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             return null;
         }
     }
@@ -118,6 +107,11 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
         }
 
         return entry;
+    }
+
+    @Override
+    public void call(final String rootPagePath) {
+        buildCache(rootPagePath);
     }
 
     @Override
@@ -210,11 +204,6 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase implements
         for (final String path : config.mandatoryCachedRootPaths()) {
             rebuildImpl(path);
         }
-    }
-
-    @Override
-    public void call(final String rootPagePath) {
-        buildCache(rootPagePath);
     }
 
 }

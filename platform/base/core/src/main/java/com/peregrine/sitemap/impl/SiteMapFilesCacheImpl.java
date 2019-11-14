@@ -27,7 +27,10 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.*;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -78,24 +81,15 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
 
     @Override
     public String get(final Resource rootPage, final int index) {
+        final String key = Integer.toString(index);
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            final Resource cache;
-            if (isCached(resourceResolver, rootPage.getPath())) {
-                final String cachePath = getCachePath(rootPage);
-                cache = resourceResolver.getResource(cachePath);
-            } else {
-                cache = buildCache(resourceResolver, rootPage);
-                resourceResolver.commit();
-            }
-
-            final ValueMap properties = cache.getValueMap();
-            final String key = Integer.toString(index);
-            return properties.get(key, String.class);
+            return Optional.ofNullable(rootPage)
+                    .map(r -> getCache(resourceResolver, r))
+                    .map(Resource::getValueMap)
+                    .map(props -> props.get(key, String.class))
+                    .orElse(null);
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-            return null;
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             return null;
         }
     }
@@ -103,14 +97,6 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
     @Override
     protected ResourceResolver getServiceResourceResolver() throws LoginException {
         return resourceResolverFactory.getServiceResourceResolver();
-    }
-
-    @Override
-    protected boolean containsCacheAlready(final Resource cache) {
-        return Optional.ofNullable(cache)
-                .map(Resource::getValueMap)
-                .map(vm -> vm.containsKey(MAIN_SITE_MAP_KEY))
-                .orElse(false);
     }
 
     @Override
@@ -125,6 +111,14 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
         }
 
         return StringUtils.substringAfter(cachePath, location);
+    }
+
+    @Override
+    protected boolean containsCacheAlready(final Resource cache) {
+        return Optional.ofNullable(cache)
+                .map(Resource::getValueMap)
+                .map(vm -> vm.containsKey(MAIN_SITE_MAP_KEY))
+                .orElse(false);
     }
 
     @Override
@@ -152,6 +146,25 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
         return cache;
     }
 
+    private void putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
+        final ModifiableValueMap modifiableValueMap = target.adaptTo(ModifiableValueMap.class);
+        final int siteMapsSize = nonNull(source) ? source.size() : 0;
+        for (int i = 0; i < siteMapsSize; i++) {
+            modifiableValueMap.put(Integer.toString(i), source.get(i));
+        }
+
+        removeCachedItemsAboveIndex(modifiableValueMap, siteMapsSize);
+    }
+
+    private void removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int startItemIndex) {
+        int i = startItemIndex;
+        String key = Integer.toString(i);
+        while (modifiableValueMap.containsKey(key)) {
+            modifiableValueMap.remove(key);
+            key = Integer.toString(++i);
+        }
+    }
+
     private LinkedList<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
         final int baseSiteMapLength = siteMapBuilder.getBaseSiteMapLength();
         final LinkedList<List<SiteMapEntry>> result = new LinkedList<>();
@@ -174,25 +187,6 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase implements Sit
         }
 
         return result;
-    }
-
-    private void putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
-        final ModifiableValueMap modifiableValueMap = target.adaptTo(ModifiableValueMap.class);
-        final int siteMapsSize = nonNull(source) ? source.size() : 0;
-        for (int i = 0; i < siteMapsSize; i++) {
-            modifiableValueMap.put(Integer.toString(i), source.get(i));
-        }
-
-        removeCachedItemsAboveIndex(modifiableValueMap, siteMapsSize);
-    }
-
-    private void removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int startItemIndex) {
-        int i = startItemIndex;
-        String key = Integer.toString(i);
-        while (modifiableValueMap.containsKey(key)) {
-            modifiableValueMap.remove(key);
-            key = Integer.toString(++i);
-        }
     }
 
     @Override

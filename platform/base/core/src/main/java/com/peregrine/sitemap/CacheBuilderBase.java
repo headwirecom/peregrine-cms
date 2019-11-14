@@ -59,6 +59,34 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         locationWithSlash = location + SLASH;
     }
 
+    protected Resource getCache(final ResourceResolver resourceResolver, final Resource rootPage) {
+        try {
+            final Resource cache;
+            if (isCached(resourceResolver, rootPage.getPath())) {
+                final String cachePath = getCachePath(rootPage);
+                cache = resourceResolver.getResource(cachePath);
+            } else {
+                cache = buildCache(resourceResolver, rootPage);
+                resourceResolver.commit();
+            }
+
+            return cache;
+        } catch (final PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
+            return null;
+        }
+    }
+
+    protected abstract ResourceResolver getServiceResourceResolver() throws LoginException;
+
+    protected final boolean isCached(final ResourceResolver resourceResolver, final String path) {
+        final String cachePath = getCachePath(path);
+        return Optional.of(resourceResolver)
+                .map(rr -> rr.getResource(cachePath))
+                .map(r -> containsCacheAlready(r))
+                .orElse(false);
+    }
+
     protected final String getCachePath(final Resource rootPage) {
         return getCachePath(rootPage.getPath());
     }
@@ -70,6 +98,10 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     protected abstract String getOriginalPath(String cachePath);
+
+    protected boolean containsCacheAlready(final Resource cache) {
+        return nonNull(cache);
+    }
 
     protected final Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         try {
@@ -105,8 +137,6 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         }
     }
 
-    protected abstract ResourceResolver getServiceResourceResolver() throws LoginException;
-
     protected final void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
             throws PersistenceException {
         final Resource cache = resourceResolver.getResource(getCachePath(rootPagePath));
@@ -132,6 +162,21 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     protected abstract void rebuildImpl(final String rootPagePath);
+
+    protected final void buildCache(final String rootPagePath) {
+        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            buildCache(resourceResolver, rootPagePath);
+            resourceResolver.commit();
+        } catch (final LoginException e) {
+            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+        } catch (final PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
+        }
+    }
+
+    private void buildCache(final ResourceResolver resourceResolver, final String rootPagePath) {
+        buildCache(resourceResolver, resourceResolver.getResource(rootPagePath));
+    }
 
     @Override
     public final void rebuildAll() {
@@ -167,33 +212,6 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         while (iterator.hasNext()) {
             rebuildCacheInTree(iterator.next());
         }
-    }
-
-    protected final boolean isCached(final ResourceResolver resourceResolver, final String path) {
-        final String cachePath = getCachePath(path);
-        return Optional.of(resourceResolver)
-                .map(rr -> rr.getResource(cachePath))
-                .map(r -> containsCacheAlready(r))
-                .orElse(false);
-    }
-
-    protected boolean containsCacheAlready(final Resource cache) {
-        return nonNull(cache);
-    }
-
-    protected final void buildCache(final String rootPagePath) {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            buildCache(resourceResolver, rootPagePath);
-            resourceResolver.commit();
-        } catch (final LoginException e) {
-            logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
-        }
-    }
-
-    private void buildCache(final ResourceResolver resourceResolver, final String rootPagePath) {
-        buildCache(resourceResolver, resourceResolver.getResource(rootPagePath));
     }
 
 }
