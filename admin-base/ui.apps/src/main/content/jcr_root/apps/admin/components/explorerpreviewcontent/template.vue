@@ -450,13 +450,11 @@
   }
 
   .info-view-image {
-    margin-top: 1em;
   }
 
   .info-view-iframe {
     width: 100%;
     height: 60%;
-    margin-top: 1em;
   }
 
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view {
@@ -466,5 +464,6 @@
 
   .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view img {
     max-height: 100%;
+    padding-top: 1em;
   }
 </style>
