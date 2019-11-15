@@ -57,10 +57,9 @@ export default {
       if (!title) { 
         title = "desktop"
       }
-      const selected = this.devices.find(function(el) {
+      return this.devices.find(function (el) {
         return el.title === title;
       });
-      return selected;
     },
     devices() {
       return this.model.children;
