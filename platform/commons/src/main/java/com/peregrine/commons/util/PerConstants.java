@@ -48,7 +48,7 @@ public class PerConstants {
 
     public static final String DISTRIBUTION_SUB_SERVICE = "peregrine-distribution-sub-service";
 
-    public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+    public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final Locale ECMA_DATE_FORMAT_LOCALE = Locale.US;
 
     public static final String SLASH = "/";
@@ -71,6 +71,7 @@ public class PerConstants {
     public static final String OBJECTS_ROOT = "/content/objects";
     public static final String SITES_ROOT = "/content/sites";
     public static final String TEMPLATES_ROOT = "/content/templates";
+    public static final String PACKAGES_PATH = "/etc/packages";
 
     public static final String COMPONENTS = "components";
     public static final String TEMPLATES = "templates";

@@ -45,17 +45,20 @@
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
-                                <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
+                              <a href="#" v-bind:title="$i18n('copy')"
+                                 v-on:click.stop.prevent="onCopy">
                                     <i class="material-icons">content_copy</i>
                                 </a>
                             </li>
                             <li v-if="clipboard" class="waves-effect waves-light">
-                                <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
+                              <a v-bind:title="$i18n('paste')" href="#"
+                                 v-on:click.stop.prevent="onPaste">
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
                             <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
-                                <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
+                              <a href="#" v-bind:title="$i18n('deleteComponent')"
+                                 v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
                             </li>
@@ -339,7 +342,7 @@ export default {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if(node.fromTemplate) {
-                    $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
+                    $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                         complete: this.removeEditOverlay
                     })
                 } else {
@@ -501,7 +504,7 @@ export default {
 
                 if(this.selectedComponent) {
                     var path = this.selectedComponent.getAttribute('data-per-path')
-                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                     if(node && node.fromTemplate) {
                         editable.style['border-color'] = 'orange'
                     } else {

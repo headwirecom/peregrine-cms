@@ -79,6 +79,7 @@
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
+                        title: '',
                         templatePath: ''
 
                     },
@@ -88,15 +89,31 @@
                         validateAfterChanged: true,
                         focusFirstField: true
                     },
+                    nameChanged: false,
                     nameSchema: {
                       fields: [
+                          {
+                              type: "input",
+                              inputType: "text",
+                              label: "Page Title",
+                              model: "title",
+                              required: true,
+                              onChanged: (model, newVal, oldVal, field) => {
+                                  if(!this.nameChanged) {
+                                      this.formmodel.name = $perAdminApp.normalizeString(newVal);
+                                  }
+                              }
+                          },
                         {
                             type: "input",
                             inputType: "text",
                             label: "Page Name",
                             model: "name",
                             required: true,
-                            validator: this.nameAvailable
+                            onChanged: (model, newVal, oldVal, field) => {
+                                this.nameChanged = true;
+                            },
+                            validator: [this.nameAvailable, this.validPageName]
                         }
                       ]
                     }
@@ -139,7 +156,7 @@
                 return this.formmodel.templatePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
+                $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, title: this.formmodel.title, data: this.formmodel })
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath);
@@ -166,10 +183,18 @@
                     return []
                 }
             },
+            validPageName(value) {
+                if(!value || value.length === 0) {
+                    return ['name is required']
+                }
+                if(value.match(/[^0-9a-zA-Z_-]/)) {
+                    return ['page names may only contain letters, numbers, underscores, and dashes']
+                }
+                return [];
+            },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
             }
-
         }
     }
 </script>

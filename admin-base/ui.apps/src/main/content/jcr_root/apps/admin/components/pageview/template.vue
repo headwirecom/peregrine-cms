@@ -97,7 +97,7 @@
             </template>
         </template>
         <div v-else class="explorer-preview-empty">
-            <span>{{$i18n('no page selected')}}</span>
+            <span>{{$i18n('noPageSelected')}}</span>
             <i class="material-icons">info</i>
         </div>
 
@@ -135,6 +135,7 @@
                     field.readonly = true
                     if(field.fields) {
                         field.fields.forEach( (field) => {
+                            field.preview = true
                             field.readonly = true
                         })
                     }

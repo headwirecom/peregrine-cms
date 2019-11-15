@@ -106,12 +106,12 @@ class PerApi {
         return impl.populateI18N(language)
     }
 
-    createSite(fromName, toName) {
-        return impl.createSite(fromName, toName)
+    createSite(fromName, toName, title) {
+        return impl.createSite(fromName, toName, title)
     }
 
-    createPage(parentPath, name, templatePath) {
-        return impl.createPage(parentPath, name, templatePath)
+    createPage(parentPath, name, templatePath, title) {
+        return impl.createPage(parentPath, name, templatePath, title)
     }
 
     deletePage(path) {
@@ -134,8 +134,8 @@ class PerApi {
         return impl.deletePageNode(path, nodePath)
     }
 
-    createTemplate(parentPath, name, component) {
-        return impl.createTemplate(parentPath, name, component)
+    createTemplate(parentPath, name, component, title) {
+        return impl.createTemplate(parentPath, name, component, title)
     }
 
     createObject(parentPath, name, templatePath) {

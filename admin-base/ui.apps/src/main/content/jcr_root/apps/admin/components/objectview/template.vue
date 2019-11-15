@@ -28,7 +28,7 @@
             <ul class="explorer-preview-nav">
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('rename object')"
+                        v-bind:title="$i18n('renameObject')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="renameObject">
                         <admin-components-iconrename></admin-components-iconrename>
@@ -44,7 +44,7 @@
                 <!--</li>-->
                 <li>
                     <a  href="#!"
-                        v-bind:title="$i18n('delete object')"
+                        v-bind:title="$i18n('deleteObject')"
                         class="waves-effect waves-light"
                         v-on:click.stop.prevent="deleteObject">
                         <i class="material-icons">delete</i>
@@ -52,13 +52,13 @@
                 </li>
                 <li>
                     <a  v-if="!edit"
-                        v-bind:title="$i18n('edit object')"
+                        v-bind:title="$i18n('editObject')"
                         class="waves-effect waves-light" 
                         v-on:click.stop.prevent="onEdit">
                         <i class="material-icons">edit</i>
                     </a>
                     <a  v-else
-                        v-bind:title="$i18n('preview object')"
+                        v-bind:title="$i18n('previewObject')"
                         class="waves-effect waves-light" 
                         v-on:click.stop.prevent="onCancel">
                         <i class="material-icons">info</i>
@@ -88,7 +88,7 @@
                     <button  
                         v-if="edit"
                         type="button"
-                        v-bind:title="$i18n('save object')"
+                        v-bind:title="$i18n('saveObject')"
                         v-bind:disabled="!valid" 
                         class="btn btn-raised waves-effect waves-light right" 
                         v-on:click.stop.prevent="onOk">
@@ -99,7 +99,7 @@
         </template>
 
         <div v-if="currentObject === undefined || schema === undefined" class="explorer-preview-empty">
-            <span>{{ $i18n('no object selected') }}</span>
+            <span>{{ $i18n('noObjectSelected') }}</span>
             <i class="material-icons">info</i>
         </div>
     </div>
