@@ -8,8 +8,6 @@
 </template>
 
 <script>
-  import {NodeType} from '../../../../../../js/constants';
-
   export default {
         props: ['model'],
         data() {
