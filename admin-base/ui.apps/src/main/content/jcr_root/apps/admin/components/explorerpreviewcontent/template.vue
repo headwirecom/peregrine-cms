@@ -70,7 +70,7 @@
                class="info-view-image"/>
           <iframe
               v-else
-              :src="currentObject.show"
+              :src="currentObject"
               class="info-view-iframe">
           </iframe>
         </div>
