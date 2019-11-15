@@ -25,15 +25,15 @@
 <template>
   <span class="__multiselect">
     <vue-multiselect
-      :value="mode"
-      deselect-label
-      track-by="title"
-      label="title"
-      placeholder="Select one"
-      :options="devices"
-      :searchable="false"
-      :allow-empty="false"
-      @select="onSelect"
+        :value="mode"
+        deselect-label
+        track-by="title"
+        label="title"
+        placeholder="Select one"
+        :options="devices"
+        :searchable="false"
+        :allow-empty="false"
+        @select="onSelect"
     >
       <template slot="option" slot-scope="props">
         <i class="material-icons" :alt="props.option.title">{{props.option.icon}}</i>
@@ -47,55 +47,61 @@
 </template>
 
 <script>
-export default {
-  props: ["model"],
-  computed: {
-    mode() {
-      let title = $perAdminApp.getNodeFromViewOrNull(
-        this.model.children[0].stateFrom
-      );
-      if (!title) { 
-        title = "desktop"
+  export default {
+    props: ['model'],
+    computed: {
+      title() {
+        const stateFrom = $perAdminApp.getNodeFromViewOrNull(this.model.children[0].stateFrom);
+        return stateFrom? stateFrom : 'desktop';
+      },
+      mode() {
+        const me = this;
+        return this.model.children.find((child) => {
+          return child.title === me.title;
+        });
+      },
+      devices() {
+        const me = this;
+        return this.model.children.filter((child) => {
+          return child.title !== me.title;
+        });
       }
-      return this.devices.find(function (el) {
-        return el.title === title;
-      });
     },
-    devices() {
-      return this.model.children;
+    methods: {
+      onSelect(item) {
+        $perAdminApp.action(this, item.command, item.target);
+      }
     }
-  },
-  methods: {
-    onSelect(item) {
-      $perAdminApp.action(this, item.command, item.target);
-    }
-  }
-};
+  };
 </script>
 
 <style>
 
-.__multiselect .multiselect__tags {
-  padding: 0;
-  background: transparent;
-  border: inherit;
-}
+  .__multiselect .multiselect__tags {
+    padding: 0;
+    background: transparent;
+    border: inherit;
+  }
 
-.__multiselect .material-icons {
-  line-height: 40px;
-  height: 40px;
-  padding-left: 8px;
-  margin-top: -1px;
-  margin-bottom: -4px;
-}
+  .__multiselect .material-icons {
+    line-height: 40px;
+    height: 40px;
+    padding-left: 8px;
+    margin-top: -1px;
+    margin-bottom: -4px;
+  }
 
-.__multiselect .multiselect__option {
-  padding: 0;
-}
+  .__multiselect .multiselect__option {
+    padding: 0;
+  }
 
-.__multiselect .multiselect--active .btn-floating {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
+  .__multiselect .multiselect--active .btn-floating {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .__multiselect .multiselect__content-wrapper {
+    overflow: hidden;
+  }
 
 </style>
