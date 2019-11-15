@@ -22,7 +22,8 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger'
+import {LoggerFactory} from './logger'
+
 let log = LoggerFactory.logger('api').setLevelDebug()
 
 let impl = null
@@ -136,6 +137,14 @@ class PerApi {
 
     createTemplate(parentPath, name, component, title) {
         return impl.createTemplate(parentPath, name, component, title)
+    }
+
+    moveTemplate(path, to, type) {
+        return impl.moveTemplate(path, to, type)
+    }
+
+    deleteTemplate(path) {
+        return impl.deleteTemplate(path)
     }
 
     createObject(parentPath, name, templatePath) {
