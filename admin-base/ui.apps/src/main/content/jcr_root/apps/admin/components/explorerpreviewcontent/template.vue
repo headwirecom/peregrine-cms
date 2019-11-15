@@ -458,4 +458,13 @@
     height: 60%;
     margin-top: 1em;
   }
+
+  .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view {
+    max-height: 50%;
+    height: unset;
+  }
+
+  .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view img {
+    max-height: 100%;
+  }
 </style>
