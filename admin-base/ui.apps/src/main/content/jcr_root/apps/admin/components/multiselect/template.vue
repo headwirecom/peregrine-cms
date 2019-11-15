@@ -36,10 +36,10 @@
         @select="onSelect"
     >
       <template slot="option" slot-scope="props">
-        <i class="material-icons" :alt="props.option.title">{{props.option.icon}}</i>
+        <i class="material-icons" :title="props.option.title" :alt="props.option.title">{{props.option.icon}}</i>
       </template>
       <template slot="singleLabel" slot-scope="props">
-        <i class="material-icons btn-floating" :alt="props.option.title">{{props.option.icon}}</i>
+        <i class="material-icons btn-floating" :title="props.option.title" :alt="props.option.title">{{props.option.icon}}</i>
       </template>
       <template slot="caret" slot-scope="props"><span></span></template>
     </vue-multiselect>
