@@ -341,6 +341,19 @@ class PerAdminImpl {
         return this.populateComponentDefinitionFromNode(path)
     }
 
+    populateTenants(path) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/listTenants.json')
+                .then( (data) => {
+                    const state = callbacks.getView().state
+                    if(!state.site && data.tenants.length > 0) {
+                        state.site = data.tenants[data.tenants.length - 1]
+                    }
+                    populateView('/admin', 'tenants', data.tenants).then( () => resolve() )
+                 } )
+        })
+    }
+
     populatePageView(path) {
         return new Promise( (resolve, reject) => {
             fetch('/admin/readNode.json'+path)

@@ -39,6 +39,7 @@
             <template v-if="vueRoot.adminPage">
                 <template v-for="item in vueRoot.adminPage.breadcrumbs">
                     <admin-components-action
+                            v-bind:key="item.path"
                             v-bind:model="{
                 command: 'selectPath',
                 title: $i18n(item.title),
@@ -48,6 +49,18 @@
             </template>
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
+            <!-- disabled for now - rest of UI has to change to a site centric approach as well <li>
+                 <vue-multiselect
+                    v-model="state.site"
+                    deselect-label=""
+                    track-by="name"
+                    label="name"
+                    placeholder="Site"
+                    :options="sites"
+                    :searchable="false"
+                    :allow-empty="false"
+                 ></vue-multiselect>
+            </li> -->
             <li v-if="this.$root.$data.state">
                 <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
                     {{this.$root.$data.state.user}}
@@ -65,7 +78,7 @@
                     deselect-label=""
                     track-by="name"
                     label="name"
-                    placeholder="Select one"
+                    placeholder="Language"
                     :options="languages"
                     :searchable="false"
                     :allow-empty="false"
@@ -76,7 +89,7 @@
       </div>
     </div>
     <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
+        <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
     </template>
 
 </nav>
@@ -85,6 +98,12 @@
 <script>
 export default {
     props: ['model'],
+    data() {
+        return {
+            state: $perAdminApp.getView().state,
+            sites: $perAdminApp.getView().admin.tenants
+        }
+    },
     computed: {
         language () {
             return { name: $perAdminApp.getView().state.language }
@@ -107,6 +126,11 @@ export default {
     methods: {
         onSelectLang ({name}) {
             this.$i18nSetLanguage(name)
+            $perAdminApp.forceFullRedraw()
+        },
+        onSelectSite ({name}) {
+            const site = this.sites.find( (el) => { return el.name === name })
+            $perAdminApp.getView().state.site = site
             $perAdminApp.forceFullRedraw()
         },
         onShowHelp () {

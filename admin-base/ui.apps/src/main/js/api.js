@@ -92,6 +92,10 @@ class PerApi {
         return impl.populateReferencedBy(path)
     }
 
+    populateTenants(path) {
+        return impl.populateTenants(path)
+    }
+
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }
