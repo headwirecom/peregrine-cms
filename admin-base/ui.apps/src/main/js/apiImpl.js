@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,10 +24,10 @@
  */
 // var axios = require('axios')
 
-import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
+import {LoggerFactory} from './logger'
+import {stripNulls} from './utils'
 
-import { stripNulls} from './utils'
+let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
 const API_BASE = '/perapi'
 const postConfig = {
@@ -210,26 +210,43 @@ class PerAdminImpl {
                     let component = callbacks.getComponentByName(name)
                     if(component && component.methods && component.methods.augmentEditorSchema) {
                         data.model = component.methods.augmentEditorSchema(data.model)
+                        data.ogTags = component.methods.augmentEditorSchema(data.ogTags)
                     }
 
                     let promises = []
-                    if(data && data.model) {
+                    if(data && data.model && data.ogTags) {
                         for(let i = 0; i < data.model.fields.length; i++) {
                             let from = data.model.fields[i].valuesFrom
                             if(from) {
                                 data.model.fields[i].values = []
                                 let promise = axios.get(from).then( (response) => {
-                                    for(var key in response.data) {
-                                        if(response.data[key]['jcr:title']) {
-                                            const nodeName = key
-                                            const val = from.replace('.infinity.json', '/'+nodeName)
-                                            let name = response.data[key].name
+                                    const toProcess = []
+                                    for(let key in response.data) {
+                                        toProcess.push({ key, data : response.data[key] })
+                                    }
+
+                                    let next = toProcess.shift()
+                                    while(next) {
+                                        if(next.data['jcr:title']) {
+                                            const nodeName = next.key
+                                            const val = next.data.path ? next.data.path + '/' + nodeName : from.replace('.infinity.json', '/'+nodeName)
+                                            let name = next.data.name
                                             if(!name) {
-                                                name = response.data[key]['jcr:title']
+                                                name = next.data['jcr:title']
+                                            }
+                                            if(next.parent) {
+                                                name = next.parent + '-' + name;
                                             }
                                             data.model.fields[i].values.push({ value: val, name: name })
+                                            for(let k in next.data) {
+                                                if(next.data[k] instanceof Object && next.data[k]['sling:resourceType'] === 'admin/objects/tag') {
+                                                    toProcess.push( { key: k, parent: name, data: next.data[k]})
+                                                }
+                                            }
                                         }
+                                        next = toProcess.shift()
                                     }
+
                                 }).catch( (error) => {
                                     logger.error('missing node', data.model.fields[i].valuesFrom, 'for list population in dialog', error)
                                 })
@@ -237,14 +254,42 @@ class PerAdminImpl {
                             }
                             let visible = data.model.fields[i].visible
                             if(visible) {
-                                data.model.fields[i].visible = function(model) { 
+                                data.model.fields[i].visible = function(model) {
                                     return exprEval.Parser.evaluate( visible, this );
-                                } 
+                                }
                             }
+                        }
+                        for(let i = 0; i < data.ogTags.fields.length; i++) {
+                          let from = data.ogTags.fields[i].valuesFrom
+                          if(from) {
+                            data.ogTags.fields[i].values = []
+                            let promise = axios.get(from).then( (response) => {
+                              for(var key in response.data) {
+                                if(response.data[key]['jcr:title']) {
+                                  const nodeName = key
+                                  const val = from.replace('.infinity.json', '/'+nodeName)
+                                  let name = response.data[key].name
+                                  if(!name) {
+                                    name = response.data[key]['jcr:title']
+                                  }
+                                  data.ogTags.fields[i].values.push({ value: val, name: name })
+                                }
+                              }
+                            }).catch( (error) => {
+                              logger.error('missing node', data.ogTags.fields[i].valuesFrom, 'for list population in dialog', error)
+                            })
+                            promises.push(promise)
+                          }
+                          let visible = data.ogTags.fields[i].visible
+                          if(visible) {
+                            data.ogTags.fields[i].visible = function(ogTags) {
+                              return exprEval.Parser.evaluate( visible, this );
+                            }
+                          }
                         }
                     }
                     Promise.all(promises).then( () => {
-                            populateView('/admin/componentDefinitions', data.name, data.model)
+                            populateView('/admin/componentDefinitions', data.name, data)
                             resolve(name)
                         }
                     )
@@ -257,6 +302,19 @@ class PerAdminImpl {
 
     populateExplorerDialog(path) {
         return this.populateComponentDefinitionFromNode(path)
+    }
+
+    populateTenants(path) {
+        return new Promise( (resolve, reject) => {
+            fetch('/admin/listTenants.json')
+                .then( (data) => {
+                    const state = callbacks.getView().state
+                    if(!state.site && data.tenants.length > 0) {
+                        state.site = data.tenants[data.tenants.length - 1]
+                    }
+                    populateView('/admin', 'tenants', data.tenants).then( () => resolve() )
+                 } )
+        })
     }
 
     populatePageView(path) {
@@ -281,20 +339,28 @@ class PerAdminImpl {
             .then( (response) => populateView('/admin/i18n', language, response.data) )
     }
 
-    createSite(fromName, toName) {
-        let data = new FormData()
-        data.append('fromSite', fromName)
-        data.append('toSite', toName)
-        return updateWithForm('/admin/createSite.json', data)
-            .then( () => this.populateNodesForBrowser(callbacks.getView().state.tools.pages) )
+    createSite(fromName, toName, title) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('fromSite', fromName)
+            data.append('toSite', toName)
+            data.append('title', title)
+            updateWithForm('/admin/createSite.json', data)
+                .then( (data) => this.populateNodesForBrowser(callbacks.getView().state.tools.pages) )
+                .then( () => resolve() )
+        })
     }
 
-    createPage(parentPath, name, templatePath) {
-        let data = new FormData()
-        data.append('name', name)
-        data.append('templatePath', templatePath)
-        return updateWithForm('/admin/createPage.json'+parentPath, data)
-                .then( () => this.populateNodesForBrowser(parentPath) )
+    createPage(parentPath, name, templatePath, title) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('name', name)
+            data.append('templatePath', templatePath)
+            data.append('title', title)
+            updateWithForm('/admin/createPage.json'+parentPath, data)
+                .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
+        })
     }
 
     createObject(parentPath, name, templatePath) {
@@ -318,10 +384,13 @@ class PerAdminImpl {
     }
 
     renameAsset(path, newName) {
-        let data = new FormData()
-        data.append('to', newName)
-        return updateWithForm('/admin/rename.json'+path, data)
-            .then( () => this.populateNodesForBrowser(path) )
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('to', newName)
+            updateWithForm('/admin/asset/rename.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
     }
 
     moveAsset(path, to, type) {
@@ -341,10 +410,13 @@ class PerAdminImpl {
     }
 
     renameObject(path, newName) {
-        let data = new FormData()
-        data.append('to', newName)
-        return updateWithForm('/admin/rename.json'+path, data)
-            .then( () => this.populateNodesForBrowser(path) )
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('to', newName)
+            updateWithForm('/admin/object/rename.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
     }
 
     deletePage(path) {
@@ -363,10 +435,13 @@ class PerAdminImpl {
     }
 
     renamePage(path, newName) {
-        let data = new FormData()
-        data.append('to', newName)
-        return updateWithForm('/admin/rename.json'+path, data)
-            .then( () => this.populateNodesForBrowser(path) )
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('to', newName)
+            updateWithForm('/admin/page/rename.json'+path, data)
+                .then( (data) => this.populateNodesForBrowser(path) )
+                .then( () => resolve() )
+        })
     }
 
     movePage(path, to, type) {
@@ -383,12 +458,33 @@ class PerAdminImpl {
             .then( () => this.populatePageView(path) )
     }
 
-    createTemplate(parentPath, name, component) {
+    createTemplate(parentPath, name, component, title) {
         let data = new FormData()
         data.append('name', name)
         data.append('component', component)
+        data.append('title', title)
         return updateWithForm('/admin/createTemplate.json'+parentPath, data)
             .then( () => this.populateNodesForBrowser(parentPath) )
+    }
+
+    moveTemplate(path, to, type) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('to', to)
+            data.append('type', type)
+            updateWithForm('/admin/move.json'+path, data)
+            .then( (data) => this.populateNodesForBrowser(path) )
+            .then( () => resolve() )
+        })
+    }
+
+    deleteTemplate(path) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json'+path, data)
+            .then( (data) => this.populateNodesForBrowser(path) )
+            .then( () => resolve() )
+        })
     }
 
     createFolder(parentPath, name) {
@@ -497,17 +593,22 @@ class PerAdminImpl {
     }
 
     saveAssetProperties(node) {
-        let formData = new FormData()
-        // convert to a new object
-        let nodeData = JSON.parse(JSON.stringify(node))
-        stripNulls(nodeData)
-        delete nodeData['jcr:created']
-        delete nodeData['jcr:createdBy']
-        delete nodeData['jcr:lastModified']
-        delete nodeData['jcr:lastModifiedBy']
-        formData.append('content', json(nodeData))
+        return new Promise( (resolve, reject) => {
+            let formData = new FormData()
+            // convert to a new object
+            let nodeData = JSON.parse(JSON.stringify(node))
+            stripNulls(nodeData)
+            delete nodeData['name']
+            delete nodeData['path']
+            delete nodeData['created']
+            delete nodeData['createdBy']
+            delete nodeData['lastModified']
+            delete nodeData['lastModifiedBy']
+            formData.append('content', json(nodeData))
 
-        return updateWithForm('/admin/updateResource.json'+ node.path, formData)
+            updateWithForm('/admin/updateResource.json'+ node.path+'/jcr:content', formData)
+                .then( () => resolve() )
+        })
     }
 
     insertNodeAt(path, component, drop, variation) {

@@ -30,13 +30,10 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    return new Promise( (resolve, reject) => {
-        api.createPage(target.parent, target.name, target.template).then( () => {
-            target.data.path = '/jcr:content'
-            api.savePageEdit(target.parent + '/' + target.name, target.data).then( () => {
-                me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
-                resolve()
-            })
+    api.createPage(target.parent, target.name, target.template, target.title).then( () => {
+        target.data.path = '/jcr:content'
+        api.savePageEdit(target.parent + '/' + target.name, target.data).then( () => {
+            me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
         })
     })
 

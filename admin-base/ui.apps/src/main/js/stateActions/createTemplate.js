@@ -30,11 +30,8 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    return new Promise( (resolve, reject) => {
-        api.createTemplate(target.parent, target.name, target.component).then( () => {
-            me.loadContent('/content/admin/templates.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
-            resolve()
-        })
+    return api.createTemplate(target.parent, target.name, target.component, target.title).then( () => {
+        me.loadContent('/content/admin/templates.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
     })
 
 }

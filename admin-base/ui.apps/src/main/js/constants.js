@@ -30,3 +30,47 @@ export const EditorTypes = {
   TEMPLATE: 'template-editor',
   PAGE: 'page-editor'
 }
+export const PathBrowser = {
+  Type: {
+    PAGE: 'page',
+    ASSET: 'asset',
+    IMAGE: 'image'
+  }
+}
+export const IgnoreContainers = {
+  ENABLED: 'ignore-containers',
+  ON_HOLD: 'on-hold',
+  DISABLED: ''
+}
+export const Field = {
+  SWITCH: 'materialswitch',
+  SELECT: 'material-select',
+  MULTI_SELECT: 'material-multiselect'
+}
+export const Icon = {
+  LABEL: 'label',
+  SETTINGS: 'settings',
+  TEXT_FORMAT: 'text_format',
+  COMPARE_ARROWS: 'compare_arrows',
+  DELETE: 'delete',
+  INFO: 'info',
+  EDIT: 'edit',
+  LIST: 'list',
+  CHECK: 'check'
+}
+export const NodeType = {
+  PAGE: 'page',
+  TEMPLATE: 'template',
+  ASSET: 'asset',
+  OBJECT: 'object'
+}
+export const MimeType = {
+  Image: {
+    PNG: 'image/png',
+    JPG: 'image/jpg',
+    JPEG: 'image/jpeg',
+    GIF: 'image/gif',
+    TIFF: 'image/tiff',
+    SVG: 'image/svg+xml'
+  }
+}

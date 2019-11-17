@@ -4,6 +4,6 @@
     jcr:lastModifiedBy="admin"
     jcr:primaryType="sling:OrderedFolder"
     jcr:title="images">
-    <logo.png/>
     <peregrine-logo.png/>
+    <logo.png/>
 </jcr:root>

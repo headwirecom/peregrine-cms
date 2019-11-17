@@ -1,60 +1,5 @@
 package com.peregrine.admin.resource;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.peregrine.adaption.PerAsset;
-import com.peregrine.commons.util.PerUtil;
-import com.peregrine.rendition.BaseResourceHandler;
-import com.peregrine.replication.ImageMetadataSelector;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jackrabbit.JcrConstants;
-import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
-import org.jetbrains.annotations.NotNull;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
@@ -112,6 +57,61 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.peregrine.adaption.PerAsset;
+import com.peregrine.commons.util.PerUtil;
+import com.peregrine.rendition.BaseResourceHandler;
+import com.peregrine.replication.ImageMetadataSelector;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.jcr.Binary;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
+import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -217,6 +217,8 @@ public class AdminResourceHandlerService
     private static final String ROOT_PROPERTY = "root";
     private static final String RULES_PROPERTY = "rules";
 
+    private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
+
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -239,6 +241,8 @@ public class AdminResourceHandlerService
 
     @Reference
     private BaseResourceHandler baseResourceHandler;
+    @Reference
+    private NodeNameValidation nodeNameValidation;
 
     private List<ImageMetadataSelector> imageMetadataSelectors = new ArrayList<>();
 
@@ -256,6 +260,9 @@ public class AdminResourceHandlerService
 
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
+        if(!nodeNameValidation.isValidPageName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             if (isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
@@ -286,6 +293,9 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource createObject(ResourceResolver resourceResolver, String parentPath, String name, String resourceType) throws ManagementException {
+        if(!nodeNameValidation.isValidPageName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             if (isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
@@ -313,7 +323,10 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath) throws ManagementException {
+    public Resource createPage(ResourceResolver resourceResolver, String parentPath, String name, String templatePath, String title) throws ManagementException {
+        if(!nodeNameValidation.isValidPageName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             Resource parent = getResource(resourceResolver, parentPath);
             if (parent == null) {
@@ -327,7 +340,7 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(TEMPLATE_NOT_FOUND, templatePath));
             }
             String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
-            Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath);
+            Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath, title);
             return adaptNodeToResource(resourceResolver, newPage);
         } catch (RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
@@ -336,7 +349,10 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component) throws ManagementException {
+    public Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component, String title) throws ManagementException {
+        if(!nodeNameValidation.isValidPageName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         try {
             Resource parent = getResource(resourceResolver, parentPath);
             if (parent == null) {
@@ -345,7 +361,7 @@ public class AdminResourceHandlerService
             if (isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, TEMPLATE, parentPath));
             }
-            Node newPage = createPageOrTemplate(parent, name, component, null);
+            Node newPage = createPageOrTemplate(parent, name, component, null, title);
             // If there is a component then we check the component node and see if there is a child jcr:content node
             // If found we copy this over into our newly created node
             if (isNotEmpty(component)) {
@@ -492,11 +508,14 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource rename(Resource fromResource, String newName) throws ManagementException {
-        if (fromResource == null) {
-            throw new ManagementException(RENAME_RESOURCE_MISSING);
-        }
         if (isEmpty(newName)) {
             throw new ManagementException(NAME_TO_BE_RENAMED_TO_MUST_BE_PROVIDED);
+        }
+        if(!nodeNameValidation.isValidNodeName(newName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, newName));
+        }
+        if(fromResource == null) {
+            throw new ManagementException(RENAME_RESOURCE_MISSING);
         }
         if (newName.indexOf('/') >= 0) {
             throw new ManagementException(NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH);
@@ -512,8 +531,14 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
-        if (isEmpty(assetName)) {
+        if(isEmpty(assetName)) {
             throw new ManagementException(ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+        }
+        if(!nodeNameValidation.isValidNodeName(assetName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, assetName));
+        }
+        if(parent == null) {
+            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
         }
         if (isEmpty(contentType)) {
             throw new ManagementException(CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
@@ -598,7 +623,6 @@ public class AdminResourceHandlerService
                 json.append("\",");
             }
         }
-
         final int length = json.length();
         if (length > 1) {
             json.deleteCharAt(length - 1);
@@ -619,13 +643,10 @@ public class AdminResourceHandlerService
         }
     }
 
-    @Override
-    public Resource createNode(
-        final Resource parent,
-        final String name,
-        final String primaryType,
-        final String resourceType
-    ) throws ManagementException {
+    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
         final Map<String, Object> properties = new HashMap<>();
         properties.put(JCR_PRIMARY_TYPE, primaryType);
         if (isNotEmpty(resourceType)) {
@@ -928,7 +949,10 @@ public class AdminResourceHandlerService
         final ResourceResolver resourceResolver,
         final String sitesParentPath,
         final String fromName,
-        final String targetName) throws ManagementException {
+        final String targetName, String title) throws ManagementException {
+        if(!nodeNameValidation.isValidSiteName(targetName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, targetName));
+        }
         checkCopySiteParameters(resourceResolver, sitesParentPath, fromName, targetName);
 
         final Resource parentResource = getResource(resourceResolver, sitesParentPath);
@@ -958,13 +982,16 @@ public class AdminResourceHandlerService
         resourcesToPackage.add(copier.copyApps(superTypes));
         // copy /content/assets/<fromSite> to /content/assets/<toSite>
         copier.setFromName(fromName);
-        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
+        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT, title));
         // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
-        resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
+        resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT, title));
         // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
-        resourcesToPackage.add(copier.copyFromRoot(TEMPLATES_ROOT));
+        Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT, title);
+        // Update css paths stored in /content/sites in the template
+        updateTemplateCssPaths(templatesCopy, fromName, targetName);
+        resourcesToPackage.add(templatesCopy);
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
-        answer = copier.copyFromRoot(SITES_ROOT);
+        answer = copier.copyFromRoot(SITES_ROOT, title);
         resourcesToPackage.add(answer);
         if (answer != null) {
             updateStringsInFiles(answer, targetName);
@@ -973,7 +1000,7 @@ public class AdminResourceHandlerService
         // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
         final Resource sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if (sourceResource != null) {
-            final Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName);
+            final Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName, title);
             resourcesToPackage.add(targetResource);
             logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
             final ValueMap properties = getModifiableProperties(targetResource, false);
@@ -1132,6 +1159,24 @@ public class AdminResourceHandlerService
             resourceResolver.create(filterResource, "f" + i, propertiesMap);
         }
 
+    }
+
+    private void updateTemplateCssPaths(final Resource templateResource, String oldSiteName, String newSiteName) {
+        final Resource templateContent = templateResource.getChild(JCR_CONTENT);
+        if(templateContent == null) {
+            logger.error("No jcr:content resource for resource '{}'", templateResource.getPath());
+            return;
+        }
+
+        ValueMap templateContentProperties = templateContent.getValueMap();
+        String[] siteCssProperty = templateContentProperties.get("siteCSS", String[].class);
+        if(siteCssProperty != null && siteCssProperty.length > 0) {
+            String[] cssReplacements = Arrays.stream(siteCssProperty)
+                    .map(css -> css.replace(SITES_ROOT + SLASH + oldSiteName, SITES_ROOT + SLASH + newSiteName))
+                    .toArray(String[]::new);
+            ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
+            modifiableProperties.put("siteCSS", cssReplacements);
+        }
     }
 
     private void updateStringsInFiles(final Resource target, final String siteName) {
@@ -1354,7 +1399,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Resource copyResources(Resource source, Resource targetParent, String toName) {
+    private Resource copyResources(Resource source, Resource targetParent, String toName, String title) {
         Resource target = getResource(targetParent, toName);
         if (target != null) {
             logger.warn("Target Resource: '{}' already exist -> copy is ignored", target.getPath());
@@ -1364,7 +1409,7 @@ public class AdminResourceHandlerService
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
             target = source.getResourceResolver().create(targetParent, toName, newProperties);
-            updateTitle(target, toName);
+            updateTitle(target, title);
         } catch (PersistenceException e) {
             logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
             return null;
@@ -1450,14 +1495,18 @@ public class AdminResourceHandlerService
             return null;
         }
 
-        public Resource copyFromRoot(final String rootPath) {
+        public Resource copyFromRoot(final String rootPath, String title) {
             final Resource source = getResource(resourceResolver, rootPath + SLASH + fromName);
             if (source != null) {
-                final Resource target = copyResources(source, source.getParent(), toName);
+                final Resource target = copyResources(source, source.getParent(), toName, title);
                 if (target != null) {
                     // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
                     // while child assets will use the name from the source; otherwise every asset has the same name
                     copyChildren(source, target, 0);
+                    Resource contentResource = target.getChild(JCR_CONTENT);
+                    if(contentResource != null) {
+                        updateTitle(contentResource, title);
+                    }
                 }
 
                 return target;
@@ -1584,7 +1633,7 @@ public class AdminResourceHandlerService
             if (value instanceof Map) {
                 applyChildProperties(resource, name, (Map) value);
             } else if (value instanceof List) {
-                applyListProperties(resource, name, (List) value);
+                applyListProperties(resource, name, (List)value);
             } else {
                 updateProperties.put(name, value);
             }
@@ -1658,6 +1707,12 @@ public class AdminResourceHandlerService
         final List list
     ) throws ManagementException {
         if (list.isEmpty()) {
+            ModifiableValueMap properties = getModifiableProperties(resource, false);
+            //If the node already has a property with the same name as the empty list,
+            //treat it as a deletion request
+            if(properties.containsKey(childName)) {
+                properties.remove(childName);
+            }
             return;
         }
         final Object first = list.get(0);
@@ -1869,7 +1924,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath) throws RepositoryException {
+    private Node createPageOrTemplate(Resource parent, String name, String templateComponent, String templatePath, String title) throws RepositoryException {
         final Node parentNode = getNode(parent);
         if (parentNode == null) {
             return null;
@@ -1879,7 +1934,7 @@ public class AdminResourceHandlerService
         Node content = newPage.addNode(JCR_CONTENT);
         content.setPrimaryType(PAGE_CONTENT_TYPE);
         content.setProperty(SLING_RESOURCE_TYPE, templateComponent);
-        content.setProperty(JCR_TITLE, name);
+        content.setProperty(JCR_TITLE, title);
         if (templatePath != null) {
             content.setProperty(TEMPLATE, templatePath);
         }

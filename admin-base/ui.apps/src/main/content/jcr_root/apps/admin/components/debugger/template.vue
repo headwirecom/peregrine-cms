@@ -24,8 +24,8 @@
   -->
 <template>
 <div v-bind:class="`debugger ${elementStyle}`">
-    <a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" v-bind:title="$i18n('show debug data')" class="toggle-debugger show-debugger"  v-bind:style="consoleErrors"><i class="material-icons">bug_report</i></a>
-    <a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" v-bind:title="$i18n('hide debug data')" class="toggle-debugger hide-debugger"><i class="material-icons">highlight_off</i></a>
+    <a href="#" v-if="!visible" v-on:click.stop.prevent="showDebugger(true)" v-bind:title="$i18n('showDebugData')" class="toggle-debugger show-debugger"  v-bind:style="consoleErrors"><i class="material-icons">bug_report</i></a>
+    <a href="#" v-if="visible" v-on:click.stop.prevent="showDebugger(false)" v-bind:title="$i18n('hideDebugData')" class="toggle-debugger hide-debugger"><i class="material-icons">highlight_off</i></a>
     <div v-if="visible" class="debugger-content">
         <div class="row">
             <div class="col s12 m4 l3 debugger-levels">
@@ -34,7 +34,7 @@
                     <li v-for="(logger, key) of getLoggers()" class="collection-item right-align">
                         <span class="logger-name">{{logger.name}}:</span> 
                         <a  class="logger-level" 
-                            v-bind:title="`${$i18n('set')} ${logger.name} ${$i18n('logging level')}: ${levelToName(logger.level)}`"
+                            v-bind:title="`${$i18n('set')} ${logger.name} ${$i18n('loggingLevel')}: ${levelToName(logger.level)}`"
                             v-on:click.stop.prevent="changeLogLevel(logger.name)">
                             {{levelToName(logger.level)}}
                         </a>
@@ -45,7 +45,7 @@
                 <h5>Root Objects</h5>
                 <ul class="list-inline">
                     <li v-for="(value, key) of this.$root.$data">
-                        <a v-bind:title="`${$i18n('show')} '${key}' ${$i18n('debug data')}`" v-bind:class="selected === key ? 'active' : ''" v-on:click.stop.prevent="select(key)">{{key}}</a>
+                        <a v-bind:title="`${$i18n('show')} '${key}' ${$i18n('debugData')}`" v-bind:class="selected === key ? 'active' : ''" v-on:click.stop.prevent="select(key)">{{key}}</a>
                     </li>
                 </ul>
                 <code><pre>{{this.$root.$data[this.selected]}}</pre></code>

@@ -29,12 +29,12 @@
                 <i class="material-icons">grid_on</i><span>back to results</span>
             </button>
             <form v-on:submit.prevent="search()" :class="['image-search', {'previewing': viewing}]">
-                <input type="text" v-model="state.input" v-bind:placeholder="$i18n('Search for an image asset')" tabindex="1" autofocus/>
+                <input type="text" v-model="state.input" v-bind:placeholder="$i18n('searchImageAsset')" tabindex="1" autofocus/>
                 <button class="" type="submit" v-bind:title="$i18n('search')" class="image-search-submit"><i class="material-icons">search</i></button>
             </form>
         </div>
         <div v-if="!state.results" class="center">
-            <span>{{ $i18n('Search for an image from pixabay and add it directly to your project') }}!</span>
+            <span>{{ $i18n('pixabaySearchHint') }}!</span>
         </div>
 
         <div v-if="state.results" class="search-content">
