@@ -78,13 +78,13 @@ public final class SiteMapEntry {
 
         visitor.visit(props, parameter);
         for (final Map.Entry<String, Map<String, Object>> e : children.entrySet()) {
-            walk(visitor, visitor.visit(parameter, e.getKey()), e.getValue());
+            walk(visitor, visitor.visit(e.getKey(), parameter), e.getValue());
         }
     }
 
     public interface MapPropertiesVisitor<Parameter> {
 
-        Parameter visit(Parameter parameter, String name);
+        Parameter visit(String name, Parameter parameter);
 
         void visit(Map<String, Object> properties, Parameter parameter);
 
