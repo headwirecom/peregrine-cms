@@ -84,9 +84,9 @@ public final class SiteMapEntry {
 
     public interface MapPropertiesVisitor<Parameter> {
 
-        Parameter visit(String name, Parameter parameter);
+        Parameter visit(String mapName, Parameter parameter);
 
-        void visit(Map<String, Object> properties, Parameter parameter);
+        void visit(Map<String, Object> map, Parameter parameter);
 
     }
     }

@@ -184,9 +184,9 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     @Override
-    public Resource visit(final String name, final Resource resource) {
+    public Resource visit(final String childName, final Resource resource) {
         try {
-            return createNode(resource, name);
+            return createNode(resource, childName);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
         }
