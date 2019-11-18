@@ -13,9 +13,9 @@ package com.peregrine.sitemap.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -46,7 +46,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component(service = SiteMapFileContentBuilder.class)
 @Designate(ocd = SiteMapFileContentBuilderImplConfig.class)
-public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder {
+public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder,
+        SiteMapEntry.PropertiesVisitor<Integer> {
 
     private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
@@ -54,7 +55,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     private static final String URL_SET_END_TAG = close(URL_SET);
 
     private static final int TAG_SYMBOLS_LENGTH = 5;
-    private static final int BASE_ENTRY_LENGTH = baseTagLength(URL) + baseTagLength(LOC);
+    private static final int BASE_ENTRY_LENGTH = baseTagLength(URL);
 
     private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 
@@ -141,14 +142,17 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
             return 0;
         }
 
-        int length = BASE_ENTRY_LENGTH;
-        length += entry.getUrl().length();
+        return entry.walk(this, BASE_ENTRY_LENGTH);
+    }
 
-        for (final Map.Entry<String, Object> e : entry.getProperties().entrySet()) {
-            length += baseTagLength(e.getKey()) + String.valueOf(e.getValue()).length();
-        }
+    @Override
+    public Integer visit(final String propertyName, final String propertyValue, final Integer size) {
+        return visit(propertyName, size) + propertyValue.length();
+    }
 
-        return length;
+    @Override
+    public Integer visit(final String mapName, final Integer size) {
+        return size + baseTagLength(mapName);
     }
 
     @Override

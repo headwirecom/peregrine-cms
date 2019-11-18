@@ -82,6 +82,30 @@ public final class SiteMapEntry {
         }
     }
 
+    public <Parameter> Parameter walk(final PropertiesVisitor<Parameter> visitor, final Parameter parameter) {
+        return walk(visitor, parameter, properties);
+    }
+
+    private <Parameter> Parameter walk(
+            final PropertiesVisitor<Parameter> visitor,
+            final Parameter parameter,
+            final Map<String, Object> properties) {
+        Parameter result = parameter;
+        for (final Map.Entry<String, Object> e : properties.entrySet()) {
+            final Object value = e.getValue();
+            if (value instanceof Map) {
+                result = visitor.visit(e.getKey(), result);
+                final Map<String, Object> map = (Map<String, Object>) e.getValue();
+                result = walk(visitor, result, map);
+            } else {
+                final String string = String.valueOf(value);
+                result = visitor.visit(e.getKey(), string, result);
+            }
+        }
+
+        return result;
+    }
+
     public interface MapPropertiesVisitor<Parameter> {
 
         Parameter visit(String mapName, Parameter parameter);
@@ -89,6 +113,13 @@ public final class SiteMapEntry {
         void visit(Map<String, Object> map, Parameter parameter);
 
     }
+
+    public interface PropertiesVisitor<Parameter> {
+
+        Parameter visit(String mapName, Parameter parameter);
+
+        Parameter visit(String propertyName, String propertyValue, Parameter parameter);
+
     }
 
 }
