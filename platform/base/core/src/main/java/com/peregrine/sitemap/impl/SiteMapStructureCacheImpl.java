@@ -163,24 +163,38 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         final Iterator<SiteMapEntry> iterator = source.iterator();
         final ResourceResolver resourceResolver = target.getResourceResolver();
         for (int i = 0; i < siteMapsSize; i++) {
-            final String childPath = Integer.toString(i);
-            Resource child = target.getChild(childPath);
+            final String childName = Integer.toString(i);
+            Resource child = target.getChild(childName);
             if (nonNull(child)) {
                 resourceResolver.delete(child);
             }
 
             final SiteMapEntry entry = iterator.next();
-            final Map<String, Object> properties = new HashMap<>();
-            properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-            properties.put(SiteMapConstants.LOC, entry.getUrl());
-            for (final Map.Entry<String, String> e : entry.getProperties()) {
-                properties.put(e.getKey(), e.getValue());
-            }
-
-            resourceResolver.create(target, childPath, properties);
+            createNode(target, childName, entry.getProperties());
         }
 
         removeCachedItemsAboveIndex(target, siteMapsSize);
+    }
+
+    private void createNode(final Resource target, final String name, final Map<String, Object> structure)
+            throws PersistenceException {
+        final ResourceResolver resourceResolver = target.getResourceResolver();
+        final Map<String, Object> properties = new HashMap<>();
+        final Map<String, Map<String, Object>> children = new HashMap<>();
+        properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
+        for (final Map.Entry<String, Object> e : structure.entrySet()) {
+            final Object value = e.getValue();
+            if (value instanceof Map) {
+                children.put(e.getKey(), (Map<String, Object>) value);
+            } else {
+                properties.put(e.getKey(), String.valueOf(value));
+            }
+        }
+
+        final Resource resource = resourceResolver.create(target, name, properties);
+        for (final Map.Entry<String, Map<String, Object>> e : children.entrySet()) {
+            createNode(resource, e.getKey(), e.getValue());
+        }
     }
 
     private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
@@ -232,5 +246,4 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
             refreshListeners.remove(listener);
         }
     }
-
 }

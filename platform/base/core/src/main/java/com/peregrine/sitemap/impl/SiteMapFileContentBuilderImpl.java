@@ -117,8 +117,8 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
 
     private String toUrl(final SiteMapEntry entry) {
         final StringBuilder result = new StringBuilder(open(URL));
-        for (final Map.Entry<String, String> e : entry.getProperties()) {
-            append(result, e.getKey(), e.getValue());
+        for (final Map.Entry<String, Object> e : entry.getProperties().entrySet()) {
+            append(result, e.getKey(), String.valueOf(e.getValue()));
         }
 
         result.append(close(URL));
@@ -144,8 +144,8 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
         int length = BASE_ENTRY_LENGTH;
         length += entry.getUrl().length();
 
-        for (final Map.Entry<String, String> e : entry.getProperties()) {
-            length += baseTagLength(e.getKey()) + e.getValue().length();
+        for (final Map.Entry<String, Object> e : entry.getProperties().entrySet()) {
+            length += baseTagLength(e.getKey()) + String.valueOf(e.getValue()).length();
         }
 
         return length;

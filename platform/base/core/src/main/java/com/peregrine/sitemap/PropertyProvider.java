@@ -29,6 +29,6 @@ public interface PropertyProvider extends HasName {
 
     String getPropertyName();
 
-    String extractValue(Page page);
+    Object extractValue(Page page);
 
 }
