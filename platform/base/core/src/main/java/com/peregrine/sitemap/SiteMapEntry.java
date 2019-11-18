@@ -1,5 +1,6 @@
 package com.peregrine.sitemap;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -16,6 +17,10 @@ public final class SiteMapEntry {
 
     public void setUrl(final String url) {
         putProperty(SiteMapConstants.LOC, url);
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 
     public Object putProperty(final String name, final Object value) {
@@ -51,8 +56,39 @@ public final class SiteMapEntry {
         return null;
     }
 
-    public Map<String, Object> getProperties() {
-        return properties;
+    public <Parameter> void walk(final MapPropertiesVisitor<Parameter> visitor, final Parameter parameter) {
+        walk(visitor, parameter, properties);
+    }
+
+    private <Parameter> void walk(
+            final MapPropertiesVisitor<Parameter> visitor,
+            final Parameter parameter,
+            final Map<String, Object> properties) {
+        final Map<String, Object> props = new HashMap<>();
+        final Map<String, Map<String, Object>> children = new HashMap<>();
+        for (final Map.Entry<String, Object> e : properties.entrySet()) {
+            final Object value = e.getValue();
+            if (value instanceof Map) {
+                final Map<String, Object> map = (Map<String, Object>) value;
+                children.put(e.getKey(), map);
+            } else {
+                props.put(e.getKey(), String.valueOf(value));
+            }
+        }
+
+        visitor.visit(props, parameter);
+        for (final Map.Entry<String, Map<String, Object>> e : children.entrySet()) {
+            walk(visitor, visitor.visit(parameter, e.getKey()), e.getValue());
+        }
+    }
+
+    public interface MapPropertiesVisitor<Parameter> {
+
+        Parameter visit(Parameter parameter, String name);
+
+        void visit(Map<String, Object> properties, Parameter parameter);
+
+    }
     }
 
 }

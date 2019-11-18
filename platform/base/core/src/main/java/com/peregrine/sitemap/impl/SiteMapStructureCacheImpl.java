@@ -13,9 +13,9 @@ package com.peregrine.sitemap.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -45,7 +45,7 @@ import static java.util.Objects.nonNull;
 @Component(service = SiteMapStructureCache.class, immediate = true)
 @Designate(ocd = SiteMapStructureCacheImplConfig.class)
 public final class SiteMapStructureCacheImpl extends CacheBuilderBase
-        implements SiteMapStructureCache, Callback<String> {
+        implements SiteMapStructureCache, Callback<String>, SiteMapEntry.MapPropertiesVisitor<Resource> {
 
     public static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
 
@@ -169,32 +169,34 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
                 resourceResolver.delete(child);
             }
 
-            final SiteMapEntry entry = iterator.next();
-            createNode(target, childName, entry.getProperties());
+            iterator.next().walk(this, createNode(target, childName));
         }
 
         removeCachedItemsAboveIndex(target, siteMapsSize);
     }
 
-    private void createNode(final Resource target, final String name, final Map<String, Object> structure)
+    private Resource createNode(final Resource target, final String name)
             throws PersistenceException {
-        final ResourceResolver resourceResolver = target.getResourceResolver();
         final Map<String, Object> properties = new HashMap<>();
-        final Map<String, Map<String, Object>> children = new HashMap<>();
         properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-        for (final Map.Entry<String, Object> e : structure.entrySet()) {
-            final Object value = e.getValue();
-            if (value instanceof Map) {
-                children.put(e.getKey(), (Map<String, Object>) value);
-            } else {
-                properties.put(e.getKey(), String.valueOf(value));
-            }
+        final ResourceResolver resourceResolver = target.getResourceResolver();
+        return resourceResolver.create(target, name, properties);
+    }
+
+    @Override
+    public Resource visit(final Resource resource, final String name) {
+        try {
+            return createNode(resource, name);
+        } catch (final PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
         }
 
-        final Resource resource = resourceResolver.create(target, name, properties);
-        for (final Map.Entry<String, Map<String, Object>> e : children.entrySet()) {
-            createNode(resource, e.getKey(), e.getValue());
-        }
+        return null;
+    }
+
+    @Override
+    public void visit(final Map<String, Object> properties, final Resource resource) {
+        resource.adaptTo(ModifiableValueMap.class).putAll(properties);
     }
 
     private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
