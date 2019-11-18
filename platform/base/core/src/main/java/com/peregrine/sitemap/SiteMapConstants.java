@@ -2,6 +2,9 @@ package com.peregrine.sitemap;
 
 public final class SiteMapConstants {
 
+    public static final String SITE_MAP_INDEX = "sitemapindex";
+    public static final String SITE_MAP = "sitemap";
+
     public static final String URL_SET = "urlset";
 
     public static final String URL = "url";

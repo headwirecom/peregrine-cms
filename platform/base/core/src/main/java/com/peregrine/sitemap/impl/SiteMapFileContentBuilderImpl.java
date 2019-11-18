@@ -28,6 +28,7 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.sitemap.SiteMapFileContentBuilder;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
+import com.peregrine.sitemap.XMLBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
@@ -36,9 +37,7 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 import static com.peregrine.sitemap.SiteMapConstants.*;
 import static java.util.Objects.nonNull;
@@ -49,66 +48,53 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder,
         SiteMapEntry.PropertiesVisitor<Integer> {
 
-    private static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-
+    private static final int BASE_ENTRY_LENGTH = XMLBuilder.getBasicElementLength(URL);
     private static final String EQ = "=";
-    private static final String URL_SET_END_TAG = close(URL_SET);
+    private static final Map<String, String> SITE_MAP_INDEX_ATTRIBUTES = new HashMap<>();
+    private static final Map<String, String> URL_SET_ATTRIBUTES = new HashMap<>();
 
-    private static final int TAG_SYMBOLS_LENGTH = 5;
-    private static final int BASE_ENTRY_LENGTH = baseTagLength(URL);
+    static {
+        SITE_MAP_INDEX_ATTRIBUTES.put("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9");
+        URL_SET_ATTRIBUTES.putAll(SITE_MAP_INDEX_ATTRIBUTES);
+        URL_SET_ATTRIBUTES.put("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        URL_SET_ATTRIBUTES.put("xsi:schemaLocation",
+                "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd");
+    }
 
     private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
-
-    private String urlSetStartTag;
+    private final Map<String, String> urlSetAttributes = new HashMap<>();
     private int baseSiteMapLength;
 
     @Activate
     public void activate(final SiteMapFileContentBuilderImplConfig config) {
-        urlSetStartTag = "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"" +
-                " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
-                " xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\"";
-
+        urlSetAttributes.clear();
+        urlSetAttributes.putAll(URL_SET_ATTRIBUTES);
         final String[] xmlnsMappings = config.xmlnsMappings();
         if (nonNull(xmlnsMappings)) {
             for (final String mapping : xmlnsMappings) {
                 if (StringUtils.contains(mapping, EQ)) {
-                    urlSetStartTag += " xmlns:";
-                    urlSetStartTag += StringUtils.substringBefore(mapping, EQ);
-                    urlSetStartTag += "=\"";
-                    urlSetStartTag += StringUtils.substringAfter(mapping, EQ);
-                    urlSetStartTag += "\"";
+                    final String key = "xmlns:" + StringUtils.substringBefore(mapping, EQ);
+                    final String value = StringUtils.substringAfter(mapping, EQ);
+                    urlSetAttributes.put(key, value);
                 }
             }
         }
 
-        urlSetStartTag += ">";
-        baseSiteMapLength = XML_VERSION.length()
-                + urlSetStartTag.length() + URL_SET_END_TAG.length();
-    }
-
-    private static String open(final String tagName) {
-        return "<" + tagName + ">";
-    }
-
-    private static String close(final String tagName) {
-        return "</" + tagName + ">";
-    }
-
-    private static int baseTagLength(final String tagName) {
-        return TAG_SYMBOLS_LENGTH + 2 * tagName.length();
+        baseSiteMapLength = XMLBuilder.XML_VERSION.length();
+        baseSiteMapLength += XMLBuilder.getBasicElementLength(URL_SET, urlSetAttributes);
     }
 
     @Override
     public String buildUrlSet(final Collection<SiteMapEntry> entries) {
-        final StringBuilder result = new StringBuilder(XML_VERSION);
-        result.append(urlSetStartTag);
+        final XMLBuilder result = new XMLBuilder();
+        result.startElement(URL_SET, urlSetAttributes);
         for (final SiteMapEntry entry : entries) {
             if (!isEmpty(entry)) {
-                result.append(toUrl(entry));
+                addEntryAsUrl(entry, result);
             }
         }
 
-        result.append(URL_SET_END_TAG);
+        result.endElement();
         return result.toString();
     }
 
@@ -116,24 +102,13 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
         return isBlank(entry.getUrl());
     }
 
-    private String toUrl(final SiteMapEntry entry) {
-        final StringBuilder result = new StringBuilder(open(URL));
-        for (final Map.Entry<String, Object> e : entry.getProperties().entrySet()) {
-            append(result, e.getKey(), String.valueOf(e.getValue()));
+    private void addEntryAsUrl(final SiteMapEntry source, final XMLBuilder target) {
+        target.startElement(URL);
+        for (final Map.Entry<String, Object> e : source.getProperties().entrySet()) {
+            target.addElement(e.getKey(), String.valueOf(e.getValue()));
         }
 
-        result.append(close(URL));
-        return result.toString();
-    }
-
-    private void append(final StringBuilder builder, final String tagName, final String content) {
-        if (isBlank(content)) {
-            return;
-        }
-
-        builder.append(open(tagName));
-        builder.append(content);
-        builder.append(close(tagName));
+        target.endElement();
     }
 
     @Override
@@ -152,7 +127,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
 
     @Override
     public Integer visit(final String mapName, final Integer size) {
-        return size + baseTagLength(mapName);
+        return size + XMLBuilder.getBasicElementLength(mapName);
     }
 
     @Override
@@ -162,21 +137,22 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
 
     @Override
     public String buildSiteMapIndex(final Resource root, final SiteMapUrlBuilder urlBuilder, final int numberOfParts) {
-        final StringBuilder result = new StringBuilder(XML_VERSION);
-        result.append("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+        final XMLBuilder result = new XMLBuilder();
+        result.startElement(SITE_MAP_INDEX, SITE_MAP_INDEX_ATTRIBUTES);
         for (int part = 1; part <= numberOfParts; part++) {
             final String url = urlBuilder.buildSiteMapUrl(root, part);
-            result.append("<sitemap>");
-            append(result, LOC, url);
+            result.startElement(SITE_MAP);
+            result.addElement(LOC, url);
             final Date lastModified = new Date(System.currentTimeMillis());
             if (nonNull(lastModified)) {
-                append(result, LAST_MOD, dateFormat.format(lastModified));
+                result.addElement(LAST_MOD, dateFormat.format(lastModified));
             }
 
-            result.append("</sitemap>");
+            result.endElement();
         }
 
-        result.append("</sitemapindex>");
+        result.endElement();
         return result.toString();
     }
+
 }
