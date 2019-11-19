@@ -196,7 +196,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
 
     @Override
     public Resource endVisit(final String mapName, final Resource resource) {
-        return resource;
+        return resource.getParent();
     }
 
     private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {

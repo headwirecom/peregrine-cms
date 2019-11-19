@@ -82,7 +82,7 @@ public final class SiteMapEntry {
 
         Parameter result = visitor.visit(mapName, Collections.unmodifiableMap(props), parameter);
         for (final Map.Entry<String, String> e : props.entrySet()) {
-            result = visitor.visit(e.getKey(), e.getValue(), parameter);
+            result = visitor.visit(e.getKey(), e.getValue(), result);
         }
 
         for (final Map.Entry<String, Map<String, Object>> e : children.entrySet()) {
