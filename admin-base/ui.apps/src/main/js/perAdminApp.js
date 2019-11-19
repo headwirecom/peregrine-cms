@@ -471,13 +471,13 @@ function exitWaitState() {
  */
 function stateActionImpl(name, target) {
 
-    console.log(name, target)
     enterWaitState()
     return new Promise( (resolve, reject) => {
         runBeforeStateActions(name).then( () => {
             try {
                 const stateAction = StateActions(name)
-                Promise.resolve(stateAction($perAdminApp, target)).then(result => {
+                const action = stateAction($perAdminApp, target)
+                Promise.resolve(action).then(result => {
                     exitWaitState()
                     if(result && result.startsWith('Uncaught (in promise')) {
                         notifyUserImpl('error', result)
@@ -492,7 +492,6 @@ function stateActionImpl(name, target) {
                 })
             } catch(error) {
                 exitWaitState()
-                console.log('error', error)
                 reject(error)
             }
         })

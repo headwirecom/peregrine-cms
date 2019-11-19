@@ -55,8 +55,6 @@ export default function(me, target) {
         log.error('addComponentToPath() target.drop not in allowed values - value was', target.drop)
     }
 
-    console.log(targetNode, target)
-
     let processed = false;
     // insert new component
     if(targetNode && target.component) {
@@ -85,7 +83,7 @@ export default function(me, target) {
         return me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
                     .then( (data) => {
                         if(targetNodeUpdate.fromTemplate === true) {
-                            return me.getApi().populatePageView(me.getNodeFromView('/pageView/path')).then(() => { resolve() })
+                            return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
                         } else {
                             if (target.drop.startsWith('into')) {
                                 Vue.set(targetNodeUpdate, 'children', data.children)
@@ -105,10 +103,10 @@ export default function(me, target) {
         return me.getApi().insertNodeAt(target.pagePath+target.path, target.component, target.drop)
             .then( (data) => {
                 if(!targetNodeUpdate) {
-                    return me.getApi().populatePageView(me.getNodeFromView('/pageView/path')).then( () => { resolve() })
+                    return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
                 } else {
                     if(targetNodeUpdate.fromTemplate === true) {
-                        return me.getApi().populatePageView(me.getNodeFromView('/pageView/path')).then( () => { resolve() })
+                        return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
                     } else {
                         if(target.drop.startsWith('into')) {
                             Vue.set(targetNodeUpdate, 'children', data.children)
