@@ -32,7 +32,7 @@ public final class XMLBuilder {
         return getBasicElementLength(name) + getAttributesSizeInFile(attributes);
     }
 
-    public void startElement(final String name, final Map<String, String> attributes) {
+    public XMLBuilder startElement(final String name, final Map<String, String> attributes) {
         stack.push(name);
         builder.append("<");
         builder.append(name);
@@ -45,30 +45,34 @@ public final class XMLBuilder {
         }
 
         builder.append(">");
+
+        return this;
     }
 
-    public void startElement(final String name) {
-        startElement(name, Collections.EMPTY_MAP);
+    public XMLBuilder startElement(final String name) {
+        return startElement(name, Collections.EMPTY_MAP);
     }
 
-    public void endElement() {
-        endElement(builder, stack.pop());
+    public XMLBuilder endElement() {
+        return endElement(builder, stack.pop());
     }
 
-    private void endElement(final StringBuilder builder, final String name) {
+    private XMLBuilder endElement(final StringBuilder builder, final String name) {
         builder.append("</");
         builder.append(name);
         builder.append(">");
+
+        return this;
     }
 
-    public void addElement(final String name, final Map<String, String> attributes, final String text) {
+    public XMLBuilder addElement(final String name, final Map<String, String> attributes, final String text) {
         startElement(name, attributes);
         builder.append(text);
-        endElement();
+        return endElement();
     }
 
-    public void addElement(final String name, final String text) {
-        addElement(name, Collections.EMPTY_MAP, text);
+    public XMLBuilder addElement(final String name, final String text) {
+        return addElement(name, Collections.EMPTY_MAP, text);
     }
 
     @Override

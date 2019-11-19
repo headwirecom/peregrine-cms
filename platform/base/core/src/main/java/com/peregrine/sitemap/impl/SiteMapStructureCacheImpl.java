@@ -45,7 +45,7 @@ import static java.util.Objects.nonNull;
 @Component(service = SiteMapStructureCache.class, immediate = true)
 @Designate(ocd = SiteMapStructureCacheImplConfig.class)
 public final class SiteMapStructureCacheImpl extends CacheBuilderBase
-        implements SiteMapStructureCache, Callback<String>, SiteMapEntry.MapPropertiesVisitor<Resource> {
+        implements SiteMapStructureCache, Callback<String>, SiteMapEntry.Visitor<Resource> {
 
     public static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
 
@@ -164,29 +164,24 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         final ResourceResolver resourceResolver = target.getResourceResolver();
         for (int i = 0; i < siteMapsSize; i++) {
             final String childName = Integer.toString(i);
-            Resource child = target.getChild(childName);
+            final Resource child = target.getChild(childName);
             if (nonNull(child)) {
                 resourceResolver.delete(child);
             }
 
-            iterator.next().walk(this, createNode(target, childName));
+            iterator.next().walk(this, target, childName);
         }
 
         removeCachedItemsAboveIndex(target, siteMapsSize);
     }
 
-    private Resource createNode(final Resource target, final String name)
-            throws PersistenceException {
-        final Map<String, Object> properties = new HashMap<>();
-        properties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-        final ResourceResolver resourceResolver = target.getResourceResolver();
-        return resourceResolver.create(target, name, properties);
-    }
-
     @Override
-    public Resource visit(final String childName, final Resource resource) {
+    public Resource visit(final String childName, final Map<String, String> properties, final Resource resource) {
         try {
-            return createNode(resource, childName);
+            final Map<String, Object> props = new HashMap<>(properties);
+            props.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
+            final ResourceResolver resourceResolver = resource.getResourceResolver();
+            return resourceResolver.create(resource, childName, props);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
         }
@@ -195,8 +190,13 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     @Override
-    public void visit(final Map<String, Object> properties, final Resource resource) {
-        resource.adaptTo(ModifiableValueMap.class).putAll(properties);
+    public Resource visit(final String propertyName, final String propertyValue, final Resource resource) {
+        return resource;
+    }
+
+    @Override
+    public Resource endVisit(final String mapName, final Resource resource) {
+        return resource;
     }
 
     private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {

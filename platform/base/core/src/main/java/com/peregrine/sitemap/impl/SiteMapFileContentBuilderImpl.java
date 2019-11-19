@@ -45,8 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component(service = SiteMapFileContentBuilder.class)
 @Designate(ocd = SiteMapFileContentBuilderImplConfig.class)
-public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder,
-        SiteMapEntry.PropertiesVisitor<Integer> {
+public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder {
 
     private static final int BASE_ENTRY_LENGTH = XMLBuilder.getBasicElementLength(URL);
     private static final String EQ = "=";
@@ -62,6 +61,8 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     }
 
     private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    private final SiteMapEntrySizeVisitor siteMapEntrySizeVisitor = new SiteMapEntrySizeVisitor();
+    private final UrlSetMapPropertiesVisitor urlSetMapPropertiesVisitor = new UrlSetMapPropertiesVisitor();
     private final Map<String, String> urlSetAttributes = new HashMap<>();
     private int baseSiteMapLength;
 
@@ -85,57 +86,6 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     }
 
     @Override
-    public String buildUrlSet(final Collection<SiteMapEntry> entries) {
-        final XMLBuilder result = new XMLBuilder();
-        result.startElement(URL_SET, urlSetAttributes);
-        for (final SiteMapEntry entry : entries) {
-            if (!isEmpty(entry)) {
-                addEntryAsUrl(entry, result);
-            }
-        }
-
-        result.endElement();
-        return result.toString();
-    }
-
-    private boolean isEmpty(final SiteMapEntry entry) {
-        return isBlank(entry.getUrl());
-    }
-
-    private void addEntryAsUrl(final SiteMapEntry source, final XMLBuilder target) {
-        target.startElement(URL);
-        for (final Map.Entry<String, Object> e : source.getProperties().entrySet()) {
-            target.addElement(e.getKey(), String.valueOf(e.getValue()));
-        }
-
-        target.endElement();
-    }
-
-    @Override
-    public int getSize(final SiteMapEntry entry) {
-        if (isEmpty(entry)) {
-            return 0;
-        }
-
-        return entry.walk(this, BASE_ENTRY_LENGTH);
-    }
-
-    @Override
-    public Integer visit(final String propertyName, final String propertyValue, final Integer size) {
-        return visit(propertyName, size) + propertyValue.length();
-    }
-
-    @Override
-    public Integer visit(final String mapName, final Integer size) {
-        return size + XMLBuilder.getBasicElementLength(mapName);
-    }
-
-    @Override
-    public int getBaseSiteMapLength() {
-        return baseSiteMapLength;
-    }
-
-    @Override
     public String buildSiteMapIndex(final Resource root, final SiteMapUrlBuilder urlBuilder, final int numberOfParts) {
         final XMLBuilder result = new XMLBuilder();
         result.startElement(SITE_MAP_INDEX, SITE_MAP_INDEX_ATTRIBUTES);
@@ -153,6 +103,75 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
 
         result.endElement();
         return result.toString();
+    }
+
+    @Override
+    public int getBaseSiteMapLength() {
+        return baseSiteMapLength;
+    }
+
+    @Override
+    public int getSize(final SiteMapEntry entry) {
+        if (isEmpty(entry)) {
+            return 0;
+        }
+
+        return entry.walk(siteMapEntrySizeVisitor, BASE_ENTRY_LENGTH, URL);
+    }
+
+    private boolean isEmpty(final SiteMapEntry entry) {
+        return isBlank(entry.getUrl());
+    }
+
+    @Override
+    public String buildUrlSet(final Collection<SiteMapEntry> entries) {
+        final XMLBuilder result = new XMLBuilder();
+        result.startElement(URL_SET, urlSetAttributes);
+        for (final SiteMapEntry entry : entries) {
+            if (!isEmpty(entry)) {
+                entry.walk(urlSetMapPropertiesVisitor, result, URL);
+            }
+        }
+
+        result.endElement();
+        return result.toString();
+    }
+
+    private static final class SiteMapEntrySizeVisitor implements SiteMapEntry.Visitor<Integer> {
+
+        @Override
+        public Integer visit(final String mapName, final Map<String, String> properties, final Integer size) {
+            return size;
+        }
+
+        @Override
+        public Integer visit(final String propertyName, final String propertyValue, final Integer size) {
+            return size + XMLBuilder.getBasicElementLength(propertyName) + propertyValue.length();
+        }
+
+        @Override
+        public Integer endVisit(final String mapName, final Integer size) {
+            return size + XMLBuilder.getBasicElementLength(mapName);
+        }
+
+    }
+
+    private static final class UrlSetMapPropertiesVisitor implements SiteMapEntry.Visitor<XMLBuilder> {
+
+        @Override
+        public XMLBuilder visit(final String mapName, final Map<String, String> properties, final XMLBuilder builder) {
+            return builder.startElement(mapName);
+        }
+
+        @Override
+        public XMLBuilder visit(final String propertyName, final String propertyValue, final XMLBuilder builder) {
+            return builder.addElement(propertyName, propertyValue);
+        }
+
+        @Override
+        public XMLBuilder endVisit(final String mapName, final XMLBuilder builder) {
+            return builder.endElement();
+        }
     }
 
 }

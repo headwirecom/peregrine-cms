@@ -1,5 +1,6 @@
 package com.peregrine.sitemap;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,10 +18,6 @@ public final class SiteMapEntry {
 
     public void setUrl(final String url) {
         putProperty(SiteMapConstants.LOC, url);
-    }
-
-    public Map<String, Object> getProperties() {
-        return properties;
     }
 
     public Object putProperty(final String name, final Object value) {
@@ -56,69 +53,52 @@ public final class SiteMapEntry {
         return null;
     }
 
-    public <Parameter> void walk(final MapPropertiesVisitor<Parameter> visitor, final Parameter parameter) {
-        walk(visitor, parameter, properties);
+    public <Parameter> Parameter walk(final Visitor<Parameter> visitor, final Parameter parameter) {
+        return walk(visitor, parameter, null);
     }
 
-    private <Parameter> void walk(
-            final MapPropertiesVisitor<Parameter> visitor,
-            final Parameter parameter,
-            final Map<String, Object> properties) {
-        final Map<String, Object> props = new HashMap<>();
-        final Map<String, Map<String, Object>> children = new HashMap<>();
-        for (final Map.Entry<String, Object> e : properties.entrySet()) {
-            final Object value = e.getValue();
-            if (value instanceof Map) {
-                final Map<String, Object> map = (Map<String, Object>) value;
-                children.put(e.getKey(), map);
-            } else {
-                props.put(e.getKey(), String.valueOf(value));
-            }
-        }
-
-        visitor.visit(props, parameter);
-        for (final Map.Entry<String, Map<String, Object>> e : children.entrySet()) {
-            walk(visitor, visitor.visit(e.getKey(), parameter), e.getValue());
-        }
-    }
-
-    public <Parameter> Parameter walk(final PropertiesVisitor<Parameter> visitor, final Parameter parameter) {
-        return walk(visitor, parameter, properties);
+    public <Parameter> Parameter walk(final Visitor<Parameter> visitor, final Parameter parameter, final String rootName) {
+        return walk(visitor, parameter, rootName, properties);
     }
 
     private <Parameter> Parameter walk(
-            final PropertiesVisitor<Parameter> visitor,
+            final Visitor<Parameter> visitor,
             final Parameter parameter,
+            final String mapName,
             final Map<String, Object> properties) {
-        Parameter result = parameter;
+        final Map<String, String> props = new HashMap<>();
+        final Map<String, Map<String, Object>> children = new HashMap<>();
         for (final Map.Entry<String, Object> e : properties.entrySet()) {
             final Object value = e.getValue();
+            final String key = e.getKey();
             if (value instanceof Map) {
-                result = visitor.visit(e.getKey(), result);
-                final Map<String, Object> map = (Map<String, Object>) e.getValue();
-                result = walk(visitor, result, map);
+                final Map<String, Object> map = (Map<String, Object>) value;
+                children.put(key, map);
             } else {
                 final String string = String.valueOf(value);
-                result = visitor.visit(e.getKey(), string, result);
+                props.put(key, string);
             }
         }
 
-        return result;
+        Parameter result = visitor.visit(mapName, Collections.unmodifiableMap(props), parameter);
+        for (final Map.Entry<String, String> e : props.entrySet()) {
+            result = visitor.visit(e.getKey(), e.getValue(), parameter);
+        }
+
+        for (final Map.Entry<String, Map<String, Object>> e : children.entrySet()) {
+            result = walk(visitor, result, e.getKey(), e.getValue());
+        }
+
+        return visitor.endVisit(mapName, result);
     }
 
-    public interface MapPropertiesVisitor<Parameter> {
+    public interface Visitor<Parameter> {
 
-        Parameter visit(String mapName, Parameter parameter);
-
-        void visit(Map<String, Object> map, Parameter parameter);
-
-    }
-
-    public interface PropertiesVisitor<Parameter> {
-
-        Parameter visit(String mapName, Parameter parameter);
+        Parameter visit(String mapName, Map<String, String> properties, Parameter parameter);
 
         Parameter visit(String propertyName, String propertyValue, Parameter parameter);
+
+        Parameter endVisit(String mapName, Parameter parameter);
 
     }
 
