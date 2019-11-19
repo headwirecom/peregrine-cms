@@ -30,14 +30,14 @@
             <p>{{$exp(model,'description')}}</p>
         </div>
         <div class="card-action">
-            <admin-components-action v-if="internal(model.action)"
+            <admin-components-action v-if="internal(model.action, model.target)"
                 v-bind:model="{ 
                     target: model.action, 
                     command: 'selectPath', 
                     title: this.$i18n('explore')
                 }">
             </admin-components-action>
-            <a v-else v-bind:href="model.action" target="docs">{{$i18n('explore')}}</a>
+            <a v-else v-bind:href="model.action" v-bind:target="model.target">{{$i18n('explore')}}</a>
 
         </div>
     </div>
@@ -48,8 +48,8 @@
     export default {
         props: ['model'],
         methods: {
-            internal(action) {
-                return !action.startsWith('http')
+            internal(action, target) {
+                return !action.startsWith('http') && (target === undefined || target === null)
             }
         }
     }

@@ -22,17 +22,14 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger'
-let log = LoggerFactory.logger('actions').setLevelDebug()
-
-let actions = []
-
+import {LoggerFactory} from './logger'
 import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
 import createPageWizard from './stateActions/createPageWizard'
 import createSiteWizard from './stateActions/createSiteWizard'
 import createSite from './stateActions/createSite'
 import deletePage from './stateActions/deletePage'
+import deleteSite from './stateActions/deleteSite'
 import renamePage from './stateActions/renamePage'
 import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
@@ -41,6 +38,7 @@ import sourceImageWizard from './stateActions/sourceImageWizard'
 import fetchExternalAsset from './stateActions/fetchExternalAsset'
 import createFolder from './stateActions/createFolder'
 import deleteFolder from './stateActions/deleteFolder'
+import deleteFile from './stateActions/deleteFile'
 import uploadFiles from './stateActions/uploadFiles'
 import editPage from './stateActions/editPage'
 import editTemplate from './stateActions/editTemplate'
@@ -76,6 +74,12 @@ import replicate from './stateActions/replicate'
 import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
+import deleteTemplate from './stateActions/deleteTemplate';
+import renameTemplate from './stateActions/renameTemplate';
+
+let log = LoggerFactory.logger('actions').setLevelDebug()
+
+let actions = []
 
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createSiteWizard'] = createSiteWizard
@@ -83,12 +87,14 @@ actions['createSite'] = createSite
 actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['deletePage'] = deletePage
+actions['deleteSite'] = deleteSite
 actions['renamePage'] = renamePage
 actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
 actions['createFolder'] = createFolder
 actions['deleteFolder'] = deleteFolder
+actions['deleteFile'] = deleteFile
 actions['uploadFiles'] = uploadFiles
 actions['sourceImageWizard'] = sourceImageWizard
 actions['fetchExternalAsset'] = fetchExternalAsset
@@ -125,7 +131,12 @@ actions['renameObject'] = renameObject
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
 actions['moveObject'] = moveObject
+
+actions['showTemplateInfo'] = showPageInfo
+actions['saveTemplateProperties'] = savePageProperties
+actions['renameTemplate'] = renameTemplate
 actions['moveTemplate'] = moveTemplate
+actions['deleteTemplate'] = deleteTemplate
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

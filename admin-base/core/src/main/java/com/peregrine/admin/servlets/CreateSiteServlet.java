@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -76,16 +77,21 @@ public class CreateSiteServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
+        String title = request.getParameterUtf8(TITLE);
+        if(StringUtils.isBlank(title)) {
+            title = toSite;
+        }
 
         try {
             logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
-            Resource site = resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite);
+            Resource site = resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite, title);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)
                 .writeAttribute(NAME, toSite)
                 .writeAttribute(PATH, site.getPath())
+                .writeAttribute(TITLE, title)
                 .writeAttribute(SOURCE_PATH, SITES_ROOT + SLASH + fromSite);
         } catch(ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE).setException(e);

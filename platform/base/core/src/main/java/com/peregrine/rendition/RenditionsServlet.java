@@ -25,26 +25,8 @@ package com.peregrine.rendition;
  * #L%
  */
 
-import com.peregrine.adaption.PerAsset;
-import com.peregrine.rendition.BaseResourceHandler.HandlerException;
-import com.peregrine.transform.ImageContext;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.commons.io.IOUtils;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -54,6 +36,24 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
+import com.peregrine.adaption.PerAsset;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.rendition.BaseResourceHandler.HandlerException;
+import com.peregrine.transform.ImageContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import org.apache.commons.io.IOUtils;
+import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     service = Servlet.class,
@@ -111,7 +111,16 @@ public class RenditionsServlet extends AbstractBaseServlet {
         String selector = request.getSelector();
         // if we have a selector called 'rendition' or the request path is the same as the resource path then we handle them as images
         // otherwise we delegate to Sling
-        if(!"rendition".equals(selector) && !resource.getPath().equals(request.getRequestPath())) {
+        // TODO: If the path changes because of a Mapping then this will fail loading the image
+        String resourceName = resource.getName();
+        String requestName = request.getRequestPath();
+        requestName = URLDecoder.decode(requestName);
+        int index = requestName.lastIndexOf("/");
+        if(index >= 0) {
+            requestName = requestName.substring(index + 1);
+        }
+        if(!"rendition".equals(selector) && !resourceName.equals(requestName)) {
+            logger.trace("Redirect as this is not an rendition (selector: '{}') or resource name: '{}' odes not match request: '{}'", selector, resourceName, requestName);
             redirectServlet.service(request.getRequest(), request.getResponse());
             return new ResponseHandledResponse();
         }
@@ -126,7 +135,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
         if(suffix != null && suffix.length() > 0) {
             // Get final Rendition Name and Mime Type
             String renditionName = suffix;
-            int index = renditionName.indexOf('/');
+            index = renditionName.indexOf('/');
             if(index >= 0) {
                 renditionName = renditionName.substring(index + 1);
             }
