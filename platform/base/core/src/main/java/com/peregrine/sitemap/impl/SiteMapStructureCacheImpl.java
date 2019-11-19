@@ -47,7 +47,9 @@ import static java.util.Objects.nonNull;
 public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         implements SiteMapStructureCache, Callback<String>, SiteMapEntry.Visitor<Resource> {
 
-    public static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
+    private static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
+    private static final String COLON = ":";
+    private static final String UNDERSCORE = "_";
 
     private final Set<RefreshListener> refreshListeners = new HashSet<>();
 
@@ -99,17 +101,49 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private SiteMapEntry extractEntry(final Resource resource) {
-        final ValueMap properties = resource.getValueMap();
         final SiteMapEntry entry = new SiteMapEntry();
-        for (final Map.Entry<String, Object> e : properties.entrySet()) {
+        for (final Map.Entry<String, Object> e : transformToMap(resource).entrySet()) {
             final String key = e.getKey();
-            if (!key.startsWith("jcr:")) {
-                final Object value = e.getValue();
-                entry.putProperty(key, String.valueOf(value));
+            final Object value = e.getValue();
+            if (value instanceof String) {
+                entry.putProperty(key, (String)value);
+            } else {
+                entry.putProperty(key, value);
             }
         }
 
         return entry;
+    }
+
+    private Map<String, Object> transformToMap(final Resource resource) {
+        final ValueMap properties = resource.getValueMap();
+        final Map<String, Object> result = new HashMap<>();
+        for (final Map.Entry<String, Object> e : properties.entrySet()) {
+            final String key = e.getKey();
+            if (!key.startsWith("jcr:")) {
+                final Object value = e.getValue();
+                result.put(transformFromJcrName(key), String.valueOf(value));
+            }
+        }
+
+        for (final Resource child : resource.getChildren()) {
+            result.put(transformFromJcrName(child.getName()), transformToMap(child));
+        }
+
+        return result;
+    }
+
+    private String transformFromJcrName(final String name) {
+        if (StringUtils.startsWith(name, UNDERSCORE)) {
+            final String nameAfterUnderscore = name.substring(1);
+            if (nameAfterUnderscore.contains(UNDERSCORE)) {
+                final String prefix = StringUtils.substringBefore(nameAfterUnderscore, UNDERSCORE);
+                final String suffix = StringUtils.substringAfter(nameAfterUnderscore, UNDERSCORE);
+                return prefix + COLON + suffix;
+            }
+        }
+
+        return name;
     }
 
     @Override
@@ -178,15 +212,34 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     @Override
     public Resource visit(final String childName, final Map<String, String> properties, final Resource resource) {
         try {
-            final Map<String, Object> props = new HashMap<>(properties);
+            final Map<String, Object> props = transformToJcrNames(properties);
             props.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
             final ResourceResolver resourceResolver = resource.getResourceResolver();
-            return resourceResolver.create(resource, childName, props);
+            return resourceResolver.create(resource, transformToJcrName(childName), props);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
         }
 
         return null;
+    }
+
+    private Map<String, Object> transformToJcrNames(final Map<String, ?> map) {
+        final Map<String, Object> result = new HashMap<>();
+        for (final Map.Entry<String, ?> e : map.entrySet()) {
+            result.put(transformToJcrName(e.getKey()), e.getValue());
+        }
+
+        return result;
+    }
+
+    private String transformToJcrName(final String name) {
+        if (StringUtils.contains(name, COLON)) {
+            final String prefix = StringUtils.substringBefore(name, COLON);
+            final String suffix = StringUtils.substringAfter(name, COLON);
+            return UNDERSCORE + prefix + UNDERSCORE + suffix;
+        }
+
+        return name;
     }
 
     @Override
