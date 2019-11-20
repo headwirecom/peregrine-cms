@@ -29,6 +29,7 @@ import com.peregrine.sitemap.ConfigurationFactoryContainerBase;
 import com.peregrine.sitemap.SiteMapConfiguration;
 import com.peregrine.sitemap.SiteMapConfigurationsContainer;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -36,6 +37,17 @@ import java.util.HashSet;
 @Component(service = SiteMapConfigurationsContainer.class)
 public final class SiteMapConfigurationsContainerImpl extends ConfigurationFactoryContainerBase<SiteMapConfiguration>
         implements SiteMapConfigurationsContainer {
+
+    @Reference
+    private SiteMapExtractorsContainerImpl extractors;
+
+    protected void addImpl(final SiteMapConfiguration item) {
+        extractors.add(item);
+    }
+
+    protected void removeImpl(final SiteMapConfiguration item) {
+        extractors.remove(item);
+    }
 
     @Override
     public Collection<SiteMapConfiguration> getAll() {

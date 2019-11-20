@@ -25,96 +25,38 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.*;
+import com.peregrine.sitemap.PropertyProvider;
+import com.peregrine.sitemap.SiteMapConfiguration;
+import com.peregrine.sitemap.SiteMapExtractorBase;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
-@Component(service = SiteMapExtractor.class, immediate = true)
-@Designate(ocd = SiteMapExtractorImplConfig.class, factory = true)
 public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Pattern pattern;
 
-    @Reference
-    private SiteMapExtractorsContainer container;
+    private final DefaultSiteMapExtractor defaultSiteMapExtractor;
 
-    @Reference
-    private NamedServiceRetriever serviceRetriever;
-
-    @Reference
-    private DefaultSiteMapExtractor defaultSiteMapExtractor;
-
-    private Pattern pattern;
-
-    @Activate
-    public void activate(final SiteMapExtractorImplConfig config) {
-        try {
-            pattern = Pattern.compile(config.pathRegex());
-        } catch (final PatternSyntaxException e) {
-            logger.error("The path regex is not valid.", e);
-        }
-
-        pageRecognizer = getNamedService(PageRecognizer.class, config.pageRecognizer());
-        urlExternalizer = getNamedService(UrlExternalizer.class, config.urlExternalizer());
+    public SiteMapExtractorImpl(final SiteMapConfiguration config, final DefaultSiteMapExtractor defaultSiteMapExtractor) {
+        pattern = config.getPagePathPattern();
+        this.defaultSiteMapExtractor = defaultSiteMapExtractor;
+        pageRecognizer = config.getPageRecognizer();
+        urlExternalizer = config.getUrlExternalizer();
         if (isNull(urlExternalizer)) {
             urlExternalizer = defaultSiteMapExtractor.getUrlExternalizer();
         }
 
-        final String[] propertyProviders = config.propertyProviders();
-        if (nonNull(propertyProviders)) {
-            setPropertyProviders(propertyProviders);
+        for (final PropertyProvider provider : config.getPropertyProviders()) {
+            addPropertyProvider(provider);
         }
 
         addPropertyProvider(defaultSiteMapExtractor.getLastModPropertyProvider());
         addPropertyProvider(defaultSiteMapExtractor.getChangeFreqPropertyProvider());
         addPropertyProvider(defaultSiteMapExtractor.getPriorityPropertyProvider());
-
-        if (isValid()) {
-            container.add(this);
-        }
-    }
-
-    private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
-        final S service = serviceRetriever.getNamedService(clazz, name);
-        if (isNull(service)) {
-            logger.error("The service '{}' of type {} was not found. Please check your configuration.",
-                    name, clazz.getName());
-        }
-
-        return service;
-    }
-
-    private void setPropertyProviders(final String[] names) {
-        for (final String name: names) {
-            final PropertyProvider provider = getNamedService(PropertyProvider.class, name);
-            addPropertyProvider(provider);
-        }
-    }
-
-    private boolean isValid() {
-        return nonNull(pattern) && nonNull(pageRecognizer) && nonNull(urlExternalizer);
-    }
-
-    @Deactivate
-    public void deactivate() {
-        if (isValid()) {
-            container.remove(this);
-        }
-
-        clear();
-        pattern = null;
     }
 
     protected SiteMapUrlBuilder getUrlBuilder() {

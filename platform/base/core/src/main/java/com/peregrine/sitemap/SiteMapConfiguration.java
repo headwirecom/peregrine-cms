@@ -25,12 +25,19 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
-
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public interface SiteMapConfiguration {
+
+    Pattern getPagePathPattern();
+
+    PageRecognizer getPageRecognizer();
+
+    UrlExternalizer getUrlExternalizer();
+
+    Collection<PropertyProvider> getPropertyProviders();
 
     Set<String> getMandatoryCachedPaths();
 

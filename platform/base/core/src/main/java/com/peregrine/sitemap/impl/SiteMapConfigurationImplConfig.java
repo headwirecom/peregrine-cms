@@ -31,6 +31,18 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @ObjectClassDefinition(name = "%config.name", description = "%config.description")
 public @interface SiteMapConfigurationImplConfig {
 
+    @AttributeDefinition(name = "%pathRegex.name", description = "%pathRegex.description")
+    String pathRegex();
+
+    @AttributeDefinition(name = "%pageRecognizer.name", description = "%pageRecognizer.description")
+    String pageRecognizer();
+
+    @AttributeDefinition(name = "%urlExternalizer.name", description = "%urlExternalizer.description")
+    String urlExternalizer();
+
+    @AttributeDefinition(name = "%propertyProviders.name", description = "%propertyProviders.description")
+    String[] propertyProviders() default { };
+
     @AttributeDefinition(name = "%mandatoryCachedRootPaths.name", description = "%mandatoryCachedRootPaths.description")
     String[] mandatoryCachedRootPaths() default { };
 }

@@ -27,7 +27,7 @@ package com.peregrine.sitemap;
 
 import org.apache.sling.api.resource.Resource;
 
-public interface SiteMapExtractorsContainer  extends ConfigurationFactoryContainer<SiteMapExtractor> {
+public interface SiteMapExtractorsContainer {
 
     SiteMapExtractor findFirstFor(Resource resource);
 

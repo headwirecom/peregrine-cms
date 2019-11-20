@@ -27,6 +27,7 @@ package com.peregrine.sitemap;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -67,14 +68,14 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     private List<SiteMapEntry> extract(final Page root) {
         final List<SiteMapEntry> result = new LinkedList<>();
-        if (!pageRecognizer.isPage(root)) {
+        if (!isPage(root)) {
             return result;
         }
 
         result.add(createEntry(root));
         for (final Resource child: root.getChildren()) {
             final Page childPage = new Page(child);
-            if (pageRecognizer.isPage(childPage)) {
+            if (isPage(childPage)) {
                 result.addAll(extract(childPage));
             }
         }
@@ -82,9 +83,13 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
         return result;
     }
 
+    private boolean isPage(final Page page) {
+        return isNull(pageRecognizer) || pageRecognizer.isPage(page);
+    }
+
     private SiteMapEntry createEntry(final Page page) {
         final SiteMapEntry entry = new SiteMapEntry();
-        entry.setUrl(urlExternalizer.map(page));
+        entry.setUrl(externalize(page));
         for (final Map.Entry<String, PropertyProvider> e : propertyProviders.entrySet()) {
             entry.putProperty(e.getKey(), e.getValue().extractValue(page));
         }
@@ -92,12 +97,28 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
         return entry;
     }
 
+    private String externalize(final Page page) {
+        if (isNull(urlExternalizer)) {
+            return page.getPath() + ".html";
+        }
+
+        return urlExternalizer.map(page);
+    }
+
     protected abstract SiteMapUrlBuilder getUrlBuilder();
 
     @Override
     public String buildSiteMapUrl(final Resource siteMapRoot, final int index) {
         final String url = getUrlBuilder().buildSiteMapUrl(siteMapRoot, index);
-        return urlExternalizer.map(siteMapRoot.getResourceResolver(), url);
+        return externalize(siteMapRoot.getResourceResolver(), url);
+    }
+
+    private String externalize(final ResourceResolver resourceResolver, final String url) {
+        if (isNull(urlExternalizer)) {
+            return url;
+        }
+
+        return urlExternalizer.map(resourceResolver, url);
     }
 
     @Override

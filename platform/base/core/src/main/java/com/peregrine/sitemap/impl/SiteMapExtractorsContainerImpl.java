@@ -25,18 +25,43 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.ConfigurationFactoryContainerBase;
+import com.peregrine.sitemap.SiteMapConfiguration;
 import com.peregrine.sitemap.SiteMapExtractor;
 import com.peregrine.sitemap.SiteMapExtractorsContainer;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component(service = SiteMapExtractorsContainer.class)
-public final class SiteMapExtractorsContainerImpl extends ConfigurationFactoryContainerBase<SiteMapExtractor> implements SiteMapExtractorsContainer {
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+@Component(service = { SiteMapExtractorsContainer.class, SiteMapExtractorsContainerImpl.class })
+public final class SiteMapExtractorsContainerImpl implements SiteMapExtractorsContainer {
+
+    private final Map<SiteMapConfiguration, SiteMapExtractorImpl> items = new HashMap<>();
+
+    @Reference
+    private DefaultSiteMapExtractor defaultSiteMapExtractor;
+
+    public boolean add(final SiteMapConfiguration config) {
+        if (isNull(config.getPagePathPattern())) {
+            return false;
+        }
+
+        items.put(config, new SiteMapExtractorImpl(config, defaultSiteMapExtractor));
+        return true;
+    }
+
+    public boolean remove(final SiteMapConfiguration config) {
+        return nonNull(items.remove(config));
+    }
 
     @Override
     public SiteMapExtractor findFirstFor(final Resource resource) {
-        for (final SiteMapExtractor extractor : items) {
+        for (final SiteMapExtractor extractor : items.values()) {
             if (extractor.appliesTo(resource)) {
                 return extractor;
             }

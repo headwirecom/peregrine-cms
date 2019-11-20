@@ -33,11 +33,20 @@ public abstract class ConfigurationFactoryContainerBase<Configuration> implement
 
     @Override
     public boolean add(final Configuration item) {
+        addImpl(item);
         return items.add(item);
+    }
+
+    protected void addImpl(final Configuration item) {
     }
 
     @Override
     public boolean remove(final Configuration item) {
+        removeImpl(item);
         return items.remove(item);
     }
+
+    protected void removeImpl(final Configuration item) {
+    }
+
 }

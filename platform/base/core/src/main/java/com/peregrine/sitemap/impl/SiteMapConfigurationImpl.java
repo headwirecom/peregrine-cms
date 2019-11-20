@@ -26,7 +26,6 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -35,21 +34,23 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapConfiguration.class, immediate = true)
 @Designate(ocd = SiteMapConfigurationImplConfig.class, factory = true)
 public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Reference
     private SiteMapConfigurationsContainer container;
+
+    @Reference
+    private NamedServiceRetriever serviceRetriever;
 
     private SiteMapConfigurationImplConfig config;
 
@@ -62,6 +63,52 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
     @Deactivate
     public void deactivate() {
         container.remove(this);
+    }
+
+    @Override
+    public Pattern getPagePathPattern() {
+        try {
+            return Pattern.compile(config.pathRegex());
+        } catch (final PatternSyntaxException e) {
+            logger.error("The path regex is not valid.", e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public PageRecognizer getPageRecognizer() {
+        return getNamedService(PageRecognizer.class, config.pageRecognizer());
+    }
+
+    private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
+        final S service = serviceRetriever.getNamedService(clazz, name);
+        if (isNull(service)) {
+            logger.error("The service '{}' of type {} was not found. Please check your configuration.",
+                    name, clazz.getName());
+        }
+
+        return service;
+    }
+
+    @Override
+    public UrlExternalizer getUrlExternalizer() {
+        return getNamedService(UrlExternalizer.class, config.urlExternalizer());
+    }
+
+    @Override
+    public Collection<PropertyProvider> getPropertyProviders() {
+        final String[] propertyProviders = config.propertyProviders();
+        if (isNull(propertyProviders)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        final List<PropertyProvider> result = new LinkedList<>();
+        for (final String name : propertyProviders) {
+            result.add(getNamedService(PropertyProvider.class, name));
+        }
+
+        return result;
     }
 
     @Override
