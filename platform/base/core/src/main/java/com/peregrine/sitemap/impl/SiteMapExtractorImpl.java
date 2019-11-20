@@ -48,10 +48,10 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
-    private NamedServiceRetriever serviceRetriever;
+    private SiteMapExtractorsContainer container;
 
     @Reference
-    private SiteMapExtractorsContainer siteMapExtractorsContainer;
+    private NamedServiceRetriever serviceRetriever;
 
     @Reference
     private DefaultSiteMapExtractor defaultSiteMapExtractor;
@@ -82,7 +82,7 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
         addPropertyProvider(defaultSiteMapExtractor.getPriorityPropertyProvider());
 
         if (isValid()) {
-            siteMapExtractorsContainer.add(this);
+            container.add(this);
         }
     }
 
@@ -110,7 +110,7 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
     @Deactivate
     public void deactivate() {
         if (isValid()) {
-            siteMapExtractorsContainer.remove(this);
+            container.remove(this);
         }
 
         clear();

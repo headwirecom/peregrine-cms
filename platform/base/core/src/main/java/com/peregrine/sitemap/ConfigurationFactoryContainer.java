@@ -25,10 +25,10 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+public interface ConfigurationFactoryContainer<Configuration> {
 
-public interface SiteMapExtractorsContainer  extends ConfigurationFactoryContainer<SiteMapExtractor> {
+    boolean add(Configuration item);
 
-    SiteMapExtractor findFirstFor(Resource resource);
+    boolean remove(Configuration item);
 
 }

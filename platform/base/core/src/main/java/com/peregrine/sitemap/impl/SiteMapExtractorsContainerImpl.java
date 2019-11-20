@@ -25,27 +25,14 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.sitemap.ConfigurationFactoryContainerBase;
 import com.peregrine.sitemap.SiteMapExtractor;
 import com.peregrine.sitemap.SiteMapExtractorsContainer;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 @Component(service = SiteMapExtractorsContainer.class)
-public final class SiteMapExtractorsContainerImpl implements SiteMapExtractorsContainer {
-
-    private final ConcurrentLinkedQueue<SiteMapExtractor> items = new ConcurrentLinkedQueue<>();
-
-    @Override
-    public boolean add(final SiteMapExtractor item) {
-        return items.add(item);
-    }
-
-    @Override
-    public boolean remove(final SiteMapExtractor item) {
-        return items.remove(item);
-    }
+public final class SiteMapExtractorsContainerImpl extends ConfigurationFactoryContainerBase<SiteMapExtractor> implements SiteMapExtractorsContainer {
 
     @Override
     public SiteMapExtractor findFirstFor(final Resource resource) {

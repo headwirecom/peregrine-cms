@@ -27,8 +27,11 @@ package com.peregrine.sitemap;
 
 import org.apache.sling.api.resource.Resource;
 
-public interface SiteMapExtractorsContainer  extends ConfigurationFactoryContainer<SiteMapExtractor> {
+import java.util.List;
+import java.util.Set;
 
-    SiteMapExtractor findFirstFor(Resource resource);
+public interface SiteMapConfiguration {
+
+    Set<String> getMandatoryCachedPaths();
 
 }

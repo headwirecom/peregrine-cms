@@ -25,10 +25,19 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public interface SiteMapExtractorsContainer  extends ConfigurationFactoryContainer<SiteMapExtractor> {
+public abstract class ConfigurationFactoryContainerBase<Configuration> implements ConfigurationFactoryContainer<Configuration> {
 
-    SiteMapExtractor findFirstFor(Resource resource);
+    protected final ConcurrentLinkedQueue<Configuration> items = new ConcurrentLinkedQueue<>();
 
+    @Override
+    public boolean add(final Configuration item) {
+        return items.add(item);
+    }
+
+    @Override
+    public boolean remove(final Configuration item) {
+        return items.remove(item);
+    }
 }

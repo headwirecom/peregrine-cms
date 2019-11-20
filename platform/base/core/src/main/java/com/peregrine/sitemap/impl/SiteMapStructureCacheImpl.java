@@ -59,6 +59,9 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
 
+    @Reference
+    private SiteMapConfigurationsContainer siteMapConfigurationsContainer;
+
     private SiteMapStructureCacheImplConfig config;
 
     private DeBouncer<String> deBouncer;
@@ -279,12 +282,10 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
 
     @Override
     protected void rebuildMandatoryContent() {
-        if (isNull(config) || isNull(config.mandatoryCachedRootPaths())) {
-            return;
-        }
-
-        for (final String path : config.mandatoryCachedRootPaths()) {
-            rebuildImpl(path);
+        for (final SiteMapConfiguration config : siteMapConfigurationsContainer.getAll()) {
+            for (final String path : config.getMandatoryCachedPaths()) {
+                rebuildImpl(path);
+            }
         }
     }
 

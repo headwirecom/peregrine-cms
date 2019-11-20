@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,10 +25,20 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+import com.peregrine.sitemap.ConfigurationFactoryContainerBase;
+import com.peregrine.sitemap.SiteMapConfiguration;
+import com.peregrine.sitemap.SiteMapConfigurationsContainer;
+import org.osgi.service.component.annotations.Component;
 
-public interface SiteMapExtractorsContainer  extends ConfigurationFactoryContainer<SiteMapExtractor> {
+import java.util.Collection;
+import java.util.HashSet;
 
-    SiteMapExtractor findFirstFor(Resource resource);
+@Component(service = SiteMapConfigurationsContainer.class)
+public final class SiteMapConfigurationsContainerImpl extends ConfigurationFactoryContainerBase<SiteMapConfiguration>
+        implements SiteMapConfigurationsContainer {
 
+    @Override
+    public Collection<SiteMapConfiguration> getAll() {
+        return new HashSet<>(items);
+    }
 }

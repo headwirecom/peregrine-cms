@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.sitemap.impl;
 
 /*-
  * #%L
@@ -25,10 +25,12 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-public interface SiteMapExtractorsContainer  extends ConfigurationFactoryContainer<SiteMapExtractor> {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface SiteMapConfigurationImplConfig {
 
-    SiteMapExtractor findFirstFor(Resource resource);
-
+    @AttributeDefinition(name = "%mandatoryCachedRootPaths.name", description = "%mandatoryCachedRootPaths.description")
+    String[] mandatoryCachedRootPaths() default { };
 }
