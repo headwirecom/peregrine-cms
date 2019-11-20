@@ -2,6 +2,8 @@ package com.peregrine.sitemap;
 
 public final class SiteMapConstants {
 
+    public static final String XML = "xml";
+
     public static final String SITE_MAP_INDEX = "sitemapindex";
     public static final String SITE_MAP = "sitemap";
 

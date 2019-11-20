@@ -26,48 +26,44 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.SiteMapUrlBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
 import static com.peregrine.commons.util.PerConstants.DOT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.sitemap.impl.SiteMapServlet.EXTENSION;
-import static com.peregrine.sitemap.impl.SiteMapServlet.SELECTOR;
+import static com.peregrine.sitemap.SiteMapConstants.SITE_MAP;
+import static com.peregrine.sitemap.SiteMapConstants.XML;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 @Component(service = SiteMapUrlBuilder.class)
 public final class SiteMapUrlBuilderImpl implements SiteMapUrlBuilder {
 
-    private static final String BASE_SUFFIX = DOT + SELECTOR + DOT + EXTENSION;
-    private static final String INDEXED_SUFFIX = BASE_SUFFIX + SLASH;
-
     @Override
     public String buildSiteMapUrl(final Resource root, final int index) {
         final String path = root.getPath();
         if (index > 0) {
-            return path + INDEXED_SUFFIX + index;
+            return path + DOT + SITE_MAP + DOT + index + DOT + XML;
         }
 
-        return path + BASE_SUFFIX;
+        return path + DOT + SITE_MAP + DOT + XML;
     }
 
     @Override
     public int getIndex(final SlingHttpServletRequest request) {
-        final String suffix = request.getRequestPathInfo().getSuffix();
-        if (isBlank(suffix)) {
+        final String[] selectors = request.getRequestPathInfo().getSelectors();
+        if (isNull(selectors) || selectors.length <= 1) {
             return 0;
         }
 
-        final String string = StringUtils.substringAfter(suffix, SLASH);
-        if (isBlank(string)) {
+        final String selector = selectors[1];
+        if (isBlank(selector)) {
             return 0;
         }
 
-        if (isNumeric(string)) {
-            return Integer.parseInt(string);
+        if (isNumeric(selector)) {
+            return Integer.parseInt(selector);
         }
 
         return -1;

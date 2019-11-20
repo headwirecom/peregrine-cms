@@ -25,6 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.sitemap.SiteMapConstants;
 import com.peregrine.sitemap.SiteMapFilesCache;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -51,14 +52,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + "sling/servlet/default",
-        SLING_SERVLET_SELECTORS + EQUALS + SiteMapServlet.SELECTOR,
-        SLING_SERVLET_EXTENSIONS + EQUALS + SiteMapServlet.EXTENSION
+        SLING_SERVLET_SELECTORS + EQUALS + SiteMapConstants.SITE_MAP,
+        SLING_SERVLET_EXTENSIONS + EQUALS + SiteMapConstants.XML
     }
 )
 public final class SiteMapServlet extends SlingAllMethodsServlet {
-
-    public static final String SELECTOR = "sitemap";
-    public static final String EXTENSION = "xml";
 
     private static final String UTF_8 = "utf-8";
     private static final String APPLICATION_XML = "application/xml";
