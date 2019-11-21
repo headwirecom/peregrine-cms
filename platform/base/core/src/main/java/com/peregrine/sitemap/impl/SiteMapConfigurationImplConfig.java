@@ -37,8 +37,8 @@ public @interface SiteMapConfigurationImplConfig {
     @AttributeDefinition(name = "%pathRegex.name", description = "%pathRegex.description")
     String pathRegex();
 
-    @AttributeDefinition(name = "%pageRecognizer.name", description = "%pageRecognizer.description")
-    String pageRecognizer();
+    @AttributeDefinition(name = "%pageRecognizers.name", description = "%pageRecognizers.description")
+    String[] pageRecognizers() default { };
 
     @AttributeDefinition(name = "%urlExternalizer.name", description = "%urlExternalizer.description")
     String urlExternalizer();

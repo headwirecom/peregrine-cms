@@ -80,7 +80,13 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
 
     @Override
     public PageRecognizer getPageRecognizer() {
-        return getNamedService(PageRecognizer.class, config.pageRecognizer());
+        final String[] names = config.pageRecognizers();
+        final PageRecognizer[] recognizers = new PageRecognizer[names.length];
+        for (int i = 0; i < names.length; i++) {
+            recognizers[i] = getNamedService(PageRecognizer.class, names[i]);
+        }
+
+        return new PageRecognizersAndChain(recognizers);
     }
 
     private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {

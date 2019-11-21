@@ -25,9 +25,8 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import com.peregrine.commons.util.PerConstants;
-
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
 
 public abstract class PageRecognizerBase implements PageRecognizer {
@@ -46,7 +45,7 @@ public abstract class PageRecognizerBase implements PageRecognizer {
     }
 
     public final boolean isPage(final Page candidate) {
-        if (!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, PAGE_PRIMARY_TYPE)) {
+        if (!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, pagePrimaryType)) {
             return false;
         }
 
@@ -54,7 +53,7 @@ public abstract class PageRecognizerBase implements PageRecognizer {
             return false;
         }
 
-        if (!isPropertyEqual(candidate.getContent(), JCR_PRIMARY_TYPE, PAGE_CONTENT_TYPE)) {
+        if (!isPropertyEqual(candidate.getContent(), JCR_PRIMARY_TYPE, pageContentPrimaryType)) {
             return false;
         }
 
@@ -62,7 +61,7 @@ public abstract class PageRecognizerBase implements PageRecognizer {
             return false;
         }
 
-        if (candidate.getProperty(PerConstants.EXCLUDE_FROM_SITEMAP, false)) {
+        if (candidate.getProperty(excludeFromSiteMapPropertyName, false)) {
             return false;
         }
 

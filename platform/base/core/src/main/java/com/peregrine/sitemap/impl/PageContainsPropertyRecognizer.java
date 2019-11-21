@@ -27,13 +27,27 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PageRecognizer;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.Designate;
 
-@Component(service = { PageRecognizer.class, PerPageRecognizer.class })
-public final class PerPageRecognizer extends PerPageRecognizerBase {
+@Component(service = PageRecognizer.class, immediate = true)
+@Designate(ocd = PageContainsPropertyRecognizerConfig.class, factory = true)
+public final class PageContainsPropertyRecognizer implements PageRecognizer {
 
-    protected boolean isPageImpl(final Page candidate) {
-        return true;
+    private PageContainsPropertyRecognizerConfig config;
+
+    @Activate
+    public void activate(final PageContainsPropertyRecognizerConfig config) {
+        this.config = config;
     }
 
+    @Override
+    public String getName() {
+        return config.name();
+    }
+
+    public final boolean isPage(final Page candidate) {
+        return candidate.containsProperty(config.propertyName());
+    }
 }

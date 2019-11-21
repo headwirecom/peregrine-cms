@@ -1,4 +1,4 @@
-package com.peregrine.sitemap.impl;
+package com.peregrine.sitemap;
 
 /*-
  * #%L
@@ -25,14 +25,28 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.Page;
-import com.peregrine.sitemap.PageRecognizer;
-import org.osgi.service.component.annotations.Component;
+import java.util.Arrays;
+import java.util.List;
 
-@Component(service = { PageRecognizer.class, PerPageRecognizer.class })
-public final class PerPageRecognizer extends PerPageRecognizerBase {
+public final class PageRecognizersAndChain implements PageRecognizer {
 
-    protected boolean isPageImpl(final Page candidate) {
+    private final List<PageRecognizer> items;
+
+    public PageRecognizersAndChain(final List<PageRecognizer> items) {
+        this.items = items;
+    }
+
+    public PageRecognizersAndChain(final PageRecognizer... items) {
+        this(Arrays.asList(items));
+    }
+
+    public final boolean isPage(final Page candidate) {
+        for (final PageRecognizer item : items) {
+            if (!item.isPage(candidate)) {
+                return false;
+            }
+        }
+
         return true;
     }
 

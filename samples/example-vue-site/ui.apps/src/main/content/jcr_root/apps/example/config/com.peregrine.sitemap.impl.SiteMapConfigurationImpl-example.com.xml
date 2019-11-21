@@ -27,6 +27,6 @@
     jcr:primaryType="sling:OsgiConfig"
     enabled="{Boolean}true"
     pathRegex="/content/sites/example"
-    pageRecognizer="com.peregrine.sitemap.impl.PerPageRecognizer"
+    pageRecognizers="[com.peregrine.sitemap.impl.PerPageRecognizer,description]"
     mandatoryCachedRootPaths="/content/sites/example"
 />

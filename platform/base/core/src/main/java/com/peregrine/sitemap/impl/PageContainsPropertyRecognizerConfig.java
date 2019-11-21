@@ -25,15 +25,16 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.Page;
-import com.peregrine.sitemap.PageRecognizer;
-import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@Component(service = { PageRecognizer.class, PerPageRecognizer.class })
-public final class PerPageRecognizer extends PerPageRecognizerBase {
+@ObjectClassDefinition(name = "%config.name", description = "%config.description")
+public @interface PageContainsPropertyRecognizerConfig {
 
-    protected boolean isPageImpl(final Page candidate) {
-        return true;
-    }
+    @AttributeDefinition(name = "%name.name", description = "%name.description")
+    String name();
+
+    @AttributeDefinition(name = "%propertyName.name", description = "%propertyName.description")
+    String propertyName();
 
 }
