@@ -47,7 +47,7 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
-    private SiteMapConfigurationsContainer container;
+    private SiteMapConfigurationsContainerImpl container;
 
     @Reference
     private NamedServiceRetriever serviceRetriever;
@@ -57,7 +57,9 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
     @Activate
     public void activate(final SiteMapConfigurationImplConfig config) {
         this.config = config;
-        container.add(this);
+        if (config.enabled()) {
+            container.add(this);
+        }
     }
 
     @Deactivate
@@ -113,9 +115,13 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
 
     @Override
     public Set<String> getMandatoryCachedPaths() {
-        final Set<String> result = new HashSet<>();
-        Collections.addAll(result, config.mandatoryCachedRootPaths());
-        return result;
+        if (config.enabled()) {
+            final Set<String> result = new HashSet<>();
+            Collections.addAll(result, config.mandatoryCachedRootPaths());
+            return result;
+        }
+
+        return Collections.EMPTY_SET;
     }
 
 }

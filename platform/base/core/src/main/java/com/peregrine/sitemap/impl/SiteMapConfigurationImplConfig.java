@@ -31,6 +31,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @ObjectClassDefinition(name = "%config.name", description = "%config.description")
 public @interface SiteMapConfigurationImplConfig {
 
+    @AttributeDefinition(name = "%enabled.name", description = "%enabled.description")
+    boolean enabled() default false;
+
     @AttributeDefinition(name = "%pathRegex.name", description = "%pathRegex.description")
     String pathRegex();
 

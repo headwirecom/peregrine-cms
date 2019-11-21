@@ -183,7 +183,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     protected Resource buildCache(final Resource rootPage, final Resource cache) throws PersistenceException {
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(extractor)) {
-            putSiteMapsInCache(null, cache);
+            removeCachedItemsStartingAtIndex(cache, 0);
             notifyCacheRefreshed(rootPage, null);
             return null;
         }
@@ -196,7 +196,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private void putSiteMapsInCache(final List<SiteMapEntry> source, final Resource target) throws PersistenceException {
-        final int siteMapsSize = nonNull(source) ? source.size() : 0;
+        final int siteMapsSize = source.size();
         final Iterator<SiteMapEntry> iterator = source.iterator();
         final ResourceResolver resourceResolver = target.getResourceResolver();
         for (int i = 0; i < siteMapsSize; i++) {
@@ -209,7 +209,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
             iterator.next().walk(this, target, childName);
         }
 
-        removeCachedItemsAboveIndex(target, siteMapsSize);
+        removeCachedItemsStartingAtIndex(target, siteMapsSize);
     }
 
     @Override
@@ -263,7 +263,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         }).start();
     }
 
-    private void removeCachedItemsAboveIndex(final Resource target, final int startItemIndex) throws PersistenceException {
+    private void removeCachedItemsStartingAtIndex(final Resource target, final int startItemIndex) throws PersistenceException {
         final ResourceResolver resourceResolver = target.getResourceResolver();
         int i = startItemIndex;
         String childPath = Integer.toString(i);
