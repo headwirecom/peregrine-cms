@@ -25,11 +25,10 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.SiteMapFileContentBuilder;
 import com.peregrine.sitemap.SiteMapEntry;
+import com.peregrine.sitemap.SiteMapFileContentBuilder;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import com.peregrine.sitemap.XMLBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -71,16 +70,8 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
         urlSetAttributes.clear();
         urlSetAttributes.putAll(URL_SET_ATTRIBUTES);
         final String[] xmlnsMappings = config.xmlnsMappings();
-        if (nonNull(xmlnsMappings)) {
-            for (final String mapping : xmlnsMappings) {
-                if (StringUtils.contains(mapping, EQ)) {
-                    final String key = "xmlns:" + StringUtils.substringBefore(mapping, EQ);
-                    final String value = StringUtils.substringAfter(mapping, EQ);
-                    urlSetAttributes.put(key, value);
-                }
-            }
-        }
-
+        final Map<String, String> mappings = XmlNamespaceUtils.parseMappingsAddPrefix(xmlnsMappings);
+        urlSetAttributes.putAll(mappings);
         baseSiteMapLength = XMLBuilder.XML_VERSION.length();
         baseSiteMapLength += XMLBuilder.getBasicElementLength(URL_SET, urlSetAttributes);
     }
