@@ -36,9 +36,7 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapFilesCache.class)
 @Designate(ocd = SiteMapFilesCacheImplConfig.class)
@@ -135,8 +133,9 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
     }
 
     private Resource buildCache(final Resource rootPage, final List<SiteMapEntry> entries, final Resource cache) {
-        if (isNull(entries)) {
-            putSiteMapsInCache(null, cache);
+        if (isNull(entries) || isNull(extractor)) {
+            final ModifiableValueMap modifiableValueMap = cache.adaptTo(ModifiableValueMap.class);
+            removeCachedItemsAboveIndex(modifiableValueMap, 0);
             return null;
         }
 
@@ -159,7 +158,7 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
 
     private void putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
         final ModifiableValueMap modifiableValueMap = target.adaptTo(ModifiableValueMap.class);
-        final int siteMapsSize = nonNull(source) ? source.size() : 0;
+        final int siteMapsSize = source.size();
         for (int i = 0; i < siteMapsSize; i++) {
             modifiableValueMap.put(Integer.toString(i), source.get(i));
         }
