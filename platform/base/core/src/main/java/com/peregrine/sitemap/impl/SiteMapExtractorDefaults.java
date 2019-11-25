@@ -25,23 +25,17 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.*;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Activate;
+import com.peregrine.sitemap.PropertyProvider;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
+import com.peregrine.sitemap.UrlExternalizer;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
-import static java.util.Objects.nonNull;
-
-@Component(service = DefaultSiteMapExtractor.class)
-public final class DefaultSiteMapExtractor extends SiteMapExtractorBase {
+@Component(service = SiteMapExtractorDefaults.class)
+public final class SiteMapExtractorDefaults {
 
     @Reference
     private SiteMapUrlBuilder urlBuilder;
-
-    @Reference
-    private PerPageRecognizer perPageRecognizer;
 
     @Reference
     private EtcMapUrlExternalizer etcMapUrlExternalizer;
@@ -55,31 +49,8 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase {
     @Reference
     private PriorityPropertyProvider priorityPropertyProvider;
 
-    @Activate
-    public void activate() {
-        pageRecognizer = perPageRecognizer;
-        urlExternalizer = etcMapUrlExternalizer;
-        addPropertyProvider(lastModPropertyProvider);
-        addPropertyProvider(changeFreqPropertyProvider);
-        addPropertyProvider(priorityPropertyProvider);
-    }
-
-    @Deactivate
-    public void deactivate() {
-        clear();
-    }
-
     public SiteMapUrlBuilder getUrlBuilder() {
         return urlBuilder;
-    }
-
-    @Override
-    public boolean appliesTo(final Resource root) {
-        return nonNull(root);
-    }
-
-    public PageRecognizer getPageRecognizer() {
-        return perPageRecognizer;
     }
 
     public UrlExternalizer getUrlExternalizer() {

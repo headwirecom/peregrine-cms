@@ -38,27 +38,15 @@ import static java.util.Objects.isNull;
 
 public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
-    private final Map<String, PropertyProvider> propertyProviders = new LinkedHashMap<>();
+    protected final SiteMapConfiguration configuration;
 
-    protected PageRecognizer pageRecognizer;
-
-    protected UrlExternalizer urlExternalizer;
-
-    protected void addPropertyProvider(final PropertyProvider provider) {
-        if (isNull(provider)) {
-            return;
-        }
-
-        final String propertyName = provider.getPropertyName();
-        if (!propertyProviders.containsKey(propertyName)) {
-            propertyProviders.put(propertyName, provider);
-        }
+    protected SiteMapExtractorBase(final SiteMapConfiguration configuration) {
+        this.configuration = configuration;
     }
 
-    protected void clear() {
-        propertyProviders.clear();
-        urlExternalizer = null;
-        pageRecognizer = null;
+    @Override
+    public SiteMapConfiguration getConfiguration() {
+        return configuration;
     }
 
     @Override
@@ -84,12 +72,14 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     }
 
     private boolean isPage(final Page page) {
-        return isNull(pageRecognizer) || pageRecognizer.isPage(page);
+        final PageRecognizer recognizer = configuration.getPageRecognizer();
+        return isNull(recognizer) || recognizer.isPage(page);
     }
 
     private SiteMapEntry createEntry(final Page page) {
         final SiteMapEntry entry = new SiteMapEntry();
         entry.setUrl(externalize(page));
+        final Map<String, PropertyProvider> propertyProviders = getPropertyProviders();
         for (final Map.Entry<String, PropertyProvider> e : propertyProviders.entrySet()) {
             entry.putProperty(e.getKey(), e.getValue().extractValue(page));
         }
@@ -97,12 +87,43 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
         return entry;
     }
 
+    private Map<String, PropertyProvider> getPropertyProviders() {
+        final Map<String, PropertyProvider> result = new LinkedHashMap<>();
+        for (final PropertyProvider provider : configuration.getPropertyProviders()) {
+            addPropertyProvider(result, provider);
+        }
+
+        for (final PropertyProvider provider : getDefaultPropertyProviders()) {
+            addPropertyProvider(result, provider);
+        }
+
+        return result;
+    }
+
+    private void addPropertyProvider(final Map<String, PropertyProvider> propertyProviders, final PropertyProvider provider) {
+        if (isNull(provider)) {
+            return;
+        }
+
+        final String propertyName = provider.getPropertyName();
+        if (!propertyProviders.containsKey(propertyName)) {
+            propertyProviders.put(propertyName, provider);
+        }
+    }
+
+    protected abstract Iterable<? extends PropertyProvider> getDefaultPropertyProviders();
+
     private String externalize(final Page page) {
-        if (isNull(urlExternalizer)) {
+        final UrlExternalizer externalizer = getExternalizer();
+        if (isNull(externalizer)) {
             return page.getPath() + SiteMapConstants.DOT_HTML;
         }
 
-        return urlExternalizer.map(page);
+        return externalizer.map(page);
+    }
+
+    protected UrlExternalizer getExternalizer() {
+        return configuration.getUrlExternalizer();
     }
 
     protected abstract SiteMapUrlBuilder getUrlBuilder();
@@ -114,11 +135,12 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     }
 
     private String externalize(final ResourceResolver resourceResolver, final String url) {
-        if (isNull(urlExternalizer)) {
+        final UrlExternalizer externalizer = getExternalizer();
+        if (isNull(externalizer)) {
             return url;
         }
 
-        return urlExternalizer.map(resourceResolver, url);
+        return externalizer.map(resourceResolver, url);
     }
 
     @Override

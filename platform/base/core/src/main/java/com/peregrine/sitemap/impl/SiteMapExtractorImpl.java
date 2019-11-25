@@ -25,47 +25,54 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.PropertyProvider;
-import com.peregrine.sitemap.SiteMapConfiguration;
-import com.peregrine.sitemap.SiteMapExtractorBase;
-import com.peregrine.sitemap.SiteMapUrlBuilder;
+import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.Resource;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.isNull;
 
 public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
 
-    private final Pattern pattern;
+    private final SiteMapExtractorDefaults siteMapExtractorDefaults;
 
-    private final DefaultSiteMapExtractor defaultSiteMapExtractor;
-
-    public SiteMapExtractorImpl(final SiteMapConfiguration config, final DefaultSiteMapExtractor defaultSiteMapExtractor) {
-        pattern = config.getPagePathPattern();
-        this.defaultSiteMapExtractor = defaultSiteMapExtractor;
-        pageRecognizer = config.getPageRecognizer();
-        urlExternalizer = config.getUrlExternalizer();
-        if (isNull(urlExternalizer)) {
-            urlExternalizer = defaultSiteMapExtractor.getUrlExternalizer();
-        }
-
-        for (final PropertyProvider provider : config.getPropertyProviders()) {
-            addPropertyProvider(provider);
-        }
-
-        addPropertyProvider(defaultSiteMapExtractor.getLastModPropertyProvider());
-        addPropertyProvider(defaultSiteMapExtractor.getChangeFreqPropertyProvider());
-        addPropertyProvider(defaultSiteMapExtractor.getPriorityPropertyProvider());
+    public SiteMapExtractorImpl(final SiteMapConfiguration config, final SiteMapExtractorDefaults siteMapExtractorDefaults) {
+        super(config);
+        this.siteMapExtractorDefaults = siteMapExtractorDefaults;
     }
 
     protected SiteMapUrlBuilder getUrlBuilder() {
-        return defaultSiteMapExtractor.getUrlBuilder();
+        return siteMapExtractorDefaults.getUrlBuilder();
+    }
+
+    protected UrlExternalizer getExternalizer() {
+        final UrlExternalizer externalizer = super.getExternalizer();
+        if (isNull(externalizer)) {
+            return siteMapExtractorDefaults.getUrlExternalizer();
+        }
+
+        return externalizer;
     }
 
     @Override
     public boolean appliesTo(final Resource root) {
+        final Pattern pattern = configuration.getPagePathPattern();
+        if (isNull(pattern)) {
+            return true;
+        }
+
         return pattern.matcher(root.getPath()).matches();
+    }
+
+    protected Iterable<? extends PropertyProvider> getDefaultPropertyProviders() {
+        final List<PropertyProvider> result = new LinkedList<>();
+        result.add(siteMapExtractorDefaults.getLastModPropertyProvider());
+        result.add(siteMapExtractorDefaults.getChangeFreqPropertyProvider());
+        result.add(siteMapExtractorDefaults.getPriorityPropertyProvider());
+
+        return result;
     }
 
 }

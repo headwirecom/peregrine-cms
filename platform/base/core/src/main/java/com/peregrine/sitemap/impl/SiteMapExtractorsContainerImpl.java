@@ -44,14 +44,14 @@ public final class SiteMapExtractorsContainerImpl implements SiteMapExtractorsCo
     private final Map<SiteMapConfiguration, SiteMapExtractorImpl> items = new HashMap<>();
 
     @Reference
-    private DefaultSiteMapExtractor defaultSiteMapExtractor;
+    private SiteMapExtractorDefaults siteMapExtractorDefaults;
 
     public boolean add(final SiteMapConfiguration config) {
         if (isNull(config.getPagePathPattern())) {
             return false;
         }
 
-        items.put(config, new SiteMapExtractorImpl(config, defaultSiteMapExtractor));
+        items.put(config, new SiteMapExtractorImpl(config, siteMapExtractorDefaults));
         return true;
     }
 
