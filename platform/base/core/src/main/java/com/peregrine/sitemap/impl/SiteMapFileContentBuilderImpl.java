@@ -36,7 +36,10 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.peregrine.sitemap.SiteMapConstants.*;
 import static java.util.Objects.nonNull;
@@ -115,9 +118,11 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     }
 
     @Override
-    public String buildUrlSet(final Collection<SiteMapEntry> entries) {
+    public String buildUrlSet(final Collection<SiteMapEntry> entries, final Map<String, String> xmlns) {
         final XMLBuilder result = new XMLBuilder();
-        result.startElement(URL_SET, urlSetAttributes);
+        final Map<String, String> attributes = new HashMap<>(urlSetAttributes);
+        attributes.putAll(xmlns);
+        result.startElement(URL_SET, attributes);
         for (final SiteMapEntry entry : entries) {
             if (!isEmpty(entry)) {
                 entry.walk(urlSetMapPropertiesVisitor, result, URL);

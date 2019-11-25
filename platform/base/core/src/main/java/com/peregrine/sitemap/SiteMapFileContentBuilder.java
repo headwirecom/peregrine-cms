@@ -28,10 +28,11 @@ package com.peregrine.sitemap;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface SiteMapFileContentBuilder {
 
-    String buildUrlSet(Collection<SiteMapEntry> entries);
+    String buildUrlSet(Collection<SiteMapEntry> entries, Map<String, String> xmlns);
 
     String buildSiteMapIndex(Resource siteMapRoot, SiteMapUrlBuilder urlBuilder, int numberOfParts);
 

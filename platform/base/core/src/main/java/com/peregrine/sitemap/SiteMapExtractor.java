@@ -31,6 +31,8 @@ import java.util.List;
 
 public interface SiteMapExtractor extends SiteMapUrlBuilder {
 
+    SiteMapConfiguration getConfiguration();
+
     boolean appliesTo(Resource root);
 
     List<SiteMapEntry> extract(Resource root);

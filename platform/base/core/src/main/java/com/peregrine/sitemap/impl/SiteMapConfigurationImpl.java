@@ -105,6 +105,11 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
     }
 
     @Override
+    public Map<String, String> getXmlNamespaces() {
+        return XmlNamespaceUtils.parseMappingsAddPrefix(config.xmlnsMappings());
+    }
+
+    @Override
     public Collection<PropertyProvider> getPropertyProviders() {
         final String[] propertyProviders = config.propertyProviders();
         if (isNull(propertyProviders)) {

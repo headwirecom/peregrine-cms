@@ -133,6 +133,7 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
     }
 
     private Resource buildCache(final Resource rootPage, final List<SiteMapEntry> entries, final Resource cache) {
+        final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(entries) || isNull(extractor)) {
             final ModifiableValueMap modifiableValueMap = cache.adaptTo(ModifiableValueMap.class);
             removeCachedItemsAboveIndex(modifiableValueMap, 0);
@@ -142,13 +143,15 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
         final ArrayList<String> siteMaps = new ArrayList<>();
         final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
         final int numberOfParts = splitEntries.size();
+
         if (numberOfParts > 1) {
-            final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
             siteMaps.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, numberOfParts));
         }
 
         for (final List<SiteMapEntry> list : splitEntries) {
-            siteMaps.add(siteMapBuilder.buildUrlSet(list));
+            final SiteMapConfiguration config = extractor.getConfiguration();
+            final String content = siteMapBuilder.buildUrlSet(list, config.getXmlNamespaces());
+            siteMaps.add(content);
         }
 
         putSiteMapsInCache(siteMaps, cache);

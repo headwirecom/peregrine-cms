@@ -26,6 +26,7 @@ package com.peregrine.sitemap;
  */
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -36,6 +37,8 @@ public interface SiteMapConfiguration {
     PageRecognizer getPageRecognizer();
 
     UrlExternalizer getUrlExternalizer();
+
+    Map<String, String> getXmlNamespaces();
 
     Collection<PropertyProvider> getPropertyProviders();
 

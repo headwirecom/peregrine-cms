@@ -43,6 +43,9 @@ public @interface SiteMapConfigurationImplConfig {
     @AttributeDefinition(name = "%urlExternalizer.name", description = "%urlExternalizer.description")
     String urlExternalizer();
 
+    @AttributeDefinition(name = "%xmlnsMappings.name", description = "%xmlnsMappings.description")
+    String[] xmlnsMappings();
+
     @AttributeDefinition(name = "%propertyProviders.name", description = "%propertyProviders.description")
     String[] propertyProviders() default { };
 
