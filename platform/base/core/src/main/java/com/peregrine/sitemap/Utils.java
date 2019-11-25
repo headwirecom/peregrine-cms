@@ -8,7 +8,8 @@ import org.apache.sling.api.resource.ResourceResolver;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
 
 public final class Utils {

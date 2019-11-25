@@ -99,7 +99,7 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     private String externalize(final Page page) {
         if (isNull(urlExternalizer)) {
-            return page.getPath() + ".html";
+            return page.getPath() + SiteMapConstants.DOT_HTML;
         }
 
         return urlExternalizer.map(page);

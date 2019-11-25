@@ -184,6 +184,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(extractor)) {
             removeCachedItemsStartingAtIndex(cache, 0);
+            // TODO remove ancestors on path up the tree?
             notifyCacheRefreshed(rootPage, null);
             return null;
         }
