@@ -93,7 +93,7 @@
               text="Select a folder or asset here"
               selector=".explorer-main">
                 <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wähle einen Ordner oder Asset aus"/>
+                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wähle einen Ordner oder ein Asset aus"/>
                 </experiences>
             </item2>
             <item3
@@ -163,7 +163,7 @@
               jcr:primaryType="nt:unstructured"
               locator="/jcr:content/nav"
               text="Here you can add assets via https://pixabay.com/"
-              selector="a[title='get asset from pixabay']">
+              selector=".pathfield ~ span:nth-of-type(3)>a">
                 <experiences jcr:primaryType="nt:unstructured">
                     <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du über https://pixabay.com/ assets hinzufügen"/>
                 </experiences>
