@@ -63,4 +63,11 @@
     <filter root="/content/objects">
         <exclude pattern="/content/objects/.*"/>
     </filter>
+
+    <filter root="/home/users/system/sitemaps-cache" />
+    <filter root="/content/rep:policy">
+        <include pattern="/content/rep:policy/sitemaps-cache"/>
+        <exclude pattern="/content/rep:policy/.*"/>
+    </filter>
+    <filter root="/var/sitemaps" />
 </workspaceFilter>
