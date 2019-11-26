@@ -25,9 +25,8 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.SiteMapConstants;
-import com.peregrine.sitemap.SiteMapFilesCache;
-import com.peregrine.sitemap.SiteMapUrlBuilder;
+import com.peregrine.commons.util.PerConstants;
+import com.peregrine.sitemap.*;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -38,8 +37,10 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static com.peregrine.commons.util.PerUtil.*;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.sling.api.servlets.ServletResolverConstants.*;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -48,38 +49,41 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Site Map Servlet",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Apache Rewrite Map Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + "sling/servlet/default",
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + PerConstants.SLING_SERVLET_DEFAULT,
         SLING_SERVLET_SELECTORS + EQUALS + SiteMapConstants.SITE_MAP,
-        SLING_SERVLET_EXTENSIONS + EQUALS + SiteMapConstants.XML
+        SLING_SERVLET_EXTENSIONS + EQUALS + SiteMapConstants.TXT
     }
 )
-public final class SiteMapServlet extends SlingAllMethodsServlet {
-
-    private static final String UTF_8 = "utf-8";
-    private static final String APPLICATION_XML = "application/xml";
+public final class ApacheRewriteMapServlet extends SlingAllMethodsServlet {
 
     @Reference
-    private SiteMapUrlBuilder urlBuilder;
-
-    @Reference
-    private SiteMapFilesCache cache;
+    private SiteMapStructureCache structure;
 
     @Override
     protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         final Resource resource = request.getResource();
-        final int index = urlBuilder.getIndex(request);
-        final String string = index >= 0 ? cache.get(resource, index) : null;
-        if (isBlank(string)) {
+        final List<SiteMapEntry> entries = structure.get(resource);
+        if (isNull(entries)) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        response.setContentType(APPLICATION_XML);
-        response.setCharacterEncoding(UTF_8);
-        response.getWriter().write(string);
+        response.setContentType(PerConstants.TEXT_MIME_TYPE);
+        response.setCharacterEncoding(PerConstants.UTF_8);
+        response.getWriter().write(buildRewriteMap(entries));
+    }
+
+    private String buildRewriteMap(final List<SiteMapEntry> entries) {
+        final StringBuilder result = new StringBuilder();
+        for (final SiteMapEntry entry : entries) {
+            result.append(entry.getUrl());
+            result.append("\n");
+        }
+
+        return result.toString();
     }
 
 }
