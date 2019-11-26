@@ -34,14 +34,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.peregrine.sitemap.SiteMapConstants.DATE_FORMAT_PATTERN;
+import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT;
 import static com.peregrine.sitemap.SiteMapConstants.LAST_MOD;
 import static java.util.Objects.nonNull;
 
 @Component(service = { PropertyProvider.class, LastModPropertyProvider.class })
 public final class LastModPropertyProvider extends PropertyProviderBase {
 
-    private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    private final DateFormat dateFormat = new SimpleDateFormat(ECMA_DATE_FORMAT);
 
     public LastModPropertyProvider() {
         super(LAST_MOD);
