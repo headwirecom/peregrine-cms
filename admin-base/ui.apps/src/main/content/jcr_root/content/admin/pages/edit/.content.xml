@@ -146,7 +146,7 @@
         jcr:primaryType="nt:unstructured"
         locator="/jcr:content/workspace"
         text="In this section, your page is created by adding components and arranging them."
-        selector=".editview-container">
+        selector="#editviewoverlay">
         <experiences jcr:primaryType="nt:unstructured">
           <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="In diesem Bereich entsteht deine Seite, indem du Komponenten hinzufügst und diese anordnest."/>
         </experiences>
