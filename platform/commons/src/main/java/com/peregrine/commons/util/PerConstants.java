@@ -61,8 +61,8 @@ public class PerConstants {
 
     public static final String JSON_MIME_TYPE = "application/json;charset=utf-8";
     public static final String HTML_MIME_TYPE = "text/html";
+    public static final String APPLICATION_XML_MIME_TYPE = "application/xml";
     public static final String DATA_JSON_EXTENSION = ".data.json";
-    public static final String APPLICATION_XML = "application/xml";
 
     public static final String PNG_MIME_TYPE = "image/png";
     public static final String JPEG_MIME_TYPE = "image/jpeg";

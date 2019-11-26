@@ -25,6 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapFileContentBuilder;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
@@ -62,7 +63,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
                 "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd");
     }
 
-    private final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    private final DateFormat dateFormat = new SimpleDateFormat(PerConstants.ECMA_DATE_FORMAT);
     private final SiteMapEntrySizeVisitor siteMapEntrySizeVisitor = new SiteMapEntrySizeVisitor();
     private final UrlSetMapPropertiesVisitor urlSetMapPropertiesVisitor = new UrlSetMapPropertiesVisitor();
     private final Map<String, String> urlSetAttributes = new HashMap<>();

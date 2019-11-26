@@ -75,7 +75,7 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
             return;
         }
 
-        response.setContentType(PerConstants.APPLICATION_XML);
+        response.setContentType(PerConstants.APPLICATION_XML_MIME_TYPE);
         response.setCharacterEncoding(PerConstants.UTF_8);
         response.getWriter().write(string);
     }
