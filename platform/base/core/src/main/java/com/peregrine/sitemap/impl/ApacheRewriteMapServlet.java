@@ -25,7 +25,6 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.SiteMapConstants;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapStructureCache;
@@ -43,6 +42,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
 import static org.apache.sling.api.servlets.ServletResolverConstants.*;
@@ -55,12 +55,14 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Apache Rewrite Map Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + PerConstants.SLING_SERVLET_DEFAULT,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + SLING_SERVLET_DEFAULT,
         SLING_SERVLET_SELECTORS + EQUALS + SiteMapConstants.SITE_MAP,
         SLING_SERVLET_EXTENSIONS + EQUALS + SiteMapConstants.TXT
     }
 )
 public final class ApacheRewriteMapServlet extends SlingAllMethodsServlet {
+
+    private static final String PROTOCOLS_DOUBLE_SLASH = ":" + SLASH + SLASH;
 
     @Reference
     private SiteMapStructureCache structure;
@@ -74,19 +76,30 @@ public final class ApacheRewriteMapServlet extends SlingAllMethodsServlet {
             return;
         }
 
-        response.setContentType(PerConstants.TEXT_MIME_TYPE);
-        response.setCharacterEncoding(PerConstants.UTF_8);
+        response.setContentType(TEXT_MIME_TYPE);
+        response.setCharacterEncoding(UTF_8);
         writeRewriteMap(entries, response.getWriter());
     }
 
     private void writeRewriteMap(final List<SiteMapEntry> entries, final PrintWriter target) {
         for (final SiteMapEntry entry : entries) {
-            target.append(entry.getUrl());
+            target.append(cutUrl(entry.getUrl()));
             target.append(StringUtils.SPACE);
             target.append(entry.getPath());
             target.append(SiteMapConstants.DOT_HTML);
             target.append(StringUtils.LF);
         }
+    }
+
+    private String cutUrl(final String url) {
+        final StringBuilder result = new StringBuilder(SLASH);
+        String string = url;
+        if (StringUtils.contains(string, PROTOCOLS_DOUBLE_SLASH)) {
+            string = StringUtils.substringAfter(string, PROTOCOLS_DOUBLE_SLASH);
+        }
+
+        result.append(StringUtils.substringAfter(string, SLASH));
+        return result.toString();
     }
 
 }
