@@ -104,8 +104,10 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private SiteMapEntry extractEntry(final Resource resource) {
-        final SiteMapEntry entry = new SiteMapEntry();
-        for (final Map.Entry<String, Object> e : transformToMap(resource).entrySet()) {
+        final Map<String, Object> properties = transformToMap(resource);
+        final String path = String.valueOf(properties.remove(PATH));
+        final SiteMapEntry entry = new SiteMapEntry(path);
+        for (final Map.Entry<String, Object> e : properties.entrySet()) {
             final String key = e.getKey();
             final Object value = e.getValue();
             if (value instanceof String) {
@@ -207,7 +209,11 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
                 resourceResolver.delete(child);
             }
 
-            iterator.next().walk(this, target, childName);
+            final SiteMapEntry entry = iterator.next();
+            Optional.ofNullable(entry.walk(this, target, childName))
+                    .map(r -> r.getChild(childName))
+                    .map(r -> r.adaptTo(ModifiableValueMap.class))
+                    .ifPresent(map -> map.put(PATH, entry.getPath()));
         }
 
         removeCachedItemsStartingAtIndex(target, siteMapsSize);

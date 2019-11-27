@@ -77,7 +77,7 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     }
 
     private SiteMapEntry createEntry(final Page page) {
-        final SiteMapEntry entry = new SiteMapEntry();
+        final SiteMapEntry entry = new SiteMapEntry(page.getPath());
         entry.setUrl(externalize(page));
         final Map<String, PropertyProvider> propertyProviders = getPropertyProviders();
         for (final Map.Entry<String, PropertyProvider> e : propertyProviders.entrySet()) {

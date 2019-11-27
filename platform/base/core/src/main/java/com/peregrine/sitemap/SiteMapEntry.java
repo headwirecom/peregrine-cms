@@ -11,6 +11,15 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public final class SiteMapEntry {
 
     private final Map<String, Object> properties = new LinkedHashMap<>();
+    private final String path;
+
+    public SiteMapEntry(final String path) {
+        this.path = path;
+    }
+
+    public String getPath() {
+        return path;
+    }
 
     public String getUrl() {
         return getProperty(SiteMapConstants.LOC, String.class);

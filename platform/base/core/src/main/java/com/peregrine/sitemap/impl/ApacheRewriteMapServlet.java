@@ -26,7 +26,10 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.commons.util.PerConstants;
-import com.peregrine.sitemap.*;
+import com.peregrine.sitemap.SiteMapConstants;
+import com.peregrine.sitemap.SiteMapEntry;
+import com.peregrine.sitemap.SiteMapStructureCache;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -37,11 +40,11 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.sling.api.servlets.ServletResolverConstants.*;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -73,17 +76,17 @@ public final class ApacheRewriteMapServlet extends SlingAllMethodsServlet {
 
         response.setContentType(PerConstants.TEXT_MIME_TYPE);
         response.setCharacterEncoding(PerConstants.UTF_8);
-        response.getWriter().write(buildRewriteMap(entries));
+        writeRewriteMap(entries, response.getWriter());
     }
 
-    private String buildRewriteMap(final List<SiteMapEntry> entries) {
-        final StringBuilder result = new StringBuilder();
+    private void writeRewriteMap(final List<SiteMapEntry> entries, final PrintWriter target) {
         for (final SiteMapEntry entry : entries) {
-            result.append(entry.getUrl());
-            result.append("\n");
+            target.append(entry.getUrl());
+            target.append(StringUtils.SPACE);
+            target.append(entry.getPath());
+            target.append(SiteMapConstants.DOT_HTML);
+            target.append(StringUtils.LF);
         }
-
-        return result.toString();
     }
 
 }
