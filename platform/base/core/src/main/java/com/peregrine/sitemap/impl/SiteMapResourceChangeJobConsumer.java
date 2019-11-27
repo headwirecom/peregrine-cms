@@ -33,21 +33,27 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.Designate;
 
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static java.util.Objects.nonNull;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 @Component(service = JobConsumer.class, immediate = true, property = {
-        JobConsumer.PROPERTY_TOPICS + "=" + SiteMapResourceChangeJobConsumer.TOPIC })
+        JobConsumer.PROPERTY_TOPICS + EQUALS + SiteMapResourceChangeJobConsumer.TOPIC })
+@Designate(ocd = SiteMapResourceChangeJobConsumerConfig.class)
 public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
 
     public static final String TOPIC = "com/peregrine/sitemap/REFRESH_CACHE";
     public static final String PN_PATHS = "paths";
-    public static final String PN_PRIMARY_TYPES = "primaryTypes";
+
+    private final Set<String> primaryTypes = new HashSet<>();
 
     @Reference
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -55,14 +61,21 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
     @Reference
     private SiteMapStructureCache cache;
 
+    @Activate
+    public void activate(final SiteMapResourceChangeJobConsumerConfig config) {
+        primaryTypes.clear();
+        for (final String type : config.primaryTypes()) {
+            primaryTypes.add(type);
+        }
+    }
+
     @Override
     public JobResult process(final Job job) {
         final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
-        final Set<String> allowedPrimaryTypes = job.getProperty(PN_PRIMARY_TYPES, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             for (final String path : initialPaths) {
                 final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
-                if (nonNull(resource) && allowedPrimaryTypes.contains(resource.getValueMap().get(JCR_PRIMARY_TYPE))) {
+                if (isAllowed(resource)) {
                     cache.rebuild(resource.getPath());
                 }
             }
@@ -71,6 +84,14 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
         }
 
         return JobResult.OK;
+    }
+
+    private boolean isAllowed(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getValueMap)
+                .map(map -> map.get(JCR_PRIMARY_TYPE))
+                .map(type -> primaryTypes.contains(type))
+                .orElse(false);
     }
 
 }

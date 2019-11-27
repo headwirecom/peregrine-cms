@@ -29,7 +29,6 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.JobManager;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
@@ -40,21 +39,11 @@ import java.util.*;
 @Designate(ocd = SiteMapResourceChangeListenerConfig.class)
 public final class SiteMapResourceChangeListener implements ResourceChangeListener {
 
-    private final Set<String> primaryTypes = new HashSet<>();
-
     @Reference
     private JobManager jobManager;
 
     @Reference
     private ResourceResolverFactory resourceResolverFactory;
-
-    @Activate
-    public void activate(final SiteMapResourceChangeListenerConfig config) {
-        primaryTypes.clear();
-        for (final String type : config.primaryTypes()) {
-            primaryTypes.add(type);
-        }
-    }
 
     @Override
     public void onChange(final List<ResourceChange> changes) {
@@ -65,7 +54,6 @@ public final class SiteMapResourceChangeListener implements ResourceChangeListen
 
         final Map<String, Object> props = new HashMap<>();
         props.put(SiteMapResourceChangeJobConsumer.PN_PATHS, paths);
-        props.put(SiteMapResourceChangeJobConsumer.PN_PRIMARY_TYPES, new HashSet<>(primaryTypes));
         jobManager.addJob(SiteMapResourceChangeJobConsumer.TOPIC, props);
     }
 
