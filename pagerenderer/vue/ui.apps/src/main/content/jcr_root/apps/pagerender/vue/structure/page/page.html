@@ -11,6 +11,13 @@
     <sly data-sly-list="${helper.model.metaproperties}"><meta property="${item.key}" content="${item.value}">
     </sly>
 
+    <meta data-sly-test="${(!(resource.useTitle) && resource.ogTitle) || (resource.useTitle && helper.model.title)}" property="og:title" content="${ resource.useTitle ? helper.model.title : resource.ogTitle}"/>
+    <meta data-sly-test="${(!(resource.useDescription) && resource.ogDescription) || (resource.useDescription && helper.model.description)}" property="og:description" content="${ resource.useDescription ? helper.model.description : resource.ogDescription}"/>
+    <meta data-sly-test="${resource.ogType}" property="og:type" content="${resource.ogType}"/>
+    <meta data-sly-test="${resource.ogImage}" property="og:image" content="${resource.ogImage}"/>
+    <meta data-sly-test="${resource.ogImageAlt}" property="og:image:alt" content="${resource.ogImageAlt}"/>
+    <meta data-sly-test="${resource.ogUrl}" property="og:url" content="${resource.ogUrl}"/>
+
     <title>${resource.jcr:title}</title>
     <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="dns-prefetch" href="${item}"></sly>
 
@@ -24,7 +31,7 @@
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
-            document.write('<script src="https://raw.githack.com/zloirock/core-js/v2.4.1/client/shim.min.js"><\/script>');
+            document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');
     </script>
 
     <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>

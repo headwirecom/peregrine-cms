@@ -25,22 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_FILES;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -52,6 +36,21 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.Part;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Uploads one or more files as assets to Peregrine
@@ -95,6 +94,8 @@ public class UploadFilesServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
+        String characterEncoding = request.getRequest().getCharacterEncoding();
+        logger.trace("Current Character Encoding: '{}'", characterEncoding);
         String path = request.getParameter(PATH);
         try {
             Resource resource = request.getResourceByPath(path);
@@ -102,6 +103,11 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             List<Resource> assets = new ArrayList<>();
             for (Part part : request.getParts()) {
                 String assetName = part.getName();
+                if(!characterEncoding.equalsIgnoreCase(StandardCharsets.UTF_8.toString())) {
+                    String originalName = assetName;
+                    assetName = new String(originalName.getBytes (characterEncoding), StandardCharsets.UTF_8);
+                    logger.trace("Asset Name, original: '{}', converted: '{}'", originalName, assetName);
+                }
                 String contentType = part.getContentType();
                 logger.debug("part type {}",contentType);
                 logger.debug("part name {}",assetName);

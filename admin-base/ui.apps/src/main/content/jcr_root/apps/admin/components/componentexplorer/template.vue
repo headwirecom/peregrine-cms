@@ -25,19 +25,20 @@
 <template>
     <div class="component-explorer">
         <span class="panel-title">{{ $i18n('Components') }}</span>
-            <input type="text" v-model="state.filter" v-bind:placeholder="$i18n('Filter components')" tabindex="1" autofocus/>
+            <input type="text" v-model="state.filter" v-bind:placeholder="$i18n('filterComponents')" tabindex="1" autofocus/>
             <select class="browser-default" v-model="state.group">
-                <option value="">{{ $i18n('All Groups') }}</option>
-                <option v-for="(group, key) in allGroups" v-bind:value="key">{{ key }}</option>
+                <option value="">{{ $i18n('allGroups') }}</option>
+                <option v-for="(group, key) in allGroups" v-bind:value="key" v-bind:key="key">{{ key }}</option>
             </select>
             <ul>
                 <li 
-                    v-for="(group, key) in groups">
+                    v-for="(group, key) in groups" v-bind:key="key">
                     <div>
                         <ul class="collection">
                             <li
                                 class="collection-item"
                                 v-for="component in group"
+                                v-bind:key="componentKey(component)"
                                 v-on:dragstart="onDragStart(component, $event)" 
                                 draggable="true">
                                 <div>
@@ -88,10 +89,11 @@
                 if(state) {
                     return state
                 }
-                Vue.set($perAdminApp.getView().state, 'componentExplorer', {filter: ''})
+                Vue.set($perAdminApp.getView().state, 'componentExplorer', {filter: '', group: ''})
                 return $perAdminApp.getNodeFromView('/state/componentExplorer')
             },
             filteredList: function() {
+                var currentGroup = this.state.group
                 if (!this.$root.$data.admin.components) return {}
                 // if(!this.$root.$data.admin.currentPageConfig) return {}
                 var componentPath = this.$root.$data.pageView.path.split('/')
@@ -110,7 +112,7 @@
                 // Filter list to local components and with local filter
                 return sorted.filter(component => {
                     if (component.group === '.hidden') return false;
-                    if((this.state.group && this.state.group !== '') && component.group !== this.state.group) return false;
+                    if((currentGroup && currentGroup !== '') && component.group !== currentGroup) return false;
                     if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
                     return component.path.startsWith(allowedComponents);
 
@@ -155,6 +157,13 @@
             }
         },
         methods: {
+            componentKey( component ) {
+                if(component.variation) {
+                    return component.path+":"+component.variation
+                } else {
+                    return component.path
+                }
+            },
             isActive( key, groupChildren) {
                 return (
                     this.state.accordion[ key ]

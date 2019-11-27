@@ -38,21 +38,21 @@
                         <i class="material-icons">view_module</i>
                     </a>
                 </li>
-                <li class="tab" v-if="withLinkTab">
+                <li v-if="withLinkTab" class="tab">
                     <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')">
                         <i class="material-icons">link</i>
                     </a>
                 </li>
-                <li 
-                    class="indicator" 
+                <li
+                    class="indicator"
                     :style="`transform: translateX(${tabIndicatorPosition}px)`">
                 </li>
             </ul>
             <div class="pathbrowser-filter" :style="`width: calc(100% - ${searchTabOffset}px)`">
                 <input placeholder="search"  type="text" v-model="search">
             </div>
-            <div class="modal-content">                    
-                <div class="col-browse"> 
+            <div class="modal-content">
+                <div class="col-browse">
                     <table v-if="search" class="highlight pathbrowser-search-results">
                         <thead>
                             <tr>
@@ -63,10 +63,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-if="searchFilter(item)" 
-                                v-for="item in nodes.children" 
+                            <tr v-if="searchFilter(item)"
+                                v-for="item in nodes.children"
                                 :class="isSelected(item.path) ? 'selected' : ''">
-                                <td class="search-radio">
+                                <td v-if="isSelectable(item)" class="search-radio">
                                     <input type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                     <label v-on:click.stop.prevent="selectItem(item)"></label>
                                 </td>
@@ -81,16 +81,17 @@
                             <div class="modal-content-section">
                                 <div class="current-folder">
                                     <template v-if="!isRoot">
-                                        <a  
-                                            href="#!" 
+                                        <a
+                                            href="#!"
                                             v-on:click.stop.prevent="selectParent">
-                                            <i class="material-icons">keyboard_arrow_left</i> 
+                                            <i class="material-icons">keyboard_arrow_left</i>
                                         </a>
                                         {{currentPath}} ({{list.length}})
                                     </template>
                                     <template v-else>
-                                        <input 
-                                            type="radio" 
+                                        <input
+                                            v-if="!isBrowserTypeImage"
+                                            type="radio"
                                             class="with-gap"
                                             :checked="isSelected(currentPath)"/>
                                         <label v-on:click.stop.prevent="selectItem(nodes)">{{currentPath}} ({{list.length}})</label>
@@ -100,19 +101,23 @@
                         </nav>
                         <ul class="browse-list" v-if="list.length > 0">
                             <template v-for="item in list">
-                                <li v-if="isFolder(item)" 
+                                <li v-if="isFolder(item)"
                                     v-on:click.stop.prevent="navigateFolder(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
-                                    <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
-                                    <label v-on:click.stop.prevent="selectItem(item)"></label>
+                                    <template v-if="!isBrowserTypeImage">
+                                        <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
+                                        <label v-on:click.stop.prevent="selectItem(item)"></label>
+                                    </template>
                                     <i class="material-icons">{{getFolderIcon()}}</i>
                                     <span>{{item.name}}</span>
                                 </li>
-                                <li v-if="isFile(item) && isFileAllowed()" 
-                                    v-on:click.stop.prevent="selectItem(item)" 
+                                <li v-if="isFile(item) && isFileAllowed()"
+                                    v-on:click.stop.prevent="selectItem(item)"
                                     :class="isSelected(item.path) ? 'selected' : ''">
-                                    <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
-                                    <label></label>
+                                    <template v-if="isSelectable(item)">
+                                        <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
+                                        <label></label>
+                                    </template>
                                     <i class="material-icons">image</i>
                                     <span>{{item.name}}</span>
                                 </li>
@@ -125,17 +130,18 @@
                             <div class="modal-content-section">
                                 <div class="current-folder">
                                     <template v-if="!isRoot">
-                                        <a  
-                                            href="#!" 
+                                        <a
+                                            href="#!"
                                             v-on:click.stop.prevent="selectParent">
-                                            <i class="material-icons">keyboard_arrow_left</i> 
+                                            <i class="material-icons">keyboard_arrow_left</i>
                                         </a>
                                         {{currentPath}} ({{list.length}})
                                     </template>
                                     <template v-else>
-                                        <input 
-                                            type="radio" 
-                                            class="with-gap" 
+                                        <input
+                                            v-if="!isBrowserTypeImage"
+                                            type="radio"
+                                            class="with-gap"
                                             :checked="isSelected(currentPath)" />
                                         <label v-on:click.stop.prevent="selectItem(nodes)">{{currentPath}} ({{list.length}})</label>
                                     </template>
@@ -147,29 +153,29 @@
                                         <span class="cards-toolbar-title">Sort</span>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_name" 
+                                        <input
+                                            name="assetbrowser_sort_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_sort_cards_name"
                                             :checked="sortBy === 'name'"/>
                                         <label v-on:click="onSort('name')" for="assetbrowser_sort_cards_name">name</label>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_type" 
+                                        <input
+                                            name="assetbrowser_sort_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_sort_cards_type"
                                             :checked="sortBy === 'resourceType'"/>
                                         <label v-on:click="onSort('resourceType')" for="assetbrowser_sort_cards_type">type</label>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_sort_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_sort_cards_date" 
+                                        <input
+                                            name="assetbrowser_sort_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_sort_cards_date"
                                             :checked="sortBy === 'created'"/>
                                         <label v-on:click="onSort('created')" for="assetbrowser_sort_cards_date">date</label>
                                     </li>
@@ -179,29 +185,29 @@
                                         <span class="cards-toolbar-title">filter</span>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_filter_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_filter_cards_all" 
+                                        <input
+                                            name="assetbrowser_filter_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_filter_cards_all"
                                             :checked="filterBy === '*'"/>
                                         <label v-on:click="onFilter('*')" for="assetbrowser_filter_cards_all">all</label>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_filter_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_filter_cards_files" 
+                                        <input
+                                            name="assetbrowser_filter_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_filter_cards_files"
                                             :checked="filterBy === 'files'"/>
                                         <label v-on:click="onFilter('files')" for="assetbrowser_filter_cards_files">files</label>
                                     </li>
                                     <li>
-                                        <input 
-                                            name="assetbrowser_filter_cards" 
-                                            type="radio" 
-                                            class="with-gap" 
-                                            id="assetbrowser_filter_cards_folders" 
+                                        <input
+                                            name="assetbrowser_filter_cards"
+                                            type="radio"
+                                            class="with-gap"
+                                            id="assetbrowser_filter_cards_folders"
                                             :checked="filterBy === 'folders'"/>
                                         <label v-on:click="onFilter('folders')" for="assetbrowser_filter_cards_folders">folders</label>
                                     </li>
@@ -210,32 +216,32 @@
                         </nav>
                         <template v-if="list.length > 0">
                             <p class="range-field">
-                                <input 
-                                    type="range" 
-                                    min="120" 
-                                    max="400" 
+                                <input
+                                    type="range"
+                                    min="120"
+                                    max="400"
                                     v-model="cardSize"/>
                             </p>
-                            <isotope 
-                                ref="isotope" 
-                                class="isotopes" 
+                            <isotope
+                                ref="isotope"
+                                class="isotopes"
                                 v-bind:options="getIsotopeOptions()"
-                                v-images-loaded:on="getImagesLoadedCbs()" 
+                                v-images-loaded:on="getImagesLoadedCbs()"
                                 v-bind:list="list">
-                                <div 
-                                    v-for="(item, index) in list" 
+                                <div
+                                    v-for="(item, index) in list"
                                     :key="item.path">
-                                    <div 
-                                        v-if="isFolder(item)" 
+                                    <div
+                                        v-if="isFolder(item)"
                                         class="item-folder"
                                         v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
                                         v-on:click.stop.prevent="navigateFolder(item)">
-                                            <div class="item-select">
+                                            <div v-if="isSelectable(item)" class="item-select">
                                                 <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                                 <label v-on:click.stop.prevent="selectItem(item)"></label>
                                             </div>
                                             <div class="item-content">
-                                                <i 
+                                                <i
                                                     class="material-icons"
                                                     :style="`font-size: ${cardIconSize(cardSize)}px`">{{getFolderIcon()}}</i>
                                                 <br/>
@@ -243,27 +249,27 @@
                                             </div>
                                     </div>
                                     <template v-if="isFile(item) && isFileAllowed()">
-                                        <img 
-                                            v-if="isImage(item)" 
+                                        <img
+                                            v-if="isImage(item)"
                                             :class="isSelected(item.path) ? 'item-image selected' : 'item-image'"
-                                            v-bind:style="`width: ${cardSize}px`" 
-                                            v-bind:src="item.path" 
+                                            v-bind:style="`width: ${cardSize}px`"
+                                            v-bind:src="item.path"
                                             v-on:click.stop.prevent="selectItem(item)"/>
-                                        <div 
+                                        <div
                                             v-else
                                             :class="isSelected(item.path) ? 'item-file selected' : 'item-file'"
                                             :title="item.name"
                                             v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
                                             v-on:click.stop.prevent="selectItem(item)">
                                             <div class="item-content">
-                                                <i 
+                                                <i
                                                     class="material-icons"
                                                     :style="`font-size: ${cardIconSize(cardSize)}px`">{{getFileIcon()}}</i>
                                                 <br/>
                                                 <span class="truncate">{{item.name}}</span>
                                             </div>
                                         </div>
-                                    
+
                                     </template>
                                 </div>
                             </isotope>
@@ -271,17 +277,39 @@
                         <p v-else class="flow-text">{{getEmptyText()}}</p>
                     </template>
                     <template v-if="withLinkTab && tab === 'link' && !search">
-                        <p>
+                        <div class="form-group">
                             <label for="pathBrowserLink">URL</label>
-                            <input 
-                                id="pathBrowserLink" 
-                                type="url" 
-                                placeholder="https://" 
+                            <input
+                                id="pathBrowserLink"
+                                type="url"
+                                placeholder="https://"
                                 :value="selectedPath"
                                 @input="selectLink" />
-                            <input type="checkbox" id="newWindow" />
+                        </div>
+                        <div class="form-group" v-if="altText !== undefined">
+                            <label for="altText">Image Alternate Text</label>
+                            <input 
+                                id="altText" 
+                                type="text" 
+                                placeholder="Alt Text" 
+                                :value="altText"
+                                @input="setAltText" />
+                        </div>
+                        <div class="form-group" v-if="linkTitle !== undefined">
+                            <label for="linkTitle">Link Title</label>
+                            <input 
+                                id="linkTitle" 
+                                type="text" 
+                                placeholder="Link Title" 
+                                :value="linkTitle"
+                                @input="setLinkTitle" />
+                        </div>
+                        <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
+                            @click="toggleNewWindow" 
+                            @keyup.space="toggleNewWindow">  
+                            <input type="checkbox" id="newWindow" :checked="newWindow"/>
                             <label for="newWindow">Open in new window?</label>
-                        </p>
+                        </div>
                     </template>
                 </div>
                 <div class="col-preview">
@@ -305,22 +333,26 @@
                         </dl>
                     </template>
                     <div v-else class="no-asset-selected">
-                        <span>{{ $i18n('no asset selected') }}</span>
+                        <span>{{ $i18n('noAssetSelected') }}</span>
                         <i class="material-icons">info</i>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer">
-                <span class="selected-path">{{selectedPath}}</span>
-                <button v-on:click="onCancel"
-                        class="modal-action waves-effect waves-light btn-flat">
-                        cancel
-                </button>
-                <button v-on:click="onSelect" 
-                        class="modal-action waves-effect waves-light btn-flat">
-                        select
-                </button>
+                <div class="pathbrowser-footer-details">
+                    <span class="pathbrowser-selected-path">{{selectedPath}}</span>
+                </div>
+                    <div class="pathbrowser-buttons">
+                        <button v-on:click="onCancel"
+                                class="modal-action waves-effect waves-light btn-flat">
+                                cancel
+                        </button>
+                        <button v-on:click="onSelect" 
+                                class="modal-action waves-effect waves-light btn-flat">
+                                select
+                        </button>
+                </div>
             </div>
         </div>
         </div>
@@ -329,6 +361,8 @@
 </template>
 
 <script>
+    import {PathBrowser} from "../../../../../../js/constants";
+
     export default {
         props: [
             'isOpen', 
@@ -337,10 +371,16 @@
             'currentPath', 
             'selectedPath', 
             'withLinkTab', 
+            'newWindow',
+            'toggleNewWindow',
             'setCurrentPath', 
             'setSelectedPath', 
+            'linkTitle',
+            'setLinkTitle',
+            'altText',
+            'setAltText',
             'onCancel', 
-            'onSelect'
+            'onSelect',
         ],
         watch: {
             cardSize: function (newCardSize) {
@@ -349,7 +389,7 @@
         },
         mounted(){
             // set initial tab
-            if(this.withLinkTab && this.selectedPath && this.selectedPath.includes('http')){
+            if(this.withLinkTab && this.selectedPath && this.selectedPath.match(/^(https?:)?\/\//)){
                 this.tab = 'link'
             } else {
                 this.tab = 'browse'
@@ -381,8 +421,7 @@
                 let view = $perAdminApp.getView()
                 let nodes = view.admin.pathBrowser
                 if(nodes && this.currentPath) {
-                    let nodesFromPath = $perAdminApp.findNodeFromPath(nodes, this.currentPath)
-                    return nodesFromPath
+                  return $perAdminApp.findNodeFromPath(nodes, this.currentPath)
                 }
                 return {}
             },
@@ -416,6 +455,9 @@
                 } else {
                     return 144
                 }
+            },
+            isBrowserTypeImage() {
+              return this.isType(PathBrowser.Type.IMAGE)
             }
         },
         methods: {
@@ -424,15 +466,18 @@
             },
             isImage(item){
                 return ['image/png','image/jpeg','image/jpg','image/gif','timage/tiff', 'image/svg+xml'].indexOf(item.mimeType) >= 0
-            }, 
+            },
+            isImageExtension(item) {
+                return item.path.match(/.(jpg|jpeg|png|gif|svg)$/i)
+            },
             getFileIcon(){
                 return 'insert_drive_file'
             },
             getFolderIcon(){
-                return this.browserType === 'asset' ? 'folder_open' : 'description'
+                return this.isType(PathBrowser.Type.ASSET) ? 'folder_open' : 'description'
             },
             getEmptyText(){
-                return this.browserType === 'asset' ? 'Folder is empty' : 'No child pages'
+                return this.isType(PathBrowser.Type.ASSET) ? 'Folder is empty' : 'No child pages'
             },
             cardIconSize: function(cardSize){
                 return Math.floor(cardSize/3)
@@ -462,13 +507,13 @@
                     },
                     getSortData: {
                         name: function(itemElem){
-                            return itemElem.name.toLowerCase()    
+                            return itemElem.name.toLowerCase()
                         },
                         created: function(itemElem){
                             return Date.parse(itemElem.created)
                         },
                         resourceType: function(itemElem){
-                            return itemElem.resourceType.toLowerCase()    
+                            return itemElem.resourceType.toLowerCase()
                         }
                     },
                     getFilterData:{
@@ -506,13 +551,13 @@
                 return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
             },
             isFileAllowed(){
-                return this.browserType !== 'page'
+                return this.browserType !== PathBrowser.Type.PAGE
             },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
             },
             isSelected(path) {
-                return this.selectedPath === path 
+                return this.selectedPath === path
             },
             navigateFolder(item) {
                 $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser')
@@ -520,17 +565,31 @@
                         this.previewType = 'current'
                         this.setCurrentPath(item.path)
                         if(this.tab === 'cards' && this.list.length > 0) this.updateIsotopeLayout('masonry')
+                        this.selectItem(item)
                     })
             },
             selectItem(item) {
-                this.previewType = 'selected'
-                this.setSelectedPath(item.path)
+                if (this.isSelectable(item)) {
+                    this.previewType = 'selected'
+                    this.setSelectedPath(item.path)
+                }
             },
             selectLink(ev){
                 // TODO: add link preview
                 this.previewType = 'link'
                 // TODO: allow target="_blank" or target="_self"
                 this.setSelectedPath(ev.target.value)
+            },
+            isType(browserType) {
+                return this.browserType === browserType
+            },
+            isSelectable(item) {
+                if (!this.isBrowserTypeImage) {
+                  return true
+                } else if (this.isImage(item) || this.isImageExtension(item)) {
+                  return true
+                }
+                return false
             }
         }
     }

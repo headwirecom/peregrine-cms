@@ -544,6 +544,30 @@ function notifyUserImpl(title, message, options) {
     $('#notifyUserModal').modal('open', options)
 }
 
+/**
+ * implementation of $perAdminApp.askUser()
+ *
+ * @private
+ * @param title
+ * @param message
+ * @param options
+ */
+function askUserImpl(title, message, options) {
+    set(view, '/state/notification/title', title)
+    set(view, '/state/notification/message', message)
+    options.dismissible = false
+    options.takeAction = false
+    options.complete = function() {
+        const answer = $('#askUserModal').modal('getInstance').options.takeAction;
+        if(answer && options.yes) {
+            options.yes()
+        } else if(options.no) {
+            options.no()
+        }
+    }
+    $('#askUserModal').modal(options)
+    $('#askUserModal').modal('open')
+}
 
 /**
  * implementation of $perAdminApp.isPreviewMode()
@@ -858,6 +882,21 @@ var PerAdminApp = {
     },
 
     /**
+     * modal with the given title and message to ask the user, calls the callback on close if provided
+     *
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param title
+     * @param message
+     * @param options
+     */
+    askUser(title, message, options) {
+        askUserImpl(title, message, options)
+    },
+
+
+    /**
      * returns true if the editor is currently in preview mode
      *
      * @memberOf PerAdminApp
@@ -920,6 +959,13 @@ var PerAdminApp = {
 
     beforeStateAction(fun) {
         beforeStateActionImpl(fun)
+    },
+
+    normalizeString(val, separator='-') {
+        return val.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\W/g, separator)
+            .toLowerCase();
     }
 
 }

@@ -349,6 +349,34 @@ paths:
           description: If the path did not resolve to a resource
           schema:
             $ref: "#/definitions/Error"
+  '/updateSite.json':
+    post:
+      description: Updates a site's components and frontend libs from its source site
+      parameters:
+        - name: name
+          type: string
+          in: formData
+          description: The Name of the site to update
+          required: true
+      responses:
+        200:
+          description: returns the path of the new site and the path to the source
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Type set to 'site'
+              status:
+                type: string
+                description: Status set to 'updated'
+              name:
+                type: string
+                description: Name of the updated site
+        400:
+          description: If the name was not a valid site name
+          schema:
+            $ref: "#/definitions/Error"
   '/deleteSite.json':
     post:
       description: Delete a Site
@@ -771,6 +799,26 @@ paths:
           description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
           schema:
             $ref: "#/definitions/Error"
+  '/listTenants.json':
+    get:
+      description: Lists the tenants (top level sites) on this peregrine instance
+      responses:
+        200:
+          description: returns the list of tenants
+          schema:
+            type: object
+            properties:
+              tenants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    title:
+                      type: string
+                    roots:
+                      type: object
 definitions:
   Error:
     type: object
