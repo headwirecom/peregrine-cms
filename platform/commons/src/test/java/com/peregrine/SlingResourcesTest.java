@@ -1,7 +1,8 @@
-package com.peregrine.commons.test;
+package com.peregrine;
 
-import com.peregrine.commons.test.mock.PageMock;
-import com.peregrine.commons.test.mock.ResourceMock;
+import com.peregrine.commons.test.AbstractTest;
+import com.peregrine.mock.PageMock;
+import com.peregrine.mock.ResourceMock;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -12,6 +13,7 @@ import javax.jcr.Session;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.mockito.Mockito.mock;
 
@@ -19,11 +21,9 @@ public class SlingResourcesTest extends AbstractTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public static final String PRIMARY_TYPE = "per:Type";
     public static final String RESOURCE_TYPE = "per/component";
     public static final String SLASH_CONTENT = SLASH + "content";
-    public static final String SLASH_APPS_SLASH = "/apps/";
-    public static final String PROPERTY_NAME = "perProperty";
+    public static final String SLASH_APPS_SLASH = APPS_ROOT + SLASH;
 
     protected final ResourceMock root = new ResourceMock("Root");
     protected final ResourceMock parent = new ResourceMock("Parent");

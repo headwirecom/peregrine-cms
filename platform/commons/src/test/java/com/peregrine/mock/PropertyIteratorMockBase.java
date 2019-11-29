@@ -1,4 +1,4 @@
-package com.peregrine.commons.test.mock;
+package com.peregrine.mock;
 
 import javax.jcr.PropertyIterator;
 import java.util.Iterator;

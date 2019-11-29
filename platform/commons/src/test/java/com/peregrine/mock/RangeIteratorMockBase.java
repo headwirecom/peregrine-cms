@@ -1,4 +1,4 @@
-package com.peregrine.commons.test.mock;
+package com.peregrine.mock;
 
 import org.apache.commons.lang3.NotImplementedException;
 

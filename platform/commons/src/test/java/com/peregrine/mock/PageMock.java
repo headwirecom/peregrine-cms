@@ -1,4 +1,4 @@
-package com.peregrine.commons.test.mock;
+package com.peregrine.mock;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
