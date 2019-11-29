@@ -12,9 +12,9 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
 
-public final class Utils {
+public final class ResourceUtils {
 
-    private Utils() {
+    private ResourceUtils() {
         throw new UnsupportedOperationException();
     }
 

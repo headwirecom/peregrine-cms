@@ -115,7 +115,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
 
     protected final Resource getOrCreateCacheResource(ResourceResolver resourceResolver, Resource rootPage) throws PersistenceException {
         final String cachePath = getCachePath(rootPage);
-        return Utils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
+        return ResourceUtils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
     }
 
     protected abstract Resource buildCache(Resource rootPage, Resource cache) throws PersistenceException;

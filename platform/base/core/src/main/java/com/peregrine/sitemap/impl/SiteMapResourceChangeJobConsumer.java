@@ -27,7 +27,7 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.ResourceResolverFactoryProxy;
 import com.peregrine.sitemap.SiteMapStructureCache;
-import com.peregrine.sitemap.Utils;
+import com.peregrine.sitemap.ResourceUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -74,7 +74,7 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
         final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             for (final String path : initialPaths) {
-                final Resource resource = Utils.getFirstExistingAncestorOnPath(resourceResolver, path);
+                final Resource resource = ResourceUtils.getFirstExistingAncestorOnPath(resourceResolver, path);
                 if (isAllowed(resource)) {
                     cache.rebuild(resource.getPath());
                 }
