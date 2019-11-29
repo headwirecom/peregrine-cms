@@ -1,6 +1,5 @@
 package com.peregrine;
 
-import com.peregrine.commons.test.AbstractTest;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
 import org.apache.sling.api.resource.Resource;
@@ -17,7 +16,7 @@ import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.mockito.Mockito.mock;
 
-public class SlingResourcesTest extends AbstractTest {
+public class SlingResourcesTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
