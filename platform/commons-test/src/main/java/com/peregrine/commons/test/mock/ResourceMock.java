@@ -4,10 +4,7 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -16,13 +13,19 @@ import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
 public class ResourceMock extends ResourceWrapper {
 
     protected final Resource mock;
+    protected final Node node = mock(Node.class);
 
     protected final Map<String, Object> properties = new HashMap<>();
 
     private final Map<String, Resource> children = new LinkedHashMap<>();
+
+    private ResourceResolver resourceResolver;
 
     public ResourceMock() {
         super(mock(Resource.class));
@@ -32,9 +35,16 @@ public class ResourceMock extends ResourceWrapper {
     }
 
     public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
+        this.resourceResolver = resourceResolver;
         when(mock.getResourceResolver()).thenReturn(resourceResolver);
-        when(resourceResolver.getResource(getPath())).thenReturn(this);
+        updateResourceResolverGetResource();
         return this;
+    }
+
+    private void updateResourceResolverGetResource() {
+        if (resourceResolver != null) {
+            when(resourceResolver.getResource(getPath())).thenReturn(this);
+        }
     }
 
     public final Map<String, Object> getProperties() {
@@ -48,6 +58,10 @@ public class ResourceMock extends ResourceWrapper {
 
     public final ResourceMock setPath(final String path) {
         when(mock.getPath()).thenReturn(path);
+        try {
+            when(node.getPath()).thenReturn(path);
+        } catch (final RepositoryException e) { }
+        updateResourceResolverGetResource();
         setPathImpl(path);
         return this;
     }
@@ -92,5 +106,9 @@ public class ResourceMock extends ResourceWrapper {
     @Override
     public boolean hasChildren() {
         return !children.isEmpty();
+    }
+
+    public Node getNode() {
+        return node;
     }
 }
