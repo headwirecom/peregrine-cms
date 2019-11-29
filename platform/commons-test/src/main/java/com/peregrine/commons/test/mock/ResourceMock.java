@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
@@ -24,34 +25,43 @@ public class ResourceMock extends ResourceWrapper {
     private final Map<String, Resource> children = new TreeMap<>();
 
     public ResourceMock() {
-        super(Mockito.mock(Resource.class));
+        super(mock(Resource.class));
         mock = getResource();
         final ValueMap valueMap = new ValueMapDecorator(properties);
-        Mockito.when(mock.getValueMap()).thenReturn(valueMap);
+        when(mock.getValueMap()).thenReturn(valueMap);
+    }
+
+    public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
+        when(mock.getResourceResolver()).thenReturn(resourceResolver);
+        when(resourceResolver.getResource(getPath())).thenReturn(this);
+        return this;
     }
 
     public final Map<String, Object> getProperties() {
         return properties;
     }
 
-    public final void putProperty(final String name, final Object property) {
+    public final ResourceMock putProperty(final String name, final Object property) {
         properties.put(name, property);
+        return this;
     }
 
-    public final void setPath(final String path) {
-        Mockito.when(mock.getPath()).thenReturn(path);
+    public final ResourceMock setPath(final String path) {
+        when(mock.getPath()).thenReturn(path);
         setPathImpl(path);
+        return this;
     }
 
     protected void setPathImpl(final String path) { }
 
     @Override
     public final String getName() {
-        return StringUtils.substringAfterLast(getPath(), PerConstants.SLASH);
+        return StringUtils.substringAfterLast(getPath(), SLASH);
     }
 
-    public final void setParent(final Resource parent) {
-        Mockito.when(mock.getParent()).thenReturn(parent);
+    public final ResourceMock setParent(final Resource parent) {
+        when(mock.getParent()).thenReturn(parent);
+        return this;
     }
 
     @Override
@@ -59,12 +69,14 @@ public class ResourceMock extends ResourceWrapper {
         return children.get(name);
     }
 
-    public final void addChild(final String name, final Resource child) {
+    public final ResourceMock addChild(final String name, final Resource child) {
         children.put(name, child);
+        return this;
     }
 
-    public final void addChild(final Resource child) {
+    public final ResourceMock addChild(final Resource child) {
         addChild(child.getName(), child);
+        return this;
     }
 
     @Override
