@@ -27,6 +27,7 @@
         <template v-for="child in model.children">
             <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
         </template>
+        <admin-components-about></admin-components-about>
         <admin-components-notifyuser></admin-components-notifyuser>
         <admin-components-askuser></admin-components-askuser>
     </div>
@@ -47,7 +48,10 @@ export default {
             $perAdminApp.stateAction('editPreview', target)
         },
         editPage: function(me, target) {
-        }
+        },
+        addSite: function(me, target) {
+            $perAdminApp.stateAction('createSiteWizard', '/content/sites')
+        },
     }
 }
 </script>

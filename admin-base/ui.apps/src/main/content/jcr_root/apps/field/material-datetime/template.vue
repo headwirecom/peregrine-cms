@@ -1,6 +1,6 @@
 <template>
 		<div>
-			<datetime v-if="!schema.preview && !schema.readonly" v-model="sanitizedValue" type="datetime" :placeholder="$i18n('Select datetime')"></datetime>
+			<datetime v-if="!schema.preview && !schema.readonly" v-model="sanitizedValue" type="datetime" :placeholder="$i18n('selectDatetime')"></datetime>
 			<div v-else>{{preview}}</div>
 		</div>
 </template>

@@ -25,27 +25,8 @@ package com.peregrine.rendition;
  * #L%
  */
 
-import com.peregrine.adaption.PerAsset;
-import com.peregrine.rendition.BaseResourceHandler.HandlerException;
-import com.peregrine.transform.ImageContext;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.commons.io.IOUtils;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLDecoder;
-
-import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -55,6 +36,24 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
+import com.peregrine.adaption.PerAsset;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.rendition.BaseResourceHandler.HandlerException;
+import com.peregrine.transform.ImageContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import org.apache.commons.io.IOUtils;
+import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     service = Servlet.class,

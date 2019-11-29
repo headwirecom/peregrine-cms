@@ -756,6 +756,26 @@ paths:
           description: If the path did not resolve to a resource, the to name was not provided or contained a slash
           schema:
             $ref: "#/definitions/Error"
+  '/listTenants.json':
+    get:
+      description: Lists the tenants (top level sites) on this peregrine instance
+      responses:
+        200:
+          description: returns the list of tenants
+          schema:
+            type: object
+            properties:
+              tenants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    title:
+                      type: string
+                    roots:
+                      type: object
 definitions:
   Error:
     type: object

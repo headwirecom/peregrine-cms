@@ -1,11 +1,10 @@
 package com.peregrine.admin.resource;
 
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-
-import javax.jcr.Node;
 import java.io.InputStream;
 import java.util.Map;
+import javax.jcr.Node;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 /**
  * Defines the Interface for the Admin Resource

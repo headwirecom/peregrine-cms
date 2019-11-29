@@ -28,4 +28,5 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_UPDATE_RESOURCE = API_PREFIX + "updateResource";
     public static final String RESOURCE_TYPE_UPLOAD_FILES = API_PREFIX + "uploadFiles";
     public static final String RESOURCE_TYPE_UPDATE_SITE = API_PREFIX + "updateSite";
+    public static final String RESOURCE_TYPE_LIST_TENANTS = API_PREFIX + "listTenants";
 }
