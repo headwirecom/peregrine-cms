@@ -18,6 +18,8 @@ import javax.jcr.RepositoryException;
 
 public class ResourceMock extends ResourceWrapper {
 
+    protected static final String DEFAULT_NAME = null;
+
     protected final Resource mock;
     protected final Node node;
 
@@ -32,13 +34,27 @@ public class ResourceMock extends ResourceWrapper {
     public ResourceMock(final String name) {
         super(mock(Resource.class, name));
         mock = getResource();
-        node = mock(Node.class, name);
+        node = mock(Node.class, concatenateToDerivedName(name, " Node"));
         final ValueMap valueMap = new ValueMapDecorator(properties);
         when(mock.getValueMap()).thenReturn(valueMap);
+        addAdapter(node);
+    }
+
+    protected static String concatenateToDerivedName(final String... strings) {
+        final StringBuilder builder = new StringBuilder();
+        for (final String s : strings) {
+            if (s == null) {
+                return DEFAULT_NAME;
+            }
+
+            builder.append(s);
+        }
+
+        return StringUtils.trim(builder.toString());
     }
 
     public ResourceMock() {
-        this(null);
+        this(DEFAULT_NAME);
     }
 
     public final ResourceMock setResourceResolver(final ResourceResolver resourceResolver) {
