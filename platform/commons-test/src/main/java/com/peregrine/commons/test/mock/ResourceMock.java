@@ -1,4 +1,4 @@
-package com.peregrine;
+package com.peregrine.commons.test.mock;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.mockito.Mockito.mock;
@@ -24,10 +24,10 @@ public class ResourceMock extends ResourceWrapper {
     private final Map<String, Resource> children = new TreeMap<>();
 
     public ResourceMock() {
-        super(mock(Resource.class));
+        super(Mockito.mock(Resource.class));
         mock = getResource();
         final ValueMap valueMap = new ValueMapDecorator(properties);
-        when(mock.getValueMap()).thenReturn(valueMap);
+        Mockito.when(mock.getValueMap()).thenReturn(valueMap);
     }
 
     public final Map<String, Object> getProperties() {
@@ -39,7 +39,7 @@ public class ResourceMock extends ResourceWrapper {
     }
 
     public final void setPath(final String path) {
-        when(mock.getPath()).thenReturn(path);
+        Mockito.when(mock.getPath()).thenReturn(path);
         setPathImpl(path);
     }
 
@@ -47,11 +47,11 @@ public class ResourceMock extends ResourceWrapper {
 
     @Override
     public final String getName() {
-        return StringUtils.substringAfterLast(getPath(), SLASH);
+        return StringUtils.substringAfterLast(getPath(), PerConstants.SLASH);
     }
 
     public final void setParent(final Resource parent) {
-        when(mock.getParent()).thenReturn(parent);
+        Mockito.when(mock.getParent()).thenReturn(parent);
     }
 
     @Override

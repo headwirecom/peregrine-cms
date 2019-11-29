@@ -1,4 +1,4 @@
-package com.peregrine;
+package com.peregrine.commons.test.mock;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
@@ -10,16 +10,16 @@ public final class PageMock extends ResourceMock {
     private final ResourceMock content = new ResourceMock();
 
     public PageMock() {
-        when(mock.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
-        when(mock.isResourceType(PAGE_PRIMARY_TYPE)).thenReturn(true);
+        Mockito.when(mock.getResourceType()).thenReturn(PerConstants.PAGE_PRIMARY_TYPE);
+        Mockito.when(mock.isResourceType(PerConstants.PAGE_PRIMARY_TYPE)).thenReturn(true);
 
-        addChild(JCR_CONTENT, content);
+        addChild(PerConstants.JCR_CONTENT, content);
         content.setParent(this);
     }
 
     @Override
     protected void setPathImpl(final String path) {
-        content.setPath(path + SLASH + JCR_CONTENT);
+        content.setPath(path + PerConstants.SLASH + PerConstants.JCR_CONTENT);
     }
 
     public ResourceMock getContent() {
