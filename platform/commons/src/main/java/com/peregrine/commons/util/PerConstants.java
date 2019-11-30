@@ -66,7 +66,8 @@ public class PerConstants {
     public static final String TEXT_MIME_TYPE = "plain/text";
 
     public static final String APPS_ROOT = "/apps";
-    public static final String CONTENT_ROOT = "/content";
+    public static final String NN_CONTENT = "content";
+    public static final String CONTENT_ROOT = SLASH + NN_CONTENT;
     public static final String ETC_ROOT = "/etc";
     public static final String ASSETS_ROOT = "/assets";
     public static final String FELIBS_ROOT = ETC_ROOT + "/felibs";

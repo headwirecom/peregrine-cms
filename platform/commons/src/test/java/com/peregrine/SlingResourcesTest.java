@@ -1,5 +1,6 @@
 package com.peregrine;
 
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
 import org.apache.sling.api.resource.LoginException;
@@ -19,6 +20,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class SlingResourcesTest {
+
+    protected static final String NN_ROOT = PerConstants.NN_CONTENT;
+    protected static final String NN_PARENT = "parent";
+    protected static final String NN_PAGE = "page";
+    protected static final String NN_RESOURCE = "resource";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -52,14 +58,14 @@ public class SlingResourcesTest {
     private void setPaths() {
         String path = SLASH;
         repoRoot.setPath(path);
-        path += SLASH + "content";
+        path += NN_ROOT;
         root.setPath(path);
-        path += SLASH + "parent";
+        path += SLASH + NN_PARENT;
         parent.setPath(path);
-        path += SLASH + "page";
+        path += SLASH + NN_PAGE;
         page.setPath(path);
         path = content.getPath();
-        path += SLASH + "resource";
+        path += SLASH + NN_RESOURCE;
         resource.setPath(path);
     }
 
