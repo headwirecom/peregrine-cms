@@ -1,6 +1,7 @@
 package com.peregrine.sitemap;
 
 import com.peregrine.SlingResourcesTest;
+import com.peregrine.TestingTools;
 import org.apache.sling.api.resource.Resource;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -17,6 +18,11 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
 
     @Before
     public void setUp() {
+    }
+
+    @Test
+    public void testConstructor() {
+        TestingTools.testUtilClassConstructor(ResourceUtils.class);
     }
 
     @Test
