@@ -4,7 +4,6 @@ import com.peregrine.SlingResourcesTest;
 import com.peregrine.TestingTools;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -18,10 +17,6 @@ import static org.mockito.Mockito.when;
 public final class ResourceUtilsTest extends SlingResourcesTest {
 
     private final String path = resource.getPath();
-
-    @Before
-    public void setUp() {
-    }
 
     @Test
     public void testConstructor() {
