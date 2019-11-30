@@ -1,5 +1,7 @@
 package com.peregrine.sitemap;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Stack;
@@ -12,6 +14,7 @@ public final class XMLBuilder {
 
     private final StringBuilder builder = new StringBuilder(XML_VERSION);
     private final Stack<String> stack = new Stack<>();
+    private boolean emptyElementInProgress = false;
 
     public static int getAttributesSizeInFile(final Map<String, String> attributes) {
         int result = XMLBuilder.XML_VERSION.length();
@@ -45,7 +48,7 @@ public final class XMLBuilder {
         }
 
         builder.append(">");
-
+        emptyElementInProgress = true;
         return this;
     }
 
@@ -54,31 +57,60 @@ public final class XMLBuilder {
     }
 
     public XMLBuilder endElement() {
-        return endElement(builder, stack.pop());
+        final String name = stack.pop();
+        if (emptyElementInProgress) {
+            emptyElementInProgress = false;
+            return endEmptyElement(builder);
+        }
+
+        return endElement(builder, name);
     }
 
     private XMLBuilder endElement(final StringBuilder builder, final String name) {
         builder.append("</");
         builder.append(name);
         builder.append(">");
+        return this;
+    }
 
+    private XMLBuilder endEmptyElement(final StringBuilder builder) {
+        final int length = builder.length();
+        builder.replace(length - 1, length, " />");
         return this;
     }
 
     public XMLBuilder addElement(final String name, final Map<String, String> attributes, final String text) {
         startElement(name, attributes);
-        builder.append(text);
+        if (StringUtils.isNotEmpty(text)) {
+            builder.append(text);
+            emptyElementInProgress = false;
+        }
+
         return endElement();
+    }
+
+    public XMLBuilder addElement(final String name, final Map<String, String> attributes) {
+        return addElement(name, attributes, null);
     }
 
     public XMLBuilder addElement(final String name, final String text) {
         return addElement(name, Collections.EMPTY_MAP, text);
     }
 
+    public XMLBuilder addElement(final String name) {
+        return addElement(name, (String)null);
+    }
+
     @Override
     public String toString() {
         final StringBuilder result = new StringBuilder(builder);
-        for (int i = stack.size() - 1; i >= 0 ; i--) {
+        int start = stack.size() - 1;
+        if (start >= 0 && emptyElementInProgress) {
+            endEmptyElement(result);
+            start--;
+        }
+
+        for (int i = start; i >= 0 ; i--) {
             endElement(result, stack.get(i));
         }
 
