@@ -27,7 +27,7 @@ public final class ResourceUtils {
         }
 
         if (isNull(resource)) {
-            resource = resourceResolver.getResource(SLASH);
+            return resourceResolver.getResource(SLASH);
         }
 
         return resource;
