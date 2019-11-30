@@ -32,7 +32,6 @@ public class ResourceMock extends ResourceWrapper {
     protected final Node node;
 
     protected final Map<String, Object> properties = new HashMap<>();
-//    protected final ValueMap valueMap = mock(ValueMap.class);
 
     private final Map<String, ResourceMock> children = new LinkedHashMap<>();
 
