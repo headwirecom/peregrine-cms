@@ -19,8 +19,8 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
     private final String path = resource.getPath();
 
     @Test
-    public void testConstructor() {
-        TestingTools.testUtilClassConstructor(ResourceUtils.class);
+    public void confirmUtilClass() {
+        TestingTools.testUtilClass(ResourceUtils.class);
     }
 
     @Test
@@ -58,4 +58,5 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
         final Resource resource = ResourceUtils.getOrCreateResource(resourceResolver, path, null);
         assertEquals(this.resource, resource);
     }
+
 }
