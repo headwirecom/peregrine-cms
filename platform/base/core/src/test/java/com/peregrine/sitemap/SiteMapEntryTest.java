@@ -4,10 +4,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SiteMapEntryTest {
+public class SiteMapEntryTest implements SiteMapEntry.Visitor<Integer> {
 
     private static final String PATH = "/content/sites/page";
     private static final String URL = "http://www.example.com";
@@ -44,9 +47,25 @@ public class SiteMapEntryTest {
 
     @Test
     public void walk() {
+        model.putProperty("x", 1);
+        final Map<String, Object> y = new HashMap<>();
+        y.put("x", 2);
+        model.putProperty("y", y);
+        assertEquals((Object)7, model.walk(this, 0));
     }
 
-    @Test
-    public void testWalk() {
+    @Override
+    public Integer visit(final String mapName, final Map<String, String> properties, final Integer result) {
+        return result + properties.size();
+    }
+
+    @Override
+    public Integer visit(final String propertyName, final String propertyValue, final Integer result) {
+        return result + Integer.parseInt(propertyValue);
+    }
+
+    @Override
+    public Integer endVisit(final String mapName, final Integer result) {
+        return result + 1;
     }
 }
