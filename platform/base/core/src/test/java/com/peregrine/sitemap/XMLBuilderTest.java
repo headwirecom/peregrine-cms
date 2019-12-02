@@ -1,6 +1,5 @@
 package com.peregrine.sitemap;
 
-import com.peregrine.SlingResourcesTest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class XMLBuilderTest extends SlingResourcesTest {
+public final class XMLBuilderTest {
 
     private final XMLBuilder builder = new XMLBuilder();
     final Map<String, String> attributes = new HashMap<>();

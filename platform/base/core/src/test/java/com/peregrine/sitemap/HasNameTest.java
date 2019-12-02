@@ -1,6 +1,5 @@
 package com.peregrine.sitemap;
 
-import com.peregrine.SlingResourcesTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -8,7 +7,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class HasNameTest extends SlingResourcesTest {
+public final class HasNameTest {
 
     private final HasName model = new HasName() {};
 
