@@ -21,6 +21,24 @@ public final class XMLBuilderTest extends SlingResourcesTest {
         attributes.put("a", "0");
     }
 
+    @Test
+    public void getAttributesLength() {
+        final int size = XMLBuilder.getAttributesLength(attributes);
+        assertEquals(6, size);
+    }
+
+    @Test
+    public void getBasicElementLength() {
+        final int size = XMLBuilder.getBasicElementLength("x");
+        assertEquals(7, size);
+    }
+
+    @Test
+    public void getBasicElementLength_withAttributes() {
+        final int size = XMLBuilder.getBasicElementLength("x", attributes);
+        assertEquals(13, size);
+    }
+
     private String test(final String expected) {
         final String output = builder.toString();
         assertTrue(output.startsWith(XMLBuilder.XML_VERSION));

@@ -9,15 +9,15 @@ import java.util.Stack;
 public final class XMLBuilder {
 
     public static final String XML_VERSION = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-    private static final int SINGLE_ATTRIBUTE_SYMBOLS_LENGTH = 4;
-    private static final int ELEMENT_SYMBOLS_LENGTH = 5;
+    private static final int SINGLE_ATTRIBUTE_SYMBOLS_LENGTH = " =\"\"".length();
+    private static final int ELEMENT_SYMBOLS_LENGTH = "<></>".length();
 
     private final StringBuilder builder = new StringBuilder(XML_VERSION);
     private final Stack<String> stack = new Stack<>();
     private boolean emptyElementInProgress = false;
 
-    public static int getAttributesSizeInFile(final Map<String, String> attributes) {
-        int result = XMLBuilder.XML_VERSION.length();
+    public static int getAttributesLength(final Map<String, String> attributes) {
+        int result = 0;
         for (final Map.Entry<String, String> e : attributes.entrySet()) {
             result += e.getKey().length();
             result += e.getValue().length();
@@ -32,7 +32,7 @@ public final class XMLBuilder {
     }
 
     public static int getBasicElementLength(final String name, final Map<String, String> attributes) {
-        return getBasicElementLength(name) + getAttributesSizeInFile(attributes);
+        return getBasicElementLength(name) + getAttributesLength(attributes);
     }
 
     public XMLBuilder startElement(final String name, final Map<String, String> attributes) {

@@ -51,7 +51,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBuilder {
 
     private static final int BASE_ENTRY_LENGTH = XMLBuilder.getBasicElementLength(URL);
-    private static final String EQ = "=";
     private static final Map<String, String> SITE_MAP_INDEX_ATTRIBUTES = new HashMap<>();
     private static final Map<String, String> URL_SET_ATTRIBUTES = new HashMap<>();
 
