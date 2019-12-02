@@ -43,13 +43,13 @@ public final class SiteMapEntry {
 
     public Object putProperty(final String name, final String value) {
         if (isBlank(value)) {
-            return putProperty(name, null);
+            return putProperty(name, (Object)null);
         }
 
         return putProperty(name, (Object)value);
     }
 
-    private <Type> Type getProperty(final String name, final Class<? extends Type> type) {
+    public <Type> Type getProperty(final String name, final Class<? extends Type> type) {
         final Object value = properties.get(name);
         if (isNull(value)) {
             return null;
