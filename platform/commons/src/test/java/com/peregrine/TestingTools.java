@@ -35,4 +35,15 @@ public final class TestingTools {
 
         Assert.assertNull(String.format(UTIL_CLASS_CONSTRUCTOR_CONDITIONS, clazzName), instance);
     }
+
+    public static void testUtilClassDeclaration(final Class<?> clazz) {
+        final String clazzName = clazz.getName();
+        Assert.assertTrue(clazzName + " should be declared final", Modifier.isFinal(clazz.getModifiers()));
+    }
+
+    public static void testUtilClass(final Class<?> clazz) {
+        testUtilClassDeclaration(clazz);
+        testUtilClassConstructor(clazz);
+    }
+
 }
