@@ -26,7 +26,6 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -102,20 +101,6 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
     @Override
     protected ResourceResolver getServiceResourceResolver() throws LoginException {
         return resourceResolverFactory.getServiceResourceResolver();
-    }
-
-    @Override
-    protected String getCachePath(final String rootPagePath) {
-        return location + rootPagePath;
-    }
-
-    @Override
-    protected String getOriginalPath(final String cachePath) {
-        if (!StringUtils.startsWith(cachePath, locationWithSlash)) {
-            return null;
-        }
-
-        return StringUtils.substringAfter(cachePath, location);
     }
 
     @Override

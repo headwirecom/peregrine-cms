@@ -91,13 +91,21 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         return getCachePath(rootPage.getPath());
     }
 
-    protected abstract String getCachePath(String rootPagePath);
+    protected String getCachePath(final String rootPagePath) {
+        return location + rootPagePath;
+    }
 
     protected final String getOriginalPath(final Resource cache) {
         return getOriginalPath(cache.getPath());
     }
 
-    protected abstract String getOriginalPath(String cachePath);
+    protected String getOriginalPath(final String cachePath) {
+        if (!StringUtils.startsWith(cachePath, locationWithSlash)) {
+            return null;
+        }
+
+        return StringUtils.substringAfter(cachePath, location);
+    }
 
     protected boolean containsCacheAlready(final Resource cache) {
         return nonNull(cache);
