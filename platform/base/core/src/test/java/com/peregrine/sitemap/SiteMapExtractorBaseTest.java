@@ -21,7 +21,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SiteMapExtractorBaseTest extends SlingResourcesTest implements SiteMapUrlBuilder, PageRecognizer, UrlExternalizer {
+public final class SiteMapExtractorBaseTest extends SlingResourcesTest
+        implements SiteMapUrlBuilder, PageRecognizer, UrlExternalizer {
 
     private static final String DOMAIN = "http://www.example.com";
     private static final String PATH = "path";
@@ -99,7 +100,7 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest implement
 
     @Override
     public int getIndex(final SlingHttpServletRequest request) {
-        return request.hashCode();
+        return request.getResource().hashCode();
     }
 
     @Override
@@ -164,6 +165,25 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest implement
         assertEquals(2, entries.size());
         final SiteMapEntry entry = entries.get(0);
         assertTrue(StringUtils.startsWith(entry.getUrl(), DOMAIN));
+    }
+
+    @Test
+    public void buildSiteMapUrl() {
+        for (int i = 0; i < 10; i++) {
+            final String expected = map(resourceResolver, buildSiteMapUrl(resource, i));
+            assertEquals(expected, model.buildSiteMapUrl(resource, i));
+        }
+
+        when(configuration.getUrlExternalizer()).thenReturn(null);
+        for (int i = 0; i < 10; i++) {
+            final String expected = buildSiteMapUrl(resource, i);
+            assertEquals(expected, model.buildSiteMapUrl(resource, i));
+        }
+    }
+
+    @Test
+    public void getIndex() {
+        assertEquals(resource.hashCode(), model.getIndex(request));
     }
 
 }
