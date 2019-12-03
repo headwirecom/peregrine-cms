@@ -120,6 +120,12 @@ public class SlingResourcesTest {
         return mock;
     }
 
+    protected <Mock extends PageMock> Mock init(final Mock mock) {
+        init((ResourceMock)mock);
+        init(mock.getContent());
+        return mock;
+    }
+
     private String fullName(final String name) {
         return SlingResourcesTest.class.getSimpleName() + " " + name;
     }
