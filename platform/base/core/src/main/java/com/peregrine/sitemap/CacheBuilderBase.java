@@ -59,7 +59,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         locationWithSlash = location + SLASH;
     }
 
-    protected Resource getCache(final ResourceResolver resourceResolver, final Resource rootPage) {
+    protected final Resource getCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         try {
             final Resource cache;
             if (isCached(resourceResolver, rootPage.getPath())) {
