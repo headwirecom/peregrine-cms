@@ -3,6 +3,7 @@ package com.peregrine;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -46,6 +47,8 @@ public class SlingResourcesTest {
 
     protected final PageMock component = new PageMock("Per Component");
 
+    protected final SlingHttpServletRequest request = mock(SlingHttpServletRequest.class, fullName("Request"));
+
     public SlingResourcesTest() {
         setPaths();
         setParentChildRelationships();
@@ -53,6 +56,7 @@ public class SlingResourcesTest {
         component.setPath(SLASH_APPS_SLASH + RESOURCE_TYPE);
         init(component);
         bindResolverFactory();
+        bindRequest();
     }
 
     private void setPaths() {
@@ -95,6 +99,11 @@ public class SlingResourcesTest {
             when(resolverFactory.getThreadResourceResolver()).thenReturn(resourceResolver);
         } catch (final LoginException e) {
         }
+    }
+
+    private void bindRequest() {
+        when(request.getResource()).thenReturn(resource);
+        when(request.getResourceResolver()).thenReturn(resourceResolver);
     }
 
     public Logger getLogger() {
