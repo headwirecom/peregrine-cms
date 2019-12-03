@@ -42,19 +42,27 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 	@Test
     public void rebuilds_throwLoginException() throws LoginException, PersistenceException {
         when(model.getServiceResourceResolver()).thenThrow(LoginException.class);
+
         model.rebuild(StringUtils.EMPTY);
         verify(resourceResolver, times(0)).commit();
+
         model.rebuildAll();
         verify(resourceResolver, times(0)).commit();
     }
 
     @Test
-    public void rebuilds_throwPersistenceException() throws LoginException, PersistenceException {
+    public void throwPersistenceException() throws PersistenceException {
         doThrow(PersistenceException.class).when(resourceResolver).commit();
+        int invocationsCount = 1;
+
+        model.getCache(resourceResolver, parent);
+        verify(resourceResolver, times(invocationsCount++)).commit();
+
         model.rebuild(StringUtils.EMPTY);
-        verify(resourceResolver, times(1)).commit();
+        verify(resourceResolver, times(invocationsCount++)).commit();
+
         model.rebuildAll();
-        verify(resourceResolver, times(2)).commit();
+        verify(resourceResolver, times(invocationsCount++)).commit();
     }
 
 }
