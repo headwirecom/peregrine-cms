@@ -49,7 +49,8 @@ public final class SiteMapEntry {
         return putProperty(name, (Object)value);
     }
 
-    public <Type> Type getProperty(final String name, final Class<? extends Type> type) {
+    @SuppressWarnings("unchecked")
+	public <Type> Type getProperty(final String name, final Class<? extends Type> type) {
         final Object value = properties.get(name);
         if (isNull(value)) {
             return null;
@@ -81,7 +82,8 @@ public final class SiteMapEntry {
             final Object value = e.getValue();
             final String key = e.getKey();
             if (value instanceof Map) {
-                final Map<String, Object> map = (Map<String, Object>) value;
+                @SuppressWarnings("unchecked")
+				final Map<String, Object> map = (Map<String, Object>) value;
                 children.put(key, map);
             } else {
                 final String string = String.valueOf(value);

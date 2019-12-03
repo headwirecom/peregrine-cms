@@ -53,7 +53,7 @@ public final class XMLBuilder {
     }
 
     public XMLBuilder startElement(final String name) {
-        return startElement(name, Collections.EMPTY_MAP);
+        return startElement(name, Collections.emptyMap());
     }
 
     public XMLBuilder endElement() {
@@ -94,7 +94,7 @@ public final class XMLBuilder {
     }
 
     public XMLBuilder addElement(final String name, final String text) {
-        return addElement(name, Collections.EMPTY_MAP, text);
+        return addElement(name, Collections.emptyMap(), text);
     }
 
     public XMLBuilder addElement(final String name) {

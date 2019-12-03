@@ -79,7 +79,8 @@ public final class Page extends ResourceWrapper {
         return isNull(value) ? null : type.cast(value);
     }
 
-    public <Type> Type getProperty(final String name, final Type defaultValue) {
+    @SuppressWarnings("unchecked")
+	public <Type> Type getProperty(final String name, final Type defaultValue) {
         if (!containsProperty(name)) {
             return defaultValue;
         }

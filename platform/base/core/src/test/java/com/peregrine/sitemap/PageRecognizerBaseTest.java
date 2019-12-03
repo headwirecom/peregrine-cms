@@ -1,12 +1,9 @@
 package com.peregrine.sitemap;
 
 import com.peregrine.SlingResourcesTest;
-import org.apache.jackrabbit.JcrConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Calendar;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
