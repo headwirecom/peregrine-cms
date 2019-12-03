@@ -44,6 +44,13 @@ public final class PageTest extends SlingResourcesTest {
     }
 
     @Test
+    public void getProperty() {
+        assertNull(missingContent.getProperty(NAME));
+        parent.putProperty(NAME, VALUE);
+        assertEquals(VALUE, missingContent.getProperty(NAME));
+    }
+
+    @Test
     public void getProperty_type() {
         assertNull(properPage.getProperty(NAME, String.class));
         content.putProperty(NAME, VALUE);
@@ -55,6 +62,9 @@ public final class PageTest extends SlingResourcesTest {
         assertEquals(DEFAULT_VALUE, properPage.getProperty(NAME, DEFAULT_VALUE));
         content.putProperty(NAME, VALUE);
         assertEquals(VALUE, properPage.getProperty(NAME, DEFAULT_VALUE));
+
+        content.putProperty(NAME, null);
+        assertNull(properPage.getProperty(NAME, DEFAULT_VALUE));
     }
 
     @Test
