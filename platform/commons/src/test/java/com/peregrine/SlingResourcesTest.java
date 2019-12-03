@@ -3,6 +3,7 @@ package com.peregrine;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -22,15 +23,16 @@ import static org.mockito.Mockito.when;
 
 public class SlingResourcesTest {
 
+    public static final String RESOURCE_TYPE = "per/component";
+    public static final String SLASH_APPS_SLASH = APPS_ROOT + SLASH;
+
     protected static final String NN_ROOT = PerConstants.NN_CONTENT;
     protected static final String NN_PARENT = "parent";
     protected static final String NN_PAGE = "page";
     protected static final String NN_RESOURCE = "resource";
+    protected static final String PAGE_PATH = SLASH + NN_ROOT + SLASH + NN_PARENT + SLASH + NN_PAGE;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    public static final String RESOURCE_TYPE = "per/component";
-    public static final String SLASH_APPS_SLASH = APPS_ROOT + SLASH;
 
     protected final ResourceMock repoRoot = new ResourceMock("Repository Root");
     protected final ResourceMock root = new ResourceMock("Root");
@@ -60,29 +62,31 @@ public class SlingResourcesTest {
     }
 
     private void setPaths() {
-        String path = SLASH;
-        repoRoot.setPath(path);
-        path += NN_ROOT;
-        root.setPath(path);
-        path += SLASH + NN_PARENT;
-        parent.setPath(path);
-        path += SLASH + NN_PAGE;
-        page.setPath(path);
-        path = content.getPath();
-        path += SLASH + NN_RESOURCE;
-        resource.setPath(path);
+        repoRoot.setPath(SLASH);
+        setPaths(PAGE_PATH, root, parent, page);
+        resource.setPath(content.getPath() + SLASH + NN_RESOURCE);
+    }
+
+    protected static void setPaths(final String path, final ResourceMock... resources) {
+        String currentPath = path;
+        for (int i = resources.length - 1; i >= 0; i--) {
+            resources[i].setPath(currentPath);
+            currentPath = StringUtils.substringBeforeLast(currentPath, SLASH);
+        }
     }
 
     private void setParentChildRelationships() {
-        root.setParent(repoRoot);
-        parent.setParent(root);
-        page.setParent(parent);
-        resource.setParent(content);
+        setParentChildRelationships(repoRoot, root, parent, page);
+        setParentChildRelationships(content, resource);
+    }
 
-        repoRoot.addChild(root);
-        root.addChild(parent);
-        parent.addChild(page);
-        content.addChild(resource);
+    protected static void setParentChildRelationships(final ResourceMock... resources) {
+        for (int i = 0; i < resources.length - 1; i++) {
+            final ResourceMock parent = resources[i];
+            final ResourceMock child = resources[i + 1];
+            child.setParent(parent);
+            parent.addChild(child);
+        }
     }
 
     private void initResources() {
