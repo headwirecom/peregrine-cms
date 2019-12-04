@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
@@ -52,6 +52,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
         @Override
         protected Resource buildCache(final Resource rootPage, final Resource cache) {
+            buildCacheCalled = true;
             return cache;
         }
 
@@ -59,6 +60,8 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         protected void rebuildImpl(final String rootPagePath) { }
 
     });
+
+    private boolean buildCacheCalled = false;
 
     @SuppressWarnings("unchecked")
 	@Test
@@ -92,6 +95,26 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     public void getCache_existsAlready() {
         final Resource cache = model.getCache(resourceResolver, parent);
         assertEquals(parentCache, cache);
+        assertFalse(buildCacheCalled);
+    }
+
+    @Test
+    public void getCache_doesNotExistYet() throws PersistenceException {
+        when(resourceResolver.getResource(parentCache.getPath())).thenReturn(null);
+        final Resource cache = model.getCache(resourceResolver, parent);
+        assertNotEquals(parentCache, cache);
+        verify(resourceResolver, times(1)).commit();
+        assertTrue(buildCacheCalled);
+    }
+
+    @Test
+    public void getCache_doesNotExistYet_handlePersistenceException() throws PersistenceException {
+        when(resourceResolver.getResource(parentCache.getPath())).thenReturn(null);
+        when(resourceResolver.create(any(), any(), any())).thenThrow(PersistenceException.class);
+        final Resource cache = model.getCache(resourceResolver, parent);
+        assertNull(cache);
+        verify(resourceResolver, times(1)).commit();
+        assertFalse(buildCacheCalled);
     }
 
 }
