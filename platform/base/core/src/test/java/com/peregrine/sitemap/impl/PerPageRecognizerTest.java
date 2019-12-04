@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PerPageRecognizerBaseTest extends PageRecognizerBaseTest {
+public class PerPageRecognizerTest extends PageRecognizerBaseTest {
 
-    public PerPageRecognizerBaseTest() {
+    public PerPageRecognizerTest() {
         super(new PerPageRecognizer());
     }
 

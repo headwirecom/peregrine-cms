@@ -7,7 +7,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageRecognizerBaseTest extends SlingResourcesTest {
@@ -17,7 +18,7 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
     private static final String EXCLUDE_SITE_MAP_PROPERTY = "exclude";
 
     protected final Page candidate = new Page(page);
-    private final PageRecognizerBase model;
+    protected final PageRecognizerBase model;
 
     protected PageRecognizerBaseTest(final PageRecognizerBase model) {
         this.model = model;
