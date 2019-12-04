@@ -38,7 +38,7 @@ import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,
-    service = { DefaultReplicationMapper.class, Replication.class },
+    service = { DefaultReplicationMapper.class/*, Replication.class */},
     immediate = true
 )
 @Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = true)
