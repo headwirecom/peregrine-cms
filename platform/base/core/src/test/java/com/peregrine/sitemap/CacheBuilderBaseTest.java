@@ -93,6 +93,9 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
         model.rebuildAll();
         verifyCommits(0);
+
+        model.buildCache(StringUtils.EMPTY);
+        verifyCommits(0);
     }
 
     @Test
@@ -108,6 +111,9 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         verifyCommits(invocationsCount++);
 
         model.rebuildAll();
+        verifyCommits(invocationsCount++);
+
+        model.buildCache(pageCache.getPath());
         verifyCommits(invocationsCount++);
     }
 
