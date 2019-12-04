@@ -43,6 +43,13 @@ under the License.
             <url>file:${project.basedir}/repository/</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>project.plugin.local</id>
+            <name>project.plugin</name>
+            <url>file:${project.basedir}/repository/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
         <dependency>
