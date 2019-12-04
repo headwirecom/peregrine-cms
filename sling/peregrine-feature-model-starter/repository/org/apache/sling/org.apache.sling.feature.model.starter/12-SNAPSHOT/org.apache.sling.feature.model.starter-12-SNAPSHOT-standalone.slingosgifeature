@@ -1,0 +1,19 @@
+{
+  "id":"org.apache.sling:org.apache.sling.feature.model.starter:slingfeature:standalone:12-SNAPSHOT",
+  "title":"Apache Sling Feature Module Starter Application",
+  "description":"The Sling Starter application built from Feature Models",
+  "vendor":"The Apache Software Foundation",
+  "license":"Apache License, Version 2.0",
+  "bundles":[
+    {
+      "id":"org.apache.felix:org.apache.felix.http.jetty:4.0.8",
+      "run-modes":":standalone",
+      "start-order":"5"
+    },
+    {
+      "id":"org.apache.felix:org.apache.felix.http.servlet-api:1.1.2",
+      "run-modes":":standalone",
+      "start-order":"5"
+    }
+  ]
+}

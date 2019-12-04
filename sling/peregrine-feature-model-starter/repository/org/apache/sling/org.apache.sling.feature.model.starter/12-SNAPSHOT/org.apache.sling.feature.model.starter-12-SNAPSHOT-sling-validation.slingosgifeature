@@ -1,0 +1,35 @@
+{
+  "id":"org.apache.sling:org.apache.sling.feature.model.starter:slingfeature:sling-validation:12-SNAPSHOT",
+  "title":"Apache Sling Feature Module Starter Application",
+  "description":"The Sling Starter application built from Feature Models",
+  "vendor":"The Apache Software Foundation",
+  "license":"Apache License, Version 2.0",
+  "bundles":[
+    {
+      "id":"org.apache.sling:org.apache.sling.validation.api:1.0.0",
+      "start-order":"20"
+    },
+    {
+      "id":"org.apache.sling:org.apache.sling.validation.core:1.0.4",
+      "start-order":"20"
+    }
+  ],
+  "configurations":{
+    "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~validation":{
+      "user.mapping":[
+        "org.apache.sling.validation.core=sling-validation"
+      ]
+    }
+  },
+  "repoinit:TEXT|true":[
+    "create service user sling-validation",
+    "",
+    "create path (sling:Folder) /apps",
+    "create path (sling:Folder) /libs",
+    "",
+    "set ACL for sling-validation",
+    "allow   jcr:read    on /apps",
+    "allow   jcr:read    on /libs",
+    "end"
+  ]
+}

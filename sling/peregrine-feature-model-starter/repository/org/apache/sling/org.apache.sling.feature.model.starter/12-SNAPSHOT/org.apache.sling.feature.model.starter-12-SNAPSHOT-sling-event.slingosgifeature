@@ -1,0 +1,35 @@
+{
+  "id":"org.apache.sling:org.apache.sling.feature.model.starter:slingfeature:sling-event:12-SNAPSHOT",
+  "title":"Apache Sling Feature Module Starter Application",
+  "description":"The Sling Starter application built from Feature Models",
+  "vendor":"The Apache Software Foundation",
+  "license":"Apache License, Version 2.0",
+  "bundles":[
+    {
+      "id":"org.apache.sling:org.apache.sling.event.dea:1.1.4",
+      "start-order":"20"
+    },
+    {
+      "id":"org.apache.sling:org.apache.sling.event:4.2.12",
+      "start-order":"20"
+    }
+  ],
+  "configurations":{
+    "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~sling.event":{
+      "user.mapping":[
+        "org.apache.sling.event=sling-event",
+        "org.apache.sling.event.dea=sling-event"
+      ]
+    }
+  },
+  "repoinit:TEXT|true":[
+    "create service user sling-event",
+    "",
+    "create path (sling:Folder) /var",
+    "create path (sling:Folder) /var/eventing",
+    "",
+    "set ACL for sling-event",
+    "allow   jcr:read,rep:write    on /var/eventing",
+    "end"
+  ]
+}

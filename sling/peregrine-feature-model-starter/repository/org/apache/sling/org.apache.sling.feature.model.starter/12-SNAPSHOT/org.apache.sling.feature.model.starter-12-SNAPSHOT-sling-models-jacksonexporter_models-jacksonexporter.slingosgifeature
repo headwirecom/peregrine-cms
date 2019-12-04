@@ -1,0 +1,28 @@
+{
+  "id":"org.apache.sling:org.apache.sling.feature.model.starter:slingfeature:sling-models-jacksonexporter_models-jacksonexporter:12-SNAPSHOT",
+  "title":"Apache Sling Feature Module Starter Application",
+  "description":"The Sling Starter application built from Feature Models",
+  "vendor":"The Apache Software Foundation",
+  "license":"Apache License, Version 2.0",
+  "variables":{
+    "jackson.version":"2.9.9"
+  },
+  "bundles":[
+    {
+      "id":"com.fasterxml.jackson.core:jackson-annotations:2.9.9",
+      "start-order":"20"
+    },
+    {
+      "id":"com.fasterxml.jackson.core:jackson-core:2.9.9",
+      "start-order":"20"
+    },
+    {
+      "id":"com.fasterxml.jackson.core:jackson-databind:2.9.9",
+      "start-order":"20"
+    },
+    {
+      "id":"org.apache.sling:org.apache.sling.models.jacksonexporter:1.0.8",
+      "start-order":"20"
+    }
+  ]
+}

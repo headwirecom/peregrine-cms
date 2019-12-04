@@ -1,0 +1,13 @@
+{
+  "id":"org.apache.sling:org.apache.sling.feature.model.starter:slingfeature:sling_packageinit:12-SNAPSHOT",
+  "title":"Apache Sling Feature Module Starter Application",
+  "description":"The Sling Starter application built from Feature Models",
+  "vendor":"The Apache Software Foundation",
+  "license":"Apache License, Version 2.0",
+  "bundles":[
+    {
+      "id":"org.apache.sling:org.apache.sling.jcr.packageinit:0.0.1-SNAPSHOT",
+      "start-level":"10"
+    }
+  ]
+}
