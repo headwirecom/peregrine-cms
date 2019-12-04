@@ -14,7 +14,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.junit.Assert.*;
@@ -62,13 +64,13 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
         @Override
         protected void rebuildImpl(final String rootPagePath) {
-            rebuildImplCalled = true;
+            rebuildImplCalled.add(rootPagePath);
         }
 
     });
 
     private final Map<Resource, Resource> buildCacheCalled = new HashMap<>();
-    private boolean rebuildImplCalled = false;
+    private final Set<String> rebuildImplCalled = new HashSet<>();
 
     private void verifyCommits(final int wantedNumberOfInvocations) {
         try {
@@ -141,7 +143,11 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     public void rebuild_cacheIsNull() {
         model.rebuild(resource.getPath() + SLASH + "not-cached");
         verifyCommits(1);
-        assertTrue(rebuildImplCalled);
+        assertTrue(rebuildImplCalled.contains(resource.getPath()));
+        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(page.getPath()));
+        assertTrue(rebuildImplCalled.contains(parent.getPath()));
+        assertTrue(rebuildImplCalled.contains(root.getPath()));
     }
 
     @Test
@@ -149,14 +155,21 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         disableResolution(resource);
         model.rebuild(resource.getPath());
         verifyCommits(1);
-        assertTrue(rebuildImplCalled);
+        assertTrue(rebuildImplCalled.contains(resource.getPath()));
+        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(page.getPath()));
+        assertTrue(rebuildImplCalled.contains(parent.getPath()));
+        assertTrue(rebuildImplCalled.contains(root.getPath()));
     }
 
     @Test
     public void rebuild() {
         model.rebuild(content.getPath());
         verifyCommits(1);
-        assertTrue(rebuildImplCalled);
+        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(page.getPath()));
+        assertTrue(rebuildImplCalled.contains(parent.getPath()));
+        assertTrue(rebuildImplCalled.contains(root.getPath()));
     }
 
 }
