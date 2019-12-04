@@ -178,4 +178,12 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         assertTrue(rebuildImplCalled.contains(root.getPath()));
     }
 
+    @Test
+    public void buildCache() {
+        final Resource cache = model.buildCache(content.getPath());
+        verifyCommits(1);
+        assertEquals(contentCache, cache);
+        assertEquals(contentCache, buildCacheCalled.get(content));
+    }
+
 }

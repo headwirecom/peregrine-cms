@@ -175,19 +175,22 @@ public abstract class CacheBuilderBase implements CacheBuilder {
 
     protected abstract void rebuildImpl(final String rootPagePath);
 
-    protected final void buildCache(final String rootPagePath) {
+    protected final Resource buildCache(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            buildCache(resourceResolver, rootPagePath);
+            final Resource result = buildCache(resourceResolver, rootPagePath);
             resourceResolver.commit();
+            return result;
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
+
+        return null;
     }
 
-    private void buildCache(final ResourceResolver resourceResolver, final String rootPagePath) {
-        buildCache(resourceResolver, resourceResolver.getResource(rootPagePath));
+    private Resource buildCache(final ResourceResolver resourceResolver, final String rootPagePath) {
+        return buildCache(resourceResolver, resourceResolver.getResource(rootPagePath));
     }
 
     @Override
