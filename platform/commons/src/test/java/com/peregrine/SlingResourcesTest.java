@@ -14,10 +14,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Session;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +48,7 @@ public class SlingResourcesTest {
 
     protected final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName("Resolver Factory"));
     protected final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName("Resource Resolver"));
+    protected final Map<String, String> resourceResolverMap = new HashMap<>();
     protected final Session session = mock(Session.class, fullName("Session"));
 
     protected final PageMock component = new PageMock("Per Component");
@@ -59,6 +63,7 @@ public class SlingResourcesTest {
         init(component);
         bindResolverFactory();
         bindRequest();
+        when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
     }
 
     private void setPaths() {
@@ -98,8 +103,8 @@ public class SlingResourcesTest {
 
     private void bindResolverFactory() {
         try {
-            when(resolverFactory.getServiceResourceResolver(Mockito.any())).thenReturn(resourceResolver);
-            when(resolverFactory.getResourceResolver(Mockito.any())).thenReturn(resourceResolver);
+            when(resolverFactory.getServiceResourceResolver(any())).thenReturn(resourceResolver);
+            when(resolverFactory.getResourceResolver(any())).thenReturn(resourceResolver);
             when(resolverFactory.getThreadResourceResolver()).thenReturn(resourceResolver);
         } catch (final LoginException e) {
         }
