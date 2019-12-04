@@ -13,6 +13,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -53,7 +56,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
         @Override
         protected Resource buildCache(final Resource rootPage, final Resource cache) {
-            buildCacheCalled = true;
+            buildCacheCalled.put(rootPage, cache);
             return cache;
         }
 
@@ -64,7 +67,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
     });
 
-    private boolean buildCacheCalled = false;
+    private final Map<Resource, Resource> buildCacheCalled = new HashMap<>();
     private boolean rebuildImplCalled = false;
 
     private void verifyCommits(final int wantedNumberOfInvocations) {
@@ -110,7 +113,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     public void getCache_existsAlready() {
         final Resource cache = model.getCache(resourceResolver, parent);
         assertEquals(parentCache, cache);
-        assertFalse(buildCacheCalled);
+        assertTrue(buildCacheCalled.isEmpty());
     }
 
     @Test
@@ -119,7 +122,8 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         final Resource cache = model.getCache(resourceResolver, parent);
         assertNotEquals(parentCache, cache);
         verifyCommits(1);
-        assertTrue(buildCacheCalled);
+        assertTrue(buildCacheCalled.containsKey(parent));
+        assertEquals(cache, buildCacheCalled.get(parent));
     }
 
     @SuppressWarnings("unchecked")
@@ -130,7 +134,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         final Resource cache = model.getCache(resourceResolver, parent);
         assertNull(cache);
         verifyCommits(1);
-        assertFalse(buildCacheCalled);
+        assertTrue(buildCacheCalled.isEmpty());
     }
 
     @Test
