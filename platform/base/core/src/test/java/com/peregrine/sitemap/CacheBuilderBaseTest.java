@@ -28,6 +28,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     private final PageMock pageCache = new PageMock("Cache Page");
     private final ResourceMock contentCache = pageCache.getContent();
     private final ResourceMock resourceCache = new ResourceMock("Cache Resource");
+
     {
         setPaths(CACHE_LOCATION + PAGE_PATH, rootCache, parentCache, pageCache);
         resourceCache.setPath(contentCache.getPath() + SLASH + NN_RESOURCE);
@@ -57,38 +58,52 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         }
 
         @Override
-        protected void rebuildImpl(final String rootPagePath) { }
+        protected void rebuildImpl(final String rootPagePath) {
+            rebuildImplCalled = true;
+        }
 
     });
 
     private boolean buildCacheCalled = false;
+    private boolean rebuildImplCalled = false;
+
+    private void verifyCommits(final int wantedNumberOfInvocations) {
+        try {
+            verify(resourceResolver, times(wantedNumberOfInvocations)).commit();
+        } catch (final PersistenceException e) {
+        }
+    }
+
+    private void disableResolution(final Resource resource) {
+        when(resourceResolver.getResource(resource.getPath())).thenReturn(null);
+    }
 
     @SuppressWarnings("unchecked")
 	@Test
-    public void rebuilds_throwLoginException() throws LoginException, PersistenceException {
+    public void rebuilds_throwLoginException() throws LoginException {
         when(model.getServiceResourceResolver()).thenThrow(LoginException.class);
 
         model.rebuild(StringUtils.EMPTY);
-        verify(resourceResolver, times(0)).commit();
+        verifyCommits(0);
 
         model.rebuildAll();
-        verify(resourceResolver, times(0)).commit();
+        verifyCommits(0);
     }
 
     @Test
-    public void throwPersistenceException() throws PersistenceException {
+    public void throwPersistenceExceptionQuickly() throws PersistenceException {
         doThrow(PersistenceException.class).when(resourceResolver).commit();
         int invocationsCount = 1;
 
-        when(resourceResolver.getResource(parentCache.getPath())).thenReturn(null);
+        disableResolution(parentCache);
         model.getCache(resourceResolver, parent);
-        verify(resourceResolver, times(invocationsCount++)).commit();
+        verifyCommits(invocationsCount++);
 
         model.rebuild(StringUtils.EMPTY);
-        verify(resourceResolver, times(invocationsCount++)).commit();
+        verifyCommits(invocationsCount++);
 
         model.rebuildAll();
-        verify(resourceResolver, times(invocationsCount++)).commit();
+        verifyCommits(invocationsCount++);
     }
 
     @Test
@@ -99,22 +114,45 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     }
 
     @Test
-    public void getCache_doesNotExistYet() throws PersistenceException {
-        when(resourceResolver.getResource(parentCache.getPath())).thenReturn(null);
+    public void getCache_doesNotExistYet() {
+        disableResolution(parentCache);
         final Resource cache = model.getCache(resourceResolver, parent);
         assertNotEquals(parentCache, cache);
-        verify(resourceResolver, times(1)).commit();
+        verifyCommits(1);
         assertTrue(buildCacheCalled);
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void getCache_doesNotExistYet_handlePersistenceException() throws PersistenceException {
-        when(resourceResolver.getResource(parentCache.getPath())).thenReturn(null);
+        disableResolution(parentCache);
         when(resourceResolver.create(any(), any(), any())).thenThrow(PersistenceException.class);
         final Resource cache = model.getCache(resourceResolver, parent);
         assertNull(cache);
-        verify(resourceResolver, times(1)).commit();
+        verifyCommits(1);
         assertFalse(buildCacheCalled);
+    }
+
+    @Test
+    public void rebuild_cacheIsNull() {
+        model.rebuild(resource.getPath() + SLASH + "not-cached");
+        verifyCommits(1);
+        assertTrue(rebuildImplCalled);
+    }
+
+    @Test
+    public void rebuild_rootPageIsNull() {
+        disableResolution(resource);
+        model.rebuild(resource.getPath());
+        verifyCommits(1);
+        assertTrue(rebuildImplCalled);
+    }
+
+    @Test
+    public void rebuild() {
+        model.rebuild(content.getPath());
+        verifyCommits(1);
+        assertTrue(rebuildImplCalled);
     }
 
 }
