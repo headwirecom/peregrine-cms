@@ -218,12 +218,14 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     private void rebuildCacheInTree(final Resource cache) {
-        final Iterator<Resource> iterator = cache.listChildren();
         if (containsCacheAlready(cache)) {
             final String rootPagePath = getOriginalPath(cache);
-            rebuildImpl(rootPagePath);
+            if (isNotBlank(rootPagePath)) {
+                rebuildImpl(rootPagePath);
+            }
         }
 
+        final Iterator<Resource> iterator = cache.listChildren();
         while (iterator.hasNext()) {
             rebuildCacheInTree(iterator.next());
         }

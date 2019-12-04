@@ -28,6 +28,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
     private static final String CACHE_LOCATION = "/var";
 
+    private final ResourceMock var = new ResourceMock("Var Root");
     private final ResourceMock rootCache = new ResourceMock("Cache Root");
     private final ResourceMock parentCache = new ResourceMock("Cache Parent");
     private final PageMock pageCache = new PageMock("Cache Page");
@@ -35,10 +36,11 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     private final ResourceMock resourceCache = new ResourceMock("Cache Resource");
 
     {
-        setPaths(CACHE_LOCATION + PAGE_PATH, rootCache, parentCache, pageCache);
+        setPaths(CACHE_LOCATION + PAGE_PATH, var, rootCache, parentCache, pageCache);
         resourceCache.setPath(contentCache.getPath() + SLASH + NN_RESOURCE);
-        setParentChildRelationships(repoRoot, rootCache, parentCache, pageCache);
+        setParentChildRelationships(var, repoRoot, rootCache, parentCache, pageCache);
         setParentChildRelationships(contentCache, resourceCache);
+        init(var);
         init(rootCache);
         init(parentCache);
         init(pageCache);
@@ -184,6 +186,25 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         verifyCommits(1);
         assertEquals(contentCache, cache);
         assertEquals(contentCache, buildCacheCalled.get(content));
+    }
+
+    @Test
+    public void rebuildAll_nothingCachedYet() {
+        disableResolution(var);
+        model.rebuildAll();
+        verifyCommits(1);
+        assertTrue(rebuildImplCalled.isEmpty());
+    }
+
+    @Test
+    public void rebuildAll() {
+        model.rebuildAll();
+        verifyCommits(1);
+        assertTrue(rebuildImplCalled.contains(resource.getPath()));
+        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(page.getPath()));
+        assertTrue(rebuildImplCalled.contains(parent.getPath()));
+        assertTrue(rebuildImplCalled.contains(root.getPath()));
     }
 
 }
