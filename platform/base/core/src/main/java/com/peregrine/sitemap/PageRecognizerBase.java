@@ -69,4 +69,17 @@ public abstract class PageRecognizerBase implements PageRecognizer {
     }
 
     protected abstract boolean isPageImpl(final Page candidate);
+
+    public String getPagePrimaryType() {
+        return pagePrimaryType;
+    }
+
+    public String getPageContentPrimaryType() {
+        return pageContentPrimaryType;
+    }
+
+    public String getExcludeFromSiteMapPropertyName() {
+        return excludeFromSiteMapPropertyName;
+    }
+
 }
