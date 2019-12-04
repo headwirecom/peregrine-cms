@@ -318,13 +318,13 @@ under the License.
                         <dependencies>
                             <dependency>
                                 <groupId>org.apache.sling</groupId>
-                                <artifactId>org.apache.sling.feature.launcher</artifactId>
-                                <version>${org.apache.sling.feature.launcher.version}</version>
+                                <artifactId>org.apache.sling.feature.extension.content</artifactId>
+                                <version>${org.apache.sling.feature.extension.content.version}</version>
                             </dependency>
                             <dependency>
                                 <groupId>org.apache.sling</groupId>
-                                <artifactId>org.apache.sling.feature.extension.content</artifactId>
-                                <version>${org.apache.sling.feature.extension.content.version}</version>
+                                <artifactId>org.apache.sling.feature.launcher</artifactId>
+                                <version>${org.apache.sling.feature.launcher.version}</version>
                             </dependency>
                         </dependencies>
                         <executions>
