@@ -1,0 +1,64 @@
+#
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
+#
+# The :launchpad feature defines Sling's launchpad version
+# Only a single artifact is allowed within this feature.
+#
+[feature name=peregrine]
+
+[artifacts startLevel=30]
+    com.peregrine-cms/login/1.0.0-SNAPSHOT
+# All 3 artifacts bundle together into one Sling instance does not work
+#    com.eclipsesource.j2v8/j2v8_linux_x86_64/4.6.0
+#    com.eclipsesource.j2v8/j2v8_macosx_x86_64/4.6.0
+#    com.eclipsesource.j2v8/j2v8_win32_x86/4.6.0
+
+[:repoinit]
+
+# Create the two System User Peregrine uses for Service Resource Resolvers
+
+    create service user distribution-agent-user
+    create service user nodejs-service-user
+
+# Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
+
+    create path (sling:OrderedFolder) /content
+    create path (sling:Folder) /etc
+    create path (sling:Folder) /etc/distribution
+    create path (sling:Folder) /libs
+    create path (sling:Folder) /libs/sling
+    create path (sling:Folder) /libs/sling/distribution
+    create path (sling:Folder) /var
+    create path (sling:Folder) /var/sling
+    create path (sling:Folder) /var/sling/distribution
+    create path (sling:Folder) /var/sling/distribution/packages
+
+# Set Permissions for Sling Distribution
+
+    set ACL for distribution-agent-user
+        allow jcr:all on /content
+        allow jcr:all on /etc/distribution
+        allow jcr:all on /libs/sling/distribution
+        allow jcr:all on /var/sling/distribution/packages
+    end
+
+# Set Repository ACL for Sling Distribution
+
+    set repository ACL for distribution-agent-user
+        allow jcr:all
+    end
