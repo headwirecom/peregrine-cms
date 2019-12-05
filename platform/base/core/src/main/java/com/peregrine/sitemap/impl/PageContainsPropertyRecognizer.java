@@ -43,7 +43,7 @@ public final class PageContainsPropertyRecognizer implements PageRecognizer {
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return config.name();
     }
 
