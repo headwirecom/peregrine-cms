@@ -25,7 +25,6 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.JobManager;
@@ -41,9 +40,6 @@ public final class SiteMapResourceChangeListener implements ResourceChangeListen
 
     @Reference
     private JobManager jobManager;
-
-    @Reference
-    private ResourceResolverFactory resourceResolverFactory;
 
     @Override
     public void onChange(final List<ResourceChange> changes) {
