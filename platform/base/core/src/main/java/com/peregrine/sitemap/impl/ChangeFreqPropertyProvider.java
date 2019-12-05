@@ -41,7 +41,7 @@ public final class ChangeFreqPropertyProvider extends PropertyProviderBase {
 
     @Override
     public String extractValue(final Page page) {
-        return page.getProperty(PerConstants.CHANGE_FREQUENCY, "weekly");
+        return page.getProperty(PerConstants.CHANGE_FREQUENCY, SiteMapConstants.WEEKLY);
     }
 
 }

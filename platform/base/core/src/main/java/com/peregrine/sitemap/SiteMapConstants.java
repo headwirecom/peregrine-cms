@@ -20,6 +20,8 @@ public final class SiteMapConstants {
     public static final String CHANGE_FREQ = "changefreq";
     public static final String PRIORITY = "priority";
 
+    public static final String WEEKLY = "weekly";
+
     private SiteMapConstants() {
         throw new UnsupportedOperationException();
     }
