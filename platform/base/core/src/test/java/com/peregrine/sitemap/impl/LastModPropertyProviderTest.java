@@ -15,8 +15,6 @@ import static org.junit.Assert.assertNull;
 @RunWith(MockitoJUnitRunner.class)
 public final class LastModPropertyProviderTest extends SlingResourcesTest {
 
-    private static final String VALUE = "0.2";
-
     private final LastModPropertyProvider model = new LastModPropertyProvider();
     private final Page candidate = new Page(page);
 
