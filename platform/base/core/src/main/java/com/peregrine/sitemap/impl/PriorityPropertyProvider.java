@@ -41,7 +41,7 @@ public final class PriorityPropertyProvider extends PropertyProviderBase {
 
     @Override
     public String extractValue(final Page page) {
-        return page.getProperty(PerConstants.PRIORITY, "0.5");
+        return page.getProperty(PerConstants.PRIORITY, SiteMapConstants.DEFAULT_PRIORITY);
     }
 
 }

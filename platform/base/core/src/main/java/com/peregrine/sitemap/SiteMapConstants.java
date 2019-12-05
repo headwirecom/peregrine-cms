@@ -21,6 +21,7 @@ public final class SiteMapConstants {
     public static final String PRIORITY = "priority";
 
     public static final String WEEKLY = "weekly";
+    public static final String DEFAULT_PRIORITY = "0.5";
 
     private SiteMapConstants() {
         throw new UnsupportedOperationException();
