@@ -1,17 +1,13 @@
 package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.Page;
-import junitx.util.PrivateAccessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Calendar;
 
 import static org.junit.Assert.*;
 
