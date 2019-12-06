@@ -53,8 +53,8 @@ public final class ApacheRewriteMapServletTest extends SlingServletTest {
         model.doGet(request, response);
         assertNotEquals(HttpServletResponse.SC_NOT_FOUND, status);
         assertEquals(
-                "/page-1.html /content/page-1.html\n" + "/page-2.html /content/page-2.html",
-                writer.toString()
+                StringUtils.strip("/page-1.html /content/page-1.html\n" + "/page-2.html /content/page-2.html"),
+                StringUtils.strip(writer.toString())
         );
     }
 
