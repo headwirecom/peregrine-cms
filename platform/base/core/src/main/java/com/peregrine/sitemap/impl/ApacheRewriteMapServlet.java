@@ -49,6 +49,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.*;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+@SuppressWarnings("serial")
 @Component(
     service = Servlet.class,
     property = {

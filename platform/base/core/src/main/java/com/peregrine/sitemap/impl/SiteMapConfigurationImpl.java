@@ -113,7 +113,7 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
     public Collection<PropertyProvider> getPropertyProviders() {
         final String[] propertyProviders = config.propertyProviders();
         if (isNull(propertyProviders)) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         final List<PropertyProvider> result = new LinkedList<>();
@@ -132,7 +132,7 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
             return result;
         }
 
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
 }

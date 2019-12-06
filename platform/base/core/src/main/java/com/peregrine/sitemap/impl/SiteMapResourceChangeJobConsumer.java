@@ -71,7 +71,8 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
 
     @Override
     public JobResult process(final Job job) {
-        final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
+        @SuppressWarnings("unchecked")
+		final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             for (final String path : initialPaths) {
                 final Resource resource = ResourceUtils.getFirstExistingAncestorOnPath(resourceResolver, path);

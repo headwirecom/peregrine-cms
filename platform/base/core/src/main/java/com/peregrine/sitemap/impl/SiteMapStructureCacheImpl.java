@@ -62,13 +62,10 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     @Reference
     private SiteMapConfigurationsContainer siteMapConfigurationsContainer;
 
-    private SiteMapStructureCacheImplConfig config;
-
     private DeBouncer<String> deBouncer;
 
     @Activate
     public void activate(final SiteMapStructureCacheImplConfig config) {
-        this.config = config;
         setLocation(config.location());
         deBouncer = new DeBouncer<>(this, config.debounceInterval());
         rebuildAll();
