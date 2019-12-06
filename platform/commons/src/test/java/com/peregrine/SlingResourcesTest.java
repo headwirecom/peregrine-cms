@@ -131,7 +131,7 @@ public class SlingResourcesTest {
         return mock;
     }
 
-    private String fullName(final String name) {
+    protected String fullName(final String name) {
         return SlingResourcesTest.class.getSimpleName() + " " + name;
     }
 }
