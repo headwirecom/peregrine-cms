@@ -26,10 +26,7 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.commons.util.PerConstants;
-import com.peregrine.sitemap.SiteMapEntry;
-import com.peregrine.sitemap.SiteMapFileContentBuilder;
-import com.peregrine.sitemap.SiteMapUrlBuilder;
-import com.peregrine.sitemap.XMLBuilder;
+import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

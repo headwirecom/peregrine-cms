@@ -48,7 +48,7 @@ public final class XmlNamespaceUtils {
         return false;
     }
 
-    public static Map<String, String> parseMappingsAddPrefix(final String[] mappings) {
+    public static Map<String, String> parseMappingsAddPrefix(final String... mappings) {
         final HashMap<String, String> result = new HashMap<>();
         if (nonNull(mappings)) {
             for (final String mapping : mappings) {
