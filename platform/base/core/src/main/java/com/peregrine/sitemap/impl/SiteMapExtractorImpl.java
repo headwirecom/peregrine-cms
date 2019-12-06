@@ -71,7 +71,6 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
         result.add(siteMapExtractorDefaults.getLastModPropertyProvider());
         result.add(siteMapExtractorDefaults.getChangeFreqPropertyProvider());
         result.add(siteMapExtractorDefaults.getPriorityPropertyProvider());
-
         return result;
     }
 
