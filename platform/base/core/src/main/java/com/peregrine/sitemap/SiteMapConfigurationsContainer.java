@@ -27,7 +27,7 @@ package com.peregrine.sitemap;
 
 import java.util.Collection;
 
-public interface SiteMapConfigurationsContainer {
+public interface SiteMapConfigurationsContainer extends ConfigurationFactoryContainer<SiteMapConfiguration> {
 
     Collection<SiteMapConfiguration> getAll();
 

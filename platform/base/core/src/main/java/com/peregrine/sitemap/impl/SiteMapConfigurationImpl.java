@@ -47,7 +47,7 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
-    private SiteMapConfigurationsContainerImpl container;
+    private SiteMapConfigurationsContainer container;
 
     @Reference
     private NamedServiceRetriever serviceRetriever;

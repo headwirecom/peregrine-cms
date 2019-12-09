@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 import java.util.Collection;
 import java.util.HashSet;
 
-@Component(service = { SiteMapConfigurationsContainer.class, SiteMapConfigurationsContainerImpl.class })
+@Component(service = { SiteMapConfigurationsContainer.class })
 public final class SiteMapConfigurationsContainerImpl extends ConfigurationFactoryContainerBase<SiteMapConfiguration>
         implements SiteMapConfigurationsContainer {
 
