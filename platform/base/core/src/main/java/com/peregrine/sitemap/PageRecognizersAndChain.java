@@ -27,6 +27,8 @@ package com.peregrine.sitemap;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class PageRecognizersAndChain implements PageRecognizer {
 
@@ -37,7 +39,7 @@ public final class PageRecognizersAndChain implements PageRecognizer {
     }
 
     public PageRecognizersAndChain(final PageRecognizer... items) {
-        this(Arrays.asList(items));
+        this(Arrays.asList(items).stream().filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     public final boolean isPage(final Page candidate) {
