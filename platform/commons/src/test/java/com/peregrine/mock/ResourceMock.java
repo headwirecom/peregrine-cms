@@ -1,6 +1,7 @@
 package com.peregrine.mock;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
@@ -125,6 +126,11 @@ public class ResourceMock extends ResourceWrapper {
         when(mock.getResourceResolver()).thenReturn(resourceResolver);
         updateResourceResolverGetResource();
         updateChildren();
+        return this;
+    }
+
+    public final ResourceMock setPrimaryType(final String primaryType) {
+        putProperty(JcrConstants.JCR_PRIMARYTYPE, primaryType);
         return this;
     }
 
