@@ -1,6 +1,5 @@
 package com.peregrine.sitemap.impl;
 
-import com.peregrine.SlingResourcesTest;
 import com.peregrine.commons.util.PerConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +11,7 @@ import static junitx.framework.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PrefixAndCutUrlExternalizerTest extends SlingResourcesTest {
+public final class PrefixAndCutUrlExternalizerTest {
 
     private final PrefixAndCutUrlExternalizer model = new PrefixAndCutUrlExternalizer();
 
@@ -32,16 +31,20 @@ public final class PrefixAndCutUrlExternalizerTest extends SlingResourcesTest {
         assertEquals(PerConstants.NAME, model.getName());
     }
 
+    private void mapAndCompare(final String expected, final String input) {
+        assertEquals(expected, model.map(null, input));
+    }
+
     @Test
     public void map() {
-        assertEquals("http://www.example.com", model.map(resourceResolver, ""));
-        assertEquals("http://www.example.com", model.map(resourceResolver, "/content/sites.html"));
-        assertEquals("http://www.example.com/page.html", model.map(resourceResolver, "/content/sites/page.html"));
-        assertEquals("http://www.example.com/page/sub.html", model.map(resourceResolver, "/content/sites/page/sub.html"));
-        assertEquals("http://www.example.com", model.map(resourceResolver, "/content/sites.x.html"));
-        assertEquals("http://www.example.com", model.map(resourceResolver, "/content/sites.sitemap.html"));
-        assertEquals("http://www.example.com/sites.sitemap.xml", model.map(resourceResolver, "/content/sites.sitemap.xml"));
-        assertEquals("http://www.example.com/sites.sitemap.1.xml", model.map(resourceResolver, "/content/sites.sitemap.1.xml"));
+        mapAndCompare("http://www.example.com", "");
+        mapAndCompare("http://www.example.com", "/content/sites.html");
+        mapAndCompare("http://www.example.com/page.html", "/content/sites/page.html");
+        mapAndCompare("http://www.example.com/page/sub.html", "/content/sites/page/sub.html");
+        mapAndCompare("http://www.example.com", "/content/sites.x.html");
+        mapAndCompare("http://www.example.com", "/content/sites.sitemap.html");
+        mapAndCompare("http://www.example.com/sites.sitemap.xml", "/content/sites.sitemap.xml");
+        mapAndCompare("http://www.example.com/sites.sitemap.1.xml", "/content/sites.sitemap.1.xml");
     }
 
 }
