@@ -61,6 +61,7 @@ public class SlingResourcesTest {
         setParentChildRelationships();
         initResources();
         component.setPath(SLASH_APPS_SLASH + RESOURCE_TYPE);
+        resource.setResourceType(RESOURCE_TYPE);
         init(component);
         bindResolverFactory();
         bindRequest();
