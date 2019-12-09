@@ -37,6 +37,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -52,6 +54,8 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
 
     public static final String TOPIC = "com/peregrine/sitemap/REFRESH_CACHE";
     public static final String PN_PATHS = "paths";
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Set<String> primaryTypes = new HashSet<>();
 
@@ -81,6 +85,7 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
                 }
             }
         } catch (final LoginException e) {
+            logger.error("Unable to process job.", e);
             return JobResult.CANCEL;
         }
 
