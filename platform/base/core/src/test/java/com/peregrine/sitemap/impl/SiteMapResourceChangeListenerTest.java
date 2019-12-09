@@ -1,9 +1,7 @@
 package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
-import com.peregrine.sitemap.SiteMapConfiguration;
 import junitx.util.PrivateAccessor;
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.event.jobs.JobManager;
 import org.junit.Before;
@@ -13,8 +11,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.*;
-import java.util.regex.Pattern;
-
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -44,7 +40,8 @@ public final class SiteMapResourceChangeListenerTest extends SlingResourcesTest 
         changes.add(change);
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void onChange() {
         when(jobManager.addJob(any(), any())).thenAnswer(invocation -> {
             props.putAll((Map<String, Object>) invocation.getArguments()[1]);

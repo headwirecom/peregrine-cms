@@ -2,7 +2,6 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
 import com.peregrine.sitemap.SiteMapConfiguration;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -11,7 +10,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
