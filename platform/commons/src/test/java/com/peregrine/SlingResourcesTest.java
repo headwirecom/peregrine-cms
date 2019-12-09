@@ -5,6 +5,7 @@ import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -18,8 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,6 +54,7 @@ public class SlingResourcesTest {
     protected final PageMock component = new PageMock("Per Component");
 
     protected final SlingHttpServletRequest request = mock(SlingHttpServletRequest.class, fullName("Request"));
+    protected final RequestPathInfo requestPathInfo = Mockito.mock(RequestPathInfo.class);
 
     public SlingResourcesTest() {
         setPaths();
@@ -113,6 +114,10 @@ public class SlingResourcesTest {
     private void bindRequest() {
         when(request.getResource()).thenReturn(resource);
         when(request.getResourceResolver()).thenReturn(resourceResolver);
+        when(request.getRequestPathInfo()).thenReturn(requestPathInfo);
+        final String path = resource.getPath();
+        when(requestPathInfo.getResourcePath()).thenReturn(path);
+        when(requestPathInfo.getExtension()).thenReturn(HTML);
     }
 
     public Logger getLogger() {
@@ -133,5 +138,15 @@ public class SlingResourcesTest {
 
     protected String fullName(final String name) {
         return SlingResourcesTest.class.getSimpleName() + " " + name;
+    }
+
+    protected void setSelectors(final String... selectors) {
+        when(requestPathInfo.getSelectors()).thenReturn(selectors);
+        when(requestPathInfo.getSelectorString()).thenReturn(StringUtils.join(selectors, DOT));
+    }
+
+    protected void setSelectorsString(final String selectorsString) {
+        when(requestPathInfo.getSelectors()).thenReturn(selectorsString.split("\\."));
+        when(requestPathInfo.getSelectorString()).thenReturn(selectorsString);
     }
 }
