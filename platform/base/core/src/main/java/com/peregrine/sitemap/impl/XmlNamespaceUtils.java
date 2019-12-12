@@ -30,12 +30,14 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.peregrine.commons.util.Strings.COLON;
+import static com.peregrine.commons.util.Strings.EQ;
 import static java.util.Objects.nonNull;
 
 public final class XmlNamespaceUtils {
 
-    private static final String EQ = "=";
-    private static final String XMLNS_PREFIX = "xmlns:";
+    public static final String XMLNS = "xmlns";
+    private static final String XMLNS_PREFIX = XMLNS + COLON;
 
     public static boolean parseMappingAddPrefix(final String mapping, final Map<String, String> target) {
         if (StringUtils.contains(mapping, EQ)) {
