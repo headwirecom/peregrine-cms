@@ -39,6 +39,10 @@ public final class XmlNamespaceUtils {
     public static final String XMLNS = "xmlns";
     private static final String XMLNS_PREFIX = XMLNS + COLON;
 
+    private XmlNamespaceUtils() {
+        throw new UnsupportedOperationException();
+    }
+
     public static boolean parseMappingAddPrefix(final String mapping, final Map<String, String> target) {
         if (StringUtils.contains(mapping, EQ)) {
             final String key = XMLNS_PREFIX + StringUtils.substringBefore(mapping, EQ);

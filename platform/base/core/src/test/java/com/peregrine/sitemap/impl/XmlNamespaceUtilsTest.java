@@ -1,5 +1,6 @@
 package com.peregrine.sitemap.impl;
 
+import com.peregrine.TestingTools;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -11,6 +12,11 @@ import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class XmlNamespaceUtilsTest {
+
+    @Test
+    public void utilClass() {
+        TestingTools.testUtilClass(XmlNamespaceUtils.class);
+    }
 
     @Test
     public void parseMappingAddPrefix() {
