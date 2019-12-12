@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.peregrine.sitemap.SiteMapConstants.*;
+import static com.peregrine.sitemap.impl.XmlNamespaceUtils.XMLNS;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -52,7 +53,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     private static final Map<String, String> URL_SET_ATTRIBUTES = new HashMap<>();
 
     static {
-        SITE_MAP_INDEX_ATTRIBUTES.put("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9");
+        SITE_MAP_INDEX_ATTRIBUTES.put(XMLNS, "http://www.sitemaps.org/schemas/sitemap/0.9");
         URL_SET_ATTRIBUTES.putAll(SITE_MAP_INDEX_ATTRIBUTES);
         URL_SET_ATTRIBUTES.put("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
         URL_SET_ATTRIBUTES.put("xsi:schemaLocation",
@@ -62,7 +63,7 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     private final DateFormat dateFormat = new SimpleDateFormat(PerConstants.ECMA_DATE_FORMAT);
     private final SiteMapEntrySizeVisitor siteMapEntrySizeVisitor = new SiteMapEntrySizeVisitor();
     private final UrlSetMapPropertiesVisitor urlSetMapPropertiesVisitor = new UrlSetMapPropertiesVisitor();
-    private final Map<String, String> urlSetAttributes = new HashMap<>();
+    private final Map<String, String> urlSetAttributes = new HashMap<>(URL_SET_ATTRIBUTES);
     private int baseSiteMapLength;
 
     @Activate
