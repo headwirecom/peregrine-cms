@@ -1,5 +1,6 @@
 package com.peregrine.commons.util;
 
+import com.peregrine.TestingTools;
 import org.junit.Test;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -10,6 +11,11 @@ public class StringsTest {
 
     private static final String X = "x";
     private static final String Y = "y";
+
+    @Test
+    public void utilClass() {
+        TestingTools.testUtilClass(Strings.class);
+    }
 
     @Test
     public void firstNotBlank() {
