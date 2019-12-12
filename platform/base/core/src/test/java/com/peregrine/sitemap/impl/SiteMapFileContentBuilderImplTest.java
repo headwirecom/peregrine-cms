@@ -63,4 +63,12 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
         assertTrue(length + diff == baseSiteMapLength || length == baseSiteMapLength);
     }
 
+    @Test
+    public void getSize() {
+        final SiteMapEntry entry = new SiteMapEntry(page.getPath());
+        assertEquals(0, model.getSize(entry));
+        entry.setUrl("URL");
+        assertEquals(36, model.getSize(entry));
+    }
+
 }
