@@ -27,11 +27,11 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.sitemap.Page;
 import com.peregrine.sitemap.PropertyProvider;
-import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
+import static com.peregrine.commons.util.Strings.firstNotBlank;
 import static java.util.Objects.nonNull;
 
 @Component(service = { PropertyProvider.class }, immediate = true)
@@ -47,16 +47,6 @@ public final class DirectPropertyProvider implements PropertyProvider {
         name = firstNotBlank(config.name(), config.elementName(), config.propertyName());
         elementName = firstNotBlank(config.elementName(), config.propertyName(), config.name());
         propertyName = firstNotBlank(config.propertyName(), config.name(), config.elementName());
-    }
-
-    private static String firstNotBlank(final String... strings) {
-        for (final String s : strings) {
-            if (StringUtils.isNotBlank(s)) {
-                return s;
-            }
-        }
-
-        return null;
     }
 
     @Override
