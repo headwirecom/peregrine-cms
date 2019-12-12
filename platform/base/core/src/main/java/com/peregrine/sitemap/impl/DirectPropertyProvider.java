@@ -46,7 +46,7 @@ public final class DirectPropertyProvider implements PropertyProvider {
     public void activate(final DirectPropertyProviderConfig config) {
         name = firstNotBlank(config.name(), config.elementName(), config.propertyName());
         elementName = firstNotBlank(config.elementName(), config.propertyName(), config.name());
-        propertyName = firstNotBlank(config.propertyName(), config.name(), config.elementName());
+        propertyName = firstNotBlank(config.propertyName(), config.elementName(), config.name());
     }
 
     @Override
