@@ -1,9 +1,6 @@
 package com.peregrine.sitemap;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -61,6 +58,10 @@ public final class SiteMapEntry {
         }
 
         return null;
+    }
+
+    public String getLastModified() {
+        return getProperty(SiteMapConstants.LAST_MOD, String.class);
     }
 
     public <Parameter> Parameter walk(final Visitor<Parameter> visitor, final Parameter parameter) {

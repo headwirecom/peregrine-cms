@@ -127,10 +127,9 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
 
         final ArrayList<String> siteMaps = new ArrayList<>();
         final LinkedList<List<SiteMapEntry>> splitEntries = splitEntries(entries);
-        final int numberOfParts = splitEntries.size();
 
-        if (numberOfParts > 1) {
-            siteMaps.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, numberOfParts));
+        if (splitEntries.size() > 1) {
+            siteMaps.add(siteMapBuilder.buildSiteMapIndex(rootPage, extractor, splitEntries));
         }
 
         for (final List<SiteMapEntry> list : splitEntries) {
@@ -154,8 +153,8 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
         removeCachedItemsAboveIndex(modifiableValueMap, siteMapsSize);
     }
 
-    private void removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int startItemIndex) {
-        int i = startItemIndex;
+    private void removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int indexOfStartItem) {
+        int i = indexOfStartItem;
         String key = Integer.toString(i);
         while (modifiableValueMap.containsKey(key)) {
             modifiableValueMap.remove(key);

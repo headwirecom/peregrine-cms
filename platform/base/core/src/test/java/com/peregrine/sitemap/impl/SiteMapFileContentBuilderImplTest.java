@@ -49,7 +49,10 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
 
     @Test
     public void buildSiteMapIndex() {
-        final String result = model.buildSiteMapIndex(page, urlBuilder, 2);
+        final List<List<SiteMapEntry>> splitEntries = new LinkedList<>();
+        splitEntries.add(entries);
+        splitEntries.add(entries);
+        final String result = model.buildSiteMapIndex(page, urlBuilder, splitEntries);
         assertNotNull(result);
         assertTrue(result.contains(page.getPath() + 1));
         assertTrue(result.contains(page.getPath() + 2));

@@ -25,24 +25,23 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.commons.util.PerConstants;
-import com.peregrine.sitemap.*;
+import com.peregrine.sitemap.SiteMapEntry;
+import com.peregrine.sitemap.SiteMapFileContentBuilder;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
+import com.peregrine.sitemap.XMLBuilder;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.sitemap.SiteMapConstants.*;
 import static com.peregrine.sitemap.impl.XmlNamespaceUtils.XMLNS;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.*;
 
 @Component(service = SiteMapFileContentBuilder.class)
 @Designate(ocd = SiteMapFileContentBuilderImplConfig.class)
@@ -60,7 +59,6 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
                 "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd");
     }
 
-    private final DateFormat dateFormat = new SimpleDateFormat(PerConstants.ECMA_DATE_FORMAT);
     private final SiteMapEntrySizeVisitor siteMapEntrySizeVisitor = new SiteMapEntrySizeVisitor();
     private final UrlSetMapPropertiesVisitor urlSetMapPropertiesVisitor = new UrlSetMapPropertiesVisitor();
     private final Map<String, String> urlSetAttributes = new HashMap<>(URL_SET_ATTRIBUTES);
@@ -78,16 +76,17 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
     }
 
     @Override
-    public String buildSiteMapIndex(final Resource root, final SiteMapUrlBuilder urlBuilder, final int numberOfParts) {
+    public String buildSiteMapIndex(final Resource root, final SiteMapUrlBuilder urlBuilder, final List<? extends List<SiteMapEntry>> splitEntries) {
         final XMLBuilder result = new XMLBuilder();
         result.startElement(SITE_MAP_INDEX, SITE_MAP_INDEX_ATTRIBUTES);
-        for (int part = 1; part <= numberOfParts; part++) {
-            final String url = urlBuilder.buildSiteMapUrl(root, part);
+        int part = 1;
+        for (final List<SiteMapEntry> entries : splitEntries) {
+            final String url = urlBuilder.buildSiteMapUrl(root, part++);
             result.startElement(SITE_MAP);
             result.addElement(LOC, url);
-            final Date lastModified = new Date(System.currentTimeMillis());
-            if (nonNull(lastModified)) {
-                result.addElement(LAST_MOD, dateFormat.format(lastModified));
+            final String lastModified = getLastModified(entries);
+            if (isNotBlank(lastModified)) {
+                result.addElement(LAST_MOD, lastModified);
             }
 
             result.endElement();
@@ -95,6 +94,18 @@ public final class SiteMapFileContentBuilderImpl implements SiteMapFileContentBu
 
         result.endElement();
         return result.toString();
+    }
+
+    private String getLastModified(final List<SiteMapEntry> source) {
+        String result = EMPTY;
+        for (final SiteMapEntry entry : source) {
+            final String next = entry.getLastModified();
+            if (isNotBlank(next) && next.compareTo(result) > 0) {
+                result = next;
+            }
+        }
+
+        return result;
     }
 
     @Override
