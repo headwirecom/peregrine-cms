@@ -2,10 +2,14 @@ package com.peregrine.commons.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 public final class Strings {
 
     public static final String COLON = String.valueOf(Chars.COLON);
     public static final String EQ = String.valueOf(Chars.EQ);
+    public static final String TAB = String.valueOf(Chars.TAB);
 
     private Strings() {
         throw new UnsupportedOperationException();
@@ -19,6 +23,13 @@ public final class Strings {
         }
 
         return null;
+    }
+
+    public static String removeWhitespaces(final String string) {
+        String result = StringUtils.replace(string, SPACE, EMPTY);
+        result = StringUtils.replace(result, TAB, EMPTY);
+        result = StringUtils.replace(result, LF, EMPTY);
+        return result;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
+import com.peregrine.commons.util.Strings;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static junitx.framework.StringAssert.assertContains;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -65,10 +67,26 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
 
     @Test
     public void getSize() {
-        final SiteMapEntry entry = new SiteMapEntry(page.getPath());
+        final SiteMapEntry entry = createEntry();
         assertEquals(0, model.getSize(entry));
         entry.setUrl("URL");
         assertEquals(36, model.getSize(entry));
+    }
+
+    private SiteMapEntry createEntry() {
+        return new SiteMapEntry(page.getPath());
+    }
+
+    @Test
+    public void buildUrlSet() {
+        SiteMapEntry entry = createEntry();
+        entries.add(entry);
+        entry = createEntry();
+        entry.setUrl("URL");
+        entries.add(entry);
+        String urlSet = model.buildUrlSet(entries, xmlns);
+        urlSet = Strings.removeWhitespaces(urlSet);
+        assertContains("<loc>URL</loc>", urlSet);
     }
 
 }
