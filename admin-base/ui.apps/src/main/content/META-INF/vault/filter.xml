@@ -46,6 +46,7 @@
     <filter root="/perapi/swaggereditor"/>
     <filter root="/perapi/definitions"/>
     <filter root="/content/admin"/>
+    <filter root="/content/tours"/>
     <filter root="/content/sites/docs"/>
     <filter root="/etc/felibs/admin"/>
     <filter root="/content/objects/tags">
