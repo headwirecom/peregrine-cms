@@ -46,6 +46,13 @@ public class SiteMapEntryTest implements SiteMapEntry.Visitor<Integer> {
     }
 
     @Test
+    public void getLastModified() {
+        assertNull(model.getLastModified());
+        model.putProperty(SiteMapConstants.LAST_MOD, VALUE);
+        assertEquals(VALUE, model.getLastModified());
+    }
+
+    @Test
     public void walk() {
         model.putProperty("x", 1);
         final Map<String, Object> y = new HashMap<>();
