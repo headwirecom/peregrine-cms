@@ -1,12 +1,9 @@
 package com.peregrine.sitemap.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.peregrine.SlingResourcesTest;
+import com.peregrine.mock.ResourceMock;
 import com.peregrine.sitemap.*;
+import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.LoginException;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,14 +11,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.peregrine.SlingResourcesTest;
-import com.peregrine.mock.ResourceMock;
-
-import junitx.util.PrivateAccessor;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
@@ -74,6 +70,7 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
 
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
         when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
+        when(structureCache.get(page)).thenReturn(entries);
     }
 
     private SiteMapEntry createEntry(final int size) {
@@ -126,11 +123,20 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
         when(config.maxEntriesCount()).thenReturn(2);
         when(config.maxFileSize()).thenReturn(10);
         model.activate(config);
-        when(structureCache.get(page)).thenReturn(entries);
         entries.add(createEntry(10));
         entries.add(createEntry(1));
         entries.add(createEntry(1));
         entries.add(createEntry(1));
+        assertNull(model.get(page, 0));
+    }
+
+    @Test
+    public void removeCachedItemsAboveIndex() {
+        entries.add(createEntry(10));
+        for (int index = 1; index < 10; index++) {
+            cache.putProperty(Integer.toString(index), VALUE);
+        }
+
         assertNull(model.get(page, 0));
     }
 
