@@ -5,7 +5,7 @@ import java.util.*;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public final class SiteMapEntry {
+    public final class SiteMapEntry {
 
     private final Map<String, Object> properties = new LinkedHashMap<>();
     private final String path;
@@ -62,6 +62,10 @@ public final class SiteMapEntry {
 
     public String getLastModified() {
         return getProperty(SiteMapConstants.LAST_MOD, String.class);
+    }
+
+    public void setLastModified(final String lastModified) {
+        putProperty(SiteMapConstants.LAST_MOD, lastModified);
     }
 
     public <Parameter> Parameter walk(final Visitor<Parameter> visitor, final Parameter parameter) {

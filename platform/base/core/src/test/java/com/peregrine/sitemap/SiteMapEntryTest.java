@@ -15,7 +15,7 @@ public class SiteMapEntryTest implements SiteMapEntry.Visitor<Integer> {
     private static final String PATH = "/content/sites/page";
     private static final String URL = "http://www.example.com";
     private static final String NAME = "propertyName";
-    private static final Object VALUE = "propertyValue";
+    private static final String VALUE = "propertyValue";
 
     private final SiteMapEntry model = new SiteMapEntry(PATH);
 
@@ -48,7 +48,7 @@ public class SiteMapEntryTest implements SiteMapEntry.Visitor<Integer> {
     @Test
     public void getLastModified() {
         assertNull(model.getLastModified());
-        model.putProperty(SiteMapConstants.LAST_MOD, VALUE);
+        model.setLastModified(VALUE);
         assertEquals(VALUE, model.getLastModified());
     }
 

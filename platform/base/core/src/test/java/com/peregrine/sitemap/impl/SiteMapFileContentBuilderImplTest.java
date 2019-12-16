@@ -55,12 +55,19 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
     public void buildSiteMapIndex() {
         final List<List<SiteMapEntry>> splitEntries = new LinkedList<>();
         splitEntries.add(entries);
+        final List<SiteMapEntry> entries = new LinkedList<>();
         splitEntries.add(entries);
+        entries.add(entry);
+        entries.add(createEntry("2001-01-01"));
+        entries.add(entry);
+        entries.add(createEntry("2000-01-01"));
+        entries.add(createEntry("2002-01-01"));
         final String result = model.buildSiteMapIndex(page, urlBuilder, splitEntries);
         assertNotNull(result);
         assertTrue(result.contains(page.getPath() + 1));
         assertTrue(result.contains(page.getPath() + 2));
         assertFalse(result.contains(page.getPath() + 3));
+        assertTrue(result.contains("2002-01-01"));
     }
 
     @Test
@@ -82,6 +89,12 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
 
     private SiteMapEntry createEntry() {
         return new SiteMapEntry(page.getPath());
+    }
+
+    private SiteMapEntry createEntry(final String lastModified) {
+        final SiteMapEntry result = createEntry();
+        result.setLastModified(lastModified);
+        return result;
     }
 
     @Test
