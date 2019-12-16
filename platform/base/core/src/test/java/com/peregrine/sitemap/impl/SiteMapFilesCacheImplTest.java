@@ -1,11 +1,12 @@
 package com.peregrine.sitemap.impl;
 
-import com.peregrine.SlingResourcesTest;
-import com.peregrine.sitemap.ResourceResolverFactoryProxy;
-import com.peregrine.sitemap.SiteMapExtractorsContainer;
-import com.peregrine.sitemap.SiteMapFileContentBuilder;
-import com.peregrine.sitemap.SiteMapStructureCache;
-import junitx.util.PrivateAccessor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.LoginException;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,15 +14,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.*;
+import com.peregrine.SlingResourcesTest;
+import com.peregrine.mock.ResourceMock;
+
+import junitx.util.PrivateAccessor;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
 
     private static final String LOCATION = "/var/sitemaps/files";
+    private static final String VALUE = "<xml />";
 
     private final SiteMapFilesCacheImpl model = new SiteMapFilesCacheImpl();
+    private final ResourceMock cache = new ResourceMock();
 
     @Mock
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -38,6 +43,12 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
     @Mock
     private SiteMapFilesCacheImplConfig config;
 
+    @Mock
+    private SiteMapExtractor extractor;
+
+    @Mock
+    private SiteMapConfiguration siteMapConfiguration;
+
     @Before
     public void setUp() throws NoSuchFieldException, LoginException {
         PrivateAccessor.setField(model, "resourceResolverFactory", resourceResolverFactory);
@@ -52,6 +63,12 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
         when(resourceResolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
 
         model.activate(config);
+
+        cache.setPath(LOCATION + page.getPath());
+        init(cache);
+
+        when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
+        when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
     }
 
     @Test
@@ -66,6 +83,13 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
     public void get_throwLoginException() throws LoginException {
         when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
         assertNull(model.get(page, 0));
+    }
+
+    @Test
+    public void get_cacheExists() {
+        assertNull(model.get(page, 0));
+        cache.putProperty("0", VALUE);
+        assertEquals(VALUE, model.get(page, 0));
     }
 
 }
