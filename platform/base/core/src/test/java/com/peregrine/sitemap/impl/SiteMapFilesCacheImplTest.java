@@ -5,6 +5,7 @@ import com.peregrine.mock.ResourceMock;
 import com.peregrine.sitemap.*;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.PersistenceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,7 +90,7 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
     @SuppressWarnings("unchecked")
 	@Test
     public void get_throwLoginException() throws LoginException {
-        when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+            when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
         assertNull(model.get(page, 0));
     }
 
@@ -138,6 +139,27 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
         }
 
         assertNull(model.get(page, 0));
+    }
+
+    @Test
+    public void rebuildImpl() {
+        model.rebuildImpl(page.getPath());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void onCacheRefreshed_catchExceptions() throws LoginException, PersistenceException {
+        doThrow(PersistenceException.class).when(resourceResolver).commit();
+        model.onCacheRefreshed(page, entries);
+        when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+        model.onCacheRefreshed(page, entries);
+        verify(resourceResolver, times(2)).commit();
+    }
+
+    @Test
+    public void onCacheRefreshed() throws PersistenceException {
+        model.onCacheRefreshed(page, entries);
+        verify(resourceResolver, times(2)).commit();
     }
 
 }
