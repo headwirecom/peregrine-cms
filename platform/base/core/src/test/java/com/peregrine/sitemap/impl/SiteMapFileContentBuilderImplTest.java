@@ -26,6 +26,10 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
 
     private final SiteMapFileContentBuilderImpl model = new SiteMapFileContentBuilderImpl();
     private final List<SiteMapEntry> entries = new LinkedList<>();
+    private final SiteMapEntry entry = createEntry();
+    {
+        entries.add(entry);
+    }
     private final String[] xmlnsMappings = { };
     private final Map<String, String> xmlns = new HashMap<>();
 
@@ -61,6 +65,7 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
 
     @Test
     public void getBaseSiteMapLength() {
+        entries.clear();
         final String xml = model.buildUrlSet(entries, xmlns);
         final int length = xml.length();
         final int diff = "</urlset>".length() - " /".length();
@@ -70,7 +75,6 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
 
     @Test
     public void getSize() {
-        final SiteMapEntry entry = createEntry();
         assertEquals(0, model.getSize(entry));
         entry.setUrl("URL");
         assertEquals(36, model.getSize(entry));
@@ -82,9 +86,7 @@ public final class SiteMapFileContentBuilderImplTest extends SlingResourcesTest 
 
     @Test
     public void buildUrlSet() {
-        SiteMapEntry entry = createEntry();
-        entries.add(entry);
-        entry = createEntry();
+        final SiteMapEntry entry = createEntry();
         entry.setUrl("URL");
         entries.add(entry);
         String urlSet = model.buildUrlSet(entries, xmlns);
