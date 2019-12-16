@@ -19,6 +19,8 @@ import com.peregrine.mock.ResourceMock;
 
 import junitx.util.PrivateAccessor;
 
+import java.util.Collections;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
 
@@ -87,9 +89,27 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
 
     @Test
     public void get_cacheExists() {
+        when(structureCache.get(page)).thenReturn(Collections.emptyList());
         assertNull(model.get(page, 0));
         cache.putProperty("0", VALUE);
         assertEquals(VALUE, model.get(page, 0));
+
+        when(structureCache.get(page)).thenReturn(null);
+        assertEquals(VALUE, model.get(page, 0));
+        when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
+        assertEquals(VALUE, model.get(page, 0));
+        when(structureCache.get(page)).thenReturn(Collections.emptyList());
+        assertEquals(VALUE, model.get(page, 0));
+    }
+
+    @Test
+    public void get_handleNullEntriesAndExtractor() {
+        when(structureCache.get(page)).thenReturn(null);
+        assertNull(model.get(page, 0));
+        when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
+        assertNull(model.get(page, 0));
+        when(structureCache.get(page)).thenReturn(Collections.emptyList());
+        assertNull(model.get(page, 0));
     }
 
 }
