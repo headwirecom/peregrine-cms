@@ -6,6 +6,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.ModifiableValueMapDecorator;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.mockito.stubbing.Answer;
 
@@ -49,6 +50,8 @@ public class ResourceMock extends ResourceWrapper {
         node = mockNode(debugName);
         final ValueMap valueMap = new ValueMapDecorator(properties);
         when(mock.getValueMap()).thenReturn(valueMap);
+        addAdapter(valueMap);
+        addAdapter(new ModifiableValueMapDecorator(properties));
     }
 
     public ResourceMock() {
