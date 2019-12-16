@@ -20,6 +20,8 @@ import com.peregrine.mock.ResourceMock;
 import junitx.util.PrivateAccessor;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
@@ -29,6 +31,7 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
 
     private final SiteMapFilesCacheImpl model = new SiteMapFilesCacheImpl();
     private final ResourceMock cache = new ResourceMock();
+    private final List<SiteMapEntry> entries = new LinkedList<>();
 
     @Mock
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -73,6 +76,12 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
         when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
     }
 
+    private SiteMapEntry createEntry(final int size) {
+        final SiteMapEntry result = new SiteMapEntry(page.getPath());
+        when(siteMapBuilder.getSize(result)).thenReturn(size);
+        return result;
+    }
+
     @Test
     public void deactivate() {
         verify(structureCache, times(1)).addRefreshListener(model);
@@ -109,6 +118,19 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page, 0));
         when(structureCache.get(page)).thenReturn(Collections.emptyList());
+        assertNull(model.get(page, 0));
+    }
+
+    @Test
+    public void splitEntries() {
+        when(config.maxEntriesCount()).thenReturn(2);
+        when(config.maxFileSize()).thenReturn(10);
+        model.activate(config);
+        when(structureCache.get(page)).thenReturn(entries);
+        entries.add(createEntry(10));
+        entries.add(createEntry(1));
+        entries.add(createEntry(1));
+        entries.add(createEntry(1));
         assertNull(model.get(page, 0));
     }
 
