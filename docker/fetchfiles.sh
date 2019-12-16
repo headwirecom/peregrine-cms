@@ -4,6 +4,7 @@
 find ../ -type f -name \*.zip | grep "/target/" | while read package; do cp $package files; done;
 cp ../resources/com.peregrine-cms.sling.launchpad-9.1.jar files/sling-9.jar
 
+# pull a recent version from themecleanflex to be added to the instance
 curl -L https://vagrant.headwire.com/peregrine/themecleanflex.ui.apps-1.0-SNAPSHOT.zip -o files/themecleanflex.ui.apps-1.0-SNAPSHOT.zip
 
 NODE_VERSION=v10.16.0
