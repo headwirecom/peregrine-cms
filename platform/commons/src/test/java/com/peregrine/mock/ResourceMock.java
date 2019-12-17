@@ -227,6 +227,13 @@ public class ResourceMock extends ResourceWrapper {
         return this;
     }
 
+    public final ResourceMock createChild(final String name) {
+        final ResourceMock result = new ResourceMock(name);
+        result.setPath(getPath() + SLASH + name);
+        addChild(name, result);
+        return result;
+    }
+
     @Override
     public Iterable<Resource> getChildren() {
         return children.values().stream().collect(Collectors.toList());
