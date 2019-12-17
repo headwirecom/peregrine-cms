@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -106,7 +107,8 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
         final ResourceMock _0 = addEntryCache(X, 0);
         _0.putProperty("_u", 1);
         _0.putProperty("_w_", 2);
-        _0.putProperty("_jcr_z", 3);
+        _0.putProperty("_abc_z", 3);
+        _0.putProperty(JCR_PRIMARY_TYPE, "per:X");
         final ResourceMock child = _0.createChild(Y);
         child.putProperty(X, false);
 
@@ -129,8 +131,8 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
         assertNotNull(entry.getProperty("_u"));
         assertNotNull(entry.getProperty("_w_"));
         assertNull(entry.getProperty("w:"));
-        assertNotNull(entry.getProperty("jcr:z"));
-        assertNull(entry.getProperty("_jcr_z"));
+        assertNotNull(entry.getProperty("abc:z"));
+        assertNull(entry.getProperty(JCR_PRIMARY_TYPE));
         final Object map = entry.getProperty(Y);
         assertNotNull(map);
         assertTrue(map instanceof Map);
