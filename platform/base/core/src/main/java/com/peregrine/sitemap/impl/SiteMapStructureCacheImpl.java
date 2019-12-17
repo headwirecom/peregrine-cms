@@ -28,7 +28,6 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.concurrent.Callback;
 import com.peregrine.concurrent.DeBouncer;
 import com.peregrine.sitemap.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,9 +38,11 @@ import org.osgi.service.metatype.annotations.Designate;
 import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.Strings.*;
+import static com.peregrine.commons.util.Strings.COLON;
+import static com.peregrine.commons.util.Strings._;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.*;
 
 @Component(service = SiteMapStructureCache.class, immediate = true)
 @Designate(ocd = SiteMapStructureCacheImplConfig.class)
@@ -135,12 +136,14 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private String transformFromJcrName(final String name) {
-        if (StringUtils.startsWith(name, _)) {
+        if (startsWith(name, _)) {
             final String nameAfterUnderscore = name.substring(1);
             if (nameAfterUnderscore.contains(_)) {
-                final String prefix = StringUtils.substringBefore(nameAfterUnderscore, _);
-                final String suffix = StringUtils.substringAfter(nameAfterUnderscore, _);
-                return prefix + COLON + suffix;
+                final String prefix = substringBefore(nameAfterUnderscore, _);
+                final String suffix = substringAfter(nameAfterUnderscore, _);
+                if (isNotBlank(suffix)) {
+                    return prefix + COLON + suffix;
+                }
             }
         }
 
@@ -165,11 +168,11 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     @Override
     protected String getOriginalPath(final String cachePath) {
         final String superOriginalPath = super.getOriginalPath(cachePath);
-        if (!StringUtils.endsWith(superOriginalPath, SLASH_JCR_CONTENT)) {
+        if (!endsWith(superOriginalPath, SLASH_JCR_CONTENT)) {
             return null;
         }
 
-        return StringUtils.substringBeforeLast(superOriginalPath, SLASH_JCR_CONTENT);
+        return substringBeforeLast(superOriginalPath, SLASH_JCR_CONTENT);
     }
 
     @Override
@@ -234,9 +237,9 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private String transformToJcrName(final String name) {
-        if (StringUtils.contains(name, COLON)) {
-            final String prefix = StringUtils.substringBefore(name, COLON);
-            final String suffix = StringUtils.substringAfter(name, COLON);
+        if (contains(name, COLON)) {
+            final String prefix = substringBefore(name, COLON);
+            final String suffix = substringAfter(name, COLON);
             return _ + prefix + _ + suffix;
         }
 
