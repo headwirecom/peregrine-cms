@@ -246,6 +246,10 @@ public class ResourceMock extends ResourceWrapper {
         return children.containsKey(name);
     }
 
+    public int getChildrenCount() {
+        return children.size();
+    }
+
     public void addAdapter(final Object adapter) {
         adaptTo.put(adapter.getClass(), adapter);
     }
