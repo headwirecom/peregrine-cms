@@ -123,7 +123,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
             final String key = e.getKey();
             if (!key.startsWith("jcr:")) {
                 final Object value = e.getValue();
-                result.put(transformFromJcrName(key), String.valueOf(value));
+                result.put(transformFromJcrName(key), value);
             }
         }
 

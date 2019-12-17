@@ -5,7 +5,7 @@ import java.util.*;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-    public final class SiteMapEntry {
+public final class SiteMapEntry {
 
     private final Map<String, Object> properties = new LinkedHashMap<>();
     private final String path;
@@ -40,15 +40,19 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
     public Object putProperty(final String name, final String value) {
         if (isBlank(value)) {
-            return putProperty(name, (Object)null);
+            return putProperty(name, (Object) null);
         }
 
-        return putProperty(name, (Object)value);
+        return putProperty(name, (Object) value);
+    }
+
+    public Object getProperty(String name) {
+        return properties.get(name);
     }
 
     @SuppressWarnings("unchecked")
-	public <Type> Type getProperty(final String name, final Class<? extends Type> type) {
-        final Object value = properties.get(name);
+    public <Type> Type getProperty(final String name, final Class<? extends Type> type) {
+        final Object value = getProperty(name);
         if (isNull(value)) {
             return null;
         }
@@ -87,8 +91,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
             final Object value = e.getValue();
             final String key = e.getKey();
             if (value instanceof Map) {
-                @SuppressWarnings("unchecked")
-				final Map<String, Object> map = (Map<String, Object>) value;
+                @SuppressWarnings("unchecked") final Map<String, Object> map = (Map<String, Object>) value;
                 children.put(key, map);
             } else {
                 final String string = String.valueOf(value);

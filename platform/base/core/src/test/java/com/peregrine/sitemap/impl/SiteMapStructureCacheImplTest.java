@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
 
     private static final String LOCATION = "/var/sitemaps/structure";
+    private static final String X = "x";
 
     private final SiteMapStructureCacheImpl model = new SiteMapStructureCacheImpl();
     private final PageMock cache = new PageMock();
@@ -94,12 +96,26 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
 
     @Test
     public void get_cacheExists() {
-        addEntryCache();
-        addEntryCache();
-        addEntryCache();
+        final List<ResourceMock> items = new ArrayList<>();
+        ResourceMock item = addEntryCache();
+        items.add(item);
+        item.putProperty(X, 0);
+        item = addEntryCache();
+        items.add(item);
+        item.putProperty(X, true);
+        item = addEntryCache();
+        items.add(item);
+        item.putProperty(X, X);
+
         final List<SiteMapEntry> entries = model.get(page);
         assertNotNull(entries);
-        assertEquals(3, entries.size());
+
+        final int size = items.size();
+        assertEquals(size, entries.size());
+
+        for (int i = 0; i < size; i++) {
+            assertEquals(items.get(i).getProperty(X), entries.get(i).getProperty(X));
+        }
     }
 
     @Test
