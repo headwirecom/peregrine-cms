@@ -30,7 +30,7 @@ under the License.
     <packaging>slingosgifeature</packaging>
 
     <properties>
-        <slingfeature-maven-plugin.version>1.1.11-SNAPSHOT</slingfeature-maven-plugin.version>
+        <slingfeature-maven-plugin.version>1.1.13-SNAPSHOT</slingfeature-maven-plugin.version>
         <sling-feature-converter-maven-plugin.version>1.0.0-SNAPSHOT</sling-feature-converter-maven-plugin.version>
         <org.apache.sling.feature.launcher.version>1.1.1-SNAPSHOT</org.apache.sling.feature.launcher.version>
         <org.apache.sling.feature.extension.content.version>1.0.5-SNAPSHOT</org.apache.sling.feature.extension.content.version>
@@ -148,32 +148,6 @@ under the License.
                 <version>${sling-feature-converter-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <executions>
-<!--                    <execution>-->
-<!--                        <id>convert-pm</id>-->
-<!--                        <phase>process-classes</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>convert-pm</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <inputFolder>${sling.starter.folder}/src/main/provisioning</inputFolder>-->
-<!--                            <outputFolder>target/fm</outputFolder>-->
-<!--                            <groupId>${{project.groupId}}</groupId>-->
-<!--                            <artifactId>${{project.artifactId}}</artifactId>-->
-<!--                            <version>${{project.version}}</version>-->
-<!--                            <frameworkProperties>-->
-<!--                                launchpad:felix.systempackages.substitution=true,-->
-<!--                                launchpad:felix.systempackages.calculate.uses=true-->
-<!--                            </frameworkProperties>-->
-<!--                            <excludeBundles>-->
-<!--                                org.apache.sling.launchpad.installer,-->
-<!--                                org.apache.sling.jcr.repoinit.impl.RepositoryInitializer-->
-<!--                            </excludeBundles>-->
-<!--                            <runModes>-->
-<!--                                oak_tar,-->
-<!--                                :standalone-->
-<!--                            </runModes>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
                     <execution>
                         <id>convert-cp</id>
                         <phase>process-classes</phase>
@@ -323,6 +297,7 @@ under the License.
                         <version>${slingfeature-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <dependencies>
+                            <!-- Extension Content Code needs to be provided AHEAD of the Launcher Code to enable CP deployment -->
                             <dependency>
                                 <groupId>org.apache.sling</groupId>
                                 <artifactId>org.apache.sling.feature.extension.content</artifactId>

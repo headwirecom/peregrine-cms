@@ -21,42 +21,37 @@
         <relativePath />
     </parent>
 
-    <artifactId>sling-feature-converter-maven-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>slingfeature-maven-plugin</artifactId>
+    <version>1.1.13-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>Apache Sling Feature Model Converter Plugin</name>
+    <name>Apache Sling OSGi Feature Maven Plugin</name>
     <description>
-        Maven Plugin to convert Configurations / Packages to Feature Model format
+        Maven Plugin for OSGi Applications
     </description>
-    <url>https://sling.apache.org/components/sling-feature-converter-maven-plugin/</url>
+    <url>https://sling.apache.org/components/slingfeature-maven-plugin/</url>
 
     <properties>
         <sling.java.version>8</sling.java.version>
-        <plexus-component-metadata.version>1.7.1</plexus-component-metadata.version>
-        <jackrabbit-spi-commons.version>2.18.4</jackrabbit-spi-commons.version>
-        <jackrabbit-api.version>2.18.4</jackrabbit-api.version>
-        <javax.json.version>1.0.4</javax.json.version>
-        <org.apache.jackrabbit.vault.version>3.2.8</org.apache.jackrabbit.vault.version>
-        <org.apache.sling.feature.cpconverter.version>1.0.1-SNAPSHOT</org.apache.sling.feature.cpconverter.version>
-        <org.apache.sling.feature.modelconverter.version>1.0.8</org.apache.sling.feature.modelconverter.version>
-        <org.apache.sling.feature.version>1.1.0</org.apache.sling.feature.version>
-        <org.apache.sling.provisioning.model.version>1.8.4</org.apache.sling.provisioning.model.version>
         <maven.version>3.5.0</maven.version>
         <maven.scm.version>1.11.1</maven.scm.version>
-        <maven-artifact-transfer.version>0.11.0</maven-artifact-transfer.version>
-        <maven-plugin-annotations.version>3.5</maven-plugin-annotations.version>
-        <plexus-archiver.version>3.5</plexus-archiver.version>
-        <mockito-all.version>1.10.19</mockito-all.version>
         <maven.site.path>${project.artifactId}-archives/${project.artifactId}-LATEST</maven.site.path>
+        <maven-artifact-transfer.version>0.11.0</maven-artifact-transfer.version>
     </properties>
+
+    <scm>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-slingfeature-maven-plugin.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-slingfeature-maven-plugin.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=sling-slingfeature-maven-plugin.git</url>
+      <tag>HEAD</tag>
+  </scm>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-component-metadata</artifactId>
-                <version>${plexus-component-metadata.version}</version>
+                <version>1.7.1</version>
                 <executions>
                     <execution>
                         <id>generate-metadata</id>
@@ -116,8 +111,7 @@
                     <debug>true</debug>
                     <projectsDirectory>src/it</projectsDirectory>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-<!-- TODO: it would great to install the test artifacts locally but this will only work if CP Converter is released -> Activate when it is released-->
-<!--                    <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>-->
+                    <settingsFile>src/it/settings.xml</settingsFile>
                     <pomIncludes>
                         <pomInclude>**/pom.xml</pomInclude>
                     </pomIncludes>
@@ -139,58 +133,75 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>6.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.6</version>
+        </dependency>
+         <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.converter</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.configurator</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.commons.johnzon</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.feature</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.feature.io</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.feature.analyser</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.feature.extension.apiregions</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <!-- aux dependencies for Content-Package check -->
+        <dependency>
+            <groupId>org.apache.jackrabbit.vault</groupId>
+            <artifactId>org.apache.jackrabbit.vault</artifactId>
+            <version>3.2.6</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-spi-commons</artifactId>
-            <version>${jackrabbit-spi-commons.version}</version>
+            <version>2.19.1</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.feature.cpconverter</artifactId>
-            <version>${org.apache.sling.feature.cpconverter.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.feature.modelconverter</artifactId>
-            <version>${org.apache.sling.feature.modelconverter.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.feature</artifactId>
-            <version>${org.apache.sling.feature.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.feature.io</artifactId>
-            <version>${org.apache.sling.feature.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.provisioning.model</artifactId>
-            <version>${org.apache.sling.provisioning.model.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-api</artifactId>
-            <version>${jackrabbit-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>${javax.json.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit.vault</groupId>
-            <artifactId>org.apache.jackrabbit.vault</artifactId>
-            <version>${org.apache.jackrabbit.vault.version}</version>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
             <scope>runtime</scope>
         </dependency>
-
+        <!-- END Content-Package check -->
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.feature.diff</artifactId>
+            <version>0.0.2</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
@@ -207,41 +218,124 @@
             <version>${maven.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-artifact-transfer</artifactId>
-            <version>${maven-artifact-transfer.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
             <version>${maven.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-archiver</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>${maven-plugin-annotations.version}</version>
+            <version>3.5</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- for converting Maven to OSGi versions -->
+        <dependency>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>biz.aQute.bndlib</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-interactivity-api</artifactId>
+            <version>1.0-alpha-6</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
-            <version>${plexus-archiver.version}</version>
+            <version>3.5</version>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+            <version>3.0.24</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.framework</artifactId>
+            <version>1.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-filtering</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <!-- schema validation -->
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>2.2.10</version>
+        </dependency>
+        <!-- APIs JARs -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.utils</artifactId>
+            <version>1.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-api</artifactId>
+            <version>${maven.scm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-manager-plexus</artifactId>
+            <version>${maven.scm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>${maven.scm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-svnexe</artifactId>
+            <version>${maven.scm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model-builder</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-artifact-transfer</artifactId>
+            <version>${maven-artifact-transfer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.3</version>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>${mockito-all.version}</version>
+            <version>1.10.19</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
