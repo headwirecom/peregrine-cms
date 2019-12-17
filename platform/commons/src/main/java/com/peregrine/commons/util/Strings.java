@@ -10,7 +10,7 @@ public final class Strings {
     public static final String COLON = String.valueOf(Chars.COLON);
     public static final String EQ = String.valueOf(Chars.EQ);
     public static final String TAB = String.valueOf(Chars.TAB);
-    public static final String _ = String.valueOf(Chars._);
+    public static final String _SCORE = String.valueOf(Chars._SCORE);
 
     private Strings() {
         throw new UnsupportedOperationException();

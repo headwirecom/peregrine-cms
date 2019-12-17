@@ -39,7 +39,7 @@ import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.Strings.COLON;
-import static com.peregrine.commons.util.Strings._;
+import static com.peregrine.commons.util.Strings._SCORE;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -136,11 +136,11 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private String transformFromJcrName(final String name) {
-        if (startsWith(name, _)) {
+        if (startsWith(name, _SCORE)) {
             final String nameAfterUnderscore = name.substring(1);
-            if (nameAfterUnderscore.contains(_)) {
-                final String prefix = substringBefore(nameAfterUnderscore, _);
-                final String suffix = substringAfter(nameAfterUnderscore, _);
+            if (nameAfterUnderscore.contains(_SCORE)) {
+                final String prefix = substringBefore(nameAfterUnderscore, _SCORE);
+                final String suffix = substringAfter(nameAfterUnderscore, _SCORE);
                 if (isNotBlank(suffix)) {
                     return prefix + COLON + suffix;
                 }
@@ -240,7 +240,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         if (contains(name, COLON)) {
             final String prefix = substringBefore(name, COLON);
             final String suffix = substringAfter(name, COLON);
-            return _ + prefix + _ + suffix;
+            return _SCORE + prefix + _SCORE + suffix;
         }
 
         return name;
