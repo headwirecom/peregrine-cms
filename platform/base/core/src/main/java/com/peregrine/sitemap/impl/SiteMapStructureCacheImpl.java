@@ -39,6 +39,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.Strings.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -48,8 +49,6 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         implements SiteMapStructureCache, Callback<String>, SiteMapEntry.Visitor<Resource> {
 
     private static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
-    private static final String COLON = ":";
-    private static final String UNDERSCORE = "_";
 
     private final Set<RefreshListener> refreshListeners = new HashSet<>();
 
@@ -136,11 +135,11 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private String transformFromJcrName(final String name) {
-        if (StringUtils.startsWith(name, UNDERSCORE)) {
+        if (StringUtils.startsWith(name, _)) {
             final String nameAfterUnderscore = name.substring(1);
-            if (nameAfterUnderscore.contains(UNDERSCORE)) {
-                final String prefix = StringUtils.substringBefore(nameAfterUnderscore, UNDERSCORE);
-                final String suffix = StringUtils.substringAfter(nameAfterUnderscore, UNDERSCORE);
+            if (nameAfterUnderscore.contains(_)) {
+                final String prefix = StringUtils.substringBefore(nameAfterUnderscore, _);
+                final String suffix = StringUtils.substringAfter(nameAfterUnderscore, _);
                 return prefix + COLON + suffix;
             }
         }
@@ -238,7 +237,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         if (StringUtils.contains(name, COLON)) {
             final String prefix = StringUtils.substringBefore(name, COLON);
             final String suffix = StringUtils.substringAfter(name, COLON);
-            return UNDERSCORE + prefix + UNDERSCORE + suffix;
+            return _ + prefix + _ + suffix;
         }
 
         return name;
