@@ -15,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -29,6 +30,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
 
     private static final String LOCATION = "/var/sitemaps/structure";
     private static final String X = "x";
+    private static final String Y = "y";
 
     private final SiteMapStructureCacheImpl model = new SiteMapStructureCacheImpl();
     private final PageMock cache = new PageMock();
@@ -83,29 +85,32 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
         assertNull(model.get(page));
     }
 
+    private ResourceMock addEntryCache(final ResourceMock parent) {
+        final String name = String.valueOf(parent.getChildrenCount());
+        final ResourceMock result = parent.createChild(name);
+        return init(result);
+    }
+
     private ResourceMock addEntryCache() {
-        final ResourceMock result = new ResourceMock();
-        final ResourceMock content = cache.getContent();
-        final String path = content.getPath();
-        final String name = String.valueOf(content.getChildrenCount());
-        result.setPath(path + SLASH + name);
-        content.addChild(result);
-        init(result);
+        return addEntryCache(cache.getContent());
+    }
+
+    private ResourceMock addEntryCache(final String propertyName, final Object propertyValue) {
+        final ResourceMock result = addEntryCache();
+        result.putProperty(propertyName, propertyValue);
         return result;
     }
 
     @Test
     public void get_cacheExists() {
+        final ResourceMock _0 = addEntryCache(X, 0);
+        final ResourceMock child = _0.createChild(Y);
+        child.putProperty(X, false);
+
         final List<ResourceMock> items = new ArrayList<>();
-        ResourceMock item = addEntryCache();
-        items.add(item);
-        item.putProperty(X, 0);
-        item = addEntryCache();
-        items.add(item);
-        item.putProperty(X, true);
-        item = addEntryCache();
-        items.add(item);
-        item.putProperty(X, X);
+        items.add(_0);
+        items.add(addEntryCache(X, true));
+        items.add(addEntryCache(X, X));
 
         final List<SiteMapEntry> entries = model.get(page);
         assertNotNull(entries);
@@ -116,6 +121,12 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
         for (int i = 0; i < size; i++) {
             assertEquals(items.get(i).getProperty(X), entries.get(i).getProperty(X));
         }
+
+        final SiteMapEntry entry = entries.get(0);
+        final Object map = entry.getProperty(Y);
+        assertNotNull(map);
+        assertTrue(map instanceof Map);
+        assertEquals(child.getProperty(X), ((Map)map).get(X));
     }
 
     @Test
