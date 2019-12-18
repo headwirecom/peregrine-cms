@@ -69,7 +69,7 @@ public class SlingResourcesTest {
         init(component);
         bindResolverFactory();
         bindRequest();
-        bindResourceResolver();
+        when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
     }
 
     private void setPaths() {
@@ -126,8 +126,7 @@ public class SlingResourcesTest {
     }
 
     @SuppressWarnings("unchecked")
-	private void bindResourceResolver() {
-        when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
+	protected void mockResourceResolverCreate() {
         try {
             when(resourceResolver.create(any(ResourceMock.class), anyString(), any(Map.class))).thenAnswer(invocation -> {
                 final Object[] args = invocation.getArguments();
