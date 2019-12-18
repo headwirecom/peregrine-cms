@@ -212,4 +212,10 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
         assertOnCacheRefreshedMapContains(page);
     }
 
+    @Test
+    public void getOriginalPath() {
+        assertNull(model.getOriginalPath(LOCATION));
+        assertEquals(page.getPath(), model.getOriginalPath(cache.getPath()));
+    }
+
 }
