@@ -218,4 +218,11 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
         assertEquals(page.getPath(), model.getOriginalPath(cache.getPath()));
     }
 
+    @SuppressWarnings("unchecked")
+	@Test
+    public void visit() throws PersistenceException {
+        when(resourceResolver.create(any(), anyString(), any())).thenThrow(PersistenceException.class);
+        assertNull(model.visit("0", new HashMap<>(), cache));
+    }
+
 }
