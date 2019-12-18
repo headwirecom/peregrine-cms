@@ -154,13 +154,29 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
     @Test
     public void get_catchPersistenceException() throws PersistenceException {
+        disableCacheResolution();
         doThrow(PersistenceException.class).when(resourceResolver).commit();
+        assertNull(model.get(page));
+    }
+
+    private void disableCacheResolution() throws PersistenceException {
         when(resourceResolver.getResource(cache.getPath())).thenReturn(null);
         when(resourceResolver.create(eq(cacheParent), eq(JCR_CONTENT), any())).thenAnswer(invocation -> {
             init(cache);
             return cache;
         });
+    }
+
+    @Test
+    public void get_extractorIsNull() throws PersistenceException, InterruptedException {
+        disableCacheResolution();
+        when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page));
+        for (int i = 0; i < 10 && !onCacheRefreshedMap.containsKey(page); i++) {
+            Thread.sleep(10);
+        }
+
+        assertTrue(onCacheRefreshedMap.containsKey(page));
     }
 
 }
