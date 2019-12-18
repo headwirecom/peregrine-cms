@@ -171,7 +171,11 @@ public class ResourceMock extends ResourceWrapper {
 
     public final ResourceMock putProperty(final String name, final Object property) {
         properties.put(name, property);
+        return this;
+    }
 
+    public final ResourceMock putProperties(final Map<String, Object> properties) {
+        properties.putAll(properties);
         return this;
     }
 
