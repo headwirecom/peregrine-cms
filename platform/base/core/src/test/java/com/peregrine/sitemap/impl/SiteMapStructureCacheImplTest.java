@@ -63,6 +63,8 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
         when(resourceResolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
 
+        when(siteMapConfigurationsContainer.getAll()).thenReturn(Arrays.asList(siteMapConfiguration));
+
         model.activate(config);
 
         cacheParent.setPath(LOCATION + page.getPath());
@@ -199,6 +201,14 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
     private SiteMapEntry createEntry() {
         return new SiteMapEntry(page.getPath());
+    }
+
+    @Test
+    public void rebuildMandatoryContent() {
+        final HashSet<String> mandatoryPaths = new HashSet<>(Arrays.asList(page.getPath()));
+        when(siteMapConfiguration.getMandatoryCachedPaths()).thenReturn(mandatoryPaths);
+        model.rebuildAll();
+        assertOnCacheRefreshedMapContains(page);
     }
 
 }
