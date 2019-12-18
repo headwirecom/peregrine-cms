@@ -7,6 +7,7 @@ import com.peregrine.sitemap.*;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +28,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
+public final class SiteMapStructureCacheImplTest extends SlingResourcesTest implements SiteMapStructureCache.RefreshListener {
 
     private static final String LOCATION = "/var/sitemaps/structure";
     private static final String X = "x";
@@ -34,6 +36,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
 
     private final SiteMapStructureCacheImpl model = new SiteMapStructureCacheImpl();
     private final PageMock cache = new PageMock();
+    private final Map<Resource, List<SiteMapEntry>> onCacheRefreshedMap = new HashMap<>();
 
     @Mock
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -71,11 +74,20 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest {
 
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
         when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
+
+        model.addRefreshListener(this);
+    }
+
+    @Override
+    public void onCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
+        onCacheRefreshedMap.put(rootPage, entries);
     }
 
     @Test
     public void deactivate() {
+        model.removeRefreshListener(this);
         model.deactivate();
+        assertTrue(onCacheRefreshedMap.isEmpty());
     }
 
     @SuppressWarnings("unchecked")
