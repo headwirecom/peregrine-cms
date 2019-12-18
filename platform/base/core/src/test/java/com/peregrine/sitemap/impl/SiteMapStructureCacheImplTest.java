@@ -14,16 +14,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +32,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     private final PageMock cacheParent = new PageMock();
     private final ResourceMock cache = cacheParent.getContent();
     private final Map<Resource, List<SiteMapEntry>> onCacheRefreshedMap = new HashMap<>();
+    private final List<SiteMapEntry> entries = new LinkedList<>();
 
     @Mock
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -159,24 +154,42 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
         assertNull(model.get(page));
     }
 
-    private void disableCacheResolution() throws PersistenceException {
+    private void disableCacheResolution() {
         when(resourceResolver.getResource(cache.getPath())).thenReturn(null);
-        when(resourceResolver.create(eq(cacheParent), eq(JCR_CONTENT), any())).thenAnswer(invocation -> {
-            init(cache);
-            return cache;
-        });
     }
 
     @Test
-    public void get_extractorIsNull() throws PersistenceException, InterruptedException {
+    public void get_extractorIsNull() {
         disableCacheResolution();
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page));
-        for (int i = 0; i < 10 && !onCacheRefreshedMap.containsKey(page); i++) {
-            Thread.sleep(10);
+        assertOnCacheRefreshedMapContains(page);
+    }
+
+    private void assertOnCacheRefreshedMapContains(final Object key) {
+        for (int i = 0; i < 10 && !onCacheRefreshedMap.containsKey(key); i++) {
+            try {
+                Thread.sleep(10);
+            } catch (final InterruptedException e) {
+            }
         }
 
-        assertTrue(onCacheRefreshedMap.containsKey(page));
+        assertTrue(onCacheRefreshedMap.containsKey(key));
+    }
+
+    @Test
+    public void putSiteMapsInCache() {
+        disableCacheResolution();
+        when(extractor.extract(page)).thenReturn(entries);
+        cache.createChild("0");
+        entries.add(createEntry());
+        entries.add(createEntry());
+        entries.add(createEntry());
+        assertNotNull(model.get(page));
+    }
+
+    private SiteMapEntry createEntry() {
+        return new SiteMapEntry(page.getPath());
     }
 
 }
