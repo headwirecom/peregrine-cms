@@ -149,6 +149,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
     @Test
     public void get_catchPersistenceException() throws PersistenceException {
+        mockResourceResolverCreate();
         disableCacheResolution();
         doThrow(PersistenceException.class).when(resourceResolver).commit();
         assertNull(model.get(page));
@@ -160,6 +161,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
     @Test
     public void get_extractorIsNull() {
+        mockResourceResolverCreate();
         disableCacheResolution();
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page));
@@ -179,12 +181,19 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
     @Test
     public void putSiteMapsInCache() {
+        mockResourceResolverCreate();
         disableCacheResolution();
         when(extractor.extract(page)).thenReturn(entries);
         cache.createChild("0");
-        entries.add(createEntry());
-        entries.add(createEntry());
-        entries.add(createEntry());
+        SiteMapEntry entry = createEntry();
+        entry.putProperty("x:y", 0);
+        entries.add(entry);
+        entry = createEntry();
+        entry.putProperty("x:", 0);
+        entries.add(entry);
+        entry = createEntry();
+        entry.putProperty("x", 0);
+        entries.add(entry);
         assertNotNull(model.get(page));
     }
 
