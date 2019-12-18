@@ -7,6 +7,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 public final class Strings {
 
+    public static final String DOT = String.valueOf(Chars.DOT);
     public static final String COLON = String.valueOf(Chars.COLON);
     public static final String EQ = String.valueOf(Chars.EQ);
     public static final String TAB = String.valueOf(Chars.TAB);
