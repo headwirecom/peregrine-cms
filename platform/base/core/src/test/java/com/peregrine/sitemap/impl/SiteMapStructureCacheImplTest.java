@@ -18,8 +18,7 @@ import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SiteMapStructureCacheImplTest extends SlingResourcesTest implements SiteMapStructureCache.RefreshListener {
@@ -162,12 +161,14 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     }
 
     @Test
-    public void get_extractorIsNull() {
+    public void get_extractorIsNull() throws PersistenceException {
+        final ResourceMock _0 = cache.createChild("0");
         mockResourceResolverCreate();
         disableCacheResolution();
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page));
         assertOnCacheRefreshedMapContains(page);
+        verify(resourceResolver, times(1)).delete(_0);
     }
 
     private void assertOnCacheRefreshedMapContains(final Object key) {
