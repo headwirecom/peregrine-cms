@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.mockito.Mockito;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +58,8 @@ public class SlingResourcesTest {
     protected final SlingHttpServletRequest request = mock(SlingHttpServletRequest.class, fullName("Request"));
     protected final RequestPathInfo requestPathInfo = Mockito.mock(RequestPathInfo.class);
 
+    private final Map<String, ResourceMock> resolvableResources = new HashMap<>();
+
     public SlingResourcesTest() {
         setPaths();
         setParentChildRelationships();
@@ -65,7 +69,7 @@ public class SlingResourcesTest {
         init(component);
         bindResolverFactory();
         bindRequest();
-        when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
+        bindResourceResolver();
     }
 
     private void setPaths() {
@@ -121,6 +125,34 @@ public class SlingResourcesTest {
         when(requestPathInfo.getExtension()).thenReturn(HTML);
     }
 
+    @SuppressWarnings("unchecked")
+	private void bindResourceResolver() {
+        when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
+        try {
+            when(resourceResolver.create(any(ResourceMock.class), anyString(), any(Map.class))).thenAnswer(invocation -> {
+                final Object[] args = invocation.getArguments();
+                int index = 0;
+                final ResourceMock parent = (ResourceMock) args[index++];
+                final String name = (String) args[index++];
+                final Map<String, Object> properties = (Map<String, Object>) args[index++];
+
+                final String path = parent.getPath() + SLASH + name;
+                final ResourceMock result;
+                if (resolvableResources.containsKey(path)) {
+                    result = resolvableResources.get(path);
+                } else {
+                    result = new ResourceMock(name);
+                    result.setPath(path);
+                }
+
+                result.setParent(parent);
+                result.putProperties(properties);
+                return init(result);
+            });
+        } catch (final PersistenceException e) {
+        }
+    }
+
     public Logger getLogger() {
         return logger;
     }
@@ -128,10 +160,11 @@ public class SlingResourcesTest {
     protected <Mock extends ResourceMock> Mock init(final Mock mock) {
         mock.setResourceResolver(resourceResolver);
         mock.setSession(session);
+        resolvableResources.put(mock.getPath(), mock);
         return mock;
     }
 
-    protected <Mock extends PageMock> Mock init(final Mock mock) {
+    protected PageMock init(final PageMock mock) {
         init((ResourceMock)mock);
         init(mock.getContent());
         return mock;
