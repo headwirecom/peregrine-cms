@@ -35,7 +35,8 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     private static final String Y = "y";
 
     private final SiteMapStructureCacheImpl model = new SiteMapStructureCacheImpl();
-    private final PageMock cache = new PageMock();
+    private final PageMock cacheParent = new PageMock();
+    private final ResourceMock cache = cacheParent.getContent();
     private final Map<Resource, List<SiteMapEntry>> onCacheRefreshedMap = new HashMap<>();
 
     @Mock
@@ -69,8 +70,8 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
         model.activate(config);
 
-        cache.setPath(LOCATION + page.getPath());
-        init(cache);
+        cacheParent.setPath(LOCATION + page.getPath());
+        init(cacheParent);
 
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
         when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
@@ -104,7 +105,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     }
 
     private ResourceMock addEntryCache() {
-        return addEntryCache(cache.getContent());
+        return addEntryCache(cache);
     }
 
     private ResourceMock addEntryCache(final String propertyName, final Object propertyValue) {
@@ -154,11 +155,10 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     @Test
     public void get_catchPersistenceException() throws PersistenceException {
         doThrow(PersistenceException.class).when(resourceResolver).commit();
-        final ResourceMock content = cache.getContent();
-        when(resourceResolver.getResource(content.getPath())).thenReturn(null);
-        when(resourceResolver.create(eq(cache), eq(JCR_CONTENT), any())).thenAnswer(invocation -> {
-            init(content);
-            return content;
+        when(resourceResolver.getResource(cache.getPath())).thenReturn(null);
+        when(resourceResolver.create(eq(cacheParent), eq(JCR_CONTENT), any())).thenAnswer(invocation -> {
+            init(cache);
+            return cache;
         });
         assertNull(model.get(page));
     }
