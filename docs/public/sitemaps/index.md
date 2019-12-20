@@ -19,6 +19,9 @@ configuration:
 It will be then available under [/content/sites/example.sitemap.xml](http://localhost:8080/content/sites/example.sitemap.xml).
 The cached file will reside under [/var/sitemaps/files/content/sites/example](http://localhost:8080/bin/browser.html/var/sitemaps/files/content/sites/example)
 and the backing structure - under [/var/sitemaps/structure/content/sites/example/jcr:content](http://localhost:8080/bin/browser.html/var/sitemaps/structure/content/sites/example/jcr%3Acontent).
+Those are created on demand, if not yet present once requested. Otherwise - the content saved in cache gets served.
+Additionally under [/content/sites/example.sitemap.txt](http://localhost:8080/content/sites/example.sitemap.txt) one
+will find an Apache Rewrite Map.
 
 # Site Map Configuration
 
@@ -97,3 +100,65 @@ return a `String`. If it's not a `String` - a `toString` result will be used. Bu
 For that reason one can also return a `Map` object and nest other maps within it. In such case the mapping between the
 extracted `Map` and `sitemap.xml` file is rather obvious (same for structured cache).
 
+# Global Configurations
+
+The system should work as-is, given a concrete site map configuration is provided. One can though customize its aspects
+described below.
+      
+## Site Map Resource Change Listener
+
+It's a fairly simple and standard `service` with well known standard configuration options for a
+[`ResourceChangeListener`](https://sling.apache.org/apidocs/sling9/org/apache/sling/api/resource/observation/ResourceChangeListener.html):
+
+![com.peregrine.sitemap.impl.SiteMapResourceChangeListener](site-map-resource-change-listener.png)
+
+It's then creating a [`Job`](https://sling.apache.org/apidocs/sling9/org/apache/sling/event/jobs/JobManager.html#addJob-java.lang.String-java.util.Map-)
+that is consumed by:
+
+## Site Map Resource Change Job Consumer
+
+This `service` consumes jobs triggered by resource changes in the system repository.
+
+![com.peregrine.sitemap.impl.SiteMapResourceChangeJobConsumer](site-map-resource-change-job-consumer.png)
+
+Its only configuration option is the list of `jcr:primaryType`s that, when changed, will trigger a cache rebuilding.
+It's one of 2 `service`s that can do so, the other being:
+
+## Site Map Scheduled Cache Re-builder
+
+The scheduled cache re-builder triggers a rebuilding process based on the given `cron` expression. Every time the time
+meets the expression criteria - all the mandatory paths described above are scheduled for rebuilding.
+
+![com.peregrine.sitemap.impl.SiteMapScheduledCacheReBuilder](site-map-scheduled-cache-re-builder.png)
+
+It is important not to set the expression interval here in conflict with the `debounceInterval` below. The `cron`
+interval here must be bigger.
+
+## Site Map File Content Builder
+
+With the file content builder one can define global `xmlns` mappings that will go to all `sitemap.xml` files in addition
+to those described above for an instance site map configuration.
+
+![com.peregrine.sitemap.impl.SiteMapFileContentBuilder](site-map-file-content-builder.png)
+
+## Site Map Files Cache
+
+Site Map Files Cache configuration page speaks for itself:
+
+![com.peregrine.sitemap.impl.SiteMapFilesCache](site-map-files-cache.png)
+      
+## Site Map Structure Cache
+
+Site Map Structure Cache is the heart of site maps system.
+
+![com.peregrine.sitemap.impl.SiteMapStructureCache](site-map-structure-cache.png)
+
+**Cache Location** configuration option is self-explanatory. The **Debounce Interval** limits the amount of possible
+cache rebuilding triggers on a single node / site. Imagine that an author edits pages within a site. Change actions
+might be happening quite often. But we want to start the rebuilding process only once they stop. So let's say - when
+nothing happens for 5 minutes - we assume the changes are done and we can rebuild stuff.
+
+One can reference `com.peregrine.sitemap.SiteMapStructureCache` `service` in their code and take advantage of the site
+map entries information cached. By implementing custom `com.peregrine.sitemap.SiteMapStructureCache.RefreshListener` and
+subscribing it to `SiteMapStructureCache` we also get an option to consume the changes at the same time when they are
+committed.

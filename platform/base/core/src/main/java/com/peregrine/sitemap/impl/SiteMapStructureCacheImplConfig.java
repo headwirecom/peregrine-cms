@@ -35,5 +35,5 @@ public @interface SiteMapStructureCacheImplConfig {
     String location() default "/var/sitemaps/structure";
 
     @AttributeDefinition(name = "%debounceInterval.name", description = "%debounceInterval.description")
-    int debounceInterval() default 0;
+    int debounceInterval() default 300_000;
 }
