@@ -50,6 +50,7 @@
         <exclude pattern="/apps/per/install/.*"/>
     </filter>
     <filter root="/apps/runmodes"/>
+    <filter root="/home/users/system/assets-fs"/>
 
     <filter root="/content/templates">
         <exclude pattern="/content/templates/.*"/>

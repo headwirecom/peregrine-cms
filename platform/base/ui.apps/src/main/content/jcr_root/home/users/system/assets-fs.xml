@@ -1,0 +1,5 @@
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+          jcr:primaryType="rep:SystemUser"
+          jcr:uuid="4b9edc44-faae-3b84-94d0-065351fe6c36"
+          rep:authorizableId="assets-fs"
+          rep:principalName="assets-fs" />
