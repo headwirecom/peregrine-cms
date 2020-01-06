@@ -90,6 +90,7 @@
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
                     <group>com.peregrine-cms</group>
+                    <acHandling>MERGE_PRESERVE</acHandling>
                 </configuration>
                 <executions>
                     <execution>
