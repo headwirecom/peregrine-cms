@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.commons.util.Chars.DOT;
+import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
