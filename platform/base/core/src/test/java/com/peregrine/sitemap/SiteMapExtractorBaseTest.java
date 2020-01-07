@@ -1,6 +1,7 @@
 package com.peregrine.sitemap;
 
 import com.peregrine.SlingResourcesTest;
+import com.peregrine.commons.Page;
 import com.peregrine.commons.util.PerConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;

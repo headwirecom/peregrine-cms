@@ -25,16 +25,13 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import com.peregrine.commons.util.PerConstants;
 import org.apache.sling.api.resource.Resource;
 
 public abstract class UrlExternalizerBase implements UrlExternalizer {
 
-    private static final String DOT_HTML = PerConstants.DOT + SiteMapConstants.HTML;
-
     @Override
     public String map(final Resource page) {
-        return map(page.getResourceResolver(), page.getPath() + DOT_HTML);
+        return map(page.getResourceResolver(), page.getPath() + SiteMapConstants.DOT_HTML);
     }
 
 }

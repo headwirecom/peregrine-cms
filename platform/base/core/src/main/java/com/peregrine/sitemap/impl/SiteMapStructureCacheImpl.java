@@ -25,8 +25,8 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.concurrent.Callback;
-import com.peregrine.concurrent.DeBouncer;
+import com.peregrine.commons.concurrent.Callback;
+import com.peregrine.commons.concurrent.DeBouncer;
 import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;

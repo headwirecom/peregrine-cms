@@ -25,13 +25,13 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.Page;
+import com.peregrine.commons.Page;
 import com.peregrine.sitemap.PropertyProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
-import static com.peregrine.commons.util.Strings.firstNotBlank;
+import static com.peregrine.commons.Strings.firstNotBlank;
 import static java.util.Objects.nonNull;
 
 @Component(service = { PropertyProvider.class }, immediate = true)

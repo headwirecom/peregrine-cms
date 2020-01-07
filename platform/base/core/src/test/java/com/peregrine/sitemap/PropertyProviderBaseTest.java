@@ -1,5 +1,6 @@
 package com.peregrine.sitemap;
 
+import com.peregrine.commons.Page;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;

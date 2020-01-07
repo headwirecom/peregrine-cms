@@ -25,6 +25,8 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import com.peregrine.commons.Page;
+
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static com.peregrine.commons.util.PerUtil.isPropertyEqual;

@@ -25,7 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.Page;
+import com.peregrine.commons.Page;
 import com.peregrine.sitemap.PageRecognizer;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;

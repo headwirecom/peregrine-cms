@@ -30,8 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.Strings.COLON;
-import static com.peregrine.commons.util.Strings.EQ;
+import static com.peregrine.commons.Strings.COLON;
+import static com.peregrine.commons.Strings.EQ;
 import static java.util.Objects.nonNull;
 
 public final class XmlNamespaceUtils {

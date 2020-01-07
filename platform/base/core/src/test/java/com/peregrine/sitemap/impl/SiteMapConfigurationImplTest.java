@@ -1,6 +1,7 @@
 package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
+import com.peregrine.commons.Page;
 import com.peregrine.sitemap.*;
 import junitx.util.PrivateAccessor;
 import org.junit.Before;

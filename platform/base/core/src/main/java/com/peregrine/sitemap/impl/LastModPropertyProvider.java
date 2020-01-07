@@ -25,7 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.Page;
+import com.peregrine.commons.Page;
 import com.peregrine.sitemap.PropertyProvider;
 import com.peregrine.sitemap.PropertyProviderBase;
 import org.osgi.service.component.annotations.Component;

@@ -1,13 +1,13 @@
 package com.peregrine.sitemap;
 
-import com.peregrine.commons.util.PerConstants;
+import com.peregrine.commons.Strings;
 
 public final class SiteMapConstants {
 
     public static final String TXT = "txt";
     public static final String XML = "xml";
     public static final String HTML = "html";
-    public static final String DOT_HTML = PerConstants.DOT + HTML;
+    public static final String DOT_HTML = Strings.DOT + HTML;
 
     public static final String SITE_MAP_INDEX = "sitemapindex";
     public static final String SITE_MAP = "sitemap";

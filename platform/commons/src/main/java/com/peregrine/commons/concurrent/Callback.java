@@ -1,4 +1,4 @@
-package com.peregrine.concurrent;
+package com.peregrine.commons.concurrent;
 
 public interface Callback<Argument> {
 

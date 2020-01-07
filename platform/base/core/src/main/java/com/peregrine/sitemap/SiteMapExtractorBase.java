@@ -25,6 +25,7 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import com.peregrine.commons.Page;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;

@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.commons;
 
 import com.peregrine.SlingResourcesTest;
 import org.apache.jackrabbit.JcrConstants;

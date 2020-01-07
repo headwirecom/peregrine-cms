@@ -25,6 +25,8 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import com.peregrine.commons.Page;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

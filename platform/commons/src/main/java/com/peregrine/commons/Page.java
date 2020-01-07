@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.commons;
 
 /*-
  * #%L

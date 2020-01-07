@@ -25,6 +25,8 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import com.peregrine.commons.Page;
+
 public interface PageRecognizer extends HasName {
 
     boolean isPage(Page candidate);

@@ -30,7 +30,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
-import static com.peregrine.commons.util.PerConstants.DOT;
+import static com.peregrine.commons.Strings.DOT;
 import static com.peregrine.sitemap.SiteMapConstants.SITE_MAP;
 import static com.peregrine.sitemap.SiteMapConstants.XML;
 import static java.util.Objects.isNull;

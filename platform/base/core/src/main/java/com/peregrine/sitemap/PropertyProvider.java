@@ -25,6 +25,8 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import com.peregrine.commons.Page;
+
 public interface PropertyProvider extends HasName {
 
     String getPropertyName();

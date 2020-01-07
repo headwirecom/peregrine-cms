@@ -2,7 +2,7 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
 import com.peregrine.commons.util.PerConstants;
-import com.peregrine.sitemap.Page;
+import com.peregrine.commons.Page;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;

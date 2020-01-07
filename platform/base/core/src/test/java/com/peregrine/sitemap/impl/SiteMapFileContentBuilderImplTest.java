@@ -1,7 +1,7 @@
 package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
-import com.peregrine.commons.util.Strings;
+import com.peregrine.commons.Strings;
 import com.peregrine.sitemap.SiteMapEntry;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.junit.Before;

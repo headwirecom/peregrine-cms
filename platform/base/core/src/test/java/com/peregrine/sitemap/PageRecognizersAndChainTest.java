@@ -1,6 +1,7 @@
 package com.peregrine.sitemap;
 
 import com.peregrine.SlingResourcesTest;
+import com.peregrine.commons.Page;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

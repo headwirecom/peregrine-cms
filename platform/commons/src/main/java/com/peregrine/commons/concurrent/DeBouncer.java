@@ -1,4 +1,4 @@
-package com.peregrine.concurrent;
+package com.peregrine.commons.concurrent;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
