@@ -10,7 +10,11 @@ import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.Strings.COLON;
+import static com.peregrine.commons.util.Strings._SCORE;
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public final class ResourceUtils {
 
@@ -54,6 +58,31 @@ public final class ResourceUtils {
         }
 
         return resourceResolver.getResource(path);
+    }
+
+    public static String fileNameToJcrName(final String name) {
+        if (startsWith(name, _SCORE)) {
+            final String nameAfterUnderscore = name.substring(1);
+            if (nameAfterUnderscore.contains(_SCORE)) {
+                final String prefix = substringBefore(nameAfterUnderscore, _SCORE);
+                final String suffix = substringAfter(nameAfterUnderscore, _SCORE);
+                if (isNotBlank(suffix)) {
+                    return prefix + COLON + suffix;
+                }
+            }
+        }
+
+        return name;
+    }
+
+    public static String jcrNameToFileName(final String name) {
+        if (contains(name, COLON)) {
+            final String prefix = substringBefore(name, COLON);
+            final String suffix = substringAfter(name, COLON);
+            return _SCORE + prefix + _SCORE + suffix;
+        }
+
+        return name;
     }
 
 }
