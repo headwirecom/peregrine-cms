@@ -60,7 +60,7 @@ public final class ResourceUtils {
         return resourceResolver.getResource(path);
     }
 
-    public static String transformFromJcrName(final String name) {
+    public static String fileNameToJcrName(final String name) {
         if (startsWith(name, _SCORE)) {
             final String nameAfterUnderscore = name.substring(1);
             if (nameAfterUnderscore.contains(_SCORE)) {
@@ -75,7 +75,7 @@ public final class ResourceUtils {
         return name;
     }
 
-    public static String transformToJcrName(final String name) {
+    public static String jcrNameToFileName(final String name) {
         if (contains(name, COLON)) {
             final String prefix = substringBefore(name, COLON);
             final String suffix = substringAfter(name, COLON);

@@ -37,8 +37,8 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import java.util.*;
 
-import static com.peregrine.commons.ResourceUtils.transformFromJcrName;
-import static com.peregrine.commons.ResourceUtils.transformToJcrName;
+import static com.peregrine.commons.ResourceUtils.fileNameToJcrName;
+import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -125,12 +125,12 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
             final String key = e.getKey();
             if (!key.startsWith("jcr:")) {
                 final Object value = e.getValue();
-                result.put(transformFromJcrName(key), value);
+                result.put(fileNameToJcrName(key), value);
             }
         }
 
         for (final Resource child : resource.getChildren()) {
-            result.put(transformFromJcrName(child.getName()), transformToMap(child));
+            result.put(fileNameToJcrName(child.getName()), transformToMap(child));
         }
 
         return result;
@@ -205,7 +205,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
             final Map<String, Object> props = transformToJcrNames(properties);
             props.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
             final ResourceResolver resourceResolver = resource.getResourceResolver();
-            return resourceResolver.create(resource, transformToJcrName(childName), props);
+            return resourceResolver.create(resource, jcrNameToFileName(childName), props);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
         }
@@ -216,7 +216,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     private Map<String, Object> transformToJcrNames(final Map<String, ?> map) {
         final Map<String, Object> result = new HashMap<>();
         for (final Map.Entry<String, ?> e : map.entrySet()) {
-            result.put(transformToJcrName(e.getKey()), e.getValue());
+            result.put(jcrNameToFileName(e.getKey()), e.getValue());
         }
 
         return result;
