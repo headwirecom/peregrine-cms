@@ -1,7 +1,8 @@
-package com.peregrine.sitemap;
+package com.peregrine.commons;
 
 import com.peregrine.SlingResourcesTest;
 import com.peregrine.TestingTools;
+import com.peregrine.commons.ResourceUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.junit.Test;

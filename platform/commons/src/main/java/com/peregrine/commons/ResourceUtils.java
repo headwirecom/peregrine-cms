@@ -1,4 +1,4 @@
-package com.peregrine.sitemap;
+package com.peregrine.commons;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;

@@ -25,6 +25,7 @@ package com.peregrine.sitemap;
  * #L%
  */
 
+import com.peregrine.commons.ResourceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
