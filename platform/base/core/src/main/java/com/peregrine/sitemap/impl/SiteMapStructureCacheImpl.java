@@ -37,12 +37,13 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import java.util.*;
 
+import static com.peregrine.commons.ResourceUtils.transformFromJcrName;
+import static com.peregrine.commons.ResourceUtils.transformToJcrName;
 import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.Strings.COLON;
-import static com.peregrine.commons.util.Strings._SCORE;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.endsWith;
+import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 @Component(service = SiteMapStructureCache.class, immediate = true)
 @Designate(ocd = SiteMapStructureCacheImplConfig.class)
@@ -135,21 +136,6 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         return result;
     }
 
-    private String transformFromJcrName(final String name) {
-        if (startsWith(name, _SCORE)) {
-            final String nameAfterUnderscore = name.substring(1);
-            if (nameAfterUnderscore.contains(_SCORE)) {
-                final String prefix = substringBefore(nameAfterUnderscore, _SCORE);
-                final String suffix = substringAfter(nameAfterUnderscore, _SCORE);
-                if (isNotBlank(suffix)) {
-                    return prefix + COLON + suffix;
-                }
-            }
-        }
-
-        return name;
-    }
-
     @Override
     public void call(final String rootPagePath) {
         buildCache(rootPagePath);
@@ -234,16 +220,6 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         }
 
         return result;
-    }
-
-    private String transformToJcrName(final String name) {
-        if (contains(name, COLON)) {
-            final String prefix = substringBefore(name, COLON);
-            final String suffix = substringAfter(name, COLON);
-            return _SCORE + prefix + _SCORE + suffix;
-        }
-
-        return name;
     }
 
     @Override
