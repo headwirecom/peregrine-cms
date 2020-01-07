@@ -28,9 +28,14 @@ package com.peregrine.assets.impl;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import static org.apache.jackrabbit.JcrConstants.NT_FILE;
+
 @ObjectClassDefinition(name = "%config.name", description = "%config.description")
 public @interface AssetsToFSResourceChangeJobConsumerConfig {
 
     @AttributeDefinition(name = "%path.name", description = "%path.description")
     String path();
+
+    @AttributeDefinition(name = "%assetTypes.name", description = "%assetTypes.description")
+    String[] assetTypes() default { NT_FILE };
 }

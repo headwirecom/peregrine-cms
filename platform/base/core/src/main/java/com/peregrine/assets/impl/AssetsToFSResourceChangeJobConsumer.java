@@ -27,6 +27,7 @@ package com.peregrine.assets.impl;
 
 import com.peregrine.assets.ResourceResolverFactoryProxy;
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -37,10 +38,15 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 
+import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -53,23 +59,23 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
     public static final String TOPIC = "com/peregrine/assets/REFRESH_FS_FILES";
     public static final String PN_PATHS = "paths";
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Reference
     private ResourceResolverFactoryProxy resourceResolverFactory;
 
-    private String rootPath;
+    private AssetsToFSResourceChangeJobConsumerConfig config;
 
     @Activate
     public void activate(final AssetsToFSResourceChangeJobConsumerConfig config) {
-        this.rootPath = config.path();
+        this.config = config;
     }
 
     @Override
     public JobResult process(final Job job) {
         final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
-            for (final String path : initialPaths) {
-                updateFiles(resourceResolver, path);
-            }
+            updateFiles(resourceResolver, initialPaths);
         } catch (final LoginException e) {
             return JobResult.CANCEL;
         }
@@ -77,14 +83,36 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
         return JobResult.OK;
     }
 
-    private void updateFiles(final ResourceResolver resourceResolver, final String path) {
-        final Resource resource = resourceResolver.getResource(path);
-        if (isNull(resource)) {
-            deleteMissingAncestorFolder(resourceResolver, path);
+    private void updateFiles(final ResourceResolver resourceResolver, final Set<String> paths) {
+        for (final String path : paths) {
+            try {
+                updateFiles(resourceResolver, path);
+            } catch (final IOException e) {
+                logger.info("File System operation did not succeed.", e);
+            }
         }
     }
 
-    private void deleteMissingAncestorFolder(final ResourceResolver resourceResolver, final String path) {
+    private void updateFiles(final ResourceResolver resourceResolver, final String path) throws IOException {
+        final Resource resource = resourceResolver.getResource(path);
+        if (isNull(resource)) {
+            deleteMissingAncestorFolder(resourceResolver, path);
+        } else if (isAsset(resource)) {
+            updateResource(resource);
+        }
+    }
+
+    private boolean isAsset(final Resource resource) {
+        for (final String type : config.assetTypes()) {
+            if (PerUtil.isPrimaryType(resource, type)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void deleteMissingAncestorFolder(final ResourceResolver resourceResolver, final String path) throws IOException {
         final Resource ancestor = ResourceUtils.getFirstExistingAncestorOnPath(resourceResolver, path);
         if (isNull(ancestor)) {
             return;
@@ -103,19 +131,29 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
             if (folder.isFile()) {
                 folder.delete();
             } else {
-                FileUtils.deleteQuietly(folder);
+                FileUtils.deleteDirectory(folder);
             }
         }
     }
 
     private String localPath(final String... parts) {
-        final StringBuilder result = new StringBuilder(rootPath);
+        final StringBuilder result = new StringBuilder(config.path());
         for (final String part : parts) {
-            result.append(SLASH);
-            result.append(part);
+            if (!startsWith(part, SLASH)) {
+                result.append(SLASH);
+            }
+
+            result.append(ResourceUtils.jcrPathToFilePath(part));
         }
 
         return result.toString();
+    }
+
+    private void updateResource(final Resource resource) throws IOException {
+        final String filePath = localPath(resource.getPath());
+        final File file = new File(filePath);
+        FileUtils.forceMkdirParent(file);
+        FileUtils.copyInputStreamToFile(resource.adaptTo(InputStream.class), file);
     }
 
 }
