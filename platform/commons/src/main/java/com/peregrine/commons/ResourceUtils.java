@@ -85,4 +85,26 @@ public final class ResourceUtils {
         return name;
     }
 
+    public static String jcrPathToFilePath(final String path) {
+        if (startsWith(path, SLASH)) {
+            return SLASH + jcrPathToFilePath(path.substring(1));
+        }
+
+        if (endsWith(path, SLASH)) {
+            return jcrPathToFilePath(path.substring(0, path.length() - 1)) + SLASH;
+        }
+
+        if (isBlank(path)) {
+            return path;
+        }
+
+        final StringBuilder result = new StringBuilder();
+        for (final String name : path.split(SLASH)) {
+            result.append(SLASH);
+            result.append(jcrNameToFileName(name));
+        }
+
+        return result.substring(1);
+    }
+
 }
