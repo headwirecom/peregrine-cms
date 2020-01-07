@@ -10,8 +10,8 @@ import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.Strings.COLON;
-import static com.peregrine.commons.util.Strings._SCORE;
+import static com.peregrine.commons.Strings.COLON;
+import static com.peregrine.commons.Strings._SCORE;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;

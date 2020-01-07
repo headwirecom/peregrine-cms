@@ -1,4 +1,4 @@
-package com.peregrine.commons.util;
+package com.peregrine.commons;
 
 import com.peregrine.TestingTools;
 import org.junit.Test;

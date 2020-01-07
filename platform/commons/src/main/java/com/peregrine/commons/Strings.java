@@ -1,5 +1,6 @@
-package com.peregrine.commons.util;
+package com.peregrine.commons;
 
+import com.peregrine.commons.util.Chars;
 import org.apache.commons.lang3.StringUtils;
 
 import static org.apache.commons.lang3.StringUtils.*;
