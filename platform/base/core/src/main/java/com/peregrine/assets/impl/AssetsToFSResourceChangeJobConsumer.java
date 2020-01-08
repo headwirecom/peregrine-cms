@@ -32,10 +32,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.Job;
+import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
@@ -44,15 +49,18 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Hashtable;
 import java.util.Set;
 
-import static com.peregrine.commons.util.PerConstants.NT_FILE;
+import static com.peregrine.commons.Chars.EQ;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.jackrabbit.JcrConstants.NT_FILE;
 
 @Component(service = JobConsumer.class, immediate = true, property = {
-        JobConsumer.PROPERTY_TOPICS + "=" + AssetsToFSResourceChangeJobConsumer.TOPIC })
+        JobConsumer.PROPERTY_TOPICS + EQ + AssetsToFSResourceChangeJobConsumer.TOPIC })
 @Designate(ocd = AssetsToFSResourceChangeJobConsumerConfig.class)
 public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
 
@@ -62,17 +70,65 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
+    private JobManager jobManager;
+
+    @Reference
     private ResourceResolverFactoryProxy resourceResolverFactory;
 
     private AssetsToFSResourceChangeJobConsumerConfig config;
 
+    private String rootPath;
+    private boolean disabled = true;
+    private ServiceRegistration<ResourceChangeListener> resourceChangeListener;
+
     @Activate
-    public void activate(final AssetsToFSResourceChangeJobConsumerConfig config) {
+    public void activate(final BundleContext context, final AssetsToFSResourceChangeJobConsumerConfig config) {
         this.config = config;
+        rootPath = config.targetFolderRootPath();
+        if (isBlank(rootPath)) {
+            return;
+        }
+
+        final File root = new File(rootPath);
+        if (!root.exists()) {
+            try {
+                FileUtils.forceMkdir(root);
+            } catch (final IOException e) {
+                logger.error("Root Folder could not get created.", e);
+                return;
+            }
+        }
+
+        disabled = !registerResourceChangeListener(context);
+    }
+
+    private boolean registerResourceChangeListener(final BundleContext context) {
+        final Hashtable<String, Object> properties = new Hashtable<>();
+        final String[] rootPaths = config.sourceAssetsRootPaths();
+        if (rootPaths == null || rootPaths.length == 0) {
+            return false;
+        }
+
+        properties.put(ResourceChangeListener.PATHS, rootPaths);
+        properties.put(ResourceChangeListener.CHANGES, new String[] { "ADDED", "CHANGED", "REMOVED" });
+        final AssetsToFSResourceChangeListener listener = new AssetsToFSResourceChangeListener(jobManager);
+        resourceChangeListener = context.registerService(ResourceChangeListener.class, listener, properties);
+        return true;
+    }
+
+    @Deactivate
+    public void deactivate() {
+        if (nonNull(resourceChangeListener)) {
+            resourceChangeListener.unregister();
+        }
     }
 
     @Override
     public JobResult process(final Job job) {
+        if (disabled) {
+            return JobResult.CANCEL;
+        }
+
         final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
             updateFiles(resourceResolver, initialPaths);
@@ -88,7 +144,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
             try {
                 updateFiles(resourceResolver, path);
             } catch (final IOException e) {
-                logger.info("File System operation did not succeed.", e);
+                logger.warn("File System operation did not succeed.", e);
             }
         }
     }
@@ -97,19 +153,9 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
         final Resource resource = resourceResolver.getResource(path);
         if (isNull(resource)) {
             deleteMissingAncestorFolder(resourceResolver, path);
-        } else if (isAsset(resource)) {
+        } else if (PerUtil.isPrimaryType(resource, NT_FILE)) {
             updateResource(resource);
         }
-    }
-
-    private boolean isAsset(final Resource resource) {
-        for (final String type : config.assetTypes()) {
-            if (PerUtil.isPrimaryType(resource, type)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void deleteMissingAncestorFolder(final ResourceResolver resourceResolver, final String path) throws IOException {
@@ -137,7 +183,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
     }
 
     private String localPath(final String... parts) {
-        final StringBuilder result = new StringBuilder(config.path());
+        final StringBuilder result = new StringBuilder(rootPath);
         for (final String part : parts) {
             if (!startsWith(part, SLASH)) {
                 result.append(SLASH);

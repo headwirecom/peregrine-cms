@@ -33,9 +33,10 @@ import static org.apache.jackrabbit.JcrConstants.NT_FILE;
 @ObjectClassDefinition(name = "%config.name", description = "%config.description")
 public @interface AssetsToFSResourceChangeJobConsumerConfig {
 
-    @AttributeDefinition(name = "%path.name", description = "%path.description")
-    String path();
+    @AttributeDefinition(name = "%sourceAssetsRootPaths.name", description = "%sourceAssetsRootPaths.description")
+    String[] sourceAssetsRootPaths() default "/content/assets";
 
-    @AttributeDefinition(name = "%assetTypes.name", description = "%assetTypes.description")
-    String[] assetTypes() default { NT_FILE };
+    @AttributeDefinition(name = "%targetFolderRootPath.name", description = "%targetFolderRootPath.description")
+    String targetFolderRootPath();
+
 }

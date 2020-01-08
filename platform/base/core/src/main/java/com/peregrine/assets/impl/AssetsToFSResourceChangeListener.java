@@ -28,18 +28,16 @@ package com.peregrine.assets.impl;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.JobManager;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.Designate;
 
 import java.util.*;
 
-@Component(service = ResourceChangeListener.class, immediate = true)
-@Designate(ocd = AssetsToFSResourceChangeListenerConfig.class)
 public final class AssetsToFSResourceChangeListener implements ResourceChangeListener {
 
-    @Reference
-    private JobManager jobManager;
+    private final JobManager jobManager;
+
+    public AssetsToFSResourceChangeListener(final JobManager jobManager) {
+        this.jobManager = jobManager;
+    }
 
     @Override
     public void onChange(final List<ResourceChange> changes) {
