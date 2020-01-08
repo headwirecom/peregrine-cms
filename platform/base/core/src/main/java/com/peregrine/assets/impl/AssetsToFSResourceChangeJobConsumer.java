@@ -164,9 +164,11 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
             target.add(resource);
         }
 
-        final Iterator<Resource> children = resource.listChildren();
-        while (children.hasNext()) {
-            findAllFiles(children.next(), target);
+        if (nonNull(resource)) {
+            final Iterator<Resource> children = resource.listChildren();
+            while (children.hasNext()) {
+                findAllFiles(children.next(), target);
+            }
         }
 
         return target;
