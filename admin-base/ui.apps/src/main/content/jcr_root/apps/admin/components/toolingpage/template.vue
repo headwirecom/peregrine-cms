@@ -30,6 +30,7 @@
         <admin-components-about></admin-components-about>
         <admin-components-notifyuser></admin-components-notifyuser>
         <admin-components-askuser></admin-components-askuser>
+        <admin-components-promptuser></admin-components-promptuser>
     </div>
 </template>
 

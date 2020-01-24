@@ -30,13 +30,17 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    api.renameObject(target.path, target.name).then( () => {
-        let path = me.getNodeFromView('/state/tools/objects')
-        if(target.returnTo) {
-            me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + path)
-        } else {
-            me.loadContent('/content/admin/objects.html/path' + SUFFIX_PARAM_SEPARATOR + path)
-        }
+    return new Promise( (resolve, reject) => {
+        api.renameObject(target.path, target.name).then( () => {
+            let path = me.getNodeFromView('/state/tools/objects')
+            if(target.returnTo) {
+                me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + path)
+                resolve()
+            } else {
+                me.loadContent('/content/admin/objects.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+            }
+            resolve()
+        })
     })
 
 }
