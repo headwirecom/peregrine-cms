@@ -22,15 +22,16 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
+import {LoggerFactory} from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('movePage').setLevelDebug()
+
+let log = LoggerFactory.logger('moveTemplate').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
-    var api = me.getApi()
-    api.movePage(target.path, target.to, target.type).then( () => {
+    const api = me.getApi();
+    api.moveTemplate(target.path, target.to, target.type).then( () => {
         let path = me.getNodeFromView('/state/tools/templates')
         me.loadContent('/content/admin/templates.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
     })

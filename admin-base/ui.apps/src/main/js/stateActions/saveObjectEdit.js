@@ -29,6 +29,9 @@ export default function(me, target) {
 
     log.fine(target)
 
-    me.getApi().saveObjectEdit(target.path, target.data).then( () => {
+    return new Promise( (resolve, reject) => {
+        me.getApi().saveObjectEdit(target.path, target.data).then( () => {
+            resolve()
+        })
     })
 }

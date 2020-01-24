@@ -138,6 +138,19 @@
         position: absolute;
 			}
 		}
+		&.mobile-landscape {
+			#editviewoverlay {
+				width: 576px;
+				z-index: 1;
+				left: calc(50% - 288px);
+			}
+			#editview {
+				width: 576px;
+				box-shadow: 0 10px 10px rgba(0,0,0,.75);
+				left: calc(50% - 288px);
+				position: absolute;
+			}
+		}
 		&.tablet {
 			#editviewoverlay {
 				width: 768px;
@@ -151,6 +164,34 @@
         position: absolute;
 			}
 		}
+		&.tablet-landscape {
+			#editviewoverlay {
+				width: 1024px;
+				z-index: 1;
+				left: calc(50% - 512px);
+			}
+
+			#editview {
+				width: 1024px;
+				box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+				left: calc(50% - 512px);
+				position: absolute;
+			}
+		}
+		&.laptop {
+			#editviewoverlay {
+				width: 1366px;
+				z-index: 1;
+				left: calc(50% - 683px);
+			}
+
+			#editview {
+				width: 1366px;
+				box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+				left: calc(50% - 683px);
+				position: absolute;
+			}
+		}
 		&.desktop {
 			#editview {
 				width: 100%;
@@ -159,7 +200,7 @@
 		&.preview {
 			width: 100% !important;
 			position: fixed;
-			z-index: 1;
+			z-index: 0;
 			top: 112px;
 			bottom: 0;
 			left: 0;

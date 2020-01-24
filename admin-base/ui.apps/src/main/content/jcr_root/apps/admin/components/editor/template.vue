@@ -33,7 +33,7 @@
         </div>
         <div class="editor-panel-buttons">
             <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
-                    v-bind:title="$i18n('delete component')" v-on:click.stop.prevent="onDelete">
+                    v-bind:title="$i18n('deleteComponent')" v-on:click.stop.prevent="onDelete">
                 <i class="material-icons">delete</i>
             </button>
             <button class="waves-effect waves-light btn btn-raised" v-bind:title="$i18n('cancel')"
@@ -72,7 +72,7 @@
         schema: function() {
             var view = $perAdminApp.getView()
             var component = view.state.editor.component
-            var schema = view.admin.componentDefinitions[component]
+            var schema = view.admin.componentDefinitions[component].model
             return schema
         },
         dataModel: function() {
@@ -109,8 +109,8 @@
             //Loop through the model for this object/page/asset and find objects that have children
             for ( const key in data) {
                 //If data[key] or deleted[key] is an array of objects
-                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
-                    ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+                if (( data && Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') ||
+                    ( _deleted && Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
 
                     let node = data[key];
 
