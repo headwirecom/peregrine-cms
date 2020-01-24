@@ -32,10 +32,13 @@ export default function(me, target) {
     if(target.path !== '/jcr:content') {
         log.fine('deletePageNode',target)
         var api = me.getApi()
-        api.deletePageNode(target.pagePath, target.pagePath+target.path).then( () => {
-            let view = me.getView()
-            delete view.state.editor;
-            set(view, '/state/editorVisible', false)
+        return new Promise( (resolve, reject) => {
+            api.deletePageNode(target.pagePath, target.pagePath+target.path).then( () => {
+                let view = me.getView()
+                delete view.state.editor;
+                set(view, '/state/editorVisible', false)
+                resolve()
+            })
         })
     }
 
