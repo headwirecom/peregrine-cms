@@ -55,7 +55,7 @@ export default function(me, target) {
     }
 
     log.fine(nodeData)
-    return new Promoise( (resolve, reject) => {
+    return new Promise( (resolve, reject) => {
         me.getApi().savePageEdit(target.path, nodeData).then( () => {
             resolve()
         })
