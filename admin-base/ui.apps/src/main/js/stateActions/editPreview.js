@@ -33,16 +33,20 @@ export default function(me, target) {
     if(!target) target = 'preview';
 
     let view = me.getView()
-    if(target === 'preview') {
-        const current = get(view, '/state/tools/workspace/preview', '');
-        if(current === 'preview') {
-            set(view, '/state/tools/workspace/preview', '')
-            set(view, '/pageView/view', view.state.tools.workspace.view)
+
+    return new Promise( (resolve, reject) => {
+        if(target === 'preview') {
+            const current = get(view, '/state/tools/workspace/preview', '');
+            if(current === 'preview') {
+                set(view, '/state/tools/workspace/preview', '')
+                set(view, '/pageView/view', view.state.tools.workspace.view)
+            } else {
+                set(view, '/state/tools/workspace/preview', target)
+                set(view, '/pageView/view', target)
+            }
         } else {
-            set(view, '/state/tools/workspace/preview', target)
-            set(view, '/pageView/view', target)
+            set(view, '/state/tools/workspace/view', target)
         }
-    } else {
-        set(view, '/state/tools/workspace/view', target)
-    }
+        resolve()
+    })
 }
