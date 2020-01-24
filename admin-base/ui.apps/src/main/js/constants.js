@@ -34,8 +34,7 @@ export const PathBrowser = {
   Type: {
     PAGE: 'page',
     ASSET: 'asset',
-    IMAGE: 'image',
-    OBJECT: 'object'
+    IMAGE: 'image'
   }
 }
 export const IgnoreContainers = {

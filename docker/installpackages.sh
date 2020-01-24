@@ -13,7 +13,6 @@ PKG_ORDER=( \
  admin.ui.materialize-1.0-SNAPSHOT.zip \
  admin.ui.apps-1.0-SNAPSHOT.zip \
  themeclean-ui.apps-1.0-SNAPSHOT.zip \
- themecleanflex.ui.apps-1.0-SNAPSHOT.zip \
 )
 
 # Install packages in a specific order first. 
