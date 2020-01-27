@@ -70,7 +70,7 @@
                 <a v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
             </li>
             <li>
-                <a v-bind:title="$i18n('aboutNavBtn')" href="#" v-on:click="onShowAbout">{{$i18n('about')}}</a>
+                <a v-bind:title="$i18n('aboutNavBtn')" href="#" v-on:click="onShowAbout">{{$i18n('aboutNavBtn')}}</a>
             </li>
             <li>
                  <vue-multiselect
