@@ -24,8 +24,11 @@
  */
 
 export const DATA_EXTENSION = '.data.json'
+
 export const COMPONENT_PREFIX = 'cmp'
+
 export const SUFFIX_PARAM_SEPARATOR = ':'
+
 export const EditorTypes = {
   TEMPLATE: 'template-editor',
   PAGE: 'page-editor'
