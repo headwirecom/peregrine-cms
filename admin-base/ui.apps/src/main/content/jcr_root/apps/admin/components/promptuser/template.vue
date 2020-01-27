@@ -23,10 +23,13 @@
   #L%
   -->
 <template>  
-    <div id="askUserModal" class="modal bottom-sheet" ref="modal">
+    <div id="promptUserModal" class="modal bottom-sheet" ref="modal">
         <div class="modal-content">
             <h4>{{title}}</h4>
             <p>{{message}}</p>
+            <input
+                v-model="value"
+                type="text">
         </div>
         <div class="modal-footer">
             <button 
@@ -50,6 +53,11 @@
 <script>
     export default {
         props: ['model'],
+        data: function() {
+            return {
+                value: null
+            }
+        },
         computed: {
             title() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/notification/title')
@@ -66,10 +74,13 @@
         },
         methods: {
             cancel() {
-                $('#askUserModal').modal('getInstance').options.takeAction = false;
+                $('#promptUserModal').modal('getInstance').options.takeAction = false;
+                this.value = null;
             },
             ok() {
-                $('#askUserModal').modal('getInstance').options.takeAction = true;
+                $('#promptUserModal').modal('getInstance').options.takeAction = true;
+                $('#promptUserModal').modal('getInstance').options.value = this.value;
+                this.value = null;
             }
         }
 

@@ -33,7 +33,10 @@ export default function(me, target) {
 
     log.fine(target)
 
-    set(me.getView(), '/state/contentview/editor/type', EditorTypes.TEMPLATE)
-    me.loadContent('/content/admin/templates/edit.html/path'+SUFFIX_PARAM_SEPARATOR+target)
+    return new Promise( (resolve, reject) => {
+        set(me.getView(), '/state/contentview/editor/type', EditorTypes.TEMPLATE)
+        me.loadContent('/content/admin/templates/edit.html/path'+SUFFIX_PARAM_SEPARATOR+target)
+        resolve()
+    })
 
 }

@@ -32,12 +32,17 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    me.getApi().savePageEdit(view.pageView.path, target.data).then( () => {
-        delete view.state.editor;
-        set(view, '/state/editorVisible', false)
-        if(view.pageView.page.serverSide) {
-            me.action(me.getApp().$children[0], 'refreshEditor', view.pageView.page)
-        }
+
+    return new Promise( (resolve, reject) => {
+        me.getApi().savePageEdit(view.pageView.path, target.data).then( () => {
+            delete view.state.editor;
+            set(view, '/state/editorVisible', false)
+            if(view.pageView.page.serverSide) {
+                me.action(me.getApp().$children[0], 'refreshEditor', view.pageView.page).then( () => { resolve() })
+            } else {
+                resolve()
+            }
+        })
     })
     // me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
     //         log.fine('component name is', name)
