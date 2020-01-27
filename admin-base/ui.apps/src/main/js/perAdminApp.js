@@ -446,7 +446,6 @@ const waitStack = []
 
 function enterWaitState() {
     waitStack.push('wait')
-    console.log('enterWaitState')
     setTimeout( function() {
         if(waitStack.length > 0) {
             document.getElementById('waitMask').style.display = 'inherit'
@@ -455,7 +454,6 @@ function enterWaitState() {
 }
 
 function exitWaitState() {
-    console.log('exitWaitState')
     waitStack.pop()
     if(waitStack.length === 0) {
         document.getElementById('waitMask').style.display = 'none'
