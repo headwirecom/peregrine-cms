@@ -378,6 +378,18 @@ public abstract class AbstractBaseServlet
         }
 
         /**
+         * Starts an JSon object value with the provided name
+         * @param name Name of the object field
+         * @return This instance for method chaining
+         * @throws IOException If starting the object failed
+         */
+        public JsonResponse writeObject(String name) throws IOException {
+            json.writeObjectFieldStart(name);
+            states.push(STATE.object);
+            return this;
+        }
+
+        /**
          * Closes the current Object or Array
          * @return This instance for method chaining
          * @throws IOException If closing the current object / array failed
