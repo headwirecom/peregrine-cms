@@ -34,14 +34,14 @@
                 class="modal-action modal-close waves-effect waves-light btn-flat"
                 v-on:click="cancel()"
                 title="cancel">
-                no
+                {{noText}}
             </button>
             <button 
                 type="button"
                 class="modal-action modal-close waves-effect waves-light btn-flat"
                 v-on:click="ok()"
                 title="ok">
-                yes
+                {{yesText}}
             </button>
         </div>
     </div>
@@ -56,6 +56,12 @@
             },
             message() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/notification/message')
+            },
+            yesText() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/yesText')
+            },
+            noText() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/noText')
             }
         },
         methods: {

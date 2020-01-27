@@ -26,6 +26,9 @@
 
 import {LoggerFactory} from './logger'
 import {get, stripNulls} from './utils'
+
+let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
+
 import {Field} from './constants';
 
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
@@ -68,10 +71,8 @@ function update(path) {
     logger.fine('Update, path: ', path)
     return axios.post(API_BASE+path, null, postConfig)
         .then( (response) => {
-            return new Promise( (resolve, reject) => {
-                logger.fine('Update, response data: ' + response.data)
-                resolve(response.data)
-            })
+            logger.fine('Update, response data: ' + response.data)
+            return response.data
         })
         .catch( (error) => {
             logger.error('Update request to', error.response.request.path, 'failed')
@@ -83,12 +84,7 @@ function updateWithForm(path, data) {
 
     logger.fine('Update with Form, path: ' + path + ', data: ' + data)
     return axios.post(API_BASE+path, data, postConfig)
-        .then( (response) => {
-            return new Promise( (resolve, reject) => {
-                logger.fine('Update with Form, response data: ' + response.data)
-                resolve(response.data)
-            })
-        })
+        .then( (response) => response.data )
         .catch( (error) => {
             logger.error('Update with Form request to', error.response.request.path, 'failed')
             throw error
@@ -101,10 +97,8 @@ function updateWithFormAndConfig(path, data, config) {
     logger.fine('Update with Form and Config, path: ' + path + ', data: ' + data)
     return axios.post(API_BASE+path, data, config)
         .then( (response) => {
-            return new Promise( (resolve, reject) => {
-                logger.fine('Update with Form and Config, response data: ' + response.data)
-                resolve(response.data)
-            })
+            logger.fine('Update with Form and Config, response data: ' + response.data)
+            return response.data
         })
         .catch( (error) => {
             logger.error('Update with Form and Config request to', error.response.request.path, 'failed')
@@ -135,7 +129,7 @@ function getOrCreate(obj, path) {
 
 function populateView(path, name, data) {
 
-    return new Promise( (resolve, reject) => {
+    return new Promise( (resolve) => {
         var obj = getOrCreate(callbacks.getView(), path)
         let vue = callbacks.getApp()
         if(vue && path !== '/') {
@@ -218,87 +212,59 @@ class PerAdminImpl {
     }
 
     populateTools() {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/list.json/tools')
-                .then( (data) => populateView('/admin', 'tools', data.children) )
-                .then(() => resolve() )
-                .catch( (error) => {
-                    logger.error('call populateTools() failed')
-                    reject(error)
-                })
-        })
+        return fetch('/admin/list.json/tools')
+            .then( (data) => populateView('/admin', 'tools', data.children) )
+            .catch( (error) => {
+                logger.error('call populateTools() failed')
+                return error
+            })
     }
 
     populateToolsConfig() {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/list.json/tools/config')
-                .then( (data) => populateView('/admin', 'toolsConfig', data.children) )
-                .then(() => resolve() )
-        })
+        return fetch('/admin/list.json/tools/config')
+            .then( (data) => populateView('/admin', 'toolsConfig', data.children) )
     }
 
     populateUser() {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/access.json?'+(new Date()).getTime())
-                .then( (data) => {
-                    populateView('/state', 'user', data.userID)
+        return fetch('/admin/access.json?'+(new Date()).getTime())
+            .then( (data) => {
+                return populateView('/state', 'user', data.userID).then( () => {
                     if(data.userID === 'anonymous') {
                         alert('please login to continue')
                         window.location = '/'
-                        reject()
                     }
                 })
-                .then(() => resolve() )
-        })
+            })
     }
 
     populateContent(path) {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/content.json'+path)
-                .then( (data) => populateView('/', 'adminPageStaged', data) )
-                .then(() => resolve() )
-        })
+        return fetch('/admin/content.json'+path)
+            .then( (data) => populateView('/', 'adminPageStaged', data) )
     }
 
     populateComponents() {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/components.json')
-                .then( (data) => populateView('/admin', 'components', data) )
-                .then( () => resolve() )
-        })
+        return fetch('/admin/components.json')
+            .then( (data) => populateView('/admin', 'components', data) )
     }
 
     populateObjects() {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/objects.json')
-                .then( (data) => populateView('/admin', 'objects', data) )
-                .then( () => resolve() )
-        })
+        return fetch('/admin/objects.json')
+            .then( (data) => populateView('/admin', 'objects', data) )
     }
 
     populateTemplates() {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/templates.json')
-                .then( (data) => populateView('/admin', 'templates', data) )
-                .then( () => resolve() )
-        })
+        return fetch('/admin/templates.json')
+            .then( (data) => populateView('/admin', 'templates', data) )
     }
 
     populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/nodes.json'+path+'?includeParents='+includeParents)
-                .then( (data) => populateView('/admin', target, data ) )
-                .then( () => resolve() )
-                .catch( (err) => reject(err) )
-        })
+        return fetch('/admin/nodes.json'+path+'?includeParents='+includeParents)
+            .then( (data) => populateView('/admin', target, data ) )
     }
 
     populateComponentDefinitionFor(component) {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/components/'+component)
+        return fetch('/admin/components/'+component)
                 .then( (data) => populateView('/admin/componentDefinitions', component, data) )
-                .then( () => resolve() )
-        })
     }
 
     populateComponentDefinitionFromNode(path) {
@@ -310,6 +276,7 @@ class PerAdminImpl {
                     let component = callbacks.getComponentByName(name)
                     if(component && component.methods && component.methods.augmentEditorSchema) {
                         data.model = component.methods.augmentEditorSchema(data.model)
+                        data.ogTags = component.methods.augmentEditorSchema(data.ogTags)
                     }
 
                     let promises = []
@@ -351,17 +318,47 @@ class PerAdminImpl {
                                 })
                                 promises.push(promise)
                             }
-                                }
-                            let visible = data.model.fields[i].visible
+                            const visible = data.model.fields[i].visible
                             if(visible) {
                                 data.model.fields[i].visible = function(model) {
                                     return exprEval.Parser.evaluate( visible, this );
                                 }
                             }
+                        }
+                        if(data.ogTags) {
+                            for(let i = 0; i < data.ogTags.fields.length; i++) {
+                                let from = data.ogTags.fields[i].valuesFrom
+                                if(from) {
+                                  data.ogTags.fields[i].values = []
+                                  let promise = axios.get(from).then( (response) => {
+                                    for(var key in response.data) {
+                                      if(response.data[key]['jcr:title']) {
+                                        const nodeName = key
+                                        const val = from.replace('.infinity.json', '/'+nodeName)
+                                        let name = response.data[key].name
+                                        if(!name) {
+                                          name = response.data[key]['jcr:title']
+                                        }
+                                        data.ogTags.fields[i].values.push({ value: val, name: name })
+                                      }
+                                    }
+                                  }).catch( (error) => {
+                                    logger.error('missing node', data.ogTags.fields[i].valuesFrom, 'for list population in dialog', error)
+                                  })
+                                  promises.push(promise)
+                                }
+                                const visible = data.ogTags.fields[i].visible
+                                if(visible) {
+                                  data.ogTags.fields[i].visible = function(ogTags) {
+                                    return exprEval.Parser.evaluate( visible, this );
+                                }
+                            }
                             translateFields(data.model.fields);
                         }
+
+                    }
                         Promise.all(promises).then( () => {
-                            populateView('/admin/componentDefinitions', data.name, data.model)
+                            populateView('/admin/componentDefinitions', data.name, data)
                             resolve(name)
                         })
                 })
@@ -376,50 +373,45 @@ class PerAdminImpl {
         return this.populateComponentDefinitionFromNode(path)
     }
 
-    populatePageView(path) {
+    populateTenants(path) {
         return new Promise( (resolve, reject) => {
-            fetch('/admin/readNode.json'+path)
-                .then( (data) => populateView('/pageView', 'page', data) )
-                .then( () => resolve() )
+            fetch('/admin/listTenants.json')
+                .then( (data) => {
+                    const state = callbacks.getView().state
+                    if(!state.site && data.tenants.length > 0) {
+                        state.site = data.tenants[data.tenants.length - 1]
+                    }
+                    populateView('/admin', 'tenants', data.tenants).then( () => resolve() )
+                 } )
         })
+    }
+
+    populatePageView(path) {
+        return fetch('/admin/readNode.json'+path)
+            .then( (data) => populateView('/pageView', 'page', data) )
     }
 
     populateObject(path, target, name) {
-        return new Promise( (resolve, reject) => {
-            // fetch('/admin/getObject.json'+path)
-            //     .then( (data) => populateView(target, name, data).then( () => {
-            //         this.populateComponentDefinitionFromNode(path).then( () => {
-            //             resolve()
-            //         })
-            //     } ) )
-            //
-            this.populateComponentDefinitionFromNode(path).then( () => {
-                fetch('/admin/getObject.json'+path).then( (data) => {
-                    populateView(target, name, data).then( () => {
-                        resolve();
-                    })
-                })
+        return this.populateComponentDefinitionFromNode(path)
+            .then( () => {
+                return fetch('/admin/getObject.json'+path).then( (data) => populateView(target, name, data) )
             })
-        })
     }
 
     populateReferencedBy(path) {
-        return new Promise( (resolve, reject) => {
-            fetch('/admin/refBy.json'+path)
-                .then( (data) => populateView('/state', 'referencedBy', data) )
-                .then( () => resolve() )
-        })
+        return fetch('/admin/refBy.json'+path)
+            .then( (data) => populateView('/state', 'referencedBy', data) )
     }
 
     populateI18N(language) {
-        return new Promise( (resolve, reject) => {
-            axios.get('/i18n/admin/'+language+'.infinity.json').then( (response) => {
-                updateExplorerDialog();
-                populateView('/admin/i18n', language, response.data).then( () => {
-                    resolve()
-                })
-            })
+      return new Promise( (resolve, reject) => {
+        axios.get('/i18n/admin/'+language+'.infinity.json').then( (response) => {
+          updateExplorerDialog();
+          populateView('/admin/i18n', language, response.data).then( () => {
+            resolve()
+          })
         })
+      })
     }
 
     createSite(fromName, toName, title) {
@@ -447,32 +439,23 @@ class PerAdminImpl {
     }
 
     createObject(parentPath, name, templatePath) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('name', name)
-            data.append('templatePath', templatePath)
-            updateWithForm('/admin/createObject.json'+parentPath, data)
-                .then( (data) => this.populateNodesForBrowser(parentPath) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        data.append('name', name)
+        data.append('templatePath', templatePath)
+        return updateWithForm('/admin/createObject.json'+parentPath, data)
+            .then( () => this.populateNodesForBrowser(parentPath) )
     }
 
     deleteObject(path) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            updateWithForm('/admin/deleteNode.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        return updateWithForm('/admin/deleteNode.json'+path, data)
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     deleteAsset(path) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            updateWithForm('/admin/deleteNode.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        return updateWithForm('/admin/deleteNode.json'+path, data)
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     renameAsset(path, newName) {
@@ -486,25 +469,19 @@ class PerAdminImpl {
     }
 
     moveAsset(path, to, type) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('to', to)
-            data.append('type', type)
-            updateWithForm('/admin/move.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        data.append('to', to)
+        data.append('type', type)
+        return updateWithForm('/admin/move.json'+path, data)
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     moveObject(path, to, type) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('to', to)
-            data.append('type', type)
-            updateWithForm('/admin/move.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        data.append('to', to)
+        data.append('type', type)
+        return updateWithForm('/admin/move.json'+path, data)
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     renameObject(path, newName) {
@@ -518,24 +495,18 @@ class PerAdminImpl {
     }
 
     deletePage(path) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            updateWithForm('/admin/deletePage.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        const data = new FormData()
+        return updateWithForm('/admin/deletePage.json'+path, data)
+                .then( () => this.populateNodesForBrowser(path) )
     }
 
     deleteSite(target) {
-        let name = target.name;
-        let root = '/content/sites';
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('name', name);
-            updateWithForm('/admin/deleteSite.json', data)
-                .then( (data) => this.populateNodesForBrowser(root) )
-                .then( () => resolve() )
-        })
+        const name = target.name;
+        const root = '/content/sites'
+        const data = new FormData()
+        data.append('name', name)
+        return updateWithForm('/admin/deleteSite.json', data)
+                .then( () => this.populateNodesForBrowser(root) )
     }
 
     renamePage(path, newName) {
@@ -549,63 +520,65 @@ class PerAdminImpl {
     }
 
     movePage(path, to, type) {
+        let data = new FormData()
+        data.append('to', to)
+        data.append('type', type)
+        return updateWithForm('/admin/move.json'+path, data)
+            .then( () => this.populateNodesForBrowser(path) )
+    }
+
+    deletePageNode(path, nodePath) {
+        let data = new FormData()
+        return updateWithForm('/admin/deleteNode.json'+nodePath, data)
+            .then( () => this.populatePageView(path) )
+    }
+
+    createTemplate(parentPath, name, component, title) {
+        let data = new FormData()
+        data.append('name', name)
+        data.append('component', component)
+        data.append('title', title)
+        return updateWithForm('/admin/createTemplate.json'+parentPath, data)
+            .then( () => this.populateNodesForBrowser(parentPath) )
+    }
+
+    moveTemplate(path, to, type) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
             data.append('to', to)
             data.append('type', type)
             updateWithForm('/admin/move.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
+            .then( (data) => this.populateNodesForBrowser(path) )
+            .then( () => resolve() )
         })
     }
 
-    deletePageNode(path, nodePath) {
+    deleteTemplate(path) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
-            updateWithForm('/admin/deleteNode.json'+nodePath, data)
-                .then( (data) => this.populatePageView(path) )
-                .then( () => resolve() )
-        })
-    }
-
-    createTemplate(parentPath, name, component, title) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('name', name)
-            data.append('component', component)
-            data.append('title', title)
-            updateWithForm('/admin/createTemplate.json'+parentPath, data)
-                .then( (data) => this.populateNodesForBrowser(parentPath) )
-                .then( () => resolve() )
+            updateWithForm('/admin/deleteNode.json'+path, data)
+            .then( (data) => this.populateNodesForBrowser(path) )
+            .then( () => resolve() )
         })
     }
 
     createFolder(parentPath, name) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            data.append('name', name)
-            updateWithForm('/admin/createFolder.json'+parentPath, data)
-                .then( (data) => this.populateNodesForBrowser(parentPath) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        data.append('name', name)
+        return updateWithForm('/admin/createFolder.json'+parentPath, data)
+            .then( () => this.populateNodesForBrowser(parentPath) )
     }
 
     deleteFolder(path) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            updateWithForm('/admin/deleteNode.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        return updateWithForm('/admin/deleteNode.json'+path, data)
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     deleteFile(path) {
-        return new Promise( (resolve, reject) => {
-            let data = new FormData()
-            updateWithForm('/admin/deleteNode.json'+path, data)
-                .then( (data) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        let data = new FormData()
+        return updateWithForm('/admin/deleteNode.json'+path, data)
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     uploadFiles(path, files, cb) {
@@ -616,40 +589,31 @@ class PerAdminImpl {
           }
         }
 
-        return new Promise( (resolve, reject) => {
+        logger.fine('uploading files to', path)
+        logger.fine(files)
 
-            logger.fine('uploading files to', path)
-            logger.fine(files)
+        var data = new FormData()
+        for(var i = 0; i < files.length; i++) {
+            var file = files[i]
+            data.append(file.name, file, file.name)
+        }
 
-            var data = new FormData()
-            for(var i = 0; i < files.length; i++) {
-                var file = files[i]
-                data.append(file.name, file, file.name)
-            }
-
-            updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
-                .then( (response) => this.populateNodesForBrowser(path) )
-                .then( () => resolve() )
-        })
+        return updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
+            .then( () => this.populateNodesForBrowser(path) )
     }
 
     fetchExternalImage(path, url, name, config) {
-        return new Promise( (resolve, reject) => {
-            axios.get(url, {responseType: "blob"}).then( (response) => {
-                //alert(response.data)
-                var data = new FormData()
-                data.append(name, response.data, name)
+        return axios.get(url, {responseType: "blob"}).then( (response) => {
+            var data = new FormData()
+            data.append(name, response.data, name)
 
-                updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
-                    .then( (response) => this.populateNodesForBrowser(path) )
-                    .then( () => resolve() )
-                    .catch( err => reject() )
-            })
+            return updateWithFormAndConfig('/admin/uploadFiles.json'+path, data, config)
+                .then( () => this.populateNodesForBrowser(path) )
         })
     }
 
     setInitialPageEditorState() {
-        return new Promise( (resolve, reject) => {
+        return new Promise( (resolve) => {
             populateView('/state', 'editorVisible', false)
             populateView('/state', 'rightPanelVisible', true)
             populateView('/state', 'editor', {})
@@ -658,7 +622,7 @@ class PerAdminImpl {
     }
 
     savePageEdit(path, node) {
-        return new Promise( (resolve, reject) => {
+        return new Promise( (resolve) => {
             let formData = new FormData()
             // convert to a new object
             let nodeData = JSON.parse(JSON.stringify(node))
@@ -691,20 +655,16 @@ class PerAdminImpl {
     }
 
     saveObjectEdit(path, node) {
-        return new Promise( (resolve, reject) => {
-            let formData = new FormData()
-            // convert to a new object
-            let nodeData = JSON.parse(JSON.stringify(node))
-            stripNulls(nodeData)
-            delete nodeData['jcr:created']
-            delete nodeData['jcr:createdBy']
-            delete nodeData['jcr:lastModified']
-            delete nodeData['jcr:lastModifiedBy']
-            formData.append('content', json(nodeData))
-
-            updateWithForm('/admin/updateResource.json'+path, formData)
-                .then( () => resolve() )
-        })
+        let formData = new FormData()
+        // convert to a new object
+        let nodeData = JSON.parse(JSON.stringify(node))
+        stripNulls(nodeData)
+        delete nodeData['jcr:created']
+        delete nodeData['jcr:createdBy']
+        delete nodeData['jcr:lastModified']
+        delete nodeData['jcr:lastModifiedBy']
+        formData.append('content', json(nodeData))
+        return updateWithForm('/admin/updateResource.json'+path, formData)
     }
 
     saveAssetProperties(node) {
@@ -728,32 +688,33 @@ class PerAdminImpl {
 
     insertNodeAt(path, component, drop, variation) {
         logger.fine(arguments)
-        return new Promise( (resolve, reject) => {
-            let formData = new FormData();
-            formData.append('component', component)
-            formData.append('drop', drop)
-            if(variation) {
-                formData.append('variation', variation)
-            }
+        let formData = new FormData();
+        formData.append('component', component)
+        formData.append('drop', drop)
+        if(variation) {
+            formData.append('variation', variation)
+        }
+        return new Promise( (resolve) => {
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( function(data) {
                     resolve(data)
-                }).catch(error => {
-                resolve( {} )
-            })
+                }).catch(() => {
+                    resolve( {} )
+                }
+            )
         })
     }
 
     insertNodeWithDataAt(path, data, drop) {
         logger.fine(arguments)
-        return new Promise( (resolve, reject) => {
-            let formData = new FormData();
-            formData.append('content', json(data))
-            formData.append('drop', drop);
+        let formData = new FormData();
+        formData.append('content', json(data))
+        formData.append('drop', drop);
+        return new Promise( (resolve) => {
             updateWithForm('/admin/insertNodeAt.json'+path, formData)
                 .then( (data) => {
                     resolve(data)
-                }).catch(error => {
+                }).catch(() => {
                 resolve( {} )
             })
         })
@@ -761,27 +722,17 @@ class PerAdminImpl {
 
     moveNodeTo(path, component, drop) {
         logger.fine('Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
-        return new Promise( (resolve, reject) => {
-            let formData = new FormData();
-            formData.append('component', component)
-            formData.append('drop', drop)
-            updateWithForm('/admin/moveNodeTo.json'+path, formData)
-                .then( function(data) {
-                    resolve(data)
-                })
-        })
+        let formData = new FormData();
+        formData.append('component', component)
+        formData.append('drop', drop)
+        return updateWithForm('/admin/moveNodeTo.json'+path, formData)
     }
 
     replicate(path) {
-        return new Promise( (resolve, reject) => {
-            let formData = new FormData();
-            formData.append('deep', 'false')
-            formData.append('name', 'defaultRepl')
-            updateWithForm('/admin/repl.json'+path, formData)
-                .then( function(data) {
-                    resolve(data)
-                })
-        })
+        let formData = new FormData();
+        formData.append('deep', 'false')
+        formData.append('name', 'defaultRepl')
+        return updateWithForm('/admin/repl.json'+path, formData)
     }
 }
 

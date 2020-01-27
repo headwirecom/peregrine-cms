@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -40,6 +40,7 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DE
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.OG_TAGS;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
@@ -73,6 +74,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
 
     public static final String EXPLORER_DIALOG_JSON = "explorer_dialog.json";
     public static final String DIALOG_JSON = "dialog.json";
+    public static final String OG_TAG_DIALOG_JSON = "og_tag_dialog.json";
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -97,7 +99,11 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         }
         Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
         if(dialog == null) {
-            dialog = getDialogFromSuperType(component, page);
+            dialog = getDialogFromSuperType(component, page, false);
+        }
+        Resource ogTags = component.getChild(OG_TAG_DIALOG_JSON);
+        if(ogTags == null) {
+          ogTags = getDialogFromSuperType(component, page, true);
         }
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute(PATH, componentPath);
@@ -105,10 +111,13 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         if(dialog != null) {
             answer.writeAttributeRaw(MODEL, ServletHelper.asString(dialog.adaptTo(InputStream.class)).toString());
         }
+        if(ogTags != null) {
+          answer.writeAttributeRaw(OG_TAGS, ServletHelper.asString(ogTags.adaptTo(InputStream.class)).toString());
+        }
         return answer;
     }
 
-    private Resource getDialogFromSuperType(Resource resource, boolean page) {
+    private Resource getDialogFromSuperType(Resource resource, boolean page, boolean isMetaTag) {
         String componentPath = resource.getValueMap().get(SLING_RESOURCE_SUPER_TYPE, String.class);
         if(componentPath != null) {
             if (!componentPath.startsWith(APPS_ROOT + SLASH)) {
@@ -116,9 +125,17 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             }
             ResourceResolver resourceResolver = resource.getResourceResolver();
             Resource component = resourceResolver.getResource(componentPath);
-            Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
+            Resource dialog;
+            if(isMetaTag){
+              dialog = component.getChild(OG_TAG_DIALOG_JSON);
+            } else {
+              dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
+            }
             if (dialog == null) {
-                return getDialogFromSuperType(component, page);
+              if(isMetaTag){
+                return getDialogFromSuperType(component, page, true);
+              }
+              return getDialogFromSuperType(component, page, false);
             } else {
                 return dialog;
             }
