@@ -76,9 +76,3 @@ export const MimeType = {
     SVG: 'image/svg+xml'
   }
 }
-
-export const IgnoreContainers = {
-  ENABLED: 'ignore-containers',
-  ON_HOLD: 'on-hold',
-  DISABLED: ''
-}
