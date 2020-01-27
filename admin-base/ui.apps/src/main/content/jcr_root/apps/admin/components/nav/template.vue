@@ -49,18 +49,17 @@
           </template>
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
-          <!-- disabled for now - rest of UI has to change to a site centric approach as well <li>
-               <vue-multiselect
-                  v-model="state.site"
-                  deselect-label=""
-                  track-by="name"
-                  label="name"
-                  placeholder="Site"
-                  :options="sites"
-                  :searchable="false"
-                  :allow-empty="false"
-               ></vue-multiselect>
-          </li> -->
+          <li>
+            <vue-multiselect
+                v-model="state.site"
+                deselect-label=""
+                track-by="name"
+                label="name"
+                placeholder="Site"
+                :options="sites"
+                :searchable="false"
+                :allow-empty="false"/>
+          </li>
           <li v-if="this.$root.$data.state">
             <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
               {{this.$root.$data.state.user}}
