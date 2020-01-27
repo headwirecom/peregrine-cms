@@ -41,7 +41,7 @@
                             v-bind:model="{
                             target: null,
                             command: 'selectParent',
-                            tooltipTitle: $i18n('back to parent directory')
+                            tooltipTitle: $i18n('backToParentDir')
                         }"><i class="material-icons">folder_open</i> ..
                     </admin-components-action>
                 </li>
@@ -103,7 +103,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'editFile',
-                                tooltipTitle: `${$i18n('edit file')} '${child.title || child.name}'`
+                                tooltipTitle: `${$i18n('editFile')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
@@ -131,7 +131,7 @@
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
-                                v-bind:title="`${$i18n('view')} '${child.title || child.name}' ${$i18n('in new tab')}`"
+                                v-bind:title="`${$i18n('view')} '${child.title || child.name}' ${$i18n('inNewTab')}`"
                                 >
                                 <i class="material-icons">visibility</i>
                             </a>
@@ -150,10 +150,10 @@
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.startsWith('/content/assets')">
-                    {{ $i18n('This folder is empty') }}, {{ $i18n('use the navigation bar to add an asset or drag and drop an asset from the file system onto the browser') }}.
+                    {{ $i18n('emptyExplorerHintAssets') }}.
                 </div>
                 <div v-else>
-                    {{ $i18n('This folder is empty') }}, {{ $i18n('use the navigation bar to add content') }}...
+                    {{ $i18n('emptyExplorerHint') }}...
                 </div>
             </div>
 

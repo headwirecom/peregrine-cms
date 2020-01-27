@@ -29,8 +29,12 @@ let log = LoggerFactory.logger('createObjectFolder').setLevelDebug()
 export default function(me, target) {
     log.fine(target)
     var api = me.getApi()
-    api.createFolder(target.parent, target.name).then( () => {
-        me.loadContent('/content/admin/objects.html/path'+ SUFFIX_PARAM_SEPARATOR + target.parent)
+
+    return new Promise( (resolve, reject) => {
+        api.createFolder(target.parent, target.name).then( () => {
+            me.loadContent('/content/admin/objects.html/path'+ SUFFIX_PARAM_SEPARATOR + target.parent)
+            resolve()
+        })
     })
 
 }

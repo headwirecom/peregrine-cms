@@ -22,47 +22,52 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
+import {LoggerFactory} from '../logger'
+
 let log = LoggerFactory.logger('editPreview').setLevelDebug()
 
-import { set, get } from '../utils'
-import { IgnoreContainers } from '../constants.js'
+import {set, get} from '../utils'
+import {IgnoreContainers} from '../constants.js'
 
-export default function(me, target) {
+export default function (me, target) {
 
-    log.fine(target);
-    if(!target) target = 'preview';
+  log.fine(target)
+  if(!target) target = 'preview';
 
-    let view = me.getView();
-    let currIgnoreContainers = get(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
-    const current = get(view, '/state/tools/workspace/preview', '');
+  let view = me.getView()
+  let currIgnoreContainers = get(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
+  const current = get(view, '/state/tools/workspace/preview', '');
+
+  return new Promise( (resolve, reject) => {
     if(target === 'preview') {
-        if(current === 'preview') {
-            set(view, '/state/tools/workspace/preview', '');
-            if (currIgnoreContainers === IgnoreContainers.ON_HOLD) {
-                set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ENABLED);
-                set(view, '/pageView/view', IgnoreContainers.ENABLED);
-            } else {
-                set(view, '/pageView/view', view.state.tools.workspace.view);
-            }
-        } else {
-            set(view, '/state/tools/workspace/preview', target);
-            set(view, '/pageView/view', target)
-            if (currIgnoreContainers === IgnoreContainers.ENABLED) {
-                set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ON_HOLD);
-            }
-        }
-    } else if (target === IgnoreContainers.ENABLED){
-        if (current !== 'preview') {
-            if(currIgnoreContainers === IgnoreContainers.ENABLED) {
-                set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
-                set(view, '/pageView/view', view.state.tools.workspace.view);
-            } else {
-                set(view, '/state/tools/workspace/ignoreContainers', target);
-                set(view, '/pageView/view', target);
-            }
-        }
+    if(current === 'preview') {
+      set(view, '/state/tools/workspace/preview', '');
+      if (currIgnoreContainers === IgnoreContainers.ON_HOLD) {
+        set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ENABLED);
+        set(view, '/pageView/view', IgnoreContainers.ENABLED);
+      } else {
+        set(view, '/pageView/view', view.state.tools.workspace.view);
+      }
     } else {
-        set(view, '/state/tools/workspace/view', target);
+      set(view, '/state/tools/workspace/preview', target);
+      set(view, '/pageView/view', target)
+      if (currIgnoreContainers === IgnoreContainers.ENABLED) {
+        set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.ON_HOLD);
+      }
     }
+  } else if (target === IgnoreContainers.ENABLED){
+    if (current !== 'preview') {
+      if(currIgnoreContainers === IgnoreContainers.ENABLED) {
+        set(view, '/state/tools/workspace/ignoreContainers', IgnoreContainers.DISABLED);
+        set(view, '/pageView/view', view.state.tools.workspace.view);
+      } else {
+        set(view, '/state/tools/workspace/ignoreContainers', target);
+        set(view, '/pageView/view', target);
+      }
+    }
+  } else {
+    set(view, '/state/tools/workspace/view', target);
+  }
+  resolve()
+})
 }

@@ -15,6 +15,7 @@ public class AdminConstants {
     public static final String ICON_ACTION_COMPONENT_PATH = "admin/components/iconaction";
     public static final String ICON_LIST_COMPONENT_PATH = "admin/components/iconlist";
     public static final String NAV_COMPONENT_PATH = "admin/components/nav";
+    public static final String MULTISELECT_COMPONENT_PATH = "admin/components/multiselect";
     public static final String TOOLING_PAGE_COMPONENT_PATH = "admin/components/toolingpage";
     public static final String PATH_FIELD_COMPONENT_PATH = "admin/components/pathfield";
     public static final String SUB_NAV_COMPONENT_PATH = "admin/components/subnav";

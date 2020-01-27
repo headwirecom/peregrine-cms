@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -36,7 +36,8 @@ export default function(me, target) {
     nodeData.component = target.component
 
     const component = target.component
-    const schema = view.admin.componentDefinitions[component]
+    const schema = view.admin.componentDefinitions[component].model
+    const ogTagSchema = view.admin.componentDefinitions[component].ogTags
 
     for(let i = 0; i < schema.fields.length; i++) {
         if(!schema.fields[i].readonly) {
@@ -45,8 +46,18 @@ export default function(me, target) {
             nodeData[dstName] = target[srcName]
         }
     }
+    for(let i = 0; i < ogTagSchema.fields.length; i++) {
+        if(!ogTagSchema.fields[i].readonly) {
+            const srcName = ogTagSchema.fields[i].model
+            const dstName = ogTagSchema.fields[i]['x-model'] ? ogTagSchema.fields[i]['x-model'] : srcName
+            nodeData[dstName] = target[srcName]
+        }
+    }
 
     log.fine(nodeData)
-    me.getApi().savePageEdit(target.path, nodeData).then( () => {
+    return new Promise( (resolve, reject) => {
+        me.getApi().savePageEdit(target.path, nodeData).then( () => {
+            resolve()
+        })
     })
 }
