@@ -66,3 +66,7 @@ dl {
 .clearfix:after {
     clear: both;
 }
+
+a[title='ignore-containers'] {
+	display: none;
+}
