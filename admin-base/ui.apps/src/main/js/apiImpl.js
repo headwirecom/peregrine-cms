@@ -367,12 +367,12 @@ class PerAdminImpl {
             translateFields(data.ogTags.fields)
           }
           translateFields(data.model.fields)
-          Promise.all(promises).then(() => {
-            populateView('/admin/componentDefinitions', data.name, data)
-            resolve(name)
-          })
         }
-      });
+        Promise.all(promises).then(() => {
+          populateView('/admin/componentDefinitions', data.name, data)
+          resolve(name)
+        })
+      })
     }).catch(error => {
       reject(error)
     })
