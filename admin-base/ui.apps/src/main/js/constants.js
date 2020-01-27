@@ -30,6 +30,7 @@ export const EditorTypes = {
   TEMPLATE: 'template-editor',
   PAGE: 'page-editor'
 }
+
 export const PathBrowser = {
   Type: {
     PAGE: 'page',

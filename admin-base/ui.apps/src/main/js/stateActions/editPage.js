@@ -23,8 +23,8 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-import {EditorTypes, SUFFIX_PARAM_SEPARATOR} from "../constants";
-import {set} from "../utils";
+import {EditorTypes, SUFFIX_PARAM_SEPARATOR} from '../constants'
+import {set} from '../utils'
 
 let log = LoggerFactory.logger('editPage').setLevelDebug()
 
