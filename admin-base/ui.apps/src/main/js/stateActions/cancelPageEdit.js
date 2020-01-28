@@ -32,10 +32,13 @@ export default function(me, target) {
     log.fine(target)
 
     var api = me.getApi()
-    api.populatePageView(target.pagePath).then( () => {
-        let view = me.getView()
-        delete view.state.editor;
-        set(view, '/state/editorVisible', false)
+    return new Promise( (resolve, reject) => {
+        api.populatePageView(target.pagePath).then( () => {
+            let view = me.getView()
+            delete view.state.editor;
+            set(view, '/state/editorVisible', false)
+            resolve()
+        })
     })
 
 }

@@ -90,39 +90,102 @@
                 <item2 
                     jcr:primaryType="nt:unstructured" 
                     locator="/jcr:content/explorer" 
-                    text="Select a site here"
+                    text="Select a page here"
                     selector=".explorer-main">
                     <experiences jcr:primaryType="nt:unstructured">
                         <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wähle hier eine Seite aus"/>
                     </experiences>
                 </item2>
-                <item3 
-                    jcr:primaryType="nt:unstructured" 
-                    locator="/jcr:content/explorer" 
-                    text="This box displays relevant information for a site"
-                    selector=".explorer-preview">
+                <item3
+                  jcr:primaryType="nt:unstructured"
+                  locator="/jcr:content/explorer"
+                  text="Sort your pages by dragging them"
+                  selector=".draggable">
                     <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Diese Box zeigt die relevanten Informationen einer Seite an"/>
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Sortiere deine Seiten, indem du sie an eine gewünschte Stelle ziehst"/>
                     </experiences>
                 </item3>
-                <item4 
-                    jcr:primaryType="nt:unstructured" 
-                    locator="/jcr:content/explorer" 
-                    text="Access that information by clicking here"
-                    selector=".explorer-main > ul > li:nth-child(1) > div > span:nth-child(3)">
+                <item4
+                  jcr:primaryType="nt:unstructured"
+                  locator="/jcr:content/explorer"
+                  text="Here you can navigate to the subfolders of the page"
+                  selector="li.collection-item>span:nth-child(2)>a>i">
                     <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Greife auf diese Informationen zu indem du hier klickst"/>
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du zu den Unterordnern der Seite navigieren"/>
                     </experiences>
                 </item4>
-                <item5 
-                    jcr:primaryType="nt:unstructured" 
-                    locator="/jcr:content/explorer" 
-                    text="Have fun!"
-                    anchor="left">
+                <item5
+                  jcr:primaryType="nt:unstructured"
+                  locator="/jcr:content/explorer"
+                  text="Click here to edit this page"
+                  selector=".secondary-content>span:nth-child(1)">
                     <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Viel Spaß!"/>
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um die Seite zu bearbeiten"/>
                     </experiences>
                 </item5>
+                <item6
+                  jcr:primaryType="nt:unstructured"
+                  locator="/jcr:content/explorer"
+                  text="Click here to replicate this page"
+                  selector=".secondary-content>span:nth-child(2)">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um die Seite zu replizieren"/>
+                    </experiences>
+                </item6>
+                <item7
+                  jcr:primaryType="nt:unstructured"
+                  locator="/jcr:content/explorer"
+                  text="Click here to get useful information for a page"
+                  selector=".secondary-content>span:nth-child(3)">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um nützliche Informationen zu einer Seite zu bekommen"/>
+                    </experiences>
+                </item7>
+                <item8
+                    jcr:primaryType="nt:unstructured" 
+                    locator="/jcr:content/explorer" 
+                    text="These information will be displayed here"
+                    selector=".explorer-preview">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Diese Informationen werden dann hier angezeigt"/>
+                    </experiences>
+                </item8>
+                <item9
+                  jcr:primaryType="nt:unstructured"
+                  locator="/jcr:content/explorer"
+                  text="Here you can have a preview of the page displayed"
+                  selector=".secondary-content>span:nth-child(4)">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du dir eine Vorschau der Seite anzeigen lassen"/>
+                    </experiences>
+                </item9>
+                <item10
+                  jcr:primaryType="nt:unstructured"
+                  locator="/jcr:content/explorer"
+                  text="Click here if you want to delete a page"
+                  selector=".secondary-content>span:nth-child(5)">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, wenn du eine Seite löschen möchtest"/>
+                    </experiences>
+                </item10>
+                <item11
+                    jcr:primaryType="nt:unstructured" 
+                    locator="/jcr:content/nav"
+                    text="Create a new page here"
+                    selector="a.btn-floating>i">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du eine neue Seite erstellen"/>
+                    </experiences>
+                </item11>
+                <item12
+                    jcr:primaryType="nt:unstructured" 
+                    locator="/jcr:content/explorer" 
+                    text="That's all, have fun!"
+                    anchor="left">
+                    <experiences jcr:primaryType="nt:unstructured">
+                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Das ist alles, viel Spaß!"/>
+                    </experiences>
+                </item12>
             </tour>
     </jcr:content>
 </jcr:root>
