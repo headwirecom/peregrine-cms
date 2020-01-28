@@ -11,7 +11,7 @@ resource changes and time-based via a cron-like expression. It's easily configur
 The default installation contains
 an example configuration for the site map of [/content/sites/example](http://localhost:8080/content/sites/example.html).
 It's disabled by default though. One needs to enable it inside the appropriate
-[com.peregrine.sitemap.impl.SiteMapConfigurationImpl](http://localhost:4502/system/console/configMgr/com.peregrine.sitemap.impl.SiteMapConfigurationImpl~example.com)
+[com.peregrine.sitemap.impl.SiteMapConfigurationImpl](http://localhost:8080/system/console/configMgr/com.peregrine.sitemap.impl.SiteMapConfigurationImpl~example.com)
 configuration:
 
 ![com.peregrine.sitemap.impl.SiteMapConfigurationImpl~example.com](site-map-configuration-example.com.png)
