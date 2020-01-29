@@ -25,9 +25,9 @@
 <template>
     <div class="component-explorer">
         <span class="panel-title">{{ $i18n('Components') }}</span>
-            <input type="text" v-model="state.filter" v-bind:placeholder="$i18n('Filter components')" tabindex="1" autofocus/>
+            <input type="text" v-model="state.filter" v-bind:placeholder="$i18n('filterComponents')" tabindex="1" autofocus/>
             <select class="browser-default" v-model="state.group">
-                <option value="">{{ $i18n('All Groups') }}</option>
+                <option value="">{{ $i18n('allGroups') }}</option>
                 <option v-for="(group, key) in allGroups" v-bind:value="key" v-bind:key="key">{{ key }}</option>
             </select>
             <ul>
@@ -39,7 +39,8 @@
                                 class="collection-item"
                                 v-for="component in group"
                                 v-bind:key="componentKey(component)"
-                                v-on:dragstart="onDragStart(component, $event)" 
+                                v-on:dragstart="onDragStart(component, $event)"
+                                v-on:dragend="onDragEnd(component, $event)"
                                 draggable="true">
                                 <div>
                                     <i class="material-icons">drag_handle</i>
@@ -55,6 +56,8 @@
 </template>
 
 <script>
+    import { IgnoreContainers } from '../../../../../../js/constants.js';
+
     export default {
         props: ['model'],
 //        beforeCreate() {
@@ -154,6 +157,12 @@
                 // make sure the currently selected group is an actual group
                 if(!ret[this.state.group]) { this.state.group = ''}
                 return ret
+            },
+            isIgnoreContainersEnabled() {
+                let view = $perAdminApp.getView();
+                return view.state.tools
+                    && view.state.tools.workspace
+                    && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
             }
         },
         methods: {
@@ -183,6 +192,19 @@
                     } else {
                         ev.dataTransfer.setData('text', component.path)
                     }
+                    let view = $perAdminApp.getView();
+                    if (this.isIgnoreContainersEnabled) {
+                        Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ON_HOLD);
+                        Vue.set(view.pageView, 'view', view.state.tools.workspace.view);
+                    }
+                }
+            },
+            onDragEnd: function(component, ev) {
+                let view = $perAdminApp.getView();
+                if (this.isIgnoreContainersEnabled) {
+                    Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ENABLED);
+                    Vue.set(view.pageView, 'view', IgnoreContainers.ENABLED);
+
                 }
             }
         }

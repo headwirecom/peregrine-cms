@@ -54,6 +54,8 @@ public class PerConstants {
     public static final String SLASH = "/";
     public static final String DASH = "-";
 
+    public static final String HTML = "html";
+
     public static final String JSON_MIME_TYPE = "application/json;charset=utf-8";
     public static final String HTML_MIME_TYPE = "text/html";
     public static final String DATA_JSON_EXTENSION = ".data.json";
@@ -66,12 +68,15 @@ public class PerConstants {
     public static final String TEXT_MIME_TYPE = "plain/text";
 
     public static final String APPS_ROOT = "/apps";
-    public static final String ASSETS_ROOT = "/content/assets";
-    public static final String FELIBS_ROOT = "/etc/felibs";
-    public static final String OBJECTS_ROOT = "/content/objects";
-    public static final String SITES_ROOT = "/content/sites";
-    public static final String TEMPLATES_ROOT = "/content/templates";
-    public static final String PACKAGES_PATH = "/etc/packages";
+    public static final String NN_CONTENT = "content";
+    public static final String CONTENT_ROOT = SLASH + NN_CONTENT;
+    public static final String ETC_ROOT = "/etc";
+    public static final String ASSETS_ROOT = "/assets";
+    public static final String FELIBS_ROOT = ETC_ROOT + "/felibs";
+    public static final String OBJECTS_ROOT = CONTENT_ROOT + "/objects";
+    public static final String SITES_ROOT = CONTENT_ROOT + "/sites";
+    public static final String TEMPLATES_ROOT = CONTENT_ROOT + "/templates";
+    public static final String PACKAGES_PATH = ETC_ROOT + "/packages";
 
     public static final String COMPONENTS = "components";
     public static final String TEMPLATES = "templates";
@@ -98,6 +103,7 @@ public class PerConstants {
     public static final String TAGS = "tags";
     public static final String METAPROPERTIES = "metaproperties";
     public static final String UPDATED = "updated";
+    public static final String OG_TAGS = "ogTags";
 
     public static final String PAGE = "page";
     public static final String DROP = "drop";

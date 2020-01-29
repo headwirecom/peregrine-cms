@@ -24,21 +24,26 @@
   -->
 <template>
     <div class="editor-panel" ref="editorPanel">
-        <div class="editor-panel-content" v-if="schema !== undefined && dataModel !== undefined">
-            <span class="panel-title">Editor</span>
-            <span v-if="title"> - {{title}}</span>
-            <div v-if="!hasSchema">this component does not have a dialog defined</div>
-            <vue-form-generator v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
-            </vue-form-generator>
+        <div class="editor-panel-content">
+            <template v-if="schema !== undefined && dataModel !== undefined">
+                <span class="panel-title">Editor</span>
+                <span v-if="title"> - {{title}}</span>
+                <div v-if="!hasSchema">this component does not have a dialog defined</div>
+                <vue-form-generator v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
+                </vue-form-generator>
+            </template>
         </div>
         <div class="editor-panel-buttons">
-            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
+            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('deleteComponent')" v-on:click.stop.prevent="onDelete">
                 <i class="material-icons">delete</i>
             </button>
-            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
+            <button class="waves-effect waves-light btn btn-raised" v-bind:title="$i18n('cancel')"
+                    v-on:click.stop.prevent="onCancel">
                 <i class="material-icons">close</i>
             </button>
-            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
+            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('save')" v-on:click.stop.prevent="onOk">
                 <i class="material-icons">check</i>
             </button>
         </div>
@@ -69,7 +74,7 @@
         schema: function() {
             var view = $perAdminApp.getView()
             var component = view.state.editor.component
-            var schema = view.admin.componentDefinitions[component]
+            var schema = view.admin.componentDefinitions[component].model
             return schema
         },
         dataModel: function() {
@@ -106,8 +111,8 @@
             //Loop through the model for this object/page/asset and find objects that have children
             for ( const key in data) {
                 //If data[key] or deleted[key] is an array of objects
-                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
-                    ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+                if (( data && Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') ||
+                    ( _deleted && Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
 
                     let node = data[key];
 

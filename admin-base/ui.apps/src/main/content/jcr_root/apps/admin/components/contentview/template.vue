@@ -45,17 +45,20 @@
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
-                                <a href="#" title="copy" v-on:click.stop.prevent="onCopy">
+                              <a href="#" v-bind:title="$i18n('copy')"
+                                 v-on:click.stop.prevent="onCopy">
                                     <i class="material-icons">content_copy</i>
                                 </a>
                             </li>
                             <li v-if="clipboard" class="waves-effect waves-light">
-                                <a title="paste" href="#" v-on:click.stop.prevent="onPaste">
+                              <a v-bind:title="$i18n('paste')" href="#"
+                                 v-on:click.stop.prevent="onPaste">
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
                             <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
-                                <a href="#" title="delete" v-on:click.stop.prevent="onDelete">
+                              <a href="#" v-bind:title="$i18n('deleteComponent')"
+                                 v-on:click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
                             </li>
@@ -74,6 +77,8 @@
 </template>
 
 <script>
+import { IgnoreContainers } from '../../../../../../js/constants.js';
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -145,6 +150,12 @@ export default {
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if(!node) return false
             return !node.fromTemplate
+        },
+        isIgnoreContainersEnabled() {
+            let view = $perAdminApp.getView();
+            return view.state.tools
+                && view.state.tools.workspace
+                && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         }
     },
 
@@ -338,8 +349,11 @@ export default {
             if(targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                if (this.isContainer(targetEl)) {
+                    if (this.isIgnoreContainersEnabled) return;
+                }
                 if(node.fromTemplate) {
-                    $perAdminApp.notifyUser('template component', 'This component is part of the template. Please modify the template in order to change it', {
+                    $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                         complete: this.removeEditOverlay
                     })
                 } else {
@@ -371,6 +385,9 @@ export default {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e)
             if(targetEl) {
+                if (this.isContainer(targetEl)) {
+                    if (this.isIgnoreContainersEnabled) return;
+                }
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
@@ -501,7 +518,7 @@ export default {
 
                 if(this.selectedComponent) {
                     var path = this.selectedComponent.getAttribute('data-per-path')
-                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)                
+                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                     if(node && node.fromTemplate) {
                         editable.style['border-color'] = 'orange'
                     } else {
@@ -556,6 +573,25 @@ export default {
         },
         refreshEditor(me, target) {
             me.$refs['editview'].contentWindow.location.reload();
+        },
+        isContainer(el) {
+            if (el && el.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+            let subEl = el.firstElementChild;
+            if (!subEl) {
+                return false;
+            }
+            while (!subEl.getAttribute('data-per-path')) {
+                subEl = subEl.firstElementChild;
+                if (!subEl) {
+                    return false;
+                }
+            }
+            if (subEl.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+            return false;
         }
     }
 }
