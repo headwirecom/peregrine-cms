@@ -92,39 +92,46 @@ nav {
   .sub-nav {
     min-height: 48px;
     padding: 4px 0;
-    text-align: center;
-    > span {
-      display: inline-block;
-      padding-right: 10px;
-      vertical-align: middle;
-      > a.btn-floating {
-        .material-icons {
-          line-height: 40px;
-          height: 100%;
-        }
-      }
-      &:only-of-type {
-        margin-left: 100px;
-      }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .page-title {
+      padding-left: 10px;
     }
-    .pathfield {
-      text-align: left;
-      display: inline-block;
-      padding-left: 0.75rem;
-      line-height: 20px;
-      width: calc(100% - 150px);
-      vertical-align: middle;
-       > span {
+    .editor-view-actions {
+      > span {
         display: inline-block;
-        height: 100%;
-        > a {
-          &:hover,
-          &:focus,
-          &:active {
-            text-decoration: underline;
+        padding-right: 10px;
+        vertical-align: middle;
+        > a.btn-floating {
+          .material-icons {
+            line-height: 40px;
+            height: 100%;
           }
         }
-       }
+        &:only-of-type {
+          margin-left: 100px;
+        }
+      }
+      .pathfield {
+        text-align: left;
+        display: inline-block;
+        padding-left: 0.75rem;
+        line-height: 20px;
+        width: calc(100% - 150px);
+        vertical-align: middle;
+        > span {
+          display: inline-block;
+          height: 100%;
+          > a {
+            &:hover,
+            &:focus,
+            &:active {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
     }
   }
 

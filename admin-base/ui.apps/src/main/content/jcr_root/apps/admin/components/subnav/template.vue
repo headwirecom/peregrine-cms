@@ -9,7 +9,7 @@
   distributed with this work for additional information
   regarding copyright ownership.  The ASF licenses this file
   to you under the Apache License, Version 2.0 (the
-  "License"); you may not use this file except in compliance
+  "License") you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
   
   http://www.apache.org/licenses/LICENSE-2.0
@@ -23,56 +23,73 @@
   #L%
   -->
 <template>
-    <div class="nav-content sub-nav">
-        <template v-for="child in model.children">
-            <div v-bind:is="child.component" v-bind:model="child"></div>
-        </template>
-        <!-- <template v-if="isEditor()">
-            <admin-components-separator></admin-components-separator>
-            <admin-components-action
-                v-bind:model="{
-                  command: 'selectPath',
-                  download: getDownloadPath(),
-                  target: getPath() + '/jcr:content.xml',
-                  tooltipTitle: $i18n('exportModule'),
-                  title: 'Export',
-                  type: 'download'
-                }"
-            ></admin-components-action>
-        </template> -->
+  <div class="nav-content sub-nav">
+    <div class="page-title" :title="{{fullTitle}}">{{ title }}</div>
+    <div class="editor-view-actions">
+      <template v-for="child in model.children">
+        <div v-bind:is="child.component" v-bind:model="child"></div>
+      </template>
     </div>
+    <div class="sub-nav-right"></div>
+    <!-- <template v-if="isEditor()">
+        <admin-components-separator></admin-components-separator>
+        <admin-components-action
+            v-bind:model="{
+              command: 'selectPath',
+              download: getDownloadPath(),
+              target: getPath() + '/jcr:content.xml',
+              tooltipTitle: $i18n('exportModule'),
+              title: 'Export',
+              type: 'download'
+            }"
+        ></admin-components-action>
+    </template> -->
+  </div>
 </template>
 
 <script>
-export default {
+  export default {
     props: ['model'],
     computed: {
-        classes() {
-            if(this.model.classes) {
-                return this.model.classes
-            }
-            return 'navright'
+      classes() {
+        if (this.model.classes) {
+          return this.model.classes
         }
+        return 'navright'
+      },
+      fullTitle() {
+        const path = this.getPath()
+        if (path && path.length > 0 && path.startsWith('/content/sites')) {
+          return this.getPath().split('/').splice(3).join(' > ')
+        }
+        return ''
+      },
+      title() {
+        return this.titles.split('/').pop() || `>${$i18n('no title')}<`
+      }
+    },
+    mounted() {
+      console.log(this.$root.$data, this.$root.$data.pageView)
     },
     methods: {
-        isEditor: function() {
-            return this.$root.$data.adminPage.title === "editor"
-        },
-        getPath: function(){
-            if( this.$root.$data.pageView){
-                if( this.$root.$data.pageView.path ){
-                    return this.$root.$data.pageView.path;
-                } else {
-                    return "";
-                }
-            } else {
-                return "";
-            }
-        },
-        getDownloadPath(){
-            return this.getPath().split('/').reverse()[0];
+      isEditor: function () {
+        return this.$root.$data.adminPage.title === "editor"
+      },
+      getPath: function () {
+        if (this.$root.$data.pageView) {
+          if (this.$root.$data.pageView.path) {
+            return this.$root.$data.pageView.path
+          } else {
+            return ""
+          }
+        } else {
+          return ""
         }
+      },
+      getDownloadPath() {
+        return this.getPath().split('/').reverse()[0]
+      }
     }
-}
+  }
 </script>
 
