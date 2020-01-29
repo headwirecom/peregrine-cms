@@ -99,6 +99,9 @@ nav {
       padding-left: 10px;
     }
     .editor-view-actions {
+      &.w-100 {
+        width: 100%;
+      }
       > span {
         display: inline-block;
         padding-right: 10px;
