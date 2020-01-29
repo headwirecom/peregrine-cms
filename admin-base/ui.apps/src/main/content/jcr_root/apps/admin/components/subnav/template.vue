@@ -24,13 +24,13 @@
   -->
 <template>
   <div class="nav-content sub-nav">
-    <div class="page-title" :title="{{fullTitle}}">{{ title }}</div>
-    <div class="editor-view-actions">
+    <div v-if="isEditor()" class="page-title" :title="fullPagePath()">{{ currentPageTitle() }}</div>
+    <div class="editor-view-actions" :class="{'w-100': !isEditor()}">
       <template v-for="child in model.children">
         <div v-bind:is="child.component" v-bind:model="child"></div>
       </template>
     </div>
-    <div class="sub-nav-right"></div>
+    <div v-if="isEditor()" class="sub-nav-right"/>
     <!-- <template v-if="isEditor()">
         <admin-components-separator></admin-components-separator>
         <admin-components-action
@@ -56,16 +56,6 @@
           return this.model.classes
         }
         return 'navright'
-      },
-      fullTitle() {
-        const path = this.getPath()
-        if (path && path.length > 0 && path.startsWith('/content/sites')) {
-          return this.getPath().split('/').splice(3).join(' > ')
-        }
-        return ''
-      },
-      title() {
-        return this.titles.split('/').pop() || `>${$i18n('no title')}<`
       }
     },
     mounted() {
@@ -74,6 +64,16 @@
     methods: {
       isEditor: function () {
         return this.$root.$data.adminPage.title === "editor"
+      },
+      fullPagePath() {
+        const path = this.getPath()
+        if (path && path.length > 0 && path.startsWith('/content/sites')) {
+          return this.getPath().split('/').splice(3).join(' > ')
+        }
+        return ''
+      },
+      currentPageTitle() {
+        return this.fullPagePath().split(' > ').slice(-1).pop() || null
       },
       getPath: function () {
         if (this.$root.$data.pageView) {
