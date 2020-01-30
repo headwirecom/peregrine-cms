@@ -1,4 +1,4 @@
-package com.peregrine.commons.util;
+package com.peregrine.commons;
 
 public final class Chars {
 

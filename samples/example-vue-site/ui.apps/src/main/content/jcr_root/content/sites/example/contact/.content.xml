@@ -32,26 +32,5 @@
             sling:resourceType="example/components/page"
             jcr:title="contact"
             template="/content/templates/example"
-    >
-        <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/container">
-
-            <row jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/row">
-
-                <col1 jcr:primaryType="nt:unstructured"
-                     sling:resourceType="example/components/col"
-                    classes="col-md-12"
-                >
-
-                    <text2 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="this is the contact page"/>
-                </col1>
-
-            </row>
-
-        </content>
-
-    </jcr:content>
+    />
 </jcr:root>

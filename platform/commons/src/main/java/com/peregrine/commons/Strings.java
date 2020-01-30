@@ -1,4 +1,4 @@
-package com.peregrine.commons.util;
+package com.peregrine.commons;
 
 import org.apache.commons.lang3.StringUtils;
 

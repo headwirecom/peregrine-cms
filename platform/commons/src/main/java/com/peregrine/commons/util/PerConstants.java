@@ -37,6 +37,10 @@ public class PerConstants {
     public static final String PER_REPLICATED = "per:Replicated";
     public static final String PER_REPLICATION_REF = "per:ReplicationRef";
 
+    public static final String SLING_SERVLET_DEFAULT = "sling/servlet/default";
+
+    public static final String UTF_8 = "utf-8";
+
     public static final String RENDITION_ACTION = "rendition.json";
 
     public static final String ORDER_BEFORE_TYPE = "before";
@@ -58,6 +62,7 @@ public class PerConstants {
 
     public static final String JSON_MIME_TYPE = "application/json;charset=utf-8";
     public static final String HTML_MIME_TYPE = "text/html";
+    public static final String APPLICATION_XML_MIME_TYPE = "application/xml";
     public static final String DATA_JSON_EXTENSION = ".data.json";
 
     public static final String PNG_MIME_TYPE = "image/png";
@@ -113,5 +118,9 @@ public class PerConstants {
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
     public static final String DEPENDENCIES = "dependencies";
+
+    public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
+    public static final String CHANGE_FREQUENCY = "changefreq";
+    public static final String PRIORITY = "priority";
 }
 
