@@ -330,8 +330,11 @@
         this.valid.errors = errors;
       },
       renameNode() {
-        let newName = prompt('new name for ' + this.node.name);
-        if (newName) {
+        let nodeName = this.node.name;
+        if (this.nodeType === NodeType.OBJECT){
+          nodeName = this.node.path.split('/').slice(-1).pop()
+        }
+        if (prompt(`new name for "${nodeName}"`)) {
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
             name: newName
