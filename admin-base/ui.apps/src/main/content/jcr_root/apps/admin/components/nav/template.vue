@@ -49,15 +49,18 @@
           </template>
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
-          <vue-multiselect
-              v-model="state.site"
-              deselect-label=""
-              track-by="name"
-              label="name"
-              placeholder="Site"
-              :options="sites"
-              :searchable="false"
-              :allow-empty="false"/>
+          <li class="tenant-select">
+            <vue-multiselect
+                v-model="state.site"
+                deselect-label=""
+                track-by="name"
+                label="name"
+                placeholder="Site"
+                :title="$i18n('tenantsSelect')"
+                :options="tenants"
+                :searchable="false"
+                :allow-empty="false"/>
+          </li>
           <li v-if="this.$root.$data.state">
             <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
               {{this.$root.$data.state.user}}
@@ -99,7 +102,7 @@
     data() {
       return {
         state: $perAdminApp.getView().state,
-        sites: $perAdminApp.getView().admin.tenants
+        tenants: $perAdminApp.getView().admin.tenants || []
       }
     },
     computed: {
@@ -122,6 +125,12 @@
         }
       }
     },
+    beforeCreate() {
+      console.log('admin-components-nav beforeCreate')
+      $perAdminApp.getApi().populateTenants().then(() => {
+        this.refreshTenants()
+      })
+    },
     methods: {
       onSelectLang({name}) {
         this.$i18nSetLanguage(name)
@@ -139,6 +148,9 @@
       },
       onShowAbout() {
         $('#aboutPeregrine').modal('open');
+      },
+      refreshTenants() {
+        this.tenants = $perAdminApp.getView().admin.tenants || []
       }
     }
   }
