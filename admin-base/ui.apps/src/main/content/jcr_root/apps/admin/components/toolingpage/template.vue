@@ -43,7 +43,25 @@ export default {
     },
     methods: {
         selectPath: function(me, target) {
-            $perAdminApp.loadContent(target+'.html')
+            if (target.tenant) {
+                const section = target.action.split('/').slice(-1).pop()
+                let sectionAlias = section
+
+                if (section === 'pages') {
+                    sectionAlias = 'sites'
+                }
+
+                const payload = {
+                    path: `/state/tools/${section}`,
+                    selected: `/content/${sectionAlias}/${target.tenant}`,
+                }
+
+                $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
+                    $perAdminApp.loadContent(target.action + '.html')
+                })
+            } else {
+                $perAdminApp.loadContent(target+'.html')
+            }
         },
         editPreview: function(me, target) {
             $perAdminApp.stateAction('editPreview', target)

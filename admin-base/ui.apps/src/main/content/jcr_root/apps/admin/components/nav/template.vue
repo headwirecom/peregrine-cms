@@ -149,6 +149,10 @@
       refreshTenants() {
         this.tenants = $perAdminApp.getView().admin.tenants || []
         this.state = $perAdminApp.getView().state
+        this.$root.$emit('tenants.refreshed', {
+          tenants: this.tenants,
+          site: this.state.site
+        })
       },
       getTenantByName(name) {
         return this.tenants.find((tenant) => {

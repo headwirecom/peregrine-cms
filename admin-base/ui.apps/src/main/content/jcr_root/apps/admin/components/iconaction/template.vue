@@ -31,14 +31,9 @@
         </div>
         <div class="card-action">
             <admin-components-action v-if="internal(model.action, model.target)"
-                v-bind:model="{ 
-                    target: model.action, 
-                    command: 'selectPath', 
-                    title: this.$i18n('explore')
-                }">
+                v-bind:model="actionModel">
             </admin-components-action>
             <a v-else v-bind:href="model.action" v-bind:target="model.target">{{$i18n('explore')}}</a>
-
         </div>
     </div>
 </div>
@@ -47,9 +42,30 @@
 <script>
     export default {
         props: ['model'],
+        data() {
+          return {
+              actionModel: {
+                  target: this.model.action,
+                  command: 'selectPath',
+                  title: this.$i18n('explore')
+              }
+          }
+        },
+        created() {
+            this.$root.$on('tenants.refreshed', this.onTenantsRefreshed);
+        },
         methods: {
             internal(action, target) {
                 return !action.startsWith('http') && (target === undefined || target === null)
+            },
+            onTenantsRefreshed(data) {
+                const lastActionNode = this.model.action.split('/').slice(-1).pop()
+                if (!['config', 'docs'].indexOf(lastActionNode) > -1) {
+                    this.actionModel.target = {
+                        tenant: data.site.name,
+                        action: this.actionModel.target
+                    }
+                }
             }
         }
     }
