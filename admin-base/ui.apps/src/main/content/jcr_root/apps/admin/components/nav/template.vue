@@ -126,7 +126,6 @@
       }
     },
     beforeCreate() {
-      console.log('admin-components-nav beforeCreate')
       $perAdminApp.getApi().populateTenants().then(() => {
         this.refreshTenants()
       })
