@@ -138,7 +138,11 @@
       },
       onSelectTenant({name}) {
         $perAdminApp.getView().state.site = this.getTenantByName(name)
-        $perAdminApp.forceFullRedraw()
+        const section = $perAdminApp.getView().state.current.section
+        $perAdminApp.action(this, 'selectPath', {
+          tenant: name,
+          action: `/content/admin/${section.name}`
+        })
       },
       onShowHelp() {
         $perAdminApp.action(this, 'showTour', '')

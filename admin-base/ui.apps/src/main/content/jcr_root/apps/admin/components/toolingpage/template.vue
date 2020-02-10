@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import {set} from '../../../../../../js/utils'
+
 export default {
     props: ['model'],
     mounted(){
@@ -45,21 +47,21 @@ export default {
         selectPath: function(me, target) {
             if (target.tenant) {
                 const section = target.action.split('/').slice(-1).pop()
+                set($perAdminApp.getView(), '/state/current/section/name', section)
                 let sectionAlias = section
-
                 if (section === 'pages') {
                     sectionAlias = 'sites'
                 }
-
                 const payload = {
                     path: `/state/tools/${section}`,
                     selected: `/content/${sectionAlias}/${target.tenant}`,
                 }
-
                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
                     $perAdminApp.loadContent(target.action + '.html')
                 })
             } else {
+                const section = target.split('/').slice(-1).pop()
+                set($perAdminApp.getView(), '/state/current/section/name', section)
                 $perAdminApp.loadContent(target+'.html')
             }
         },
