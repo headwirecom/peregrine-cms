@@ -384,7 +384,7 @@ class PerAdminImpl {
     return this.populateComponentDefinitionFromNode(path)
   }
 
-  populateTenants(path) {
+  populateTenants() {
     return new Promise((resolve, reject) => {
       fetch('/admin/listTenants.json')
       .then((data) => {
