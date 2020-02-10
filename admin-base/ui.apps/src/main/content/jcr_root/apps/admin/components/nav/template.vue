@@ -59,7 +59,8 @@
                 :title="$i18n('tenantsSelect')"
                 :options="tenants"
                 :searchable="false"
-                :allow-empty="false"/>
+                :allow-empty="false"
+                @select="onSelectTenant"/>
           </li>
           <li v-if="this.$root.$data.state">
             <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
@@ -135,11 +136,8 @@
         this.$i18nSetLanguage(name)
         $perAdminApp.forceFullRedraw()
       },
-      onSelectSite({name}) {
-        const site = this.sites.find((el) => {
-          return el.name === name
-        })
-        $perAdminApp.getView().state.site = site
+      onSelectTenant({name}) {
+        $perAdminApp.getView().state.site = this.getTenantByName(name)
         $perAdminApp.forceFullRedraw()
       },
       onShowHelp() {
@@ -150,6 +148,12 @@
       },
       refreshTenants() {
         this.tenants = $perAdminApp.getView().admin.tenants || []
+        this.state = $perAdminApp.getView().state
+      },
+      getTenantByName(name) {
+        return this.tenants.find((tenant) => {
+          return tenant.name === name
+        })
       }
     }
   }
