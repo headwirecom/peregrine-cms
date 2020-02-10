@@ -23,122 +23,123 @@
   #L%
   -->
 <template>
-<nav v-bind:data-per-path="model.path" v-bind:class="isExtended ? 'nav-extended' : ''">
+  <nav v-bind:data-per-path="model.path" v-bind:class="isExtended ? 'nav-extended' : ''">
     <div class="nav-wrapper blue-grey darken-3">
       <div class="col s12">
         <div class="brand-logo">
-          <admin-components-action 
-            v-bind:model="{ 
+          <admin-components-action
+              v-bind:model="{
               command: 'selectPath', 
               target: '/content/admin',
               classes: 'peregrine-logo',
               tooltipTitle: $i18n('home')
             }">
-            <admin-components-logo></admin-components-logo>
+            <admin-components-logo/>
           </admin-components-action>
-            <template v-if="vueRoot.adminPage">
-                <template v-for="item in vueRoot.adminPage.breadcrumbs">
-                    <admin-components-action
-                            v-bind:key="item.path"
-                            v-bind:model="{
+          <template v-if="vueRoot.adminPage">
+            <template v-for="item in vueRoot.adminPage.breadcrumbs">
+              <admin-components-action
+                  v-bind:key="item.path"
+                  v-bind:model="{
                 command: 'selectPath',
                 title: $i18n(item.title),
                 target: item.path
               }"></admin-components-action>
-                </template>
             </template>
+          </template>
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
-            <!-- disabled for now - rest of UI has to change to a site centric approach as well <li>
-                 <vue-multiselect
-                    v-model="state.site"
-                    deselect-label=""
-                    track-by="name"
-                    label="name"
-                    placeholder="Site"
-                    :options="sites"
-                    :searchable="false"
-                    :allow-empty="false"
-                 ></vue-multiselect>
-            </li> -->
-            <li v-if="this.$root.$data.state">
-                <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
-                    {{this.$root.$data.state.user}}
-                </a>
-            </li>
-            <li v-if="help">
-                <a v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
-            </li>
-            <li>
-                <a v-bind:title="$i18n('aboutNavBtn')" href="#" v-on:click="onShowAbout">{{$i18n('aboutNavBtn')}}</a>
-            </li>
-            <li>
-                 <vue-multiselect
-                    :value="language"
-                    deselect-label=""
-                    track-by="name"
-                    label="name"
-                    placeholder="Language"
-                    :options="languages"
-                    :searchable="false"
-                    :allow-empty="false"
-                    @select="onSelectLang"
-                 ></vue-multiselect>
-            </li>
+          <vue-multiselect
+              v-model="state.site"
+              deselect-label=""
+              track-by="name"
+              label="name"
+              placeholder="Site"
+              :options="sites"
+              :searchable="false"
+              :allow-empty="false"/>
+          <li v-if="this.$root.$data.state">
+            <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
+              {{this.$root.$data.state.user}}
+            </a>
+          </li>
+          <li v-if="help">
+            <a v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
+          </li>
+          <li>
+            <a v-bind:title="$i18n('aboutNavBtn')" href="#" v-on:click="onShowAbout">{{$i18n('aboutNavBtn')}}</a>
+          </li>
+          <li>
+            <vue-multiselect
+                :value="language"
+                deselect-label=""
+                track-by="name"
+                label="name"
+                placeholder="Language"
+                :options="languages"
+                :searchable="false"
+                :allow-empty="false"
+                @select="onSelectLang"
+            ></vue-multiselect>
+          </li>
         </ul>
       </div>
     </div>
     <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
+      <component v-bind:is="child.component" v-bind:model="child"
+                 v-bind:key="child.path"></component>
     </template>
 
-</nav>
+  </nav>
 </template>
 
 <script>
-export default {
+  export default {
     props: ['model'],
     data() {
-        return {
-            state: $perAdminApp.getView().state,
-            sites: $perAdminApp.getView().admin.tenants
-        }
+      return {
+        state: $perAdminApp.getView().state,
+        sites: $perAdminApp.getView().admin.tenants
+      }
     },
     computed: {
-        language () {
-            return { name: $perAdminApp.getView().state.language }
-        },
-        languages () {
-            return this.$i18nGetLanguages()
-        },
-        vueRoot () {
-            return this.$root
-        },
-        isExtended () {
-            return this.model.children && this.model.children.length > 0
-        },
-        help () {
-            if($perAdminApp.getView()) {
-                return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage, '/jcr:content/tour')
-            }
+      language() {
+        return {name: $perAdminApp.getView().state.language}
+      },
+      languages() {
+        return this.$i18nGetLanguages()
+      },
+      vueRoot() {
+        return this.$root
+      },
+      isExtended() {
+        return this.model.children && this.model.children.length > 0
+      },
+      help() {
+        if ($perAdminApp.getView()) {
+          return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage,
+              '/jcr:content/tour')
         }
+      }
     },
     methods: {
-        onSelectLang ({name}) {
-            this.$i18nSetLanguage(name)
-            $perAdminApp.forceFullRedraw()
-        },
-        onSelectSite ({name}) {
-            const site = this.sites.find( (el) => { return el.name === name })
-            $perAdminApp.getView().state.site = site
-            $perAdminApp.forceFullRedraw()
-        },
-        onShowHelp () {
-            $perAdminApp.action(this, 'showTour', '')
-        },
-        onShowAbout () {
-            $('#aboutPeregrine').modal('open');
-        }
+      onSelectLang({name}) {
+        this.$i18nSetLanguage(name)
+        $perAdminApp.forceFullRedraw()
+      },
+      onSelectSite({name}) {
+        const site = this.sites.find((el) => {
+          return el.name === name
+        })
+        $perAdminApp.getView().state.site = site
+        $perAdminApp.forceFullRedraw()
+      },
+      onShowHelp() {
+        $perAdminApp.action(this, 'showTour', '')
+      },
+      onShowAbout() {
+        $('#aboutPeregrine').modal('open');
+      }
     }
-}
+  }
 </script>
