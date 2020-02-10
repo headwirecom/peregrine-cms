@@ -198,6 +198,7 @@ function initPeregrineApp() {
     logger.fine('initPeregrineApp')
     logger.fine(JSON.stringify(view, true, 2))
 
+    Vue.config.productionTip = false
     Vue.use(i18n)
     Vue.use(experiences)
     const lang = view.state.language

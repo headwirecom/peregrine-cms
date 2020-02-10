@@ -118,6 +118,7 @@ function set(node, path, value) {
 
 function initPeregrineApp() {
 
+    Vue.config.productionTip = false
     Vue.use(experiences)
     Vue.use(helper)
 
