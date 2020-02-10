@@ -202,7 +202,7 @@
         },
         computed: {
             showNavigateToParent() {
-                return this.path.split('/').length > 3
+                return this.path.split('/').length > 4
             },
             path: function() {
                 var dataFrom = this.model.dataFrom
