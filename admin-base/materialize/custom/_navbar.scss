@@ -88,6 +88,11 @@ nav {
         }
       }
     }
+    .nav-mobile {
+      .tenant-select {
+        min-width: 150px;
+      }
+    }
   }
   .sub-nav {
     min-height: 48px;
