@@ -59,6 +59,35 @@
     "items": []
   },
   {
+    "model": "palette",
+    "label": "Color Palette",
+    "type": "material-select",
+    "values": [
+      {
+        "name": "default.light",
+        "value": "/content/sites/themecleanflex/css/pallets/default.light.css"
+      },
+      {
+        "name": "default.dark",
+        "value": "/content/sites/themecleanflex/css/pallets/default.dark.css"
+      },
+      {
+        "name": "lime.light",
+        "value": "/content/sites/themecleanflex/css/pallets/lime.light.css"
+      },
+      {
+        "name": "lime.dark",
+        "value": "/content/sites/themecleanflex/css/pallets/lime.dark.css"
+      },
+      {
+        "name": "headwire",
+        "value": "/content/sites/themecleanflex/css/pallets/headwire.css"
+      }
+    ],
+    "placeholder": "color palette",
+    "visible": "model.name == 'themecleanflex-components-page'"
+  },
+  {
     "type": "collection",
     "title": "Public Domain Names",
     "model": "domains",

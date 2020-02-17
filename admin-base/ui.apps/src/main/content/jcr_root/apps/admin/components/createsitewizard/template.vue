@@ -54,7 +54,7 @@
         </tab-content>
         <tab-content title="choose color palette">
             <div v-if="showColorPaletteSelector" class="form-group required">
-                <admin-components-colorpaletteselector />
+                <admin-components-colorpaletteselector @select="onColorPaletteSelect"/>
             </div>
             <div v-else class="feature-unavailable">
                 <div class="card">
@@ -167,7 +167,16 @@
                 return this.formmodel.templatePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name, title: this.formmodel.title })
+                const payload = {
+                    fromName: this.formmodel.templatePath,
+                    toName: this.formmodel.name,
+                    title: this.formmodel.title
+                }
+
+                if (this.showColorPaletteSelector) {
+                    payload.palette = this.formmodel.palette
+                }
+                $perAdminApp.stateAction('createSite', payload)
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);
@@ -205,6 +214,9 @@
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
+            },
+            onColorPaletteSelect(palette) {
+                this.formmodel.palette = palette
             }
         }
     }

@@ -28,7 +28,12 @@
 
     <sly data-sly-include="styles.html"></sly>
     <sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
-
+    <!-- PALETTE -->
+    <sly data-sly-test="${helper.model.palette}">
+        <link rel="stylesheet" type="text/css" href="/content/sites/themecleanflex/css/palette.css">
+        <link rel="stylesheet" type="text/css" href="${helper.model.palette}">
+    </sly>
+    <!-- /PALETTE -->
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
             document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');

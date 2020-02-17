@@ -44,6 +44,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PALETTE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
@@ -123,6 +124,8 @@ public class PageModel
     @Inject private String[] suffixToParameter;
 
     @Inject private String description;
+
+    @Inject private String palette;
 
     public String getSiteRoot() {
         String path = getPagePath();
@@ -237,6 +240,20 @@ public class PageModel
 
     public String[] getSuffixToParameter() {
         return suffixToParameter;
+    }
+
+    public String getPalette() {
+        if(palette == null) {
+            String value = (String) getInheritedProperty(PALETTE);
+            if(value != null) return value;
+            if(getTemplate() != null) {
+                PageModel templatePageModel = getTamplatePageModel();
+                if(templatePageModel != null) {
+                    return templatePageModel.getPalette();
+                }
+            }
+        }
+        return palette;
     }
 
     public List<Tag> getTags() {

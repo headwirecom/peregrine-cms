@@ -29,7 +29,7 @@
             href="/etc/felibs/themecleanflex/css/colors.css"
             type="text/css"/>
       <link rel="stylesheet"
-            :href="`/content/sites/themecleanflex/css/pallets/${value}.css`"
+            :href="fullPalettePath"
             type="text/css"/>
     </div>
     <label>Select Color Palette</label>
@@ -93,9 +93,15 @@
         ]
       }
     },
+    computed: {
+      fullPalettePath() {
+        return `/content/sites/themecleanflex/css/pallets/${this.value}.css`
+      }
+    },
     methods: {
       onSelect(palette) {
         this.value = palette
+        this.$emit('select', this.fullPalettePath)
       }
     }
   }

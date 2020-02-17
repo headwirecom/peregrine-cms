@@ -78,6 +78,7 @@ public class CreateSiteServlet extends AbstractBaseServlet {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
         String title = request.getParameterUtf8(TITLE);
+        String palette = request.getParameter(PALETTE);
         if(StringUtils.isBlank(title)) {
             title = toSite;
         }
@@ -86,13 +87,19 @@ public class CreateSiteServlet extends AbstractBaseServlet {
             logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
             Resource site = resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite, title);
             request.getResourceResolver().commit();
-            return new JsonResponse()
+            JsonResponse response = new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)
                 .writeAttribute(NAME, toSite)
                 .writeAttribute(PATH, site.getPath())
                 .writeAttribute(TITLE, title)
                 .writeAttribute(SOURCE_PATH, SITES_ROOT + SLASH + fromSite);
+
+            if (palette != null && palette.length() > 0) {
+                response.writeAttribute(PALETTE, palette);
+            }
+
+            return response;
         } catch(ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE).setException(e);
         }
