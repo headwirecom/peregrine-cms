@@ -45,15 +45,33 @@
                         <span track-by="index">Selection required</span>
                     </div>
                 </div>
-                <div class="form-group required" v-if="showColorPaletteSelector">
-                    <admin-components-colorpaletteselector />
-                </div>
             </fieldset>
             <p>
                 This wizard allows you to create a site from an existing theme. If you'd like to create a more complex
                 site please use the commandline tool `percli create project &lt;name&gt;` to create a site managed as a
                 full project.
             </p>
+        </tab-content>
+        <tab-content title="choose color palette">
+            <div v-if="showColorPaletteSelector" class="form-group required">
+                <admin-components-colorpaletteselector />
+            </div>
+            <div v-else class="feature-unavailable">
+                <div class="card">
+                    <div class="card-content center">
+                        <span class="card-title">We are Sorry</span>
+                    </div>
+                    <div class="card-action center">
+                        <p>
+                            This feature is currently only supported by
+                            <a href="https://github.com/headwirecom/themeclean-flex"
+                               title="GitHub: headwirecom/themeclean-flex">
+                                themeclean-flex
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
             <vue-form-generator
@@ -191,3 +209,14 @@
         }
     }
 </script>
+
+<style scoped>
+    .feature-unavailable {
+        display: flex;
+        justify-content: center;
+    }
+
+    .feature-unavailable .card{
+        max-width: 700px;
+    }
+</style>

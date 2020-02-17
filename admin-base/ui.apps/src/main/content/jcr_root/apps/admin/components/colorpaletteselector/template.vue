@@ -24,27 +24,28 @@
   -->
 <template>
   <div>
-    <link rel="stylesheet"
-          href="/etc/felibs/themecleanflex/css/colors.css"
-          type="text/css"/>
-    <link rel="stylesheet"
-          :href="`/content/sites/themecleanflex/css/pallets/${value}.css`"
-          type="text/css"/>
+    <div class="palette-stylsheet-wrapper">
+      <link rel="stylesheet"
+            href="/etc/felibs/themecleanflex/css/colors.css"
+            type="text/css"/>
+      <link rel="stylesheet"
+            :href="`/content/sites/themecleanflex/css/pallets/${value}.css`"
+            type="text/css"/>
+    </div>
     <label>Select Color Palette</label>
-    <div class="wrapper">
-      <div class="__multiselect">
-        <vue-multiselect
-            :value="value"
-            :options="palettes"
-            :searchable="false"
-            :allow-empty="false"
-            deselect-label=""
-            @select="onSelect"/>
-      </div>
-      <div class="palette-preview">
-        <div v-for="colorVar in colorVars"
-          :style="{'background-color': `var(--${colorVar})`}"
-          :title="colorVar"/>
+    <ul class="collection">
+      <li class="collection-item"
+          v-for="palette in palettes"
+          :class="{active: value === palette}"
+          @click.stop.prevent="onSelect(palette)">
+        {{ palette }}
+      </li>
+    </ul>
+    <div class="palette-preview">
+      <div v-for="color in colors"
+           :style="{backgroundColor: `var(--${color.var})`, color: color.text}"
+           :title="color.label">
+        {{ color.label }}
       </div>
     </div>
   </div>
@@ -63,12 +64,32 @@
           'lime.dark',
           'headwire'
         ],
-        colorVars: [
-          'bg-primary-color',
-          'bg-secondary-color',
-          'text-primary-color',
-          'text-secondary-color',
-          'border-primary-color'
+        colors: [
+          {
+            label: 'primary background color',
+            var: 'bg-primary-color',
+            text: 'var(--text-primary-color)'
+          },
+          {
+            label: 'secondary background color',
+            var: 'bg-secondary-color',
+            text: 'var(--text-secondary-color)'
+          },
+          {
+            label: 'primary text color',
+            var: 'text-primary-color',
+            text: 'var(--bg-primary-color)'
+          },
+          {
+            label: 'secondary text color',
+            var: 'text-secondary-color',
+            text: 'var(--bg-secondary-color)'
+          },
+          {
+            label: 'primary border color',
+            var: 'border-primary-color',
+            text: 'var(--text-primary-color)'
+          }
         ]
       }
     },
@@ -81,25 +102,13 @@
 </script>
 
 <style scoped>
-  .wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    width: 100%;
-  }
-
-  .wrapper > div {
-    flex: 1;
-  }
-
   .palette-preview {
     display: flex;
-    flex-direction: row;
-    align-items: stretch;
     border: 1px solid #000000;
     border-left-width: 0;
-    min-height: 100px;
-    max-width: 300px;
+    height: 150px;
+    line-height: 150px;
+    text-align: center;
   }
 
   .palette-preview > div {
