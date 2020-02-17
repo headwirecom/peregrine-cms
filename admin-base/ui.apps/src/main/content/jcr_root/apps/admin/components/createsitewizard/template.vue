@@ -45,6 +45,9 @@
                         <span track-by="index">Selection required</span>
                     </div>
                 </div>
+                <div class="form-group required" v-if="showColorPaletteSelector">
+                    <admin-components-colorpaletteselector />
+                </div>
             </fieldset>
             <p>
                 This wizard allows you to create a site from an existing theme. If you'd like to create a more complex
@@ -53,7 +56,7 @@
             </p>
         </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
-            <vue-form-generator 
+            <vue-form-generator
               :model   ="formmodel"
               :schema  ="nameSchema"
               :options ="formOptions"
@@ -131,6 +134,9 @@
                 const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content/sites').children
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 return themes.filter( (item) => item.name.startsWith('theme'))
+            },
+            showColorPaletteSelector() {
+                return this.formmodel.templatePath === 'themecleanflex'
             }
         },
         methods: {
@@ -182,7 +188,6 @@
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
             }
-
         }
     }
 </script>
