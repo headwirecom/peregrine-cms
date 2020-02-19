@@ -26,9 +26,11 @@
 <div class="container">
     <form-wizard
       v-bind:title="'create a site'"
-      v-bind:subtitle="''" @on-complete="onComplete"
+      v-bind:subtitle="''"
+      @on-complete="onComplete"
       error-color="#d32f2f"
-      color="#546e7a">
+      color="#546e7a"
+      :key="formmodel.templatePath">
         <tab-content title="select theme" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
@@ -52,26 +54,10 @@
                 full project.
             </p>
         </tab-content>
-        <tab-content title="choose color palette">
-            <div v-if="showColorPaletteSelector" class="form-group required">
-                <admin-components-colorpaletteselector @select="onColorPaletteSelect"/>
-            </div>
-            <div v-else class="feature-unavailable">
-                <div class="card">
-                    <div class="card-content center">
-                        <span class="card-title">We are Sorry</span>
-                    </div>
-                    <div class="card-action center">
-                        <p>
-                            This feature is currently only supported by
-                            <a href="https://github.com/headwirecom/themeclean-flex"
-                               title="GitHub: headwirecom/themeclean-flex">
-                                themeclean-flex
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <tab-content v-if="showColorPaletteSelector" title="choose color palette">
+            <admin-components-colorpaletteselector
+                :template="formmodel.templatePath"
+                @select="onColorPaletteSelect"/>
         </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
             <vue-form-generator
@@ -174,7 +160,7 @@
                 }
 
                 if (this.showColorPaletteSelector) {
-                    payload.palette = this.formmodel.palette
+                    payload.colorPalette = this.formmodel.colorPalette
                 }
                 $perAdminApp.stateAction('createSite', payload)
             },
@@ -215,8 +201,8 @@
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
             },
-            onColorPaletteSelect(palette) {
-                this.formmodel.palette = palette
+            onColorPaletteSelect(colorPalette) {
+                this.formmodel.colorPalette = colorPalette
             }
         }
     }

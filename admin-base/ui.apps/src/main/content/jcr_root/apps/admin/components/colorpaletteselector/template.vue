@@ -53,7 +53,6 @@
 
 <script>
   export default {
-    props: ['model'],
     data() {
       return {
         value: 'default.light',
@@ -95,7 +94,7 @@
     },
     computed: {
       fullPalettePath() {
-        return `/content/sites/themecleanflex/css/pallets/${this.value}.css`
+        return `/content/sites/themecleanflex/css/palettes/${this.value}.css`
       }
     },
     methods: {
@@ -113,12 +112,15 @@
     border: 1px solid #000000;
     border-left-width: 0;
     height: 150px;
-    line-height: 150px;
     text-align: center;
   }
 
   .palette-preview > div {
     border-left: 1px solid #000000;
     flex: 1;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
   }
 </style>

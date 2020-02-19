@@ -427,12 +427,15 @@ class PerAdminImpl {
     })
   }
 
-  createSite(fromName, toName, title) {
+  createSite(fromName, toName, title, colorPalette) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('fromSite', fromName)
       data.append('toSite', toName)
       data.append('title', title)
+      if (colorPalette) {
+        data.append('colorPalette', colorPalette)
+      }
       updateWithForm('/admin/createSite.json', data)
       .then((data) => this.populateNodesForBrowser(
           callbacks.getView().state.tools.pages))
