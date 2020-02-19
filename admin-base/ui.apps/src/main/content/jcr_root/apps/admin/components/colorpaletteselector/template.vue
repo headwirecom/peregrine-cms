@@ -53,6 +53,12 @@
 
 <script>
   export default {
+    props: {
+      templatePath: {
+        type: String,
+        required: true
+      }
+    },
     data() {
       return {
         value: 'default.light',
@@ -94,7 +100,7 @@
     },
     computed: {
       fullPalettePath() {
-        return `/content/sites/themecleanflex/css/palettes/${this.value}.css`
+        return `/content/sites/${this.templatePath}/css/palettes/${this.value}.css`
       }
     },
     methods: {

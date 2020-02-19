@@ -56,7 +56,7 @@
         </tab-content>
         <tab-content v-if="showColorPaletteSelector" title="choose color palette">
             <admin-components-colorpaletteselector
-                :template="formmodel.templatePath"
+                :template-path="formmodel.templatePath"
                 @select="onColorPaletteSelect"/>
         </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
