@@ -29,16 +29,16 @@
             :href="`/etc/felibs/${this.templatePath}/css/colors.css`"
             type="text/css"/>
       <link rel="stylesheet"
-            :href="fullPalettePath"
+            :href="selectedPath"
             type="text/css"/>
     </div>
     <label>Select Color Palette</label>
     <ul class="collection">
       <li class="collection-item"
           v-for="palette in palettes"
-          :class="{active: value === palette}"
+          :class="{active: selectedPath === palette.path}"
           @click.stop.prevent="onSelect(palette)">
-        {{ palette }}
+        {{ palette.name }}
       </li>
     </ul>
     <div class="palette-preview">
@@ -57,18 +57,15 @@
       templatePath: {
         type: String,
         required: true
+      },
+      palettes: {
+        type: Array,
+        required: true
       }
     },
     data() {
       return {
-        value: 'default.light',
-        palettes: [
-          'default.light',
-          'default.dark',
-          'lime.light',
-          'lime.dark',
-          'headwire'
-        ],
+        selectedPath: null,
         colors: [
           {
             label: 'primary background color',
@@ -98,15 +95,15 @@
         ]
       }
     },
-    computed: {
-      fullPalettePath() {
-        return `/content/sites/${this.templatePath}/css/palettes/${this.value}.css`
+    mounted() {
+      if (this.palettes && this.palettes.length > 0) {
+        this.onSelect(this.palettes[0])
       }
     },
     methods: {
       onSelect(palette) {
-        this.value = palette
-        this.$emit('select', this.fullPalettePath)
+        this.selectedPath = palette.path
+        this.$emit('select', this.selectedPath)
       }
     }
   }

@@ -230,6 +230,10 @@ class PerApi {
     replicate(path) {
         return impl.replicate(path)
     }
+
+    getPalettes(templateName) {
+        return impl.getPalettes(templateName)
+    }
 }
 
 export default PerApi

@@ -777,6 +777,15 @@ class PerAdminImpl {
     formData.append('name', 'defaultRepl')
     return updateWithForm('/admin/repl.json' + path, formData)
   }
+
+  getPalettes(templateName) {
+    return fetch(`/admin/nodes.json/content/sites/${templateName}/css/palettes`)
+        .then((data) => {
+          return $perAdminApp.findNodeFromPath(data, '/content/sites/themecleanflex/css/palettes')
+        }).catch((err) => {
+          logger.warn(`template ${templateName} does not support palettes`)
+        })
+  }
 }
 
 export default PerAdminImpl

@@ -30,7 +30,7 @@
       @on-complete="onComplete"
       error-color="#d32f2f"
       color="#546e7a"
-      :key="formmodel.templatePath">
+      :key="reloadKey">
         <tab-content title="select theme" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
@@ -54,8 +54,9 @@
                 full project.
             </p>
         </tab-content>
-        <tab-content v-if="showColorPaletteSelector" title="choose color palette">
+        <tab-content v-if="colorPalettes && colorPalettes.length > 0" title="choose color palette">
             <admin-components-colorpaletteselector
+                :palettes="colorPalettes"
                 :template-path="formmodel.templatePath"
                 @select="onColorPaletteSelect"/>
         </tab-content>
@@ -80,6 +81,8 @@
         data:
             function() {
                 return {
+                    reloadKey: 0,
+                    colorPalettes: [],
                     formErrors: {
                         unselectedThemeError: false
                     },
@@ -137,17 +140,24 @@
             themes: function() {
                 const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content/sites').children
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
-                return themes.filter( (item) => item.name.startsWith('theme'))
-            },
-            showColorPaletteSelector() {
-                return this.formmodel.templatePath === 'themecleanflex'
+                return themes.filter( (item) => {
+                    return item.name.startsWith('theme');
+                })
             }
         },
         methods: {
             selectTheme: function(me, target){
                 if(me === null) me = this;
                 me.formmodel.templatePath = target;
+                me.formmodel.colorPalette = null
+                me.colorPalettes = []
                 this.validateTabOne(me);
+                $perAdminApp.getApi().getPalettes(me.formmodel.templatePath).then((data) =>{
+                    if (data && data.children && data.children.length > 0) {
+                        me.colorPalettes = data.children
+                    }
+                    me.reloadKey++
+                })
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
@@ -159,7 +169,7 @@
                     title: this.formmodel.title
                 }
 
-                if (this.showColorPaletteSelector) {
+                if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {
                     payload.colorPalette = this.formmodel.colorPalette
                 }
                 $perAdminApp.stateAction('createSite', payload)
