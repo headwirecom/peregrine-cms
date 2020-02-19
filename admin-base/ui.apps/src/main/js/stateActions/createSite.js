@@ -30,19 +30,8 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    if (target.palette) {
-        return api.createSiteWithPalette(
-            target.fromName,
-            target.toName,
-            target.title,
-            target.palette
-        ).then( () => {
-            me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/sites')
-        })
-    } else {
-        return api.createSite(target.fromName, target.toName, target.title).then( () => {
-            me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/sites')
-        })
-    }
+    return api.createSite(target.fromName, target.toName, target.title).then( () => {
+        me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/sites')
+    })
 
 }

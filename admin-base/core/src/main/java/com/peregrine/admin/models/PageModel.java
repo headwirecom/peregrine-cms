@@ -93,8 +93,6 @@ public class PageModel
 
     @Inject private String[] suffixToParameter;
 
-    @Inject private String palette;
-
     public String[] getSiteCSS() {
         if(siteCSS == null) {
             String[] value = getInheritedProperty("siteCSS");
@@ -146,10 +144,6 @@ public class PageModel
 
     public String[] getSuffixToParameter() {
         return suffixToParameter;
-    }
-
-    public String getPalette() {
-        return palette;
     }
 
     public List<TitlePath> getBreadcrumbs() {

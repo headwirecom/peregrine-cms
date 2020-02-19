@@ -115,10 +115,6 @@ class PerApi {
         return impl.createSite(fromName, toName, title)
     }
 
-    createSiteWithPalette(fromName, toName, title, palette) {
-        return impl.createSiteWithPalette(fromName, toName, title, palette)
-    }
-
     createPage(parentPath, name, templatePath, title) {
         return impl.createPage(parentPath, name, templatePath, title)
     }

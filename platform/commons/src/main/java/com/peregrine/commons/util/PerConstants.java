@@ -109,7 +109,6 @@ public class PerConstants {
     public static final String METAPROPERTIES = "metaproperties";
     public static final String UPDATED = "updated";
     public static final String OG_TAGS = "ogTags";
-    public static final String PALETTE = "palette";
 
     public static final String PAGE = "page";
     public static final String DROP = "drop";
