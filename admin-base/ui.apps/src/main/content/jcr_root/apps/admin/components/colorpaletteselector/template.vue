@@ -26,7 +26,7 @@
   <div>
     <div class="palette-stylsheet-wrapper">
       <link rel="stylesheet"
-            href="/etc/felibs/themecleanflex/css/colors.css"
+            :href="`/etc/felibs/${this.templatePath}/css/colors.css`"
             type="text/css"/>
       <link rel="stylesheet"
             :href="fullPalettePath"
