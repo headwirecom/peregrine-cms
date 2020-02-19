@@ -32,17 +32,46 @@
         <tab-content title="select template" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
-                    <label>Select Template</label>
-                    <ul class="collection">
-                        <li class="collection-item"
-                            v-for="template in templates"
-                            v-on:click.stop.prevent="selectTemplate(null, template.path)"
-                            v-bind:class="isSelected(template.path) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
-                        </li>
-                    </ul>
-                    <div v-if="formErrors.unselectedTemplateError" class="errors">
-                        <span track-by="index">selection required</span>
+                    <div class="row">
+                        <div class="col s6">
+                            <label>Select Template</label>
+                            <ul class="collection">
+                                <li class="collection-item"
+                                    v-for="template in templates"
+                                    v-on:click.stop.prevent="selectTemplate(null, template.path)"
+                                    v-bind:class="isSelected(template.path) ? 'active' : ''"
+                                    v-bind:key="template.path">
+                                    <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
+                                </li>
+                            </ul>
+                            <div v-if="boilerplatePages && boilerplatePages.length > 0">
+                                OR<br/>
+                                <label>Select Boilerplate Page</label>
+                                <ul class="collection">
+                                    <li class="collection-item"
+                                        v-for="boilerplatePage in boilerplatePages"
+                                        v-on:click.stop.prevent="selectBoilerplatePage(null, boilerplatePage.path)"
+                                        v-bind:class="isSelected(boilerplatePage.path) ? 'active' : ''"
+                                        v-bind:key="boilerplatePage.path">
+                                        <admin-components-action v-bind:model="{ command: 'selectBoilerplatePage', target: boilerplatePage.path, title: boilerplatePage.name }"></admin-components-action>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div v-if="formErrors.unselectedTemplateError" class="errors">
+                                <span track-by="index">selection required</span>
+                            </div>
+                        </div>
+                        <div class="col s6">
+                            <label>Preview</label>
+                            <div class="iframe-container">
+                                <iframe v-if="formmodel.boilerplatePagePath"
+                                        v-bind:src="formmodel.boilerplatePagePath + '.html'" data-per-mode="preview">
+                                </iframe>
+                                <iframe v-if="formmodel.templatePath"
+                                        v-bind:src="formmodel.templatePath + '.html'" data-per-mode="preview">
+                                </iframe>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </fieldset>
@@ -56,12 +85,9 @@
             </vue-form-generator>
         </tab-content>
         <tab-content title="verify">
-            <vue-form-generator :model="formmodel"
-                                :schema="pageSchema"
-                                :options="formOptions"
-                                ref="nameTab">
-
-            </vue-form-generator>
+            Creating Page `{{formmodel.name}}` from
+            <span v-if="formmodel.templatePath">template `{{formmodel.templatePath}}`</span>
+            <span v-else-if="formmodel.boilerplatePagePath">boilerplate page `{{formmodel.boilerplatePagePath}}`</span>
         </tab-content>
     </form-wizard>
 </div>
@@ -80,8 +106,8 @@
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
                         title: '',
-                        templatePath: ''
-
+                        templatePath: '',
+                        boilerplatePagePath: ''
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -143,6 +169,14 @@
                 siteRootParts[2] = 'templates'
                 const siteRoot = siteRootParts.join('/')
                 return templates.filter( (item) => item.path.startsWith(siteRoot))
+            },
+            boilerplatePages: function() {
+                const siteRoot = this.formmodel.path.split('/').slice(0,4).join('/') + '/boilerplates'
+                const boilerplateRoot = $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, siteRoot)
+                if(boilerplateRoot) {
+                    return boilerplateRoot.children
+                }
+                return []
             }
         }
         ,
@@ -150,22 +184,40 @@
             selectTemplate: function(me, target){
                 if(me === null) me = this
                 me.formmodel.templatePath = target
+                me.formmodel.boilerplatePagePath = ''
+                this.validateTabOne(me);
+            },
+            selectBoilerplatePage: function(me, target){
+                if(me === null) me = this
+                me.formmodel.boilerplatePagePath = target
+                me.formmodel.templatePath = ''
                 this.validateTabOne(me);
             },
             isSelected: function(target) {
-                return this.formmodel.templatePath === target
+                return this.formmodel.templatePath === target || this.formmodel.boilerplatePagePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, title: this.formmodel.title, data: this.formmodel })
+                if(this.formmodel.templatePath) {
+                    $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
+                }
+                else {
+                    $perAdminApp.stateAction('createPageFromBoilerplate', { parent: this.formmodel.path, name: this.formmodel.name, boilerplatePagePath: this.formmodel.boilerplatePagePath, data: this.formmodel })
+                }
             },
             validateTabOne: function(me) {
-                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath);
+                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath && '' === '' + me.formmodel.boilerplatePagePath);
 
                 return !me.formErrors.unselectedTemplateError;
             },
             leaveTabOne: function() {
                 if('' !== ''+this.formmodel.templatePath) {
                     $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
+                }
+                if('' !== ''+this.formmodel.boilerplatePagePath) {
+                    const boilerplatePage = this.boilerplatePages.find(bp => {
+                        return bp.path == this.formmodel.boilerplatePagePath
+                    })
+                    $perAdminApp.getApi().populateComponentDefinitionFromNode(boilerplatePage.templatePath)
                 }
 
                 return this.validateTabOne(this);
@@ -198,3 +250,23 @@
         }
     }
 </script>
+
+<style>
+.iframe-container {
+    overflow: hidden;
+    padding-top: 56.25%;
+    position: relative;
+}
+
+.iframe-container iframe {
+    border: 0;
+    height: 200%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 200%;
+    transform: scale(0.5) translate(-50%, -50%);
+}
+
+
+</style>

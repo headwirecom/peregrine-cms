@@ -63,6 +63,10 @@ class PerApi {
         return impl.populateObjects()
     }
 
+    populateBoilerplates(path, target, includeParents = false) {
+        return impl.populateBoilerplates(path, target, includeParents)
+    }
+
     populateNodesForBrowser(path, target, includeParents = false) {
         return impl.populateNodesForBrowser(path, target, includeParents)
     }
@@ -80,7 +84,7 @@ class PerApi {
     }
 
 
-        populateObject(path, target, name) {
+    populateObject(path, target, name) {
         return impl.populateObject(path, target, name)
     }
 
@@ -101,10 +105,10 @@ class PerApi {
     }
 
     populateByName(name) {
-        if(name === '/admin/tools') return this.populateTools()
-        if(name === '/admin/toolsConfig') return this.populateToolsConfig()
-        if(name === '/admin/components') return this.populateComponents()
-        return Promise.reject('populateByName for '+name+' is not defined')
+        if (name === '/admin/tools') return this.populateTools()
+        if (name === '/admin/toolsConfig') return this.populateToolsConfig()
+        if (name === '/admin/components') return this.populateComponents()
+        return Promise.reject('populateByName for ' + name + ' is not defined')
     }
 
     populateI18N(language) {
@@ -117,6 +121,10 @@ class PerApi {
 
     createPage(parentPath, name, templatePath, title) {
         return impl.createPage(parentPath, name, templatePath, title)
+    }
+
+    createPageFromBoilerplate(parentPath, name, boilerplatePagePath) {
+        return impl.createPageFromBoilerplate(parentPath, name, boilerplatePagePath)
     }
 
     deletePage(path) {
