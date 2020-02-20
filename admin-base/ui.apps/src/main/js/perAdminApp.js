@@ -727,6 +727,8 @@ function sessionKeepAlive() {
  */
 var PerAdminApp = {
 
+    eventBus: new Vue(),
+
     /**
      *
      * initialize the peregrine administation console with a view object
