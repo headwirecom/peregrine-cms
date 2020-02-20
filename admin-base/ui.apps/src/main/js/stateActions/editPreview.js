@@ -73,7 +73,7 @@ export default function (me, target) {
     } else {
       set(view, state.view, target)
     }
-    me.eventBus.$emit('edit-preview', target)
+    me.eventBus.$emit('edit-preview', get(view, state.preview, ''))
     resolve()
   })
 }
