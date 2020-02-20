@@ -29,6 +29,9 @@
             :href="`/etc/felibs/${this.templatePath}/css/colors.css`"
             type="text/css"/>
       <link rel="stylesheet"
+            :href="`/content/sites/${this.templatePath}/css/commons.css`"
+            type="text/css"/>
+      <link rel="stylesheet"
             :href="selectedPath"
             type="text/css"/>
     </div>
@@ -41,12 +44,18 @@
         {{ palette.name }}
       </li>
     </ul>
-    <div class="palette-preview" id="peregrine-app">
-      <div v-for="color in colors"
-           :style="{backgroundColor: `var(--${color.var})`, color: color.text}"
-           :title="color.label">
-        {{ color.label }}
-      </div>
+    <div class="palette-previews" id="peregrine-app">
+      <template v-for="theme in themes">
+        <h4 class="theme-name">{{ theme }}</h4>
+        <div class="theme-preview" :class="`theme-${theme}`">
+          <div v-for="color in colors"
+               :style="{backgroundColor: `var(--${color.var})`, color: color.text}"
+               :title="color.label"
+               class="palette-col">
+            {{ color.label }}
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -66,6 +75,7 @@
     data() {
       return {
         selectedPath: null,
+        themes: ['none', 'light', 'dark'],
         colors: [
           {
             label: 'primary background color',
@@ -110,7 +120,12 @@
 </script>
 
 <style scoped>
-  .palette-preview {
+  .palette-previews .theme-name {
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .palette-previews .theme-preview {
     display: flex;
     border: 1px solid #000000;
     border-left-width: 0;
@@ -118,12 +133,13 @@
     text-align: center;
   }
 
-  .palette-preview > div {
+  .palette-previews .theme-preview > .palette-col {
     border-left: 1px solid #000000;
-    flex: 1;
     display: flex;
+    flex: 1;
     justify-content: center;
     align-content: center;
     flex-direction: column;
+    padding: 10px;
   }
 </style>

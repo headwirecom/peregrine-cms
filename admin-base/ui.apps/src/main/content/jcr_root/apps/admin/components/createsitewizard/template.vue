@@ -154,7 +154,7 @@
                 this.validateTabOne(me);
                 $perAdminApp.getApi().getPalettes(me.formmodel.templatePath).then((data) =>{
                     if (data && data.children && data.children.length > 0) {
-                        me.colorPalettes = data.children
+                        me.colorPalettes = data.children.reverse()
                     }
                     me.reloadKey++
                 })
