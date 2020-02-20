@@ -58,7 +58,6 @@ export default {
         if (window.parent && window.parent.$perAdminApp  && window.parent.$perAdminApp.eventBus) {
             window.parent.$perAdminApp.eventBus.$on('edit-preview', (data) => {
                 vm.show = data !== 'preview'
-                console.log(vm.show, data, data !== 'preview')
             })
         }
     },
