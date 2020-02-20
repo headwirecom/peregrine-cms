@@ -41,7 +41,7 @@
         {{ palette.name }}
       </li>
     </ul>
-    <div class="palette-preview">
+    <div class="palette-preview" id="peregrine-app">
       <div v-for="color in colors"
            :style="{backgroundColor: `var(--${color.var})`, color: color.text}"
            :title="color.label">
