@@ -215,8 +215,18 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
         final Resource resource = resourceResolver.getResource(path);
         if (isNull(resource)) {
             deleteMissingAncestorFolder(resourceResolver, path);
-        } else if (isFile(resource)) {
+        } else {
+            updateFiles(resource);
+        }
+    }
+
+    private void updateFiles(final Resource resource) throws IOException {
+        if (isFile(resource)) {
             updateResource(resource);
+        }
+
+        for (final Resource child : resource.getChildren()) {
+            updateFiles(child);
         }
     }
 
