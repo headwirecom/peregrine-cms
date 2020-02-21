@@ -32,7 +32,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
@@ -193,12 +192,27 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
 
         final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
-            updateFiles(resourceResolver, initialPaths);
+            updateFiles(resourceResolver, cleanPaths(initialPaths));
         } catch (final LoginException e) {
             return JobResult.CANCEL;
         }
 
         return JobResult.OK;
+    }
+
+    private Set<String> cleanPaths(final Set<String> paths) {
+        final Set<String> result = new HashSet<>();
+        for (String path : paths) {
+            String parent = path;
+            do {
+                path = parent;
+                parent = substringBeforeLast(path, SLASH);
+            } while (paths.contains(parent));
+
+            result.add(path);
+        }
+
+        return result;
     }
 
     private void updateFiles(final ResourceResolver resourceResolver, final Set<String> paths) {
@@ -222,7 +236,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
 
     private void updateFiles(final Resource resource) throws IOException {
         if (isFile(resource)) {
-            updateResource(resource);
+            backupResourceToFile(resource);
         }
 
         for (final Resource child : resource.getChildren()) {
@@ -267,7 +281,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
         return result.toString();
     }
 
-    private void updateResource(final Resource resource) throws IOException {
+    private void backupResourceToFile(final Resource resource) throws IOException {
         final String filePath = localPath(resource.getPath());
         final File file = new File(filePath);
         FileUtils.forceMkdirParent(file);
