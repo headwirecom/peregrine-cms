@@ -27,6 +27,8 @@ package com.peregrine.assets.impl;
 
 import com.peregrine.assets.ResourceResolverFactoryProxy;
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.commons.concurrent.Callback;
+import com.peregrine.commons.concurrent.DeBouncer;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
@@ -50,7 +52,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.peregrine.commons.Chars.EQ;
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -62,10 +63,10 @@ import static org.apache.jackrabbit.JcrConstants.NT_FILE;
 @Component(service = JobConsumer.class, immediate = true, property = {
         JobConsumer.PROPERTY_TOPICS + EQ + AssetsToFSResourceChangeJobConsumer.TOPIC })
 @Designate(ocd = AssetsToFSResourceChangeJobConsumerConfig.class)
-public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
+public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, Callback<String> {
 
     public static final String TOPIC = "com/peregrine/assets/REFRESH_FS_FILES";
-    public static final String PN_PATHS = "paths";
+    public static final String PN_PATH = "path";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -78,8 +79,9 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
     private AssetsToFSResourceChangeJobConsumerConfig config;
 
     private String rootPath;
-    private boolean disabled = true;
+    private boolean enabled = false;
     private ServiceRegistration<ResourceChangeListener> resourceChangeListener;
+    private DeBouncer<String> deBouncer;
 
     @Activate
     public void activate(final BundleContext context, final AssetsToFSResourceChangeJobConsumerConfig config) {
@@ -93,9 +95,13 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
             return;
         }
 
-        disabled = !registerResourceChangeListener(context);
-        if (!disabled) {
-            updateExistingFiles();
+        enabled = registerResourceChangeListener(context);
+        if (!enabled) {
+            return;
+        }
+
+        for (final String path : config.sourceAssetsRootPaths()) {
+            call(path);
         }
     }
 
@@ -129,72 +135,43 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
 
         properties.put(ResourceChangeListener.PATHS, rootPaths);
         properties.put(ResourceChangeListener.CHANGES, new String[] { "ADDED", "CHANGED", "REMOVED" });
-        final AssetsToFSResourceChangeListener listener = new AssetsToFSResourceChangeListener(jobManager);
+        deBouncer = new DeBouncer<>(this, config.deBouncerInterval());
+        final AssetsToFSResourceChangeListener listener = new AssetsToFSResourceChangeListener(deBouncer);
         resourceChangeListener = context.registerService(ResourceChangeListener.class, listener, properties);
         return true;
     }
 
-    private void updateExistingFiles() {
-        final Set<String> paths = new HashSet<>();
-        try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
-            for (final String path : config.sourceAssetsRootPaths()) {
-                final Resource resource = resourceResolver.getResource(path);
-                paths.addAll(
-                        findAllFiles(resource).stream()
-                                .map(Resource::getPath)
-                                .collect(Collectors.toSet())
-                );
-            }
-        } catch (final LoginException e) {
-            return;
-        }
-
-        final Map<String, Object> props = new HashMap<>();
-        props.put(AssetsToFSResourceChangeJobConsumer.PN_PATHS, paths);
-        jobManager.addJob(AssetsToFSResourceChangeJobConsumer.TOPIC, props);
-    }
-
-    private Collection<Resource> findAllFiles(final Resource resource) {
-        return findAllFiles(resource, new LinkedList<>());
-    }
-
-    private Collection<Resource> findAllFiles(final Resource resource, final LinkedList<Resource> target) {
-        if (isFile(resource)) {
-            target.add(resource);
-        }
-
-        if (nonNull(resource)) {
-            final Iterator<Resource> children = resource.listChildren();
-            while (children.hasNext()) {
-                findAllFiles(children.next(), target);
-            }
-        }
-
-        return target;
-    }
-
-    private boolean isFile(Resource resource) {
+    private boolean isFile(final Resource resource) {
         return PerUtil.isPrimaryType(resource, NT_FILE);
     }
 
     @Deactivate
     public void deactivate() {
-        if (nonNull(resourceChangeListener)) {
+        if (enabled) {
             resourceChangeListener.unregister();
+            deBouncer.finishAndTerminate();
         }
     }
 
     @Override
+    public void call(final String path) {
+        final Map<String, Object> props = new HashMap<>();
+        props.put(PN_PATH, path);
+        jobManager.addJob(TOPIC, props);
+    }
+
+    @Override
     public JobResult process(final Job job) {
-        if (disabled) {
+        if (!enabled) {
             return JobResult.CANCEL;
         }
 
-        final Set<String> initialPaths = job.getProperty(PN_PATHS, Set.class);
         try (final ResourceResolver resourceResolver = resourceResolverFactory.getServiceResourceResolver()) {
-            updateFiles(resourceResolver, cleanPaths(initialPaths));
+            updateFiles(resourceResolver, job.getProperty(PN_PATH, String.class));
         } catch (final LoginException e) {
             return JobResult.CANCEL;
+        } catch (final IOException e) {
+            logger.warn("File System operation did not succeed.", e);
         }
 
         return JobResult.OK;
@@ -213,16 +190,6 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer {
         }
 
         return result;
-    }
-
-    private void updateFiles(final ResourceResolver resourceResolver, final Set<String> paths) {
-        for (final String path : paths) {
-            try {
-                updateFiles(resourceResolver, path);
-            } catch (final IOException e) {
-                logger.warn("File System operation did not succeed.", e);
-            }
-        }
     }
 
     private void updateFiles(final ResourceResolver resourceResolver, final String path) throws IOException {

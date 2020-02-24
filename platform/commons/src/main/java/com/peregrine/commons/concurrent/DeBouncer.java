@@ -21,7 +21,7 @@ public final class DeBouncer<Argument> implements Callback<Argument> {
 
 	public DeBouncer(final Callback<Argument> callback, final int interval, final TimeUnit timeUnit) {
 		this.callback = callback;
-		this.interval = interval;
+		this.interval = Math.max(0, interval);
 		this.timeUnit = timeUnit;
 	}
 
@@ -44,6 +44,12 @@ public final class DeBouncer<Argument> implements Callback<Argument> {
 	public Set<Argument> terminate() {
 		scheduler.shutdownNow();
 		return delayedTasks.keySet();
+	}
+
+	public void finishAndTerminate() {
+		for (final Argument arg : terminate()) {
+			callback.call(arg);
+		}
 	}
 
 	/** The task that wakes up when the wait time elapses */

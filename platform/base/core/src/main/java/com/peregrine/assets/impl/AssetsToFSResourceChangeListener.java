@@ -25,30 +25,25 @@ package com.peregrine.assets.impl;
  * #L%
  */
 
+import com.peregrine.commons.concurrent.DeBouncer;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
-import org.apache.sling.event.jobs.JobManager;
 
-import java.util.*;
+import java.util.List;
 
 public final class AssetsToFSResourceChangeListener implements ResourceChangeListener {
 
-    private final JobManager jobManager;
+    private final DeBouncer<String> deBouncer;
 
-    public AssetsToFSResourceChangeListener(final JobManager jobManager) {
-        this.jobManager = jobManager;
+    public AssetsToFSResourceChangeListener(final DeBouncer<String> deBouncer) {
+        this.deBouncer = deBouncer;
     }
 
     @Override
     public void onChange(final List<ResourceChange> changes) {
-        final Set<String> paths = new HashSet<>();
         for (final ResourceChange change: changes) {
-            paths.add(change.getPath());
+            deBouncer.call(change.getPath());
         }
-
-        final Map<String, Object> props = new HashMap<>();
-        props.put(AssetsToFSResourceChangeJobConsumer.PN_PATHS, paths);
-        jobManager.addJob(AssetsToFSResourceChangeJobConsumer.TOPIC, props);
     }
 
 }

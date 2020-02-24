@@ -39,4 +39,7 @@ public @interface AssetsToFSResourceChangeJobConsumerConfig {
     @AttributeDefinition(name = "%targetFolderRootPath.name", description = "%targetFolderRootPath.description")
     String targetFolderRootPath();
 
+    @AttributeDefinition(name = "%deBouncerInterval.name", description = "%deBouncerInterval.description")
+    int deBouncerInterval() default 0;
+
 }
