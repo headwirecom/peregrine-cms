@@ -29,6 +29,7 @@ import com.peregrine.assets.ResourceResolverFactoryProxy;
 import com.peregrine.commons.ResourceUtils;
 import com.peregrine.commons.concurrent.Callback;
 import com.peregrine.commons.concurrent.DeBouncer;
+import com.peregrine.commons.concurrent.ElementAdjuster;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
@@ -56,14 +57,13 @@ import java.util.*;
 import static com.peregrine.commons.Chars.EQ;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.jackrabbit.JcrConstants.NT_FILE;
 
 @Component(service = JobConsumer.class, immediate = true, property = {
         JobConsumer.PROPERTY_TOPICS + EQ + AssetsToFSResourceChangeJobConsumer.TOPIC })
 @Designate(ocd = AssetsToFSResourceChangeJobConsumerConfig.class)
-public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, Callback<String> {
+public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, Callback<String>, ElementAdjuster<String> {
 
     public static final String TOPIC = "com/peregrine/assets/REFRESH_FS_FILES";
     public static final String PN_PATH = "path";
@@ -135,7 +135,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, C
 
         properties.put(ResourceChangeListener.PATHS, rootPaths);
         properties.put(ResourceChangeListener.CHANGES, new String[] { "ADDED", "CHANGED", "REMOVED" });
-        deBouncer = new DeBouncer<>(this, config.deBouncerInterval());
+        deBouncer = new DeBouncer<>(this, this, config.deBouncerInterval());
         final AssetsToFSResourceChangeListener listener = new AssetsToFSResourceChangeListener(deBouncer);
         resourceChangeListener = context.registerService(ResourceChangeListener.class, listener, properties);
         return true;
@@ -151,6 +151,39 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, C
             resourceChangeListener.unregister();
             deBouncer.finishAndTerminate();
         }
+    }
+
+    @Override
+    public String findSuperElement(final String newPath, final Set<String> oldPaths) {
+        String result = newPath;
+        String path;
+        String parent = newPath;
+        do {
+            if (oldPaths.contains(parent)) {
+                result = parent;
+            }
+
+            path = parent;
+            parent = substringBeforeLast(path, SLASH);
+        } while (isNotBlank(parent));
+        return result;
+    }
+
+    private Set<String> cleanPaths(final Set<String> paths) {
+        final Set<String> result = new HashSet<>();
+        for (String path : paths) {
+            result.add(findSuperElement(path, paths));
+        }
+
+        return result;
+    }
+
+    @Override
+    public Set<String> findSubElements(final String newPath, final Set<String> oldPaths) {
+        final Set<String> result = new HashSet<>(oldPaths);
+        result.add(newPath);
+        result.removeAll(cleanPaths(result));
+        return result;
     }
 
     @Override
@@ -175,21 +208,6 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, C
         }
 
         return JobResult.OK;
-    }
-
-    private Set<String> cleanPaths(final Set<String> paths) {
-        final Set<String> result = new HashSet<>();
-        for (String path : paths) {
-            String parent = path;
-            do {
-                path = parent;
-                parent = substringBeforeLast(path, SLASH);
-            } while (paths.contains(parent));
-
-            result.add(path);
-        }
-
-        return result;
     }
 
     private void updateFiles(final ResourceResolver resourceResolver, final String path) throws IOException {

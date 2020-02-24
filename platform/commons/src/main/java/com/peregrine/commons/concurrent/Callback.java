@@ -1,7 +1,7 @@
 package com.peregrine.commons.concurrent;
 
-public interface Callback<Argument> {
+public interface Callback<Element> {
 
-	void call(Argument arg);
+	void call(Element arg);
 
 }
