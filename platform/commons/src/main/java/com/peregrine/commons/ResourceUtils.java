@@ -61,15 +61,19 @@ public final class ResourceUtils {
     }
 
     public static String fileNameToJcrName(final String name) {
-        if (startsWith(name, _SCORE)) {
-            final String nameAfterUnderscore = name.substring(1);
-            if (nameAfterUnderscore.contains(_SCORE)) {
-                final String prefix = substringBefore(nameAfterUnderscore, _SCORE);
-                final String suffix = substringAfter(nameAfterUnderscore, _SCORE);
-                if (isNotBlank(suffix)) {
-                    return prefix + COLON + suffix;
-                }
-            }
+        if (!startsWith(name, _SCORE)) {
+            return name;
+        }
+
+        final String nameAfterUnderscore = name.substring(1);
+        if (!contains(nameAfterUnderscore, _SCORE) || startsWith(nameAfterUnderscore, _SCORE)) {
+            return name;
+        }
+
+        final String prefix = substringBefore(nameAfterUnderscore, _SCORE);
+        final String suffix = substringAfter(nameAfterUnderscore, _SCORE);
+        if (isNotBlank(suffix)) {
+            return prefix + COLON + suffix;
         }
 
         return name;
