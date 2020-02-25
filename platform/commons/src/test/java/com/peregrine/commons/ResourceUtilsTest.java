@@ -81,10 +81,12 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
 
     @Test
     public void jcrPathToFilePath() {
-        assertEquals("/content/folder/file", ResourceUtils.fileNameToJcrName("/content/folder/file"));
-        assertEquals("/content/folder/_jcr_content/file", ResourceUtils.fileNameToJcrName("/content/folder/jcr:content/file"));
-        assertEquals("/content/folder/_jcr_content/file/_cq_renditions", ResourceUtils.fileNameToJcrName("/content/folder/jcr:content/file/cq:renditions"));
-        assertEquals("", ResourceUtils.fileNameToJcrName(""));
+        assertEquals(null, ResourceUtils.jcrPathToFilePath(null));
+        assertEquals(EMPTY, ResourceUtils.jcrPathToFilePath(EMPTY));
+        assertEquals("/content/folder/file", ResourceUtils.jcrPathToFilePath("/content/folder/file"));
+        assertEquals("/content/folder/_jcr_content/file", ResourceUtils.jcrPathToFilePath("/content/folder/jcr:content/file"));
+        assertEquals("/content/folder/_jcr_content/file/_cq_renditions", ResourceUtils.jcrPathToFilePath("/content/folder/jcr:content/file/cq:renditions"));
+        assertEquals("/content/", ResourceUtils.jcrPathToFilePath("/content/"));
     }
 
 }
