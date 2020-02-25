@@ -32,7 +32,7 @@ public final class ResourceResolverFactoryProxyImplTest {
 	}
 
 	@Test
-	public synchronized void testBasic() throws LoginException {
+	public void getServiceResourceResolver() throws LoginException {
 		assertEquals(resourceResolver, model.getServiceResourceResolver());
 	}
 }
