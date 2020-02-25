@@ -21,8 +21,8 @@ COPY installpackages.sh .
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY peregrine.pref /etc/apt/preferences.d/
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ cosmic main restricted" >> /etc/apt/sources.list \
-    && echo "deb http://archive.ubuntu.com/ubuntu/ cosmic universe" >> /etc/apt/sources.list \
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ disco main restricted" >> /etc/apt/sources.list \
+    && echo "deb http://archive.ubuntu.com/ubuntu/ disco universe" >> /etc/apt/sources.list \
     && apt update \
     && apt --only-upgrade install -y libvips libvips-tools
 # End 
