@@ -26,6 +26,18 @@ public final class DeBouncerTest implements Callback<Integer>, ElementAdjuster<I
 		this.value = value;
 	}
 
+	@Override
+	public Integer findSuperElement(final Integer newElement, final Set<Integer> oldElements) {
+		return newElement;
+	}
+
+	@Override
+	public Set<Integer> findSubElements(final Integer newElement, final Set<Integer> oldElements) {
+		final Set<Integer> result = new HashSet<>();
+		result.add(otherValue);
+		return result;
+	}
+
 	@Test
 	public synchronized void testBasic() throws InterruptedException {
 		final DeBouncer<Integer> model = new DeBouncer<>(this, INTERVAL);
@@ -67,17 +79,5 @@ public final class DeBouncerTest implements Callback<Integer>, ElementAdjuster<I
 		model.finishAndTerminate();
 
 		Assert.assertEquals(desiredValue, value);
-	}
-
-	@Override
-	public Integer findSuperElement(final Integer newElement, final Set<Integer> oldElements) {
-		return newElement;
-	}
-
-	@Override
-	public Set<Integer> findSubElements(final Integer newElement, final Set<Integer> oldElements) {
-		final Set<Integer> result = new HashSet<>();
-		result.add(otherValue);
-		return result;
 	}
 }
