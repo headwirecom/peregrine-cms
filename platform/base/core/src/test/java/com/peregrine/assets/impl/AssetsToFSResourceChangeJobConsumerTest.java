@@ -3,10 +3,12 @@ package com.peregrine.assets.impl;
 import com.peregrine.SlingResourcesTest;
 import com.peregrine.assets.ResourceResolverFactoryProxy;
 import junitx.util.PrivateAccessor;
+import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer.JobResult;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +16,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.framework.BundleContext;
 
-import static org.junit.Assert.assertEquals;
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,6 +51,15 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		when(config.targetFolderRootPath()).thenReturn(targetFolderRootPath);
 	}
 
+	@After
+	public void tearDown() throws IOException {
+		final File root = new File(targetFolderRootPath);
+		if (root.exists()) {
+			FileUtils.cleanDirectory(root);
+			root.delete();
+		}
+	}
+
 	private void activate() {
 		model.activate(context, config);
 	}
@@ -70,6 +84,25 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		when(config.targetFolderRootPath()).thenReturn(">:<");
 		activate();
 		assertProcess(JobResult.CANCEL);
+	}
+
+	@Test
+	public void targetFolderRootPath_doesNotExist() {
+		final File root = new File(targetFolderRootPath);
+		assertFalse(root.exists());
+		activate();
+		assertProcess(JobResult.CANCEL);
+		assertTrue(root.exists());
+	}
+
+	@Test
+	public void targetFolderRootPath_exists() throws IOException {
+		final File root = new File(targetFolderRootPath);
+		FileUtils.forceMkdir(root);
+		assertTrue(root.exists());
+		activate();
+		assertProcess(JobResult.CANCEL);
+		assertTrue(root.exists());
 	}
 
 }
