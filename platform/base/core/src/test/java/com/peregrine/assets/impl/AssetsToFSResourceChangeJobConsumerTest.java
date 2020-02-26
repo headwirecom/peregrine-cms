@@ -5,6 +5,7 @@ import com.peregrine.assets.ResourceResolverFactoryProxy;
 import junitx.util.PrivateAccessor;
 import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer.JobResult;
@@ -15,15 +16,21 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResourcesTest {
+
+	private static final String ROOT_PATH = "/content/assets";
+	private static final String[] NULL_PATHS_ARRAY = null;
 
 	private final String targetFolderRootPath = System.getProperty("user.dir") + "/target/" + getClass().getSimpleName();
 	private final AssetsToFSResourceChangeJobConsumer model = new AssetsToFSResourceChangeJobConsumer();
@@ -41,6 +48,9 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 	private AssetsToFSResourceChangeJobConsumerConfig config;
 
 	@Mock
+	private ServiceRegistration<ResourceChangeListener> resourceChangeListener;
+
+	@Mock
 	private Job job;
 
 	@Before
@@ -49,10 +59,14 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		PrivateAccessor.setField(model, "resourceResolverFactory", resourceResolverFactory);
 		when(resourceResolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
 		when(config.targetFolderRootPath()).thenReturn(targetFolderRootPath);
+		when(config.sourceAssetsRootPaths()).thenReturn(new String[] { ROOT_PATH });
+		when(context.registerService(eq(ResourceChangeListener.class), any(AssetsToFSResourceChangeListener.class), any()))
+				.thenReturn(resourceChangeListener);
 	}
 
 	@After
 	public void tearDown() throws IOException {
+		model.deactivate();
 		final File root = new File(targetFolderRootPath);
 		if (root.exists()) {
 			FileUtils.cleanDirectory(root);
@@ -61,6 +75,11 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 	}
 
 	private void activate() {
+		model.activate(context, config);
+	}
+
+	private void activate(final String... paths) {
+		when(config.sourceAssetsRootPaths()).thenReturn(paths);
 		model.activate(context, config);
 	}
 
@@ -75,14 +94,14 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 	@Test
 	public void targetFolderRootPath_isNull() {
 		when(config.targetFolderRootPath()).thenReturn(null);
-		activate();
+		activate(NULL_PATHS_ARRAY);
 		assertProcess(JobResult.CANCEL);
 	}
 
 	@Test
 	public void targetFolderRootPath_incorrectPath() {
 		when(config.targetFolderRootPath()).thenReturn(">:<");
-		activate();
+		activate(NULL_PATHS_ARRAY);
 		assertProcess(JobResult.CANCEL);
 	}
 
@@ -90,7 +109,7 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 	public void targetFolderRootPath_doesNotExist() {
 		final File root = new File(targetFolderRootPath);
 		assertFalse(root.exists());
-		activate();
+		activate(NULL_PATHS_ARRAY);
 		assertProcess(JobResult.CANCEL);
 		assertTrue(root.exists());
 	}
@@ -100,16 +119,21 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		final File root = new File(targetFolderRootPath);
 		FileUtils.forceMkdir(root);
 		assertTrue(root.exists());
-		activate();
+		activate(NULL_PATHS_ARRAY);
 		assertProcess(JobResult.CANCEL);
 		assertTrue(root.exists());
 	}
 
 	@Test
 	public void registerResourceChangeListener_emptyArray() {
-		when(config.sourceAssetsRootPaths()).thenReturn(new String[0]);
-		activate();
+		activate(new String[0]);
 		assertProcess(JobResult.CANCEL);
+	}
+
+	@Test
+	public void registerResourceChangeListener() {
+		activate();
+		assertProcess(JobResult.OK);
 	}
 
 }
