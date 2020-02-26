@@ -20,8 +20,11 @@ import org.osgi.framework.ServiceRegistration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 
+import static com.peregrine.assets.impl.AssetsToFSResourceChangeJobConsumer.PN_PATH;
+import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -82,7 +85,7 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 
 	private void activate(final String... paths) {
 		when(config.sourceAssetsRootPaths()).thenReturn(paths);
-		model.activate(context, config);
+		activate();
 	}
 
 	private JobResult process() {
@@ -91,6 +94,11 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 
 	private void assertProcess(final JobResult result) {
 		assertEquals(result, process());
+	}
+
+	private void assertProcess(final String path, final JobResult result) {
+		when(job.getProperty(PN_PATH, String.class)).thenReturn(path);
+		assertProcess(result);
 	}
 
 	@Test
@@ -160,6 +168,15 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		assertTrue(subElements.contains("/x/b"));
 		assertTrue(subElements.contains("/x/a/s"));
 		assertFalse(subElements.contains("/x"));
+	}
+
+	@Test
+	public void updateFiles() {
+		activate();
+		resource.setPrimaryType(NT_FILE);
+		final InputStream is = getClass().getResourceAsStream("");
+		when(resource.adaptTo(InputStream.class)).thenReturn(is);
+		assertProcess(page.getPath(), JobResult.OK);
 	}
 
 }
