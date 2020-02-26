@@ -20,8 +20,9 @@ import org.osgi.framework.ServiceRegistration;
 
 import java.io.File;
 import java.io.IOException;
-import static java.util.Arrays.*;
+import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -142,6 +143,23 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		assertEquals("/x/a/w", model.findSuperElement("/x/a/w", asList()));
 		assertEquals("/x/a", model.findSuperElement("/x/a/w", asList("/x/b", "/x/a/s", "/x/a")));
 		assertEquals("/x", model.findSuperElement("/x/a/w", asList("/x/b", "/x/a/s", "/x")));
+	}
+
+	@Test
+	public void findSubElements() {
+		assertFalse(model.findSubElements("/x/a/w", asList()).contains("/x/a/w"));
+
+		Set<String> subElements = model.findSubElements("/x/a/w", asList("/x/b", "/x/a/s", "/x/a"));
+		assertTrue(subElements.contains("/x/a/w"));
+		assertTrue(subElements.contains("/x/a/s"));
+		assertFalse(subElements.contains("/x/a"));
+		assertFalse(subElements.contains("/x/b"));
+
+		subElements = model.findSubElements("/x/a/w", asList("/x/b", "/x/a/s", "/x"));
+		assertTrue(subElements.contains("/x/a/w"));
+		assertTrue(subElements.contains("/x/b"));
+		assertTrue(subElements.contains("/x/a/s"));
+		assertFalse(subElements.contains("/x"));
 	}
 
 }
