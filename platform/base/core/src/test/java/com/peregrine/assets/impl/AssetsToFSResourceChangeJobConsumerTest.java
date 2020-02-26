@@ -2,6 +2,7 @@ package com.peregrine.assets.impl;
 
 import com.peregrine.SlingResourcesTest;
 import com.peregrine.assets.ResourceResolverFactoryProxy;
+import com.peregrine.commons.ResourceUtils;
 import junitx.util.PrivateAccessor;
 import org.apache.commons.io.FileUtils;
 import org.apache.sling.api.resource.LoginException;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 import static com.peregrine.assets.impl.AssetsToFSResourceChangeJobConsumer.PN_PATH;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -176,7 +178,18 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		resource.setPrimaryType(NT_FILE);
 		final InputStream is = getClass().getResourceAsStream("");
 		when(resource.adaptTo(InputStream.class)).thenReturn(is);
-		assertProcess(page.getPath(), JobResult.OK);
+		final String path = page.getPath();
+		assertProcess(path, JobResult.OK);
+		final File file = new File(targetFolderRootPath + ResourceUtils.jcrPathToFilePath(path));
+		assertTrue(file.exists());
+	}
+
+	@Test
+	public void deleteMissingAncestorFolder_ancestorIsNull() {
+		activate();
+		when(resourceResolver.getResource(SLASH)).thenReturn(null);
+		assertProcess(SLASH, JobResult.OK);
+	}
 	}
 
 }
