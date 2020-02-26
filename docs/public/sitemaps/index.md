@@ -4,7 +4,7 @@ peregrine cms site maps
 # Introduction
 
 Peregrine supports an extensive `sitemap.xml` rendition and caching mechanism. It supports cache rebuilds triggered by
-resource changes and time-based via a cron-like expression. It's easily configurable and highly customizable by plugins. #
+resource changes and time-based via a cron-like expression. It's easily configurable and highly customizable by plugins.
 
 
 # Known Issues
