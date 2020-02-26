@@ -105,4 +105,11 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		assertTrue(root.exists());
 	}
 
+	@Test
+	public void registerResourceChangeListener_emptyArray() {
+		when(config.sourceAssetsRootPaths()).thenReturn(new String[0]);
+		activate();
+		assertProcess(JobResult.CANCEL);
+	}
+
 }
