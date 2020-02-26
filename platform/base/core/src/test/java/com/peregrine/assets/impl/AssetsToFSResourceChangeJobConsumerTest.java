@@ -65,4 +65,11 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		assertProcess(JobResult.CANCEL);
 	}
 
+	@Test
+	public void targetFolderRootPath_incorrectPath() {
+		when(config.targetFolderRootPath()).thenReturn(">:<");
+		activate();
+		assertProcess(JobResult.CANCEL);
+	}
+
 }
