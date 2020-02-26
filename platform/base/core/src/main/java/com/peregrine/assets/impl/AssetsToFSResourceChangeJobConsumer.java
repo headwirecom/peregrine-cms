@@ -141,10 +141,6 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, C
         return true;
     }
 
-    private boolean isFile(final Resource resource) {
-        return PerUtil.isPrimaryType(resource, NT_FILE);
-    }
-
     @Deactivate
     public void deactivate() {
         if (enabled) {
@@ -154,7 +150,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, C
     }
 
     @Override
-    public String findSuperElement(final String newPath, final Set<String> oldPaths) {
+    public String findSuperElement(final String newPath, final Collection<String> oldPaths) {
         String result = newPath;
         String path;
         String parent = newPath;
@@ -179,7 +175,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, C
     }
 
     @Override
-    public Set<String> findSubElements(final String newPath, final Set<String> oldPaths) {
+    public Set<String> findSubElements(final String newPath, final Collection<String> oldPaths) {
         final Set<String> result = new HashSet<>(oldPaths);
         result.add(newPath);
         result.removeAll(cleanPaths(result));
@@ -220,7 +216,7 @@ public final class AssetsToFSResourceChangeJobConsumer implements JobConsumer, C
     }
 
     private void updateFiles(final Resource resource) throws IOException {
-        if (isFile(resource)) {
+        if (PerUtil.isPrimaryType(resource, NT_FILE)) {
             backupResourceToFile(resource);
         }
 

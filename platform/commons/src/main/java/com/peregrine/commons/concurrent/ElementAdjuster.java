@@ -1,11 +1,11 @@
 package com.peregrine.commons.concurrent;
 
-import java.util.Set;
+import java.util.Collection;
 
 public interface ElementAdjuster<Element> {
 
-	Element findSuperElement(Element newElement, Set<Element> oldElements);
+	Element findSuperElement(Element newElement, Collection<Element> oldElements);
 
-	Set<Element> findSubElements(Element newElement, Set<Element> oldElements);
+	Collection<Element> findSubElements(Element newElement, Collection<Element> oldElements);
 
 }

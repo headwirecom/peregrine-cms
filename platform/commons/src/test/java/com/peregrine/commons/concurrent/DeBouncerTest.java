@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,12 +28,12 @@ public final class DeBouncerTest implements Callback<Integer>, ElementAdjuster<I
 	}
 
 	@Override
-	public Integer findSuperElement(final Integer newElement, final Set<Integer> oldElements) {
+	public Integer findSuperElement(final Integer newElement, final Collection<Integer> oldElements) {
 		return newElement;
 	}
 
 	@Override
-	public Set<Integer> findSubElements(final Integer newElement, final Set<Integer> oldElements) {
+	public Set<Integer> findSubElements(final Integer newElement, final Collection<Integer> oldElements) {
 		final Set<Integer> result = new HashSet<>();
 		result.add(otherValue);
 		return result;

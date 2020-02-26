@@ -1,5 +1,6 @@
 package com.peregrine.commons.concurrent;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -58,7 +59,7 @@ public final class DeBouncer<Element> implements Callback<Element>, ElementAdjus
 			if (prev == null) {
 				scheduler.schedule(task, interval, timeUnit);
 			}
-		} while (prev != null && !prev.extend());
+		} while (nonNull(prev) && !prev.extend());
 	}
 
 	public Set<Element> terminate() {
@@ -73,12 +74,12 @@ public final class DeBouncer<Element> implements Callback<Element>, ElementAdjus
 	}
 
 	@Override
-	public Set<Element> findSubElements(final Element newElement, final Set<Element> oldElements) {
+	public Set<Element> findSubElements(final Element newElement, final Collection<Element> oldElements) {
 		return emptySet;
 	}
 
 	@Override
-	public Element findSuperElement(final Element newElement, final Set<Element> oldElements) {
+	public Element findSuperElement(final Element newElement, final Collection<Element> oldElements) {
 		return newElement;
 	}
 

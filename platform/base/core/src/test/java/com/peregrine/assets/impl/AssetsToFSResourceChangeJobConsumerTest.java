@@ -20,6 +20,7 @@ import org.osgi.framework.ServiceRegistration;
 
 import java.io.File;
 import java.io.IOException;
+import static java.util.Arrays.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -134,6 +135,13 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 	public void registerResourceChangeListener() {
 		activate();
 		assertProcess(JobResult.OK);
+	}
+
+	@Test
+	public void findSuperElement() {
+		assertEquals("/x/a/w", model.findSuperElement("/x/a/w", asList()));
+		assertEquals("/x/a", model.findSuperElement("/x/a/w", asList("/x/b", "/x/a/s", "/x/a")));
+		assertEquals("/x", model.findSuperElement("/x/a/w", asList("/x/b", "/x/a/s", "/x")));
 	}
 
 }
