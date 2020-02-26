@@ -28,6 +28,7 @@ import static com.peregrine.assets.impl.AssetsToFSResourceChangeJobConsumer.PN_P
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -69,6 +70,9 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		when(config.sourceAssetsRootPaths()).thenReturn(new String[] { ROOT_PATH });
 		when(context.registerService(eq(ResourceChangeListener.class), any(AssetsToFSResourceChangeListener.class), any()))
 				.thenReturn(resourceChangeListener);
+		final InputStream is = getClass().getResourceAsStream(EMPTY);
+		when(resource.adaptTo(InputStream.class)).thenReturn(is);
+		resource.setPrimaryType(NT_FILE);
 	}
 
 	@After
@@ -175,13 +179,28 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 	@Test
 	public void updateFiles() {
 		activate();
-		resource.setPrimaryType(NT_FILE);
-		final InputStream is = getClass().getResourceAsStream("");
-		when(resource.adaptTo(InputStream.class)).thenReturn(is);
-		final String path = page.getPath();
-		assertProcess(path, JobResult.OK);
-		final File file = new File(targetFolderRootPath + ResourceUtils.jcrPathToFilePath(path));
+		final String pagePath = page.getPath();
+		final String resourcePath = resource.getPath();
+		final File file = new File(targetFolderRootPath + ResourceUtils.jcrPathToFilePath(resourcePath));
+
+		assertProcess(pagePath, JobResult.OK);
 		assertTrue(file.exists());
+
+		assertProcess(pagePath + "/none", JobResult.OK);
+		assertTrue(file.exists());
+
+		assertProcess(pagePath, JobResult.OK);
+		assertTrue(file.exists());
+		when(resourceResolver.getResource(pagePath)).thenReturn(null);
+		assertProcess(pagePath, JobResult.OK);
+		assertFalse(file.exists());
+
+		when(resourceResolver.getResource(pagePath)).thenReturn(page);
+		assertProcess(pagePath, JobResult.OK);
+		assertTrue(file.exists());
+		when(resourceResolver.getResource(resourcePath)).thenReturn(null);
+		assertProcess(resourcePath, JobResult.OK);
+		assertFalse(file.exists());
 	}
 
 	@Test
@@ -189,7 +208,6 @@ public final class AssetsToFSResourceChangeJobConsumerTest extends SlingResource
 		activate();
 		when(resourceResolver.getResource(SLASH)).thenReturn(null);
 		assertProcess(SLASH, JobResult.OK);
-	}
 	}
 
 }
