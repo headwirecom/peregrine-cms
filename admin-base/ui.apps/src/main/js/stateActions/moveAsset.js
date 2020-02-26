@@ -30,9 +30,12 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    api.moveAsset(target.path, target.to, target.type).then( () => {
-        let path = me.getNodeFromView('/state/tools/assets')
-        me.loadContent('/content/admin/assets.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
+    return new Promise((resolve, reject) => {
+        api.moveAsset(target.path, target.to, target.type).then( () => {
+            let path = me.getNodeFromView('/state/tools/assets')
+            me.loadContent('/content/admin/assets.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
+            resolve()
+        })
     })
 
 }

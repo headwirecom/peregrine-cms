@@ -29,6 +29,9 @@ export default function(me, target) {
 
     log.fine(target)
 
-    me.getApi().replicate(target).then( () => {
+    return new Promise( (resolve, reject) => {
+        me.getApi().replicate(target).then( () => {
+            resolve()
+        })
     })
 }

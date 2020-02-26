@@ -26,6 +26,4 @@
 
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="nt:unstructured"
-          text="Peregrine CMS - a head optional content management system based on Apache Sling
-                and Vue.JS."
-/>
+          text="Peregrine CMS - Ein head optional Content-Management-System basierend auf &lt;a href=&quot;https://sling.apache.org/&quot;&gt;Apache Sling&lt;/a&gt; und &lt;a href=&quot;http://vuejs.org/&quot;&gt;VueJS&lt;/a&gt;."/>
