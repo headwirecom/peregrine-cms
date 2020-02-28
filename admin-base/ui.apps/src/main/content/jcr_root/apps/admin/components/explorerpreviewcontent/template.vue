@@ -218,6 +218,9 @@
         return obj;
       },
       node() {
+        if(this.nodeType === NodeType.OBJECT) {
+              return this.rawCurrentObject.data
+        }
         return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
       },
       allowOperations() {
@@ -327,8 +330,11 @@
         this.valid.errors = errors;
       },
       renameNode() {
-        let newName = prompt('new name for ' + this.node.name);
-        if (newName) {
+        let nodeName = this.node.name;
+        if (this.nodeType === NodeType.OBJECT){
+          nodeName = this.node.path.split('/').slice(-1).pop()
+        }
+        if (prompt(`new name for "${nodeName}"`)) {
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
             name: newName
@@ -373,12 +379,14 @@
       save() {
         if (this.nodeType === NodeType.OBJECT) {
           this.saveObject();
+        } else {
+          $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
+          this.edit = false;
         }
-        $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
-        this.edit = false;
       },
       saveObject() {
-        let {data, show} = this.currentRawObject;
+        let data = this.node;
+        let {show} = this.rawCurrentObject;
         let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
 
         //Find child nodes with subchildren for our edited object
@@ -414,9 +422,9 @@
             data[key] = targetNode;
           }
         }
-
         $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show});
         $perAdminApp.stateAction('selectObject', {selected: show})
+        this.edit = false;
       },
       setActiveTab(clickedTab) {
         this.activeTab = clickedTab;

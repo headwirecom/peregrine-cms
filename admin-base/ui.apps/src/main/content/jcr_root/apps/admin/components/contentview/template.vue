@@ -80,6 +80,8 @@
 </template>
 
 <script>
+import { IgnoreContainers } from '../../../../../../js/constants.js';
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -152,6 +154,12 @@ export default {
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if(!node) return false
             return !node.fromTemplate
+        },
+        isIgnoreContainersEnabled() {
+            let view = $perAdminApp.getView();
+            return view.state.tools
+                && view.state.tools.workspace
+                && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         },
         inlineContent: function() {
             if(this.inline) {
@@ -388,6 +396,9 @@ export default {
             if(targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                if (this.isContainer(targetEl)) {
+                    if (this.isIgnoreContainersEnabled) return;
+                }
                 if(node.fromTemplate) {
                     $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                         complete: this.removeEditOverlay
@@ -431,6 +442,9 @@ export default {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             var targetEl = this.getTargetEl(e).targetEl
             if(targetEl) {
+                if (this.isContainer(targetEl)) {
+                    if (this.isIgnoreContainersEnabled) return;
+                }
                 if(targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
@@ -616,6 +630,25 @@ export default {
         },
         refreshEditor(me, target) {
             me.$refs['editview'].contentWindow.location.reload();
+        },
+        isContainer(el) {
+            if (el && el.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+            let subEl = el.firstElementChild;
+            if (!subEl) {
+                return false;
+            }
+            while (!subEl.getAttribute('data-per-path')) {
+                subEl = subEl.firstElementChild;
+                if (!subEl) {
+                    return false;
+                }
+            }
+            if (subEl.getAttribute('data-per-droptarget')) {
+                return true;
+            }
+            return false;
         }
     }
 }

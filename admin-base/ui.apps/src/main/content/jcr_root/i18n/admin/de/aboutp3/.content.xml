@@ -26,8 +26,8 @@
 
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="nt:unstructured"
-          text="Peregrine CMS is an open source project sponsored by
-                &lt;a href=&quot;https://www.headwire.com&quot; target=&quot;_blank&quot;&gt;headwire.com, Inc&lt;/a&gt;.
-                Commercial support is available upon request. We encourage contributions
-                to the project. Please let us know what you think about this product."
+          text="Peregrine CMS is ein von &lt;a href=&quot;https://www.headwire.com&quot; target=&quot;_blank&quot;&gt;headwire.com, Inc&lt;/a&gt; gesponsertes Open Source Projekt.
+                Kommerzieller Support ist auf Anfrage erhältlich.
+                Wir freuen uns über jede Mitarbeit am Projekt.
+                Teilen Sie uns gerne Ihre Meinung zu diesem Produkt mit."
 />

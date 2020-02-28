@@ -23,7 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('addComponentToPath').setLevelDebug()
+let log = LoggerFactory.logger('addComponentToPath').setLevelFine()
 
 import { parentPath } from '../utils'
 
@@ -39,7 +39,7 @@ export default function(me, target) {
 
     // resolve path to component name
     let componentName = componentPath ? componentPath.split('/').slice(2).join('-') : target.data.component
-    log.fine('load',componentName, 'into edit view (make sure it is available')
+    log.fine('load',componentName, 'into edit view (make sure it is available)')
     document.getElementById('editview').contentWindow.$peregrineApp.loadComponent(componentName)
 
     let targetNode = null
@@ -55,48 +55,58 @@ export default function(me, target) {
         log.error('addComponentToPath() target.drop not in allowed values - value was', target.drop)
     }
 
-    if(targetNode) {
-        if(target.component) {
-            me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
-                .then( (data) => {
-                    if(targetNodeUpdate.fromTemplate === true) {
-                        me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
-                    } else {
-                        if(target.drop.startsWith('into')) {
-                            Vue.set(targetNodeUpdate, 'children', data.children)
+    let processed = false;
+    // insert new component
+    if(targetNode && target.component) {
+        processed = true;
+        return me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
+            .then( (data) => {
+                        if(targetNodeUpdate.fromTemplate === true) {
+                            return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                        } else {
+                            if(target.drop.startsWith('into')) {
+                                Vue.set(targetNodeUpdate, 'children', data.children)
+                            }
+                            else if(target.drop === 'before' || target.drop === 'after')
+                            {
+                                Vue.set(targetNodeUpdate, 'children', data.children)
+                            }
+                            log.fine(data)
+                            return
                         }
-                        else if(target.drop === 'before' || target.drop === 'after')
-                        {
-                            Vue.set(targetNodeUpdate, 'children', data.children)
+                    })
+    }
+
+    // copy/paste? 
+    if(targetNode && target.data) {
+        processed = true;
+        return me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
+                    .then( (data) => {
+                        if(targetNodeUpdate.fromTemplate === true) {
+                            return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                        } else {
+                            if (target.drop.startsWith('into')) {
+                                Vue.set(targetNodeUpdate, 'children', data.children)
+                            }
+                            else if (target.drop === 'before' || target.drop === 'after') {
+                                Vue.set(targetNodeUpdate, 'children', data.children)
+                            }
+                            log.fine(data)
+                            return
                         }
-                        log.fine(data)
-                    }
-                })
-        } else if(target.data) {
-            me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
-                .then( (data) => {
-                    if(targetNodeUpdate.fromTemplate === true) {
-                        me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
-                    } else {
-                        if (target.drop.startsWith('into')) {
-                            Vue.set(targetNodeUpdate, 'children', data.children)
-                        }
-                        else if (target.drop === 'before' || target.drop === 'after') {
-                            Vue.set(targetNodeUpdate, 'children', data.children)
-                        }
-                        log.fine(data)
-                    }
-                })
-        }
-    } else {
+                    })
+
+    }
+
+    if(!processed) {
         // target path does not exist yet
-        me.getApi().insertNodeAt(target.pagePath+target.path, target.component, target.drop)
+        return me.getApi().insertNodeAt(target.pagePath+target.path, target.component, target.drop)
             .then( (data) => {
                 if(!targetNodeUpdate) {
-                    me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                    return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
                 } else {
                     if(targetNodeUpdate.fromTemplate === true) {
-                        me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                        return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
                     } else {
                         if(target.drop.startsWith('into')) {
                             Vue.set(targetNodeUpdate, 'children', data.children)
@@ -110,6 +120,69 @@ export default function(me, target) {
                 }
             })
     }
+    // return new Promise( (resolve, reject) => {
+    
+    //     if(targetNode) {
+    //         if(target.component) {
+    //             me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
+    //                 .then( (data) => {
+    //                     if(targetNodeUpdate.fromTemplate === true) {
+    //                         me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+    //                     } else {
+    //                         if(target.drop.startsWith('into')) {
+    //                             Vue.set(targetNodeUpdate, 'children', data.children)
+    //                         }
+    //                         else if(target.drop === 'before' || target.drop === 'after')
+    //                         {
+    //                             Vue.set(targetNodeUpdate, 'children', data.children)
+    //                         }
+    //                         log.fine(data)
+    //                         resolve()
+    //                     }
+    //                 })
+    //         } else if(target.data) {
+    //             me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
+    //                 .then( (data) => {
+    //                     if(targetNodeUpdate.fromTemplate === true) {
+    //                         me.getApi().populatePageView(me.getNodeFromView('/pageView/path')).then(() => { resolve() })
+    //                     } else {
+    //                         if (target.drop.startsWith('into')) {
+    //                             Vue.set(targetNodeUpdate, 'children', data.children)
+    //                         }
+    //                         else if (target.drop === 'before' || target.drop === 'after') {
+    //                             Vue.set(targetNodeUpdate, 'children', data.children)
+    //                         }
+    //                         resolve()
+    //                         log.fine(data)
+    //                     }
+    //                 })
+    //         }
+    //     } else {
+    //         // target path does not exist yet
+    //         me.getApi().insertNodeAt(target.pagePath+target.path, target.component, target.drop)
+    //             .then( (data) => {
+    //                 if(!targetNodeUpdate) {
+    //                     me.getApi().populatePageView(me.getNodeFromView('/pageView/path')).then( () => { resolve() })
+    //                 } else {
+    //                     if(targetNodeUpdate.fromTemplate === true) {
+    //                         me.getApi().populatePageView(me.getNodeFromView('/pageView/path')).then( () => { resolve() })
+    //                     } else {
+    //                         if(target.drop.startsWith('into')) {
+    //                             Vue.set(targetNodeUpdate, 'children', data.children)
+    //                         }
+    //                         else if(target.drop === 'before' || target.drop === 'after')
+    //                         {
+    //                             Vue.set(targetNodeUpdate, 'children', data.children)
+    //                         }
+    //                         log.fine(data)
+    //                         resolve()
+    //                     }
+    //                 }
+    //             })
+    //     }
+    
+    // })
+
 
     // me.getApi().savePageEdit(view.pageView.path, nodeToSave).then( () => {
     //     delete view.state.editor;

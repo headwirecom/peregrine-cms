@@ -35,7 +35,6 @@ export default function(me, target) {
         api.savePageEdit(target.parent + '/' + target.name, target.data).then( () => {
             me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
         })
-
     })
 
 }

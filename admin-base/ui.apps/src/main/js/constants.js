@@ -24,17 +24,22 @@
  */
 
 export const DATA_EXTENSION = '.data.json'
+
 export const COMPONENT_PREFIX = 'cmp'
+
 export const SUFFIX_PARAM_SEPARATOR = ':'
+
 export const EditorTypes = {
   TEMPLATE: 'template-editor',
   PAGE: 'page-editor'
 }
+
 export const PathBrowser = {
   Type: {
     PAGE: 'page',
     ASSET: 'asset',
-    IMAGE: 'image'
+    IMAGE: 'image',
+    OBJECT: 'object'
   }
 }
 export const IgnoreContainers = {

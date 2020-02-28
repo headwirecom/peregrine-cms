@@ -30,9 +30,12 @@ export default function(me, target) {
 
     log.fine(target)
     var api = me.getApi()
-    api.renamePage(target.path, target.name).then( () => {
-        let path = me.getNodeFromView('/state/tools/pages')
-        me.loadContent('/content/admin/pages.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
+    return new Promise( (resolve, reject) => {
+        api.renamePage(target.path, target.name).then( () => {
+            let path = me.getNodeFromView('/state/tools/pages')
+            me.loadContent('/content/admin/pages.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
+            resolve()
+        })
     })
 
 }

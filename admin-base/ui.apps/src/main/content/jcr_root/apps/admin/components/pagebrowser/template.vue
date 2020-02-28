@@ -230,7 +230,7 @@
                             type: "checkbox",
                             label: "Open in new window?",
                             model: "newWindow",
-                            default: true
+                            default: false
                         }
                     ]
                 },

@@ -523,6 +523,13 @@
                 <version>${org.apache.sling.servlet-helpers.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.event</artifactId>
+                <version>4.2.12</version>
+                <scope>provided</scope>
+            </dependency>
+
 
             <!-- Support -->
             <dependency>
@@ -629,6 +636,12 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit-addons</groupId>
+                <artifactId>junit-addons</artifactId>
+                <version>1.4</version>
                 <scope>test</scope>
             </dependency>
 

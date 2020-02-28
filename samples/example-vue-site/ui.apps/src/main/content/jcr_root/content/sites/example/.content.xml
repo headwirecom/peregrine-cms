@@ -32,44 +32,8 @@
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
             jcr:title="example vuejs site"
-            brand="example"
-            description="this is an example site"
+            brand="example brand"
+            description="this is an example brand site"
             template="/content/templates/example"
-    >
-        <jumbotron jcr:primaryType="nt:unstructured"
-                   sling:resourceType="example/components/jumbotron"
-                   title="hello"
-                   text="world"/>
-
-        <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/container">
-
-            <row jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/row">
-
-                <col1 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="example/components/col"
-                      classes="col-md-12"
-                >
-
-                    <text1 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed facilisis sem fringilla, commodo erat id, ultricies orci. Etiam sit amet eleifend ipsum. Phasellus vitae purus metus. Sed et eros enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus in ullamcorper augue. Aenean accumsan dictum nibh non sollicitudin. Integer venenatis nisi in nulla posuere, vitae congue sem lacinia. Sed vulputate feugiat quam, dapibus condimentum diam congue id. Sed condimentum metus mauris, vitae ultricies leo rutrum a. Ut cursus a nisi id tincidunt. Mauris dui enim, vehicula eget ante sit amet, pretium elementum orci. In hac habitasse platea dictumst. Nunc faucibus nibh vitae placerat feugiat. Nulla ac maximus sem. Duis ullamcorper lacinia erat, sollicitudin blandit nisl tempor at."/>
-                    <text2 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="Integer vel ornare mauris, a volutpat quam. Nunc ullamcorper in sapien vel elementum. Ut porttitor semper dolor, sit amet gravida nulla maximus quis. Vivamus accumsan aliquet ligula sit amet tristique. Morbi porta, est nec egestas eleifend, lacus justo cursus lorem, ut venenatis quam neque quis massa. Proin pellentesque tincidunt sagittis. Nam eget libero nec nibh laoreet pharetra eu vitae purus. Integer lacinia viverra sollicitudin. Etiam eget mauris et purus pharetra lacinia a vitae nulla. Nulla mattis metus lacus, iaculis bibendum velit interdum nec."/>
-                    <text3 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="Nullam egestas eros quis turpis molestie, ac maximus libero iaculis. Praesent convallis erat sit amet mi maximus sollicitudin. Praesent sed maximus ipsum. Curabitur pellentesque leo nisl, ac hendrerit est pellentesque a. Etiam aliquet viverra massa, id feugiat ligula bibendum at. Integer ac sollicitudin est, et convallis erat. Donec pellentesque quis lacus ac facilisis. Integer venenatis aliquet erat, quis venenatis risus ullamcorper interdum. Cras tristique viverra augue, a luctus lacus molestie sit amet. Etiam tortor nibh, pulvinar sed aliquet a, dapibus quis massa. Vivamus sapien augue, auctor sed elit sagittis, vehicula sagittis urna. Aenean et est condimentum, dictum augue et, iaculis dolor. Maecenas elementum diam massa, vel fermentum risus porta nec. Praesent hendrerit imperdiet leo et pulvinar. Duis volutpat porta erat, quis aliquam nulla mattis sit amet."/>
-                    <text4 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="Nam vehicula at risus vel condimentum. Fusce volutpat tempus massa sit amet consequat. Donec in eleifend erat. Proin quis pellentesque lacus, at maximus libero. Proin eu tristique velit. Vestibulum a felis dignissim nisl malesuada ultrices. In hac habitasse platea dictumst. Donec elementum urna sit amet neque dictum commodo. Nam auctor odio eu elit dignissim, sit amet vehicula nunc tempor. Vivamus nulla ex, vestibulum vitae finibus sed, vulputate in orci."/>
-                </col1>
-
-            </row>
-
-
-        </content>
-
-    </jcr:content>
+    />
 </jcr:root>
