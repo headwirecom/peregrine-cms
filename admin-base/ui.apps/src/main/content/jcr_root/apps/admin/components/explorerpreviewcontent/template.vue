@@ -334,7 +334,8 @@
         if (this.nodeType === NodeType.OBJECT){
           nodeName = this.node.path.split('/').slice(-1).pop()
         }
-        if (prompt(`new name for "${nodeName}"`)) {
+        let newName = prompt(`new name for "${nodeName}"`);
+        if (newName) {
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
             name: newName
