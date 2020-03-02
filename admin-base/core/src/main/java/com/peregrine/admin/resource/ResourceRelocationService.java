@@ -161,6 +161,7 @@ public class ResourceRelocationService
             String title = properties.get(JCR_TITLE, String.class);
             if(fromName.equals(title)) {
                 properties.put(JCR_TITLE, newName);
+                properties.put("name", newName);
             }
         }
         fromNode.getSession().move(fromPath, newPath);
