@@ -25,8 +25,12 @@
   -->
 
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          jcr:primaryType="sling:OsgiConfig"
-          user.default=""
-          user.mapping="[com.peregrine-cms.nodejs:nodejs-service=nodejs-service-user,com.peregrine-cms.nodejs.scripts:nodejs-service=nodejs-service-user,com.peregrine-cms.nodejs.j2v8:nodejs-service=nodejs-service-user]"
+        jcr:primaryType="sling:OsgiConfig"
+        name="default"
+        type="jcrvlt"
+        cleanupDelay="1"
+        package.filters="[/content|-.*/excluded]"
+        useBinaryReferences="{Boolean}true"
+        tempFsFolder="/var/sling/distribution/packages"
 >
 </jcr:root>

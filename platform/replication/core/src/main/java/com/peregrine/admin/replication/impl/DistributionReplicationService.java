@@ -205,6 +205,7 @@ public class DistributionReplicationService
                     throw new ReplicationException("Could not set Replication User before distribution", e);
                 }
                 if(distributor != null) {
+                    log.trace("Agent Name: '{}', Distributor: '{}', activate: '{}'", agentName, distributor, activate);
                     DistributionResponse response = distributor.distribute(
                         agentName,
                         resourceResolver,

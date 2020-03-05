@@ -151,7 +151,9 @@ public class DistributionEventHandlerService
                 } else {
                     String text = value + "";
                     answer = text.equals(tokens[1]);
-                    log.trace("Event Property: '{}' does not match. Found: '{}', Expected: '{}'", tokens[0], text, tokens[1]);
+                    if(!answer) {
+                        log.trace("Event Property: '{}' does not match. Found: '{}', Expected: '{}'", tokens[0], text, tokens[1]);
+                    }
                 }
             } else {
                 log.trace("Pair: '{}' is not of 'name=value' format", pair);
