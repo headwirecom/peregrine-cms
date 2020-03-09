@@ -63,18 +63,19 @@ Because this is copying resources in Peregrine the renditions are only copied
 if already created. If not then Peregrine will create them when the desired
 rendition in the target is obtained.
 
-# Local, inter-Peregrine Copies
+# Peregrine to Peregrine Copies
 
 This distributions allows to copy resources from one Peregrine to another, remote
-Peregrine instance using the **Sling Distribution** service. To configure this
-distribution service: **com.peregrine.admin.replication.impl.DistributionReplicationService**:
+Peregrine instance using the **Sling Distribution** service. This is mostly used to replicate
+content from an **Author to a Publish** instance but it is not limited to that.
+ To configure this distribution service: **com.peregrine.admin.replication.impl.DistributionReplicationService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
 |Name|name|yes|String|none|Name of the Distribution Service|
 |Forward Agent|agentName|yes|String|none|Name of the Sling Distribution Forward Agent|
 
-Out of the box there is a service called **remote** that has the this Forward Agent: **publish**. 
+Out of the box there is a service called **remote** that has uses a Forward Agent: **publish**. 
 
 ![OSGi System Console Config for Remote](distribution.inter.sling.remote.configuration.png)
 
@@ -89,32 +90,58 @@ go through these steps.
 
 ### Setup Runmodes for Author / Publish
 
-1. Create an **Author** and **Publish** instance using **percli** service
+Using the Peregrine's **percli** system it is possible to have a basic, local distribution setup
+available out of the box. These are the steps to make it work:
 
-or
+1. Update **percli** to the latest version with `npm install percli -g` if applicable
+2. Create an **author** folder and change into that folder
+3. Create and launch the author with: `percli server install --author`
+4. Check the **sling/sling.properties** that the runmodes are set to **author,notshared**
+5. Wait until Peregrine is fully launched
+6. Check the OSGi Configuration to verify the setup (see above)
+7. Create an **publish** folder and change into that folder
+3. Create and launch the publish with: `percli server install --publish`
+4. Check the **sling/sling.properties** that the runmodes are set to **publish,notshared**
 
-1. Start and Stop two Peregrine instances
-1. Edit **sling/sling.properties** files
-    1. Add this line to the Author: **sling.run.modes=author,notshared**
-    1. Add this line to the Publish: **sling.run.modes=publish,notshared**
-1. Restart both Peregrine instances
+**Attention**: author is running on port **8080** and publish on **8180**.
 
-### Configure Forward on Author
+### Adjust Author Instance
 
-The only things that needs to be adjusted is the URL that points to the **Publish**
-on the **Author**. Do this:
+In order to adjust a Peregrine CMS Distribution to a production environment these settings
+in the  [OSGi System Console Configuration](http://localhost:8080/system/console/configMgr)
+need to be adjusted:
 
-1. Open [OSGi System Console Configuration](http://localhost:8080/system/console/configMgr)
-1. Search for **Forward Agents Factory**
-1. Click to edit
-1. Look for Property: **Importer Endpoints**
-1. Adjust URL. Default Value is: http://localhost:8180/libs/sling/distribution/services/importers/default
-1. Please note the **Name** of that service. This the name that is then set in the **Forward Agent** property
-   of the **DistributionReplicationService** configuration
+|Component Name|Parameter|Required|Type|Default|Description|
+|:---|:--------|:-------|:---|:------|:----------|
+|Forward Agents Factory|name|yes|String|none|Name of the Agent Service|
+||packageImporter.endpoints|yes|String|http://localhost:8180/libs/sling/distribution/services/importers/default|Path to the Importer. Adjust host and port|
+|Vault Package Builder Factory|none|||none|No adjustment necessary|
+|User Credentials based DistributionTransportSecretProvider|username|yes|String|admin|Name of user for transport|
+||password|yes|String|admin|Password of the user used here|
+|Remote Replication Service|name|yes|String|remote|Name of the Replication Service used in repl.json|
+||agentName|yes|String|publish|Name of the Forward Agent|
 
-### Configure Importer on Publish
+These are just the basic setups to get a more complex distribution to work. More advanced configuration
+especially regarding security must be done according to the Sling Distribution Configuration like
+[Sling Content Distribution](https://sling.apache.org/documentation/bundles/content-distribution.html)
+even though this page does not touch on that.
 
-On the **Publish** site there is nothing to be done if you only adjust the host name / port in the URL above.
+#### Verification
+
+In the **OSGi System Console Configuration make sure these services are configured:
+
+* Forward Agent
+* Vault Package Builder Factory
+* Privilege Request Authorization Strategy
+* User Credentials based DistributionTransportSecretProvider
+* Peregrine: Remote Replication Service
+
+**Attention**: make sure the *User Credentials based DistributionTransportSecretProvider* has
+the correct credentials as by default it is set to the default Sling admin password.
+
+### Configure Publish Instance
+
+On the **publish** instance there is nothing to be done
 
 # Local File System Copies
 
@@ -171,17 +198,19 @@ To configure this distribution service: **com.peregrine.admin.replication.impl.R
 Whenever the service tries to push a change to S3 and the connection fails it will retry
 once and if it fails again it will end the distribution.
 
-# Default Distribution
+# Default Distribution Mapping
 
-In Peregrine Default Distribution is a way to configure Distribution based
-on the path of a resource. Whenever a resource is distributed by the name
-of a Default Distribution that service will select the appropriate distribution
-(also by its name) and then delegate the distribution to that service.
+In Peregrine the Default Distribution (Default Replication Mapper Service) is a
+way to configure Distribution based on the path of a resource. Whenever
+a resource is distributed by the name of a Default Distribution that service
+will select the appropriate distribution (also by its name) and then delegate
+the distribution to that service.
 
 Default Distribution is used like any other distribution but it does not
 actually do a distribution but rather delegate it to the target one.
 
-To configure this distribution service: **com.peregrine.admin.replication.DefaultReplicationMapperService**:
+To configure this Default Replication Mapper Service service:
+**com.peregrine.admin.replication.DefaultReplicationMapperService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
@@ -190,7 +219,7 @@ To configure this distribution service: **com.peregrine.admin.replication.Defaul
 |Default|defaultMapping|yes|String|none|Name of the Distribution service that is used by default|
 |Path Mapping|pathMapping|no|String|none|Target Distribution for a sub path. Format &lt;distribution name>:path=&lt;root path>[&lt;pipe>(&lt;parameter key>=&lt;parameter value>)*]|
 
-**Attention**: The Peregrine UI uses the Default Distribution **defaultRepl** as
+**Attention**: The Peregrine UI uses the Default Distribution called **defaultRepl** as
 the default distribution for its UI. It is important that this service is configured
 appropriately otherwise the UI will not be able to distribute.
 

@@ -18,6 +18,7 @@ ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 COPY files/* /app/binaries/
 COPY healthcheck.sh .
 COPY installpackages.sh .
+COPY patchfiles/tasks.js .
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY peregrine.pref /etc/apt/preferences.d/
@@ -43,6 +44,7 @@ RUN npm install percli @peregrinecms/slingpackager \
     && mkdir out \
     && cp binaries/*.jar out \
     && chmod a+x node_modules/percli/bin/*
+RUN mv /app/tasks.js /app/node_modules/percli/lib/tasks.js
 RUN npx percli server register author
 RUN npx percli server start author \
     && ./installpackages.sh \
