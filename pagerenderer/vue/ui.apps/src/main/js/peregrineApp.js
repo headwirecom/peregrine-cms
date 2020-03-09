@@ -304,6 +304,11 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
 
 function isAuthorModeImpl() {
 
+    if(window && window.parent && window.frameElement && window.frameElement.attributes['data-per-mode']) {
+        if(window.frameElement.attributes['data-per-mode'].value === 'preview') {
+            return false
+        }
+    }
     if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
         return true
     }

@@ -23,8 +23,13 @@
   #L%
   -->
 <template>
-    <div v-if="isEditMode" class="per-drop-target"
-        v-on:allowDrop="allowDrop" v-on:drop="drop" v-bind:data-per-path="model.path" data-per-droptarget="true" v-bind:data-per-location="model.location">
+    <div v-if="show"
+         class="per-drop-target"
+         v-on:allowDrop="allowDrop"
+         v-on:drop="drop"
+         v-bind:data-per-path="model.path"
+         data-per-droptarget="true"
+         v-bind:data-per-location="model.location">
         {{componentName}}
     </div>
 </template>
@@ -32,8 +37,38 @@
 <script>
 export default {
     props: ['model'],
+    data: function() {
+      return {
+          show: true
+      }
+    },
     computed: {
+        componentName: function() {
+            let post = ''
+            if(this.model.location === 'before') post = ' start'
+            if(this.model.location === 'after') post = ' end'
+            return this.model.component.split('-').pop() + post
+        },
+        mode: function() {
+            return this.$root.view
+        }
+    },
+    created() {
+        const vm = this;
+        if (window.parent && window.parent.$perAdminApp  && window.parent.$perAdminApp.eventBus) {
+            window.parent.$perAdminApp.eventBus.$on('edit-preview', (data) => {
+                vm.show = data !== 'preview'
+            })
+        }
+    },
+    mounted() {
+      this.show = this.isEditMode()
+    },
+    methods: {
         isEditMode: function() {
+            if(window.$peregrineApp) {
+                return window.$peregrineApp.isAuthorMode()
+            }
             if(window.parent) {
                 if(window.parent.$perAdminApp && window.parent !== window) {
                     return this.$root.view !== 'preview'
@@ -41,14 +76,6 @@ export default {
             }
             return false
         },
-        componentName: function() {
-            let post = ''
-            if(this.model.location === 'before') post = ' start'
-            if(this.model.location === 'after') post = ' end'
-            return this.model.component.split('-').pop() + post
-        }
-    },
-    methods: {
         allowDrop: function(e) {
             e.preventDefault()
         },

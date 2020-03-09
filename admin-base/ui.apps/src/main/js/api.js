@@ -63,6 +63,10 @@ class PerApi {
         return impl.populateObjects()
     }
 
+    populateSkeletonPages(path, target, includeParents = false) {
+        return impl.populateSkeletonPages(path, target, includeParents)
+    }
+
     populateNodesForBrowser(path, target, includeParents = false) {
         return impl.populateNodesForBrowser(path, target, includeParents)
     }
@@ -80,7 +84,7 @@ class PerApi {
     }
 
 
-        populateObject(path, target, name) {
+    populateObject(path, target, name) {
         return impl.populateObject(path, target, name)
     }
 
@@ -101,22 +105,26 @@ class PerApi {
     }
 
     populateByName(name) {
-        if(name === '/admin/tools') return this.populateTools()
-        if(name === '/admin/toolsConfig') return this.populateToolsConfig()
-        if(name === '/admin/components') return this.populateComponents()
-        return Promise.reject('populateByName for '+name+' is not defined')
+        if (name === '/admin/tools') return this.populateTools()
+        if (name === '/admin/toolsConfig') return this.populateToolsConfig()
+        if (name === '/admin/components') return this.populateComponents()
+        return Promise.reject('populateByName for ' + name + ' is not defined')
     }
 
     populateI18N(language) {
         return impl.populateI18N(language)
     }
 
-    createSite(fromName, toName, title) {
-        return impl.createSite(fromName, toName, title)
+    createSite(fromName, toName, title, colorPalette) {
+        return impl.createSite(fromName, toName, title, colorPalette)
     }
 
     createPage(parentPath, name, templatePath, title) {
         return impl.createPage(parentPath, name, templatePath, title)
+    }
+
+    createPageFromSkeletonPage(parentPath, name, skeletonPagePath) {
+        return impl.createPageFromSkeletonPage(parentPath, name, skeletonPagePath)
     }
 
     deletePage(path) {
@@ -221,6 +229,10 @@ class PerApi {
 
     replicate(path) {
         return impl.replicate(path)
+    }
+
+    getPalettes(templateName) {
+        return impl.getPalettes(templateName)
     }
 }
 

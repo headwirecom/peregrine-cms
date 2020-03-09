@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,8 +28,12 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -78,6 +82,7 @@ public class CreateSiteServlet extends AbstractBaseServlet {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
         String title = request.getParameterUtf8(TITLE);
+
         if(StringUtils.isBlank(title)) {
             title = toSite;
         }
@@ -86,6 +91,11 @@ public class CreateSiteServlet extends AbstractBaseServlet {
             logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
             Resource site = resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite, title);
             request.getResourceResolver().commit();
+
+            if (fromSite.equals("themecleanflex")) {
+                setColorPalette(request, fromSite, toSite);
+            }
+
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)
@@ -98,5 +108,33 @@ public class CreateSiteServlet extends AbstractBaseServlet {
         }
     }
 
+    private void setColorPalette(Request request, String fromSite, String toSite) throws PersistenceException {
+        final Resource templateContent = getResource(request.getResourceResolver(), TEMPLATES_ROOT + SLASH + toSite).getChild(JCR_CONTENT);
+        final String colorPalette = request.getParameter(COLOR_PALETTE);
+
+        if(templateContent == null) {
+            logger.error("No jcr:content resource for copied template");
+            return;
+        }
+
+        ValueMap templateContentProperties = templateContent.getValueMap();
+        String[] siteCssProperty = templateContentProperties.get("siteCSS", String[].class);
+
+        if(siteCssProperty != null && siteCssProperty.length > 0) {
+            String[] cssReplacements = Arrays.stream(siteCssProperty)
+                .map(css -> {
+                    if (css.contains("/palettes/")) {
+                        return colorPalette.replace(SITES_ROOT + SLASH + fromSite, SITES_ROOT + SLASH + toSite);
+                    } else {
+                        return css;
+                    }
+                }).toArray(String[]::new);
+            ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
+            modifiableProperties.put("siteCSS", cssReplacements);
+            request.getResourceResolver().commit();
+        } else {
+            logger.error("No siteCSS property found for copied template");
+        }
+    }
 }
 
