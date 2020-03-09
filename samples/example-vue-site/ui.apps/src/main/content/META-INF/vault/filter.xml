@@ -41,10 +41,7 @@
         Also any sub pckage of this module needs to exclude /apps/example/install
         folder otherwise they wipe all installed bundles.
     -->
-    <filter root="/content/sites/example"/>
-    <filter root="/content/assets/example"/>
-    <filter root="/content/objects/example"/>
-    <filter root="/content/templates/example"/>
+    <filter root="/content/example"/>
     <filter root="/conf/sites/example"/>
     <filter root="/etc/felibs/examplesite"/>
     <!--

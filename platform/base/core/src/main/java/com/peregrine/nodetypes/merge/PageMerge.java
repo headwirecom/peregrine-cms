@@ -25,35 +25,31 @@ package com.peregrine.nodetypes.merge;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.request.RequestDispatcherOptions;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.scripting.SlingScriptHelper;
-import org.apache.sling.models.factory.ExportException;
-import org.apache.sling.models.factory.MissingExporterException;
-import org.apache.sling.models.factory.ModelFactory;
-import org.apache.sling.scripting.sightly.pojo.Use;
-import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.script.Bindings;
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.*;
-
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.script.Bindings;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.scripting.SlingScriptHelper;
+import org.apache.sling.models.factory.ExportException;
+import org.apache.sling.models.factory.MissingExporterException;
+import org.apache.sling.models.factory.ModelFactory;
+import org.apache.sling.scripting.sightly.pojo.Use;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by rr on 5/8/2017.
