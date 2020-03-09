@@ -257,10 +257,17 @@ class PerAdminImpl {
     .then((data) => populateView('/admin', 'templates', data))
   }
 
-    populateBoilerplates(path, target = 'nodes', includeParents = false) {
-        const boilerplatePath = path.split('/').slice(0,4).join('/')+'/boilerplates'
-        return this.populateNodesForBrowser(boilerplatePath, target, includeParents)
-    }
+  populateBoilerplates(path, target = 'nodes', includeParents = false) {
+    const boilerplatePath = path.split('/').slice(0,4).join('/')+'/boilerplates'
+
+    try {
+      if (get(boilerplatePath, null)) {
+        this.populateContent(boilerplatePath)
+      }
+    } catch(err) {}
+
+    return this.populateNodesForBrowser(boilerplatePath, target, includeParents)
+  }
 
   populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
     return fetch(
@@ -455,7 +462,12 @@ class PerAdminImpl {
       data.append('templatePath', templatePath)
       data.append('title', title)
       updateWithForm('/admin/createPage.json' + parentPath, data)
-      .then((data) => this.populateNodesForBrowser(parentPath))
+      .then((data) => {
+        if (parentPath.indexOf('boilerplates') > -1) {
+          this.populateBoilerplates(parentPath)
+        }
+        this.populateNodesForBrowser(parentPath)
+      })
       .then(() => resolve())
     })
   }
