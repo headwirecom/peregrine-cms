@@ -257,16 +257,16 @@ class PerAdminImpl {
     .then((data) => populateView('/admin', 'templates', data))
   }
 
-  populateBoilerplates(path, target = 'nodes', includeParents = false) {
-    const boilerplatePath = path.split('/').slice(0,4).join('/')+'/boilerplates'
+  populateSkeletonPages(path, target = 'nodes', includeParents = false) {
+    const skeletonPagePath = path.split('/').slice(0,4).join('/')+'/skeleton-pages'
 
     try {
-      if (get(boilerplatePath, null)) {
-        this.populateContent(boilerplatePath)
+      if (get(skeletonPagePath, null)) {
+        this.populateContent(skeletonPagePath)
       }
     } catch(err) {}
 
-    return this.populateNodesForBrowser(boilerplatePath, target, includeParents)
+    return this.populateNodesForBrowser(skeletonPagePath, target, includeParents)
   }
 
   populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
@@ -463,8 +463,8 @@ class PerAdminImpl {
       data.append('title', title)
       updateWithForm('/admin/createPage.json' + parentPath, data)
       .then((data) => {
-        if (parentPath.indexOf('boilerplates') > -1) {
-          this.populateBoilerplates(parentPath)
+        if (parentPath.indexOf('skeleton-pages') > -1) {
+          this.populateSkeletonPages(parentPath)
         }
         this.populateNodesForBrowser(parentPath)
       })
@@ -472,16 +472,16 @@ class PerAdminImpl {
     })
   }
 
-    createPageFromBoilerplate(parentPath, name, boilerplatePagePath) {
+    createPageFromSkeletonPage(parentPath, name, skeletonPagePath) {
         return new Promise( (resolve, reject) => {
             let data = new FormData()
-            data.append('path', boilerplatePagePath)
+            data.append('path', skeletonPagePath)
             data.append('to', parentPath)
             data.append('deep', 'true')
             data.append('newName', name)
             data.append('newTitle', name)
             data.append('type', 'child')
-            updateWithForm('/admin/createPageFromBoilerplate.json', data)
+            updateWithForm('/admin/createPageFromSkeletonPage.json', data)
                 .then( (data) => this.populateNodesForBrowser(parentPath) )
                 .then( () => resolve() )
         })

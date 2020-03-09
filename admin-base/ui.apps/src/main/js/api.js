@@ -63,8 +63,8 @@ class PerApi {
         return impl.populateObjects()
     }
 
-    populateBoilerplates(path, target, includeParents = false) {
-        return impl.populateBoilerplates(path, target, includeParents)
+    populateSkeletonPages(path, target, includeParents = false) {
+        return impl.populateSkeletonPages(path, target, includeParents)
     }
 
     populateNodesForBrowser(path, target, includeParents = false) {
@@ -123,8 +123,8 @@ class PerApi {
         return impl.createPage(parentPath, name, templatePath, title)
     }
 
-    createPageFromBoilerplate(parentPath, name, boilerplatePagePath) {
-        return impl.createPageFromBoilerplate(parentPath, name, boilerplatePagePath)
+    createPageFromSkeletonPage(parentPath, name, skeletonPagePath) {
+        return impl.createPageFromSkeletonPage(parentPath, name, skeletonPagePath)
     }
 
     deletePage(path) {

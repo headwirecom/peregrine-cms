@@ -44,16 +44,16 @@
                                     <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
                                 </li>
                             </ul>
-                            <div v-if="boilerplatePages && boilerplatePages.length > 0">
+                            <div v-if="skeletonPages && skeletonPages.length > 0">
                                 OR<br/>
-                                <label>Select Boilerplate Page</label>
+                                <label>Select Skeleton-Page</label>
                                 <ul class="collection">
                                     <li class="collection-item"
-                                        v-for="boilerplatePage in boilerplatePages"
-                                        v-on:click.stop.prevent="selectBoilerplatePage(null, boilerplatePage.path)"
-                                        v-bind:class="isSelected(boilerplatePage.path) ? 'active' : ''"
-                                        v-bind:key="boilerplatePage.path">
-                                        <admin-components-action v-bind:model="{ command: 'selectBoilerplatePage', target: boilerplatePage.path, title: boilerplatePage.name }"></admin-components-action>
+                                        v-for="skeletonPage in skeletonPages"
+                                        v-on:click.stop.prevent="selectSkeletonPage(null, skeletonPage.path)"
+                                        v-bind:class="isSelected(skeletonPage.path) ? 'active' : ''"
+                                        v-bind:key="skeletonPage.path">
+                                        <admin-components-action v-bind:model="{ command: 'selectSkeletonPage', target: skeletonPage.path, title: skeletonPage.name }"></admin-components-action>
                                     </li>
                                 </ul>
                             </div>
@@ -64,8 +64,8 @@
                         <div class="col s6">
                             <label>Preview</label>
                             <div class="iframe-container">
-                                <iframe v-if="formmodel.boilerplatePagePath"
-                                        v-bind:src="formmodel.boilerplatePagePath + '.html'" data-per-mode="preview">
+                                <iframe v-if="formmodel.skeletonPagePath"
+                                        v-bind:src="formmodel.skeletonPagePath + '.html'" data-per-mode="preview">
                                 </iframe>
                                 <iframe v-if="formmodel.templatePath"
                                         v-bind:src="formmodel.templatePath + '.html'" data-per-mode="preview">
@@ -87,7 +87,7 @@
         <tab-content title="verify">
             Creating Page `{{formmodel.name}}` from
             <span v-if="formmodel.templatePath">template `{{formmodel.templatePath}}`</span>
-            <span v-else-if="formmodel.boilerplatePagePath">boilerplate page `{{formmodel.boilerplatePagePath}}`</span>
+            <span v-else-if="formmodel.skeletonPagePath">skeleton page `{{formmodel.skeletonPagePath}}`</span>
         </tab-content>
     </form-wizard>
 </div>
@@ -107,7 +107,7 @@
                         name: '',
                         title: '',
                         templatePath: '',
-                        boilerplatePagePath: ''
+                        skeletonPagePath: ''
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -170,11 +170,11 @@
                 const siteRoot = siteRootParts.join('/')
                 return templates.filter( (item) => item.path.startsWith(siteRoot))
             },
-            boilerplatePages: function() {
-                const siteRoot = this.formmodel.path.split('/').slice(0,4).join('/') + '/boilerplates'
-                const boilerplateRoot = $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, siteRoot)
-                if(boilerplateRoot) {
-                    return boilerplateRoot.children
+            skeletonPages: function() {
+                const siteRoot = this.formmodel.path.split('/').slice(0,4).join('/') + '/skeleton-pages'
+                const skeletonPageRoot = $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, siteRoot)
+                if(skeletonPageRoot) {
+                    return skeletonPageRoot.children
                 }
                 return []
             }
@@ -184,28 +184,28 @@
             selectTemplate: function(me, target){
                 if(me === null) me = this
                 me.formmodel.templatePath = target
-                me.formmodel.boilerplatePagePath = ''
+                me.formmodel.skeletonPagePath = ''
                 this.validateTabOne(me);
             },
-            selectBoilerplatePage: function(me, target){
+            selectSkeletonPage: function(me, target){
                 if(me === null) me = this
-                me.formmodel.boilerplatePagePath = target
+                me.formmodel.skeletonPagePath = target
                 me.formmodel.templatePath = ''
                 this.validateTabOne(me);
             },
             isSelected: function(target) {
-                return this.formmodel.templatePath === target || this.formmodel.boilerplatePagePath === target
+                return this.formmodel.templatePath === target || this.formmodel.skeletonPagePath === target
             },
             onComplete: function() {
                 if(this.formmodel.templatePath) {
                     $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
                 }
                 else {
-                    $perAdminApp.stateAction('createPageFromBoilerplate', { parent: this.formmodel.path, name: this.formmodel.name, boilerplatePagePath: this.formmodel.boilerplatePagePath, data: this.formmodel })
+                    $perAdminApp.stateAction('createPageFromSkeletonPage', { parent: this.formmodel.path, name: this.formmodel.name, skeletonPagePath: this.formmodel.skeletonPagePath, data: this.formmodel })
                 }
             },
             validateTabOne: function(me) {
-                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath && '' === '' + me.formmodel.boilerplatePagePath);
+                me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath && '' === '' + me.formmodel.skeletonPagePath);
 
                 return !me.formErrors.unselectedTemplateError;
             },
@@ -213,11 +213,11 @@
                 if('' !== ''+this.formmodel.templatePath) {
                     $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
                 }
-                if('' !== ''+this.formmodel.boilerplatePagePath) {
-                    const boilerplatePage = this.boilerplatePages.find(bp => {
-                        return bp.path == this.formmodel.boilerplatePagePath
+                if('' !== ''+this.formmodel.skeletonPagePath) {
+                    const skeletonPage = this.skeletonPages.find(bp => {
+                        return bp.path == this.formmodel.skeletonPagePath
                     })
-                    $perAdminApp.getApi().populateComponentDefinitionFromNode(boilerplatePage.templatePath)
+                    $perAdminApp.getApi().populateComponentDefinitionFromNode(skeletonPage.templatePath)
                 }
 
                 return this.validateTabOne(this);
