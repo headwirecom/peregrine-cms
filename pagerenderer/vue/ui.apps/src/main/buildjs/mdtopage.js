@@ -40,7 +40,7 @@ return `<?xml version="1.0" encoding="UTF-8"?>
             sling:resourceType="example/components/page"
             jcr:title="${title}"
             brand="peregrine"
-            template="/content/templates/example"
+            template="/content/example/templates"
     >
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">
@@ -97,7 +97,7 @@ function makeContent(root, path) {
     var out = marked.parse(md) + '<p>&nbsp;</p>'
     var res = content(title, out, order)
 
-    var relPath = 'target/classes/content/sites/docs'+path.slice(root.length)
+    var relPath = 'target/classes/content/docs/pages/docs'+path.slice(root.length)
     relPath = relPath.replace('index.md', '.content.xml')
     console.log(relPath)
     fs.mkdirsSync(relPath.replace('.content.xml', title))

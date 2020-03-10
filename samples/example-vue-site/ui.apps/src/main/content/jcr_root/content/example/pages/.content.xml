@@ -30,7 +30,7 @@
     <jcr:content
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
-            jcr:title="sites"
+            jcr:title="pages"
     >
 
     </jcr:content>

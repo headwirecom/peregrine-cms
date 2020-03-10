@@ -28,5 +28,9 @@
   orderable
   - useTitle (boolean) = 'true' autocreated
   - useDescription (boolean) = 'true' autocreated
-
+  - ogTitle (string) = '' autocreated
+  - ogType (string) = 'website' autocreated < 'website'
+  - ogImage (string) = '' autocreated
+  - ogImageAlt (string) = '' autocreated
+  - ogUrl (string) = '' autocreated
 

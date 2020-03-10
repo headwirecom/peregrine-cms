@@ -44,14 +44,14 @@
     "type": "pathbrowser",
     "label": "Page",
     "model": "pagePath",
-    "browserRoot": "/content/sites",
+    "browserRoot": "/content/example/pages",
     "placeholder": "select path"
   },
   {
     "type": "pathbrowser",
     "label": "Image",
     "model": "imagePath",
-    "browserRoot": "/content/assets/example/images",
+    "browserRoot": "/content/example/assets/images",
     "placeholder": "select path"
   },
   {
@@ -158,7 +158,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/assets",
+          "browserRoot": "/content/example/assets",
           "placeholder": "image",
           "label": "Image",
           "model": "image"

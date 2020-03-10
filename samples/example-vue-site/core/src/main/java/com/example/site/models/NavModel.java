@@ -69,7 +69,7 @@ public class NavModel extends AbstractComponent {
         RenderContext rx = PageMerge.getRenderContext();
         SlingHttpServletRequest request = rx.getRequest();
         Resource homePage = getResourceAt(request.getResource(), 3);
-        // Resource homePage = getResource().getResourceResolver().getResource("/content/sites/example");
+        // Resource homePage = getResource().getResourceResolver().getResource("/content/example/pages/example");
 
         Iterator<Resource> children = homePage.listChildren();
 

@@ -34,6 +34,6 @@
             jcr:title="example vuejs site"
             brand="example brand"
             description="this is an example brand site"
-            template="/content/templates/example"
+            template="/content/example/templates"
     />
 </jcr:root>

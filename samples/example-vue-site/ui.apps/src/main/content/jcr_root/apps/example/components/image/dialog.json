@@ -3,7 +3,7 @@
   "type": "pathbrowser",
   "label": "image",
   "model": "imagePath",
-  "browserRoot": "/content/assets",
+  "browserRoot": "/content/example/assets",
   "placeholder": "select path"
 },
 {

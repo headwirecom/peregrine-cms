@@ -40,7 +40,7 @@ return `<?xml version="1.0" encoding="UTF-8"?>
             sling:resourceType="example/components/page"
             jcr:title="${title}"
             brand="peregrine"
-            template="/content/templates/example"
+            template="/content/example/templates"
     >
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">

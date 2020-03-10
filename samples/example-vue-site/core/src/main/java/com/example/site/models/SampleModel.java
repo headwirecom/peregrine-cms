@@ -89,26 +89,25 @@ public class SampleModel extends AbstractComponent {
     private String range;
     
     @Inject
-	private String select;
+	  private String select;
     
     @Inject
-	private String time;
+	  private String time;
 
-	@Inject
-	private String date;
+	  @Inject
+	  private String date;
 	
-	@Inject
-	private String datetime;
+	  @Inject
+	  private String datetime;
 	
-	@Inject
-	private List<IComponent> cards;
+	  @Inject
+	  private List<IComponent> cards;
 	
-	@Inject
-	private String color;
+	  @Inject
+	  private String color;
 	
-	@Inject
-	private String icon;
-    
+	  @Inject
+	  private String icon;
 
     public String getText() {
         return text;

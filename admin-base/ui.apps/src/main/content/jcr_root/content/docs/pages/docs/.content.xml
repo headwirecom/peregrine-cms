@@ -32,7 +32,7 @@
             jcr:primaryType="per:PageContent"
             sling:resourceType="example/components/page"
             jcr:title="peregrine cms"
-            template="/content/templates/example"
+            template="/content/example/templates"
     >
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">
