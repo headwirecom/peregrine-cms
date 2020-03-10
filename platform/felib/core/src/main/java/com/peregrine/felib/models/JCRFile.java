@@ -25,19 +25,17 @@ package com.peregrine.felib.models;
  * #L%
  */
 
-import org.apache.sling.api.resource.ResourceResolver;
-
 /**
  * Created by rr on 4/18/2017.
  */
-public class JCRFile {
+public final class JCRFile {
 
-    private String filePath;
-    private String data;
+    private final String filePath;
+    private final String content;
 
-    public JCRFile(String filePath, String data) {
-        this.filePath = filePath;
-        this.data = data;
+    public JCRFile(final String path, final String content) {
+        this.filePath = path;
+        this.content = content;
     }
 
     public String getPath() {
@@ -45,11 +43,11 @@ public class JCRFile {
     }
 
     public String getContent() {
-        return data;
+        return content;
     }
 
     public String toString() {
-        return "filePath: "+filePath;
+        return "path: " + filePath;
     }
 
 }
