@@ -125,27 +125,28 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
     }
 
     private Response findObjects(Request request) throws IOException {
-
         String query = "select * from per:ObjectDefinition order by jcr:path";
         return findAndOutputToWriterAsJSON(request, query);
     }
 
     private Response findComponents(Request request) throws IOException {
-
         String query = "select * from per:Component order by jcr:path";
         return findAndOutputToWriterAsJSON(request, query);
     }
 
     private Response findTemplates(Request request) throws IOException {
-
-        String query = "select * from per:Page where jcr:path like '/content/templates/%' order by jcr:path";
+        String query = "select * from per:Page where jcr:path like '/content/%/templates' order by jcr:path";
         return findAndOutputToWriterAsJSON(request, query);
     }
 
     private Response findAndOutputToWriterAsJSON(Request request, String query) throws IOException {
         JsonResponse answer = new JsonResponse();
         if(query.length() == 0) {
-            answer.writeAttribute(CURRENT, 1).writeAttribute(MORE, false).writeArray(DATA).writeClose();
+            answer
+                .writeAttribute(CURRENT, 1)
+                .writeAttribute(MORE, false)
+                .writeArray(DATA)
+                .writeClose();
         } else {
             Session session = request.getResourceResolver().adaptTo(Session.class);
             try {
