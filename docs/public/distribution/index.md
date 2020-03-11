@@ -90,41 +90,48 @@ go through these steps.
 
 ### Setup Runmodes for Author / Publish
 
-Using the Peregrine's **percli** system it is possible to have a basic, local distribution setup
-available out of the box. These are the steps to make it work:
+A Peregrine **Sample** setup is provided with the module **distribution** which contains the necessary
+setup for it to work. The important step is to set the **runmodes** accordingly. The available runmodes
+are **author, publish, notshared, shared**.
 
-1. Update **percli** to the latest version with `npm install percli -g` if applicable
-2. Create an **author** folder and change into that folder
-3. Create and launch the author with: `percli server install --author`
-4. Check the **sling/sling.properties** that the runmodes are set to **author,notshared**
-5. Wait until Peregrine is fully launched
-6. Check the OSGi Configuration to verify the setup (see above)
-7. Create an **publish** folder and change into that folder
-3. Create and launch the publish with: `percli server install --publish`
-4. Check the **sling/sling.properties** that the runmodes are set to **publish,notshared**
+To set up a configuration do:
 
-**Attention**: author is running on port **8080** and publish on **8180**.
+1. Create an **Author** and **Publish** instance using **percli** service (*percli server start --author* /
+*percli server start --publish*)
+2. Stop both servers with *percli server stop*
+3. Edit **sling/sling.properties** files
+    1. Add this line to the Author: **sling.run.modes=author,notshared**
+    2. Add this line to the Publish: **sling.run.modes=publish,notshared**
 
-### Adjust Author Instance
+or
 
-In order to adjust a Peregrine CMS Distribution to a production environment these settings
-in the  [OSGi System Console Configuration](http://localhost:8080/system/console/configMgr)
-need to be adjusted:
+1. Start and Stop two Peregrine Sling instance with the Peregrine Sling JAR file
+2. Edit **sling/sling.properties** files
+    1. Add this line to the Author: **sling.run.modes=author,notshared**
+    2. Add this line to the Publish: **sling.run.modes=publish,notshared**
+3. Restart both Peregrine instances
 
-|Component Name|Parameter|Required|Type|Default|Description|
-|:---|:--------|:-------|:---|:------|:----------|
-|Forward Agents Factory|name|yes|String|none|Name of the Agent Service|
-||packageImporter.endpoints|yes|String|http://localhost:8180/libs/sling/distribution/services/importers/default|Path to the Importer. Adjust host and port|
-|Vault Package Builder Factory|none|||none|No adjustment necessary|
-|User Credentials based DistributionTransportSecretProvider|username|yes|String|admin|Name of user for transport|
-||password|yes|String|admin|Password of the user used here|
-|Remote Replication Service|name|yes|String|remote|Name of the Replication Service used in repl.json|
-||agentName|yes|String|publish|Name of the Forward Agent|
+### Configure Author Instance
 
-These are just the basic setups to get a more complex distribution to work. More advanced configuration
-especially regarding security must be done according to the Sling Distribution Configuration like
-[Sling Content Distribution](https://sling.apache.org/documentation/bundles/content-distribution.html)
-even though this page does not touch on that.
+The only things that needs to be adjusted is the URL that points to the **Publish**
+on the **Author** and then let the Peregrine Replication Service know about
+that . Do this:
+
+1. Open [OSGi System Console Configuration](http://localhost:8080/system/console/configMgr)
+1. Search for **Forward Agents Factory**
+1. Either select an existing Forward Agents and click on edit or create a new one by clicking the
+**+** sign on the Factory
+1. Give it a **name**
+1. Look for Property: **Importer Endpoints**
+1. Adjust URL. Default Value is: http://localhost:8180/libs/sling/distribution/services/importers/default. The thing
+to adjust is the server name and its port
+1. Click on **save**
+1. Search for **Peregrine: Remote Replication Service**
+1. Either select an existing Remote Replication Service and click on edit or create a new one by clicking the
+**+** sign on the Factory
+1. Give it a **name** (which is name used in the repl.json)
+1. Add the name of the forward agent into **Forward Agent**
+1. Click on **save**
 
 #### Verification
 
@@ -141,7 +148,7 @@ the correct credentials as by default it is set to the default Sling admin passw
 
 ### Configure Publish Instance
 
-On the **publish** instance there is nothing to be done
+On the **Publish** site there is nothing to be done
 
 # Local File System Copies
 
