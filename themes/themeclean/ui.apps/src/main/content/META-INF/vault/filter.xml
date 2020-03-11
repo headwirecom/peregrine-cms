@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  example site - UI Apps
+  %%
+  Copyright (C) 2017 headwire inc.
+  %%
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
 
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  #L%
+  -->
 <workspaceFilter version="1.0">
     <!--
         Any node that will contain customer data needs to be excluded
-        otherwise a Pacakge Installation will wipe them.
+        otherwise a Package Installation will wipe them.
 
         If there is a mix then all provided nodes must be included and
         all custom nodes excluded.
@@ -11,25 +34,19 @@
         If unsure what to do then go to the Composum Package Manager
         (/bin/packages.html) and create a test package. To to the package
         filter list and add filter entries until all of the app provides
-        nodes are included but none of the customer generatedd nodes.
+        nodes are included but none of the customer generated nodes.
 
-        Also any sub pckage of this module needs to exclude /apps/themeclean/install
+        Also any sub package of this module needs to exclude /apps/example/install
         folder otherwise they wipe all installed bundles.
     -->
-   
-    <filter root="/content/sites/themeclean" mode="merge"/>
-    <filter root="/content/assets/themeclean" mode="merge"/>
-    <filter root="/content/objects/themeclean" mode="merge"/>
-    <filter root="/content/templates/themeclean" mode="merge"/>
-   
-    <filter root="/etc/felibs/themeclean"/>
-
-    <!--
-        Need to exclude the Install folder otherwise the Bundle will be undeployed
-        as it is in the '/apps/themeclean/install' folder (see the 'all'
-        package).
-    -->
-    <filter root="/apps/themeclean">
-        <exclude pattern="/apps/themeclean/install/.*"/>
-    </filter>
+  <filter root="/content/themeclean" mode="merge"/>
+  <filter root="/etc/felibs/themeclean"/>
+  <!--
+      Need to exclude the Install folder otherwise the Bundle will be undeployed
+      as it is in the '/apps/themeclean/install' folder (see the 'all'
+      package).
+  -->
+  <filter root="/apps/themeclean">
+    <exclude pattern="/apps/themeclean/install/.*"/>
+  </filter>
 </workspaceFilter>

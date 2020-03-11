@@ -70,7 +70,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
  * This servlet provides renditions of Peregrine Assets (per:Asset)
  * and creates them if they are not available yet
  *
- * Drag an image to the asset page: http://localhost:8080/content/admin/assets.html/path///content/assets
+ * Drag an image to the asset page: http://localhost:8080/content/admin/assets.html/path:/content/assets
  * Create a thumbnail image with: curl -u admin:admin http://localhost:8080/content/assets/test.png.rendition.json/thumbnail.png
  */
 public class RenditionsServlet extends AbstractBaseServlet {

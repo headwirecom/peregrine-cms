@@ -97,7 +97,7 @@ function makeContent(root, path) {
     var out = marked.parse(md) + '<p>&nbsp;</p>'
     var res = content(title, out, order)
 
-    var relPath = 'target/classes/content/sites/docs'+path.slice(root.length)
+    var relPath = 'target/classes/content/docs/pages/docs'+path.slice(root.length)
     relPath = relPath.replace('index.md', '.content.xml')
     console.log(relPath)
     fs.mkdirsSync(relPath.replace('.content.xml', title))

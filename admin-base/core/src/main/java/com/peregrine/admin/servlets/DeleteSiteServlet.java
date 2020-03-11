@@ -25,26 +25,33 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_SITE;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_SITE;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.*;
+import static com.peregrine.commons.util.PerConstants.DELETED;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
+import static com.peregrine.commons.util.PerConstants.SITE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Delete a Peregrine Site
@@ -65,7 +72,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class DeleteSiteServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
-    public static final String FOLDER = "folder";
 
     @Reference
     ModelFactory modelFactory;
@@ -76,17 +82,20 @@ public class DeleteSiteServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String fromSite = request.getParameter(NAME);
-
         try {
             logger.trace("Delete Site form: '{}'", fromSite);
-            resourceManagement.deleteSite(request.getResourceResolver(), SITES_ROOT, fromSite);
+            resourceManagement.deleteSite(request.getResourceResolver(), PAGES_ROOT, fromSite);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, DELETED)
-                .writeAttribute(SOURCE_PATH, SITES_ROOT + SLASH + fromSite);
+                .writeAttribute(SOURCE_PATH, PAGES_ROOT + SLASH + fromSite);
+
         } catch(ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_DELETE_SITE).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_DELETE_SITE)
+                .setException(e);
         }
     }
 

@@ -56,7 +56,7 @@ import org.osgi.service.component.annotations.Reference;
  * Uploads one or more files as assets to Peregrine
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  *
  * To Upload a File with CURL you have to do the following:
  *

@@ -258,15 +258,13 @@ class PerAdminImpl {
   }
 
   populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
-    return fetch(
-        '/admin/nodes.json' + path + '?includeParents=' + includeParents)
+    return fetch('/admin/nodes.json' + path + '?includeParents=' + includeParents)
     .then((data) => populateView('/admin', target, data))
   }
 
   populateComponentDefinitionFor(component) {
     return fetch('/admin/components/' + component)
-    .then(
-        (data) => populateView('/admin/componentDefinitions', component, data))
+    .then((data) => populateView('/admin/componentDefinitions', component, data))
   }
 
   populateComponentDefinitionFromNode(path) {

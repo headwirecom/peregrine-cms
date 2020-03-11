@@ -10,6 +10,6 @@
         jcr:title="sub-child 3"
         sling:resourceType="themeclean/components/page"
         name="sub-child 3"
-        template="/content/templates/themeclean/base page"
-        templatePath="/content/templates/themeclean/base page"/>
+        template="/content/themeclean/templates/base page"
+        templatePath="/content/themeclean/templates/base page"/>
 </jcr:root>

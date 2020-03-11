@@ -83,7 +83,7 @@ import javax.inject.Named;
               "x-form-label": "Image Source",
               "x-form-visible": "model.mediatype == 'image'",
               "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/assets"
+              "x-form-browserRoot": "/content/themeclean/assets"
             },
             "mediaalttext": {
               "type": "string",
@@ -98,7 +98,7 @@ import javax.inject.Named;
               "x-form-label": "Video Source",
               "x-form-visible": "model.mediatype == 'video'",
               "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/assets"
+              "x-form-browserRoot": "/content/themeclean/assets"
             },
             "mediawidth": {
               "type": "string",

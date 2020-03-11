@@ -121,7 +121,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
@@ -129,7 +129,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",

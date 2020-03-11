@@ -83,7 +83,7 @@
               "x-source": "inject",
               "x-form-label": "Image Source",
               "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/assets"
+              "x-form-browserRoot": "/content/themeclean/assets"
             },
             "heading": {
               "type": "string",

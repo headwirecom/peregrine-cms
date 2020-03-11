@@ -100,7 +100,7 @@ import org.slf4j.LoggerFactory;
               "x-form-type": "pathbrowser",
               "x-form-visible": "model.backgroundtype == 'video' and model.custombackground == 'true'",
               "x-default": "https://www.youtube.com/embed/Ju86mknumYM",
-              "x-form-browserRoot": "/content/assets"
+              "x-form-browserRoot": "/content/themeclean/assets"
             },
             "bgimage": {
               "type": "string",

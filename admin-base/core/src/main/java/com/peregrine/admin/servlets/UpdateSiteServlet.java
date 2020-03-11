@@ -54,7 +54,7 @@ import org.osgi.service.component.annotations.Reference;
  * Update a site's components and felibs from its source
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,

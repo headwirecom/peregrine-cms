@@ -28,7 +28,7 @@ import java.util.List;
           "x-source": "inject",
           "x-form-type": "pathbrowser",
           "x-form-label": "Root Page",
-          "x-form-browserRoot": "/content/sites"
+          "x-form-browserRoot": "/content/themeclean/pages"
         },
         "includeroot": {
           "type": "string",
@@ -75,7 +75,7 @@ public class PagelistModel extends AbstractComponent {
     public PagelistModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/sites"} */
+    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/themeclean/pages"} */
 	@Inject
 	private String rootpage;
 
@@ -91,7 +91,7 @@ public class PagelistModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/sites"} */
+    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/themeclean/pages"} */
 	public String getRootpage() {
 		return rootpage;
 	}

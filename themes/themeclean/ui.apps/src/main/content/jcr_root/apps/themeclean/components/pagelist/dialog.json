@@ -2,7 +2,7 @@
   "fields": [
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/sites",
+      "browserRoot": "/content/themeclean/pages",
       "placeholder": "rootpage",
       "label": "Root Page",
       "model": "rootpage"

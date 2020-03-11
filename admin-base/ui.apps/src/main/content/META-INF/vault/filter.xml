@@ -23,8 +23,6 @@
   under the License.
   #L%
   -->
-
-
 <workspaceFilter version="1.0">
     <!--
         Any node that will contain customer data needs to be excluded
@@ -46,12 +44,11 @@
     <filter root="/perapi/swaggereditor"/>
     <filter root="/perapi/definitions"/>
     <filter root="/content/admin"/>
-    <filter root="/content/sites/docs"/>
+    <filter root="/content/docs"/>
     <filter root="/etc/felibs/admin"/>
     <filter root="/content/objects/tags">
         <exclude pattern="/content/objects/tags/.*"/>
     </filter>
-
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
         as it is in the '/apps/admin/install' folder (see the 'all'

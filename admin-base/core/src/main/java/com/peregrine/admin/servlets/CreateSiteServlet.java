@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,26 +25,39 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_SITE;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.*;
+import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.FROM_SITE_NAME;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.SITE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TITLE;
+import static com.peregrine.commons.util.PerConstants.TO_SITE_NAME;
+import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Creates a Peregrine Site by copying from another, existing Site
@@ -78,13 +91,14 @@ public class CreateSiteServlet extends AbstractBaseServlet {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
         String title = request.getParameterUtf8(TITLE);
+
         if(StringUtils.isBlank(title)) {
             title = toSite;
         }
 
         try {
             logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
-            Resource site = resourceManagement.copySite(request.getResourceResolver(), SITES_ROOT, fromSite, toSite, title);
+            Resource site = resourceManagement.copySite(request.getResourceResolver(), PAGES_ROOT, fromSite, toSite, title);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
@@ -92,7 +106,7 @@ public class CreateSiteServlet extends AbstractBaseServlet {
                 .writeAttribute(NAME, toSite)
                 .writeAttribute(PATH, site.getPath())
                 .writeAttribute(TITLE, title)
-                .writeAttribute(SOURCE_PATH, SITES_ROOT + SLASH + fromSite);
+                .writeAttribute(SOURCE_PATH, PAGES_ROOT + SLASH + fromSite);
         } catch(ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE).setException(e);
         }

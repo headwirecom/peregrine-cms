@@ -43,7 +43,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/example/assets",
       "browserType": "image",
       "label": "og:image",
       "placeholder": "og:image",

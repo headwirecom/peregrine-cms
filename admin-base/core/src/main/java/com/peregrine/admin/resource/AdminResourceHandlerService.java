@@ -24,10 +24,10 @@ import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
+import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
@@ -232,7 +232,7 @@ public class AdminResourceHandlerService
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * JSon Mapper for pretty print of JSon text
+     * Json Mapper for pretty print of Json text
      **/
     private ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -241,6 +241,7 @@ public class AdminResourceHandlerService
 
     @Reference
     private BaseResourceHandler baseResourceHandler;
+
     @Reference
     private NodeNameValidation nodeNameValidation;
 
@@ -257,7 +258,6 @@ public class AdminResourceHandlerService
     void removeImageMetadataSelector(ImageMetadataSelector selector) {
         imageMetadataSelectors.remove(selector);
     }
-
 
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
         if(!nodeNameValidation.isValidPageName(name)) {
@@ -287,7 +287,6 @@ public class AdminResourceHandlerService
         if (node == null) {
             return null;
         }
-
         return resourceResolver.getResource(node.getPath());
     }
 
@@ -306,7 +305,6 @@ public class AdminResourceHandlerService
             }
 
             final Node parent = getNode(resourceResolver, parentPath);
-
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
@@ -316,6 +314,7 @@ public class AdminResourceHandlerService
             newObject.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newObject);
             return adaptNodeToResource(resourceResolver, newObject);
+
         } catch (RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
@@ -342,6 +341,7 @@ public class AdminResourceHandlerService
             String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
             Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath, title);
             return adaptNodeToResource(resourceResolver, newPage);
+
         } catch (RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, PAGE, parentPath, name), e);
@@ -369,6 +369,7 @@ public class AdminResourceHandlerService
                 copyAppsComponentToNewTemplate(component, newPage);
             }
             return adaptNodeToResource(resourceResolver, newPage);
+
         } catch (RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, TEMPLATE, parentPath, name), e);
@@ -421,6 +422,7 @@ public class AdminResourceHandlerService
                 .setType(StringUtils.defaultIfEmpty(primaryTypeValue, "not-found"));
             resourceResolver.delete(resource);
             return response;
+
         } catch (PersistenceException e) {
             throw new ManagementException(String.format(FAILED_TO_DELETE, path), e);
         }
@@ -991,7 +993,7 @@ public class AdminResourceHandlerService
         updateTemplateCssPaths(templatesCopy, fromName, targetName);
         resourcesToPackage.add(templatesCopy);
         // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
-        answer = copier.copyFromRoot(SITES_ROOT, title);
+        answer = copier.copyFromRoot(PAGES_ROOT, title);
         resourcesToPackage.add(answer);
         if (answer != null) {
             updateStringsInFiles(answer, targetName);
@@ -1172,7 +1174,7 @@ public class AdminResourceHandlerService
         String[] siteCssProperty = templateContentProperties.get("siteCSS", String[].class);
         if(siteCssProperty != null && siteCssProperty.length > 0) {
             String[] cssReplacements = Arrays.stream(siteCssProperty)
-                    .map(css -> css.replace(SITES_ROOT + SLASH + oldSiteName, SITES_ROOT + SLASH + newSiteName))
+                    .map(css -> css.replace(PAGES_ROOT + SLASH + oldSiteName, PAGES_ROOT + SLASH + newSiteName))
                     .toArray(String[]::new);
             ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
             modifiableProperties.put("siteCSS", cssReplacements);
@@ -1335,7 +1337,7 @@ public class AdminResourceHandlerService
         sourceResource = getResource(resourceResolver, TEMPLATES_ROOT + SLASH + name);
         deleteResource(resourceResolver, sourceResource);
 
-        sourceResource = getResource(resourceResolver, SITES_ROOT + SLASH + name);
+        sourceResource = getResource(resourceResolver, PAGES_ROOT + SLASH + name);
         deleteResource(resourceResolver, sourceResource);
 
         sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + name);
@@ -1348,7 +1350,7 @@ public class AdminResourceHandlerService
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_UPDATE);
         }
-        Resource siteResource = getResource(resourceResolver, SITES_ROOT + SLASH + siteName);
+        Resource siteResource = getResource(resourceResolver, PAGES_ROOT + SLASH + siteName);
         if (siteResource == null) {
             throw new ManagementException(String.format(MISSING_SITE_RESOURCE, siteName));
         }

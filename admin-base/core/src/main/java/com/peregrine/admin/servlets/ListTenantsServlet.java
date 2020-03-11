@@ -25,29 +25,53 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_TENANTS;
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
+import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
+import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
+import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
+import static com.peregrine.commons.util.PerConstants.TITLE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.GET;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 import com.google.common.collect.ImmutableSortedMap;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_TENANTS;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.*;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.apache.sling.api.servlets.ServletResolverConstants.*;
-import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-import static org.osgi.framework.Constants.SERVICE_VENDOR;
-
+/**
+ * This servlet provides a list of the tenants (top-level sites) on this
+ * Peregrine instance.
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
+ */
 @Component(
     service = Servlet.class,
     property = {
@@ -59,16 +83,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-/**
- * This servlet provides a list of the tenants (top-level sites) on this
- * peregrine instance.
- *
- * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
- */
 public class ListTenantsServlet extends AbstractBaseServlet {
 
-    private static final String SITE_ROOT_MISSING = "The site root '" + SITES_ROOT + "' did not resolve to a resource.";
+    private static final String SITE_ROOT_MISSING = "The site root '" + PAGES_ROOT + "' did not resolve to a resource.";
     private static final String TENANTS = "tenants";
     public static final String ROOTS = "roots";
 
@@ -77,16 +94,18 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             .put("assets", ASSETS_ROOT)
             .put("felibs", FELIBS_ROOT)
             .put("objects", OBJECTS_ROOT)
-            .put("sites", SITES_ROOT)
+            .put("sites", PAGES_ROOT)
             .put("templates", TEMPLATES_ROOT)
             .build();
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
         ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource siteRoot = resourceResolver.getResource(SITES_ROOT);
+        Resource siteRoot = resourceResolver.getResource(PAGES_ROOT);
         if(siteRoot == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(SITE_ROOT_MISSING);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(SITE_ROOT_MISSING);
         }
 
         Predicate<Resource> isPage = resource -> {
@@ -115,9 +134,6 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             for(String key : ROOT_MAP.keySet()) {
                 answer.writeAttribute(key, ROOT_MAP.get(key) + SLASH + tenant.getName());
             }
-            answer.writeClose();
-
-            answer.writeClose();
         }
         answer.writeClose();
         return answer;

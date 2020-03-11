@@ -68,7 +68,6 @@ public class PerConstants {
     public static final String PNG_MIME_TYPE = "image/png";
     public static final String JPEG_MIME_TYPE = "image/jpeg";
     public static final String WEBP_MIME_TYPE = "image/webp";
-    //AS Does that exist?
     public static final String JPG_MIME_TYPE = "image/jpg";
     public static final String TEXT_MIME_TYPE = "plain/text";
 
@@ -76,10 +75,10 @@ public class PerConstants {
     public static final String NN_CONTENT = "content";
     public static final String CONTENT_ROOT = SLASH + NN_CONTENT;
     public static final String ETC_ROOT = "/etc";
-    public static final String ASSETS_ROOT = "/assets";
     public static final String FELIBS_ROOT = ETC_ROOT + "/felibs";
+    public static final String PAGES_ROOT = CONTENT_ROOT + "/pages";
+    public static final String ASSETS_ROOT = CONTENT_ROOT+ "/assets";
     public static final String OBJECTS_ROOT = CONTENT_ROOT + "/objects";
-    public static final String SITES_ROOT = CONTENT_ROOT + "/sites";
     public static final String TEMPLATES_ROOT = CONTENT_ROOT + "/templates";
     public static final String PACKAGES_PATH = ETC_ROOT + "/packages";
 

@@ -25,14 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.intra.IntraSlingCaller;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
@@ -45,11 +37,18 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.intra.IntraSlingCaller;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * Redirects Request to 'Session Info'
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
@@ -80,6 +79,7 @@ public class AccessServlet extends AbstractBaseServlet {
             );
             return new TextResponse(JSON, JSON_MIME_TYPE)
                 .write(new String(response));
+
         } catch(IntraSlingCaller.CallException e) {
             logger.warn("Internal call failed", e);
         }

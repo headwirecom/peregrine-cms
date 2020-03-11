@@ -80,12 +80,12 @@ import org.osgi.service.component.annotations.Reference;
  * List all the resources part of the given Path
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Nodes servlet",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Nodes Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_NODES

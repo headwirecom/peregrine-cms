@@ -10,8 +10,8 @@
         jcr:title="Site 2"
         sling:resourceType="themeclean/components/page"
         name="site 2"
-        template="/content/templates/themeclean/base page"
-        templatePath="/content/templates/themeclean/base page"/>
+        template="/content/themeclean/templates/base page"
+        templatePath="/content/themeclean/templates/base page"/>
     <child_x0020_1/>
     <child_x0020_2/>
 </jcr:root>

@@ -957,10 +957,10 @@
         <module>pagerenderer/vue</module>
         <module>admin-base</module>
         <module>samples/example-vue-site</module>
-        <module>themes/themeclean</module>
+<!--        <module>themes/themeclean</module>-->
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
-        <module>tooling/maven/archetypes/project</module>
+<!--        <module>tooling/maven/archetypes/project</module>-->
     </modules>
 
 </project>

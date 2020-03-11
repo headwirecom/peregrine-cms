@@ -66,14 +66,16 @@ public class Helper implements Use {
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
 
         String path = resource.getPath();
-        if(path.startsWith("/content/sites/")) {
-            path = path.substring("/content/sites/".length());
-        } else if(path.startsWith("/content/templates/")) {
-            path = path.substring("/content/templates/".length());
-        }
+        path = path.substring("/content/".length());
+
+//        if(path.startsWith("/content/?/pages")) {
+//            path = path.substring("/content/sites/".length());
+//        } else if(path.startsWith("/content/templates/")) {
+//            path = path.substring("/content/templates/".length());
+//        }
         int slash = path.indexOf("/");
         siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
-        siteRootPath = "/content/sites/"+siteName;
+        siteRootPath = "/content/" + siteName + "/pages/" + siteName;
 
         try {
             model = sling.getService(ModelFactory.class).getModelFromResource(resource);

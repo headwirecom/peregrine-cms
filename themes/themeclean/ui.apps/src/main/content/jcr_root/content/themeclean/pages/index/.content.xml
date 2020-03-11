@@ -10,6 +10,6 @@
         jcr:title="index"
         sling:resourceType="themeclean/components/page"
         name="index"
-        template="/content/templates/themeclean/base page"
-        templatePath="/content/templates/themeclean/base page"/>
+        template="/content/themeclean/templates/base page"
+        templatePath="/content/themeclean/templates/base page"/>
 </jcr:root>

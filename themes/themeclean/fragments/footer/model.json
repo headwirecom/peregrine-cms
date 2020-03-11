@@ -16,7 +16,7 @@
           "x-form-label": "Logo",
           "x-form-type": "pathbrowser",
           "x-form-visible": "model.showlogo == 'true'",
-          "x-form-browserRoot": "/content/assets"
+          "x-form-browserRoot": "/content/themeclean/assets"
         },
         "logoalttext": {
           "type": "string",
@@ -31,7 +31,7 @@
           "x-form-label": "Logo Url",
           "x-form-type": "pathbrowser",
           "x-form-visible": "model.showlogo == 'true'",
-          "x-form-browserRoot": "/content/sites"
+          "x-form-browserRoot": "/content/themeclean/pages"
         },
         "logosize": {
           "type": "string",

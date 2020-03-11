@@ -4,7 +4,7 @@
   "model": {
     "mediatype": "image",
     "mediaposition": "before",
-    "imagesrc": "/content/assets/themeclean/images/yosemite.jpg",
+    "imagesrc": "/content/themeclean/assets/images/yosemite.jpg",
     "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
     "mediawidth": "50",
     "toppadding": "0",

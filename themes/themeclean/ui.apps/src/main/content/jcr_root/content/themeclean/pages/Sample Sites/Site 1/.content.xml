@@ -10,6 +10,6 @@
         jcr:title="Site 1"
         sling:resourceType="themeclean/components/page"
         name="Site 1"
-        template="/content/templates/themeclean"
-        templatePath="/content/templates/themeclean"/>
+        template="/content/themeclean/templates"
+        templatePath="/content/themeclean/templates"/>
 </jcr:root>

@@ -25,40 +25,22 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_SEARCH;
 import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.admin.util.AdminConstants.MORE;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENTS;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES;
-import static com.peregrine.commons.util.PerConstants.OBJECTS;
+import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NODE_TYPE;
+import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
+import static com.peregrine.commons.util.PerConstants.TEMPLATES;
 import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATION;
@@ -76,6 +58,23 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.servlet.Servlet;
+import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Component;
+
 /**
  * Limited Search of either Peregrine:
  * - Components
@@ -83,7 +82,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * - Objects
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,

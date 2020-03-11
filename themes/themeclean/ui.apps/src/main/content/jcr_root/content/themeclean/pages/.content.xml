@@ -12,6 +12,6 @@
         jcr:title="themeclean"
         sling:resourceType="themeclean/components/page"
         brand="themeclean"
-        template="/content/templates/themeclean">
+        template="/content/themeclean/templates">
     </jcr:content>
 </jcr:root>

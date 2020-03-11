@@ -10,7 +10,7 @@
         jcr:title="Sample Sites"
         sling:resourceType="themeclean/components/page"
         name="Sample Sites"
-        template="/content/templates/themeclean"
-        templatePath="/content/templates/themeclean"/>
+        template="/content/themeclean/templates"
+        templatePath="/content/themeclean/templates"/>
     <Site_x0020_1/>
 </jcr:root>

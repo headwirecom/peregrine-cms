@@ -8,7 +8,7 @@
   },
   {
     "type": "pathbrowser",
-    "browserRoot": "/content/assets",
+    "browserRoot": "/content/example/assets",
     "placeholder": "icon location",
     "label": "Site Icons Location",
     "model": "siteIcons"

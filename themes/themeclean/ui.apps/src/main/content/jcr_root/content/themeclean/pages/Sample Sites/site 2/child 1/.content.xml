@@ -10,8 +10,8 @@
         jcr:title="child 1"
         sling:resourceType="themeclean/components/page"
         name="child 1"
-        template="/content/templates/themeclean/base page"
-        templatePath="/content/templates/themeclean/base page"/>
+        template="/content/themeclean/templates/base page"
+        templatePath="/content/themeclean/templates/base page"/>
     <sub-child_x0020_1/>
     <sub-child_x0020_2/>
     <sub-child_x0020_3/>
