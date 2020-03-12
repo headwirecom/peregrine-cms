@@ -136,16 +136,16 @@ public class ListTenantsServlet extends AbstractBaseServlet {
 //            }
 //        }
         answer.writeObject();
-        answer.writeAttribute(NAME, "themeclean");
-        answer.writeAttribute(TITLE, "themeclean");
+        answer.writeAttribute(NAME, "example");
+        answer.writeAttribute(TITLE, "example");
 
         answer.writeObject(ROOTS);
-        answer.writeAttribute("apps", "/apps/themeclean");
-        answer.writeAttribute("etc", "/etc/felibs/themeclean");
-        answer.writeAttribute("assets", "/content/themeclean/assets");
-        answer.writeAttribute("objects", "/content/themeclean/objects");
-        answer.writeAttribute("templates", "/content/themeclean/templates");
-        answer.writeAttribute("pages", "/content/themeclean/pages");
+        answer.writeAttribute("apps", "/apps/example");
+        answer.writeAttribute("etc", "/etc/felibs/example");
+        answer.writeAttribute("assets", "/content/example/assets");
+        answer.writeAttribute("objects", "/content/example/objects");
+        answer.writeAttribute("templates", "/content/example/templates");
+        answer.writeAttribute("pages", "/content/example/pages");
         answer.writeClose();
 
         answer.writeClose();
