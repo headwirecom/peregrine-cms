@@ -31,7 +31,7 @@
   <pages jcr:primaryType="nt:unstructured" jcr:title="Pages"
     sling:resourceType="admin/components/iconaction"
     jcr:description="edit and manage the pages of this Peregrine instance"
-    action="/content/admin/pages/admin/pages">
+    action="/content/admin/pages/pages">
     <experiences jcr:primaryType="nt:unstructured">
       <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Seiten"
         description="Bearbeiten von Seiten dieser Instanz von Peregrine-CMS"/>
@@ -41,7 +41,7 @@
   <assets jcr:primaryType="nt:unstructured" jcr:title="Assets"
     sling:resourceType="admin/components/iconaction"
     jcr:description="peregrine asset management"
-    action="/content/admin/pages/admin/assets">
+    action="/content/admin/pages/assets">
     <experiences jcr:primaryType="nt:unstructured">
       <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Assets"
         description="Peregrine Assets Verwaltung"/>
@@ -51,7 +51,7 @@
   <objects jcr:primaryType="nt:unstructured" jcr:title="Objects"
     sling:resourceType="admin/components/iconaction"
     jcr:description="edit and manage objects (common content data for all pages)"
-    action="/content/admin/pages/admin/objects">
+    action="/content/admin/pages/objects">
     <experiences jcr:primaryType="nt:unstructured">
       <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Objekte"
         description="Objekte bearbeiten und verwalten (gemeinsamer Inhalt für alle Seiten)"/>
@@ -61,7 +61,7 @@
   <templates jcr:primaryType="nt:unstructured" jcr:title="Templates"
     sling:resourceType="admin/components/iconaction"
     jcr:description="edit and manage templates"
-    action="/content/admin/pages/admin/templates">
+    action="/content/admin/pages/templates">
     <experiences jcr:primaryType="nt:unstructured">
       <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Template"
         description="Templates bearbeiten und verwalten"/>
@@ -71,7 +71,7 @@
   <config jcr:primaryType="nt:unstructured" jcr:title="Tools"
     sling:resourceType="admin/components/iconaction"
     jcr:description="Dig deeper into Peregrine with these tools"
-    action="/content/admin/pages/admin/config">
+    action="/content/admin/pages/config">
     <experiences jcr:primaryType="nt:unstructured">
       <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Hillfsmittel"
         description="Vertiefte Ansicht von Peregrine"/>
@@ -81,7 +81,7 @@
   <docs jcr:primaryType="nt:unstructured" jcr:title="Documentation"
     sling:resourceType="admin/components/iconaction"
     jcr:description="view the peregrine documentation"
-    action="/content/admin/pages/admin/docs">
+    action="/content/admin/pages/docs">
     <experiences jcr:primaryType="nt:unstructured">
       <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Dokumentation"
         description="Peregrine Dokumentation anschauen"/>

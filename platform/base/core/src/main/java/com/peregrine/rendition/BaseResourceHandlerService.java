@@ -45,7 +45,7 @@ import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 public class BaseResourceHandlerService
     implements BaseResourceHandler
 {
-    public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
+    public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/content/admin/assets/images/broken-image.svg";
     public static final String NO_ASSET_RESOURCE_PROVIDED = "No Asset Resource provided";
     public static final String NO_RENDITION_NAME_PROVIDED = "No Rendition Name provided";
     public static final String NO_SOURCE_MIME_TYPE_PROVIDED = "No Source Mime Type provided";

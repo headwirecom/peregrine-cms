@@ -371,7 +371,7 @@ var peregrineApp = {
  *
  * var $perView = {};
  * $peregrineApp.registerView($perView)
- * $peregrineApp.loadContent('/content/example/pages/example.html')
+ * $peregrineApp.loadContent('/content/example/pages/index.html')
  *
  */
 export default peregrineApp

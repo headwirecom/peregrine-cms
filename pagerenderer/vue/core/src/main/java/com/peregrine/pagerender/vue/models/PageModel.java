@@ -25,8 +25,20 @@ package com.peregrine.pagerender.vue.models;
  * #L%
  */
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
+
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
@@ -36,31 +48,18 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.factory.ModelFactory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by rr on 12/2/2016.
  */
-@Model(adaptables = Resource.class,
-       resourceType = {PR_VUE_COMPONENT_PAGE_TYPE},
-       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-       adapters = IComponent.class)
-@Exporter(name = JACKSON,
-          extensions = JSON)
-public class PageModel
-    extends Container {
+@Model(
+    adaptables = Resource.class,
+    resourceType = {PR_VUE_COMPONENT_PAGE_TYPE},
+    defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+    adapters = IComponent.class)
+@Exporter(
+    name = JACKSON,
+    extensions = JSON)
+public class PageModel extends Container {
 
     public static final String SITE_CSS = "siteCSS";
     public static final String PREFETCH_DNS = "prefetchDNS";
@@ -86,7 +85,8 @@ public class PageModel
         return null;
     }
 
-    @Inject private ModelFactory modelFactory;
+    @Inject
+    private ModelFactory modelFactory;
 
     @Inject
     @Optional
@@ -114,15 +114,20 @@ public class PageModel
     @Optional
     private String title;
 
-    @Inject private String dataFrom;
+    @Inject
+    private String dataFrom;
 
-    @Inject private String dataDefault;
+    @Inject
+    private String dataDefault;
 
-    @Inject private String[] loaders;
+    @Inject
+    private String[] loaders;
 
-    @Inject private String[] suffixToParameter;
+    @Inject
+    private String[] suffixToParameter;
 
-    @Inject private String description;
+    @Inject
+    private String description;
 
     public String getSiteRoot() {
         String path = getPagePath();

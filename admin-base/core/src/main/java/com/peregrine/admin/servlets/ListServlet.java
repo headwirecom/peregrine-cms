@@ -68,8 +68,8 @@ public class ListServlet extends AbstractBaseServlet {
 
     public static final String TOOLS = "/tools";
     public static final String TOOLS_CONFIG = "/tools/config";
-    public static final String CONTENT_ADMIN_TOOLS = "/content/admin/pages/admin/tools";
-    public static final String CONTENT_ADMIN_TOOLS_CONFIG = "/content/admin/pages/admin/toolsConfig";
+    public static final String CONTENT_ADMIN_TOOLS = "/content/admin/pages/tools";
+    public static final String CONTENT_ADMIN_TOOLS_CONFIG = "/content/admin/pages/toolsConfig";
     public static final String UNKNOWN_SUFFIX = "Unknown suffix: ";
     public static final String ERROR_WHILE_EXPORTING_MODEL = "Error while exporting model";
     public static final String NO_EXPORTER_JACKSON_DEFINED = "no exporter 'jackson' defined";

@@ -196,9 +196,7 @@ public interface AdminResourceHandler {
      */
     void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException;
 
-    class ManagementException
-        extends Exception
-    {
+    class ManagementException extends Exception {
         public ManagementException(String message) {
             super(message);
         }

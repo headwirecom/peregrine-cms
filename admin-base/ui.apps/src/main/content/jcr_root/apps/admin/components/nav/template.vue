@@ -30,7 +30,7 @@
           <admin-components-action
               v-bind:model="{
               command: 'selectPath', 
-              target: '/content/admin/pages/admin',
+              target: '/content/admin/pages/index',
               classes: 'peregrine-logo',
               tooltipTitle: $i18n('home')
             }">
