@@ -40,7 +40,7 @@ function content(title, html, order) {
             sling:resourceType="example/components/page"
             jcr:title="${title}"
             brand="peregrine"
-            template="/content/example/templates"
+            template="/content/example/templates/base"
     >
         <content jcr:primaryType="nt:unstructured"
                  sling:resourceType="pagerender/vue/structure/container">

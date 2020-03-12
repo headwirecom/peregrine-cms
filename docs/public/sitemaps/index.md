@@ -15,18 +15,18 @@ resource changes and time-based via a cron-like expression. It's easily configur
 ## Example
 
 The default installation contains
-an example configuration for the site map of [/content/example/pages](http://localhost:8080/content/example/pages/example.html).
+an example configuration for the site map of [/content/example/pages](http://localhost:8080/content/example/pages/index.html).
 It's disabled by default though. One needs to enable it inside the appropriate
 [com.peregrine.sitemap.impl.SiteMapConfigurationImpl](http://localhost:8080/system/console/configMgr/com.peregrine.sitemap.impl.SiteMapConfigurationImpl~example.com)
 configuration:
 
 ![com.peregrine.sitemap.impl.SiteMapConfigurationImpl~example.com](site-map-configuration-example.com.png)
 
-It will be then available under [/content/example/pages/example.sitemap.xml](http://localhost:8080/content/example/pages/example.sitemap.xml).
+It will be then available under [/content/example/pages/index.sitemap.xml](http://localhost:8080/content/example/pages/index.sitemap.xml).
 The cached file will reside under [/var/sitemaps/files/content/example/pages](http://localhost:8080/bin/browser.html/var/sitemaps/files/content/example/pages)
-and the backing structure - under [/var/sitemaps/structure/content/example/pages/example/jcr:content](http://localhost:8080/bin/browser.html/var/sitemaps/structure/content/example/pages/example/jcr%3Acontent).
+and the backing structure - under [/var/sitemaps/structure/content/example/pages/index/jcr:content](http://localhost:8080/bin/browser.html/var/sitemaps/structure/content/example/pages/index/jcr%3Acontent).
 Those are created on demand, if not yet present once requested. Otherwise - the content saved in cache gets served.
-Additionally under [/content/example/pages/example.sitemap.txt](http://localhost:8080/content/example/pages/example.sitemap.txt) one
+Additionally under [/content/example/pages/index.sitemap.txt](http://localhost:8080/content/example/pages/index.sitemap.txt) one
 will find an Apache Rewrite Map.
 
 # Site Map Configuration

@@ -23,10 +23,26 @@
   under the License.
   #L%
   -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
 
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="sling:Folder"
-          jcr:title="template config example"
-          jcr:description="template configuration for example template of example site"
-          allowedComponents="[/apps/pagerender/vue,/apps/example/components]"
-/>
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="example/components/page"
+    jcr:title="example vuejs site template"
+    siteCSS="[/etc/felibs/pagerender-vue/bootstrap/css/bootstrap.min.css]"
+    siteJS="[/etc/felibs/pagerender-vue/jquery/jquery.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js,/etc/felibs/pagerender-vue/bootstrap/js/bootstrap.min.js]">>
+
+    <nav jcr:primaryType="nt:unstructured"
+      sling:resourceType="example/components/nav"
+      brand="example"/>
+
+    <footer jcr:primaryType="nt:unstructured"
+      sling:resourceType="example/components/footer"/>
+
+  </jcr:content>
+
+</jcr:root>
