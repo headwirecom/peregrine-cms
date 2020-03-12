@@ -23,35 +23,38 @@
   under the License.
   #L%
   -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Page"
->
-    <jcr:content
-            jcr:primaryType="per:PageContent"
-            sling:resourceType="example/components/page"
-            jcr:title="services"
-            template="/content/example/templates"
-    >
-        <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/container">
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="example/components/page"
+    jcr:title="services"
+    template="/content/example/templates/base">
 
-            <row jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/row">
+    <content jcr:primaryType="nt:unstructured"
+      sling:resourceType="example/components/container">
 
-                <col1 jcr:primaryType="nt:unstructured"
-                     sling:resourceType="example/components/col"
-                    classes="col-md-12"
-                >
+      <row jcr:primaryType="nt:unstructured"
+        sling:resourceType="example/components/row">
 
-                    <text2 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="this is the services page"/>
-                </col1>
+        <col1 jcr:primaryType="nt:unstructured"
+          sling:resourceType="example/components/col"
+          classes="col-md-12">
 
-            </row>
+          <text2 jcr:primaryType="nt:unstructured"
+            sling:resourceType="example/components/text"
+            text="this is the services page"/>
 
-        </content>
+        </col1>
 
-    </jcr:content>
+      </row>
+
+    </content>
+
+  </jcr:content>
+
 </jcr:root>

@@ -75,11 +75,11 @@
                         </Sling-Namespaces>
 
                         <Sling-Nodetypes>
+                            SLING-INF/nodetypes/site.cnd,
                             SLING-INF/nodetypes/replication.cnd,
                             SLING-INF/nodetypes/asset.cnd,
                             SLING-INF/nodetypes/pagecontent.cnd,
                             SLING-INF/nodetypes/page.cnd,
-                            SLING-INF/nodetypes/site.cnd,
                             SLING-INF/nodetypes/component.cnd,
                             SLING-INF/nodetypes/felib.cnd,
                             SLING-INF/nodetypes/npmpackageconfig.cnd,

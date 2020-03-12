@@ -24,7 +24,7 @@
  */
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 
-[per:Site] > per:Page
-  orderable primaryitem jcr:content
+[per:Site] > nt:unstructured
+  orderable
   - template (boolean) = 'false' autocreated
   - internal (boolean) = 'false' autocreated

@@ -115,7 +115,7 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             return PAGE_PRIMARY_TYPE.equals(primaryType);
         };
 
-        List<Resource> sites = StreamSupport.stream(sitesRoot.getChildren().spliterator(), false)
+        List<Resource> tenants = StreamSupport.stream(sitesRoot.getChildren().spliterator(), false)
                 .filter(isPage)
                 .collect(Collectors.toList());
 

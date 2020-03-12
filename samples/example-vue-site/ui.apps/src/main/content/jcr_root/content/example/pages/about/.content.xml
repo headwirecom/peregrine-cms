@@ -23,56 +23,59 @@
   under the License.
   #L%
   -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Page"
->
-    <jcr:content
-            jcr:primaryType="per:PageContent"
-            sling:resourceType="example/components/page"
-            jcr:title="about"
-            description="this is the about page description for the example project"
-            template="/content/example/templates"
-    >
-        <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/container">
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="example/components/page"
+    jcr:title="about"
+    template="/content/example/templates/base">
 
-            <row jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/row">
+    <content jcr:primaryType="nt:unstructured"
+      sling:resourceType="example/components/container">
 
-                <col1 jcr:primaryType="nt:unstructured"
-                     sling:resourceType="example/components/col"
-                    classes="col-md-12"
-                >
+      <row jcr:primaryType="nt:unstructured"
+        sling:resourceType="example/components/row">
 
-                    <carousel jcr:primaryType="nt:unstructured"
-                            sling:resourceType="example/components/carousel"
-                            interval="5000"
-                            pause="hover"
-                            ride="true"
-                            indicators="true"
-                            controls="true"
-                            wrap="true"
-                            keyboard="true"
-                           >
-                        <slide1 jcr:primaryType="nt:unstructured"
-                                imagePath="/content/admin/assets/images/tesla.jpg"
-                                sling:resourceType="example/components/carouselItem"
-                                name="slide1"/>
-                        <slide2 jcr:primaryType="nt:unstructured"
-                                imagePath="/content/admin/assets/images/tesla1.jpg"
-                                sling:resourceType="example/components/carouselItem"
-                                name="slide2"/>
-                    </carousel>
+        <col1 jcr:primaryType="nt:unstructured"
+          sling:resourceType="example/components/col"
+          classes="col-md-12">
 
-                    <text2 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="example/components/text"
-                           text="this is the about page"/>
-                </col1>
+          <carousel jcr:primaryType="nt:unstructured"
+            sling:resourceType="example/components/carousel"
+            interval="5000"
+            pause="hover"
+            ride="true"
+            indicators="true"
+            controls="true"
+            wrap="true"
+            keyboard="true">
 
-            </row>
+            <slide1 jcr:primaryType="nt:unstructured"
+              imagePath="/content/admin/assets/images/tesla.jpg"
+              sling:resourceType="example/components/carouselItem"
+              name="slide1"/>
 
-        </content>
+            <slide2 jcr:primaryType="nt:unstructured"
+              imagePath="/content/admin/assets/images/tesla1.jpg"
+              sling:resourceType="example/components/carouselItem"
+              name="slide2"/>
 
-    </jcr:content>
+          </carousel>
+
+          <text2 jcr:primaryType="nt:unstructured"
+            sling:resourceType="example/components/text"
+            text="this is the about page"/>
+        </col1>
+
+      </row>
+
+    </content>
+
+  </jcr:content>
+
 </jcr:root>
