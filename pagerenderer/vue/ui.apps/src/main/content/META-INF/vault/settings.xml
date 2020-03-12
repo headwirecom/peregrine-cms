@@ -23,7 +23,6 @@
   under the License.
   #L%
   -->
-
 <vault version="1.0">
   <ignore name=".svn"/>
   <ignore name=".git"/>

@@ -89,7 +89,7 @@
         </experiences>
       </item2>
 
-      <item3 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/admin/tools/pages"
+      <item3 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/pages"
         text="The Pages explorer gives you an overview of your website pages, and allows you to edit the structure of your pages">
         <experiences jcr:primaryType="nt:unstructured">
           <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
@@ -97,7 +97,7 @@
         </experiences>
       </item3>
 
-      <item4 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/admin/tools/assets"
+      <item4 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/assets"
         text="From the Asset explorer, you can add and manage assets such as images that are available throughout your website">
         <experiences jcr:primaryType="nt:unstructured">
           <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
@@ -105,7 +105,7 @@
         </experiences>
       </item4>
 
-      <item5 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/admin/tools/objects"
+      <item5 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/objects"
         text="Use the Object explorer to create and manage common content data for your website">
         <experiences jcr:primaryType="nt:unstructured">
           <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
@@ -113,7 +113,7 @@
         </experiences>
       </item5>
 
-      <item6 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/admin/tools/templates"
+      <item6 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/templates"
         text="Create and edit page Templates for use throughout your website">
         <experiences jcr:primaryType="nt:unstructured">
           <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
@@ -121,7 +121,7 @@
         </experiences>
       </item6>
 
-      <item7 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/admin/tools/config"
+      <item7 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/config"
         text="On the Tools page you can access various tools like Composum Developer Tool, Peregrine API Explorer or JCR Query Tool">
         <experiences jcr:primaryType="nt:unstructured">
           <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"

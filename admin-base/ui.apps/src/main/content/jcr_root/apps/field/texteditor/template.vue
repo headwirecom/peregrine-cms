@@ -72,7 +72,7 @@
                 isOpen: false,
                 default: {
                     config: {
-                        svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
+                        svgPath: '/content/admin/assets/images/trumbowyg-icons.svg',
                         resetCss: true,
                         btnsDef: {
                             formattingWithCode: {

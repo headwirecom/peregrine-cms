@@ -34,7 +34,7 @@ export default function(me, target) {
 
     return new Promise( (resolve, reject) => {
         api.fetchExternalImage(target.path, target.url, target.name, target.config).then( () => {
-            me.loadContent('/content/admin/assets.html/path'+SUFFIX_PARAM_SEPARATOR+target.path)
+            me.loadContent('/content/admin/pages/assets.html/path'+SUFFIX_PARAM_SEPARATOR+target.path)
             resolve()
         }).catch( () => {
             me.notifyUser('Error', 'Could not upload asset', target.error) 

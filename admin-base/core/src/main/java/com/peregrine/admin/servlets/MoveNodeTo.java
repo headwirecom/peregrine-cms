@@ -80,6 +80,7 @@ public class MoveNodeTo extends AbstractBaseServlet {
 
     @Reference
     private ResourceRelocation resourceRelocation;
+
     @Reference
     AdminResourceHandler resourceManagement;
 

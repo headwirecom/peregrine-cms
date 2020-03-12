@@ -61,7 +61,7 @@ public class PageMerge implements Use {
     public static final String REQUEST = "request";
     public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
-    public static final String CONTENT_TEMPLATES = "/content/templates/";
+    public static final String REGEX_TEMPLATES = "(?<=\\/content\\/).*(?=\\/templates)";
     private final Logger log = LoggerFactory.getLogger(PageMerge.class);
 
     private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
@@ -99,12 +99,11 @@ public class PageMerge implements Use {
         try {
             Resource content = resource.getChild(JCR_CONTENT);
             if(content == null) return Collections.<String, String> emptyMap();
-            Map page = modelFactory.exportModelForResource(content,
-                    JACKSON, Map.class,
-                    Collections.<String, String> emptyMap());
+            Map page = modelFactory
+                .exportModelForResource(content, JACKSON, Map.class, Collections.emptyMap());
             String templatePath = (String) page.get(TEMPLATE);
             if(templatePath == null) {
-                if(resource.getParent().getPath().startsWith(CONTENT_TEMPLATES)) {
+                if(resource.getParent().getPath().matches(REGEX_TEMPLATES)) {
                     // only use the parent as a template of a template if it is in fact a page
                     if(resource.getParent().getResourceType().equals(PAGE_PRIMARY_TYPE)) {
                         templatePath = resource.getParent().getPath();

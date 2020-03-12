@@ -32,7 +32,7 @@ export default function(me, target) {
 
     return new Promise( (resolve, reject) => {
         api.createFolder(target.parent, target.name).then( () => {
-            me.loadContent('/content/admin/objects.html/path'+ SUFFIX_PARAM_SEPARATOR + target.parent)
+            me.loadContent('/content/admin/pages/objects.html/path'+ SUFFIX_PARAM_SEPARATOR + target.parent)
             resolve()
         })
     })

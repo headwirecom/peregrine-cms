@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  admin base - UI Apps
+  peregrine vuejs page renderer - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -27,29 +27,27 @@
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-  jcr:primaryType="per:Page">
+  jcr:primaryType="per:Site">
 
   <jcr:content
     jcr:primaryType="per:PageContent"
-    sling:resourceType="admin/components/toolingpage"
-    jcr:title="create object"
-    jcr:description="admin base Content Root"
-    suffixToParameter="[path,/state/tools/objects]"
-    dataFrom="/state/tools/objects"
-    dataDefault="/content/{tenant}/objects"
-    loaders="[populateObjects:/state/tools/objects,populateNodesForBrowser:/state/tools/objects]">
+    sling:resourceType="pagerender/vue/structure/page"
+    jcr:title="pagerenderer-vue Index"
+    siteCSS="[/etc/felibs/pagerender-vue/bootstrap/css/bootstrap.min.css]"
+    siteJS="[/etc/felibs/pagerender-vue/jquery/jquery.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js,/etc/felibs/pagerender-vue/bootstrap/js/bootstrap.min.js]">
 
-    <nav jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/nav"/>
+    <content jcr:primaryType="nt:unstructured"
+      sling:resourceType="pagerender/vue/structure/container">
 
-    <wizard jcr:primaryType="nt:unstructured"
-      dataFrom="/state/tools/objects"
-      returnTo="/content/admin/pages/admin/objects"
-      sling:resourceType="admin/components/createobjectwizard">
-    </wizard>
+      <text1 jcr:primaryType="nt:unstructured"
+        sling:resourceType="pagerender/vue/components/base"
+        text="peregrine-cms is a basic headless, api first cms built on top of apache sling and apache jackrabbit"/>
 
-    <jsonview jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/debugger" dataFrom="/"/>
+      <text2 jcr:primaryType="nt:unstructured"
+        sling:resourceType="pagerender/vue/components/base"
+        text="about link: &lt;a href='/content/pagerenderer/vue/pages/about.html'&gt;about&lt;/a&gt;"/>
+
+    </content>
 
   </jcr:content>
 

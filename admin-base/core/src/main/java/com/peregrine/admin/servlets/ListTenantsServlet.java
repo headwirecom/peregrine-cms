@@ -101,8 +101,8 @@ public class ListTenantsServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource siteRoot = resourceResolver.getResource(PAGES_ROOT);
-        if(siteRoot == null) {
+        Resource sitesRoot = resourceResolver.getResource("/content");
+        if(sitesRoot == null) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(SITE_ROOT_MISSING);
@@ -115,7 +115,7 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             return PAGE_PRIMARY_TYPE.equals(primaryType);
         };
 
-        List<Resource> tenants = StreamSupport.stream(siteRoot.getChildren().spliterator(), false)
+        List<Resource> sites = StreamSupport.stream(sitesRoot.getChildren().spliterator(), false)
                 .filter(isPage)
                 .collect(Collectors.toList());
 
