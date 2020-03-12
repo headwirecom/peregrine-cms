@@ -23,27 +23,30 @@
   #L%
   -->
 <template>
-    <div
-        v-bind:class  ="`peregrine-content-view ${viewModeClass}`"
+    <div v-bind:class = "`peregrine-content-view ${viewModeClass}`"
         v-on:mouseout = "leftOverlayArea">
-        <div
-            id             = "editviewoverlay"
+        <div id            = "editviewoverlay"
             v-on:click     = "onClickOverlay"
             v-on:scroll    = "onScrollOverlay"
             v-on:mousemove = "mouseMove"
             v-on:dragover  = "onDragOver"
             v-on:drop.prevent = "onDrop">
             <div class="editview-container" ref="editviewContainer">
-                <div
-                    v-bind:class   = "editableClass"
-                    ref            = "editable"
-                    id             = "editable"
-                    :draggable     = "enableEditableFeatures"
-                    v-on:dragstart = "onDragStart"
+                <div id             = "editable"
+                    ref             = "editable"
+                    v-bind:class    = "editableClass"
+                    :draggable      = "enableEditableFeatures"
+                    v-on:dragstart  = "onDragStart"
                     v-on:touchstart = "onEditableTouchStart"
-                    v-on:touchend  = "onEditableTouchEnd">
-                    <div v-show="editorVisible && inlineContent && enableEditableFeatures" style="background-color: white;" >
-                        <div v-once contentEditable="true" v-on:input.stop.prevent="onInput" ref="inlineEdit">inline edit here</div>
+                    v-on:touchend   = "onEditableTouchEnd">
+                    <div v-show="editorVisible && inlineContent && enableEditableFeatures" style="background-color: white;">
+                        <div ref="inlineEditContainer" v-on:click.stop.prevent>
+                            <trumbowyg ref="inlineEdit"
+                                :config="trumbowyg.config"
+                                v-model="trumbowyg.content"
+                                v-on:input="onInlineEditInput">
+                            </trumbowyg>
+                        </div>
                     </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
@@ -70,10 +73,9 @@
                 </div>
             </div>
         </div>
-        <iframe
-            v-on:load    = "onIframeLoaded"
+        <iframe id       = "editview"
             ref          = "editview"
-            id           = "editview"
+            v-on:load    = "onIframeLoaded"
             v-bind:src   = "pagePath"
             frameborder  = "0"></iframe>
     </div>
@@ -119,7 +121,40 @@ export default {
             isTouch: false,
             isIOS: false,
             editableTimer: null,
-            inline: undefined
+            inline: undefined,
+            trumbowyg: {
+                content: '',
+                config: {
+                    svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
+                    resetCss: true,
+                    btnsDef: {
+                        formattingWithCode: {
+                            dropdown: ['p', 'quote', 'preformatted', 'h1', 'h2', 'h3', 'h4'],
+                            ico: 'p',
+                            hasIcon: true
+                        }
+                    },
+                    btns: [
+                        'viewHTML',
+                        'undo',
+                        'redo',
+                        'formattingWithCode',
+                        'strong',
+                        'em',
+                        'superscript',
+                        'subscript',
+                        'link',
+                        'insertImage',
+                        'justifyLeft',
+                        'justifyCenter',
+                        'justifyRight',
+                        'justifyFull',
+                        'unorderedList',
+                        'orderedList',
+                        'removeformat'
+                    ]
+                }
+            }
         }
     },
     watch: {
@@ -143,10 +178,10 @@ export default {
             }
             return ret
         },
-        viewModeClass: function() {
+        viewModeClass() {
             return this.viewMode
         },
-        enableEditableFeatures: function() {
+        enableEditableFeatures() {
             var targetEl = this.selectedComponent
             if(targetEl == null || targetEl === undefined) return false
             const path = targetEl.getAttribute('data-per-path')
@@ -161,19 +196,20 @@ export default {
                 && view.state.tools.workspace
                 && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         },
-        inlineContent: function() {
-            if(this.inline) {
+        inlineContent() {
+            if (this.inline) {
                 var targetEl = this.selectedComponent
-                if(targetEl == null || targetEl === undefined) return undefined
+                if (targetEl == null || targetEl === undefined) return undefined
                 const path = targetEl.getAttribute('data-per-path')
-                if(path === undefined || path === null) return undefined
+                if (path === undefined || path === null) return undefined
                 let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 const segments = this.inline.split('.')
                 segments.shift()
-                for(let i = 0; i < segments.length; i++) {
+                for (let i = 0; i < segments.length; i++) {
                     answer = answer[segments[i]]
-                    if(!answer) return undefined
+                    if (!answer) return undefined
                 }
+
                 return answer
             } else {
                 return undefined
@@ -185,20 +221,23 @@ export default {
     },
 
     methods: {
-        onInput(event) {
-            if(this.inline) {                
+        onInlineEditInput(text) {
+            if (this.inline) {
                 var targetEl = this.selectedComponent
-                if(targetEl == null || targetEl === undefined) return undefined
+                if (targetEl == null || targetEl === undefined) return undefined
+
                 const path = targetEl.getAttribute('data-per-path')
-                if(path === undefined || path === null) return undefined
+                if (path === undefined || path === null) return undefined
+
                 let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 const segments = this.inline.split('.')
                 segments.shift()
-                for(let i = 0; i < segments.length -1; i++) {
+                for (let i = 0; i < segments.length -1; i++) {
                     answer = answer[segments[i]]
-                    if(!answer) return undefined
+                    if (!answer) return undefined
                 }
-                answer[segments[length-1]] = event.target.innerHTML
+
+                answer[segments[length - 1]] = text
             }
         },
         /* Window/Document methods =================
@@ -389,32 +428,31 @@ export default {
         },
 
         onClickOverlay: function(e) {
-            if(!e) return
-            if(e.target && e.target.getAttribute('contenteditable') === 'true') return;
+            if (!e) return
+            if (e.target && e.target.getAttribute('contenteditable') === 'true') return;
             const target = this.getTargetEl(e)
             let targetEl = target.targetEl
-            if(targetEl) {
+            if (targetEl) {
                 var path = targetEl.getAttribute('data-per-path')
                 var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                if (this.isContainer(targetEl)) {
-                    if (this.isIgnoreContainersEnabled) return;
-                }
-                if(node.fromTemplate) {
+                if (this.isContainer(targetEl) && this.isIgnoreContainersEnabled) return;
+
+                if (node.fromTemplate) {
                     $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                         complete: this.removeEditOverlay
                     })
                 } else {
                     this.selectedComponent = targetEl
                     this.inline = target.inline ? target.inline.getAttribute('data-per-inline-edit') : undefined
-                    if(this.inline) {
-                        const style = window.getComputedStyle(target.inline)
-
+                    if (this.inline) {
+                        /* const style = window.getComputedStyle(target.inline)
                         // copy styles from original element into this one
                         let cssText = style.cssText
                         cssText = cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
-                        this.$refs.inlineEdit.setAttribute('style', cssText)
-                        this.$refs.inlineEdit.innerHTML = target.inline.innerHTML
+                        this.$refs.inlineEditContainer.setAttribute('style', cssText) */
+                        this.trumbowyg.content = target.inline.innerHTML
                     }
+
                     var targetBox = this.getBoundingClientRect(targetEl)
                     this.setEditableStyle(targetBox, 'selected')
                     $perAdminApp.action(this, 'showComponentEdit', path)
