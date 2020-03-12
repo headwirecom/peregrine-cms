@@ -32,13 +32,13 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    const tenant = view.state.site.name
+    const site = view.state.site
 
     return new Promise( (resolve, reject) => {
         me.getApi().populateExplorerDialog(target.selected).then( () => {
-            if(target.selected.startsWith(`/content/${tenant}/pages`)) {
+            if(target.selected.startsWith(`/content/${site.name}/pages`)) {
                 set(view, '/state/tools/page', target.selected)
-            } else if(target.selected.startsWith(`/content/${tenant}templates`)) {
+            } else if(target.selected.startsWith(`/content/${site.name}templates`)) {
                 set(view, '/state/tools/template', target.selected)
             }
             resolve()
