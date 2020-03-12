@@ -22,19 +22,20 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
-
+import {LoggerFactory} from '../logger'
 import {set} from '../utils'
+
+let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
     let view = me.getView()
+    const site = view.state.site
 
     return new Promise( (resolve, reject) => { 
-        if(target.selected.startsWith('/content/sites')) {
+        if(target.selected.startsWith(`/content/${site.name}/pages`)) {
             set(view, '/state/tools/page', null)
         } else {
             set(view, '/state/tools/template', null)

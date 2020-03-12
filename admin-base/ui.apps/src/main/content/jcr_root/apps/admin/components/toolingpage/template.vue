@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import {set} from '../../../../../../js/utils'
+    import {set} from '../../../../../../js/utils'
 
-export default {
+    export default {
     props: ['model'],
     mounted(){
         // init materialize plugins
@@ -45,21 +45,18 @@ export default {
     },
     methods: {
         selectPath: function(me, target) {
-            if (target.tenant) {
-                const section = target.action.split('/').slice(-1).pop()
-                set($perAdminApp.getView(), '/state/current/section/name', section)
-                const payload = {
-                    path: `/state/tools/${section}`,
-                    selected: `/content/${target.tenant}/${section}`
-                }
-                $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
-                    $perAdminApp.loadContent(target.action + '.html')
-                })
-            } else {
-                const section = target.split('/').slice(-1).pop()
-                set($perAdminApp.getView(), '/state/current/section/name', section)
-                $perAdminApp.loadContent(target+'.html')
+            const view = $perAdminApp.getView()
+            const site = view.state.site
+            const action = target.action || target
+            const section = action.split('/').slice(-1).pop()
+            set(view, '/state/current/section/name', section)
+            const payload = {
+                path: `/state/tools/${section}`,
+                selected: `/content/${site.name}/${section}`
             }
+            $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
+                $perAdminApp.loadContent(action + '.html')
+            })
         },
         editPreview: function(me, target) {
             $perAdminApp.stateAction('editPreview', target)
