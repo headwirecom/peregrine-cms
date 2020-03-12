@@ -50,7 +50,7 @@ export default {
                 set($perAdminApp.getView(), '/state/current/section/name', section)
                 const payload = {
                     path: `/state/tools/${section}`,
-                    selected: `/content/${target.tenant}/${section}`,
+                    selected: `/content/${target.tenant}/${section}`
                 }
                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
                     $perAdminApp.loadContent(target.action + '.html')
