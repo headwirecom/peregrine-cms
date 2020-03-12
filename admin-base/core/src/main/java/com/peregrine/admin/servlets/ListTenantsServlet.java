@@ -100,7 +100,7 @@ public class ListTenantsServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        ResourceResolver resourceResolver = request.getResourceResolver();
+     /*   ResourceResolver resourceResolver = request.getResourceResolver();
         Resource siteRoot = resourceResolver.getResource(PAGES_ROOT);
         if(siteRoot == null) {
             return new ErrorResponse()
@@ -117,24 +117,39 @@ public class ListTenantsServlet extends AbstractBaseServlet {
 
         List<Resource> tenants = StreamSupport.stream(siteRoot.getChildren().spliterator(), false)
                 .filter(isPage)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
 
         JsonResponse answer = new JsonResponse();
         answer.writeArray(TENANTS);
-        for(Resource tenant : tenants) {
-            answer.writeObject();
-            answer.writeAttribute(NAME, tenant.getName());
+//        for(Resource tenant : tenants) {
+//            answer.writeObject();
+//            answer.writeAttribute(NAME, tenant.getName());
+//
+//            Resource contentResource = tenant.getChild(JCR_CONTENT);
+//            if(contentResource != null) {
+//                ValueMap properties = contentResource.getValueMap();
+//                answer.writeAttribute(TITLE, properties.get(JCR_TITLE, String.class));
+//            }
+//            answer.writeObject(ROOTS);
+//            for(String key : ROOT_MAP.keySet()) {
+//                answer.writeAttribute(key, ROOT_MAP.get(key) + SLASH + tenant.getName());
+//            }
+//        }
+        answer.writeObject();
+        answer.writeAttribute(NAME, "themeclean");
+        answer.writeAttribute(TITLE, "themeclean");
 
-            Resource contentResource = tenant.getChild(JCR_CONTENT);
-            if(contentResource != null) {
-                ValueMap properties = contentResource.getValueMap();
-                answer.writeAttribute(TITLE, properties.get(JCR_TITLE, String.class));
-            }
-            answer.writeObject(ROOTS);
-            for(String key : ROOT_MAP.keySet()) {
-                answer.writeAttribute(key, ROOT_MAP.get(key) + SLASH + tenant.getName());
-            }
-        }
+        answer.writeObject(ROOTS);
+        answer.writeAttribute("apps", "/apps/themeclean");
+        answer.writeAttribute("etc", "/etc/felibs/themeclean");
+        answer.writeAttribute("assets", "/content/themeclean/assets");
+        answer.writeAttribute("objects", "/content/themeclean/objects");
+        answer.writeAttribute("templates", "/content/themeclean/templates");
+        answer.writeAttribute("pages", "/content/themeclean/pages");
+        answer.writeClose();
+
+        answer.writeClose();
+
         answer.writeClose();
         return answer;
     }
