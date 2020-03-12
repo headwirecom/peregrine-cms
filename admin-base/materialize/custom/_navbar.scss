@@ -51,7 +51,7 @@ nav {
                 }
               }
             }
-          }        
+          }
         }
       }
     }
@@ -91,6 +91,17 @@ nav {
     #nav-mobile {
       .tenant-select {
         min-width: 150px;
+      }
+
+      .multiselect {
+        .multiselect__placeholder {
+          margin: 0;
+          padding: 0;
+        }
+
+        .multiselect__tags {
+          min-height: 64px;
+        }
       }
     }
   }
