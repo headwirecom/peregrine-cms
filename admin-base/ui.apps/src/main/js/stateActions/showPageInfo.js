@@ -38,7 +38,7 @@ export default function(me, target) {
         me.getApi().populateExplorerDialog(target.selected).then( () => {
             if(target.selected.startsWith(`/content/${site.name}/pages`)) {
                 set(view, '/state/tools/page', target.selected)
-            } else if(target.selected.startsWith(`/content/${site.name}templates`)) {
+            } else if(target.selected.startsWith(`/content/${site.name}/templates`)) {
                 set(view, '/state/tools/template', target.selected)
             }
             resolve()
