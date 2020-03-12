@@ -26,6 +26,15 @@
 <jcr:root
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
-  jcr:primaryType="sling:OrderedFolder"
+  jcr:primaryType="per:Page"
   jcr:title="admin-pages"
-  jcr:description="Admin Pages Root"/>
+  jcr:description="Admin Pages Root">
+    <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="admin/components/toolingpage"
+    jcr:title="home"
+    jcr:description="admin base home page"
+    siteCSS="[/etc/felibs/admin/dependencies/material-design-icons/material-icons.css,/etc/felibs/materialize/materialize.css]"
+    siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js]">
+    </jcr:content>
+</jcr:root>
