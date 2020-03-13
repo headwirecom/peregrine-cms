@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  peregrine vuejs page renderer - UI Apps
+  admin base - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -23,7 +23,10 @@
   under the License.
   #L%
   -->
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
-  jcr:primaryType="sling:Folder"
-  jcr:title="peregrine vuejs page renderer Root"
-  jcr:description="peregrine vuejs page renderer Apps Root folder"/>
+<jcr:root
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  jcr:primaryType="per:FeLib"
+  jcr:title="fonts"
+  jcr:description="fonts"
+  sling:resourceType="felib/components/lib"/>

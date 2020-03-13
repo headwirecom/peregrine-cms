@@ -54,7 +54,7 @@ public class NavModel extends AbstractComponent {
     public String getBrand() {
         RenderContext rx = PageMerge.getRenderContext();
         SlingHttpServletRequest request = rx.getRequest();
-        Resource homePage = getResourceAt(request.getResource(), 4);
+        Resource homePage = getResourceAt(request.getResource(), 3);
         Resource content = homePage.getChild("jcr:content");
         return content.adaptTo(ValueMap.class).get("brand", String.class);
     }
@@ -64,7 +64,7 @@ public class NavModel extends AbstractComponent {
 
         RenderContext rx = PageMerge.getRenderContext();
         SlingHttpServletRequest request = rx.getRequest();
-        Resource homePage = getResourceAt(request.getResource(), 4);
+        Resource homePage = getResourceAt(request.getResource(), 3);
 
         Iterator<Resource> children = homePage.listChildren();
 

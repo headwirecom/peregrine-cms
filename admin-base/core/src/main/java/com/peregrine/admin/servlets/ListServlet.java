@@ -82,7 +82,10 @@ public class ListServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter("path");
         if(path == null || path.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No suffix provided").setRequestPath(path);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage("No suffix provided")
+                .setRequestPath(path);
         }
         Response answer;
         if(TOOLS.equals(path)) {
@@ -90,27 +93,28 @@ public class ListServlet extends AbstractBaseServlet {
         } else if(TOOLS_CONFIG.equals(path)) {
             answer = getJSONFromResource(request.getResource(), CONTENT_ADMIN_TOOLS_CONFIG);
         } else {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UNKNOWN_SUFFIX + path);
+            answer = new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(UNKNOWN_SUFFIX + path);
         }
         return answer;
     }
 
     private Response getJSONFromResource(Resource resource, String resourcePath) throws IOException {
-        Response answer;
         Resource res = resource.getResourceResolver().getResource(resourcePath);
         try {
-            String out = modelFactory.exportModelForResource(res, JACKSON, String.class, Collections.<String, String> emptyMap());
-            answer = new PlainJsonResponse(out);
-        } catch (ExportException e) {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(ERROR_WHILE_EXPORTING_MODEL).setException(e);
-        } catch (MissingExporterException e) {
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_EXPORTER_JACKSON_DEFINED).setException(e);
+            String out = modelFactory
+                .exportModelForResource(res, JACKSON, String.class, Collections.emptyMap());
+            return new PlainJsonResponse(out);
+        } catch (ExportException | MissingExporterException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(ERROR_WHILE_EXPORTING_MODEL)
+                .setException(e);
         }
-        return answer;
     }
 
-    public static class PlainJsonResponse
-        extends JsonResponse {
+    public static class PlainJsonResponse extends JsonResponse {
 
         private String json = "{}";
 

@@ -26,16 +26,15 @@
 <jcr:root
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
-  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-  jcr:primaryType="per:Page">
+  jcr:primaryType="per:Page"
+  jcr:title="pagerender-vue-pages"
+  jcr:description="Pagerender-Vue Pages Root">
 
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="pagerender/vue/structure/page"
     jcr:title="pagerenderer-vue root page"
     siteCSS="[/etc/felibs/pagerender-vue/bootstrap/css/bootstrap.min.css]"
-    siteJS="[/etc/felibs/pagerender-vue/jquery/jquery.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js,/etc/felibs/pagerender-vue/bootstrap/js/bootstrap.min.js]">
-
-  </jcr:content>
+    siteJS="[/etc/felibs/pagerender-vue/jquery/jquery.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js,/etc/felibs/pagerender-vue/bootstrap/js/bootstrap.min.js]"/>
 
 </jcr:root>

@@ -100,7 +100,7 @@ function makeContent(root, path) {
   var out = marked.parse(md) + '<p>&nbsp;</p>'
   var res = content(title, out, order)
 
-  var relPath = 'target/classes/content/docs/pages/index' + path.slice(
+  var relPath = 'target/classes/content/docs/pages/public' + path.slice(
       root.length)
   relPath = relPath.replace('index.md', '.content.xml')
   console.log(relPath)
@@ -115,8 +115,7 @@ function copyImage(root, path) {
   var name = path.slice(path.lastIndexOf('/'))
 
 //    var relPath = 'target/classes/content/docs/pages/docs'+title.slice(root.length) + '/../'
-  var relPath = 'target/classes/content/docs/pages/index' + title.slice(
-      root.length)
+  var relPath = 'target/classes/content/docs/pages/public' + title.slice(root.length)
   fs.mkdirsSync(relPath)
   fs.writeFileSync(relPath + '/' + name, image)
 }

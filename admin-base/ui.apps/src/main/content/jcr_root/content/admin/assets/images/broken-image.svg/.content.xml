@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
+    jcr:primaryType="per:Asset">
+    <jcr:content
+        jcr:data="{Binary}"
+        jcr:lastModified="{Date}2020-03-13T02:07:41.529+01:00"
+        jcr:lastModifiedBy="admin"
+        jcr:mimeType="image/svg+xml"
+        jcr:primaryType="per:AssetContent"
+        jcr:uuid="cf4453f1-494f-4579-a118-26f4a57b93d8"/>
+</jcr:root>

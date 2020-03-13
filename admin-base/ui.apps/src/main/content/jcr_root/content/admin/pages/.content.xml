@@ -29,12 +29,11 @@
   jcr:primaryType="per:Page"
   jcr:title="admin-pages"
   jcr:description="Admin Pages Root">
-    <jcr:content
+
+  <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
-    jcr:title="home"
-    jcr:description="admin base home page"
     siteCSS="[/etc/felibs/admin/dependencies/material-design-icons/material-icons.css,/etc/felibs/materialize/materialize.css]"
-    siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js]">
-    </jcr:content>
+    siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js]"/>
+
 </jcr:root>

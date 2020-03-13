@@ -26,7 +26,7 @@
 <jcr:root
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
-  jcr:primaryType="sling:Folder"
-  jcr:title="pagerenderer-vue Felibs"
-  jcr:description="VueJs pagerenderer for Felibs"
+  jcr:primaryType="per:FeLib"
+  jcr:title="pagerende-rvue"
+  jcr:description="pagerender-vue"
   sling:resourceType="felib/components/lib"/>

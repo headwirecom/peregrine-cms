@@ -25,20 +25,16 @@ package com.peregrine.nodetypes.models;
  * #L%
  */
 
-import org.apache.commons.lang.StringUtils;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.nodetypes.models.Constants.PEREGRINE_TEXT_TYPE;
+
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.List;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.nodetypes.models.Constants.PEREGRINE_TEXT_TYPE;
 
 @Model(adaptables = Resource.class,
        resourceType = PEREGRINE_TEXT_TYPE,

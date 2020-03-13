@@ -51,8 +51,7 @@ import org.apache.sling.models.annotations.Model;
        adapters = IComponent.class)
 @Exporter(name = JACKSON,
           extensions = JSON)
-public class PageModel
-    extends Container {
+public class PageModel extends Container {
 
     public PageModel(Resource r) {
         super(r);
