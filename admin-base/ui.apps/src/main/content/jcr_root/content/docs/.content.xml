@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  example site - UI Apps
+  admin base - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -23,4 +23,9 @@
   under the License.
   #L%
   -->
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" jcr:primaryType="per:Site" jcr:title="Docs Site"/>
+<jcr:root
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  jcr:primaryType="per:Site"
+  jcr:title="Docs Site"
+  internal="false"
+  template="false"/>

@@ -33,28 +33,6 @@
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="example/components/page"
-    template="/content/templates/example">
-
-    <content jcr:primaryType="nt:unstructured"
-      sling:resourceType="example/components/container">
-
-      <row jcr:primaryType="nt:unstructured"
-        sling:resourceType="example/components/row">
-
-        <col1 jcr:primaryType="nt:unstructured"
-          sling:resourceType="example/components/col"
-          classes="col-md-12">
-
-          <text1 jcr:primaryType="nt:unstructured"
-            sling:resourceType="example/components/text"
-            text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed facilisis sem fringilla, commodo erat id, ultricies orci. Etiam sit amet eleifend ipsum. Phasellus vitae purus metus. Sed et eros enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus in ullamcorper augue. Aenean accumsan dictum nibh non sollicitudin. Integer venenatis nisi in nulla posuere, vitae congue sem lacinia. Sed vulputate feugiat quam, dapibus condimentum diam congue id. Sed condimentum metus mauris, vitae ultricies leo rutrum a. Ut cursus a nisi id tincidunt. Mauris dui enim, vehicula eget ante sit amet, pretium elementum orci. In hac habitasse platea dictumst. Nunc faucibus nibh vitae placerat feugiat. Nulla ac maximus sem. Duis ullamcorper lacinia erat, sollicitudin blandit nisl tempor at."/>
-
-        </col1>
-
-      </row>
-
-    </content>
-
-  </jcr:content>
+    template="/content/example/templates/base"/>
 
 </jcr:root>

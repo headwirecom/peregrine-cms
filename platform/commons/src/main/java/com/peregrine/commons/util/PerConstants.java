@@ -26,6 +26,7 @@ public class PerConstants {
     public static final String JCR_LAST_MODIFIED = "jcr:lastModified";
     public static final String JCR_LAST_MODIFIED_BY = "jcr:lastModifiedBy";
     public static final String JCR_TITLE = "jcr:title";
+    public static final String SITE_PRIMARY_TYPE = "per:Site";
     public static final String COMPONENT_PRIMARY_TYPE = "per:Component";
     public static final String PAGE_PRIMARY_TYPE = "per:Page";
     public static final String PAGE_CONTENT_TYPE = "per:PageContent";

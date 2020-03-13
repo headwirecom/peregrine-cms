@@ -4,16 +4,15 @@ import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
     //GEN[:DATA

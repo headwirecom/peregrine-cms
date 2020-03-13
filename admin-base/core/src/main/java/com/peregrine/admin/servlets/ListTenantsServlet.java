@@ -27,18 +27,13 @@ package com.peregrine.admin.servlets;
 
 import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_TENANTS;
-import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
+import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
@@ -85,73 +80,59 @@ import org.osgi.service.component.annotations.Component;
 @SuppressWarnings("serial")
 public class ListTenantsServlet extends AbstractBaseServlet {
 
-    private static final String SITE_ROOT_MISSING = "The site root '" + PAGES_ROOT + "' did not resolve to a resource.";
+    private static final String SITE_ROOT_MISSING =
+        "The site root '" + PAGES_ROOT + "' did not resolve to a resource.";
     private static final String TENANTS = "tenants";
-    public static final String ROOTS = "roots";
+    private static final String ROOTS = "roots";
 
     private static final Map<String, String> ROOT_MAP = ImmutableSortedMap.<String, String>naturalOrder()
-            .put("apps", APPS_ROOT)
-            .put("assets", ASSETS_ROOT)
-            .put("felibs", FELIBS_ROOT)
-            .put("objects", OBJECTS_ROOT)
-            .put("sites", PAGES_ROOT)
-            .put("templates", TEMPLATES_ROOT)
-            .build();
+        .put("apps", "/apps/${tenant}")
+        .put("assets", "/content/${tenant}/assets")
+        .put("felibs", "/etc/felibs/${tenant}")
+        .put("objects", "/content/${tenant}/objects")
+        .put("pages", "/content/${tenant}/pages")
+        .put("templates", "/content/${tenant}/templates")
+        .build();
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-     /*   ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource siteRoot = resourceResolver.getResource(PAGES_ROOT);
-        if(siteRoot == null) {
+        ResourceResolver resourceResolver = request.getResourceResolver();
+
+        Resource siteRoot = resourceResolver.getResource(CONTENT_ROOT);
+        if (siteRoot == null) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(SITE_ROOT_MISSING);
         }
 
-        Predicate<Resource> isPage = resource -> {
-            if(resource == null) return false;
+        Predicate<Resource> isTenant = resource -> {
+            if (resource == null) return false;
             ValueMap properties = resource.getValueMap();
             String primaryType = properties.get(JCR_PRIMARY_TYPE, String.class);
-            return PAGE_PRIMARY_TYPE.equals(primaryType);
+            boolean template = properties.get("template", false);
+            boolean internal = properties.get("internal", false);
+            return SITE_PRIMARY_TYPE.equals(primaryType) && !template && !internal;
         };
 
         List<Resource> tenants = StreamSupport.stream(siteRoot.getChildren().spliterator(), false)
-                .filter(isPage)
-                .collect(Collectors.toList());*/
+            .filter(isTenant)
+            .collect(Collectors.toList());
 
         JsonResponse answer = new JsonResponse();
         answer.writeArray(TENANTS);
-//        for(Resource tenant : tenants) {
-//            answer.writeObject();
-//            answer.writeAttribute(NAME, tenant.getName());
-//
-//            Resource contentResource = tenant.getChild(JCR_CONTENT);
-//            if(contentResource != null) {
-//                ValueMap properties = contentResource.getValueMap();
-//                answer.writeAttribute(TITLE, properties.get(JCR_TITLE, String.class));
-//            }
-//            answer.writeObject(ROOTS);
-//            for(String key : ROOT_MAP.keySet()) {
-//                answer.writeAttribute(key, ROOT_MAP.get(key) + SLASH + tenant.getName());
-//            }
-//        }
-        answer.writeObject();
-        answer.writeAttribute(NAME, "example");
-        answer.writeAttribute(TITLE, "example");
 
-        answer.writeObject(ROOTS);
-        answer.writeAttribute("apps", "/apps/example");
-        answer.writeAttribute("etc", "/etc/felibs/example");
-        answer.writeAttribute("assets", "/content/example/assets");
-        answer.writeAttribute("objects", "/content/example/objects");
-        answer.writeAttribute("templates", "/content/example/templates");
-        answer.writeAttribute("pages", "/content/example/pages");
-        answer.writeClose();
-
-        answer.writeClose();
-
+        for (Resource tenant : tenants) {
+            answer.writeObject();
+            answer.writeAttribute(NAME, tenant.getName());
+            answer.writeAttribute(NAME, tenant.getValueMap().get(JCR_TITLE, String.class));
+            answer.writeObject(ROOTS);
+            for (String key : ROOT_MAP.keySet()) {
+                answer.writeAttribute(key, ROOT_MAP.get(key).replace("${tenant}", tenant.getName()));
+            }
+            answer.writeClose();
+            answer.writeClose();
+        }
         answer.writeClose();
         return answer;
     }
 }
-

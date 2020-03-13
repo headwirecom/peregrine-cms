@@ -23,4 +23,9 @@
   under the License.
   #L%
   -->
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" jcr:primaryType="per:Site" jcr:title="Example Site"/>
+<jcr:root
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  jcr:primaryType="per:Site"
+  jcr:title="Example Site"
+  internal="false"
+  template="false"/>
