@@ -2,8 +2,8 @@
   <admin-components-explorerpreviewcontent
       :model="model"
       :nodeType="NodeType.ASSET"
-      browserRoot="/content/assets"
-      currentPath="/content/assets">
+      :browserRoot="`${getBasePath()}/pages`"
+      :currentPath="`${getBasePath()}/pages`">
   </admin-components-explorerpreviewcontent>
 </template>
 
@@ -16,6 +16,16 @@
       return {
         NodeType: NodeType
       };
+    },
+    methods: {
+      getBasePath() {
+        const view = $perAdminApp.getView()
+        let site = { name: 'example' }
+        if (view.state.site) {
+          site = view.state.site
+        }
+        return `/content/${site.name}`
+      }
     }
   };
 </script>
