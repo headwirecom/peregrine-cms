@@ -39,16 +39,16 @@
                     @dragstart  = "onDragStart"
                     @touchstart = "onEditableTouchStart"
                     @touchend   = "onEditableTouchEnd">
-                    <div v-show="inlineEditVisible"
+                    <div id="inlineEditContainer"
+                        ref="inlineEditContainer"
+                        v-show="inlineEditVisible"
+                        @click.stop.prevent
                         style="background-color: white;">
-                        <div ref="inlineEditContainer"
-                            @click.stop.prevent>
-                            <trumbowyg ref="inlineEdit"
-                                :config="trumbowyg.config"
-                                v-model="trumbowyg.content"
-                                @input="onInlineEditInput">
-                            </trumbowyg>
-                        </div>
+                        <trumbowyg id="inlineEdit"
+                            :config="trumbowyg.config"
+                            v-model="trumbowyg.content"
+                            @input="onInlineEditInput">
+                        </trumbowyg>
                     </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
@@ -697,3 +697,18 @@ export default {
 }
 </script>
 
+<style lang="scss">
+    #inlineEditContainer {
+        .trumbowyg-box {
+            margin: 0;
+        }
+
+        .trumbowyg-box, .trumbowyg-editor {
+            min-height: unset;
+        }
+
+        .trumbowyg-button-pane {
+            z-index: 1;
+        }
+    }
+</style>
