@@ -24,9 +24,9 @@
   #L%
   -->
 <workspaceFilter version="1.0">
-  <filter root="/content/example"/>
   <filter root="/conf/example/templates"/>
   <filter root="/etc/felibs/examplesite"/>
+  <filter root="/content/example"/>
   <filter root="/apps/example">
     <exclude pattern="/apps/example/install/.*"/>
   </filter>

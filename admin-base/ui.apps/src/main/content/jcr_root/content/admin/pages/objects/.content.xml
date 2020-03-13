@@ -36,7 +36,7 @@
     jcr:description="objects content root"
     suffixToParameter="[path,/state/tools/objects]"
     dataFrom="/state/tools/objects"
-    dataDefault="/content/{tenant}/objects"
+    dataDefault="/content/admin/objects"
     loaders="[populateNodesForBrowser:/state/tools/objects]">
 
     <nav jcr:primaryType="nt:unstructured"

@@ -36,7 +36,7 @@
     jcr:description="admin base Content Root"
     suffixToParameter="[path,/state/tools/pages]"
     dataFrom="/state/tools/pages"
-    dataDefault="/content/{tenant}/pages"
+    dataDefault="/content/admin/pages"
     loaders="[populateNodesForBrowser:/state/tools/pages]">
 
     <nav jcr:primaryType="nt:unstructured"
@@ -60,7 +60,7 @@
           command="addSite"
           icon="folder"
           classes="addSite"
-          visibility="state.tools.pages == '/content/{tenant}/pages'">
+          visibility="state.tools.pages == '/content/admin/pages'">
           <experiences jcr:primaryType="nt:unstructured">
             <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
               title="Webseite hinzufügen"/>
@@ -75,7 +75,7 @@
           command="addPage"
           icon="add"
           classes="addPage"
-          visibility="state.tools.pages != '/content/{tenant}/pages'">
+          visibility="state.tools.pages != '/content/admin/pages'">
           <experiences jcr:primaryType="nt:unstructured">
             <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Seite hinzufügen"/>
           </experiences>

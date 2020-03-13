@@ -124,7 +124,7 @@ public class ListTenantsServlet extends AbstractBaseServlet {
         for (Resource tenant : tenants) {
             answer.writeObject();
             answer.writeAttribute(NAME, tenant.getName());
-            answer.writeAttribute(NAME, tenant.getValueMap().get(JCR_TITLE, String.class));
+            answer.writeAttribute(TITLE, tenant.getValueMap().get(JCR_TITLE, String.class));
             answer.writeObject(ROOTS);
             for (String key : ROOT_MAP.keySet()) {
                 answer.writeAttribute(key, ROOT_MAP.get(key).replace("${tenant}", tenant.getName()));

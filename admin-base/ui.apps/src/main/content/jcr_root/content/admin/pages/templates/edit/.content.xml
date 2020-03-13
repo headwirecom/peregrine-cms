@@ -36,7 +36,7 @@
     jcr:description="admin base Content Root"
     suffixToParameter="[path,/pageView/path]"
     dataFrom="/pageView/path"
-    dataDefault="/content/{tenant}/templates"
+    dataDefault="/content/admin/templates"
     loaders="[populatePageView:/pageView/path,populateComponents:/pageView/path,setInitialPageEditorState:/]">
 
     <nav jcr:primaryType="nt:unstructured"
