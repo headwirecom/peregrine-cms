@@ -127,8 +127,8 @@
         :isOpen="isOpen"
         :browserRoot="browserRoot"
         :browserType="nodeType"
-        :currentPath="currentPath"
-        :selectedPath="selectedPath"
+        :currentPath="path.current"
+        :selectedPath="path.selected"
         :setCurrentPath="setCurrentPath"
         :setSelectedPath="setSelectedPath"
         :onCancel="onMoveCancel"
@@ -196,6 +196,10 @@
           selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
           showProp: [NodeType.ASSET, NodeType.OBJECT],
           allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
+        },
+        path: {
+          current: null,
+          selected: null
         }
       }
     },
@@ -258,6 +262,10 @@
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
       }
+    },
+    mounted() {
+      this.path.selected = this.selectedPath
+      this.path.current = this.currentPath
     },
     methods: {
       getSchema(schemaKey) {
@@ -343,11 +351,13 @@
         }
       },
       moveNode() {
-        $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
+        const view = $perAdminApp.getView()
+        const site = view.state.site
+        $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
         .then(() => {
           this.isOpen = true;
         }).catch((err) => {
-          $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser');
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.name}`, 'pathBrowser');
         });
       },
       deleteNode() {
@@ -359,10 +369,10 @@
         }
       },
       setCurrentPath(path) {
-        this.currentPath = path;
+        this.path.current = path;
       },
       setSelectedPath(path) {
-        this.selectedPath = path;
+        this.path.selected = path;
       },
       onMoveCancel() {
         this.isOpen = false;
@@ -370,7 +380,7 @@
       onMoveSelect() {
         $perAdminApp.stateAction(`move${this.uNodeType}`, {
           path: this.node.path,
-          to: this.selectedPath,
+          to: this.path.selected,
           type: 'child'
         });
         $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
