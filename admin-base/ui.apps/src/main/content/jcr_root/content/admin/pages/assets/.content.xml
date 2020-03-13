@@ -36,7 +36,7 @@
     jcr:description="admin base Content Root"
     suffixToParameter="[path,/state/tools/assets]"
     dataFrom="/state/tools/assets"
-    dataDefault="/content/{tenant}/assets"
+    dataDefault="/content/admin/assets"
     loaders="[populateNodesForBrowser:/state/tools/assets]">
 
     <nav jcr:primaryType="nt:unstructured"
