@@ -13,8 +13,8 @@ function setTimeout() {
 }
 
 var $data = <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" />${page.merged @ context = 'unsafe'};
-<sly data-sly-use.helper="apps.pagerender.vue.structure.page.Helper"/>
-<sly data-sly-resource="${ '/etc/felibs/pagerender-vue' }"/>
+<sly data-sly-use.helper="apps.pagerendervue.structure.page.Helper"/>
+<sly data-sly-resource="${ '/etc/felibs/pagerendervue' }"/>
 
 const app = new Vue({
 template: `<div id="peregrine-app">
@@ -28,7 +28,7 @@ page: $data
 })
 
 // we need to register all components here or use $peregrineApp with the initial data
-Vue.component('pagerender-vue-structure-page', cmpPagerenderVueStructurePage)
+Vue.component('pagerendervue-structure-page', cmpPagerenderVueStructurePage)
 
 renderer.renderToString(app, (err, html) => {
 if (err) throw err

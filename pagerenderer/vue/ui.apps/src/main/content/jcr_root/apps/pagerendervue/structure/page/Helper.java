@@ -1,4 +1,4 @@
-package apps.pagerender.vue.structure.page;
+package apps.pagerendervue.structure.page;
 
 /*-
  * #%L

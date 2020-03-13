@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  example site - UI Apps
+  peregrine vuejs page renderer - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -12,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-
+  
   http://www.apache.org/licenses/LICENSE-2.0
-
+  
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,4 +22,17 @@
   under the License.
   #L%
   -->
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" jcr:primaryType="per:Site" jcr:title="Pagerender-Vue Site"/>
+<template>
+<div class="container">
+    <div v-for="child in model.children" v-bind:key="child.path">
+        <component v-bind:is="child.component" v-bind:model="child"></component>
+    </div>
+    <pagerendervue-components-placeholder v-bind:model="{ path: model.path, component: model.component }"></pagerendervue-components-placeholder>
+</div>
+</template>
+
+<script>
+export default {
+    props: [ 'model' ]
+}
+</script>

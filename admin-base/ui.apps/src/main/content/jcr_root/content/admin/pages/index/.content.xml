@@ -39,7 +39,7 @@
       sling:resourceType="admin/components/nav"/>
 
     <content jcr:primaryType="nt:unstructured"
-      sling:resourceType="pagerender/vue/structure/container">
+      sling:resourceType="pagerendervue/structure/container">
 
       <row jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/row">
@@ -48,7 +48,7 @@
           sling:resourceType="admin/components/col" classes="col">
 
           <text jcr:primaryType="nt:unstructured"
-            sling:resourceType="pagerender/vue/components/base"
+            sling:resourceType="pagerendervue/components/base"
             text="peregrine-cms is a head optional, api first cms built on top of vuejs, apache sling and apache jackrabbit">
             <experiences
               jcr:primaryType="nt:unstructured">

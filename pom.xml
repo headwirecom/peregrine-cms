@@ -729,7 +729,7 @@
                                             <filtering>false</filtering>
                                         </resource>
                                         <resource>
-                                            <directory>pagerender-vue/ui.apps/target/site/jsdoc</directory>
+                                            <directory>pagerenderer/vue/ui.apps/target/site/jsdoc</directory>
                                             <filtering>false</filtering>
                                         </resource>
                                     </resources>

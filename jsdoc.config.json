@@ -10,7 +10,7 @@
   "source": {
     "include": [
       "admin-base/ui.apps/src/main/js", "admin-base/ui.apps/src/main/content/jcr_root/apps", "./admin-base/ui.apps/readme.md", "./admin-base/ui.apps/package.json",
-      "pagerender-vue/ui.apps/src/main/js", "pagerender-vue/ui.apps/src/main/content/jcr_root/apps", "./pagerender-vue/ui.apps/readme.md", "./pagerender-vue/ui.apps/package.json"
+      "pagerenderer/vue/ui.apps/src/main/js", "pagerenderer/vue/ui.apps/src/main/content/jcr_root/apps", "./pagerenderer/vue/ui.apps/readme.md", "./pagerenderer/vue/ui.apps/package.json"
     ],
     "includePattern": "\\.(vue|js|md)$"
 

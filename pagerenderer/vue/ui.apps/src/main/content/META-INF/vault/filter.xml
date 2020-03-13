@@ -24,10 +24,10 @@
   #L%
   -->
 <workspaceFilter version="1.0">
-  <filter root="/etc/felibs/pagerender-vue"/>
-  <filter root="/content/pagerenderer/vue"/>
-  <filter root="/apps/pagerender/vue">
-    <exclude pattern="/apps/pagerender/vue/install/.*"/>
+  <filter root="/etc/felibs/pagerendervue"/>
+  <filter root="/content/pagerendervue"/>
+  <filter root="/apps/pagerendervue">
+    <exclude pattern="/apps/pagerendervue/install/.*"/>
   </filter>
   <filter root="/conf/nodejs/ssr-html"/>
 </workspaceFilter>

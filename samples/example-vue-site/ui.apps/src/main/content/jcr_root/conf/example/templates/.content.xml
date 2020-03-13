@@ -28,4 +28,4 @@
   jcr:primaryType="sling:Folder"
   jcr:title="template config example"
   jcr:description="template configuration for example site"
-  allowedComponents="[/apps/pagerender/vue,/apps/example/components]"/>
+  allowedComponents="[/apps/pagerendervue,/apps/example/components]"/>

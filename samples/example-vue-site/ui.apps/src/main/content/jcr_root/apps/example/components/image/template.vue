@@ -37,7 +37,7 @@
                     return this.model.imagePath
                 }
                 if(window.parent && window.parent.$perAdminApp) {
-                    return '/empty.png'
+                    return '/content/admin/assets/images/empty.png'
                 }
             }
         }

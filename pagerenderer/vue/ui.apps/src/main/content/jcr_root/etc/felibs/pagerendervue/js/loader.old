@@ -115,7 +115,7 @@ function mergeRecursive(obj1, obj2) {
 function processLoadedContent(data, path, firstTime) {
         walkTreeAndLoad(data)
 
-        loadComponent('pagerender-vue-components-placeholder')
+        loadComponent('pagerendervue-components-placeholder')
         getPerView().page = data;
         getPerView().status = 'loaded';
         if(firstTime) {

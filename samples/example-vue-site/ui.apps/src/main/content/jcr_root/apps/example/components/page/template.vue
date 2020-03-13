@@ -24,10 +24,10 @@
   -->
 <template>
     <div v-bind:data-per-path="model.path" v-bind:class="[editorType]">
-        <pagerender-vue-components-placeholder
+        <pagerendervue-components-placeholder
             v-bind:model="{ path: model.path, component: model.component, location: 'before' }"
             v-bind:class="{'from-template': model.fromTemplate}">
-        </pagerender-vue-components-placeholder>
+        </pagerendervue-components-placeholder>
         <template v-for="child in model.children">
             <component
                 v-bind:is="child.component"
@@ -35,10 +35,10 @@
                 v-bind:class="{'from-template': isFromTemplate(child)}">
             </component>
         </template>
-        <pagerender-vue-components-placeholder
+        <pagerendervue-components-placeholder
             v-bind:model="{ path: model.path, component: model.component, location: 'after' }"
             v-bind:class="{'from-template': model.fromTemplate}">
-        </pagerender-vue-components-placeholder>
+        </pagerendervue-components-placeholder>
     </div>
 </template>
 

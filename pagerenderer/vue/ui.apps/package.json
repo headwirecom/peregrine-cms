@@ -5,12 +5,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/headwirecom/peregrine-cms.git",
-    "directory": "pagerender/vue/ui.apps"
+    "directory": "pagerenderer/vue/ui.apps"
   },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./node_modules/rollup/bin/rollup -c --silent && node ../../../buildscripts/buildvue.js pagerender-vue && node src/main/buildjs/mdtopage.js",
+    "build": "node ./node_modules/rollup/bin/rollup -c --silent && node ../../../buildscripts/buildvue.js pagerendervue",
     "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json"
   },
   "author": "",

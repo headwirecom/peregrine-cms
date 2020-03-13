@@ -89,7 +89,7 @@
       sling:resourceType="admin/components/explorer"
       dataFrom="/state/tools/pages">
       <!--
-      <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerender/vue/structure/container">
+      <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerendervue/structure/container">
           <add jcr:primaryType="nt:unstructured"
                sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add"/>
       </actions>

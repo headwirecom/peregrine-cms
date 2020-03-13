@@ -43,7 +43,7 @@ return `<?xml version="1.0" encoding="UTF-8"?>
             template="/content/example/templates/base"
     >
         <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="pagerender/vue/structure/container">
+                 sling:resourceType="pagerendervue/structure/container">
 
             <row jcr:primaryType="nt:unstructured"
                  sling:resourceType="example/components/row">
@@ -54,7 +54,7 @@ return `<?xml version="1.0" encoding="UTF-8"?>
                 >
 
                     <text1 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="pagerender/vue/components/base"
+                           sling:resourceType="pagerendervue/components/base"
                            text="${html}"/>
                 </col1>
 

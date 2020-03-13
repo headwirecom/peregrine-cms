@@ -23,7 +23,7 @@
   under the License.
   #L%
   -->
-<sly data-sly-use.helper="apps.pagerender.vue.structure.page.Helper"/>
+<sly data-sly-use.helper="apps.pagerendervue.structure.page.Helper"/>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -44,7 +44,7 @@
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
-            document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');
+            document.write('<script src="/etc/felibs/pagerendervue/conditional-js/shim.min.js"><\/script>');
         }
 
         if('ResizeObserver' in window === false) {
@@ -119,7 +119,7 @@
         $perAdminApp.loadComponent('admin-components-draghandle')
         $perAdminApp.loadComponent('admin-components-iconbrowser')
 
-        $perAdminApp.loadComponent('pagerender-vue-components-placeholder')
+        $perAdminApp.loadComponent('pagerendervue-components-placeholder')
 
         // init peregrine admin app
         $perAdminApp.init($perAdminView)

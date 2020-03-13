@@ -39,7 +39,7 @@
       sling:resourceType="admin/components/nav"/>
 
     <content jcr:primaryType="nt:unstructured"
-      sling:resourceType="pagerender/vue/structure/container">
+      sling:resourceType="pagerendervue/structure/container">
 
       <iconlist jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/iconlist"

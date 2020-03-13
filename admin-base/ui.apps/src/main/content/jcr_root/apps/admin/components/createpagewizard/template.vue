@@ -131,7 +131,7 @@
                     const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
                     if(definitions) {
                         // todo: component should be resolved through the template
-                        const comp = 'pagerender-vue-structure-page'
+                        const comp = 'pagerendervue-structure-page'
                         const def = $perAdminApp.getNodeFromView('/admin/componentDefinitions')[comp]
                         return def
                     }
