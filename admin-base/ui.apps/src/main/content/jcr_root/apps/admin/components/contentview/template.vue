@@ -23,48 +23,50 @@
   #L%
   -->
 <template>
-    <div v-bind:class = "`peregrine-content-view ${viewModeClass}`"
-        v-on:mouseout = "leftOverlayArea">
-        <div id            = "editviewoverlay"
-            v-on:click     = "onClickOverlay"
-            v-on:scroll    = "onScrollOverlay"
-            v-on:mousemove = "mouseMove"
-            v-on:dragover  = "onDragOver"
-            v-on:drop.prevent = "onDrop">
+    <div :class   = "`peregrine-content-view ${viewModeClass}`"
+        @mouseout = "leftOverlayArea">
+        <div id           = "editviewoverlay"
+            @click        = "onClickOverlay"
+            @scroll       = "onScrollOverlay"
+            @mousemove    = "mouseMove"
+            @dragover     = "onDragOver"
+            @drop.prevent = "onDrop">
             <div class="editview-container" ref="editviewContainer">
-                <div id             = "editable"
-                    ref             = "editable"
-                    v-bind:class    = "editableClass"
-                    :draggable      = "enableEditableFeatures"
-                    v-on:dragstart  = "onDragStart"
-                    v-on:touchstart = "onEditableTouchStart"
-                    v-on:touchend   = "onEditableTouchEnd">
-                    <div v-show="editorVisible && inlineContent && enableEditableFeatures" style="background-color: white;">
-                        <div ref="inlineEditContainer" v-on:click.stop.prevent>
+                <div id         = "editable"
+                    ref         = "editable"
+                    :class      = "editableClass"
+                    :draggable  = "enableEditableFeatures"
+                    @dragstart  = "onDragStart"
+                    @touchstart = "onEditableTouchStart"
+                    @touchend   = "onEditableTouchEnd">
+                    <div v-show="inlineEditVisible"
+                        style="background-color: white;">
+                        <div ref="inlineEditContainer"
+                            @click.stop.prevent>
                             <trumbowyg ref="inlineEdit"
                                 :config="trumbowyg.config"
                                 v-model="trumbowyg.content"
-                                v-on:input="onInlineEditInput">
+                                @input="onInlineEditInput">
                             </trumbowyg>
                         </div>
                     </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
-                              <a href="#" v-bind:title="$i18n('copy')"
-                                 v-on:click.stop.prevent="onCopy">
+                              <a href="#" :title="$i18n('copy')"
+                                 @click.stop.prevent="onCopy">
                                     <i class="material-icons">content_copy</i>
                                 </a>
                             </li>
                             <li v-if="clipboard" class="waves-effect waves-light">
-                              <a v-bind:title="$i18n('paste')" href="#"
-                                 v-on:click.stop.prevent="onPaste">
+                              <a :title="$i18n('paste')" href="#"
+                                 @click.stop.prevent="onPaste">
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
                             <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
-                              <a href="#" v-bind:title="$i18n('deleteComponent')"
-                                 v-on:click.stop.prevent="onDelete">
+                              <a href="#" :title="$i18n('deleteComponent')"
+                                 @click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
                             </li>
@@ -73,11 +75,11 @@
                 </div>
             </div>
         </div>
-        <iframe id       = "editview"
-            ref          = "editview"
-            v-on:load    = "onIframeLoaded"
-            v-bind:src   = "pagePath"
-            frameborder  = "0"></iframe>
+        <iframe id = "editview"
+            ref    = "editview"
+            @load  = "onIframeLoaded"
+            :src   = "pagePath"
+            frameborder = "0"></iframe>
     </div>
 </template>
 
@@ -217,6 +219,9 @@ export default {
         },
         editorVisible() {
             return $perAdminApp.getNodeFromViewOrNull('/state/editorVisible')
+        },
+        inlineEditVisible() {
+            return this.editorVisible && this.inlineContent && this.enableEditableFeatures;
         }
     },
 
