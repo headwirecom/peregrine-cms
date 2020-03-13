@@ -2,8 +2,8 @@
   <admin-components-explorerpreviewcontent
       :model="model"
       :nodeType="NodeType.ASSET"
-      :browserRoot="`${getBasePath()}/pages`"
-      :currentPath="`${getBasePath()}/pages`">
+      :browserRoot="`${getBasePath()}/assets`"
+      :currentPath="`${getBasePath()}/assets`">
   </admin-components-explorerpreviewcontent>
 </template>
 
