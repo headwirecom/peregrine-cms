@@ -29,42 +29,44 @@ const xmlescape = require('xml-escape');
 var path = '../../docs/public'
 
 function content(title, html, order) {
-  html = xmlescape(html)
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Page"
->
-    <jcr:content
-            jcr:primaryType="per:PageContent"
-            sling:resourceType="example/components/page"
-            jcr:title="${title}"
-            brand="peregrine"
-            template="/content/example/templates/base"
-    >
-        <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="pagerendervue/structure/container">
+html = xmlescape(html)
+return `<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root 
+   xmlns:sling="http://sling.apache.org/jcr/sling/1.0" 
+   xmlns:jcr="http://www.jcp.org/jcr/1.0"
+   xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+   jcr:primaryType="per:Page">
+   
+   <jcr:content
+      jcr:primaryType="per:PageContent"
+      sling:resourceType="example/components/page"
+      jcr:title="${title}"
+      template="/content/example/templates/base">
+     
+      <content jcr:primaryType="nt:unstructured"
+        sling:resourceType="example/components/container">
+        
+        <row jcr:primaryType="nt:unstructured"
+          sling:resourceType="example/components/row">
 
-            <row jcr:primaryType="nt:unstructured"
-                 sling:resourceType="example/components/row">
+          <col1 jcr:primaryType="nt:unstructured"
+            sling:resourceType="example/components/col"
+            classes="col-md-12">
+            
+            <text2 jcr:primaryType="nt:unstructured"
+              sling:resourceType="example/components/text"
+              text="${html}"/>
+              
+          </col1>
 
-                <col1 jcr:primaryType="nt:unstructured"
-                      sling:resourceType="example/components/col"
-                      classes="col-md-12"
-                >
+        </row>
 
-                    <text1 jcr:primaryType="nt:unstructured"
-                           sling:resourceType="pagerendervue/components/base"
-                           text="${html}"/>
-                </col1>
-
-            </row>
-
-
-        </content>
+      </content>
 
     </jcr:content>
+    
     ${order}
+   
 </jcr:root>`
 }
 
@@ -100,8 +102,7 @@ function makeContent(root, path) {
   var out = marked.parse(md) + '<p>&nbsp;</p>'
   var res = content(title, out, order)
 
-  var relPath = 'target/classes/content/docs/pages/public' + path.slice(
-      root.length)
+  var relPath = 'target/classes/content/docs/pages/public' + path.slice(root.length)
   relPath = relPath.replace('index.md', '.content.xml')
   console.log(relPath)
   fs.mkdirsSync(relPath.replace('.content.xml', title))
@@ -114,7 +115,6 @@ function copyImage(root, path) {
   var title = path.slice(0, path.lastIndexOf('/'))
   var name = path.slice(path.lastIndexOf('/'))
 
-//    var relPath = 'target/classes/content/docs/pages/docs'+title.slice(root.length) + '/../'
   var relPath = 'target/classes/content/docs/pages/public' + title.slice(root.length)
   fs.mkdirsSync(relPath)
   fs.writeFileSync(relPath + '/' + name, image)
