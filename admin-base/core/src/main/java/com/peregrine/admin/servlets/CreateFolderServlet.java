@@ -27,6 +27,7 @@ package com.peregrine.admin.servlets;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_FOLDER;
 import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.FOLDER;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
@@ -69,8 +70,7 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class CreateFolderServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder";
-    public static final String FOLDER = "folder";
+    private static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder";
 
     @Reference
     ModelFactory modelFactory;
@@ -83,14 +83,14 @@ public class CreateFolderServlet extends AbstractBaseServlet {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         try {
-            Resource newFolder = resourceManagement.createFolder(request.getResourceResolver(), parentPath, name);
+            Resource newFolder = resourceManagement
+                .createFolder(request.getResourceResolver(), parentPath, name);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, FOLDER)
                 .writeAttribute(STATUS, CREATED)
                 .writeAttribute(NAME, name)
                 .writeAttribute(PATH, newFolder.getPath());
-
         } catch (ManagementException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
@@ -99,6 +99,5 @@ public class CreateFolderServlet extends AbstractBaseServlet {
                 .setException(e);
         }
     }
-
 }
 

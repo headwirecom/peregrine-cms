@@ -60,7 +60,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Creates a Peregrine Site by copying from another, existing Site
+ * Creates a Peregrine Site by copying another existing Site
  *
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
@@ -78,7 +78,6 @@ import org.osgi.service.component.annotations.Reference;
 public class CreateSiteServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_CREATE_SITE = "Failed to create site";
-    public static final String FOLDER = "folder";
 
     @Reference
     ModelFactory modelFactory;
@@ -91,14 +90,13 @@ public class CreateSiteServlet extends AbstractBaseServlet {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
         String title = request.getParameterUtf8(TITLE);
-
         if(StringUtils.isBlank(title)) {
             title = toSite;
         }
-
         try {
-            logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
-            Resource site = resourceManagement.copySite(request.getResourceResolver(), PAGES_ROOT, fromSite, toSite, title);
+            logger.debug("Copy Site from: '{}' to: '{}'", fromSite, toSite);
+            Resource site = resourceManagement
+                .copySite(request.getResourceResolver(), PAGES_ROOT, fromSite, toSite, title);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
@@ -108,9 +106,11 @@ public class CreateSiteServlet extends AbstractBaseServlet {
                 .writeAttribute(TITLE, title)
                 .writeAttribute(SOURCE_PATH, PAGES_ROOT + SLASH + fromSite);
         } catch(ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_SITE).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_CREATE_SITE)
+                .setException(e);
         }
     }
-
 }
 

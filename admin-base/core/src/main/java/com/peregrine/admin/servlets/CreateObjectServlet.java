@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_OBJECT;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.OBJECT;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
 import static com.peregrine.commons.util.PerConstants.TEMPLATE_PATH;
@@ -53,7 +54,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Servlet that Creates Peregrine Objects
+ * Creates a Peregrine Object
  *
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
@@ -70,8 +71,7 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class CreateObjectServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_OBJECT = "Failed to create object";
-    public static final String OBJECT = "object";
+    private static final String FAILED_TO_CREATE_OBJECT = "Failed to create object";
 
     @Reference
     ModelFactory modelFactory;
@@ -85,7 +85,8 @@ public class CreateObjectServlet extends AbstractBaseServlet {
         String name = request.getParameter(NAME);
         String templatePath = request.getParameter(TEMPLATE_PATH);
         try {
-            Resource newNode = resourceManagement.createObject(request.getResourceResolver(), parentPath, name, templatePath);
+            Resource newNode = resourceManagement
+                .createObject(request.getResourceResolver(), parentPath, name, templatePath);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, OBJECT)
@@ -93,7 +94,6 @@ public class CreateObjectServlet extends AbstractBaseServlet {
                 .writeAttribute(NAME, name)
                 .writeAttribute(PATH, newNode.getPath())
                 .writeAttribute(TEMPLATE_PATH, templatePath);
-
         } catch (ManagementException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)

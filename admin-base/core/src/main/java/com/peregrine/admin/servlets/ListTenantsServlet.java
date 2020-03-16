@@ -25,12 +25,12 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_TENANTS;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.INTERNAL;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
 import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
@@ -39,6 +39,7 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.TEMPLATE;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -61,8 +62,7 @@ import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * This servlet provides a list of the tenants (top-level sites) on this
- * Peregrine instance.
+ * Provides a list of the tenants (top-level sites) on this Peregrine instance.
  *
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
@@ -74,14 +74,13 @@ import org.osgi.service.component.annotations.Component;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_LIST_TENANTS,
-        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
+        SLING_SERVLET_SELECTORS + EQUALS + JSON
     }
 )
 @SuppressWarnings("serial")
 public class ListTenantsServlet extends AbstractBaseServlet {
 
-    private static final String SITE_ROOT_MISSING =
-        "The site root '" + PAGES_ROOT + "' did not resolve to a resource.";
+    private static final String SITE_ROOT_MISSING = "The site root '" + PAGES_ROOT + "' did not resolve to a resource.";
     private static final String TENANTS = "tenants";
     private static final String ROOTS = "roots";
 
@@ -98,8 +97,8 @@ public class ListTenantsServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         ResourceResolver resourceResolver = request.getResourceResolver();
 
-        Resource siteRoot = resourceResolver.getResource(CONTENT_ROOT);
-        if (siteRoot == null) {
+        Resource sitesRoot = resourceResolver.getResource(CONTENT_ROOT);
+        if (sitesRoot == null) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(SITE_ROOT_MISSING);
@@ -109,12 +108,12 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             if (resource == null) return false;
             ValueMap properties = resource.getValueMap();
             String primaryType = properties.get(JCR_PRIMARY_TYPE, String.class);
-            boolean template = properties.get("template", false);
-            boolean internal = properties.get("internal", false);
+            boolean template = properties.get(TEMPLATE, false);
+            boolean internal = properties.get(INTERNAL, false);
             return SITE_PRIMARY_TYPE.equals(primaryType) && !template && !internal;
         };
 
-        List<Resource> tenants = StreamSupport.stream(siteRoot.getChildren().spliterator(), false)
+        List<Resource> tenants = StreamSupport.stream(sitesRoot.getChildren().spliterator(), false)
             .filter(isTenant)
             .collect(Collectors.toList());
 

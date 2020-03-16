@@ -20,25 +20,23 @@ public interface BaseResourceHandler {
      * @throws HandlerException If the creation failed because resource is null, resource is not an asset,
      *                          rendition name is not provided or mime type is not provided
      */
-    public ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws HandlerException;
+     ImageContext createRendition(Resource resource, String renditionName, String sourceMimeType) throws HandlerException;
 
     /**
      * Updates the Modification Properties of the given Node
      * @param resourceResolver Resource Resolver to find the Resource from the Node
      * @param node Node to be updated
      */
-    public void updateModification(ResourceResolver resourceResolver, Node node);
+    void updateModification(ResourceResolver resourceResolver, Node node);
 
     /**
      * Updates the Modification Properties of the given Reosurce
      * @param resource Resource to update its moditication properties
      */
-    public void updateModification(Resource resource);
+     void updateModification(Resource resource);
 
     /** Exception for the Base Resource Handler **/
-    public class HandlerException
-        extends Exception
-    {
+    class HandlerException extends Exception {
         public HandlerException(String message) {
             super(message);
         }
@@ -47,5 +45,4 @@ public interface BaseResourceHandler {
             super(message, cause);
         }
     }
-
 }

@@ -1,6 +1,7 @@
 package com.peregrine.admin.resource;
 
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
+import static com.peregrine.commons.util.PerConstants.ASSET;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
@@ -8,6 +9,7 @@ import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.COMPONENTS;
 import static com.peregrine.commons.util.PerConstants.DEPENDENCIES;
 import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
+import static com.peregrine.commons.util.PerConstants.FOLDER;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
 import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
@@ -17,22 +19,27 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.NODE;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.OBJECT;
 import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
+import static com.peregrine.commons.util.PerConstants.PAGE;
 import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.RENDITION;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
@@ -167,14 +174,6 @@ public class AdminResourceHandlerService
 
     private static final String RAW_TAGS = "raw_tags";
 
-    private static final String FOLDER = "folder";
-    private static final String OBJECT = "object";
-    private static final String PAGE = "page";
-    private static final String TEMPLATE = "template";
-    private static final String NODE = "node";
-    private static final String ASSET = "asset";
-    private static final String RENDITION = "rendition";
-
     private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
     private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
 
@@ -259,6 +258,27 @@ public class AdminResourceHandlerService
         imageMetadataSelectors.remove(selector);
     }
 
+    @Override
+    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
+        if(!nodeNameValidation.isValidNodeName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
+        final Map<String, Object> properties = new HashMap<>();
+        properties.put(JCR_PRIMARY_TYPE, primaryType);
+        if (isNotEmpty(resourceType)) {
+            properties.put(SLING_RESOURCE_TYPE, resourceType);
+        }
+        try {
+            return parent.getResourceResolver().create(parent, name, properties);
+        } catch (PersistenceException e) {
+            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
+        } catch (RuntimeException e) {
+            logger.debug("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
+            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
+        }
+    }
+
+    @Override
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
         if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
@@ -267,12 +287,10 @@ public class AdminResourceHandlerService
             if (isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
-
             final Node parent = getNode(resourceResolver, parentPath);
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
             }
-
             Node newFolder = parent.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newFolder);
@@ -281,13 +299,6 @@ public class AdminResourceHandlerService
             logger.debug("Failed to create Folder. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, FOLDER, parentPath, name), e);
         }
-    }
-
-    private Resource adaptNodeToResource(final ResourceResolver resourceResolver, final Node node) throws RepositoryException {
-        if (node == null) {
-            return null;
-        }
-        return resourceResolver.getResource(node.getPath());
     }
 
     @Override
@@ -299,22 +310,17 @@ public class AdminResourceHandlerService
             if (isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
             }
-
-            if (isEmpty(resourceType)) {
-                throw new ManagementException(String.format(RESOURCE_TYPE_UNDEFINED, parentPath, name));
-            }
-
             final Node parent = getNode(resourceResolver, parentPath);
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
-
             Node newObject = parent.addNode(name, OBJECT_PRIMARY_TYPE);
-            newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
+            if (!isEmpty(resourceType)) {
+                newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
+            }
             baseResourceHandler.updateModification(resourceResolver, newObject);
             return adaptNodeToResource(resourceResolver, newObject);
-
         } catch (RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
@@ -327,12 +333,12 @@ public class AdminResourceHandlerService
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
         try {
+            if (isEmpty(name)) {
+                throw new ManagementException(String.format(NAME_UNDEFINED, PAGE, parentPath));
+            }
             Resource parent = getResource(resourceResolver, parentPath);
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, PAGE, parentPath, name));
-            }
-            if (isEmpty(name)) {
-                throw new ManagementException(String.format(NAME_UNDEFINED, PAGE, parentPath));
             }
             Resource templateResource = getResource(resourceResolver, templatePath + "/" + JCR_CONTENT);
             if (templateResource == null) {
@@ -341,7 +347,6 @@ public class AdminResourceHandlerService
             String templateComponent = templateResource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
             Node newPage = createPageOrTemplate(parent, name, templateComponent, templatePath, title);
             return adaptNodeToResource(resourceResolver, newPage);
-
         } catch (RepositoryException e) {
             logger.debug("Failed to create Page. Parent Path: '{}', Name: '{}', Template Path: '{}'", parentPath, name, templatePath);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, PAGE, parentPath, name), e);
@@ -354,12 +359,12 @@ public class AdminResourceHandlerService
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
         try {
+            if (isEmpty(name)) {
+                throw new ManagementException(String.format(NAME_UNDEFINED, TEMPLATE, parentPath));
+            }
             Resource parent = getResource(resourceResolver, parentPath);
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, TEMPLATE, parentPath, name));
-            }
-            if (isEmpty(name)) {
-                throw new ManagementException(String.format(NAME_UNDEFINED, TEMPLATE, parentPath));
             }
             Node newPage = createPageOrTemplate(parent, name, component, null, title);
             // If there is a component then we check the component node and see if there is a child jcr:content node
@@ -369,14 +374,20 @@ public class AdminResourceHandlerService
                 copyAppsComponentToNewTemplate(component, newPage);
             }
             return adaptNodeToResource(resourceResolver, newPage);
-
         } catch (RepositoryException e) {
             logger.debug("Failed to create Template. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, TEMPLATE, parentPath, name), e);
         }
     }
 
-    private void copyAppsComponentToNewTemplate(final String component, final Node template) throws RepositoryException, ManagementException {
+    private Resource adaptNodeToResource(ResourceResolver resourceResolver, Node node) throws RepositoryException {
+        if (node == null) {
+            return null;
+        }
+        return resourceResolver.getResource(node.getPath());
+    }
+
+    private void copyAppsComponentToNewTemplate(String component, Node template) throws RepositoryException, ManagementException {
         try {
             if (component.startsWith(SLASH)) {
                 logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
@@ -395,11 +406,6 @@ public class AdminResourceHandlerService
         } catch (PathNotFoundException e) {
             logger.warn("Component (for template)t: '{}' not found -> ignored", component);
         }
-    }
-
-    @Override
-    public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException {
-        return deleteResource(resourceResolver, path, null);
     }
 
     @Override
@@ -644,26 +650,6 @@ public class AdminResourceHandlerService
             }
         }
     }
-
-    public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
-        if(!nodeNameValidation.isValidNodeName(name)) {
-            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
-        }
-        final Map<String, Object> properties = new HashMap<>();
-        properties.put(JCR_PRIMARY_TYPE, primaryType);
-        if (isNotEmpty(resourceType)) {
-            properties.put(SLING_RESOURCE_TYPE, resourceType);
-        }
-        try {
-            return parent.getResourceResolver().create(parent, name, properties);
-        } catch (final PersistenceException e) {
-            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
-        } catch (final RuntimeException e) {
-            logger.debug("Failed to create Node, parent: '{}', name: '{}', properties: '{}'", parent, name, properties);
-            throw new ManagementException(String.format(FAILED_TO_CREATE, NODE, parent.getPath(), name), e);
-        }
-    }
-
 
     // TODO: needs deep clone
     private Node createNode(
@@ -947,11 +933,7 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource copySite(
-        final ResourceResolver resourceResolver,
-        final String sitesParentPath,
-        final String fromName,
-        final String targetName, String title) throws ManagementException {
+    public Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException {
         if(!nodeNameValidation.isValidSiteName(targetName)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, targetName));
         }
@@ -969,7 +951,6 @@ public class AdminResourceHandlerService
         if (!isPrimaryType(source, PAGE_PRIMARY_TYPE)) {
             throw new ManagementException(String.format(SOURCE_SITE_IS_NOT_A_PAGE, fromName));
         }
-
         Resource answer = getResource(parentResource, targetName);
         if (answer != null) {
             throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName));
@@ -1037,11 +1018,7 @@ public class AdminResourceHandlerService
         return answer;
     }
 
-    private void checkCopySiteParameters(
-        final ResourceResolver resourceResolver,
-        final String sitesParentPath,
-        final String fromName,
-        final String targetName) throws ManagementException {
+    private void checkCopySiteParameters(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException {
         // Check the given parameters and make sure everything is correct
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY);
@@ -1064,7 +1041,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private String assembleMappingsJs(final List<String> superTypes, final String fromName, final String targetName) {
+    private String assembleMappingsJs(List<String> superTypes, String fromName, String targetName) {
         final StringBuilder builder = new StringBuilder();
         for (final String superType : superTypes) {
             String sourceName = getComponentVariableNameFromString(superType);
@@ -1163,7 +1140,7 @@ public class AdminResourceHandlerService
 
     }
 
-    private void updateTemplateCssPaths(final Resource templateResource, String oldSiteName, String newSiteName) {
+    private void updateTemplateCssPaths(Resource templateResource, String oldSiteName, String newSiteName) {
         final Resource templateContent = templateResource.getChild(JCR_CONTENT);
         if(templateContent == null) {
             logger.error("No jcr:content resource for resource '{}'", templateResource.getPath());
@@ -1181,7 +1158,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void updateStringsInFiles(final Resource target, final String siteName) {
+    private void updateStringsInFiles(Resource target, String siteName) {
         final Resource content = target.getChild(JCR_CONTENT);
         if (content == null) {
             logger.error("No jcr:content resource for resource '{}'", target.getPath());
