@@ -190,56 +190,44 @@ export default {
             return !node.fromTemplate
         },
         isIgnoreContainersEnabled() {
-            let view = $perAdminApp.getView();
+            const view = $perAdminApp.getView();
             return view.state.tools
                 && view.state.tools.workspace
                 && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         },
-        inlineContent() {
+        inlineNode() {
             if (this.inline) {
-                var targetEl = this.selectedComponent
-                if (targetEl == null || targetEl === undefined) return undefined
+                const targetEl = this.selectedComponent
+                if (!targetEl) return
+
                 const path = targetEl.getAttribute('data-per-path')
-                if (path === undefined || path === null) return undefined
+                if (!path) return
+
                 let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 const segments = this.inline.split('.')
                 segments.shift()
-                for (let i = 0; i < segments.length; i++) {
+                for (let i = 0; answer && i < segments.length - 1; i++) {
                     answer = answer[segments[i]]
-                    if (!answer) return undefined
                 }
 
                 return answer
-            } else {
-                return undefined
             }
         },
         editorVisible() {
             return $perAdminApp.getNodeFromViewOrNull('/state/editorVisible')
         },
         inlineEditVisible() {
-            return this.editorVisible && this.inlineContent && this.enableEditableFeatures;
+            return this.editorVisible && this.inlineNode && this.enableEditableFeatures;
         }
     },
 
     methods: {
         onInlineEditInput(text) {
-            if (this.inline) {
-                var targetEl = this.selectedComponent
-                if (targetEl == null || targetEl === undefined) return undefined
-
-                const path = targetEl.getAttribute('data-per-path')
-                if (path === undefined || path === null) return undefined
-
-                let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                const segments = this.inline.split('.')
-                segments.shift()
-                for (let i = 0; i < segments.length -1; i++) {
-                    answer = answer[segments[i]]
-                    if (!answer) return undefined
-                }
-
-                answer[segments[length - 1]] = text
+            const node = this.inlineNode
+            if (node) {
+                const index = this.inline.indexOf('.')
+                const name = index >=0 ? this.inline.slice(index + 1) : this.inline
+                node[name] = text
             }
         },
         /* Window/Document methods =================
@@ -428,10 +416,10 @@ export default {
             if (!e) return
             if (e.target && e.target.getAttribute('contenteditable') === 'true') return;
             const target = this.getTargetEl(e)
-            let targetEl = target.targetEl
+            const targetEl = target.targetEl
             if (targetEl) {
-                var path = targetEl.getAttribute('data-per-path')
-                var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                const path = targetEl.getAttribute('data-per-path')
+                const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if (this.isContainer(targetEl) && this.isIgnoreContainersEnabled) return;
 
                 if (node.fromTemplate) {
@@ -446,12 +434,12 @@ export default {
                         this.trumbowyg.content = target.inline.innerHTML
                         // copy styles from original element into this one
                         const style = window.getComputedStyle(target.inline)
-                        let cssText = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+                        const cssText = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
                         $('#inlineEditContainer .trumbowyg-editor').attr('style', cssText)
                         editableClass += ' no-border'
                     }
 
-                    var targetBox = this.getBoundingClientRect(targetEl)
+                    const targetBox = this.getBoundingClientRect(targetEl)
                     this.setEditableStyle(targetBox, editableClass)
                     $perAdminApp.action(this, 'showComponentEdit', path)
                 }
