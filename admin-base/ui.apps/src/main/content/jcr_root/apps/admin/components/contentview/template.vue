@@ -125,7 +125,7 @@ export default {
                 content: '',
                 config: {
                     svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
-                    resetCss: true,
+                    resetCss: false,
                     btnsDef: {
                         formattingWithCode: {
                             dropdown: ['p', 'quote', 'preformatted', 'h1', 'h2', 'h3', 'h4'],
