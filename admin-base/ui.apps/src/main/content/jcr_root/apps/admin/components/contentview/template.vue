@@ -42,8 +42,8 @@
                     <div id="inlineEditContainer"
                         v-show="inlineEditVisible"
                         @click.stop.prevent>
-                        <trumbowyg :config="trumbowyg.config"
-                            v-model="trumbowyg.content"
+                        <trumbowyg :config="inline.config"
+                            v-model="inline.content"
                             @input="onInlineEditInput">
                         </trumbowyg>
                     </div>
@@ -120,9 +120,9 @@ export default {
             isTouch: false,
             isIOS: false,
             editableTimer: null,
-            inline: undefined,
-            trumbowyg: {
-                content: '',
+            inline: {
+                path: undefined,
+                content: null,
                 config: {
                     svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
                     resetCss: false,
@@ -196,7 +196,7 @@ export default {
                 && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         },
         inlineNode() {
-            if (this.inline) {
+            if (this.inline.path) {
                 const targetEl = this.selectedComponent
                 if (!targetEl) return
 
@@ -204,7 +204,7 @@ export default {
                 if (!path) return
 
                 let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                const segments = this.inline.split('.')
+                const segments = this.inline.path.split('.')
                 segments.shift()
                 for (let i = 0; answer && i < segments.length - 1; i++) {
                     answer = answer[segments[i]]
@@ -225,8 +225,8 @@ export default {
         onInlineEditInput(text) {
             const node = this.inlineNode
             if (node) {
-                const index = this.inline.indexOf('.')
-                const name = index >=0 ? this.inline.slice(index + 1) : this.inline
+                const index = this.inline.path.indexOf('.')
+                const name = index >= 0 ? this.inline.path.slice(index + 1) : this.inline.path
                 node[name] = text
             }
         },
@@ -428,10 +428,11 @@ export default {
                     })
                 } else {
                     this.selectedComponent = targetEl
-                    this.inline = target.inline ? target.inline.getAttribute('data-per-inline-edit') : undefined
+                    this.inline.path = target.inline ? target.inline.getAttribute('data-per-inline-edit') : undefined
                     let editableClass = 'selected';
-                    if (this.inline) {
-                        this.trumbowyg.content = target.inline.innerHTML
+                    if (this.inline.path) {
+                        this.inline.content = target.inline.innerHTML
+                        editableClass += ' no-border'
                         // copy styles from original element into this one
                         const style = window.getComputedStyle(target.inline)
                         const cssText = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
