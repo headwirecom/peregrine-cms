@@ -78,7 +78,7 @@
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
-        <organization.logo>http://www.peregrine-cms.com/content/admin/assets/images/peregrine-logo.png</organization.logo>
+        <organization.logo>http://www.peregrine-cms.com/peregrine-logo.png</organization.logo>
         <repositoryName>Peregrine Release Distribution Repository</repositoryName>
         <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</repositoryUrl>
         <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
