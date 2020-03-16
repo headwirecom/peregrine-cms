@@ -122,6 +122,7 @@ export default {
             editableTimer: null,
             inline: {
                 path: undefined,
+                target: undefined,
                 content: null,
                 config: {
                     svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
@@ -228,6 +229,7 @@ export default {
                 const index = this.inline.path.indexOf('.')
                 const name = index >= 0 ? this.inline.path.slice(index + 1) : this.inline.path
                 node[name] = text
+                this.updateInlineStyle()
             }
         },
         /* Window/Document methods =================
@@ -428,15 +430,13 @@ export default {
                     })
                 } else {
                     this.selectedComponent = targetEl
-                    this.inline.path = target.inline ? target.inline.getAttribute('data-per-inline-edit') : undefined
+                    const inline = target.inline
+                    this.inline.path = inline ? inline.getAttribute('data-per-inline-edit') : undefined
                     let editableClass = 'selected';
                     if (this.inline.path) {
-                        this.inline.content = target.inline.innerHTML
-                        editableClass += ' no-border'
-                        // copy styles from original element into this one
-                        const style = window.getComputedStyle(target.inline)
-                        const cssText = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
-                        $('#inlineEditContainer .trumbowyg-editor').attr('style', cssText)
+                        this.inline.target = inline
+                        this.inline.content = inline.innerHTML
+                        this.updateInlineStyle()
                         editableClass += ' no-border'
                     }
 
@@ -445,6 +445,13 @@ export default {
                     $perAdminApp.action(this, 'showComponentEdit', path)
                 }
             }
+        },
+
+        updateInlineStyle: function() {
+            // copy styles from original element into this one
+            const style = window.getComputedStyle(this.inline.target)
+            const cssText = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+            $('#inlineEditContainer .trumbowyg-editor').attr('style', cssText)
         },
 
         leftOverlayArea: function(e) {
