@@ -45,14 +45,15 @@
     },
     methods: {
         selectPath: function(me, target) {
+            console.log('selectPath', target)
             const view = $perAdminApp.getView()
-            const site = view.state.site
+            const tenant = view.state.tenant
             const action = target.action || target
             const section = action.split('/').slice(-1).pop()
             set(view, '/state/current/section/name', section)
             const payload = {
                 path: `/state/tools/${section}`,
-                selected: `/content/${site.name}/${section}`
+                selected: `/content/${tenant.name}/${section}`
             }
             $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
                 $perAdminApp.loadContent(action + '.html')

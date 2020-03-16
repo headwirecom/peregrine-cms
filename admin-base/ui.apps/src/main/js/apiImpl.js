@@ -387,10 +387,16 @@ class PerAdminImpl {
       fetch('/admin/listTenants.json')
       .then((data) => {
         const state = callbacks.getView().state
-        if (!state.site && data.tenants.length > 0) {
-          state.site = data.tenants[data.tenants.length - 1]
+        if (!state.tenant && data.tenants.length > 0) {
+          state.tenant = data.tenants[data.tenants.length - 1]
         }
-        populateView('/admin', 'tenants', data.tenants).then(() => resolve())
+        populateView('/admin', 'tenants', data.tenants).then(() => {
+          $perAdminApp.getApp().$emit('tenants-update', {
+            current: state.tenant,
+            list: data.tenants
+          })
+          resolve()
+        })
       })
     })
   }

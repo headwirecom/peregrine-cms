@@ -32,10 +32,10 @@ export default function(me, target) {
     log.fine(target)
 
     let view = me.getView()
-    const site = view.state.site
+    const tenant = view.state.tenant
 
     return new Promise( (resolve, reject) => { 
-        if(target.selected.startsWith(`/content/${site.name}/pages`)) {
+        if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
             set(view, '/state/tools/page', null)
         } else {
             set(view, '/state/tools/template', null)

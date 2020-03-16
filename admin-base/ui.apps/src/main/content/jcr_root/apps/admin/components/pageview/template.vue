@@ -20,11 +20,11 @@
     methods: {
       getBasePath() {
         const view = $perAdminApp.getView()
-        let site = { name: 'example' }
-        if (view.state.site) {
-          site = view.state.site
+        let tenant = { name: 'example' }
+        if (view.state.tenant) {
+          tenant = view.state.tenant
         }
-        return `/content/${site.name}`
+        return `/content/${tenant.name}`
       }
     }
   };

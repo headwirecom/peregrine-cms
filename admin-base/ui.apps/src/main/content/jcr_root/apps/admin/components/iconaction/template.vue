@@ -51,21 +51,9 @@
               }
           }
         },
-        created() {
-            this.$root.$on('tenants.refreshed', this.onTenantsRefreshed);
-        },
         methods: {
             internal(action, target) {
                 return !action.startsWith('http') && (target === undefined || target === null)
-            },
-            onTenantsRefreshed(data) {
-                const lastActionNode = this.model.action.split('/').slice(-1).pop()
-                if (!['config', 'docs'].indexOf(lastActionNode) > -1) {
-                    this.actionModel.target = {
-                        tenant: data.site.name,
-                        action: this.actionModel.target
-                    }
-                }
             }
         }
     }

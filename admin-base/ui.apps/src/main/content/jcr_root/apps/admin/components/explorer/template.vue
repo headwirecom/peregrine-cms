@@ -190,6 +190,8 @@
 </template>
 
 <script>
+    import {set} from '../../../../../../js/utils';
+
     export default {
         props: ['model'],
         data(){
@@ -234,6 +236,15 @@
             hasEdit: function() {
                 return this.model.children && this.model.children[0]
             }
+        },
+        created() {
+            this.$root.$on('tenants-update', (data) => {
+                const pathArr = this.path.split('/')
+                const section = pathArr[3]
+                pathArr[2] = data.current.name
+                set($perAdminApp.getView(), this.model.dataFrom, pathArr.join('/'))
+                this.selectPath(this, { path: pathArr.join('/') });
+            })
         },
         methods: {
             isAssets(path){
@@ -443,6 +454,7 @@
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
             showInfo: function(me, target) {
+                console.log('showInfo', target)
                 if(target.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })

@@ -361,7 +361,7 @@
 </template>
 
 <script>
-    import {PathBrowser} from "../../../../../../js/constants";
+    import {PathBrowser} from '../../../../../../js/constants';
 
     export default {
         props: [
@@ -394,6 +394,13 @@
             } else {
                 this.tab = 'browse'
             }
+
+            this.$on('setSelectedPath', () => {
+                console.log('setSelectedPath')
+            })
+            this.$on('setCurrentPath', () => {
+                console.log('setCurrentPath')
+            })
         },
         data: function() {
             return {

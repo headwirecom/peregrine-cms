@@ -352,12 +352,12 @@
       },
       moveNode() {
         const view = $perAdminApp.getView()
-        const site = view.state.site
+        const tenant = view.state.tenant
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
         .then(() => {
           this.isOpen = true;
         }).catch((err) => {
-          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.name}`, 'pathBrowser');
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
       },
       deleteNode() {

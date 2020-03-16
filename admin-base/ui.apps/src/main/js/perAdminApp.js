@@ -36,19 +36,18 @@ console.error= function() {
     consoleERROR.apply(this, arguments)
 }
 
-import { LoggerFactory } from './logger'
+import {LoggerFactory} from './logger'
 import i18n from './i18n'
 import experiences from './experiences'
-let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
-
 import PeregrineApi from './api'
 import PerAdminImpl from './apiImpl'
-import {makePathInfo, pagePathToDataPath, set, get} from './utils'
+import {get, makePathInfo, pagePathToDataPath, set} from './utils'
 
 import StateActions from './stateActions'
 
-import { SUFFIX_PARAM_SEPARATOR } from "./constants"
+import {SUFFIX_PARAM_SEPARATOR} from './constants'
 
+let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
 
 /**
  * registers a pop state listener for the adminui to track back/forward button and loads
@@ -469,7 +468,7 @@ function exitWaitState() {
  * @param target
  */
 function stateActionImpl(name, target) {
-
+    console.log('stateActionImpl', name, target)
     enterWaitState()
     return new Promise( (resolve, reject) => {
         runBeforeStateActions(name).then( () => {

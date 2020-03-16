@@ -51,7 +51,7 @@
         <ul id="nav-mobile" class="right hide-on-small-and-down">
           <li class="tenant-select">
             <vue-multiselect
-                v-model="state.site"
+                v-model="state.tenant"
                 deselect-label=""
                 track-by="name"
                 label="name"
@@ -137,11 +137,10 @@
         $perAdminApp.forceFullRedraw()
       },
       onSelectTenant({name}) {
-        $perAdminApp.getView().state.site = this.getTenantByName(name)
-        const section = $perAdminApp.getView().state.current.section
-        $perAdminApp.action(this, 'selectPath', {
-          tenant: name,
-          action: `/content/admin/${section.name}`
+
+        $perAdminApp.getView().state.tenant = this.getTenantByName(name)
+        this.$root.$emit('tenants-update', {
+          current: $perAdminApp.getView().state.tenant
         })
       },
       onShowHelp() {
@@ -153,10 +152,6 @@
       refreshTenants() {
         this.tenants = $perAdminApp.getView().admin.tenants || []
         this.state = $perAdminApp.getView().state
-        this.$root.$emit('tenants.refreshed', {
-          tenants: this.tenants,
-          site: this.state.site
-        })
       },
       getTenantByName(name) {
         return this.tenants.find((tenant) => {
