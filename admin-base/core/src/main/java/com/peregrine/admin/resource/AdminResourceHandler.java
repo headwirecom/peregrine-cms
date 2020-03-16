@@ -167,11 +167,11 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver to obtain the resources
      * @param sitesParentPath Absolute Path to Sites
      * @param fromName Name of the source Site which must exist
-     * @param targetName Name of the target Site which cannot be null and must not exist
+     * @param toName Name of the target Site which cannot be null and must not exist
      * @return Resource of the Target Copy
      * @throws ManagementException If a management error occurs
      */
-    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException;
+    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String toName) throws ManagementException;
 
     /**
      * Delete a peregrine cms site

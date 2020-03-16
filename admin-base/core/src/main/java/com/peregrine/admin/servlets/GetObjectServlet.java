@@ -65,7 +65,7 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class GetObjectServlet extends AbstractBaseServlet {
 
-    public static final String RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String RESOURCE_NOT_FOUND = "Resource not found";
 
     @Reference
     ModelFactory modelFactory;
@@ -75,7 +75,10 @@ public class GetObjectServlet extends AbstractBaseServlet {
         String path = request.getParameter(PATH);
         Resource resource = request.getResourceByPath(path);
         if(resource == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND).setRequestPath(path);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(RESOURCE_NOT_FOUND)
+                .setRequestPath(path);
         }
 
         // changed the approach to forward through the export servlet as exportModelForResource does not

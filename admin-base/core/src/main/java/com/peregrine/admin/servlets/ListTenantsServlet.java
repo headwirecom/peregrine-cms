@@ -26,14 +26,21 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_TENANTS;
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
+import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
+import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
 import static com.peregrine.commons.util.PerConstants.INTERNAL;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
 import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
+import static com.peregrine.commons.util.PerConstants.TENANT;
 import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
@@ -85,12 +92,12 @@ public class ListTenantsServlet extends AbstractBaseServlet {
     private static final String ROOTS = "roots";
 
     private static final Map<String, String> ROOT_MAP = ImmutableSortedMap.<String, String>naturalOrder()
-        .put("apps", "/apps/${tenant}")
-        .put("assets", "/content/${tenant}/assets")
-        .put("felibs", "/etc/felibs/${tenant}")
-        .put("objects", "/content/${tenant}/objects")
-        .put("pages", "/content/${tenant}/pages")
-        .put("templates", "/content/${tenant}/templates")
+        .put("apps", APPS_ROOT + SLASH + TENANT)
+        .put("felibs", FELIBS_ROOT + SLASH + TENANT)
+        .put("assets", ASSETS_ROOT)
+        .put("objects", OBJECTS_ROOT)
+        .put("pages", PAGES_ROOT)
+        .put("templates", TEMPLATES_ROOT)
         .build();
 
     @Override
@@ -126,7 +133,7 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             answer.writeAttribute(TITLE, tenant.getValueMap().get(JCR_TITLE, String.class));
             answer.writeObject(ROOTS);
             for (String key : ROOT_MAP.keySet()) {
-                answer.writeAttribute(key, ROOT_MAP.get(key).replace("${tenant}", tenant.getName()));
+                answer.writeAttribute(key, ROOT_MAP.get(key).replace(TENANT, tenant.getName()));
             }
             answer.writeClose();
             answer.writeClose();

@@ -68,18 +68,18 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class UpdateSiteServlet extends AbstractBaseServlet {
 
-    private static final String NAME_PARAMETER = "name";
     private static final String FAILED_TO_UPDATE_SITE = "Failed to update site";
 
     @Reference
     AdminResourceHandler resourceManagement;
 
-
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String name = request.getParameter(NAME_PARAMETER);
+        String name = request.getParameter(NAME);
         if(StringUtils.isBlank(name)) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("No site name provided");
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage("No site name provided");
         }
         try {
             resourceManagement.updateSite(request.getResourceResolver(), name);
@@ -89,10 +89,11 @@ public class UpdateSiteServlet extends AbstractBaseServlet {
                     .writeAttribute(STATUS, UPDATED)
                     .writeAttribute(NAME, name);
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_UPDATE_SITE).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_UPDATE_SITE)
+                .setException(e);
         }
-
     }
-
 }
 

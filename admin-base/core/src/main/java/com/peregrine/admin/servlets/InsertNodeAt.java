@@ -89,8 +89,8 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class InsertNodeAt extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
-    public static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
+    private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
+    private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
 
     @Reference
     ModelFactory modelFactory;
@@ -161,7 +161,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
             properties.putAll(mapper.readValue(data, Map.class));
         }
         if(component != null && !component.isEmpty()) {
-            // Component overrides the JSon component if provided
+            // Component overrides the Json component if provided
             properties.put(COMPONENT, component);
         } else {
             component = getStringOrNull(properties, COMPONENT);
@@ -177,7 +177,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
         } catch (ManagementException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
         }
-
     }
 }
 

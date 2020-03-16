@@ -73,7 +73,7 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class CreateTemplateServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_TEMPLATE = "Failed to create template";
+    private static final String FAILED_TO_CREATE_TEMPLATE = "Failed to create template";
 
     @Reference
     ModelFactory modelFactory;

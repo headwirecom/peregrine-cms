@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_NODE;
 import static com.peregrine.commons.util.PerConstants.DELETED;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.NODE;
 import static com.peregrine.commons.util.PerConstants.NODE_TYPE;
 import static com.peregrine.commons.util.PerConstants.PARENT_PATH;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -71,8 +72,8 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class DeleteNodeServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_DELETE_NODE = "Failed to delete node: ";
-    public static final String NODE = "node";
+    private static final String FAILED_TO_DELETE_NODE = "Failed to delete node: ";
+
     @Reference
     ModelFactory modelFactory;
 
@@ -83,9 +84,9 @@ public class DeleteNodeServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
         String type = request.getParameter(TYPE);
-        logger.debug("Got Delete Node Type: '{}'", type);
         try {
-            DeletionResponse response = resourceManagement.deleteResource(request.getResourceResolver(), path, type);
+            DeletionResponse response = resourceManagement
+                .deleteResource(request.getResourceResolver(), path, type);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, NODE)
@@ -94,9 +95,12 @@ public class DeleteNodeServlet extends AbstractBaseServlet {
                 .writeAttribute(NODE_TYPE, response.getType())
                 .writeAttribute(PARENT_PATH, response.getParentPath());
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_DELETE_NODE + path).setRequestPath(path).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_DELETE_NODE + path)
+                .setRequestPath(path)
+                .setException(e);
         }
     }
-
 }
 

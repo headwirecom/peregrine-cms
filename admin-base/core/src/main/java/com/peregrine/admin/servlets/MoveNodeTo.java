@@ -79,9 +79,6 @@ public class MoveNodeTo extends AbstractBaseServlet {
     ModelFactory modelFactory;
 
     @Reference
-    private ResourceRelocation resourceRelocation;
-
-    @Reference
     AdminResourceHandler resourceManagement;
 
     @Override
@@ -97,8 +94,7 @@ public class MoveNodeTo extends AbstractBaseServlet {
         boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
         boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
         logger.trace("Add resource: '{}' to {}: '{}' {}",
-            fromPath, addAsChild ? "parent" : "sibling", toPath, addBefore ? "before" : "after"
-        );
+            fromPath, addAsChild ? "parent" : "sibling", toPath, addBefore ? "before" : "after");
         try {
             Resource toResource = request.getResourceByPath(toPath);
             Resource fromResource = request.getResourceByPath(fromPath);
@@ -107,7 +103,10 @@ public class MoveNodeTo extends AbstractBaseServlet {
             answer = new RedirectResponse((addAsChild ? toPath : toResource.getParent().getPath()) + MODEL_JSON);
         } catch(ManagementException e) {
             logger.error("problems while moving", e);
-            answer = new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
+            answer = new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setException(e);
         }
         return answer;
     }

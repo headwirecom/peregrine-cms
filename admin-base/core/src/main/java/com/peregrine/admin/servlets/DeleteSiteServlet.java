@@ -26,9 +26,9 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_SITE;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.DELETED;
 import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
 import static com.peregrine.commons.util.PerConstants.SITE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
@@ -54,7 +54,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Delete a Peregrine Site
+ * Deletes a Peregrine Site
  *
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
@@ -71,7 +71,7 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class DeleteSiteServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
+    private static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
 
     @Reference
     ModelFactory modelFactory;
@@ -83,14 +83,13 @@ public class DeleteSiteServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String fromSite = request.getParameter(NAME);
         try {
-            logger.trace("Delete Site form: '{}'", fromSite);
-            resourceManagement.deleteSite(request.getResourceResolver(), PAGES_ROOT, fromSite);
+            logger.debug("Delete Site form: '{}'", fromSite);
+            resourceManagement.deleteSite(request.getResourceResolver(), CONTENT_ROOT, fromSite);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, DELETED)
-                .writeAttribute(SOURCE_PATH, PAGES_ROOT + SLASH + fromSite);
-
+                .writeAttribute(SOURCE_PATH, CONTENT_ROOT + SLASH + fromSite);
         } catch(ManagementException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
@@ -98,6 +97,5 @@ public class DeleteSiteServlet extends AbstractBaseServlet {
                 .setException(e);
         }
     }
-
 }
 

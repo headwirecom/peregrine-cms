@@ -27,6 +27,7 @@ package com.peregrine.admin.servlets;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -66,20 +67,19 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class ListServlet extends AbstractBaseServlet {
 
-    public static final String TOOLS = "/tools";
-    public static final String TOOLS_CONFIG = "/tools/config";
-    public static final String CONTENT_ADMIN_TOOLS = "/content/admin/pages/tools";
-    public static final String CONTENT_ADMIN_TOOLS_CONFIG = "/content/admin/pages/toolsConfig";
-    public static final String UNKNOWN_SUFFIX = "Unknown suffix: ";
-    public static final String ERROR_WHILE_EXPORTING_MODEL = "Error while exporting model";
+    private static final String TOOLS = "/tools";
+    private static final String TOOLS_CONFIG = "/tools/config";
+    private static final String CONTENT_ADMIN_TOOLS = "/content/admin/pages/tools";
+    private static final String CONTENT_ADMIN_TOOLS_CONFIG = "/content/admin/pages/toolsConfig";
+    private static final String UNKNOWN_SUFFIX = "Unknown suffix: ";
+    private static final String ERROR_WHILE_EXPORTING_MODEL = "Error while exporting model";
 
     @Reference
     ModelFactory modelFactory;
 
-
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter("path");
+        String path = request.getParameter(PATH);
         if(path == null || path.isEmpty()) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
@@ -102,8 +102,7 @@ public class ListServlet extends AbstractBaseServlet {
     private Response getJSONFromResource(Resource resource, String resourcePath) throws IOException {
         Resource res = resource.getResourceResolver().getResource(resourcePath);
         try {
-            String out = modelFactory
-                .exportModelForResource(res, JACKSON, String.class, Collections.emptyMap());
+            String out = modelFactory.exportModelForResource(res, JACKSON, String.class, Collections.emptyMap());
             return new PlainJsonResponse(out);
         } catch (ExportException | MissingExporterException e) {
             return new ErrorResponse()
@@ -113,7 +112,7 @@ public class ListServlet extends AbstractBaseServlet {
         }
     }
 
-    public static class PlainJsonResponse extends JsonResponse {
+    private static class PlainJsonResponse extends JsonResponse {
 
         private String json = "{}";
 

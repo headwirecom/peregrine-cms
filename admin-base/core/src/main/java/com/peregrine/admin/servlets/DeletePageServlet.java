@@ -85,7 +85,8 @@ public class DeletePageServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
         try {
-            DeletionResponse response = resourceManagement.deleteResource(request.getResourceResolver(), path, PAGE_PRIMARY_TYPE);
+            DeletionResponse response = resourceManagement
+                .deleteResource(request.getResourceResolver(), path, PAGE_PRIMARY_TYPE);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, PAGE)
@@ -93,7 +94,6 @@ public class DeletePageServlet extends AbstractBaseServlet {
                 .writeAttribute(NAME, response.getName())
                 .writeAttribute(NODE_TYPE, response.getType())
                 .writeAttribute(PARENT_PATH, response.getParentPath());
-
         } catch (ManagementException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)

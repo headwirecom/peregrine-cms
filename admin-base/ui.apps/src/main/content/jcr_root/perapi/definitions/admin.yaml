@@ -60,7 +60,7 @@ paths:
     get:
       description: returns the content for the given path
       parameters:
-        - description: the path to the content, for example /content/_tenant_/pages/index
+        - description: the path to the content, for example /content/${tenant}/pages/index
           name: path
           type: string
           in: path
@@ -281,6 +281,7 @@ paths:
           type: string
           in: path
           description: the path to the node to delete
+          required: true
       responses:
         200:
           description: Given Node was deleted
@@ -311,6 +312,7 @@ paths:
           type: string
           in: path
           description: the path to the page to delete
+          required: true
       responses:
         200:
           description: Given Page was deleted
@@ -331,34 +333,6 @@ paths:
                 description: Path of the parent in which the Page was deleted from
         400:
           description: If the path did not resolve to a resource, if the reosurce is not a page or if the page could not be deleted
-          schema:
-            $ref: "#/definitions/Error"
-  '/updateSite.json':
-    post:
-      description: Updates a site's components and frontend libs from its source site
-      parameters:
-        - name: name
-          type: string
-          in: formData
-          description: The Name of the site to update
-          required: true
-      responses:
-        200:
-          description: returns the path of the new site and the path to the source
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'site'
-              status:
-                type: string
-                description: Status set to 'updated'
-              name:
-                type: string
-                description: Name of the updated site
-        400:
-          description: If the name was not a valid site name
           schema:
             $ref: "#/definitions/Error"
   '/deleteSite.json':
@@ -391,12 +365,13 @@ paths:
             $ref: "#/definitions/Error"
   '/getObject.json{path}':
     get:
-      description: returns the content for the given object
+      description: Return the content for the given object
       parameters:
         - description: the path to the content
           name: path
           type: string
           in: path
+          required: true
       responses:
         200:
           description: returns all the content for the given node
@@ -412,6 +387,7 @@ paths:
           type: string
           in: path
           description: the path to the parent resource for into moves or the sibling for before or after
+          required: true
         - name: component
           type: string
           in: formData
@@ -419,7 +395,7 @@ paths:
         - name: content
           type: object
           in: formData
-          description: Node properties in JSon format. 'component' must provide the component node path and path is disregarded
+          description: Node properties in Json format. 'component' must provide the component node path and path is disregarded
         - name: drop
           type: string
           in: formData
@@ -445,12 +421,13 @@ paths:
             $ref: "#/definitions/Error"
   '/list.json/{type}':
     get:
-      description: list the available tools
+      description: List the available tools
       parameters:
         - name: type
           type: string
           in: path
           description: either 'tools' or 'tools/config'
+          required: true
       responses:
         200:
           description: the available tools
@@ -459,9 +436,29 @@ paths:
             additionalProperties:
               type: object
         400:
-          description: If the type was unrecognized or the JSon serialization failed
+          description: If the type was unrecognized or the Json serialization failed
           schema:
             $ref: "#/definitions/Error"
+  '/listTenants.json':
+    get:
+      description: Lists the tenants (top level sites) on this peregrine instance
+      responses:
+        200:
+          description: returns the list of tenants
+          schema:
+            type: object
+            properties:
+              tenants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    title:
+                      type: string
+                    roots:
+                      type: object
   '/moveNodeTo.json{path}':
     post:
       description: list the available tools
@@ -499,6 +496,7 @@ paths:
         - name: path
           type: string
           in: path
+          required: true
       responses:
         '200':
           description: returns the node tree
@@ -540,6 +538,7 @@ paths:
           type: string
           in: path
           description: Path to the resource the assets are added to
+          required: true
       responses:
         200:
           description: Returns the parent node together with an array of asset uploaded
@@ -755,26 +754,34 @@ paths:
           description: If the path did not resolve to a resource, the to name was not provided or contained a slash
           schema:
             $ref: "#/definitions/Error"
-  '/listTenants.json':
-    get:
-      description: Lists the tenants (top level sites) on this peregrine instance
+  '/updateSite.json':
+    post:
+      description: Updates a site's components and frontend libs from its source site
+      parameters:
+        - name: name
+          type: string
+          in: formData
+          description: The Name of the site to update
+          required: true
       responses:
         200:
-          description: returns the list of tenants
+          description: returns the path of the new site and the path to the source
           schema:
             type: object
             properties:
-              tenants:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    title:
-                      type: string
-                    roots:
-                      type: object
+              type:
+                type: string
+                description: Type set to 'site'
+              status:
+                type: string
+                description: Status set to 'updated'
+              name:
+                type: string
+                description: Name of the updated site
+        400:
+          description: If the name was not a valid site name
+          schema:
+            $ref: "#/definitions/Error"
 definitions:
   Error:
     type: object

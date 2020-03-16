@@ -82,11 +82,11 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class UploadFilesServlet extends AbstractBaseServlet {
 
-    public static final String RESOURCE_NAME = "resourceName";
-    public static final String RESOURCE_PATH = "resourcePath";
-    public static final String ASSET_NAME = "assetName";
-    public static final String ASSET_PATH = "assetPath";
-    public static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
+    private static final String RESOURCE_NAME = "resourceName";
+    private static final String RESOURCE_PATH = "resourcePath";
+    private static final String ASSET_NAME = "assetName";
+    private static final String ASSET_PATH = "assetPath";
+    private static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
 
     @Reference
     ModelFactory modelFactory;
@@ -97,7 +97,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String characterEncoding = request.getRequest().getCharacterEncoding();
-        logger.trace("Current Character Encoding: '{}'", characterEncoding);
+        logger.debug("Current Character Encoding: '{}'", characterEncoding);
         String path = request.getParameter(PATH);
         try {
             Resource resource = request.getResourceByPath(path);
@@ -108,12 +108,13 @@ public class UploadFilesServlet extends AbstractBaseServlet {
                 if(!characterEncoding.equalsIgnoreCase(StandardCharsets.UTF_8.toString())) {
                     String originalName = assetName;
                     assetName = new String(originalName.getBytes (characterEncoding), StandardCharsets.UTF_8);
-                    logger.trace("Asset Name, original: '{}', converted: '{}'", originalName, assetName);
+                    logger.debug("Asset Name, original: '{}', converted: '{}'", originalName, assetName);
                 }
                 String contentType = part.getContentType();
                 logger.debug("part type {}",contentType);
                 logger.debug("part name {}",assetName);
-                Resource asset = resourceManagement.createAssetFromStream(resource, assetName, contentType, part.getInputStream());
+                Resource asset = resourceManagement.
+                    createAssetFromStream(resource, assetName, contentType, part.getInputStream());
                 assets.add(asset);
             }
             resource.getResourceResolver().commit();
@@ -122,7 +123,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
                 .writeAttribute(RESOURCE_NAME, resource.getName())
                 .writeAttribute(RESOURCE_PATH, resource.getPath())
                 .writeArray("assets");
-            for(Resource asset: assets) {
+            for(Resource asset : assets) {
                 answer.writeObject();
                 answer.writeAttribute(ASSET_NAME, asset.getName());
                 answer.writeAttribute(ASSET_PATH, asset.getPath());
@@ -131,11 +132,18 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             return answer;
         } catch(ManagementException e) {
             logger.debug("Upload Failed", e);
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(path).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setRequestPath(path)
+                .setException(e);
         } catch(ServletException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM).setRequestPath(path).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM)
+                .setRequestPath(path)
+                .setException(e);
         }
     }
-
 }
 

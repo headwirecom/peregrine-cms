@@ -26,16 +26,15 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_SITE;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.FROM_SITE_NAME;
 import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SITE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
-import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerConstants.TO_SITE_NAME;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -53,7 +52,6 @@ import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import javax.servlet.Servlet;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -77,7 +75,7 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class CreateSiteServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_SITE = "Failed to create site";
+    private static final String FAILED_TO_CREATE_SITE = "Failed to create site";
 
     @Reference
     ModelFactory modelFactory;
@@ -89,22 +87,17 @@ public class CreateSiteServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String fromSite = request.getParameter(FROM_SITE_NAME);
         String toSite = request.getParameter(TO_SITE_NAME);
-        String title = request.getParameterUtf8(TITLE);
-        if(StringUtils.isBlank(title)) {
-            title = toSite;
-        }
         try {
             logger.debug("Copy Site from: '{}' to: '{}'", fromSite, toSite);
             Resource site = resourceManagement
-                .copySite(request.getResourceResolver(), PAGES_ROOT, fromSite, toSite, title);
+                .copySite(request.getResourceResolver(), CONTENT_ROOT, fromSite, toSite);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)
                 .writeAttribute(NAME, toSite)
                 .writeAttribute(PATH, site.getPath())
-                .writeAttribute(TITLE, title)
-                .writeAttribute(SOURCE_PATH, PAGES_ROOT + SLASH + fromSite);
+                .writeAttribute(SOURCE_PATH, CONTENT_ROOT + SLASH + fromSite);
         } catch(ManagementException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)

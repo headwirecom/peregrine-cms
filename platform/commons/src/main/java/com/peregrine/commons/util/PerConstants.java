@@ -85,12 +85,14 @@ public class PerConstants {
     public static final String ETC_ROOT = "/etc";
     public static final String CONTENT_ROOT = "/content";
 
+    public static final String TENANT = "${tenant}";
+
     public static final String PACKAGES_PATH = ETC_ROOT + SLASH + PACKAGES;
     public static final String FELIBS_ROOT = ETC_ROOT + SLASH + FELIBS;
-    public static final String ASSETS_ROOT = CONTENT_ROOT + SLASH + ASSETS;
-    public static final String OBJECTS_ROOT = CONTENT_ROOT + SLASH + OBJECTS;
-    public static final String PAGES_ROOT = CONTENT_ROOT + SLASH + PAGES;
-    public static final String TEMPLATES_ROOT = CONTENT_ROOT + SLASH + TEMPLATES;
+    public static final String ASSETS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + ASSETS;
+    public static final String OBJECTS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + OBJECTS;
+    public static final String PAGES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + PAGES;
+    public static final String TEMPLATES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + TEMPLATES;
 
     public static final String FOLDER = "folder";
     public static final String ASSET = "asset";
@@ -104,6 +106,7 @@ public class PerConstants {
 
     public static final String PATH = "path";
     public static final String NAME = "name";
+    public static final String DATA = "data";
     public static final String MODEL = "model";
     public static final String TYPE = "type";
     public static final String VARIATION = "variation";

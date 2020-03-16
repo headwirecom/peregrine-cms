@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CONTENT;
+import static com.peregrine.commons.util.PerConstants.DATA;
 import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
@@ -64,8 +65,6 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class ContentServlet extends AbstractBaseServlet {
 
-    private static final String DATA = "=data";
-
     @Reference
     ModelFactory modelFactory;
 
@@ -76,9 +75,8 @@ public class ContentServlet extends AbstractBaseServlet {
             suffix = suffix.substring(0, suffix.indexOf(DATA_JSON_EXTENSION));
         }
         Resource res = request.getResourceByPath(suffix);
-        RequestDispatcherOptions rdOptions = new RequestDispatcherOptions(
-            RequestDispatcherOptions.OPT_REPLACE_SELECTORS + DATA
-        );
+        RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
+        rdOptions.setReplaceSelectors(DATA);
         return new ForwardResponse(res, rdOptions);
     }
 }
