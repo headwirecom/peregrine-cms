@@ -247,17 +247,20 @@
             })
         },
         methods: {
+            getTenant() {
+              return $peAdminApp.getView().state.tenant || {name: 'example'}
+            },
             isAssets(path){
-                return path.startsWith('/content/assets')
+                return path.startsWith(`/content/${this.getTenant().name}/assets`)
             },
             isSites(path){
-                return path.startsWith('/content/sites')
+                return path.startsWith(`/content/${this.getTenant().name}/sites`)
             },
             isObjects(path){
-                return path.startsWith('/content/objects')
+                return path.startsWith(`/content/${this.getTenant().name}/objects`)
             },
             isTemplates(path){
-                return path.startsWith('/content/templates')
+                return path.startsWith(`/content/${this.getTenant().name}/templates`)
             },
             selectParent(me, target) {
                 var dataFrom = !me ? this.model.dataFrom : me.model.dataFrom
