@@ -40,12 +40,9 @@
                     @touchstart = "onEditableTouchStart"
                     @touchend   = "onEditableTouchEnd">
                     <div id="inlineEditContainer"
-                        ref="inlineEditContainer"
                         v-show="inlineEditVisible"
-                        @click.stop.prevent
-                        style="background-color: white;">
-                        <trumbowyg id="inlineEdit"
-                            :config="trumbowyg.config"
+                        @click.stop.prevent>
+                        <trumbowyg :config="trumbowyg.config"
                             v-model="trumbowyg.content"
                             @input="onInlineEditInput">
                         </trumbowyg>
@@ -413,11 +410,6 @@ export default {
         getTargetEl: function(e) {
             var pos = this.getPosFromMouse(e)
             var editview = this.$refs.editview
-//            if($perAdminApp.getOSBrowser() === 'win'){
-//                var targetEl = this.findIn(editview.contentWindow.document.body, pos)
-//            } else {
-//                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
-//            }
             var targetEl = this.findIn(editview.contentWindow.document.body, pos)
             if(!targetEl) return { targetEl: undefined, inline: undefined }
 
@@ -449,17 +441,18 @@ export default {
                 } else {
                     this.selectedComponent = targetEl
                     this.inline = target.inline ? target.inline.getAttribute('data-per-inline-edit') : undefined
+                    let editableClass = 'selected';
                     if (this.inline) {
-                        /* const style = window.getComputedStyle(target.inline)
-                        // copy styles from original element into this one
-                        let cssText = style.cssText
-                        cssText = cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
-                        this.$refs.inlineEditContainer.setAttribute('style', cssText) */
                         this.trumbowyg.content = target.inline.innerHTML
+                        // copy styles from original element into this one
+                        const style = window.getComputedStyle(target.inline)
+                        let cssText = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+                        $('#inlineEditContainer .trumbowyg-editor').attr('style', cssText)
+                        editableClass += ' no-border'
                     }
 
                     var targetBox = this.getBoundingClientRect(targetEl)
-                    this.setEditableStyle(targetBox, 'selected')
+                    this.setEditableStyle(targetBox, editableClass)
                     $perAdminApp.action(this, 'showComponentEdit', path)
                 }
             }
@@ -699,8 +692,12 @@ export default {
 
 <style lang="scss">
     #inlineEditContainer {
+        background-color: white;
+        margin-top: -39px;
+
         .trumbowyg-box {
             margin: 0;
+            overflow: hidden;
         }
 
         .trumbowyg-box, .trumbowyg-editor {
