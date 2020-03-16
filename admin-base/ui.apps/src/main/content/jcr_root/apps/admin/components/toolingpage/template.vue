@@ -45,7 +45,6 @@
     },
     methods: {
         selectPath: function(me, target) {
-            console.log('selectPath', target)
             const view = $perAdminApp.getView()
             const tenant = view.state.tenant
             const action = target.action || target

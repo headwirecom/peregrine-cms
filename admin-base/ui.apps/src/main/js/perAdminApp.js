@@ -468,7 +468,6 @@ function exitWaitState() {
  * @param target
  */
 function stateActionImpl(name, target) {
-    console.log('stateActionImpl', name, target)
     enterWaitState()
     return new Promise( (resolve, reject) => {
         runBeforeStateActions(name).then( () => {
