@@ -87,8 +87,10 @@ public class UploadFilesServlet extends AbstractBaseServlet {
     public static final String ASSET_NAME = "assetName";
     public static final String ASSET_PATH = "assetPath";
     public static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
+
     @Reference
     ModelFactory modelFactory;
+
     @Reference
     AdminResourceHandler resourceManagement;
 

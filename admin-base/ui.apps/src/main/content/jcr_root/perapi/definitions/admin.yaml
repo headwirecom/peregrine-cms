@@ -34,16 +34,13 @@ paths:
   /componentDefinition.json:
     get:
       parameters:
-        - description: the name of the component we want to get information about
-          name: name
-          type: string
-          in: query
         - description: the path to a content node to look up the corresponding component. If
                        a path to a per:Page node is provided the explorer_dialog.json is used
                        for the model otherwise the dialog.json file of the component is used.
           name: path
           type: string
           in: query
+          required: true
       responses:
         200:
           description: get a component definition
@@ -63,25 +60,11 @@ paths:
     get:
       description: returns the content for the given path
       parameters:
-        - description: the path to the content, for example /content/sites
+        - description: the path to the content, for example /content/_tenant_/pages/index
           name: path
           type: string
           in: path
-      responses:
-        200:
-          description: returns all the content for the given node
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-  '/getObject.json{path}':
-    get:
-      description: returns the content for the given object
-      parameters:
-        - description: the path to the content
-          name: path
-          type: string
-          in: path
+          required: true
       responses:
         200:
           description: returns all the content for the given node
@@ -139,10 +122,10 @@ paths:
           in: formData
           description: the name of the new object
           required: true
-        - name: templatePath
+        - name: resourceType
           type: string
           in: formData
-          description: the path to the template of the object
+          description: the resource type of new the object
       responses:
         200:
           description: Object created as specified
@@ -212,6 +195,45 @@ paths:
           description: If the path or template path did not resolve to a resource, the name is null or the page already exists
           schema:
             $ref: "#/definitions/Error"
+  '/createSite.json':
+    post:
+      description: Creates a new Site by copying from an existing site
+      parameters:
+        - name: fromSite
+          type: string
+          in: formData
+          description: The Name of the Source Site to copy from which must exist
+          required: true
+        - name: toSite
+          type: string
+          in: formData
+          description: The Name of the Target Site to be copied to which must not exist
+          required: true
+      responses:
+        200:
+          description: returns the path of the new site and the path to the source
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Type set to 'site'
+              status:
+                type: string
+                description: Status set to 'created'
+              name:
+                type: string
+                description: Name of the newly crated site
+              path:
+                type: string
+                description: Path of the newly created site
+              sourcePath:
+                type: string
+                description: Path of the source site
+        400:
+          description: If the path did not resolve to a resource
+          schema:
+            $ref: "#/definitions/Error"
   '/createTemplate.json{path}':
     post:
       description: create a new template in the system
@@ -220,6 +242,7 @@ paths:
           type: string
           in: path
           description: the path where to create the template
+          required: true
         - name: name
           type: string
           in: formData
@@ -310,45 +333,6 @@ paths:
           description: If the path did not resolve to a resource, if the reosurce is not a page or if the page could not be deleted
           schema:
             $ref: "#/definitions/Error"
-  '/createSite.json':
-    post:
-      description: Creates a new Site by copying from an existing site
-      parameters:
-        - name: fromSite
-          type: string
-          in: formData
-          description: The Name of the Source Site to copy from which must exist
-          required: true
-        - name: toSite
-          type: string
-          in: formData
-          description: The Name of the Target Site to be copied to which must not exist
-          required: true
-      responses:
-        200:
-          description: returns the path of the new site and the path to the source
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'site'
-              status:
-                type: string
-                description: Status set to 'created'
-              name:
-                type: string
-                description: Name of the newly crated site
-              path:
-                type: string
-                description: Path of the newly created site
-              sourcePath:
-                type: string
-                description: Path of the source site
-        400:
-          description: If the path did not resolve to a resource
-          schema:
-            $ref: "#/definitions/Error"
   '/updateSite.json':
     post:
       description: Updates a site's components and frontend libs from its source site
@@ -405,6 +389,21 @@ paths:
           description: If the path did not resolve to a resource
           schema:
             $ref: "#/definitions/Error"
+  '/getObject.json{path}':
+    get:
+      description: returns the content for the given object
+      parameters:
+        - description: the path to the content
+          name: path
+          type: string
+          in: path
+      responses:
+        200:
+          description: returns all the content for the given node
+          schema:
+            type: object
+            additionalProperties:
+              type: object
   '/insertNodeAt.json{path}':
     post:
       description: insert node at a path based on a component or content properties
@@ -797,7 +796,7 @@ definitions:
         type: string
       sourcePath:
         type: string
-      tagetName:
+      targetName:
         type: string
       targetPath:
         type: string

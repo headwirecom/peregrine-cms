@@ -73,7 +73,7 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class CreatePageServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_PAGE = "Failed to create page";
+    private static final String FAILED_TO_CREATE_PAGE = "Failed to create page";
 
     @Reference
     ModelFactory modelFactory;
@@ -91,7 +91,8 @@ public class CreatePageServlet extends AbstractBaseServlet {
             title = name;
         }
         try {
-            Resource newPage = resourceManagement.createPage(request.getResourceResolver(), parentPath, name, templatePath, title);
+            Resource newPage = resourceManagement
+                .createPage(request.getResourceResolver(), parentPath, name, templatePath, title);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, PAGE)
@@ -99,7 +100,6 @@ public class CreatePageServlet extends AbstractBaseServlet {
                 .writeAttribute(NAME, name)
                 .writeAttribute(PATH, newPage.getPath())
                 .writeAttribute(TEMPLATE_PATH, templatePath);
-
         } catch (ManagementException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
@@ -108,6 +108,5 @@ public class CreatePageServlet extends AbstractBaseServlet {
                 .setException(e);
         }
     }
-
 }
 

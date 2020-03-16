@@ -60,36 +60,49 @@ public class PerConstants {
     public static final String DASH = "-";
 
     public static final String HTML = "html";
+    public static final String JSON = "json";
 
-    public static final String JSON_MIME_TYPE = "application/json;charset=utf-8";
-    public static final String HTML_MIME_TYPE = "text/html";
-    public static final String APPLICATION_XML_MIME_TYPE = "application/xml";
     public static final String DATA_JSON_EXTENSION = ".data.json";
 
+    public static final String XML_MIME_TYPE = "application/xml";
+    public static final String JSON_MIME_TYPE = "application/json;charset=utf-8";
+    public static final String HTML_MIME_TYPE = "text/html";
+    public static final String TEXT_MIME_TYPE = "plain/text";
     public static final String PNG_MIME_TYPE = "image/png";
     public static final String JPEG_MIME_TYPE = "image/jpeg";
     public static final String WEBP_MIME_TYPE = "image/webp";
     public static final String JPG_MIME_TYPE = "image/jpg";
-    public static final String TEXT_MIME_TYPE = "plain/text";
+
+    public static final String PACKAGES = "packages";
+    public static final String FELIBS = "felibs";
+    public static final String ASSETS = "assets";
+    public static final String OBJECTS = "objects";
+    public static final String PAGES = "pages";
+    public static final String TEMPLATES = "templates";
+    public static final String COMPONENTS = "components";
 
     public static final String APPS_ROOT = "/apps";
-    public static final String NN_CONTENT = "content";
-    public static final String CONTENT_ROOT = SLASH + NN_CONTENT;
     public static final String ETC_ROOT = "/etc";
-    public static final String FELIBS_ROOT = ETC_ROOT + "/felibs";
-    public static final String PAGES_ROOT = CONTENT_ROOT + "/pages";
-    public static final String ASSETS_ROOT = CONTENT_ROOT+ "/assets";
-    public static final String OBJECTS_ROOT = CONTENT_ROOT + "/objects";
-    public static final String TEMPLATES_ROOT = CONTENT_ROOT + "/templates";
-    public static final String PACKAGES_PATH = ETC_ROOT + "/packages";
+    public static final String CONTENT_ROOT = "/content";
 
-    public static final String COMPONENTS = "components";
-    public static final String TEMPLATES = "templates";
-    public static final String OBJECTS = "objects";
+    public static final String PACKAGES_PATH = ETC_ROOT + SLASH + PACKAGES;
+    public static final String FELIBS_ROOT = ETC_ROOT + SLASH + FELIBS;
+    public static final String ASSETS_ROOT = CONTENT_ROOT + SLASH + ASSETS;
+    public static final String OBJECTS_ROOT = CONTENT_ROOT + SLASH + OBJECTS;
+    public static final String PAGES_ROOT = CONTENT_ROOT + SLASH + PAGES;
+    public static final String TEMPLATES_ROOT = CONTENT_ROOT + SLASH + TEMPLATES;
 
+    public static final String FOLDER = "folder";
+    public static final String ASSET = "asset";
+    public static final String OBJECT = "object";
+    public static final String PAGE = "page";
+    public static final String TEMPLATE = "template";
     public static final String COMPONENT = "component";
-    public static final String PATH = "path";
     public static final String SITE = "site";
+    public static final String NODE = "node";
+    public static final String RENDITION = "rendition";
+
+    public static final String PATH = "path";
     public static final String NAME = "name";
     public static final String MODEL = "model";
     public static final String TYPE = "type";
@@ -109,15 +122,12 @@ public class PerConstants {
     public static final String METAPROPERTIES = "metaproperties";
     public static final String UPDATED = "updated";
     public static final String OG_TAGS = "ogTags";
-
-    public static final String PAGE = "page";
     public static final String DROP = "drop";
     public static final String JACKSON = "jackson";
-    public static final String JSON = "json";
-
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
     public static final String DEPENDENCIES = "dependencies";
+    public static final String INTERNAL = "internal";
 
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";

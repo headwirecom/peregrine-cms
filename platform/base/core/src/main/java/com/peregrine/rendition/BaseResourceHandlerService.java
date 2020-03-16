@@ -52,9 +52,11 @@ public class BaseResourceHandlerService
     public static final String RESOURCE_NOT_ADAPTABLE_TO_ASSET = "Resource: '%s' could not be adapted to an Asset";
 
     @Reference
-    MimeTypeService mimeTypeService;
+    private MimeTypeService mimeTypeService;
+
     @Reference
     private ImageTransformationConfigurationProvider imageTransformationConfigurationProvider;
+
     @Reference
     private ImageTransformationProvider imageTransformationProvider;
 

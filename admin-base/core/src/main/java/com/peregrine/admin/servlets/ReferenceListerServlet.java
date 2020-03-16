@@ -25,10 +25,10 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -51,17 +51,6 @@ import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(
-    service = Servlet.class,
-    property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Reference Lister Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_REF,
-        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
-    }
-)
-@SuppressWarnings("serial")
 /**
  * This servlet provides a list of that are referenced by the given
  * resource (to which resources does the given resources points to)
@@ -69,6 +58,17 @@ import org.osgi.service.component.annotations.Reference;
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
+@Component(
+    service = Servlet.class,
+    property = {
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Reference Lister Servlet",
+        SERVICE_VENDOR + EQUALS + PER_VENDOR,
+        SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_REF,
+        SLING_SERVLET_SELECTORS + EQUALS + JSON
+    }
+)
+@SuppressWarnings("serial")
 public class ReferenceListerServlet extends AbstractBaseServlet {
 
     public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
@@ -96,7 +96,10 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
             answer.writeClose();
             return answer;
         } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE).setRequestPath(sourcePath);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE)
+                .setRequestPath(sourcePath);
         }
     }
 }

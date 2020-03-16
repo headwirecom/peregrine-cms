@@ -62,28 +62,28 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class AccessServlet extends AbstractBaseServlet {
 
+    private static final String SESSION_PATH = "/system/sling/info";
+    private static final String SESSION_SELECTOR = "sessionInfo";
+
     @Reference
     @SuppressWarnings("unused")
     private IntraSlingCaller intraSlingCaller;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        // Load that content internally  and return as JSon Content. If it fails redirect
+        // Load that content internally  and return as JSON Content. If it fails redirect
         try {
             byte[] response = intraSlingCaller.call(
                 intraSlingCaller.createContext()
                     .setResourceResolver(request.getRequest().getResourceResolver())
-                    .setPath("/system/sling/info")
-                    .setSelectors("sessionInfo")
-                    .setExtension("json")
-            );
-            return new TextResponse(JSON, JSON_MIME_TYPE)
-                .write(new String(response));
-
+                    .setPath(SESSION_PATH)
+                    .setSelectors(SESSION_SELECTOR)
+                    .setExtension(JSON));
+            return new TextResponse(JSON, JSON_MIME_TYPE).write(new String(response));
         } catch(IntraSlingCaller.CallException e) {
             logger.warn("Internal call failed", e);
         }
-        return new RedirectResponse("/system/sling/info.sessionInfo.json");
+        return new RedirectResponse(SESSION_PATH + "." + SESSION_SELECTOR + "." + JSON);
     }
 }
 

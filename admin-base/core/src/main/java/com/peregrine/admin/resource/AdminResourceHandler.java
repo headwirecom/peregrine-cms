@@ -75,8 +75,6 @@ public interface AdminResourceHandler {
      */
     Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component, String title) throws ManagementException;
 
-    DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
-
     /**
      * Deletes a resource
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
@@ -174,7 +172,6 @@ public interface AdminResourceHandler {
      * @throws ManagementException If a management error occurs
      */
     Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException;
-
 
     /**
      * Delete a peregrine cms site

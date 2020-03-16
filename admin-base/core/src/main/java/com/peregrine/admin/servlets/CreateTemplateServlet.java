@@ -31,6 +31,7 @@ import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE;
 import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -72,7 +73,6 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class CreateTemplateServlet extends AbstractBaseServlet {
 
-    public static final String TEMPLATE = "template";
     public static final String FAILED_TO_CREATE_TEMPLATE = "Failed to create template";
 
     @Reference
@@ -91,13 +91,20 @@ public class CreateTemplateServlet extends AbstractBaseServlet {
             title = name;
         }
         try {
-            Resource newTemplate = resourceManagement.createTemplate(request.getResourceResolver(), parentPath, name, component, title);
+            Resource newTemplate = resourceManagement
+                .createTemplate(request.getResourceResolver(), parentPath, name, component, title);
             request.getResourceResolver().commit();
             return new JsonResponse()
-                .writeAttribute(TYPE, TEMPLATE).writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, name).writeAttribute(PATH, newTemplate.getPath());
+                .writeAttribute(TYPE, TEMPLATE)
+                .writeAttribute(STATUS, CREATED)
+                .writeAttribute(NAME, name)
+                .writeAttribute(PATH, newTemplate.getPath());
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_TEMPLATE).setRequestPath(parentPath).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_CREATE_TEMPLATE)
+                .setRequestPath(parentPath)
+                .setException(e);
         }
     }
 }

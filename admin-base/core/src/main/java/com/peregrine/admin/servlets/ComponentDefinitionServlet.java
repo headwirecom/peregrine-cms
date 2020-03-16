@@ -71,9 +71,9 @@ import org.osgi.service.component.annotations.Component;
 @SuppressWarnings("serial")
 public class ComponentDefinitionServlet extends AbstractBaseServlet {
 
-    public static final String EXPLORER_DIALOG_JSON = "explorer_dialog.json";
-    public static final String DIALOG_JSON = "dialog.json";
-    public static final String OG_TAG_DIALOG_JSON = "og_tag_dialog.json";
+    private static final String EXPLORER_DIALOG_JSON = "explorer_dialog.json";
+    private static final String DIALOG_JSON = "dialog.json";
+    private static final String OG_TAG_DIALOG_JSON = "og_tag_dialog.json";
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -90,7 +90,6 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         } else {
             componentPath = APPS_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
         }
-
         Resource component = request.getResourceByPath(componentPath);
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
         if("/apps/admin/components/assetview".equals(path)) {
@@ -142,6 +141,5 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             return null;
         }
     }
-
 }
 
