@@ -487,7 +487,9 @@
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
                 const payload = { selected: target.path, path: me.model.dataFrom }
-                $perAdminApp.stateAction('selectToolsNodesPath', payload)
+                $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
+                    $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
+                })
             },
             selectPathInNav: function(me, target) {
                 this.selectPath(me, target)
