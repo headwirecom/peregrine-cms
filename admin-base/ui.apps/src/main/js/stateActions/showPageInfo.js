@@ -33,7 +33,6 @@ export default function(me, target) {
 
     let view = me.getView()
     const tenant = view.state.tenant
-    console.log(tenant, target)
 
     return new Promise( (resolve, reject) => {
         me.getApi().populateExplorerDialog(target.selected).then( () => {

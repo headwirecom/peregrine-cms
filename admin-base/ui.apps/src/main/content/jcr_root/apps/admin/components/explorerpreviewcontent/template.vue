@@ -342,21 +342,23 @@
         if (this.nodeType === NodeType.OBJECT){
           nodeName = this.node.path.split('/').slice(-1).pop()
         }
-        if (prompt(`new name for "${nodeName}"`)) {
+        const newName = prompt(`new name for "${nodeName}"`)
+        if (newName) {
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
             name: newName
           });
-          $perAdminApp.getNodeFromView('/state/tools')[this.nodeType] = null;
+          const currNode = $perAdminApp.getNodeFromView('/state/tools')[this.nodeType]
+          const currNodeArr = currNode.split('/');
+          currNodeArr[currNodeArr.length -1 ] = newName
+          $perAdminApp.getNodeFromView('/state/tools')[this.nodeType] = currNodeArr.join('/')
         }
       },
       moveNode() {
-        const view = $perAdminApp.getView()
-        const tenant = view.state.tenant
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
         .then(() => {
           this.isOpen = true;
-        }).catch((err) => {
+        }).catch(() => {
           $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
       },
