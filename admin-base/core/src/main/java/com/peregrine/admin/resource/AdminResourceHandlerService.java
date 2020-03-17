@@ -954,6 +954,7 @@ public class AdminResourceHandlerService
                 newSite.setProperty(JCR_TITLE, toName);
                 newSite.setProperty(TEMPLATE, false);
                 newSite.setProperty(INTERNAL, false);
+                newSite.setProperty(SOURCE_SITE, fromName);
                 answer = getResource(resourceResolver, newSite.getPath());
             } catch (RepositoryException e) {
                 logger.error("Error creating per:Site JCR node", e);
@@ -1320,18 +1321,15 @@ public class AdminResourceHandlerService
         if (siteResource == null) {
             throw new ManagementException(String.format(MISSING_SITE_RESOURCE, siteName));
         }
-        Resource siteContentResource = siteResource.getChild(JCR_CONTENT);
-        if (siteContentResource == null) {
-            throw new ManagementException(String.format(MISSING_CONTENT_RESOURCE, siteName));
-        }
-        ValueMap contentProperties = siteContentResource.getValueMap();
+        ValueMap contentProperties = siteResource.getValueMap();
         String sourceSiteName = contentProperties.get(SOURCE_SITE, String.class);
         if (isBlank(sourceSiteName)) {
             throw new ManagementException(String.format(MISSING_SOURCE_NAME, siteName));
         }
+
+        Resource siteFelibsRoot = getResource(resourceResolver, FELIBS_ROOT + SLASH + siteName);
         Resource siteAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + siteName);
         Resource sourceAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + sourceSiteName);
-        Resource siteFelibsRoot = getResource(resourceResolver, FELIBS_ROOT + SLASH + siteName);
 
         if (siteAppsRoot == null || siteFelibsRoot == null) {
             throw new ManagementException(String.format(MISSING_SITE_LOCATIONS, siteName));
@@ -1822,21 +1820,23 @@ public class AdminResourceHandlerService
                 }
             }
             for (Resource child : appsSource.getChildren()) {
-                ValueMap properties = child.getValueMap();
-                Map<String, Object> newProperties = new HashMap<>(properties);
-                String originalAppsPath = child.getPath();
-                originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
-                if (superTypes != null) {
-                    superTypes.add(originalAppsPath);
-                }
-                newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
-                Resource existingResource = getResource(source.getResourceResolver(), appsTarget.getPath() + SLASH + child.getName());
-                //Check whether there's already a version of this resource for the new site
-                if (existingResource == null) {
-                    try {
-                        source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
-                    } catch (PersistenceException e) {
-                        logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                if (isPrimaryType(child, COMPONENT_PRIMARY_TYPE) || isPrimaryType(child, OBJECT_DEFINITION_PRIMARY_TYPE)) {
+                    ValueMap properties = child.getValueMap();
+                    Map<String, Object> newProperties = new HashMap<>(properties);
+                    String originalAppsPath = child.getPath();
+                    originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
+                    if (superTypes != null) {
+                        superTypes.add(originalAppsPath);
+                    }
+                    newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
+                    Resource existingResource = getResource(source.getResourceResolver(), appsTarget.getPath() + SLASH + child.getName());
+                    //Check whether there's already a version of this resource for the new site
+                    if (existingResource == null) {
+                        try {
+                            source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
+                        } catch (PersistenceException e) {
+                            logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                        }
                     }
                 }
             }

@@ -52,7 +52,8 @@ import org.apache.sling.models.annotations.Model;
     extensions = JSON)
 public class BaseModel extends AbstractComponent {
 
-    @Inject @Default(values = "")
+    @Inject
+    @Default(values = "")
     private String text;
 
     @Inject
