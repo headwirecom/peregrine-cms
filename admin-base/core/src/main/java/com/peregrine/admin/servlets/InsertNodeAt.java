@@ -125,9 +125,13 @@ public class InsertNodeAt extends AbstractBaseServlet {
                                 logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
                                 if(temp == null) {
                                     try {
-                                        intermediate = resourceManagement.createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
+                                        intermediate = resourceManagement
+                                            .createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
                                     } catch(ManagementException e) {
-                                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES).setRequestPath(path);
+                                        return new ErrorResponse()
+                                            .setHttpErrorCode(SC_BAD_REQUEST)
+                                            .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
+                                            .setRequestPath(path);
                                     }
                                 } else {
                                     intermediate = temp;
@@ -141,7 +145,10 @@ public class InsertNodeAt extends AbstractBaseServlet {
         }
         //AS End of Patch
         if(resource == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH).setRequestPath(path);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH)
+                .setRequestPath(path);
         }
         String type = request.getParameter(TYPE);
         // Next Block is only here to be backwards compatible
@@ -171,11 +178,15 @@ public class InsertNodeAt extends AbstractBaseServlet {
         }
         String variation = request.getParameter(VARIATION);
         try {
-            Resource newResource = resourceManagement.insertNode(resource, properties, addAsChild, addBefore, variation);
+            Resource newResource = resourceManagement
+                .insertNode(resource, properties, addAsChild, addBefore, variation);
             newResource.getResourceResolver().commit();
             return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + MODEL_JSON);
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setException(e);
         }
     }
 }
