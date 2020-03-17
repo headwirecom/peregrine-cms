@@ -243,8 +243,7 @@
                 pathArr[2] = data.current.name
                 set($perAdminApp.getView(), this.model.dataFrom, pathArr.join('/'))
                 this.selectPath(this, {
-                    path: pathArr.join('/'),
-                    fullReload: true
+                    path: pathArr.join('/')
                 });
             })
         },
@@ -488,13 +487,7 @@
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
                 const payload = { selected: target.path, path: me.model.dataFrom }
-                $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
-                    if (target.fullReload) {
-                        const breadcrumbs = $perAdminApp.getView().adminPage.breadcrumbs
-                        const lastCrumb = breadcrumbs[breadcrumbs.length - 1]
-                        $perAdminApp.loadContent(lastCrumb.path + '.html')
-                    }
-                })
+                $perAdminApp.stateAction('selectToolsNodesPath', payload)
             },
             selectPathInNav: function(me, target) {
                 this.selectPath(me, target)
