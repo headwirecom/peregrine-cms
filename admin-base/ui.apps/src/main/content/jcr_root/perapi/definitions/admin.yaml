@@ -34,6 +34,10 @@ paths:
   /componentDefinition.json:
     get:
       parameters:
+        - description: the name of the component we want to get information about
+          name: name
+          type: string
+          in: query
         - description: the path to a content node to look up the corresponding component. If
                        a path to a per:Page node is provided the explorer_dialog.json is used
                        for the model otherwise the dialog.json file of the component is used.
@@ -379,6 +383,34 @@ paths:
             type: object
             additionalProperties:
               type: object
+  '/updateSite.json':
+    post:
+      description: Updates a site's components and frontend libs from its source site
+      parameters:
+        - name: name
+          type: string
+          in: formData
+          description: The Name of the site to update
+          required: true
+      responses:
+        200:
+          description: returns the path of the new site and the path to the source
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Type set to 'site'
+              status:
+                type: string
+                description: Status set to 'updated'
+              name:
+                type: string
+                description: Name of the updated site
+        400:
+          description: If the name was not a valid site name
+          schema:
+            $ref: "#/definitions/Error"
   '/insertNodeAt.json{path}':
     post:
       description: insert node at a path based on a component or content properties
@@ -461,12 +493,13 @@ paths:
                       type: object
   '/moveNodeTo.json{path}':
     post:
-      description: list the available tools
+      description: Moves the given node to different location
       parameters:
         - name: path
           type: string
           in: path
           description: the path of the parent resource for into moves or the sibling for before or after
+          required: true
         - name: component
           type: string
           in: formData
@@ -488,6 +521,57 @@ paths:
               type: object
         400:
           description: If the path or component did not resolve to a resource or if the move / reorder failed
+          schema:
+            $ref: "#/definitions/Error"
+  '/move.json{path}':
+    post:
+      description: Move a given node to a new place
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the resource which is moved
+          required: true
+        - name: to
+          type: string
+          in: formData
+          description: the path of the resource that is either the new parent for type 'child' or the next/previous sibling for type 'before' or 'after'
+          required: true
+        - name: type
+          type: string
+          in: formData
+          description: The type of move which can be 'child' (add as child of the given to node), 'after' (add after the given to node) or 'before' (add before the given to node)
+          required: true
+      responses:
+        200:
+          description: returns the from node name and path and the new node name and path
+          schema:
+            $ref: "#/definitions/Move"
+        400:
+          description: If the path and to did not resolve to a resource or if the type was wrong
+          schema:
+            $ref: "#/definitions/Error"
+  '/rename.json{path}':
+    post:
+      description: Renames a Resource and tries to keep the order intact
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the resource which is renamed
+          required: true
+        - name: to
+          type: string
+          in: path
+          description: the new name of the resource
+          required: true
+      responses:
+        200:
+          description: returns the from node name and path and the new node name and path
+          schema:
+            $ref: "#/definitions/Move"
+        400:
+          description: If the path did not resolve to a resource, the to name was not provided or contained a slash
           schema:
             $ref: "#/definitions/Error"
   '/nodes.json{path}':
@@ -526,46 +610,11 @@ paths:
     get:
       responses:
         '200':
-          description: returns the templates
+          description: returns the components
           schema:
             type: object
             additionalProperties:
               type: object
-  '/uploadFiles.json{path}':
-    post:
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: Path to the resource the assets are added to
-          required: true
-      responses:
-        200:
-          description: Returns the parent node together with an array of asset uploaded
-          schema:
-            type: object
-            properties:
-              resourceName:
-                type: string
-                description: Name of the Parent Resource
-              resourcePath:
-                type: string
-                description: Path of the Parent Resource
-              assets:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    assetName:
-                      type: string
-                      description: Name of the created Asset Resource
-                    assetPath:
-                      type: string
-                      description: Path of the created Asset Resource
-        400:
-          description: If the path or if the asset creation failed
-          schema:
-            $ref: "#/definitions/Error"
   '/listRepl.json':
     get:
       description: Lists all available and active Replication Services
@@ -703,83 +752,39 @@ paths:
           description: If the path did not resolve to a resource
           schema:
             $ref: "#/definitions/Error"
-  '/move.json{path}':
+  '/uploadFiles.json{path}':
     post:
-      description: Move a given node to a new place
       parameters:
         - name: path
           type: string
           in: path
-          description: the path of the resource which is moved
-          required: true
-        - name: to
-          type: string
-          in: formData
-          description: the path of the resource that is either the new parent for type 'child' or the next/previous sibling for type 'before' or 'after'
-          required: true
-        - name: type
-          type: string
-          in: formData
-          description: The type of move which can be 'child' (add as child of the given to node), 'after' (add after the given to node) or 'before' (add before the given to node)
+          description: Path to the resource the assets are added to
           required: true
       responses:
         200:
-          description: returns the from node name and path and the new node name and path
-          schema:
-            $ref: "#/definitions/Move"
-        400:
-          description: If the path and to did not resolve to a resource or if the type was wrong
-          schema:
-            $ref: "#/definitions/Error"
-  '/rename.json{path}':
-    post:
-      description: Renames a Resource and tries to keep the order intact
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the resource which is renamed
-          required: true
-        - name: to
-          type: string
-          in: path
-          description: the new name of the resource
-          required: true
-      responses:
-        200:
-          description: returns the from node name and path and the new node name and path
-          schema:
-            $ref: "#/definitions/Move"
-        400:
-          description: If the path did not resolve to a resource, the to name was not provided or contained a slash
-          schema:
-            $ref: "#/definitions/Error"
-  '/updateSite.json':
-    post:
-      description: Updates a site's components and frontend libs from its source site
-      parameters:
-        - name: name
-          type: string
-          in: formData
-          description: The Name of the site to update
-          required: true
-      responses:
-        200:
-          description: returns the path of the new site and the path to the source
+          description: Returns the parent node together with an array of asset uploaded
           schema:
             type: object
             properties:
-              type:
+              resourceName:
                 type: string
-                description: Type set to 'site'
-              status:
+                description: Name of the Parent Resource
+              resourcePath:
                 type: string
-                description: Status set to 'updated'
-              name:
-                type: string
-                description: Name of the updated site
+                description: Path of the Parent Resource
+              assets:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    assetName:
+                      type: string
+                      description: Name of the created Asset Resource
+                    assetPath:
+                      type: string
+                      description: Path of the created Asset Resource
         400:
-          description: If the name was not a valid site name
+          description: If the path or if the asset creation failed
           schema:
             $ref: "#/definitions/Error"
 definitions:

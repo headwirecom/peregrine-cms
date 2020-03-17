@@ -333,12 +333,12 @@ public class FormAuthenticationHandler extends DefaultAuthenticationFeedbackHand
 
                 @Override
                 public String getRequestURI() {
-                    return "/content/sites/example.html";
+                    return "/content/admin/pages/index.html";
                 }
 
                 @Override
                 public StringBuffer getRequestURL() {
-                    return new StringBuffer("http://localhost:8080/content/sites/example.html");
+                    return new StringBuffer("http://localhost:8080/content/admin/pages/index.html");
                 }
 
                 @Override
@@ -358,7 +358,7 @@ public class FormAuthenticationHandler extends DefaultAuthenticationFeedbackHand
                         RequestDispatcherOptions.OPT_REPLACE_SELECTORS + "=data"
                 );
                 try {
-                    request.getRequestDispatcher("/content/sites/example.html").forward(wrappedRequest, response);
+                    request.getRequestDispatcher("/content/example/pages/index.html").forward(wrappedRequest, response);
                 } catch (ServletException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
