@@ -23,7 +23,30 @@
   under the License.
   #L%
   -->
-<vault version="1.0">
-  <ignore name=".svn"/>
-  <ignore name=".git"/>
-</vault>
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="pagerenderserver/structure/page"
+    jcr:title="peregrine-server Index">
+
+    <content jcr:primaryType="nt:unstructured"
+      sling:resourceType="pagerenderserver/structure/container">
+
+      <text1 jcr:primaryType="nt:unstructured"
+        sling:resourceType="pagerenderserver/components/base"
+        text="peregrine-cms is a basic headless, api first cms built on top of apache sling and apache jackrabbit"/>
+
+      <text2 jcr:primaryType="nt:unstructured"
+        sling:resourceType="pagerenderserver/components/base"
+        text="hello link: &lt;a href='/content/pagerenderserver/pages/about.html'&gt;about&lt;/a&gt;"/>
+
+    </content>
+
+  </jcr:content>
+
+</jcr:root>

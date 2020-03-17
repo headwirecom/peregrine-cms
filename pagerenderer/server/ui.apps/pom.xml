@@ -161,7 +161,7 @@
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <embeddedTarget>/apps/pagerender/server/install</embeddedTarget>
+                            <embeddedTarget>/apps/pagerenderserver/install</embeddedTarget>
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>

@@ -2,7 +2,7 @@ package com.peregrine.pagerender.server.models;
 
 /*-
  * #%L
- * peregrine vuejs page renderer - Core
+ * peregrine server page renderer - Core
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -25,9 +25,17 @@ package com.peregrine.pagerender.server.models;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.peregrine.nodetypes.models.AbstractComponent;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_PAGE_TYPE;
+
 import com.peregrine.nodetypes.models.IComponent;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
@@ -37,29 +45,18 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.factory.ModelFactory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.List;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_PAGE_TYPE;
-
 /**
  * Created by rr on 12/2/2016.
  */
-@Model(adaptables = Resource.class,
-       resourceType = {PR_SERVER_COMPONENT_PAGE_TYPE},
-       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
-       adapters = IComponent.class)
-@Exporter(name = JACKSON,
-          extensions = JSON)
-public class PageModel
-    extends Container {
+@Model(
+    adaptables = Resource.class,
+    resourceType = {PR_SERVER_COMPONENT_PAGE_TYPE},
+    defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+    adapters = IComponent.class)
+@Exporter(
+    name = JACKSON,
+    extensions = JSON)
+public class PageModel extends Container {
 
     public static final String SITE_CSS = "siteCSS";
     public static final String DOMAINS = "domains";
@@ -131,7 +128,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(SITE_CSS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getSiteCSS();
                 }
@@ -145,7 +142,7 @@ public class PageModel
             String[] value = (String[]) getInheritedProperty(DOMAINS);
             if(value != null && value.length != 0) return value;
             if(getTemplate() != null) {
-                PageModel templatePageModel = getTamplatePageModel();
+                PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {
                     return templatePageModel.getDomains();
                 }
@@ -154,7 +151,7 @@ public class PageModel
         return domains;
     }
 
-    private PageModel getTamplatePageModel() {
+    private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
@@ -178,7 +175,7 @@ public class PageModel
         if(siteJS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_JS);
             if(value != null && value.length != 0) return value;
-            PageModel templatePageModel = getTamplatePageModel();
+            PageModel templatePageModel = getTemplatePageModel();
             if(templatePageModel != null) {
                 return templatePageModel.getSiteJS();
             }
@@ -220,5 +217,4 @@ public class PageModel
     public boolean getServerSide() {
         return true;
     }
-
 }

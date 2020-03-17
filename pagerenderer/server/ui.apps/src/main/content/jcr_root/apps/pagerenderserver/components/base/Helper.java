@@ -1,8 +1,8 @@
-package apps.pagerender.server.structure.page;
+package apps.pagerenderserver.components.base;
 
 /*-
  * #%L
- * peregrine vuejs page renderer - UI Apps
+ * peregrine server page renderer - UI Apps
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -37,23 +37,11 @@ import org.apache.sling.api.scripting.SlingScriptHelper;
 public class Helper implements Use {
 
     private Object model;
-    private String siteRootPath;
 
     private Resource resource;
 
-    public String getPath() {
-        return resource.getPath();
-    }
-//    public String getHello() {
-//        return "hello";
-//    }
-//
     public Object getModel() {
         return model;
-    }
-
-    public String getSiteRootPath() {
-        return siteRootPath;
     }
 
     public String getModelClass() {
@@ -65,21 +53,10 @@ public class Helper implements Use {
         SlingHttpServletRequest request = (SlingHttpServletRequest) bindings.get("request");
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
 
-        String path = resource.getPath();
-        if(path.startsWith("/content/sites/")) {
-            path = path.substring("/content/sites/".length());
-        } else if(path.startsWith("/content/templates/")) {
-            path = path.substring("/content/templates/".length());
-        }
-        int slash = path.indexOf("/");
-        String siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
-        siteRootPath = "/content/sites/"+siteName;
-
         try {
             model = sling.getService(ModelFactory.class).getModelFromResource(resource);
         } catch(Throwable t) {
             model = sling.getService(ModelFactory.class).getModelFromRequest(request);
         }
     }
-
 }

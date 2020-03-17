@@ -1,4 +1,4 @@
-package apps.pagerender.server.components.base;
+package apps.pagerenderserver.structure.page;
 
 /*-
  * #%L
@@ -37,11 +37,23 @@ import org.apache.sling.api.scripting.SlingScriptHelper;
 public class Helper implements Use {
 
     private Object model;
-
+    private String siteRootPath;
     private Resource resource;
+
+    public String getHello() {
+        return "hello";
+    }
+
+    public String getPath() {
+        return resource.getPath();
+    }
 
     public Object getModel() {
         return model;
+    }
+
+    public String getSiteRootPath() {
+        return siteRootPath;
     }
 
     public String getModelClass() {
@@ -52,6 +64,13 @@ public class Helper implements Use {
         Resource resource = (Resource) bindings.get("resource");
         SlingHttpServletRequest request = (SlingHttpServletRequest) bindings.get("request");
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
+
+        String path = resource.getPath();
+        path = path.substring("/content/".length());
+
+        int slash = path.indexOf("/");
+        String siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
+        siteRootPath = "/content/" + siteName + "/pages";
 
         try {
             model = sling.getService(ModelFactory.class).getModelFromResource(resource);
