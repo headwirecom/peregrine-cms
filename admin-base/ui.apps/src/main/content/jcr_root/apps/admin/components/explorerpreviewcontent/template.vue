@@ -342,7 +342,8 @@
         if (this.nodeType === NodeType.OBJECT){
           nodeName = this.node.path.split('/').slice(-1).pop()
         }
-        if (prompt(`new name for "${nodeName}"`)) {
+        const newName = prompt(`new name for "${nodeName}"`)
+        if (newName) {
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
             name: newName
@@ -351,12 +352,10 @@
         }
       },
       moveNode() {
-        const view = $perAdminApp.getView()
-        const tenant = view.state.tenant
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
         .then(() => {
           this.isOpen = true;
-        }).catch((err) => {
+        }).catch(() => {
           $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
       },
