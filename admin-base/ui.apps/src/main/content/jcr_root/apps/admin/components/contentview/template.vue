@@ -443,8 +443,10 @@ export default {
         updateInlineStyle: function() {
             // copy styles from original element into this one
             const style = window.getComputedStyle(this.inline.target)
-            const cssText = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
-            $('#inlineEditContainer .trumbowyg-editor').attr('style', cssText)
+            let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+            value = value.replace(/display.+?;/, '')
+            $('#inlineEditContainer .trumbowyg-editor').attr('style', value)
+            $('#inlineEditContainer textarea').attr('style', value)
         },
 
         leftOverlayArea: function(e) {
