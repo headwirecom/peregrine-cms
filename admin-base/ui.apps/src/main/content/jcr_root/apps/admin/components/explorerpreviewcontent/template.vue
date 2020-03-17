@@ -348,7 +348,10 @@
             path: this.currentObject,
             name: newName
           });
-          $perAdminApp.getNodeFromView('/state/tools')[this.nodeType] = null;
+          const currNode = $perAdminApp.getNodeFromView('/state/tools')[this.nodeType]
+          const currNodeArr = currNode.split('/');
+          currNodeArr[currNodeArr.length -1 ] = newName
+          $perAdminApp.getNodeFromView('/state/tools')[this.nodeType] = currNodeArr.join('/')
         }
       },
       moveNode() {
