@@ -519,7 +519,8 @@
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path )
             },
             addTemplate: function(me, target) {
-                if(me.pt.path === '/content/templates') {
+                const tenant = $perAdminApp.getView().state.tenant
+                if(me.pt.path === tenant.roots.templates) {
                     $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
                 } else {
                     $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
