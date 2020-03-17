@@ -298,15 +298,12 @@ export default {
             }
         },
 
-        updateOverlay(){
+        updateOverlay() {
             this.$nextTick(() => {
                 /* ensure edit container height === iframe body height */
                 this.setEditContainerHeight()
                 /* update editable position if selected */
-                if(this.selectedComponent !== null){
-                    var targetBox = this.getBoundingClientRect(this.selectedComponent)
-                    this.setEditableStyle(targetBox, 'selected')
-                }
+                this.setSelectedEditableStyle()
             })
         },
 
@@ -432,16 +429,12 @@ export default {
                     this.selectedComponent = targetEl
                     const inline = target.inline
                     this.inline.path = inline ? inline.getAttribute('data-per-inline-edit') : undefined
-                    let editableClass = 'selected';
                     if (this.inline.path) {
                         this.inline.target = inline
                         this.inline.content = inline.innerHTML
-                        this.updateInlineStyle()
-                        editableClass += ' no-border'
                     }
 
-                    const targetBox = this.getBoundingClientRect(targetEl)
-                    this.setEditableStyle(targetBox, editableClass)
+                    this.setSelectedEditableStyle()
                     $perAdminApp.action(this, 'showComponentEdit', path)
                 }
             }
@@ -470,60 +463,57 @@ export default {
         },
 
         mouseMove: function(e) {
-            if(!e || this.isTouch) return
-            if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
-            var targetEl = this.getTargetEl(e).targetEl
-            if(targetEl) {
+            if (!e || this.isTouch) return
+            if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
+            let targetEl = this.getTargetEl(e).targetEl
+            if (targetEl) {
                 if (this.isContainer(targetEl)) {
                     if (this.isIgnoreContainersEnabled) return;
                 }
-                if(targetEl.getAttribute('data-per-droptarget')) {
+
+                if (targetEl.getAttribute('data-per-droptarget')) {
                     targetEl = targetEl.parentElement
                 }
+
                 this.selectedComponent = targetEl
-                var targetBox = this.getBoundingClientRect(targetEl)
-                this.setEditableStyle(targetBox, 'selected')
+                this.setSelectedEditableStyle()
             }
         },
 
         /* Drag and Drop ===========================
         ============================================ */
         onDragStart(ev) {
-            if(this.selectedComponent === null)return
+            if (this.selectedComponent === null)return
             this.editableClass = 'dragging'
             ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
         },
 
         onDragOver(ev) {
             ev.preventDefault()
-            var targetEl = this.getTargetEl(ev).targetEl
-
-            if(targetEl) {
-                var pos = this.getPosFromMouse(ev)
-                var targetBox = this.getBoundingClientRect(targetEl)
-                var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-
-                var isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path')).fromTemplate === true
-
-                if(isDropTarget) {
-                    var dropLocation = targetEl.getAttribute('data-per-location')
-                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
+            const targetEl = this.getTargetEl(ev).targetEl
+            if (targetEl) {
+                const pos = this.getPosFromMouse(ev)
+                const targetBox = this.getBoundingClientRect(targetEl)
+                const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
+                const isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path')).fromTemplate === true
+                if (isDropTarget) {
+                    const dropLocation = targetEl.getAttribute('data-per-location')
+                    if (targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
-                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before' && !isRoot) {
+                    } else if (pos.y - targetBox.top < 10 && dropLocation === 'before' && !isRoot) {
                         this.dropPosition = 'before'
                         this.setEditableStyle(targetBox, 'drop-top')
-                    } else if(dropLocation) {
-                        this.dropPosition = 'into-'+dropLocation
-                        this.setEditableStyle(targetBox, 'selected')
+                    } else if (dropLocation) {
+                        this.dropPosition = `into-${dropLocation}`
+                        this.setSelectedEditableStyle()
                     } else {
                         this.dropPosition = 'none'
                         this.leftOverlayArea()
                     }
-                } else if(!isRoot) {
-                    
-                    var y = pos.y - targetBox.top
-                    if(y < targetBox.height/2) {
+                } else if(!isRoot) {                    
+                    const y = pos.y - targetBox.top
+                    if (2 * y < targetBox.height) {
                         this.dropPosition = 'before'
                         this.setEditableStyle(targetBox, 'drop-top')
                     } else {
@@ -538,20 +528,19 @@ export default {
                 this.dropPosition = 'none'
                 this.leftOverlayArea()
             }
-
         },
 
         onDrop(ev) {
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
             var targetEl = this.getTargetEl(ev).targetEl
-            if(typeof targetEl === 'undefined' || targetEl === null){
+            if (typeof targetEl === 'undefined' || targetEl === null) {
                 return false
             }
             var targetPath = targetEl.getAttribute('data-per-path');
             var componentPath = ev.dataTransfer.getData('text')
 
-            if(targetPath === componentPath) {
+            if (targetPath === componentPath) {
                 ev.dataTransfer.clearData('text')
                 return false
             }
@@ -595,33 +584,47 @@ export default {
             this.editableClass = 'draggable'
         },
         setEditableStyle: function(targetBox, editableClass) {
-            var editable = this.$refs.editable
-            var editview = this.$refs.editview
-            var scrollY = editview ? editview.contentWindow.scrollY : 0
-            var scrollX = editview ? editview.contentWindow.scrollX : 0
-            if(editable) {
-                editable.style.top    = (targetBox.top + scrollY + (this.isIOS ? this.scrollTop : 0)) + 'px'
-                editable.style.left   = (targetBox.left + scrollX) + 'px'
-                editable.style.width  = targetBox.width + 'px'
-                editable.style.height = targetBox.height + 'px'
+            const editable = this.$refs.editable
+            if (editable) {
+                const editview = this.$refs.editview
+                const scrollY  = editview ? editview.contentWindow.scrollY : 0
+                const scrollX  = editview ? editview.contentWindow.scrollX : 0
 
-                if(this.selectedComponent) {
-                    var path = this.selectedComponent.getAttribute('data-per-path')
-                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                    if(node && node.fromTemplate) {
-                        editable.style['border-color'] = 'orange'
-                    } else {
-                        editable.style['border-color'] = ''
+                const style  = editable.style;
+                style.top    = `${targetBox.top + scrollY + (this.isIOS ? this.scrollTop : 0)}px`
+                style.left   = `${targetBox.left + scrollX}px`
+                style.width  = `${targetBox.width}px`
+                style.height = `${targetBox.height}px`
+
+                let color = ''
+                if (this.selectedComponent) {
+                    const path = this.selectedComponent.getAttribute('data-per-path')
+                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                    if (node && node.fromTemplate) {
+                        color = 'orange'
                     }
-                } else {
-                    editable.style['border-color'] = ''
                 }
+
+                style['border-color'] = color
             }
+            
             this.editableClass = editableClass
         },
+        setSelectedEditableStyle: function() {
+            if (this.selectedComponent) {
+                let editableClass = 'selected';
+                if (this.inline.path) {
+                    this.updateInlineStyle()
+                    editableClass += ' no-border'
+                }
 
-        updateEditablePos: function(top){
-            this.$refs.editable.style.top = top + 'px'
+                const targetBox = this.getBoundingClientRect(this.selectedComponent)
+                this.setEditableStyle(targetBox, editableClass)
+            }
+        },
+
+        updateEditablePos: function(top) {
+            this.$refs.editable.style.top = `${top}px`
         },
 
         onDelete: function(e) {
@@ -694,14 +697,20 @@ export default {
         .trumbowyg-box {
             margin: 0;
             overflow: hidden;
-        }
-
-        .trumbowyg-box, .trumbowyg-editor {
             min-height: unset;
-        }
 
-        .trumbowyg-button-pane {
-            z-index: 1;
+            .trumbowyg-button-pane {
+                z-index: 1;
+            }
+
+            .trumbowyg-editor {
+                min-height: unset;
+
+                p {
+                    margin: unset;
+                    padding: unset;
+                }
+            }
         }
     }
 </style>

@@ -95,9 +95,9 @@
 						&.no-border {
 							border: 0;
 						}
-						#inlineEditContainer {
-							border: 2px solid color("blue-grey", "base");
-						}
+					}
+					#inlineEditContainer {
+						border: 2px solid color("blue-grey", "base");
 					}
 					&.draggable {
 						border-color: color("blue-grey", "base");
