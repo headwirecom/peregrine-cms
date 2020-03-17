@@ -459,7 +459,6 @@
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
             showInfo: function(me, target) {
-                console.log('showInfo', target)
                 if(target.startsWith('/content/objects')) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
