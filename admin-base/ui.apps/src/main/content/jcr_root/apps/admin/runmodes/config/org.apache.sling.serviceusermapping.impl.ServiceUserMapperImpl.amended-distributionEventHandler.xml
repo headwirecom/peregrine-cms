@@ -27,7 +27,11 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
           jcr:primaryType="sling:OsgiConfig"
           user.default=""
-          user.mapping="[com.peregrine.cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user]"
+          user.mapping=
+"[
+com.peregrine-cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user,
+com.peregrine-cms.replication.core:peregrine-distribution-sub-service=distribution-agent-user
+]"
 >
     <!-- This configuration is setting up the Service User: 'defaultAgentService' for this bundle
          using the system user of the distribution configuration -->

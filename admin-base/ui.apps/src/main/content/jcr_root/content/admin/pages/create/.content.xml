@@ -34,7 +34,7 @@
             jcr:description="admin base Content Root"
             suffixToParameter="[path,/state/tools/pages]"
             dataFrom="/state/tools/pages" dataDefault="/content/sites"
-            loaders="[populateTemplates:/pageView/path,populateNodesForBrowser:/state/tools/pages]"
+            loaders="[populateTemplates:/pageView/path,populateNodesForBrowser:/state/tools/pages,populateSkeletonPages:/state/tools/pages]"
     >
             <nav jcr:primaryType="nt:unstructured"
                  sling:resourceType="admin/components/nav"/>

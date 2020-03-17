@@ -191,7 +191,7 @@ public class ReferenceListerService
                     if(child != null) {
                         // Check if the resource is not already listed in there
                         if(containsResource(response, child)) {
-                            log.info("Resource is already in the list: '{}'", child);
+                            log.trace("Resource is already in the list: '{}'", child);
                         } else {
                             if(source  != null && target != null) {
                                 listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));

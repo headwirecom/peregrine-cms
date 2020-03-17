@@ -76,11 +76,11 @@ public class PerConstants {
     public static final String NN_CONTENT = "content";
     public static final String CONTENT_ROOT = SLASH + NN_CONTENT;
     public static final String ETC_ROOT = "/etc";
-    public static final String ASSETS_ROOT = "/assets";
     public static final String FELIBS_ROOT = ETC_ROOT + "/felibs";
-    public static final String OBJECTS_ROOT = CONTENT_ROOT + "/objects";
     public static final String SITES_ROOT = CONTENT_ROOT + "/sites";
     public static final String TEMPLATES_ROOT = CONTENT_ROOT + "/templates";
+    public static final String ASSETS_ROOT = CONTENT_ROOT + "/assets";
+    public static final String OBJECTS_ROOT = CONTENT_ROOT + "/objects";
     public static final String PACKAGES_PATH = ETC_ROOT + "/packages";
 
     public static final String COMPONENTS = "components";
@@ -109,6 +109,7 @@ public class PerConstants {
     public static final String METAPROPERTIES = "metaproperties";
     public static final String UPDATED = "updated";
     public static final String OG_TAGS = "ogTags";
+    public static final String COLOR_PALETTE = "colorPalette";
 
     public static final String PAGE = "page";
     public static final String DROP = "drop";
