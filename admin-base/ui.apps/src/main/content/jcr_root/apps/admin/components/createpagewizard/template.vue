@@ -140,7 +140,7 @@
             templates: function() {
                 const templates = $perAdminApp.getNodeFromViewOrNull('/admin/templates/data')
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
-                siteRootParts[2] = 'templates'
+                siteRootParts[3] = 'templates'
                 const siteRoot = siteRootParts.join('/')
                 return templates.filter( (item) => item.path.startsWith(siteRoot))
             }
