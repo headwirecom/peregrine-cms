@@ -29,6 +29,8 @@ import static com.peregrine.admin.util.AdminConstants.NAV_COMPONENT_PATH;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
 
+import javax.inject.Inject;
+
 import com.peregrine.nodetypes.models.Container;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
@@ -74,8 +76,14 @@ import org.apache.sling.models.annotations.Model;
 public class NavModel
     extends Container {
 
+    @Inject private String hideTenants;
+
     public NavModel(Resource r) {
         super(r);
+    }
+
+    public boolean isHideTenants() {
+      return "true".equals(hideTenants);
     }
 
     //GEN[:INJECT

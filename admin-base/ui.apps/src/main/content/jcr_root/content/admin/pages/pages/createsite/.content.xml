@@ -40,7 +40,7 @@
     loaders="[populateTemplates:/pageView/path,populateNodesForBrowser:/state/tools/pages]">
 
     <nav jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/nav"/>
+      sling:resourceType="admin/components/nav" hideTenants="true"/>
 
     <wizard jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/createsitewizard">

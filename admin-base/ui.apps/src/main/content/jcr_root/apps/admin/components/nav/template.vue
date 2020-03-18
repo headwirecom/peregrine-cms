@@ -49,7 +49,7 @@
           </template>
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
-          <li class="tenant-select">
+          <li v-if="!model.hideTenants" class="tenant-select">
             <vue-multiselect
                 v-model="state.tenant"
                 deselect-label=""
