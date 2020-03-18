@@ -41,7 +41,7 @@
                                     v-on:click.stop.prevent="selectTemplate(null, template.path)"
                                     v-bind:class="isSelected(template.path) ? 'active' : ''"
                                     v-bind:key="template.path">
-                                    <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.name }"></admin-components-action>
+                                    <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.title ? template.title : template.name }"></admin-components-action>
                                 </li>
                             </ul>
                             <div v-if="skeletonPages && skeletonPages.length > 0">
@@ -149,7 +149,9 @@
         ,
         created: function() {
             //By default select the first item in the list;
-            this.selectTemplate(this, this.templates[0].path);
+            if(this.templates && this.templates.length > 0) {
+                this.selectTemplate(this, this.templates[0].path);
+            }
         },
         computed: {
             pageSchema: function() {

@@ -135,7 +135,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
     }
 
     private Response findTemplates(Request request) throws IOException {
-        String query = "select * from per:Page where jcr:path like '/content/%/templates' order by jcr:path";
+        String query = "select * from per:Page where jcr:path like '/content/%/templates%' order by jcr:path";
         return findAndOutputToWriterAsJSON(request, query);
     }
 
@@ -190,6 +190,9 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                         } else {
                             answer.writeObject();
                             answer.writeAttribute(NAME, node.getName());
+                            if(node.hasProperty(JCR_TITLE)) {
+                                answer.writeAttribute(TITLE, node.getProperty(JCR_TITLE).getString());
+                            }
                             answer.writeAttribute(PATH, node.getPath());
                             answer.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
                             answer.writeClose();
