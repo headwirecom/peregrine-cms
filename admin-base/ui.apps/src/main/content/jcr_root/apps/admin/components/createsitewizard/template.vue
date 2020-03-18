@@ -26,9 +26,11 @@
 <div class="container">
     <form-wizard
       v-bind:title="'create a site'"
-      v-bind:subtitle="''" @on-complete="onComplete"
+      v-bind:subtitle="''"
+      @on-complete="onComplete"
       error-color="#d32f2f"
-      color="#546e7a">
+      color="#546e7a"
+      :key="reloadKey">
         <tab-content title="select theme" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
@@ -52,8 +54,14 @@
                 full project.
             </p>
         </tab-content>
+        <tab-content v-if="colorPalettes && colorPalettes.length > 0" title="choose color palette">
+            <admin-components-colorpaletteselector
+                :palettes="colorPalettes"
+                :template-path="formmodel.templatePath"
+                @select="onColorPaletteSelect"/>
+        </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
-            <vue-form-generator 
+            <vue-form-generator
               :model   ="formmodel"
               :schema  ="nameSchema"
               :options ="formOptions"
@@ -73,6 +81,8 @@
         data:
             function() {
                 return {
+                    reloadKey: 0,
+                    colorPalettes: [],
                     formErrors: {
                         unselectedThemeError: false
                     },
@@ -130,20 +140,39 @@
             themes: function() {
                 const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content/sites').children
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
-                return themes.filter( (item) => item.name.startsWith('theme'))
+                return themes.filter( (item) => {
+                    return item.name.startsWith('theme');
+                })
             }
         },
         methods: {
             selectTheme: function(me, target){
                 if(me === null) me = this;
                 me.formmodel.templatePath = target;
+                me.formmodel.colorPalette = null
+                me.colorPalettes = []
                 this.validateTabOne(me);
+                $perAdminApp.getApi().getPalettes(me.formmodel.templatePath).then((data) =>{
+                    if (data && data.children && data.children.length > 0) {
+                        me.colorPalettes = data.children.reverse()
+                    }
+                    me.reloadKey++
+                })
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name, title: this.formmodel.title })
+                const payload = {
+                    fromName: this.formmodel.templatePath,
+                    toName: this.formmodel.name,
+                    title: this.formmodel.title
+                }
+
+                if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {
+                    payload.colorPalette = this.formmodel.colorPalette
+                }
+                $perAdminApp.stateAction('createSite', payload)
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);
@@ -181,8 +210,21 @@
             },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
+            },
+            onColorPaletteSelect(colorPalette) {
+                this.formmodel.colorPalette = colorPalette
             }
-
         }
     }
 </script>
+
+<style scoped>
+    .feature-unavailable {
+        display: flex;
+        justify-content: center;
+    }
+
+    .feature-unavailable .card{
+        max-width: 700px;
+    }
+</style>

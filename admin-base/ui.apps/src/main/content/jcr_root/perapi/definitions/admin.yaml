@@ -39,8 +39,8 @@ paths:
           type: string
           in: query
         - description: the path to a content node to look up the corresponding component. If
-                       a path to a per:Page node is provided the explorer_dialog.json is used
-                       for the model otherwise the dialog.json file of the component is used.
+            a path to a per:Page node is provided the explorer_dialog.json is used
+            for the model otherwise the dialog.json file of the component is used.
           name: path
           type: string
           in: query
@@ -76,6 +76,49 @@ paths:
             type: object
             additionalProperties:
               type: object
+  '/copy.json{path}':
+    post:
+      description: Copy a given node to a new place
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the resource to copy
+          required: true
+        - name: to
+          type: string
+          in: formData
+          description: the path of the resource that is either the new parent for type 'child' or the next sibling for type 'before'
+          required: true
+        - name: type
+          type: string
+          in: formData
+          description: The type of move which can be 'child' (add as child of the given to node) or 'before' (add before the given to node)
+          required: true
+        - name: newName
+          type: string
+          in: formData
+          description: The new name that copied resource will have
+          required: false
+        - name: newTitle
+          type: string
+          in: formData
+          description: The new title that copied resource will have
+          required: false
+        - name: deep
+          type: boolean
+          in: formData
+          description: flag indicating if children of the selected resource should also be copied
+          required: false
+      responses:
+        200:
+          description: returns the from node name and path and the new node name and path
+          schema:
+            $ref: "#/definitions/Copy"
+        400:
+          description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
+          schema:
+            $ref: "#/definitions/Error"
   '/createFolder.json{path}':
     post:
       description: create a new folder in the system

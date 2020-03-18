@@ -257,6 +257,18 @@ class PerAdminImpl {
     .then((data) => populateView('/admin', 'templates', data))
   }
 
+  populateSkeletonPages(path, target = 'nodes', includeParents = false) {
+    const skeletonPagePath = path.split('/').slice(0,4).join('/')+'/skeleton-pages'
+
+    try {
+      if (get(skeletonPagePath, null)) {
+        this.populateContent(skeletonPagePath)
+      }
+    } catch(err) {}
+
+    return this.populateNodesForBrowser(skeletonPagePath, target, includeParents)
+  }
+
   populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
     return fetch('/admin/nodes.json' + path + '?includeParents=' + includeParents)
     .then((data) => populateView('/admin', target, data))
@@ -431,12 +443,15 @@ class PerAdminImpl {
     })
   }
 
-  createSite(fromName, toName, title) {
+  createSite(fromName, toName, title, colorPalette) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('fromSite', fromName)
       data.append('toSite', toName)
       data.append('title', title)
+      if (colorPalette) {
+        data.append('colorPalette', colorPalette)
+      }
       updateWithForm('/admin/createSite.json', data)
       .then((data) => this.populateNodesForBrowser(
           callbacks.getView().state.tools.pages))
@@ -451,10 +466,30 @@ class PerAdminImpl {
       data.append('templatePath', templatePath)
       data.append('title', title)
       updateWithForm('/admin/createPage.json' + parentPath, data)
-      .then((data) => this.populateNodesForBrowser(parentPath))
+      .then((data) => {
+        if (parentPath.indexOf('skeleton-pages') > -1) {
+          this.populateSkeletonPages(parentPath)
+        }
+        this.populateNodesForBrowser(parentPath)
+      })
       .then(() => resolve())
     })
   }
+
+    createPageFromSkeletonPage(parentPath, name, skeletonPagePath) {
+        return new Promise( (resolve, reject) => {
+            let data = new FormData()
+            data.append('path', skeletonPagePath)
+            data.append('to', parentPath)
+            data.append('deep', 'true')
+            data.append('newName', name)
+            data.append('newTitle', name)
+            data.append('type', 'child')
+            updateWithForm('/admin/createPageFromSkeletonPage.json', data)
+                .then( (data) => this.populateNodesForBrowser(parentPath) )
+                .then( () => resolve() )
+        })
+    }
 
   createObject(parentPath, name, templatePath) {
     let data = new FormData()
@@ -757,6 +792,15 @@ class PerAdminImpl {
     formData.append('deep', 'false')
     formData.append('name', 'defaultRepl')
     return updateWithForm('/admin/repl.json' + path, formData)
+  }
+
+  getPalettes(templateName) {
+    return fetch(`/admin/nodes.json/content/sites/${templateName}/css/palettes`)
+        .then((data) => {
+          return $perAdminApp.findNodeFromPath(data, '/content/sites/themecleanflex/css/palettes')
+        }).catch((err) => {
+          logger.warn(`template ${templateName} does not support palettes`)
+        })
   }
 }
 

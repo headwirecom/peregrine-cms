@@ -95,6 +95,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -221,6 +222,18 @@ public class AdminResourceHandlerService
     private static final String REPLACE_VALUE = "replace";
     private static final String ROOT_PROPERTY = "root";
     private static final String RULES_PROPERTY = "rules";
+    private static final String RESOURCE_NAME_COLLISION = "Resource '%s' already has a child named '%s'";
+    private static final String CANNOT_MOVE_RESOURCE_BELOW_ITSELF_OR_DESCENDANT = "Cannot move resource '%s' below itself or one of its descendants '%s'";
+    private static final String RESOURCE_RESOLVER_PROVIDED_TO_COPY_OPERATION_IS_NULL = "Resource resolver provided to copy operation is null";
+    private static final String NO_RESOURCE_TO_COPY_PROVIDED = "No resource to copy provided.";
+    private static final String NO_NEW_PARENT_RESOURCE_PROVIDED = "No new parent resource provided.";
+    private static final String NO_JCR_CONTENT_FOR_COPY = "Resource being copied '%s' does not have a jcr:content resource child";
+    private static final String COPY_GENERIC_EXCEPTION = "Exception occurred copying '%s' to '%s'";
+    private static final String VAR = "/var";
+    private static final String NO_VAR_RESOURCE = "No resource exists at /var so temp resource could not be created";
+    private static final String TEMP = "temp";
+    private static final String NO_COPIED_RESOURCE = "Resource copy should've yielded a resource at '%s' but our resource is null";
+    private static final String REORDER_EXCEPTION = "Exception occurred trying to order node '%s' before '%s'";
 
     private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
@@ -467,6 +480,9 @@ public class AdminResourceHandlerService
                 if (!sameParent) {
                     //AS TODO: Shouldn't we try to update the references ?
                     // If not the same parent then just move as they are added at the end
+                    if(isAncestor(fromResource, toResource)) {
+                        throw new ManagementException(String.format(CANNOT_MOVE_RESOURCE_BELOW_ITSELF_OR_DESCENDANT, fromResource.getPath(), toResource.getPath()));
+                    }
                     answer = resourceRelocation.moveToNewParent(fromResource, toResource, false);
                 }
                 if (orderBefore || sameParent) {
@@ -480,6 +496,9 @@ public class AdminResourceHandlerService
                 // and if they are the same parent we means we only ORDER otherwise we MOVE first
                 boolean sameParent = resourceRelocation.hasSameParent(fromResource, toResource);
                 if (!sameParent) {
+                    if(isAncestor(fromResource, toResource.getParent())) {
+                        throw new ManagementException(String.format(CANNOT_MOVE_RESOURCE_BELOW_ITSELF_OR_DESCENDANT, fromResource.getPath(), toResource.getParent().getPath()));
+                    }
                     answer = resourceRelocation.moveToNewParent(fromResource, toResource.getParent(), false);
                 }
                 resourceRelocation.reorder(toResource.getParent(), fromResource.getName(), toResource.getName(), orderBefore);
@@ -506,6 +525,9 @@ public class AdminResourceHandlerService
         }
         if (newName.indexOf('/') >= 0) {
             throw new ManagementException(NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH);
+        }
+        if(fromResource.getParent() != null && fromResource.getParent().getChild(newName) != null) {
+            throw new ManagementException(String.format(RESOURCE_NAME_COLLISION, fromResource.getParent().getPath(), newName));
         }
         try {
             final Resource answer = resourceRelocation.rename(fromResource, newName, true);
@@ -1921,6 +1943,127 @@ public class AdminResourceHandlerService
             }
         }
         return answer;
+    }
+
+    public Resource copyResource(ResourceResolver resourceResolver, Resource resourceToCopy, Resource newParent, String newName, String newTitle, Resource nextSibling, boolean deep) throws ManagementException {
+        if (resourceResolver == null) {
+            throw new ManagementException(RESOURCE_RESOLVER_PROVIDED_TO_COPY_OPERATION_IS_NULL);
+        }
+        if(resourceToCopy == null) {
+            throw new ManagementException(NO_RESOURCE_TO_COPY_PROVIDED);
+        }
+        if(newParent == null) {
+            throw new ManagementException(NO_NEW_PARENT_RESOURCE_PROVIDED);
+        }
+
+        newName = getNameForCopy(resourceToCopy, newParent, newName);
+
+        String originalPath = resourceToCopy.getPath();
+        String parentPath = newParent.getPath();
+        String newPath = parentPath + SLASH + newName;
+        ValueMap copyProps = resourceToCopy.getValueMap();
+        Resource copiedResource = null;
+
+        if(!deep) {
+            Resource pageContentResource = resourceToCopy.getChild(JCR_CONTENT);
+            if(pageContentResource == null) {
+                throw new ManagementException(String.format(NO_JCR_CONTENT_FOR_COPY, originalPath));
+            }
+            try {
+                copiedResource = resourceResolver.create(newParent, newName, copyProps);
+                resourceResolver.copy(pageContentResource.getPath(), copiedResource.getPath());
+                return copiedResource;
+            } catch (PersistenceException e) {
+                throw new ManagementException(String.format(COPY_GENERIC_EXCEPTION, originalPath, newPath), e);
+            }
+        }
+        else {
+            //For deep copies, we're actually copying the resource to a temp location and then moving it to its destination
+            //to get around renaming and cyclical reference issues
+            Resource etc = resourceResolver.getResource(VAR);
+            if(etc == null) {
+                throw new ManagementException(NO_VAR_RESOURCE);
+            }
+            String tempResourceName = TEMP + System.currentTimeMillis() + new Random().nextInt(Integer.MAX_VALUE);
+            try {
+                //Create a temp location with a random (enough) path
+                Resource tempResource = resourceResolver.create(etc, tempResourceName, new HashMap<>());
+                //Make a resource with the new name under the temp location
+                Resource tempCopy = resourceResolver.create(tempResource, newName, copyProps);
+                //Copy all the children of the original resource to the temp copy
+                for(Resource child : resourceToCopy.getChildren()) {
+                    resourceResolver.copy(child.getPath(), tempCopy.getPath());
+                }
+                //Move the temp copy to the new parent location
+                copiedResource = resourceResolver.move(tempCopy.getPath(), parentPath);
+                //Clean up the temp location
+                resourceResolver.delete(tempResource);
+            } catch (PersistenceException e) {
+                throw new ManagementException(String.format(COPY_GENERIC_EXCEPTION, originalPath, newPath), e);
+            }
+        }
+
+        if(copiedResource == null) {
+            //This should be unreachable since both deep and shallow copies should result in a resource assigned to this variable
+            //or an exception but just in case
+            throw new ManagementException((String.format(NO_COPIED_RESOURCE, newPath)));
+        }
+
+        //Handle retitling
+        Resource copiedContent = copiedResource.getChild(JCR_CONTENT);
+        if(copiedContent != null) {
+            ValueMap modifiableProperties = getModifiableProperties(copiedContent);
+            if(modifiableProperties.containsKey(NAME)) {
+                modifiableProperties.put(NAME, newName);
+            }
+            if(StringUtils.isNotBlank(newTitle)) {
+                modifiableProperties.put(JCR_TITLE, newTitle);
+            }
+        }
+
+        //Handle reordering
+        if(nextSibling != null) {
+            String nextSiblingName = nextSibling.getName();
+            Node parentNode = newParent.adaptTo(Node.class);
+            try {
+                parentNode.orderBefore(newName,nextSiblingName);
+            } catch (RepositoryException e) {
+                throw new ManagementException(String.format(REORDER_EXCEPTION, newPath, nextSibling.getPath()), e);
+            }
+        }
+        return copiedResource;
+    }
+
+    private String getNameForCopy(Resource resourceToCopy, Resource newParent, String newName) throws ManagementException{
+        if(StringUtils.isNotBlank(newName)) {
+            if(newParent.getChild(newName) == null) {
+                return newName;
+            }
+            else {
+                throw new ManagementException(String.format(RESOURCE_NAME_COLLISION, newParent.getName(), newName));
+            }
+        }
+        newName = resourceToCopy.getName();
+        if(newParent.getChild(newName) == null) {
+            return newName;
+        }
+
+        int i = 1;
+        while(newParent.getChild(newName+i) != null) {
+            i++;
+        }
+        return newName+i;
+    }
+
+    /**
+     * Returns true if resource1 is an ancestor of or equal to resource 2
+     *
+     * @param resource1
+     * @param resource2
+     * @return
+     */
+    private boolean isAncestor(Resource resource1, Resource resource2) {
+        return(resource2.getPath().startsWith(resource1.getPath()));
     }
 
     private String prettyPrintJson(Object object) {

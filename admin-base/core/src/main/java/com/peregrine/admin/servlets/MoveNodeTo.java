@@ -48,7 +48,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import javax.servlet.Servlet;

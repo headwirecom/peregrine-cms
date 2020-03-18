@@ -26,7 +26,6 @@
 
     <sly data-sly-include="styles.html"></sly>
     <sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
-
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
             document.write('<script src="/etc/felibs/pagerendervue/conditional-js/shim.min.js"><\/script>');
