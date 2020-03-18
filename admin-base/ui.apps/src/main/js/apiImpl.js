@@ -555,7 +555,7 @@ class PerAdminImpl {
 
   deleteSite(target) {
     const name = target.name;
-    const root = '/content/sites'
+    const root = '/content'
     const data = new FormData()
     data.append('name', name)
     return updateWithForm('/admin/deleteSite.json', data)
@@ -779,8 +779,7 @@ class PerAdminImpl {
 
   moveNodeTo(path, component, drop) {
     logger.fine(
-        'Move Node To: path: ' + path + ', component: ' + component + ', drop: '
-        + drop)
+        'Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
     let formData = new FormData();
     formData.append('component', component)
     formData.append('drop', drop)
@@ -795,9 +794,9 @@ class PerAdminImpl {
   }
 
   getPalettes(templateName) {
-    return fetch(`/admin/nodes.json/content/sites/${templateName}/css/palettes`)
+    return fetch(`/admin/nodes.json/content/${templateName}/pages/css/palettes`)
         .then((data) => {
-          return $perAdminApp.findNodeFromPath(data, '/content/sites/themecleanflex/css/palettes')
+          return $perAdminApp.findNodeFromPath(data, `/content/${templateName}/pages/css/palettes`)
         }).catch((err) => {
           logger.warn(`template ${templateName} does not support palettes`)
         })

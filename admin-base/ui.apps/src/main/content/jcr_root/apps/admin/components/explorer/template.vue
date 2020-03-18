@@ -498,7 +498,7 @@
                 alert(target)
             },
             addSite: function(me, target) {
-                $perAdminApp.stateAction('createSiteWizard', '/content/sites')
+                $perAdminApp.stateAction('createSiteWizard', '/content')
             },
             addPage: function(me, target) {
                 if(me.pt.path === '/content/sites') {

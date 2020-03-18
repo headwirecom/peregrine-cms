@@ -64,7 +64,7 @@
         editPage: function(me, target) {
         },
         addSite: function(me, target) {
-            $perAdminApp.stateAction('createSiteWizard', '/content/sites')
+            $perAdminApp.stateAction('createSiteWizard', '/content')
         },
     }
 }

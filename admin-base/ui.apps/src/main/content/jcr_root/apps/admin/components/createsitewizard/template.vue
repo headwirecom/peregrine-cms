@@ -138,7 +138,7 @@
             pageSchema: function() {
             },
             themes: function() {
-                const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content/sites').children
+                const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content').children
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 return themes.filter( (item) => {
                     return item.name.startsWith('theme');
