@@ -34,7 +34,7 @@
     sling:resourceType="admin/components/toolingpage"
     jcr:title="templates"
     jcr:description="admin base Content Root"
-    suffixToParam="[path,/state/tools/templates]"
+    suffixToParameter="[path,/state/tools/templates]"
     dataFrom="/state/tools/templates"
     dataDefault="/content/admin/templates"
     loaders="[populateNodesForBrowser:/state/tools/templates]">
