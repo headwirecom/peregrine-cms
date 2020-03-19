@@ -59,8 +59,7 @@
           title="add site"
           command="addSite"
           icon="folder"
-          classes="addSite"
-          visibility="state.tools.pages == '/content/admin/pages'">
+          classes="addSite">
           <experiences jcr:primaryType="nt:unstructured">
             <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
               title="Webseite hinzufügen"/>
@@ -74,8 +73,7 @@
           title="add page"
           command="addPage"
           icon="add"
-          classes="addPage"
-          visibility="state.tools.pages != '/content/admin/pages'">
+          classes="addPage">
           <experiences jcr:primaryType="nt:unstructured">
             <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Seite hinzufügen"/>
           </experiences>
