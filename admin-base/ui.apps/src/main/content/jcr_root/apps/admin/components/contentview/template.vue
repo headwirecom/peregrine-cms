@@ -182,19 +182,18 @@ export default {
             return this.viewMode
         },
         enableEditableFeatures() {
-            var targetEl = this.selectedComponent
-            if(targetEl == null || targetEl === undefined) return false
+            const targetEl = this.selectedComponent
+            if (!targetEl) return false
             const path = targetEl.getAttribute('data-per-path')
-            if(path === undefined || path === null) return false
-            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-            if(!node) return false
-            return !node.fromTemplate
+            if (!path) return false
+            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+            return node && !node.fromTemplate
         },
         isIgnoreContainersEnabled() {
-            const view = $perAdminApp.getView();
-            return view.state.tools
-                && view.state.tools.workspace
-                && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
+            const tools = $perAdminApp.getView().state.tools;
+            return tools
+                && tools.workspace
+                && tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         },
         inlineNode() {
             if (this.inline.path) {
@@ -235,42 +234,41 @@ export default {
         /* Window/Document methods =================
         ============================================ */
         onKeyDown(ev){
-            var nodeName = document.activeElement.nodeName
-            var className = ''+document.activeElement.className
+            const nodeName = document.activeElement.nodeName
+            const className = document.activeElement.className.toString()
             /* check no field is currently in focus */
-            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')){
+            if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')) {
                 return false
-            } else {
-                var ctrlKey = 17
-                var cmdKey = 91
-                if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                    this.ctrlDown = true
-                }
-                if(this.selectedComponent !== null){
-                    var cKey = 67
-                    var vKey = 86
-                    if (this.ctrlDown && (ev.keyCode == cKey)){
+            }
+
+            const ctrlKey = 17
+            const cmdKey = 91
+            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey) {
+                this.ctrlDown = true
+                if (this.selectedComponent) {
+                    const cKey = 67
+                    const vKey = 86
+                    if (ev.keyCode == cKey) {
                         this.onCopy()
-                    }
-                    if (this.ctrlDown && (ev.keyCode == vKey)){
+                    } else if (ev.keyCode == vKey) {
                         this.onPaste()
                     }
                 }
             }
         },
 
-        onKeyUp(ev){
-            var nodeName = document.activeElement.nodeName
-            var className = document.activeElement.className
+        onKeyUp(ev) {
+            const nodeName = document.activeElement.nodeName
+            const className = document.activeElement.className
             /* check no field is currently in focus */
-            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+            if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
                 return false
-            } else {
-                var ctrlKey = 17
-                var cmdKey = 91
-                if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                    this.ctrlDown = false
-                }
+            }
+
+            const ctrlKey = 17
+            const cmdKey = 91
+            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+                this.ctrlDown = false
             }
         },
 
@@ -288,14 +286,9 @@ export default {
         },
 
         setIframeScrollState(viewMode) {
-             var iframeDoc = this.$refs.editview.contentWindow.document
-            if(viewMode.endsWith('preview')){
-                iframeDoc.body.style.overflowX = 'hidden'
-                iframeDoc.body.style.overflowY = 'auto'
-            } else {
-                iframeDoc.body.style.overflowX = 'hidden'
-                iframeDoc.body.style.overflowY = 'auto'
-            }
+            const iframeDoc = this.$refs.editview.contentWindow.document
+            iframeDoc.body.style.overflowX = 'hidden'
+            iframeDoc.body.style.overflowY = 'auto'
         },
 
         updateOverlay() {
@@ -329,7 +322,7 @@ export default {
             // make sure the iframe exists before we actually try to read it
             if(this.$refs.editview) {
                 var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
-                this.$refs.editviewContainer.style.height = iframeHeight + 'px'
+                this.$refs.editviewContainer.style.height = `${iframeHeight}px`
             }
         },
 
@@ -347,17 +340,18 @@ export default {
         },
 
         getElementStyle: function (e, styleName) {
-            var styleValue = "";
-            if(document.defaultView && document.defaultView.getComputedStyle) {
-                styleValue = document.defaultView.getComputedStyle(e, "").getPropertyValue(styleName);
-            }
-            else if(e.currentStyle) {
-                styleName = styleName.replace(/\-(\w)/g, function (strMatch, p1) {
+            if (document.defaultView && document.defaultView.getComputedStyle) {
+                return document.defaultView.getComputedStyle(e, "").getPropertyValue(styleName);
+            } 
+            
+            if (e.currentStyle) {
+                const name = styleName.replace(/\-(\w)/g, function (strMatch, p1) {
                     return p1.toUpperCase();
                 });
-                styleValue = e.currentStyle[styleName];
+                return e.currentStyle[name];
             }
-            return styleValue;
+
+            return ''
         },
 
         getBoundingClientRect: function(e) {
