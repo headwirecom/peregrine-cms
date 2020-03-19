@@ -118,7 +118,6 @@
         },
         created: function() {
             //By default select the first item in the list;
-            console.log(this.components, this.components[0])
             this.selectComponent(this, this.components[0].path);
         },
         computed: {
