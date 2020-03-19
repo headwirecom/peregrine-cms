@@ -1,6 +1,6 @@
 /*-
  * #%L
- * peregrine vuejs page renderer - UI Apps
+ * peregrine server page renderer - UI Apps
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%

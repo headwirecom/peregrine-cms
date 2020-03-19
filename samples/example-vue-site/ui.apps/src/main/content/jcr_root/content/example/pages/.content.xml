@@ -27,12 +27,13 @@
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
-  jcr:title="example-pages"
+  jcr:title="example root page"
   jcr:description="Example Pages Root">
 
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="example/components/page"
+    jcr:title="example root page"
     template="/content/example/templates/base"/>
 
 </jcr:root>

@@ -27,13 +27,13 @@
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
-  jcr:title="pagerendervue-pages"
-  jcr:description="PagerenderVue Pages Root">
+  jcr:title="pagerender-vue root page"
+  jcr:description="Pagerender-Vue Pages Root">
 
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="pagerendervue/structure/page"
-    siteCSS="[/etc/felibs/pagerendervue/bootstrap/css/bootstrap.min.css]"
-    siteJS="[/etc/felibs/pagerendervue/jquery/jquery.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js,/etc/felibs/pagerendervue/bootstrap/js/bootstrap.min.js]"/>
+    jcr:title="pagerender-vue root page"
+    template="/content/pagerendervue/templates"/>
 
 </jcr:root>

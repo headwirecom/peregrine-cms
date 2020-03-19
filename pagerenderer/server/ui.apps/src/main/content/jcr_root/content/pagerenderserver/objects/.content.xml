@@ -27,5 +27,13 @@
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
-  jcr:title="pagerenderserver-objects"
-  jcr:description="PagerenderServer Objects Root"/>
+  jcr:title="pagerender-server root page"
+  jcr:description="Pagerender-Server Pages Root">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="pagerenderserver/structure/page"
+    jcr:title="pagerender-server root page"
+    template="/content/pagerenderserver/templates"/>
+
+</jcr:root>
