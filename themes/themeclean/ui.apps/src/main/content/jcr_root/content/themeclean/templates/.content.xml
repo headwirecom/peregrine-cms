@@ -4,7 +4,7 @@
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
   jcr:title="themeclean root template"
-  jcr:description="themeclean Site Root">
+  jcr:description="themeclean Templates Root">
 
   <jcr:content
     jcr:primaryType="per:PageContent"

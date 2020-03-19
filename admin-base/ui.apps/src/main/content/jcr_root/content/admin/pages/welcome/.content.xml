@@ -32,10 +32,8 @@
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
-    jcr:title="welcome"
-    jcr:description="admin base welcome page"
-    siteCSS="[/etc/felibs/admin/dependencies/material-design-icons/material-icons.css,/etc/felibs/materialize/materialize.css]"
-    siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js]">
+    jcr:title="Welcome"
+    jcr:description="admin base welcome page">
 
     <nav jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/nav" hideTenants="true"/>

@@ -27,5 +27,13 @@
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
-  jcr:title="pagerendervue-assets"
-  jcr:description="PagerenderVue Assets Root"/>
+  jcr:title="pagerender-vue root asset"
+  jcr:description="Pagerender-Vue Assets Root">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="pagerendervue/structure/page"
+    jcr:title="pagerender-vue root asset"
+    template="/content/pagerendervue/templates"/>
+
+</jcr:root>

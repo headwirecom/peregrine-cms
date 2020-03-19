@@ -32,7 +32,7 @@
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
-    jcr:title="home"
+    jcr:title="Home"
     jcr:description="admin base home page">
 
     <nav jcr:primaryType="nt:unstructured"

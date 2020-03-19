@@ -31,7 +31,7 @@
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
-    jcr:title="create template"
+    jcr:title="Create Template"
     jcr:description="admin base Content Root"
     suffixToParameter="[path,/state/tools/templates]"
     dataFrom="/state/tools/templates"

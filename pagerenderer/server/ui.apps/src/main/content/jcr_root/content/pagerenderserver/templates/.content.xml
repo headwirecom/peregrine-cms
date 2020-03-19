@@ -27,5 +27,14 @@
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
-  jcr:title="pagerenderserver-templates"
-  jcr:description="PagerenderServer Templates Root"/>
+  jcr:title="pagerender-server root template"
+  jcr:description="Pagerender-Server Templates Root">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="pagerenderserver/structure/page"
+    jcr:title="pagerender-server root template"
+    siteCSS="[https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css]"
+    siteJS="[https://code.jquery.com/jquery-3.1.1.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js,https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js]"/>
+
+</jcr:root>

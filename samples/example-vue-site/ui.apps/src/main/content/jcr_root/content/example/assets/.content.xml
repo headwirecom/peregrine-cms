@@ -27,5 +27,13 @@
   xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
-  jcr:title="example-assets"
-  jcr:description="Example Assets Root"/>
+  jcr:title="example root asset"
+  jcr:description="Example Assets Root">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="example/components/page"
+    jcr:title="example root asset"
+    template="/content/example/templates/base"/>
+
+</jcr:root>
