@@ -118,18 +118,21 @@
         },
         created: function() {
             //By default select the first item in the list;
+            console.log(this.components, this.components[0])
             this.selectComponent(this, this.components[0].path);
         },
         computed: {
             components: function() {
-                const templates = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
+                const tenant = $perAdminApp.getView().state.tenant || {name: 'example'}
+                const components = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 siteRootParts[1] = 'apps'
-                siteRootParts[2] = siteRootParts[3]
+                siteRootParts[2] = tenant.name
                 const siteRoot = siteRootParts.slice(0,3).join('/')
-                return templates.filter( (item) => item.path.startsWith(siteRoot) && (
-                    item.name === 'page' || item.templateComponent
-                ))
+                return components.filter( (component) =>
+                    component.path.startsWith(siteRoot)
+                    && (component.name === 'page' || component.templateComponent)
+                )
             }
         }
         ,
