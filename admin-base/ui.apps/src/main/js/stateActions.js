@@ -133,7 +133,6 @@ actions['renameObject'] = renameObject
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
 actions['moveObject'] = moveObject
-
 actions['showTemplateInfo'] = showPageInfo
 actions['saveTemplateProperties'] = savePageProperties
 actions['renameTemplate'] = renameTemplate
