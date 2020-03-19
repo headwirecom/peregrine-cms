@@ -24,143 +24,31 @@
   -->
 <template>
 
-<div class="explorer">
-
-    <div class="explorer-layout">
-    <div class="row">
-        <div class="col s12 m8 explorer-main">
-            <ul class="collection">
-                <li
-                    v-for ="(child,i) in children"
-                    v-bind:key="i"
-                    v-bind:class="`collection-item`"
-                    draggable ="true">
-
-                    <!-- <admin-components-action v-if="editable(child)"
-                                             v-bind:model="{
-                                target: child,
-                                command: 'selectPath',
-                                tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
-                            }">
-                        <i class="material-icons">folder</i>
-                    </admin-components-action> -->
-                    <admin-components-action
-                        v-bind:model="{
-                            target: child.roots.pages,
-                            command: 'selectPath',
-                            dblClickTarget: child,
-                            dblClickCommand: 'selectPath',
-                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
-                        }">{{child.title ? child.title : child.name}} {{child}}
-                    </admin-components-action>
-
-                    <!-- <admin-components-action v-if="!editable(child)"
-                        v-bind:model="{
-                            target: child,
-                            command: 'selectPath',
-                            tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
-                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
-                    </admin-components-action>
-
-                    <admin-components-extensions v-bind:model="{id: 'admin.components.explorer', item: child}"></admin-components-extensions>
-
-                    <div class="secondary-content">
-                        <admin-components-action v-if="editable(child)"
-                            v-bind:model="{
-                                target: child.path,
-                                command: 'editPage',
-                                tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
-                            }">
-                            <admin-components-iconeditpage></admin-components-iconeditpage>
-                        </admin-components-action>
-
-                        <admin-components-action v-if="composumEditable(child)"
-                            v-bind:model="{
-                                target: child.path,
-                                command: 'editFile',
-                                tooltipTitle: `${$i18n('editFile')} '${child.title || child.name}'`
-                            }">
-                            <admin-components-iconeditpage></admin-components-iconeditpage>
-                        </admin-components-action>
-
-                        <admin-components-action v-if="replicatable(child)"
-                            v-bind:model="{
-                                target: child.path,
-                                command: 'replicate',
-                                tooltipTitle: `${$i18n('replicate')} '${child.title || child.name}'`
-                            }">
-                            <i class="material-icons" v-bind:class="replicatedClass(child)">public</i>
-                        </admin-components-action>
-
-                        <admin-components-action v-if="editable(child)"
-                            v-bind:model="{
-                                target: child.path,
-                                command: 'showInfo',
-                                tooltipTitle: `'${child.title || child.name}' ${$i18n('info')}`
-                            }">
-                            <i class="material-icons">info</i>
-                        </admin-components-action>
-
-                        <span v-if="viewable(child)">
-                            <a
-                                target      ="viewer"
-                                v-bind:href ="viewUrl(child)"
-                                v-on:click.stop  =""
-                                v-bind:title="`${$i18n('view')} '${child.title || child.name}' ${$i18n('inNewTab')}`"
-                                >
-                                <i class="material-icons">visibility</i>
-                            </a>
-                        </span>
-
-                        <admin-components-action
-                            v-bind:model="{
-                                target: child,
-                                command: 'deleteSiteOrPage',
-                                tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
-                            }">
-                            <i class="material-icons">delete</i>
-                        </admin-components-action> 
-                    </div>-->
-                </li>
-            </ul>
-            <!-- <div v-if="children && children.length == 0" class="empty-explorer">
-                <div v-if="path.startsWith('/content/assets')">
-                    {{ $i18n('emptyExplorerHintAssets') }}.
+    <div>
+        <fieldset class="vue-form-generator">
+            <div class="form-group required">
+                <div class="row">
+                    <div class="col s6">
+                        <label>Select Tenant</label>
+                        <ul class="collection">
+                            <li class="collection-item" v-for="child in children" v-bind:key="child.name">
+                                <admin-components-action
+                                    v-bind:model="{
+                                        target: '/content/admin/pages/pages',
+                                        command: 'selectPath',
+                                        dblClickTarget: child,
+                                        dblClickCommand: 'selectPath',
+                                        tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                                    }">{{child.title ? child.title : child.name}}
+                                </admin-components-action>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div v-else>
-                    {{ $i18n('emptyExplorerHint') }}...
-                </div>
-            </div> -->
-
-        </div>
-        <!-- <admin-components-explorerpreview v-if="hasEdit">
-            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
-        </admin-components-explorerpreview> -->
+            </div>
+        </fieldset>
     </div>
 
-    <!-- <div v-if="isFileUploadVisible" class="file-upload">
-        <div class="file-upload-inner">
-            <i class="material-icons">file_download</i>
-            <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
-            <div class="progress-bar">
-                <div class="progress-bar-value" v-bind:style="`width: ${uploadProgress}%`"></div>
-            </div>
-            <div class="progress-text">{{uploadProgress}}%</div>
-            <div class="file-upload-action">
-                <button
-                    type="button"
-                    class="btn"
-                    v-on:click="onDoneFileUpload">ok</button>
-            </div>
-        </div>
-    </div> -->
-    <!--
-    <template v-for="child in model.children[0].children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-    -->
-</div>
-</div>
 </template>
 
 <script>
@@ -443,32 +331,32 @@
 //                     $perAdminApp.stateAction('showPageInfo', { selected: target })
 //                 }
 //             },
-            selectPath: function(me, target) {
-                let resourceType = target.resourceType
-                if(resourceType) {
-//                    if(resourceType === 'per:Object') {
-//                        me.selectedObject = target.path
-//                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
-//                        return
-//                    }
-                    if(resourceType === 'per:Asset') {
-                        $perAdminApp.stateAction('selectAsset', { selected: target.path })
-                        return
-                    } else if(resourceType === 'nt:file') {
-                        return
-                    }
-                }
-                if($perAdminApp.getNodeFromView('/state/tools/object/show')) {
-                    $perAdminApp.stateAction('unselectObject', { })
-                }
-                if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
-                    $perAdminApp.stateAction('unselectAsset', { })
-                }
-                const payload = { selected: target.path, path: me.model.dataFrom }
-                $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
-                    $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
-                })
-            }
+//             selectPath: function(me, target) {
+//                 let resourceType = target.resourceType
+//                 if(resourceType) {
+// //                    if(resourceType === 'per:Object') {
+// //                        me.selectedObject = target.path
+// //                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
+// //                        return
+// //                    }
+//                     if(resourceType === 'per:Asset') {
+//                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
+//                         return
+//                     } else if(resourceType === 'nt:file') {
+//                         return
+//                     }
+//                 }
+//                 if($perAdminApp.getNodeFromView('/state/tools/object/show')) {
+//                     $perAdminApp.stateAction('unselectObject', { })
+//                 }
+//                 if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
+//                     $perAdminApp.stateAction('unselectAsset', { })
+//                 }
+//                 const payload = { selected: target.path, path: me.model.dataFrom }
+//                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
+//                     $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
+//                 })
+//             }
 //             selectPathInNav: function(me, target) {
 //                 this.selectPath(me, target)
 //             },
