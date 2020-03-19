@@ -46,7 +46,7 @@
       <row jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/row">
 
-        <col1 jcr:primaryType="nt:unstructured"
+        <!-- <col1 jcr:primaryType="nt:unstructured"
           sling:resourceType="admin/components/col" classes="col m6">
 
           <text1 jcr:primaryType="nt:unstructured"
@@ -63,14 +63,10 @@
           </addSite>
 
 
-        </col1>
-        <col2 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col m6">
+        </col1> -->
 
-          <text2 jcr:primaryType="nt:unstructured"
-            sling:resourceType="pagerendervue/components/base"
-            text="work with an existing site">
-          </text2>
+        <col2 jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/col" classes="col m12">
 
           <tenants jcr:primaryType="nt:unstructured"
             sling:resourceType="admin/components/tenants"></tenants>

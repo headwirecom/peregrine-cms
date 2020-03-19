@@ -25,6 +25,13 @@
 <template>
 
     <div>
+        <admin-components-action
+            v-bind:model="{
+                target: '/content/admin/pages/pages/createsite',
+                command: 'selectPath',
+                tooltipTitle: $i18n('create tenant'),
+            }">{{$i18n('create tenant')}}
+        </admin-components-action>
         <fieldset class="vue-form-generator">
             <div class="form-group required">
                 <div class="row">
