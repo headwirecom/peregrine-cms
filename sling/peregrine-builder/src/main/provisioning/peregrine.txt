@@ -21,8 +21,12 @@
 #
 [feature name=peregrine]
 
+[variables]
+    peregrine.version=1.0.0-SNAPSHOT
+
 [artifacts startLevel=30]
     com.peregrine-cms/login/1.0-SNAPSHOT
+    com.peregrine-cms/peregrinecms-com-peregrine-sling-auth-header/${peregrine.version}
 # All 3 artifacts bundle together into one Sling instance does not work
 #    com.eclipsesource.j2v8/j2v8_linux_x86_64/4.6.0
 #    com.eclipsesource.j2v8/j2v8_macosx_x86_64/4.6.0
@@ -62,3 +66,27 @@
     set repository ACL for distribution-agent-user
         allow jcr:all
     end
+
+
+[configurations]
+  org.apache.jackrabbit.oak.spi.security.authentication.external.impl.DefaultSyncHandler-HeaderLoginModule
+    handler.name="default"
+    user.autoMembership=["sso"]
+    user.disableMissing=B"false"
+    user.dynamicMembership=B"false"
+    user.expirationTime="1h"
+    user.membershipExpTime="1h"
+    user.membershipNestingDepth=I"0"
+    user.pathPrefix=""
+    user.propertyMapping=["rep:fullname\=cn"]
+    group.autoMembership=[""]
+    group.expirationTime="1d"
+    group.pathPrefix=""
+    group.propertyMapping=[""]
+    enableRFC7613UsercaseMappedProfile=B"false"
+
+  org.apache.felix.jaas.Configuration.factory-HeaderLoginModule
+    jaas.controlFlag="sufficient"
+    jaas.realmName="jackrabbit.oak"
+    jaas.classname="com.peregrine.sling.auth.header.HeaderExternalLoginModule"
+    jaas.ranking=I"5000"
