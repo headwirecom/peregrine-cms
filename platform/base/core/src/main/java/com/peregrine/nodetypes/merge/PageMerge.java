@@ -66,7 +66,7 @@ public class PageMerge implements Use {
     public static final String REQUEST = "request";
     public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
-    public static final String REGEX_TEMPLATES = "(?<=\\/content\\/).*(?=\\/templates)";
+    public static final String REGEX_TEMPLATES = "(?<=\\/content\\/)([a-zA-Z0-9\\\\s\\\\_-])*(?=\\/templates)";
 
     private ModelFactory modelFactory;
 
