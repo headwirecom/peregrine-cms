@@ -89,7 +89,7 @@ export default {
             /* is this a touch device */
             this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
             this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-            if(this.isTouch){
+            if(this.isTouch) {
                 /* selected components are not immediatly draggable on touch devices */
                 this.selectedComponentDragable = false
             }
@@ -98,7 +98,7 @@ export default {
 
             /* check if page has loaded */
             var unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
-                if(pageView.status === 'loaded'){
+                if(pageView.status === 'loaded') {
                     this.updateOverlay()
                     unwatch() // we dont need to watch the pageView prop anymore
                 }
@@ -108,7 +108,7 @@ export default {
 
     props: ['model'],
 
-    data(){
+    data() {
         return {
             editableVisible: false,
             editableClass: null,
@@ -157,17 +157,18 @@ export default {
             }
         }
     },
+
     watch: {
-        viewMode: function (newViewMode) {
+        viewMode(newViewMode) {
             this.setIframeScrollState(newViewMode)
         }
     },
 
     computed: {
-        pagePath: function() {
+        pagePath() {
             return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
         },
-        viewMode: function() {
+        viewMode() {
             const viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
             const previewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
             let ret = ''
@@ -178,9 +179,11 @@ export default {
             }
             return ret
         },
+
         viewModeClass() {
             return this.viewMode
         },
+
         enableEditableFeatures() {
             const targetEl = this.selectedComponent
             if (!targetEl) return false
@@ -189,12 +192,14 @@ export default {
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             return node && !node.fromTemplate
         },
+
         isIgnoreContainersEnabled() {
             const tools = $perAdminApp.getView().state.tools;
             return tools
                 && tools.workspace
                 && tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         },
+
         inlineNode() {
             if (this.inline.path) {
                 const targetEl = this.selectedComponent
@@ -213,9 +218,11 @@ export default {
                 return answer
             }
         },
+
         editorVisible() {
             return $perAdminApp.getNodeFromViewOrNull('/state/editorVisible')
         },
+
         inlineEditVisible() {
             return this.editorVisible && this.inlineNode && this.enableEditableFeatures;
         }
@@ -231,9 +238,10 @@ export default {
                 this.updateInlineStyle()
             }
         },
+
         /* Window/Document methods =================
         ============================================ */
-        onKeyDown(ev){
+        onKeyDown(ev) {
             const nodeName = document.activeElement.nodeName
             const className = document.activeElement.className.toString()
             /* check no field is currently in focus */
@@ -261,21 +269,20 @@ export default {
             const nodeName = document.activeElement.nodeName
             const className = document.activeElement.className
             /* check no field is currently in focus */
-            if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+            if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor') {
                 return false
             }
 
             const ctrlKey = 17
             const cmdKey = 91
-            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
+            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey) {
                 this.ctrlDown = false
             }
         },
 
-
         /* Iframe (editview) methods ===============
         ============================================ */
-        onIframeLoaded(ev){
+        onIframeLoaded(ev) {
             const iframeDoc = ev.target.contentWindow.document
             this.setIframeScrollState(this.viewMode)
             iframeDoc.body.style.position = 'relative'
@@ -302,10 +309,10 @@ export default {
 
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
-        onScrollOverlay(ev){
+        onScrollOverlay(ev) {
             this.scrollTop = ev.target.scrollTop
             var editview = this.$refs.editview
-            if(this.isIOS){
+            if(this.isIOS) {
                 /* ios device, use scroll alternative */
                 this.$nextTick(function() {
                     editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
@@ -318,7 +325,7 @@ export default {
             }
         },
 
-        setEditContainerHeight(){
+        setEditContainerHeight() {
             // make sure the iframe exists before we actually try to read it
             if(this.$refs.editview) {
                 var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
@@ -326,7 +333,7 @@ export default {
             }
         },
 
-        getPosFromMouse: function(e) {
+        getPosFromMouse(e) {
             var elRect = this.getBoundingClientRect(this.$refs.editview)
             if(e) {
                 var posX = e.clientX - elRect.left
@@ -339,7 +346,7 @@ export default {
             }
         },
 
-        getElementStyle: function (e, styleName) {
+        getElementStyle(e, styleName) {
             if (document.defaultView && document.defaultView.getComputedStyle) {
                 return document.defaultView.getComputedStyle(e, "").getPropertyValue(styleName);
             } 
@@ -354,7 +361,7 @@ export default {
             return ''
         },
 
-        getBoundingClientRect: function(e) {
+        getBoundingClientRect(e) {
             let rect = e.getBoundingClientRect()
             let marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
             let marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
@@ -371,7 +378,7 @@ export default {
             return newRect;
         },
 
-        findIn: function(el, pos) {
+        findIn(el, pos) {
             if(!el) return null
             var rect = this.getBoundingClientRect(el)
             var ret = null
@@ -388,7 +395,7 @@ export default {
             return ret
         },
 
-        getTargetEl: function(e) {
+        getTargetEl(e) {
             var pos = this.getPosFromMouse(e)
             var editview = this.$refs.editview
             var targetEl = this.findIn(editview.contentWindow.document.body, pos)
@@ -405,7 +412,7 @@ export default {
             return { targetEl, inline }
         },
 
-        onClickOverlay: function(e) {
+        onClickOverlay(e) {
             if (!e) return
             if (e.target && e.target.getAttribute('contenteditable') === 'true') return;
             const target = this.getTargetEl(e)
@@ -415,7 +422,7 @@ export default {
                 const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                 if (this.isContainer(targetEl) && this.isIgnoreContainersEnabled) return;
 
-                if (node.fromTemplate) {
+                if (node && node.fromTemplate) {
                     $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                         complete: this.removeEditOverlay
                     })
@@ -434,7 +441,7 @@ export default {
             }
         },
 
-        updateInlineStyle: function() {
+        updateInlineStyle() {
             // copy styles from original element into this one
             const style = window.getComputedStyle(this.inline.target)
             let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
@@ -443,7 +450,7 @@ export default {
             $('#inlineEditContainer textarea').attr('style', value)
         },
 
-        leftOverlayArea: function(e) {
+        leftOverlayArea(e) {
             if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
 
             // check if we only left the area into the overlay for the actions
@@ -458,7 +465,7 @@ export default {
             if (this.isTouch) this.selectedComponentDragable = false
         },
 
-        mouseMove: function(e) {
+        mouseMove(e) {
             if (!e || this.isTouch) return
             if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
             let targetEl = this.getTargetEl(e).targetEl
@@ -507,7 +514,7 @@ export default {
                         this.dropPosition = 'none'
                         this.leftOverlayArea()
                     }
-                } else if(!isRoot) {                    
+                } else if (!isRoot) {                    
                     const y = pos.y - targetBox.top
                     if (2 * y < targetBox.height) {
                         this.dropPosition = 'before'
@@ -549,7 +556,7 @@ export default {
                 drop: this.dropPosition
             }
             var addOrMove
-            if(componentPath.includes('/components/')) {
+            if (componentPath.includes('/components/')) {
                 addOrMove = 'addComponentToPath';
             } else {
                 addOrMove = 'moveComponentToPath';
@@ -568,18 +575,21 @@ export default {
 
         /* Editable methods ========================
         ============================================ */
-        onEditableTouchStart: function(ev){
+        onEditableTouchStart(ev) {
             this.editableTimer = setTimeout(this.onLongTouchOverlay, 800)
         },
-        onEditableTouchEnd: function(ev){
+
+        onEditableTouchEnd(ev) {
             clearTimeout(this.editableTimer)
         },
-        onLongTouchOverlay: function(){
+
+        onLongTouchOverlay() {
             if(this.selectedComponent === null) return
             this.selectedComponentDragable = true
             this.editableClass = 'draggable'
         },
-        setEditableStyle: function(targetBox, editableClass) {
+
+        setEditableStyle(targetBox, editableClass) {
             const editable = this.$refs.editable
             if (editable) {
                 const editview = this.$refs.editview
@@ -606,7 +616,8 @@ export default {
             
             this.editableClass = editableClass
         },
-        setSelectedEditableStyle: function() {
+
+        setSelectedEditableStyle() {
             if (this.selectedComponent) {
                 let editableClass = 'selected';
                 if (this.inline.path) {
@@ -619,11 +630,11 @@ export default {
             }
         },
 
-        updateEditablePos: function(top) {
+        updateEditablePos(top) {
             this.$refs.editable.style.top = `${top}px`
         },
 
-        onDelete: function(e) {
+        onDelete(e) {
             var targetEl = this.selectedComponent
             var view = $perAdminApp.getView()
             var pagePath = view.pageView.path
@@ -638,13 +649,13 @@ export default {
             this.selectedComponent = null
         },
 
-        onCopy: function(e) {
+        onCopy(e) {
             var targetEl = this.selectedComponent
             var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
             this.clipboard = node
         },
 
-        onPaste: function(e) {
+        onPaste(e) {
             var targetEl = this.selectedComponent
             var nodeFromClipboard = this.clipboard
             var view = $perAdminApp.getView()
@@ -659,9 +670,11 @@ export default {
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
+
         refreshEditor(me, target) {
             me.$refs['editview'].contentWindow.location.reload();
         },
+
         isContainer(el) {
             if (el && el.getAttribute('data-per-droptarget')) {
                 return true;
