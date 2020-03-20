@@ -52,22 +52,40 @@
         }
     </script>
 
+    <script>
+        function showHideTutorial() {
+            var tutorial = document.getElementById('per-tutorial');
+            if(tutorial.style.bottom === '20px') {
+                tutorial.style.bottom = '-580px';
+            } else {
+                tutorial.style.bottom = '20px';
+            }
+        }
+    </script>
+
 </head>
 <body>
 
 <div id="waitMask" style="display: none; z-index: 999; position: absolute; top: 0; right: 0; height: 100%; width: 100%; cursor: wait; background-color: black; opacity: 0.2;">&nbsp;</div>
 
+<div>
 <div id="peregrine-adminapp">
     <span v-cloak>
         <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
     </span>
 </div>
-
+<div>tutorial</div>
+</div>
 <sly data-sly-list="${helper.model.siteJS}">
     <script type="text/javascript" src="${item}"></script>
 </sly>
 
 <sly data-sly-include="renderer.html"></sly>
+
+<div id="per-tutorial" style="width: 400px; height: 600px; position: fixed; bottom: 20px; right: 10px; background: silver;">
+    <div style="width: 100%; text-align: right;"><button onclick="showHideTutorial()">X</button></div>
+    <iframe data-per-mode="preview" style="width: 100%; height: 100%; background: white;" src="/content/sites/tutorials/index.html"></iframe>
+</div>
 <script>
     // switch between old and new implementation
     var newImpl = true
