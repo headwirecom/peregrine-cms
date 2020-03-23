@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workspaceFilter version="1.0">
-  <filter root="/content/themeclean" mode="merge"/>
+  <filter root="/content/themeclean" mode="merge">
+    <exclude pattern="/content/themeclean/objects/tags/.*"/>
+  </filter>
   <filter root="/etc/felibs/themeclean"/>
   <filter root="/apps/themeclean">
     <exclude pattern="/apps/themeclean/install/.*"/>

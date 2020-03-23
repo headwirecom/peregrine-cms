@@ -62,7 +62,7 @@
       "taggable": true,
       "placeholder": "Select option"
     },
-    "valuesFrom": "/content/objects/tags.infinity.json"
+    "valuesFrom": "/content/pagerendervue/objects/tags.infinity.json"
   },
   {
     "type": "material-textarea",

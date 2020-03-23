@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  peregrine default node types - UI Apps
+  admin base - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -23,17 +23,6 @@
   under the License.
   #L%
   -->
-
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="sling:OsgiConfig"
-          osgi.http.whiteboard.context.select="(osgi.http.whiteboard.context.name=*)"
-          osgi.http.whiteboard.listener="true"
-          auth.sudo.cookie="sling.sudo"
-          auth.sudo.parameter="sudo"
-          auth.annonymous="false"
-          sling.auth.requirements="[-/perapi/admin/access,-/system/sling/login,-/system/sling/info,-/content,-/etc/felibs,-/favicon.ico,-/content/apidocs]"
-          sling.auth.anonymous.user=""
-          auth.http="preemtive"
-          auth.http.realm="peregrine cms"
-          auth.uri.suffix="/j_security_check"
-/>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  jcr:primaryType="sling:OrderedFolder"
+  allowedObjects="[tag]"/>

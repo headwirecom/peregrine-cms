@@ -26,7 +26,9 @@
 <workspaceFilter version="1.0">
   <filter root="/conf/nodejs/ssr-html"/>
   <filter root="/etc/felibs/pagerendervue"/>
-  <filter root="/content/pagerendervue"/>
+  <filter root="/content/pagerendervue">
+    <exclude pattern="/content/pagerendervue/objects/tags/.*"/>
+  </filter>
   <filter root="/apps/pagerendervue">
     <exclude pattern="/apps/pagerendervue/install/.*"/>
   </filter>

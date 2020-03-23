@@ -25,7 +25,9 @@
   -->
 <workspaceFilter version="1.0">
   <filter root="/etc/felibs/pagerenderserver"/>
-  <filter root="/content/pagerenderserver"/>
+  <filter root="/content/pagerenderserver">
+    <exclude pattern="/content/pagerenderserver/objects/tags/.*"/>
+  </filter>
   <filter root="/apps/pagerenderserver">
     <exclude pattern="/apps/pagerenderserver/install/.*"/>
   </filter>

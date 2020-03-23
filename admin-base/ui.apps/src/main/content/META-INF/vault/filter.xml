@@ -28,12 +28,13 @@
   <filter root="/perapi/admin"/>
   <filter root="/perapi/swaggereditor"/>
   <filter root="/perapi/definitions"/>
-  <filter root="/content/admin"/>
-  <filter root="/content/docs"/>
-  <filter root="/etc/felibs/admin"/>
-  <filter root="/content/objects/tags">
-    <exclude pattern="/content/objects/tags/.*"/>
+  <filter root="/content/admin">
+    <exclude pattern="/content/admin/objects/tags/.*"/>
   </filter>
+  <filter root="/content/docs">
+    <exclude pattern="/content/docs/objects/tags/.*"/>
+  </filter>
+  <filter root="/etc/felibs/admin"/>
   <filter root="/apps/admin">
     <exclude pattern="/apps/admin/install/.*"/>
   </filter>

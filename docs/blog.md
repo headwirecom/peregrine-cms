@@ -718,7 +718,7 @@ to
     "type": "listselection",
     "label": "Author",
     "model": "author",
-    "valuesFrom": "/content/objects/blog/authors.infinity.json"
+    "valuesFrom": "/content/<tenant>/objects/blog/authors.infinity.json"
   },
 ```
 

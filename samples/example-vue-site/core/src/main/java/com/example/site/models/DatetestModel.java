@@ -21,7 +21,7 @@ import org.apache.sling.models.annotations.Model;
           "x-source": "inject",
           "x-form-label": "Project",
           "x-form-type": "materialselect",
-          "x-form-from": "/content/objects/timetracker/projects.infinity.json"
+          "x-form-from": "/content/example/objects/timetracker/projects.infinity.json"
         },
         "description": {
           "type": "string",

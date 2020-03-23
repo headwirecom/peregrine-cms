@@ -44,7 +44,7 @@ describe('Peregrine objects page', function () {
         it('clicking add object should navigate to add object wizard', function() {
             SubNav.addObjectButton.click()
             AddObjectWizard.container.waitForVisible()
-            expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
+            expect( browser.getUrl() ).to.contain('content/admin/pages/objects/create.html/path:/content/example/objects')
         })
         
         let exampleTemplate

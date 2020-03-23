@@ -333,12 +333,12 @@ public class FormAuthenticationHandler extends DefaultAuthenticationFeedbackHand
 
                 @Override
                 public String getRequestURI() {
-                    return "/content/admin/pages/index.html";
+                    return "/content/example/pages/index.html";
                 }
 
                 @Override
                 public StringBuffer getRequestURL() {
-                    return new StringBuffer("http://localhost:8080/content/admin/pages/index.html");
+                    return new StringBuffer("http://localhost:8080/content/example/pages/index.html");
                 }
 
                 @Override
@@ -352,7 +352,7 @@ public class FormAuthenticationHandler extends DefaultAuthenticationFeedbackHand
                 log.debug("getting resource resolver");
                 resourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
                 log.debug("getting resource");
-                Resource resource = resourceResolver.resolve("/content/sites/example");
+                Resource resource = resourceResolver.resolve("/content/example/pages/index");
 
                 RequestDispatcherOptions rdOtions = new RequestDispatcherOptions(
                         RequestDispatcherOptions.OPT_REPLACE_SELECTORS + "=data"

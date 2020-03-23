@@ -20,6 +20,9 @@
         folder otherwise they wipe all installed bundles.
     -->
     <filter root="/content/${contentFolderName}"/>
+    <filter root="/content/${contentFolderName}">
+        <exclude pattern="/content/${contentFolderName}/objects/tags/.*"/>
+    </filter>
     <filter root="/etc/felibs/${appsFolderName}"/>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed

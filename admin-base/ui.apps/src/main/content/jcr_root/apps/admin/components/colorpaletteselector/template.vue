@@ -29,7 +29,7 @@
             :href="`/etc/felibs/${this.templatePath}/css/colors.css`"
             type="text/css"/>
       <link rel="stylesheet"
-            :href="`/content/sites/${this.templatePath}/css/commons.css`"
+            :href="`/content/${this.templatePath}/pages/css/commons.css`"
             type="text/css"/>
       <link rel="stylesheet"
             :href="selectedPath"
