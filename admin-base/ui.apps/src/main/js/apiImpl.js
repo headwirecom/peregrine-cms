@@ -27,6 +27,7 @@
 import {LoggerFactory} from './logger'
 import {get, stripNulls} from './utils'
 import {Field} from './constants';
+import stateActions from './stateActions';
 
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
@@ -400,7 +401,7 @@ class PerAdminImpl {
       .then((data) => {
         const state = callbacks.getView().state
         if (!state.tenant && data.tenants.length > 0) {
-          state.tenant = data.tenants[data.tenants.length - 1]
+          stateActions('setTenant', data.tenants[data.tenants.length - 1])
         }
         populateView('/admin', 'tenants', data.tenants).then(() => {
           $perAdminApp.getApp().$emit('tenants-update', {

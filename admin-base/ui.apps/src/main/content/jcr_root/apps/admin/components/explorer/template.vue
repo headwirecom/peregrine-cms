@@ -239,7 +239,7 @@
         },
 
         created() {
-            this.$root.$on('tenants-update', (data) => {
+            $perAdminApp.eventBus.$on('tenants-update', (data) => {
                 const pathArr = this.path.split('/')
                 pathArr[2] = data.current.name
                 set($perAdminApp.getView(), this.model.dataFrom, pathArr.join('/'))

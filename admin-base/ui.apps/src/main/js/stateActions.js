@@ -25,7 +25,8 @@
 import {LoggerFactory} from './logger'
 import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
-import createPageFromSkeletonPage from './stateActions/createPageFromSkeletonPage'
+import createPageFromSkeletonPage
+    from './stateActions/createPageFromSkeletonPage'
 import createPageWizard from './stateActions/createPageWizard'
 import createSiteWizard from './stateActions/createSiteWizard'
 import createSite from './stateActions/createSite'
@@ -75,8 +76,9 @@ import replicate from './stateActions/replicate'
 import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
-import deleteTemplate from './stateActions/deleteTemplate';
-import renameTemplate from './stateActions/renameTemplate';
+import deleteTemplate from './stateActions/deleteTemplate'
+import renameTemplate from './stateActions/renameTemplate'
+import setTenant from './stateActions/setTenant'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -138,6 +140,7 @@ actions['saveTemplateProperties'] = savePageProperties
 actions['renameTemplate'] = renameTemplate
 actions['moveTemplate'] = moveTemplate
 actions['deleteTemplate'] = deleteTemplate
+actions['setTenant'] = setTenant
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

@@ -136,12 +136,8 @@
         this.$i18nSetLanguage(name)
         $perAdminApp.forceFullRedraw()
       },
-      onSelectTenant({name}) {
-
-        $perAdminApp.getView().state.tenant = this.getTenantByName(name)
-        this.$root.$emit('tenants-update', {
-          current: $perAdminApp.getView().state.tenant
-        })
+      onSelectTenant(tenant) {
+        $perAdminApp.stateAction('setTenant', tenant)
       },
       onShowHelp() {
         $perAdminApp.action(this, 'showTour', '')
@@ -152,11 +148,6 @@
       refreshTenants() {
         this.tenants = $perAdminApp.getView().admin.tenants || []
         this.state = $perAdminApp.getView().state
-      },
-      getTenantByName(name) {
-        return this.tenants.find((tenant) => {
-          return tenant.name === name
-        })
       }
     }
   }
