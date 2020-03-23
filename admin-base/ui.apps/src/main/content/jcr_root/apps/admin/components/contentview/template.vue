@@ -232,7 +232,7 @@ export default {
         onInlineEditInput(text) {
             const node = this.inlineNode
             if (node) {
-                const index = this.inline.path.indexOf('.')
+                const index = this.inline.path.lastIndexOf('.')
                 const name = index >= 0 ? this.inline.path.slice(index + 1) : this.inline.path
                 node[name] = text
                 this.updateInlineStyle()
