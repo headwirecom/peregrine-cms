@@ -14,7 +14,7 @@ class ObjectsPage extends LoginPage {
     }
 
     open() {
-        super.open('content/admin/objects.html')
+        super.open('content/admin/pages/objects.html')
     }
 }
 

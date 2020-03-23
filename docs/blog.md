@@ -46,9 +46,9 @@ we also add a text component to allow for blocks of content in the post
 we will use the following content structure to begin: 
 
 ```
-/content/sites/blog/index
-/content/sites/blog/{other pages}
-/content/sites/blog/archive
+/content/blog/pages/index
+/content/blog/pages/{other pages}
+/content/blog/pages/archive
 ```
 ## install an instance of peregrine-cms
 

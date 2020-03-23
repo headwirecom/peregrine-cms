@@ -62,12 +62,12 @@ import org.osgi.service.component.annotations.Reference;
  *
  * curl -i -u admin:admin \
  *    -F"test3.jpg=@./testme.jpg;type=image/jpeg" \
- *    "http://localhost:8080/perapi/admin/uploadFiles.json/content/assets/test"
+ *    "http://localhost:8080/perapi/admin/uploadFiles.json/content/test/assets"
  *
  * 'test3.jpg' is the name of the asset under the given asset path in the URL,
  * './testme.jpg' is the relative or absolute path to the file to be uploaded
  * 'type=image/jpeg' defines the image content type which must be provided
- * '/content/assets/test' is the path to the resource that will contain the resource
+ * '/content/test/assets' is the path to the resource that will contain the resource
  *
  */
 @Component(

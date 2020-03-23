@@ -14,7 +14,7 @@ class AssetsPage extends LoginPage {
     }
 
     open() {
-        super.open('content/admin/assets.html')
+        super.open('content/admin/pages/assets.html')
     }
 }
 

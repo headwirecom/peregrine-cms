@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class SiteMapEntryTest implements SiteMapEntry.Visitor<Integer> {
 
-    private static final String PATH = "/content/pages/index";
+    private static final String PATH = "/content/example/pages/index";
     private static final String URL = "http://www.example.com";
     private static final String NAME = "propertyName";
     private static final String VALUE = "propertyValue";

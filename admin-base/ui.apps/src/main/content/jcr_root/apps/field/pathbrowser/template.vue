@@ -38,13 +38,13 @@
           <i class="material-icons">insert_drive_file</i>
         </button>
         <img v-if="isImage(value)" :src="sanitizedValue" />
-        <admin-components-pathbrowser 
+        <admin-components-pathbrowser
             v-if="isOpen"
-            :isOpen="isOpen" 
-            :browserRoot="browserRoot" 
-            :browserType="browserType" 
-            :currentPath="currentPath" 
-            :selectedPath="selectedPath" 
+            :isOpen="isOpen"
+            :browserRoot="browserRoot"
+            :browserType="browserType"
+            :currentPath="currentPath"
+            :selectedPath="selectedPath"
             :withLinkTab="withLinkTab"
             :setCurrentPath="setCurrentPath"
             :setSelectedPath="setSelectedPath"
@@ -65,9 +65,9 @@
         data () {
             return {
                 isOpen: false,
-                browserRoot: '/content/assets',
+                browserRoot: `${getBasePath()}/assets`,
                 browserType: PathBrowser.Type.ASSET,
-                currentPath: '/content/assets',
+                currentPath: `${getBasePath()}/assets`,
                 selectedPath: null,
                 withLinkTab: true
             }
@@ -83,6 +83,14 @@
 			}
 		},
         methods: {
+            getBasePath() {
+              const view = $perAdminApp.getView()
+              let tenant = { name: 'example' }
+              if (view.state.tenant) {
+                tenant = view.state.tenant
+              }
+              return `/content/${tenant.name}`
+            },
             onCancel(){
                 this.isOpen = false
             },
@@ -112,7 +120,7 @@
                 // browser type is used to limit browsing and show correct file/icon types
                 let type = this.schema.browserType
                 if(!type) {
-                    root === '/content/sites' ? type = PathBrowser.Type.PAGE : type = PathBrowser.Type.ASSET
+                    root === `${getBasePath()}/pages` ? type = PathBrowser.Type.PAGE : type = PathBrowser.Type.ASSET
                 }
                 let selectedPath = this.value
                 // current path is the active directory in the path browser

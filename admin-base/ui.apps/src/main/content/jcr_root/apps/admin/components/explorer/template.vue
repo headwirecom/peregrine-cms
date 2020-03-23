@@ -148,7 +148,7 @@
                 </li>
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
-                <div v-if="path.startsWith('/content/assets')">
+                <div v-if="path.includes('assets')">
                     {{ $i18n('emptyExplorerHintAssets') }}.
                 </div>
                 <div v-else>
@@ -258,8 +258,8 @@
                 return path.startsWith(`/content/${this.getTenant().name}/assets`)
             },
 
-            isSites(path) {
-                return path.startsWith(`/content/${this.getTenant().name}/sites`)
+            isPages(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/pages`)
             },
 
             isObjects(path) {
@@ -345,7 +345,7 @@
                     const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
                     let action
                     switch(true) {
-                        case (this.isSites(path)):
+                        case (this.isPages(path)):
                             action = 'movePage'
                             break
                         case (this.isTemplates(path)):

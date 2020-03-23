@@ -20,7 +20,7 @@ public final class PrefixAndCutUrlExternalizerTest {
 
     @Before
     public void setUp()  {
-        when(config.cutCount()).thenReturn(2);
+        when(config.cutCount()).thenReturn(3);
         when(config.prefix()).thenReturn("http://www.example.com");
         model.activate(config);
         when(config.name()).thenReturn(PerConstants.NAME);
@@ -38,13 +38,13 @@ public final class PrefixAndCutUrlExternalizerTest {
     @Test
     public void map() {
         mapAndCompare("http://www.example.com", "");
-        mapAndCompare("http://www.example.com", "/content/sites.html");
-        mapAndCompare("http://www.example.com/page.html", "/content/sites/page.html");
-        mapAndCompare("http://www.example.com/page/sub.html", "/content/sites/page/sub.html");
-        mapAndCompare("http://www.example.com", "/content/sites.x.html");
-        mapAndCompare("http://www.example.com", "/content/sites.sitemap.html");
-        mapAndCompare("http://www.example.com/sitemap.xml", "/content/sites.sitemap.xml");
-        mapAndCompare("http://www.example.com/sitemap.1.xml", "/content/sites.sitemap.1.xml");
+        mapAndCompare("http://www.example.com", "/content/example/pages.html");
+        mapAndCompare("http://www.example.com/page.html", "/content/example/pages/page.html");
+        mapAndCompare("http://www.example.com/page/sub.html", "/content/example/pages/page/sub.html");
+        mapAndCompare("http://www.example.com", "/content/example/pages.x.html");
+        mapAndCompare("http://www.example.com", "/content/example/pages.sitemap.html");
+        mapAndCompare("http://www.example.com/sitemap.xml", "/content/example/pages.sitemap.xml");
+        mapAndCompare("http://www.example.com/sitemap.1.xml", "/content/example/pages.sitemap.1.xml");
     }
 
 }
