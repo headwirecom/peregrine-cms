@@ -42,6 +42,8 @@ export default function(me, tenant) {
       throw 'tenant not found'
     }
 
+    set(me.getView(), '/state/tools', {})
+
     next = next[0]
     set(me.getView(), '/state/tenant', next)
     eventBus.$emit('tenants-update', {

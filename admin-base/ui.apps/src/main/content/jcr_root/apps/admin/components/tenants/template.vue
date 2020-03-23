@@ -23,17 +23,19 @@
 <template>
 
     <div>
+        <p>
         <admin-components-action
             v-bind:model="{
                 target: '/content/admin/pages/pages/createsite',
                 command: 'selectPath',
                 tooltipTitle: $i18n('create tenant'),
-            }">{{$i18n('create tenant')}}
+            }"><button>{{$i18n('create website')}}</button>
         </admin-components-action>
+        </p>
         <fieldset class="vue-form-generator">
             <div class="form-group required">
                 <div class="row">
-                    <div class="col s6">
+                    <div class="col m12">
                         <label>Select Tenant</label>
                         <ul class="collection">
                             <li class="collection-item" v-for="child in children" v-bind:key="child.name">
@@ -44,7 +46,16 @@
                                         tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                                     }">{{child.title ? child.title : child.name}}
                                 </admin-components-action>
-                            </li>
+
+                                <admin-components-action
+                                    v-bind:model="{
+                                        target: child,
+                                        command: 'deleteSiteOrPage',
+                                        tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
+                                    }">
+                                    <i class="material-icons">delete</i>
+                                </admin-components-action>
+                           </li>
                         </ul>
                     </div>
                 </div>
@@ -68,7 +79,11 @@
         },
         computed: {
             children: function() {
-                return $perAdminApp.getNodeFrom($perAdminApp.getView(), '/admin/tenants')
+                const tenants = $perAdminApp.getNodeFrom($perAdminApp.getView(), '/admin/tenants');
+                if(tenants) {
+                    return tenants.filter( (t) => !t.template && !t.internal);
+                }
+                return [];
             }
         },
         created() {
@@ -83,5 +98,8 @@
     }
 </script>
 
-<style>
+<style scoped>
+fieldset {
+    border: none;
+}
 </style>

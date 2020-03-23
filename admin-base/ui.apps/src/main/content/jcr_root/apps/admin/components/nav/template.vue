@@ -37,8 +37,23 @@
             <admin-components-logo/>
           </admin-components-action>
 
+          <!-- <template v-if="vueRoot.adminPage">
+            <template v-for="item in vueRoot.adminPage.breadcrumbs">
+              <admin-components-action
+                  v-bind:key="item.path"
+                  v-bind:model="{
+                command: 'selectPath',
+                title: $i18n(item.title),
+                target: item.path
+              }"></admin-components-action>
+            </template>
+          </template> -->
+        </div>
+        <ul id="nav-mobile" class="right hide-on-small-and-down">
+
+          <li>
           <admin-components-action v-if="!model.hideTenants"
-              v-bind:model="{
+            v-bind:model="{
             command: 'selectPath',
             title: state.tenant ? state.tenant.name : 'unknown',
             target: '/content/admin/pages/index'
@@ -51,7 +66,8 @@
             target: '/content/admin/pages/index'
           }"></admin-components-action>
 
-          <span v-if="!model.hideTenants">
+          <admin-components-separator />
+
           <admin-components-action
               v-bind:model="{
             command: 'selectPath',
@@ -79,20 +95,12 @@
             title: $i18n('Templates'),
             target: '/content/admin/pages/templates'
           }"></admin-components-action>
-          </span>
-          <!-- <template v-if="vueRoot.adminPage">
-            <template v-for="item in vueRoot.adminPage.breadcrumbs">
-              <admin-components-action
-                  v-bind:key="item.path"
-                  v-bind:model="{
-                command: 'selectPath',
-                title: $i18n(item.title),
-                target: item.path
-              }"></admin-components-action>
-            </template>
-          </template> -->
-        </div>
-        <ul id="nav-mobile" class="right hide-on-small-and-down">
+
+          <admin-components-separator />
+          </li>
+
+          
+
           <!-- <li v-if="!model.hideTenants" class="tenant-select">
             <vue-multiselect
                 v-model="state.tenant"

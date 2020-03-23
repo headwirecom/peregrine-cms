@@ -60,10 +60,12 @@
     export default {
         mixins: [ VueFormGenerator.abstractField ],
         data () {
+            const basePath = '/content/'+$perAdminApp.getView().state.tenant.name; 
+
             return {
-                browserRoot: `${getBasePath()}/assets`,
+                browserRoot: `${basePath}/assets`,
                 browserType: 'asset',
-                currentPath: `${getBasePath()}/assets`,
+                currentPath: `${basePath}/assets`,
                 selectedPath: null,
                 altText: null,
                 linkTitle: '',
@@ -199,7 +201,7 @@
             getBasePath() {
                 const view = $perAdminApp.getView()
                 let tenant = { name: 'example' }
-                if (view.state.tenant) {
+                if (view.state && view.state.tenant) {
                     tenant = view.state.tenant
                 }
                 return `/content/${tenant.name}`
