@@ -65,6 +65,10 @@
             text="work with an existing site">
           </text2>
 
+          <tenants jcr:primaryType="nt:unstructured"
+            sling:resourceType="admin/components/tenants">
+          </tenants>
+
         </col1>
 
       </row>
