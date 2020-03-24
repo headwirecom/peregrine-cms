@@ -117,7 +117,7 @@
 
     <template v-else>
       <div v-if="!currentObject" class="explorer-preview-empty">
-        <span>{{ $i18n(`no ${nodeType} selected`) }}</span>
+        <span>{{ $i18n(`no${uNodeType}Selected`) }}</span>
         <i class="material-icons">info</i>
       </div>
     </template>

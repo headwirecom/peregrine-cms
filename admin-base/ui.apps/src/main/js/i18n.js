@@ -1,3 +1,6 @@
+import {LoggerFactory} from './logger'
+
+const log = LoggerFactory.logger('i18n').setLevelDebug()
 let lang = 'en'
 
 function keyToLang(original) {
@@ -10,6 +13,7 @@ function keyToLang(original) {
             return resources[lowOriginal].text
         }
         if(lang === 'en') return original
+        log.warn(`missing translation for: ${original}`)
         return 'T['+original+']'
     } catch(error) {
         return original

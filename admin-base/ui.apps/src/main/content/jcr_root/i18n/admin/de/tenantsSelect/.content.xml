@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   admin base - UI Apps
@@ -11,9 +12,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,35 +23,10 @@
   under the License.
   #L%
   -->
-<template>
-    <span>
-      <a v-bind:title="$i18n('fileUpload')" href="#!" class="btn-floating waves-effect waves-light">
-        <label style="cursor: inherit;">
-          <input type="file" ref="file_upload" style="display:none" v-on:change="addFiles">
-          <i class="material-icons">file_upload</i>
-        </label>
-      </a>
-    </span>
-</template>
 
-<script>
-export default {
-  props: ['model'],
-  methods: {
-    addFiles (ev) {
-      this.uploadFile(ev.target.files)
-    },
-    uploadFile(files) {
-      $perAdminApp.stateAction('uploadFiles', {
-        path: $perAdminApp.getView().state.tools.assets,
-        files: files,
-        cb: this.fileUploadComplete
-      })
-    },
-    fileUploadComplete(percentCompleted){
-      return
-    }
-  }
-}
-
-</script>
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="nt:unstructured"
+  text="Mandanten"/>

@@ -156,6 +156,11 @@
                 </div>
             </div>
         </div>
+        <div v-else class="col s12 m8 explorer-main explorer-empty">
+            <div>
+                <span>{{ $i18n(`nothing to show`) }}</span>
+            </div>
+        </div>
         <admin-components-explorerpreview v-if="hasEdit">
             <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
         </admin-components-explorerpreview>
@@ -251,7 +256,7 @@
 
         methods: {
             getTenant() {
-              return $peAdminApp.getView().state.tenant || {name: 'example'}
+              return $perAdminApp.getView().state.tenant || {name: 'example'}
             },
 
             isAssets(path) {
@@ -623,5 +628,11 @@
 
     .item-activated-modified {
         color: purple;
+    }
+
+    .explorer-empty {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
