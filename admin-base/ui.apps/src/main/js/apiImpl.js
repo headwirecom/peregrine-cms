@@ -27,7 +27,6 @@
 import {LoggerFactory} from './logger'
 import {get, stripNulls} from './utils'
 import {Field} from './constants';
-import stateActions from './stateActions';
 
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
@@ -396,20 +395,23 @@ class PerAdminImpl {
   }
 
   populateTenants() {
+    console.log('populate tenants')
     return new Promise((resolve, reject) => {
       fetch('/admin/listTenants.json')
       .then((data) => {
         const state = callbacks.getView().state
         if (!state.tenant && data.tenants.length > 0) {
-          stateActions('setTenant', data.tenants[data.tenants.length - 1])
-        }
-        populateView('/admin', 'tenants', data.tenants).then(() => {
-          $perAdminApp.getApp().$emit('tenants-update', {
-            current: state.tenant,
-            list: data.tenants
+            $perAdminApp.stateAction('setTenant', data.tenants[data.tenants.length - 1])
+                .then(() => {
+                  return populateView('/admin', 'tenants', data.tenants)
+                }).then((promise) =>{
+                  promise.resolve()
+              })
+        } else {
+          populateView('/admin', 'tenants', data.tenants).then(() => {
+            resolve()
           })
-          resolve()
-        })
+        }
       })
     })
   }
