@@ -38,6 +38,7 @@
                     <ul class="collection">
                         <li class="collection-item"
                             v-for="item in themes"
+                            v-bind:key="item.name"
                             v-on:click.stop.prevent="selectTheme(null, item.name)"
                             v-bind:class="isSelected(item.name) ? 'active' : ''">
                             <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name, title: item.name }"></admin-components-action>
@@ -190,10 +191,13 @@
                 if(!value || value.length === 0) {
                     return ['name is required']
                 } else {
-                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
-                    for(let i = 0; i < folder.children.length; i++) {
-                        if(folder.children[i].name === value) {
-                            return ['name aready in use']
+                    console.log(value)
+                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content')
+                    if(folder && folder.children) {
+                        for(let i = 0; i < folder.children.length; i++) {
+                            if(folder.children[i].name === value) {
+                                return ['name aready in use']
+                            }
                         }
                     }
                     return []

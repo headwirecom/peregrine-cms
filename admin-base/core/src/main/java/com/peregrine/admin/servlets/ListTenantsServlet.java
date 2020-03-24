@@ -115,9 +115,9 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             if (resource == null) return false;
             ValueMap properties = resource.getValueMap();
             String primaryType = properties.get(JCR_PRIMARY_TYPE, String.class);
-            boolean template = properties.get(TEMPLATE, false);
-            boolean internal = properties.get(INTERNAL, false);
-            return SITE_PRIMARY_TYPE.equals(primaryType) && !template && !internal;
+            // boolean template = properties.get(TEMPLATE, false);
+            // boolean internal = properties.get(INTERNAL, false);
+            return SITE_PRIMARY_TYPE.equals(primaryType); //  && !template && !internal;
         };
 
         List<Resource> tenants = StreamSupport.stream(sitesRoot.getChildren().spliterator(), false)
@@ -131,6 +131,8 @@ public class ListTenantsServlet extends AbstractBaseServlet {
             answer.writeObject();
             answer.writeAttribute(NAME, tenant.getName());
             answer.writeAttribute(TITLE, tenant.getValueMap().get(JCR_TITLE, String.class));
+            answer.writeAttribute(TEMPLATE, tenant.getValueMap().get(TEMPLATE, Boolean.class));
+            answer.writeAttribute(INTERNAL, tenant.getValueMap().get(INTERNAL, Boolean.class));
             answer.writeObject(ROOTS);
             for (String key : ROOT_MAP.keySet()) {
                 answer.writeAttribute(key, ROOT_MAP.get(key).replace(TENANT, tenant.getName()));

@@ -4,4 +4,4 @@
   jcr:primaryType="per:Site"
   jcr:title="Themeclean Site"
   internal="false"
-  template="false"/>
+  template="true"/>

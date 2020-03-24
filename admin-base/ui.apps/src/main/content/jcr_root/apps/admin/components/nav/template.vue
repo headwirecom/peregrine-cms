@@ -36,7 +36,8 @@
             }">
             <admin-components-logo/>
           </admin-components-action>
-          <template v-if="vueRoot.adminPage">
+
+          <!-- <template v-if="vueRoot.adminPage">
             <template v-for="item in vueRoot.adminPage.breadcrumbs">
               <admin-components-action
                   v-bind:key="item.path"
@@ -46,10 +47,61 @@
                 target: item.path
               }"></admin-components-action>
             </template>
-          </template>
+          </template> -->
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
-          <li v-if="!model.hideTenants" class="tenant-select">
+
+          <li v-if="!model.hideTenants">
+          <admin-components-action 
+            v-bind:model="{
+            command: 'selectPath',
+            title: state.tenant ? state.tenant.name : 'unknown',
+            target: '/content/admin/pages/welcome'
+          }"></admin-components-action>
+
+          <!-- <admin-components-action v-else
+              v-bind:model="{
+            command: 'selectPath',
+            title: $i18n('Tenants'),
+            target: '/content/admin/pages/index'
+          }"></admin-components-action> -->
+
+          <admin-components-separator />
+
+          <admin-components-action
+              v-bind:model="{
+            command: 'selectPath',
+            title: $i18n('Pages'),
+            target: '/content/admin/pages/pages'
+          }"></admin-components-action>
+
+          <admin-components-action
+              v-bind:model="{
+            command: 'selectPath',
+            title: $i18n('Assets'),
+            target: '/content/admin/pages/assets'
+          }"></admin-components-action>
+
+          <admin-components-action
+              v-bind:model="{
+            command: 'selectPath',
+            title: $i18n('Objects'),
+            target: '/content/admin/pages/objects'
+          }"></admin-components-action>
+
+          <admin-components-action
+              v-bind:model="{
+            command: 'selectPath',
+            title: $i18n('Templates'),
+            target: '/content/admin/pages/templates'
+          }"></admin-components-action>
+
+          <admin-components-separator />
+          </li>
+
+          
+
+          <!-- <li v-if="!model.hideTenants" class="tenant-select">
             <vue-multiselect
                 v-model="state.tenant"
                 deselect-label=""
@@ -61,7 +113,7 @@
                 :searchable="false"
                 :allow-empty="false"
                 @select="onSelectTenant"/>
-          </li>
+          </li> -->
           <li v-if="this.$root.$data.state">
             <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
               {{this.$root.$data.state.user}}
