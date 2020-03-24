@@ -23,7 +23,10 @@
   #L%
   -->
 <template>
-    <div v-html="text" data-per-inline-edit="model.text" v-bind:data-per-path="model.path"></div>
+    <div v-html="text"
+        v-bind:data-per-path="model.path"
+        data-per-inline-property="model.text"
+        data-per-inline-is-rich="true"></div>
 </template>
 
 <script>

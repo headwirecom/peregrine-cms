@@ -128,6 +128,7 @@ export default {
                 el: null,
                 node: null,
                 propertyName: null,
+                isRich: false,
                 content: null,
                 config: {
                     svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
@@ -378,12 +379,12 @@ export default {
             let targetEl = this.findIn(editview.contentWindow.document.body, pos)
             if (!targetEl) return
 
-            let path, inlineEl, inlinePath
+            let path, inlineEl, inlineProp
             while (targetEl && !path) {
                 path = targetEl.getAttribute('data-per-path');
                 if (!inlineEl) {
-                    inlinePath = targetEl.getAttribute('data-per-inline-edit')
-                    if (inlinePath){
+                    inlineProp = targetEl.getAttribute('data-per-inline-property')
+                    if (inlineProp){
                         inlineEl = targetEl
                     }
                 }
@@ -393,7 +394,7 @@ export default {
 
             const inline = inlineEl ? {
                 el: inlineEl,
-                path: inlinePath
+                property: inlineProp
             } : undefined
             return {
                 el: targetEl,
@@ -427,18 +428,18 @@ export default {
                 if (inline) {
                     this.inline.el = inline.el
                     this.inline.content = inline.el.innerHTML
+                    this.inline.isRich = inline.el.getAttribute('data-per-inline-is-rich') === 'true'
+
+                    const segments = inline.property.split('.')
+                    this.inline.propertyName = segments[segments.length - 1]
 
                     let val = node
-                    const segments = inline.path.split('.')
                     segments.shift()
                     for (let i = 0; val && i < segments.length - 1; i++) {
                         val = val[segments[i]]
                     }
 
                     this.inline.node = val
-
-                    const index = inline.path.lastIndexOf('.')
-                    this.inline.propertyName = index >= 0 ? inline.path.slice(index + 1) : inline.path
                 } else {
                     this.clearInline()
                 }
@@ -485,6 +486,7 @@ export default {
             this.inline.el = null
             this.inline.node = null
             this.inline.propertyName = null
+            this.inline.isRich = false
         },
 
         mouseMove(e) {
