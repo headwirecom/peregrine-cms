@@ -25,7 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.commons.Strings;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import com.peregrine.commons.util.PerConstants;
@@ -39,6 +38,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DEFINITION;
+import static com.peregrine.commons.Strings.COLON;
+import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.nonNull;
@@ -124,7 +125,7 @@ public final class ComponentDefinitionServlet extends AbstractBaseServlet {
     private Resource extractComponent(final Resource resource, final Function<Resource, String> getType) {
         return Optional.of(resource)
                 .map(getType)
-                .map(s -> s.replaceAll(Strings.COLON, SLASH))
+                .map(s -> s.replaceAll(COLON, SLASH))
                 .map(t -> t.startsWith(APPS_PREFIX) ? t : APPS_PREFIX + t)
                 .map(resource::getChild)
                 .orElse(null);
