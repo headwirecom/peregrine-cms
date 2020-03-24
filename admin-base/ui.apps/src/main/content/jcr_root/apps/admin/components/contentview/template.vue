@@ -61,7 +61,7 @@
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
-                            <li v-if="selectedComponent && selectedComponentPath !== '/jcr:content'" class="waves-effect waves-light">
+                            <li v-if="selected.path !== '/jcr:content'" class="waves-effect waves-light">
                               <a href="#" :title="$i18n('deleteComponent')"
                                  @click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
@@ -91,7 +91,7 @@ export default {
             this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
             if(this.isTouch) {
                 /* selected components are not immediatly draggable on touch devices */
-                this.selectedComponentDragable = false
+                this.selected.draggable = false
             }
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
@@ -112,9 +112,12 @@ export default {
         return {
             editableVisible: false,
             editableClass: null,
-            selectedComponent: null,
-            selectedComponentPath: null,
-            selectedComponentDragable: true,
+            selected: {
+                el: null,
+                path: null,
+                node: null,
+                draggable: true
+            },
             clipboard: null,
             ctrlDown: false,
             scrollTop: 0,
@@ -122,8 +125,9 @@ export default {
             isIOS: false,
             editableTimer: null,
             inline: {
-                path: undefined,
-                target: undefined,
+                el: null,
+                node: null,
+                propertyName: null,
                 content: null,
                 config: {
                     svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
@@ -186,11 +190,7 @@ export default {
         },
 
         enableEditableFeatures() {
-            const targetEl = this.selectedComponent
-            if (!targetEl) return false
-            const path = this.selectedComponentPath
-            if (!path) return false
-            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+            const node = this.selected.node
             return node && !node.fromTemplate
         },
 
@@ -201,43 +201,19 @@ export default {
                 && tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
         },
 
-        inlineNode() {
-            if (this.inline.path) {
-                const targetEl = this.selectedComponent
-                if (!targetEl) return
-
-                const path = this.selectedComponentPath
-                if (!path) return
-
-                let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                const segments = this.inline.path.split('.')
-                segments.shift()
-                for (let i = 0; answer && i < segments.length - 1; i++) {
-                    answer = answer[segments[i]]
-                }
-
-                return answer
-            }
-        },
-
         editorVisible() {
             return $perAdminApp.getNodeFromViewOrNull('/state/editorVisible')
         },
 
         inlineEditVisible() {
-            return this.editorVisible && this.inlineNode && this.enableEditableFeatures;
+            return this.editorVisible && this.inline.node && this.enableEditableFeatures;
         }
     },
 
     methods: {
         onInlineEditInput(text) {
-            const node = this.inlineNode
-            if (node) {
-                const index = this.inline.path.lastIndexOf('.')
-                const name = index >= 0 ? this.inline.path.slice(index + 1) : this.inline.path
-                node[name] = text
-                this.updateInlineStyle()
-            }
+            this.inline.node[this.inline.propertyName] = text
+            this.updateInlineStyle()
         },
 
         /* Window/Document methods =================
@@ -254,7 +230,7 @@ export default {
             const cmdKey = 91
             if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey) {
                 this.ctrlDown = true
-                if (this.selectedComponent) {
+                if (this.selected.node) {
                     const cKey = 67
                     const vKey = 86
                     if (ev.keyCode == cKey) {
@@ -434,25 +410,37 @@ export default {
                 return
             }
 
-            const targetEl = target.el
+            const el = target.el
+            if (this.isContainer(el) && this.isIgnoreContainersEnabled) return;
+
             const path = target.path
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-            if (this.isContainer(targetEl) && this.isIgnoreContainersEnabled) return;
-
-            if (node && node.fromTemplate) {
+            if (!node || node.fromTemplate) {
                 $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                     complete: this.removeEditOverlay
                 })
             } else {
-                this.selectedComponent = targetEl
-                this.selectedComponentPath = path
+                this.selected.el = el
+                this.selected.path = path
+                this.selected.node = node
                 const inline = target.inline
                 if (inline) {
-                    this.inline.target = inline.el
-                    this.inline.path = inline.path
+                    this.inline.el = inline.el
                     this.inline.content = inline.el.innerHTML
+
+                    let val = node
+                    const segments = inline.path.split('.')
+                    segments.shift()
+                    for (let i = 0; val && i < segments.length - 1; i++) {
+                        val = val[segments[i]]
+                    }
+
+                    this.inline.node = val
+
+                    const index = inline.path.lastIndexOf('.')
+                    this.inline.propertyName = index >= 0 ? inline.path.slice(index + 1) : inline.path
                 } else {
-                    this.inline.path = undefined
+                    this.clearInline()
                 }
 
                 this.setSelectedEditableStyle()
@@ -462,7 +450,7 @@ export default {
 
         updateInlineStyle() {
             // copy styles from original element into this one
-            const style = window.getComputedStyle(this.inline.target)
+            const style = window.getComputedStyle(this.inline.el)
             let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
             value = value.replace(/display.+?;/, '')
             $('#inlineEditContainer .trumbowyg-editor').attr('style', value)
@@ -479,10 +467,24 @@ export default {
         },
 
         removeEditOverlay() {
-            this.selectedComponent = null
-            this.selectedComponentPath = null
+            this.clearSelected()
+            if (this.isTouch) this.selected.draggable = false
+        },
+
+        clearSelected() {
+            this.selected.el = null
+            this.selected.path = null
+            this.selected.node = null
+            
             this.editableClass = null
-            if (this.isTouch) this.selectedComponentDragable = false
+            
+            this.clearInline()
+        },
+
+        clearInline() {
+            this.inline.el = null
+            this.inline.node = null
+            this.inline.propertyName = null
         },
 
         mouseMove(e) {
@@ -500,17 +502,18 @@ export default {
                 targetEl = targetEl.parentElement
             }
 
-            this.selectedComponent = targetEl
-            this.selectedComponentPath = target.path
+            this.selected.el = targetEl
+            this.selected.path = target.path
+            this.selected.node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, target.path)
             this.setSelectedEditableStyle()
         },
 
         /* Drag and Drop ===========================
         ============================================ */
         onDragStart(ev) {
-            if (!this.selectedComponent) return
+            if (!this.selected.path) return
             this.editableClass = 'dragging'
-            ev.dataTransfer.setData('text', this.selectedComponentPath)
+            ev.dataTransfer.setData('text', this.selected.path)
         },
 
         onDragOver(ev) {
@@ -558,7 +561,7 @@ export default {
 
         onDrop(ev) {
             this.editableClass = null
-            if (this.isTouch) this.selectedComponentDragable = false
+            if (this.isTouch) this.selected.draggable = false
             const target = this.getTarget(ev)
             if (!target) {
                 return false
@@ -609,8 +612,8 @@ export default {
         },
 
         onLongTouchOverlay() {
-            if (!this.selectedComponent) return
-            this.selectedComponentDragable = true
+            if (!this.selected.node) return
+            this.selected.draggable = true
             this.editableClass = 'draggable'
         },
 
@@ -628,12 +631,9 @@ export default {
                 style.height = `${targetBox.height}px`
 
                 let color = ''
-                if (this.selectedComponent) {
-                    const path = this.selectedComponentPath
-                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                    if (node && node.fromTemplate) {
-                        color = 'orange'
-                    }
+                const node = this.selected.node
+                if (node && node.fromTemplate) {
+                    color = 'orange'
                 }
 
                 style['border-color'] = color
@@ -643,14 +643,16 @@ export default {
         },
 
         setSelectedEditableStyle() {
-            if (this.selectedComponent) {
+            if (this.selected.node) {
+                let target = this.selected.el;
                 let editableClass = 'selected';
-                if (this.inline.path) {
+                if (this.inline.node) {
                     this.updateInlineStyle()
+                    target = this.inline.el
                     editableClass += ' no-border'
                 }
 
-                const targetBox = this.getBoundingClientRect(this.selectedComponent)
+                const targetBox = this.getBoundingClientRect(target)
                 this.setEditableStyle(targetBox, editableClass)
             }
         },
@@ -660,37 +662,28 @@ export default {
         },
 
         onDelete(e) {
-            var targetEl = this.selectedComponent
-            var view = $perAdminApp.getView()
-            var pagePath = view.pageView.path
-            var payload = {
-                pagePath: view.pageView.path,
-                path: this.selectedComponentPath
+            const path = this.selected.path
+            if (path !== '/jcr:content') {
+                $perAdminApp.stateAction('deletePageNode',  {
+                    pagePath: $perAdminApp.getView().pageView.path,
+                    path
+                })
             }
-            if(payload.path !== '/jcr:content') {
-                $perAdminApp.stateAction('deletePageNode',  payload)
-            }
-            this.editableClass = null
-            this.selectedComponent = null
-            this.selectedComponentPath = null
+
+            this.clearSelected()
         },
 
         onCopy(e) {
-            this.clipboard = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selectedComponentPath)
+            this.clipboard = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selected.path)
         },
 
         onPaste(e) {
-            var targetEl = this.selectedComponent
-            var nodeFromClipboard = this.clipboard
-            var view = $perAdminApp.getView()
-            var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-            var dropPosition
-            isDropTarget ? dropPosition = 'into' : dropPosition = 'after'
-            var payload = {
-                pagePath: view.pageView.path,
-                data: nodeFromClipboard,
-                path: this.selectedComponentPath,
-                drop: dropPosition
+            const isDropTarget = this.selected.el.getAttribute('data-per-droptarget') === 'true'
+            const payload = {
+                pagePath: $perAdminApp.getView().pageView.path,
+                data: this.clipboard,
+                path: this.selected.path,
+                drop: isDropTarget ? 'into' : 'after'
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
