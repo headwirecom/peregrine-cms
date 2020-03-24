@@ -57,17 +57,17 @@
 </template>
 
 <script>
-    import {PathBrowser} from "../../../../../js/constants";
+  import {PathBrowser} from '../../../../../js/constants';
 
-    export default {
+  export default {
         props: ['model'],
         mixins: [ VueFormGenerator.abstractField ],
         data () {
             return {
                 isOpen: false,
-                browserRoot: `${getBasePath()}/assets`,
+                browserRoot: '/assets',
                 browserType: PathBrowser.Type.ASSET,
-                currentPath: `${getBasePath()}/assets`,
+                currentPath: '/assets',
                 selectedPath: null,
                 withLinkTab: true
             }
@@ -82,7 +82,11 @@
 				}
 			}
 		},
-        methods: {
+      created() {
+          this.browserRoot = this.getBasePath() + this.browserRoot
+          this.currentPath = this.getBasePath() + this.currentPath
+      },
+      methods: {
             getBasePath() {
               const view = $perAdminApp.getView()
               let tenant = { name: 'example' }
