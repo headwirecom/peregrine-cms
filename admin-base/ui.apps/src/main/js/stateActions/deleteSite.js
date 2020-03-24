@@ -29,6 +29,6 @@ export default function(me, target) {
     log.fine('deleteSite',target)
     var api = me.getApi()
     me.getNodeFromView('/state/tools').page = undefined
-    return api.deleteSite(target)
+    return api.deleteSite(target).then( () => api.populateTenants() )
 
 }

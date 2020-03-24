@@ -33,10 +33,12 @@ export default function(me, target) {
     log.fine(target)
     var api = me.getApi()
     return api.createSite(target.fromName, target.toName, target.title, target.colorPalette).then( () => {
-        return setTenant(me, { name : target.toName }).then( () => {
-            me.loadContent('/content/admin/pages/welcome.html');
-            // path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName)
-        })
+        return api.populateTenants().then( () => {
+            return setTenant(me, { name : target.toName }).then( () => {
+                me.loadContent('/content/admin/pages/welcome.html');
+                // path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName)
+            })
+        })        
     })
 
 }
