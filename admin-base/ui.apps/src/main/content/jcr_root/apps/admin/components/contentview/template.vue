@@ -395,49 +395,66 @@ export default {
             return ret
         },
 
-        getTargetEl(e) {
-            var pos = this.getPosFromMouse(e)
-            var editview = this.$refs.editview
-            var targetEl = this.findIn(editview.contentWindow.document.body, pos)
-            if(!targetEl) return { targetEl: undefined, inline: undefined }
+        getTarget(e) {
+            const pos = this.getPosFromMouse(e)
+            const editview = this.$refs.editview
+            let targetEl = this.findIn(editview.contentWindow.document.body, pos)
+            if (!targetEl) return
 
-            let inline = targetEl.getAttribute('data-per-inline-edit') ? targetEl : undefined
-            while(!targetEl.getAttribute('data-per-path')) {
-                targetEl = targetEl.parentElement
-                if(!inline && targetEl.getAttribute('data-per-inline-edit')) {
-                    inline = targetEl
+            let path, inlineEl, inlinePath
+            while (targetEl && !path) {
+                path = targetEl.getAttribute('data-per-path');
+                if (!inlineEl) {
+                    inlinePath = targetEl.getAttribute('data-per-inline-edit')
+                    if (inlinePath){
+                        inlineEl = targetEl
+                    }
                 }
-                if(!targetEl) { break }
+
+                targetEl = path ? targetEl : targetEl.parentElement
             }
-            return { targetEl, inline }
+
+            const inline = inlineEl ? {
+                el: inlineEl,
+                path: inlinePath
+            } : undefined
+            return {
+                el: targetEl,
+                path: path,
+                inline
+            }
         },
 
         onClickOverlay(e) {
             if (!e) return
             if (e.target && e.target.getAttribute('contenteditable') === 'true') return;
-            const target = this.getTargetEl(e)
-            const targetEl = target.targetEl
-            if (targetEl) {
-                const path = targetEl.getAttribute('data-per-path')
-                const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                if (this.isContainer(targetEl) && this.isIgnoreContainersEnabled) return;
+            const target = this.getTarget(e)
+            if (!target) {
+                return
+            }
 
-                if (node && node.fromTemplate) {
-                    $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
-                        complete: this.removeEditOverlay
-                    })
+            const targetEl = target.el
+            const path = target.path
+            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+            if (this.isContainer(targetEl) && this.isIgnoreContainersEnabled) return;
+
+            if (node && node.fromTemplate) {
+                $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
+                    complete: this.removeEditOverlay
+                })
+            } else {
+                this.selectedComponent = targetEl
+                const inline = target.inline
+                if (inline) {
+                    this.inline.target = inline.el
+                    this.inline.path = inline.path
+                    this.inline.content = inline.el.innerHTML
                 } else {
-                    this.selectedComponent = targetEl
-                    const inline = target.inline
-                    this.inline.path = inline ? inline.getAttribute('data-per-inline-edit') : undefined
-                    if (this.inline.path) {
-                        this.inline.target = inline
-                        this.inline.content = inline.innerHTML
-                    }
-
-                    this.setSelectedEditableStyle()
-                    $perAdminApp.action(this, 'showComponentEdit', path)
+                    this.inline.path = undefined
                 }
+
+                this.setSelectedEditableStyle()
+                $perAdminApp.action(this, 'showComponentEdit', path)
             }
         },
 
@@ -451,12 +468,12 @@ export default {
         },
 
         leftOverlayArea(e) {
-            if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
+            if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
 
             // check if we only left the area into the overlay for the actions
-            var targetEl = this.getTargetEl(e).targetEl
-            if(targetEl) return
-            this.removeEditOverlay()
+            if (!this.getTarget(e)) {
+                this.removeEditOverlay()
+            }
         },
 
         removeEditOverlay() {
@@ -468,37 +485,39 @@ export default {
         mouseMove(e) {
             if (!e || this.isTouch) return
             if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
-            let targetEl = this.getTargetEl(e).targetEl
-            if (targetEl) {
-                if (this.isContainer(targetEl)) {
-                    if (this.isIgnoreContainersEnabled) return;
-                }
-
-                if (targetEl.getAttribute('data-per-droptarget')) {
-                    targetEl = targetEl.parentElement
-                }
-
-                this.selectedComponent = targetEl
-                this.setSelectedEditableStyle()
+            const target = this.getTarget(e)
+            if (!target) {
+                return
             }
+
+            let targetEl = target.el
+            if (this.isIgnoreContainersEnabled && this.isContainer(targetEl)) return;
+
+            if (targetEl.getAttribute('data-per-droptarget')) {
+                targetEl = targetEl.parentElement
+            }
+
+            this.selectedComponent = targetEl
+            this.setSelectedEditableStyle()
         },
 
         /* Drag and Drop ===========================
         ============================================ */
         onDragStart(ev) {
-            if (this.selectedComponent === null)return
+            if (!this.selectedComponent) return
             this.editableClass = 'dragging'
             ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
         },
 
         onDragOver(ev) {
             ev.preventDefault()
-            const targetEl = this.getTargetEl(ev).targetEl
-            if (targetEl) {
+            const target = this.getTarget(ev)
+            if (target) {
+                const targetEl = target.el
                 const pos = this.getPosFromMouse(ev)
                 const targetBox = this.getBoundingClientRect(targetEl)
                 const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-                const isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path')).fromTemplate === true
+                const isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, target.path).fromTemplate === true
                 if (isDropTarget) {
                     const dropLocation = targetEl.getAttribute('data-per-location')
                     if (targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
@@ -536,31 +555,33 @@ export default {
         onDrop(ev) {
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
-            var targetEl = this.getTargetEl(ev).targetEl
-            if (typeof targetEl === 'undefined' || targetEl === null) {
+            const target = this.getTarget(ev)
+            if (!target) {
                 return false
             }
-            var targetPath = targetEl.getAttribute('data-per-path');
-            var componentPath = ev.dataTransfer.getData('text')
+
+            const targetEl = target.el
+            const targetPath = target.path
+            const componentPath = ev.dataTransfer.getData('text')
 
             if (targetPath === componentPath) {
                 ev.dataTransfer.clearData('text')
                 return false
             }
 
-            var view = $perAdminApp.getView()
-            var payload = {
+            const view = $perAdminApp.getView()
+            const payload = {
                 pagePath : view.pageView.path,
-                path: targetEl.getAttribute('data-per-path'),
+                path: targetPath,
                 component: componentPath,
                 drop: this.dropPosition
             }
-            var addOrMove
+            let addOrMove
             if (componentPath.includes('/components/')) {
                 addOrMove = 'addComponentToPath';
             } else {
                 addOrMove = 'moveComponentToPath';
-                var targetNode = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetPath)
+                const targetNode = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetPath)
                 if((!targetNode) || (targetNode.fromTemplate)) {
                     $perAdminApp.notifyUser('template component', 'You cannot drag a component into a template section', {
                         complete: this.removeEditOverlay
