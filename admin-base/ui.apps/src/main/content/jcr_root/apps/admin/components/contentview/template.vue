@@ -61,7 +61,7 @@
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
-                            <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
+                            <li v-if="selectedComponent && selectedComponentPath !== '/jcr:content'" class="waves-effect waves-light">
                               <a href="#" :title="$i18n('deleteComponent')"
                                  @click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
@@ -113,6 +113,7 @@ export default {
             editableVisible: false,
             editableClass: null,
             selectedComponent: null,
+            selectedComponentPath: null,
             selectedComponentDragable: true,
             clipboard: null,
             ctrlDown: false,
@@ -187,7 +188,7 @@ export default {
         enableEditableFeatures() {
             const targetEl = this.selectedComponent
             if (!targetEl) return false
-            const path = targetEl.getAttribute('data-per-path')
+            const path = this.selectedComponentPath
             if (!path) return false
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             return node && !node.fromTemplate
@@ -205,7 +206,7 @@ export default {
                 const targetEl = this.selectedComponent
                 if (!targetEl) return
 
-                const path = targetEl.getAttribute('data-per-path')
+                const path = this.selectedComponentPath
                 if (!path) return
 
                 let answer = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
@@ -444,6 +445,7 @@ export default {
                 })
             } else {
                 this.selectedComponent = targetEl
+                this.selectedComponentPath = path
                 const inline = target.inline
                 if (inline) {
                     this.inline.target = inline.el
@@ -478,6 +480,7 @@ export default {
 
         removeEditOverlay() {
             this.selectedComponent = null
+            this.selectedComponentPath = null
             this.editableClass = null
             if (this.isTouch) this.selectedComponentDragable = false
         },
@@ -498,6 +501,7 @@ export default {
             }
 
             this.selectedComponent = targetEl
+            this.selectedComponentPath = target.path
             this.setSelectedEditableStyle()
         },
 
@@ -506,7 +510,7 @@ export default {
         onDragStart(ev) {
             if (!this.selectedComponent) return
             this.editableClass = 'dragging'
-            ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
+            ev.dataTransfer.setData('text', this.selectedComponentPath)
         },
 
         onDragOver(ev) {
@@ -605,7 +609,7 @@ export default {
         },
 
         onLongTouchOverlay() {
-            if(this.selectedComponent === null) return
+            if (!this.selectedComponent) return
             this.selectedComponentDragable = true
             this.editableClass = 'draggable'
         },
@@ -625,7 +629,7 @@ export default {
 
                 let color = ''
                 if (this.selectedComponent) {
-                    const path = this.selectedComponent.getAttribute('data-per-path')
+                    const path = this.selectedComponentPath
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
                     if (node && node.fromTemplate) {
                         color = 'orange'
@@ -661,19 +665,18 @@ export default {
             var pagePath = view.pageView.path
             var payload = {
                 pagePath: view.pageView.path,
-                path: targetEl.getAttribute('data-per-path')
+                path: this.selectedComponentPath
             }
             if(payload.path !== '/jcr:content') {
                 $perAdminApp.stateAction('deletePageNode',  payload)
             }
             this.editableClass = null
             this.selectedComponent = null
+            this.selectedComponentPath = null
         },
 
         onCopy(e) {
-            var targetEl = this.selectedComponent
-            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
-            this.clipboard = node
+            this.clipboard = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selectedComponentPath)
         },
 
         onPaste(e) {
@@ -686,7 +689,7 @@ export default {
             var payload = {
                 pagePath: view.pageView.path,
                 data: nodeFromClipboard,
-                path: targetEl.getAttribute('data-per-path'),
+                path: this.selectedComponentPath,
                 drop: dropPosition
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
@@ -697,22 +700,15 @@ export default {
         },
 
         isContainer(el) {
-            if (el && el.getAttribute('data-per-droptarget')) {
-                return true;
-            }
-            let subEl = el.firstElementChild;
-            if (!subEl) {
-                return false;
-            }
-            while (!subEl.getAttribute('data-per-path')) {
+            let subEl = el;
+            while (subEl && !subEl.getAttribute('data-per-path')) {
                 subEl = subEl.firstElementChild;
-                if (!subEl) {
-                    return false;
-                }
             }
-            if (subEl.getAttribute('data-per-droptarget')) {
+
+            if (subEl && subEl.getAttribute('data-per-droptarget')) {
                 return true;
             }
+
             return false;
         }
     }
