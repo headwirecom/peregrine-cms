@@ -395,7 +395,6 @@ class PerAdminImpl {
   }
 
   populateTenants() {
-    console.log('populate tenants')
     return new Promise((resolve, reject) => {
       fetch('/admin/listTenants.json')
       .then((data) => {
