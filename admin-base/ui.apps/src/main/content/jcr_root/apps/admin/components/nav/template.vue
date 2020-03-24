@@ -30,7 +30,7 @@
           <admin-components-action
               v-bind:model="{
               command: 'selectPath', 
-              target: '/content/admin/pages/welcome',
+              target: '/content/admin/pages/index',
               classes: 'peregrine-logo',
               tooltipTitle: $i18n('home')
             }">
@@ -51,20 +51,20 @@
         </div>
         <ul id="nav-mobile" class="right hide-on-small-and-down">
 
-          <li>
-          <admin-components-action v-if="!model.hideTenants"
+          <li v-if="!model.hideTenants">
+          <admin-components-action 
             v-bind:model="{
             command: 'selectPath',
             title: state.tenant ? state.tenant.name : 'unknown',
-            target: '/content/admin/pages/index'
+            target: '/content/admin/pages/welcome'
           }"></admin-components-action>
 
-          <admin-components-action v-else
+          <!-- <admin-components-action v-else
               v-bind:model="{
             command: 'selectPath',
             title: $i18n('Tenants'),
             target: '/content/admin/pages/index'
-          }"></admin-components-action>
+          }"></admin-components-action> -->
 
           <admin-components-separator />
 

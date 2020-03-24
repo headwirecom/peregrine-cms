@@ -91,7 +91,7 @@
         methods: {
             selectTenant(me, target) {
                 $perAdminApp.stateAction('setTenant', { name: target}).then( () => {
-                    $perAdminApp.loadContent('/content/admin/pages/index.html');
+                    $perAdminApp.loadContent('/content/admin/pages/welcome.html');
                 });
             }
         }

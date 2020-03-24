@@ -20,7 +20,7 @@
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
   KIND, either express or implied.  See the License for the
   specific language governing permissions and limitations
-  under the License.
+  under the License.¡
   #L%
   -->
 <jcr:root
@@ -32,11 +32,11 @@
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
-    jcr:title="Welcome"
-    jcr:description="admin base welcome page">
+    jcr:title="Home"
+    jcr:description="admin base home page">
 
     <nav jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/nav" hideTenants="true"/>
+      sling:resourceType="admin/components/nav"/>
 
     <content jcr:primaryType="nt:unstructured"
       sling:resourceType="pagerendervue/structure/container">
@@ -45,105 +45,135 @@
         sling:resourceType="admin/components/row">
 
         <col1 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col m4">
+          sling:resourceType="admin/components/col" classes="col">
 
-          <text1 jcr:primaryType="nt:unstructured"
+          <text jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
-            text="
-            &lt;style&gt;
-            .browser-default a {
-                color: #b66f35;
-            }
-            &lt;/style&gt;
-            &lt;h2&gt;peregrine cms&lt;/h2&gt;&lt;p&gt;to get started with peregrine cms click on the 'create tenant' button to the right or select one of the existing sites you have already created before.&lt;/p&gt;
-             &lt;h5&gt;Tools&lt;/h5&gt;
-                Use the tools to help you understand and manage Peregrine CMS
-                &lt;ul class=&quot;browser-default&quot;&gt;
-                    &lt;li&gt;&lt;a href=&quot;/bin/browser.html&quot;&gt;composum&lt;/a&gt;&lt;br&gt;
-                    Direct access to the content repository and package manager of Apache Sling.&lt;/li&gt;
-                    &lt;li&gt;&lt;a href=&quot;/perapi/swaggereditor/&quot;&gt;peregrine api&lt;/a&gt;&lt;br&gt;
-                    Explore the headless API used by Peregrine CMS for all client/server communication.&lt;/li&gt;
-                    &lt;li&gt;&lt;a href=&quot;/content/apidocs/cms/index.html&quot;&gt;javadocs&lt;/a&gt;&lt;br&gt;
-                    See the java documentation for all server side code of Peregrine CMS&lt;/li&gt;
-                &lt;/ul&gt;
-            ">
-          </text1>
+            text="peregrine-cms is a head optional, api first cms built on top of vuejs, apache sling and apache jackrabbit">
+            <experiences
+              jcr:primaryType="nt:unstructured">
+              <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+                text="peregrine-cms ist ein 'head optional', 'api first' cms basierend auf VueJS, Apache Sling und Apache Jackrabbit"/>
+            </experiences>
+          </text>
 
         </col1>
-        <col2 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col m4">
-
-          <text1 jcr:primaryType="nt:unstructured"
-            sling:resourceType="pagerendervue/components/base"
-            text="&lt;h2&gt;your websites&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;">
-          </text1>
-
-          <!-- <addSite jcr:primaryType="nt:unstructured"
-            sling:resourceType="admin/components/action" target="" type="icon" title="add site"
-            command="addSite" icon="folder" classes="addSite">
-            <experiences jcr:primaryType="nt:unstructured">
-              <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Webseite hinzufügen"/>
-            </experiences>
-          </addSite> -->
-
-          <tenants jcr:primaryType="nt:unstructured"
-            sling:resourceType="admin/components/tenants">
-          </tenants>
-
-        </col2>
-
-        <col3 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col m4">
-
-          <text1 jcr:primaryType="nt:unstructured"
-            sling:resourceType="pagerendervue/components/base"
-            text="&lt;h2&gt;about us&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;">
-          </text1>
-
-          <text2 jcr:primaryType="nt:unstructured"
-            sling:resourceType="pagerendervue/components/base"
-            text="&lt;p class=&quot;left-align&quot;&gt;
-                    &lt;img style=&quot;margin: 10px; width: 100px; max-width: 100px;&quot; src=&quot;/etc/felibs/admin/peregrine-logo.svg&quot; align=&quot;right&quot;/&gt;
-                    &lt;img style=&quot;width: 0px; height: 0px;&quot; src=&quot;https://www.headwire.com/t/peregrine.png&quot;/&gt;
-                    Peregrine CMS - a head optional content management system based on Apache Sling
-                    and Vue.JS.
-                &lt;/p&gt;
-                &lt;p class=&quot;left-align browser-default&quot;&gt;
-                    For documentation about Peregrine CMS please visit our &lt;a href=&quot;http://www.peregrine-cms.com&quot;&gt;website&lt;/a&gt;.
-                &lt;/p&gt;
-                &lt;p class=&quot;left-align browser-default&quot;&gt;
-                    Peregrine CMS is an open source project sponsored by
-                    &lt;a href=&quot;https://www.headwire.com&quot; target=&quot;_blank&quot;&gt;headwire.com, Inc&lt;/a&gt;.
-                    Commercial support is available upon request. We encourage contributions
-                    to the project. Please let us know what you think about this product.
-                &lt;/p&gt;
-                &lt;p class=&quot;left-align browser-default&quot;&gt;
-                    &lt;a href=&quot;https://github.com/headwirecom/peregrine-cms&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;&lt;br&gt;
-                    &lt;a href=&quot;https://github.com/headwirecom/peregrine-cms/issues&quot; target=&quot;_blank&quot;&gt;issue tracker&lt;/a&gt;&lt;br&gt;
-                    &lt;a href=&quot;mailto:info@headwire.com?subject=invite me to peregrine-cms.slack.com&quot;&gt;peregrine-cms.slack.com&lt;/a&gt;
-                &lt;/p&gt;">
-          </text2>
-
-        </col3>
 
       </row>
+
+      <iconlist jcr:primaryType="nt:unstructured"
+        sling:resourceType="admin/components/iconlist" source="/admin/tools"/>
 
     </content>
 
     <jsonview jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/debugger" dataFrom="/"/>
 
-    <tour jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/tour">
+    <tour jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/tour">
 
-      <item1 jcr:primaryType="nt:unstructured"
-        locator="/jcr:content"
+      <item1 jcr:primaryType="nt:unstructured" locator="/jcr:content"
         text="Welcome to the Peregrine Administrator dashboard!">
         <experiences jcr:primaryType="nt:unstructured">
           <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
             text="Wilkommen im Peregrine Administrator Dashboard!"/>
         </experiences>
       </item1>
+
+      <item2 jcr:primaryType="nt:unstructured" locator="/jcr:content/content/iconlist"
+        text="From this page you can access all of the core tools provided by Peregrine to manage your website">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Von dieser Seite aus kannst du auf alle Kern-Tools von Peregrine zugreifen um deine Seiten zu verwalten"/>
+        </experiences>
+      </item2>
+
+      <item3 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/pages"
+        text="The Pages explorer gives you an overview of your website pages, and allows you to edit the structure of your pages">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Der Seiten-Erkunder gibt dir eine Übersicht deiner Seiten und ermöglicht die Bearbeitung der Struktur"/>
+        </experiences>
+      </item3>
+
+      <item4 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/assets"
+        text="From the Asset explorer, you can add and manage assets such as images that are available throughout your website">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Mit dem Asset-Erkunder kannst du deine Assets (z.B. Bilder), die auf den Seiten verfügbar sind, verwalten "/>
+        </experiences>
+      </item4>
+
+      <item5 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/objects"
+        text="Use the Object explorer to create and manage common content data for your website">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Nutze den Objekt-Erkunder um allgemeinene Content Daten deiner Seiten zu erstellen und zu verwalten"/>
+        </experiences>
+      </item5>
+
+      <item6 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/templates"
+        text="Create and edit page Templates for use throughout your website">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Erstelle und Bearbeite Templates für deine Seite"/>
+        </experiences>
+      </item6>
+
+      <item7 jcr:primaryType="nt:unstructured" locator="/content/admin/pages/tools/config"
+        text="On the Tools page you can access various tools like Composum Developer Tool, Peregrine API Explorer or JCR Query Tool">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Auf der Tools Seite kannst du auf verschiedene Werkzeuge wie Composum Developer Tool, Peregrine API Explorer oder JCR Query Tool zugreifen"/>
+        </experiences>
+      </item7>
+
+      <item8 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav"
+        text="Use the navigation bar to quickly move throughout the dashboard">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Nutze die Navigation um zügig durch das Dashboard zu navigieren"/>
+        </experiences>
+      </item8>
+
+      <item9 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav"
+        text="Return to the Admin dashboard home page (this page)" selector=".peregrine-logo">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Kehre zurück zur Admin Dashboard Startseite (Aktuelle Seite)"/>
+        </experiences>
+      </item9>
+
+      <item10 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav"
+        text="Logout of the admin dashboard" selector="li:nth-child(1)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Melde dich vom Admin Dashboard ab"/>
+        </experiences>
+      </item10>
+
+      <item11 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav"
+        text="Try the help button on other pages!" selector="li:nth-child(2)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Probier den Hilfe Button auf anderen Seiten aus!"/>
+        </experiences>
+      </item11>
+
+      <item12 jcr:primaryType="nt:unstructured" locator="/jcr:content/nav"
+        text="Here you can change the language" selector="li:nth-child(3)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Hier kannst du die Sprache ändern"/>
+        </experiences>
+      </item12>
+
+      <item13 jcr:primaryType="nt:unstructured" locator="/jcr:content"
+        text="Thanks for choosing Peregrine CMS!">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Danke das du dich für Peregrine CMS entschieden hast!"/>
+        </experiences>
+      </item13>
 
     </tour>
 

@@ -42,7 +42,13 @@ export default function(me, tenant) {
       throw 'tenant not found'
     }
 
-    set(me.getView(), '/state/tools', {})
+    // prepopulate tree viewers
+    set(me.getView(), '/state/tools', { 
+      pages: `/content/${tenant.name}/pages`,
+      assets: `/content/${tenant.name}/assets`,
+      objects: `/content/${tenant.name}/objects`,
+      templates: `/content/${tenant.name}/templates`
+    })
 
     next = next[0]
     set(me.getView(), '/state/tenant', next)
