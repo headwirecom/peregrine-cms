@@ -256,7 +256,7 @@
 
         methods: {
             getTenant() {
-              return $peAdminApp.getView().state.tenant || {name: 'example'}
+              return $perAdminApp.getView().state.tenant || {name: 'example'}
             },
 
             isAssets(path) {
