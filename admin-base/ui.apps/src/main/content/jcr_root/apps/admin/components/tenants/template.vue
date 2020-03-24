@@ -32,7 +32,7 @@
             }"><button>{{$i18n('create website')}}</button>
         </admin-components-action>
         </p>
-        <fieldset class="vue-form-generator">
+        <fieldset class="vue-form-generator" v-if="children.length > 0">
             <div class="form-group required">
                 <div class="row">
                     <div class="col m12">
@@ -49,8 +49,8 @@
 
                                 <admin-components-action
                                     v-bind:model="{
-                                        target: child,
-                                        command: 'deleteSiteOrPage',
+                                        target: { path: '/content', name: child.name },
+                                        command: 'deleteSite',
                                         tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                                     }">
                                     <i class="material-icons">delete</i>
@@ -93,7 +93,15 @@
                 $perAdminApp.stateAction('setTenant', { name: target}).then( () => {
                     $perAdminApp.loadContent('/content/admin/pages/welcome.html');
                 });
-            }
+            },
+
+            deleteSite: function(me, target) {
+                $perAdminApp.askUser('Delete Site', me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'), {
+                    yes() {
+                        $perAdminApp.stateAction('deleteSite', target)
+                    }
+                })
+            },
         }
     }
 </script>

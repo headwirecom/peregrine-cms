@@ -24,6 +24,8 @@
  */
 import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
+import setTenant from "./setTenant";
+
 let log = LoggerFactory.logger('createSite').setLevelDebug()
 
 export default function(me, target) {
@@ -31,7 +33,10 @@ export default function(me, target) {
     log.fine(target)
     var api = me.getApi()
     return api.createSite(target.fromName, target.toName, target.title, target.colorPalette).then( () => {
-        me.loadContent('/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName)
+        return setTenant(me, { name : target.toName }).then( () => {
+            me.loadContent('/content/admin/pages/welcome.html');
+            // path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName)
+        })
     })
 
 }
