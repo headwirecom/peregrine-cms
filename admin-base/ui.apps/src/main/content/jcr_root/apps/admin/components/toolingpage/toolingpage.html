@@ -52,15 +52,60 @@
         }
     </script>
 
+    <style>
+        .tutorial-visible {
+            display: flex;
+        }
+
+        #peregrine-adminapp {
+            flex-grow: 1;
+        }
+
+        .peregrine-tutorial {
+            display: none;
+        }
+
+        .tutorial-visible .peregrine-tutorial {
+            width: 400px;
+            background: #37474f;
+            height: 100vh;
+            display: block;
+            top: 0px;
+            position: sticky;
+        }
+
+        .tutorial-visible .tooling-page .explorer {
+            right: 400px;
+        }
+
+        .tutorial-visible .tooling-page .peregrine-workspace {
+            right: 400px;
+        }
+
+        .tutorial-visible .peregrine-workspace .peregrine-content-view.preview {
+            right: 400px;
+        }
+
+        .tutorial-visible .preview #editview {
+            width: calc(100% - 400px) !important;
+        }
+
+    </style>
+
 </head>
 <body>
 
 <div id="waitMask" style="display: none; z-index: 999; position: absolute; top: 0; right: 0; height: 100%; width: 100%; cursor: wait; background-color: black; opacity: 0.2;">&nbsp;</div>
 
-<div id="peregrine-adminapp">
-    <span v-cloak>
-        <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
-    </span>
+<div id="peregrine-main">
+    <div id="peregrine-adminapp">
+        <span v-cloak>
+            <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
+        </span>
+    </div>
+    <div class="peregrine-tutorial">
+        <iframe src="/content/admin/pages/tutorials.html" style="height: 100%; width: 100%; background: white;" data-per-mode="tutorial"></iframe>
+    </div>
 </div>
 
 <sly data-sly-list="${helper.model.siteJS}">

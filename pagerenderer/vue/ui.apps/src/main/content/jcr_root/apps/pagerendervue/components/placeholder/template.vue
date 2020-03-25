@@ -55,6 +55,13 @@ export default {
     },
     created() {
         const vm = this;
+
+        if(window.frameElement && window.frameElement.attributes['data-per-mode']) {
+            if(window.frameElement.attributes['data-per-mode'].value) {
+                return;
+            }
+        }
+
         if (window.parent && window.parent.$perAdminApp  && window.parent.$perAdminApp.eventBus) {
             window.parent.$perAdminApp.eventBus.$on('edit-preview', (data) => {
                 vm.show = data !== 'preview'
