@@ -514,8 +514,9 @@ export default {
             if (targetEl.getAttribute('data-per-droptarget')) {
                 targetEl = targetEl.parentElement
                 this.selected.el = targetEl
-                this.selected.path = targetEl.getAttribute('data-per-path')
-                this.selected.node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selected.path)
+                const path = targetEl.getAttribute('data-per-path')
+                this.selected.path = path
+                this.selected.node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             } else {
                 this.selected.el = target.el
                 this.selected.path = target.path
