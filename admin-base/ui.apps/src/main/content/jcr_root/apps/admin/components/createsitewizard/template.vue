@@ -191,7 +191,6 @@
                 if(!value || value.length === 0) {
                     return ['name is required']
                 } else {
-                    console.log(value)
                     const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content')
                     if(folder && folder.children) {
                         for(let i = 0; i < folder.children.length; i++) {
