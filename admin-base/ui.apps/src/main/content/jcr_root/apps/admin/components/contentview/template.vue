@@ -115,7 +115,6 @@ export default {
             selected: {
                 el: null,
                 path: null,
-                node: null,
                 draggable: true
             },
             clipboard: null,
@@ -126,7 +125,7 @@ export default {
             editableTimer: null,
             inline: {
                 el: null,
-                node: null,
+                pathSegments: null,
                 propertyName: null,
                 isRich: false,
                 content: null,
@@ -172,7 +171,7 @@ export default {
 
     computed: {
         isComponentSelected() {
-            return this.selected.node && this.selected.path !== '/jcr:content'
+            return this.selected.path && this.selected.path !== '/jcr:content'
         },
 
         pagePath() {
@@ -196,30 +195,53 @@ export default {
         },
 
         enableEditableFeatures() {
-            const node = this.selected.node
+            const node = this.selectedNode
             return node && !node.fromTemplate
         },
 
         isIgnoreContainersEnabled() {
-            const tools = $perAdminApp.getView().state.tools;
+            const tools = $perAdminApp.getView().state.tools
             return tools
                 && tools.workspace
-                && tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
+                && tools.workspace.ignoreContainers === IgnoreContainers.ENABLED
         },
 
         editorVisible() {
             return $perAdminApp.getNodeFromViewOrNull('/state/editorVisible')
         },
 
+        selectedNode() {
+            if (this.selected.path) {
+                return $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selected.path)
+            }
+        },
+
+        inlineNode() {
+            const segments = this.inline.pathSegments
+            if (!segments) {
+                return
+            }
+
+            let node = this.selectedNode
+            for (let i = 0; node && i < segments.length; i++) {
+                node = node[segments[i]]
+            }
+
+            return node
+        },
+
         inlineEditVisible() {
-            return this.editorVisible && this.inline.node && this.enableEditableFeatures;
+            return this.editorVisible && this.inlineNode && this.enableEditableFeatures
         }
     },
 
     methods: {
         onInlineEditInput(text) {
-            this.inline.node[this.inline.propertyName] = text
-            this.updateInlineStyle()
+            const node = this.inlineNode
+            if (node) {
+                node[this.inline.propertyName] = text
+                this.updateInlineStyle()
+            }
         },
 
         /* Window/Document methods =================
@@ -236,7 +258,7 @@ export default {
             const cmdKey = 91
             if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey) {
                 this.ctrlDown = true
-                if (this.selected.node) {
+                if (this.selectedNode) {
                     const cKey = 67
                     const vKey = 86
                     if (ev.keyCode == cKey) {
@@ -434,7 +456,6 @@ export default {
                 const path = target.path
                 this.selected.el = targetEl
                 this.selected.path = path
-                this.selected.node = node
                 const inline = target.inline
                 if (inline) {
                     this.inline.el = inline.el
@@ -442,15 +463,9 @@ export default {
                     this.inline.isRich = inline.el.getAttribute('data-per-inline-is-rich') === 'true'
 
                     const segments = inline.property.split('.')
-                    this.inline.propertyName = segments[segments.length - 1]
-
-                    let val = node
+                    this.inline.propertyName = segments.pop()
                     segments.shift()
-                    for (let i = 0; val && i < segments.length - 1; i++) {
-                        val = val[segments[i]]
-                    }
-
-                    this.inline.node = val
+                    this.inline.pathSegments = segments
                 } else {
                     this.clearInline()
                 }
@@ -486,7 +501,6 @@ export default {
         clearSelected() {
             this.selected.el = null
             this.selected.path = null
-            this.selected.node = null
             
             this.editableClass = null
             
@@ -495,7 +509,7 @@ export default {
 
         clearInline() {
             this.inline.el = null
-            this.inline.node = null
+            this.inline.pathSegments = null
             this.inline.propertyName = null
             this.inline.isRich = false
         },
@@ -512,15 +526,11 @@ export default {
             if (this.isIgnoreContainersEnabled && this.isContainer(targetEl)) return;
 
             if (targetEl.getAttribute('data-per-droptarget')) {
-                targetEl = targetEl.parentElement
-                this.selected.el = targetEl
-                const path = targetEl.getAttribute('data-per-path')
-                this.selected.path = path
-                this.selected.node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+                this.selected.el = targetEl.parentElement
+                this.selected.path = this.selected.el.getAttribute('data-per-path')
             } else {
                 this.selected.el = target.el
                 this.selected.path = target.path
-                this.selected.node = target.node
             }
 
             this.setSelectedEditableStyle()
@@ -627,7 +637,7 @@ export default {
         },
 
         onLongTouchOverlay() {
-            if (!this.selected.node) return
+            if (!this.selected.path) return
             this.selected.draggable = true
             this.editableClass = 'draggable'
         },
@@ -646,7 +656,7 @@ export default {
                 style.height = `${targetBox.height}px`
 
                 let color = ''
-                const node = this.selected.node
+                const node = this.selectedNode
                 if (node && node.fromTemplate) {
                     color = 'orange'
                 }
@@ -658,10 +668,10 @@ export default {
         },
 
         setSelectedEditableStyle() {
-            if (this.selected.node) {
+            if (this.selected.path) {
                 let target = this.selected.el;
                 let editableClass = 'selected';
-                if (this.inline.node) {
+                if (this.inlineNode) {
                     this.updateInlineStyle()
                     target = this.inline.el
                     editableClass += ' no-border'
@@ -688,7 +698,7 @@ export default {
         },
 
         onCopy(e) {
-            this.clipboard = this.selected.node
+            this.clipboard = this.selectedNode
         },
 
         onPaste(e) {
