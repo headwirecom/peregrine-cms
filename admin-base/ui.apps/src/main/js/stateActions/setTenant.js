@@ -36,14 +36,15 @@ export default function(me, tenant) {
   const list = view.admin.tenants
 
   return new Promise( (resolve, reject) => {
-    let next = list.filter((item) => item.name === tenant.name)
+    if (!list) resolve()
 
+    let next = list.filter((item) => (item.name === tenant.name))
     if (next.length <= 0) {
       throw 'tenant not found'
     }
 
     // prepopulate tree viewers
-    set(me.getView(), '/state/tools', { 
+    set(me.getView(), '/state/tools', {
       pages: `/content/${tenant.name}/pages`,
       assets: `/content/${tenant.name}/assets`,
       objects: `/content/${tenant.name}/objects`,
@@ -56,6 +57,7 @@ export default function(me, tenant) {
       current: next
     })
     resolve()
+
   }).catch(err => {
     log.error(err)
   })

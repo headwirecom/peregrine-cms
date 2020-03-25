@@ -401,15 +401,11 @@ class PerAdminImpl {
         const state = callbacks.getView().state
         if (!state.tenant && data.tenants.length > 0) {
             $perAdminApp.stateAction('setTenant', data.tenants[data.tenants.length - 1])
-                .then(() => {
-                  return populateView('/admin', 'tenants', data.tenants)
-                }).then((promise) =>{
-                  promise.resolve()
-              })
+            .then(() => populateView('/admin', 'tenants', data.tenants))
+            .then(() => resolve())
         } else {
-          populateView('/admin', 'tenants', data.tenants).then(() => {
-            resolve()
-          })
+          populateView('/admin', 'tenants', data.tenants)
+          .then(() => resolve())
         }
       })
     })
@@ -435,13 +431,12 @@ class PerAdminImpl {
 
   populateI18N(language) {
     return new Promise((resolve, reject) => {
-      axios.get('/i18n/admin/' + language + '.infinity.json').then(
-          (response) => {
-            updateExplorerDialog();
-            populateView('/admin/i18n', language, response.data).then(() => {
-              resolve()
-            })
-          })
+      axios.get('/i18n/admin/' + language + '.infinity.json')
+      .then((response) => {
+        updateExplorerDialog();
+        populateView('/admin/i18n', language, response.data)
+        .then(() => resolve())
+      })
     })
   }
 
@@ -455,8 +450,7 @@ class PerAdminImpl {
         data.append('colorPalette', colorPalette)
       }
       updateWithForm('/admin/createSite.json', data)
-      .then((data) => this.populateNodesForBrowser(
-          callbacks.getView().state.tools.pages))
+      .then((data) => this.populateNodesForBrowser(callbacks.getView().state.tools.pages))
       .then(() => resolve())
     })
   }
@@ -488,8 +482,8 @@ class PerAdminImpl {
             data.append('newTitle', name)
             data.append('type', 'child')
             updateWithForm('/admin/createPageFromSkeletonPage.json', data)
-                .then( (data) => this.populateNodesForBrowser(parentPath) )
-                .then( () => resolve() )
+            .then((data) => this.populateNodesForBrowser(parentPath))
+            .then(() => resolve())
         })
     }
 
