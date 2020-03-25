@@ -61,7 +61,7 @@
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
-                            <li v-if="selected.path !== '/jcr:content'" class="waves-effect waves-light">
+                            <li v-if="isComponentSelected" class="waves-effect waves-light">
                               <a href="#" :title="$i18n('deleteComponent')"
                                  @click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
@@ -171,9 +171,14 @@ export default {
     },
 
     computed: {
+        isComponentSelected() {
+            return this.selected.node && this.selected.path !== '/jcr:content'
+        },
+
         pagePath() {
             return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
         },
+
         viewMode() {
             const viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
             const previewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
@@ -664,11 +669,10 @@ export default {
         },
 
         onDelete(e) {
-            const path = this.selected.path
-            if (path !== '/jcr:content') {
+            if (this.isComponentSelected) {
                 $perAdminApp.stateAction('deletePageNode',  {
                     pagePath: $perAdminApp.getView().pageView.path,
-                    path
+                    path: this.selected.path
                 })
             }
 
