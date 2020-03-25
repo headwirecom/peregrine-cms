@@ -41,11 +41,22 @@
                     @touchend   = "onEditableTouchEnd">
                     <div id="inlineEditContainer"
                         v-show="inlineEditVisible"
-                        @click.stop.prevent>
-                        <trumbowyg :config="inline.config"
-                            v-model="inline.content"
-                            @input="onInlineEditInput">
-                        </trumbowyg>
+                        @click.stop.prevent
+                        @input.stop.prevent>
+                        <div v-show="inline.isRich"
+                            class="editor rich">
+                            <trumbowyg :config="inline.config"
+                                v-model="inline.content"
+                                @input="updateInlineText">
+                            </trumbowyg>
+                        </div>
+                        <div v-show="!inline.isRich"
+                            class="editor simple">
+                            <div ref="simpleInlineEdit"
+                                v-html="inline.content"
+                                contenteditable="true"
+                                @input="onInlineSimpleEditInput"></div>
+                        </div>
                     </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
@@ -236,12 +247,16 @@ export default {
     },
 
     methods: {
-        onInlineEditInput(text) {
+        updateInlineText(text) {
             const node = this.inlineNode
             if (node) {
                 node[this.inline.propertyName] = text
                 this.updateInlineStyle()
             }
+        },
+
+        onInlineSimpleEditInput(text) {
+            this.updateInlineText(event.target.innerHTML)
         },
 
         /* Window/Document methods =================
@@ -479,6 +494,8 @@ export default {
             // copy styles from original element into this one
             const style = window.getComputedStyle(this.inline.el)
             let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+            this.$refs.simpleInlineEdit.setAttribute('style', value)
+
             value = value.replace(/display.+?;/, '')
             $('#inlineEditContainer .trumbowyg-editor').attr('style', value)
             $('#inlineEditContainer textarea').attr('style', value)
@@ -735,6 +752,10 @@ export default {
     #inlineEditContainer {
         background-color: white;
         margin-top: -39px;
+
+        .simple {
+            margin-top: 39px;
+        }
 
         .trumbowyg-box {
             margin: 0;
