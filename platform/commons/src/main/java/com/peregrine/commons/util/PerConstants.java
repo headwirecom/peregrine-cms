@@ -1,5 +1,7 @@
 package com.peregrine.commons.util;
 
+import com.peregrine.commons.Strings;
+
 import java.util.Locale;
 
 /**
@@ -57,8 +59,8 @@ public class PerConstants {
     public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final Locale ECMA_DATE_FORMAT_LOCALE = Locale.US;
 
-    public static final String SLASH = "/";
-    public static final String DASH = "-";
+    public static final String SLASH = Strings.SLASH;
+    public static final String DASH = Strings.DASH;
 
     public static final String HTML = "html";
     public static final String JSON = "json";
