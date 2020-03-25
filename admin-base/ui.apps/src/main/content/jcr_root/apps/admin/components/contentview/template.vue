@@ -381,29 +381,35 @@ export default {
         getTarget(e) {
             const pos = this.getPosFromMouse(e)
             const editview = this.$refs.editview
-            let targetEl = this.findIn(editview.contentWindow.document.body, pos)
-            if (!targetEl) return
+            let el = this.findIn(editview.contentWindow.document.body, pos)
+            if (!el) return
 
             let path, inlineEl, inlineProp
-            while (targetEl && !path) {
-                path = targetEl.getAttribute('data-per-path');
+            while (el && !path) {
+                path = el.getAttribute('data-per-path');
                 if (!inlineEl) {
-                    inlineProp = targetEl.getAttribute('data-per-inline-property')
+                    inlineProp = el.getAttribute('data-per-inline-property')
                     if (inlineProp){
-                        inlineEl = targetEl
+                        inlineEl = el
                     }
                 }
 
-                targetEl = path ? targetEl : targetEl.parentElement
+                if (!path) {
+                    el = el.parentElement
+                }
             }
+
+            if (!el || !path) return
 
             const inline = inlineEl ? {
                 el: inlineEl,
                 property: inlineProp
             } : undefined
             return {
-                el: targetEl,
-                path: path,
+                el,
+                path,
+                node: $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path),
+                isDropTarget: el.getAttribute('data-per-droptarget') === 'true',
                 inline
             }
         },
@@ -416,17 +422,17 @@ export default {
                 return
             }
 
-            const el = target.el
-            if (this.isContainer(el) && this.isIgnoreContainersEnabled) return;
+            const targetEl = target.el
+            if (this.isIgnoreContainersEnabled && this.isContainer(targetEl)) return;
 
-            const path = target.path
-            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+            const node = target.node
             if (!node || node.fromTemplate) {
                 $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
                     complete: this.removeEditOverlay
                 })
             } else {
-                this.selected.el = el
+                const path = target.path
+                this.selected.el = targetEl
                 this.selected.path = path
                 this.selected.node = node
                 const inline = target.inline
@@ -507,11 +513,15 @@ export default {
 
             if (targetEl.getAttribute('data-per-droptarget')) {
                 targetEl = targetEl.parentElement
+                this.selected.el = targetEl
+                this.selected.path = targetEl.getAttribute('data-per-path')
+                this.selected.node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selected.path)
+            } else {
+                this.selected.el = target.el
+                this.selected.path = target.path
+                this.selected.node = target.node
             }
 
-            this.selected.el = targetEl
-            this.selected.path = target.path
-            this.selected.node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, target.path)
             this.setSelectedEditableStyle()
         },
 
@@ -530,9 +540,8 @@ export default {
                 const targetEl = target.el
                 const pos = this.getPosFromMouse(ev)
                 const targetBox = this.getBoundingClientRect(targetEl)
-                const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-                const isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, target.path).fromTemplate === true
-                if (isDropTarget) {
+                const isRoot = target.node.fromTemplate === true
+                if (target.isDropTarget) {
                     const dropLocation = targetEl.getAttribute('data-per-location')
                     if (targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
                         this.dropPosition = 'after'
@@ -574,7 +583,6 @@ export default {
                 return false
             }
 
-            const targetEl = target.el
             const targetPath = target.path
             const componentPath = ev.dataTransfer.getData('text')
 
@@ -583,20 +591,13 @@ export default {
                 return false
             }
 
-            const view = $perAdminApp.getView()
-            const payload = {
-                pagePath : view.pageView.path,
-                path: targetPath,
-                component: componentPath,
-                drop: this.dropPosition
-            }
             let addOrMove
             if (componentPath.includes('/components/')) {
                 addOrMove = 'addComponentToPath';
             } else {
                 addOrMove = 'moveComponentToPath';
-                const targetNode = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetPath)
-                if((!targetNode) || (targetNode.fromTemplate)) {
+                const targetNode = target.node
+                if (!targetNode || targetNode.fromTemplate) {
                     $perAdminApp.notifyUser('template component', 'You cannot drag a component into a template section', {
                         complete: this.removeEditOverlay
                     })
@@ -604,6 +605,12 @@ export default {
                 }
             }
 
+            const payload = {
+                pagePath : $perAdminApp.getView().pageView.path,
+                path: targetPath,
+                component: componentPath,
+                drop: this.dropPosition
+            }
             $perAdminApp.stateAction(addOrMove, payload)
             ev.dataTransfer.clearData('text')
         },
@@ -680,16 +687,15 @@ export default {
         },
 
         onCopy(e) {
-            this.clipboard = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selected.path)
+            this.clipboard = this.selected.node
         },
 
         onPaste(e) {
-            const isDropTarget = this.selected.el.getAttribute('data-per-droptarget') === 'true'
             const payload = {
                 pagePath: $perAdminApp.getView().pageView.path,
                 data: this.clipboard,
                 path: this.selected.path,
-                drop: isDropTarget ? 'into' : 'after'
+                drop: this.selected.isDropTarget ? 'into' : 'after'
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
