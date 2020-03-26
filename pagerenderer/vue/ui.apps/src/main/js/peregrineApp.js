@@ -134,8 +134,13 @@ function registerViewImpl(v) {
 
 function getView() {
     if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
-        log.fine("getVIEW() - window.parent.perAdminView.pageView");
-        return window.parent.$perAdminView.pageView
+        var mode = window.frameElement.attributes['data-per-mode'] ? window.frameElement.attributes['data-per-mode'].value : null;
+        if(mode === 'tutorial') { 
+            return view;
+        } else {
+            log.fine("getVIEW() - window.parent.perAdminView.pageView");
+            return window.parent.$perAdminView.pageView
+        }
     }
     return view
 }
@@ -306,7 +311,8 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
 function isAuthorModeImpl() {
 
     if(window && window.parent && window.frameElement && window.frameElement.attributes['data-per-mode']) {
-        if(window.frameElement.attributes['data-per-mode'].value === 'preview') {
+        var mode = window.frameElement.attributes['data-per-mode'].value;
+        if(mode === 'preview' || mode === 'tutorial') {
             return false
         }
     }
@@ -321,6 +327,12 @@ function getAdminAppNodeImpl(path) {
     log.fine('getAdminAppState: ' + path)
 
     if(window && window.parent && window.parent.$perAdminApp) {
+        if(window.frameElement.attributes['data-per-mode']) {
+            var mode = window.frameElement.attributes['data-per-mode'].value;
+            if(mode === 'tutorial') {
+                return null;
+            }
+        }
         return window.parent.$perAdminApp.getNodeFromViewOrNull(path)
     }
     return null

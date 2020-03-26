@@ -119,8 +119,12 @@
               {{this.$root.$data.state.user}}
             </a>
           </li>
-          <li v-if="help">
-            <a v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
+          <li>
+            <a v-if="help" v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
+            <span v-else style="padding: 15px; color: silver;">{{$i18n('help')}}</span>
+          </li>
+          <li>
+            <a v-bind:title="$i18n('tutorials')" href="#" v-on:click="onShowTutorials">{{$i18n('tutorials')}}</a>
           </li>
           <li>
             <a v-bind:title="$i18n('aboutNavBtn')" href="#" v-on:click="onShowAbout">{{$i18n('aboutNavBtn')}}</a>
@@ -193,6 +197,9 @@
       },
       onShowHelp() {
         $perAdminApp.action(this, 'showTour', '')
+      },
+      onShowTutorials() {
+        document.getElementById('peregrine-main').classList.toggle('tutorial-visible')
       },
       onShowAbout() {
         $('#aboutPeregrine').modal('open');
