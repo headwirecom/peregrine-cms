@@ -34,7 +34,7 @@
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Create Folder"
     jcr:description="admin base Content Root"
-    suffixToParameter="[path,/state/tools/assets]"
+    suffixToParameter="[path,/state/tools/objects]"
     dataFrom="/state/tools/objects"
     dataDefault="/content/admin/objects"
     loaders="[populateNodesForBrowser:/state/tools/objects]">
