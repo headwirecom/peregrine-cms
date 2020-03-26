@@ -59,11 +59,11 @@
              &lt;h3&gt;tools&lt;/h3&gt;
                 Use the tools to help you understand and manage Peregrine CMS
                 &lt;ul class=&quot;browser-default&quot;&gt;
-                    &lt;li&gt;&lt;a href=&quot;/bin/browser.html&quot;&gt;composum&lt;/a&gt;&lt;br&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/bin/browser.html&quot;&gt;composum&lt;/a&gt;&lt;br&gt;
                     Direct access to the content repository and package manager of Apache Sling.&lt;/li&gt;
-                    &lt;li&gt;&lt;a href=&quot;/perapi/swaggereditor/&quot;&gt;peregrine api&lt;/a&gt;&lt;br&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/perapi/swaggereditor/&quot;&gt;peregrine api&lt;/a&gt;&lt;br&gt;
                     Explore the headless API used by Peregrine CMS for all client/server communication.&lt;/li&gt;
-                    &lt;li&gt;&lt;a href=&quot;/content/apidocs/cms/index.html&quot;&gt;javadocs&lt;/a&gt;&lt;br&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/content/apidocs/cms/index.html&quot;&gt;javadocs&lt;/a&gt;&lt;br&gt;
                     See the java documentation for all server side code of Peregrine CMS&lt;/li&gt;
                 &lt;/ul&gt;
             ">
@@ -109,7 +109,7 @@
                     and Vue.JS.
                 &lt;/p&gt;
                 &lt;p class=&quot;left-align browser-default&quot;&gt;
-                    For documentation about Peregrine CMS please visit our &lt;a href=&quot;http://www.peregrine-cms.com&quot;&gt;website&lt;/a&gt;.
+                    For documentation about Peregrine CMS please visit our &lt;a target=&quot;_blank&quot; href=&quot;http://www.peregrine-cms.com&quot;&gt;website&lt;/a&gt;.
                 &lt;/p&gt;
                 &lt;p class=&quot;left-align browser-default&quot;&gt;
                     Peregrine CMS is an open source project sponsored by
