@@ -124,7 +124,7 @@
                 // browser type is used to limit browsing and show correct file/icon types
                 let type = this.schema.browserType
                 if(!type) {
-                    root === `${getBasePath()}/pages` ? type = PathBrowser.Type.PAGE : type = PathBrowser.Type.ASSET
+                    root === `${this.getBasePath()}/pages` ? type = PathBrowser.Type.PAGE : type = PathBrowser.Type.ASSET
                 }
                 let selectedPath = this.value
                 // current path is the active directory in the path browser
