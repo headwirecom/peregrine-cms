@@ -44,34 +44,8 @@
       <row jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/row">
 
-        <col1 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col m4">
-
-          <text1 jcr:primaryType="nt:unstructured"
-            sling:resourceType="pagerendervue/components/base"
-            text="
-            &lt;style&gt;
-            .browser-default a {
-                color: #b66f35;
-            }
-            &lt;/style&gt;
-            &lt;h2&gt;peregrine cms&lt;/h2&gt;&lt;p&gt;to get started with peregrine cms click on the 'create tenant' button to the right or select one of the existing sites you have already created before.&lt;/p&gt;
-             &lt;h3&gt;tools&lt;/h3&gt;
-                Use the tools to help you understand and manage Peregrine CMS
-                &lt;ul class=&quot;browser-default&quot;&gt;
-                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/bin/browser.html&quot;&gt;composum&lt;/a&gt;&lt;br&gt;
-                    Direct access to the content repository and package manager of Apache Sling.&lt;/li&gt;
-                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/perapi/swaggereditor/&quot;&gt;peregrine api&lt;/a&gt;&lt;br&gt;
-                    Explore the headless API used by Peregrine CMS for all client/server communication.&lt;/li&gt;
-                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/content/apidocs/cms/index.html&quot;&gt;javadocs&lt;/a&gt;&lt;br&gt;
-                    See the java documentation for all server side code of Peregrine CMS&lt;/li&gt;
-                &lt;/ul&gt;
-            ">
-          </text1>
-
-        </col1>
         <col2 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col m4">
+          sling:resourceType="admin/components/col" classes="col m7">
 
           <text1 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
@@ -93,18 +67,18 @@
         </col2>
 
         <col3 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col m4">
+          sling:resourceType="admin/components/col" classes="col m5">
 
           <text1 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
-            text="&lt;h2&gt;about us&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;">
+            text="&lt;h2&gt;about peregrine&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;">
           </text1>
 
           <text2 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
             text="&lt;p class=&quot;left-align&quot;&gt;
                     &lt;img style=&quot;margin: 10px; width: 100px; max-width: 100px;&quot; src=&quot;/etc/felibs/admin/peregrine-logo.svg&quot; align=&quot;right&quot;/&gt;
-                    &lt;img style=&quot;width: 0px; height: 0px;&quot; src=&quot;https://www.headwire.com/t/peregrine.png&quot;/&gt;
+                    &lt;img style=&quot;width: 0px; height: 0px;&quot; src=&quot;https://www.headwire.com/t/peregrine.png&quot; align=&quot;right&quot;/&gt;
                     Peregrine CMS - a head optional content management system based on Apache Sling
                     and Vue.JS.
                 &lt;/p&gt;
@@ -123,6 +97,27 @@
                     &lt;a href=&quot;mailto:info@headwire.com?subject=invite me to peregrine-cms.slack.com&quot;&gt;peregrine-cms.slack.com&lt;/a&gt;
                 &lt;/p&gt;">
           </text2>
+
+          <text3 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            text="
+            &lt;style&gt;
+            .browser-default a {
+                color: #b66f35;
+            }
+            &lt;/style&gt;
+             &lt;h3&gt;tools&lt;/h3&gt;
+                Use the tools to help you understand and manage Peregrine CMS
+                &lt;ul class=&quot;browser-default&quot;&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/bin/browser.html&quot;&gt;composum&lt;/a&gt;&lt;br&gt;
+                    Direct access to the content repository and package manager of Apache Sling.&lt;/li&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/perapi/swaggereditor/&quot;&gt;peregrine api&lt;/a&gt;&lt;br&gt;
+                    Explore the headless API used by Peregrine CMS for all client/server communication.&lt;/li&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/content/apidocs/cms/index.html&quot;&gt;javadocs&lt;/a&gt;&lt;br&gt;
+                    See the java documentation for all server side code of Peregrine CMS&lt;/li&gt;
+                &lt;/ul&gt;
+            ">
+          </text3>
 
         </col3>
 

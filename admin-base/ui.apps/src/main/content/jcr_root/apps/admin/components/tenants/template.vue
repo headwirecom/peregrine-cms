@@ -22,7 +22,53 @@
   -->
 <template>
 
-    <div>
+    <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
+        <div class="col s12 m6 l4 icon-action" v-for="child in children" v-bind:key="child.name">
+            <div class="card blue-grey darken-3">
+                <div class="card-content white-text">
+                    <span class="card-title">{{child.title ? child.title : child.name}}</span>
+                    <p>{{child.description}}</p>
+                </div>
+                <div class="card-action">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: child.name,
+                            command: 'selectTenant',
+                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                        }">{{`${$i18n('edit')} '${child.title || child.name}'`}}
+                    </admin-components-action>
+
+                    <admin-components-action
+                        v-bind:model="{
+                            target: { path: '/content', name: child.name },
+                            command: 'deleteSite',
+                            tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
+                        }">
+                        <i class="material-icons">delete</i>
+                    </admin-components-action>
+                </div>
+            </div>
+        </div>
+
+        <div class="col s12 m6 l4 icon-action">
+            <div class="card blue-grey darken-3">
+                <div class="card-content white-text">
+                    <span class="card-title">{{`${$i18n('new site')}`}}</span>
+                    <p>create your own website</p>
+                </div>
+                <div class="card-action">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '/content/admin/pages/pages/createsite',
+                            command: 'selectPath',
+                            tooltipTitle: $i18n('create tenant'),
+                        }">{{$i18n('create website')}}
+                    </admin-components-action>
+                </div>
+            </div>
+        </div>
+
+        <!-- older variation 
         <p>
         <admin-components-action
             v-bind:model="{
@@ -60,7 +106,7 @@
                     </div>
                 </div>
             </div>
-        </fieldset>
+        </fieldset> -->
     </div>
 
 </template>
