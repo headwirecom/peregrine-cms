@@ -419,8 +419,8 @@ class PerAdminImpl {
   populateObject(path, target, name) {
     return this.populateComponentDefinitionFromNode(path)
     .then(() => {
-      return fetch('/admin/getObject.json' + path).then(
-          (data) => populateView(target, name, data))
+      return fetch('/admin/getObject.json' + path)
+      .then((data) => populateView(target, name, data))
     })
   }
 
@@ -633,8 +633,7 @@ class PerAdminImpl {
   uploadFiles(path, files, cb) {
     var config = {
       onUploadProgress: progressEvent => {
-        var percentCompleted = Math.floor(
-            (progressEvent.loaded * 100) / progressEvent.total);
+        var percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
         cb(percentCompleted)
       }
     }
@@ -648,18 +647,17 @@ class PerAdminImpl {
       data.append(file.name, file, file.name)
     }
 
-    return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data,
-        config)
+    return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data, config)
     .then(() => this.populateNodesForBrowser(path))
   }
 
   fetchExternalImage(path, url, name, config) {
-    return axios.get(url, {responseType: "blob"}).then((response) => {
+    return axios.get(url, {responseType: "blob"})
+    .then((response) => {
       var data = new FormData()
       data.append(name, response.data, name)
 
-      return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data,
-          config)
+      return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data, config)
       .then(() => this.populateNodesForBrowser(path))
     })
   }
@@ -732,9 +730,7 @@ class PerAdminImpl {
       delete nodeData['lastModified']
       delete nodeData['lastModifiedBy']
       formData.append('content', json(nodeData))
-
-      updateWithForm('/admin/updateResource.json' + node.path + '/jcr:content',
-          formData)
+      updateWithForm('/admin/updateResource.json' + node.path + '/jcr:content', formData)
       .then(() => resolve())
     })
   }
@@ -765,17 +761,13 @@ class PerAdminImpl {
     formData.append('drop', drop);
     return new Promise((resolve) => {
       updateWithForm('/admin/insertNodeAt.json' + path, formData)
-      .then((data) => {
-        resolve(data)
-      }).catch(() => {
-        resolve({})
-      })
+      .then((data) => resolve(data))
+      .catch(() => resolve({}))
     })
   }
 
   moveNodeTo(path, component, drop) {
-    logger.fine(
-        'Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
+    logger.fine('Move Node To: path: ' + path + ', component: ' + component + ', drop: ' + drop)
     let formData = new FormData();
     formData.append('component', component)
     formData.append('drop', drop)
