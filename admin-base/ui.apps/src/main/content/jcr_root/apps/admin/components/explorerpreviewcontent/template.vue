@@ -344,14 +344,23 @@
         }
         const newName = prompt(`new name for "${nodeName}"`)
         if (newName) {
+          const that = this;
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
-            path: this.currentObject,
-            name: newName
+              path: this.currentObject,
+              name: newName
+            }).then( () => {
+              if(that.nodeType === 'asset') {
+                const currNode = $perAdminApp.getNodeFromView('/state/tools/asset/show')
+                const currNodeArr = currNode.split('/');
+                currNodeArr[currNodeArr.length -1 ] = newName
+                $perAdminApp.getNodeFromView('/state/tools/asset').show = currNodeArr.join('/')
+              } else {
+                const currNode = $perAdminApp.getNodeFromView('/state/tools')[that.nodeType]
+                const currNodeArr = currNode.split('/');
+                currNodeArr[currNodeArr.length -1 ] = newName
+                $perAdminApp.getNodeFromView('/state/tools')[that.nodeType] = currNodeArr.join('/')
+              }
           });
-          const currNode = $perAdminApp.getNodeFromView('/state/tools')[this.nodeType]
-          const currNodeArr = currNode.split('/');
-          currNodeArr[currNodeArr.length -1 ] = newName
-          $perAdminApp.getNodeFromView('/state/tools')[this.nodeType] = currNodeArr.join('/')
         }
       },
       moveNode() {
