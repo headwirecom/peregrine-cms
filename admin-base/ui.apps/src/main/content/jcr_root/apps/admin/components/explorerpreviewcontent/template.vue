@@ -349,12 +349,12 @@
               path: this.currentObject,
               name: newName
             }).then( () => {
-              if(that.nodeType === 'asset') {
-                const currNode = $perAdminApp.getNodeFromView('/state/tools/asset/show')
+              if(that.nodeType === 'asset' || that.nodeType === 'object') {
+                const currNode = $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}/show`)
                 const currNodeArr = currNode.split('/');
                 currNodeArr[currNodeArr.length -1 ] = newName
-                $perAdminApp.getNodeFromView('/state/tools/asset').show = currNodeArr.join('/')
-              } else {
+                $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}`).show = currNodeArr.join('/')
+              } else { // page and template handling
                 const currNode = $perAdminApp.getNodeFromView('/state/tools')[that.nodeType]
                 const currNodeArr = currNode.split('/');
                 currNodeArr[currNodeArr.length -1 ] = newName
