@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   admin base - UI Apps
@@ -22,16 +23,9 @@
   under the License.
   #L%
   -->
-<template>
-<div>
-    <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
-    </template>
-</div>
-</template>
 
-<script>
-    export default {
-        props: ['model']
-    }
-</script>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="per:Component"
+          jcr:title="configure tenant"
+          jcr:description=""
+/>

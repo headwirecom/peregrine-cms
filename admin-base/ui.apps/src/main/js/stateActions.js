@@ -32,6 +32,7 @@ import createSiteWizard from './stateActions/createSiteWizard'
 import createSite from './stateActions/createSite'
 import deletePage from './stateActions/deletePage'
 import deleteSite from './stateActions/deleteSite'
+import configureSite from './stateActions/configureSite'
 import renamePage from './stateActions/renamePage'
 import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
@@ -92,6 +93,7 @@ actions['createPage'] = createPage
 actions['createPageFromSkeletonPage'] = createPageFromSkeletonPage
 actions['deletePage'] = deletePage
 actions['deleteSite'] = deleteSite
+actions['configureSite'] = configureSite
 actions['renamePage'] = renamePage
 actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate

@@ -41,6 +41,15 @@
                     <admin-components-action
                         v-bind:model="{
                             target: { path: '/content', name: child.name },
+                            command: 'configureSite',
+                            tooltipTitle: `${$i18n('configure')} '${child.title || child.name}'`
+                        }">
+                        <i class="material-icons">settings</i>
+                    </admin-components-action>
+
+                    <admin-components-action
+                        v-bind:model="{
+                            target: { path: '/content', name: child.name },
                             command: 'deleteSite',
                             tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                         }">
@@ -147,7 +156,7 @@
                         $perAdminApp.stateAction('deleteSite', target)
                     }
                 })
-            },
+            }
         }
     }
 </script>

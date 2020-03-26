@@ -52,12 +52,24 @@
         <ul id="nav-mobile" class="right hide-on-small-and-down">
 
           <li v-if="!model.hideTenants">
+
+            <span style="padding: 15px; padding-right: 0px; color: white;">{{$i18n('Website')}}:</span>
+
           <admin-components-action 
             v-bind:model="{
             command: 'selectPath',
             title: state.tenant ? state.tenant.name : 'unknown',
             target: '/content/admin/pages/welcome'
           }"></admin-components-action>
+
+          <admin-components-action v-if="state.tenant"
+              v-bind:model="{
+                  target: { path: '/content', name: state.tenant.name },
+                  command: 'configureSite',
+                  title: 'settings',
+                  tooltipTitle: `${$i18n('configure')} '${state.tenant.title || state.tenant.name}'`
+              }">
+          </admin-components-action>
 
           <!-- <admin-components-action v-else
               v-bind:model="{

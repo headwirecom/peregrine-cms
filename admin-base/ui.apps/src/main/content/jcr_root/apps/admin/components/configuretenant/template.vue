@@ -24,14 +24,24 @@
   -->
 <template>
 <div>
-    <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
-    </template>
+    <admin-components-action 
+        v-bind:model="{
+        command: 'editRootTemplate',
+        title: 'configure website root template',
+        target: '/content/admin/pages/templates/edit',
+        classes: 'btn'
+    }"></admin-components-action>
 </div>
 </template>
 
 <script>
     export default {
-        props: ['model']
+        props: ['model'],
+        methods: {
+            editRootTemplate(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant.name;
+                $perAdminApp.stateAction('editTemplate', `/content/${tenant}/templates` )
+            }
+        }
     }
 </script>

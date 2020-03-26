@@ -68,6 +68,9 @@
         addSite: function(me, target) {
             $perAdminApp.stateAction('createSiteWizard', '/content')
         },
+        configureSite: function(me, target) {
+            $perAdminApp.stateAction('configureSite', target)
+        }
     }
 }
 </script>
