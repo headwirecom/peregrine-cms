@@ -39,23 +39,25 @@
                     @dragstart  = "onDragStart"
                     @touchstart = "onEditableTouchStart"
                     @touchend   = "onEditableTouchEnd">
-                    <div id="inlineEditContainer"
-                        v-show="inlineEditVisible"
-                        @click.stop.prevent
-                        @input.stop.prevent>
-                        <div v-show="inline.isRich"
-                            class="editor rich">
-                            <trumbowyg :config="inline.config"
-                                v-model="inline.content"
-                                @input="updateInlineText">
-                            </trumbowyg>
-                        </div>
-                        <div v-show="!inline.isRich"
-                            class="editor simple">
-                            <div ref="simpleInlineEdit"
-                                v-html="inline.content"
-                                contenteditable="true"
-                                @input="onInlineSimpleEditInput"></div>
+                    <div ref="editContainer">
+                        <div id="inlineEditContainer"
+                            v-show="inlineEditVisible"
+                            @click.stop.prevent
+                            @input.stop.prevent>
+                            <div v-show="inline.isRich"
+                                class="editor rich">
+                                <trumbowyg :config="inline.config"
+                                    v-model="inline.content"
+                                    @input="updateInlineText">
+                                </trumbowyg>
+                            </div>
+                            <div v-show="!inline.isRich"
+                                class="editor simple">
+                                <div ref="simpleInlineEdit"
+                                    v-html="inline.content"
+                                    contenteditable="true"
+                                    @input="onInlineSimpleEditInput"></div>
+                            </div>
                         </div>
                     </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
@@ -383,6 +385,7 @@ export default {
 
         getBoundingClientRect(e) {
             let rect = e.getBoundingClientRect()
+            
             let marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
             let marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
             let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
@@ -494,7 +497,12 @@ export default {
             // copy styles from original element into this one
             const style = window.getComputedStyle(this.inline.el)
             let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+
             this.$refs.simpleInlineEdit.setAttribute('style', value)
+
+            const inline = this.getBoundingClientRect(this.inline.el)
+            const selected = this.getBoundingClientRect(this.selected.el)
+            this.$refs.editContainer.setAttribute('style', `background: unset; padding-left: ${inline.left - selected.left}px; padding-top: ${inline.top - selected.top}px; padding-right: ${selected.right - inline.right}px`)
 
             value = value.replace(/display.+?;/, '')
             $('#inlineEditContainer .trumbowyg-editor').attr('style', value)
@@ -529,6 +537,7 @@ export default {
             this.inline.pathSegments = null
             this.inline.propertyName = null
             this.inline.isRich = false
+            this.$refs.editContainer.setAttribute('style', ``)
         },
 
         mouseMove(e) {
@@ -690,8 +699,8 @@ export default {
                 let editableClass = 'selected';
                 if (this.inlineNode) {
                     this.updateInlineStyle()
-                    target = this.inline.el
-                    editableClass += ' no-border'
+//                    target = this.inline.el
+//                    editableClass += ' no-border'
                 }
 
                 const targetBox = this.getBoundingClientRect(target)
@@ -752,15 +761,21 @@ export default {
     #inlineEditContainer {
         background-color: white;
         margin-top: -39px;
+        border: none;
 
         .simple {
             margin-top: 39px;
+        }
+
+        .editor {
+            border: none !important;
         }
 
         .trumbowyg-box {
             margin: 0;
             overflow: hidden;
             min-height: unset;
+            border: none;
 
             .trumbowyg-button-pane {
                 z-index: 1;
