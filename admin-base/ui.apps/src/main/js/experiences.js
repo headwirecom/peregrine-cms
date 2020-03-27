@@ -1,4 +1,4 @@
-import {LoggerFactory} from './logger'
+import {LoggerFactory, LogLevel} from './logger'
 
 const log = LoggerFactory.logger('experiences').setLevelDebug()
 
@@ -14,8 +14,12 @@ function experience(model, name, defaultValue) {
         }
     }
     if(experience !== 'lang:en' && experience.indexOf('lang:') === 0) {
-        log.warn(`missing translation for: ${original}`)
-        return (model[name] ? model[name] : defaultValue)
+        if (log.level === LogLevel.FINE) {
+            return `T[${(model[name] ? model[name] : defaultValue)}]`
+        } else {
+            log.warn(`missing translation for: ${(model[name] ? model[name] : defaultValue)}`)
+            return (model[name] ? model[name] : defaultValue)
+        }
     }
     return model[name] ? model[name] : defaultValue
 
