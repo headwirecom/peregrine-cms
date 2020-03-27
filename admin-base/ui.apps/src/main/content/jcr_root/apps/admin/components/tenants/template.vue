@@ -23,7 +23,7 @@
 <template>
 
     <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
-        <div class="col s12 m6 l4 icon-action" v-for="child in children" v-bind:key="child.name">
+        <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
             <div class="card blue-grey darken-3">
                 <div class="card-content white-text tenant-link" @click="selectTenant(child.name)">
                     <span class="card-title">{{child.title ? child.title : child.name}}</span>
@@ -32,12 +32,22 @@
                 <div class="card-action">
                     <admin-components-action
                         v-bind:model="{
+                            target: child.name,
+                            command: 'selectTenant',
+                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                        }">
+                        <i class="material-icons">edit</i>
+                    </admin-components-action>
+
+                    <admin-components-action
+                        v-bind:model="{
                             target: { path: '/content', name: child.name },
                             command: 'configureSite',
                             tooltipTitle: `${$i18n('configure')} '${child.title || child.name}'`
                         }">
                         <i class="material-icons">settings</i>
                     </admin-components-action>
+
 
                     <admin-components-action
                         v-bind:model="{
@@ -51,11 +61,11 @@
             </div>
         </div>
 
-        <div class="col s12 m6 l4 icon-action">
+        <div class="col s12 m6 l6 icon-action">
             <div class="card blue-grey darken-3">
-                <div class="card-content white-text">
-                    <span class="card-title">{{`${$i18n('new site')}`}}</span>
-                    <p>create your own website</p>
+                <div class="card-content white-text tenant-link" @click="onCreateNewSiteClick">
+                    <span class="card-title">{{`${$i18n('create new site')}`}}</span>
+                    <p>Click to create your own website</p>
                 </div>
                 <div class="card-action">
                     <admin-components-action
@@ -63,7 +73,8 @@
                             target: '/content/admin/pages/pages/createsite',
                             command: 'selectPath',
                             tooltipTitle: $i18n('create tenant'),
-                        }">{{$i18n('create website')}}
+                        }">
+                        <i class="material-icons">note_add</i>
                     </admin-components-action>
                 </div>
             </div>
@@ -147,6 +158,10 @@
                         $perAdminApp.stateAction('deleteSite', target)
                     }
                 })
+            },
+
+            onCreateNewSiteClick() {
+                $perAdminApp.action(this, 'selectPath', '/content/admin/pages/pages/createsite')
             }
         }
     }
