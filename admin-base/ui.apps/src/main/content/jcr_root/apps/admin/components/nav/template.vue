@@ -60,7 +60,7 @@
             command: 'selectPath',
             title: state.tenant ? state.tenant.name : 'unknown',
             target: '/content/admin/pages/welcome'
-          }"></admin-components-action>
+          }" :class="{'active-section': getActiveSection() === 'welcome'}"/>
 
           <admin-components-action v-if="state.tenant"
               v-bind:model="{
@@ -85,28 +85,28 @@
             command: 'selectPath',
             title: $i18n('Pages'),
             target: '/content/admin/pages/pages'
-          }"></admin-components-action>
+          }" :class="{'active-section': getActiveSection() === 'pages'}"/>
 
           <admin-components-action
               v-bind:model="{
             command: 'selectPath',
             title: $i18n('Assets'),
             target: '/content/admin/pages/assets'
-          }"></admin-components-action>
+          }" :class="{'active-section': getActiveSection() === 'assets'}"/>
 
           <admin-components-action
               v-bind:model="{
             command: 'selectPath',
             title: $i18n('Objects'),
             target: '/content/admin/pages/objects'
-          }"></admin-components-action>
+          }" :class="{'active-section': getActiveSection() === 'objects'}"/>
 
           <admin-components-action
               v-bind:model="{
             command: 'selectPath',
             title: $i18n('Templates'),
             target: '/content/admin/pages/templates'
-          }"></admin-components-action>
+          }" :class="{'active-section': getActiveSection() === 'templates'}"/>
 
           <admin-components-separator />
           </li>
@@ -219,7 +219,20 @@
       refreshTenants() {
         this.tenants = $perAdminApp.getView().admin.tenants || []
         this.state = $perAdminApp.getView().state
+      },
+      getActiveSection() {
+        const breadcrumbs = $perAdminApp.getView().adminPage.breadcrumbs
+        if (breadcrumbs) {
+          return breadcrumbs[0].path.split('/')[4]
+        }
+        return 'welcome'
       }
     }
   }
 </script>
+
+<style>
+  .active-section a {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+</style>
