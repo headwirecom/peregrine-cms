@@ -1,3 +1,6 @@
+import {LoggerFactory} from './logger'
+
+const log = LoggerFactory.logger('experiences').setLevelDebug()
 
 function experience(model, name, defaultValue) {
     const experience = 'lang:'+$perAdminApp.getView().state.language
@@ -11,7 +14,8 @@ function experience(model, name, defaultValue) {
         }
     }
     if(experience !== 'lang:en' && experience.indexOf('lang:') === 0) {
-        return 'T[' + (model[name] ? model[name] : defaultValue) +']'
+        log.warn(`missing translation for: ${original}`)
+        return (model[name] ? model[name] : defaultValue)
     }
     return model[name] ? model[name] : defaultValue
 

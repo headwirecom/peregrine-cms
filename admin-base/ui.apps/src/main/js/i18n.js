@@ -14,7 +14,7 @@ function keyToLang(original) {
         }
         if(lang === 'en') return original
         log.warn(`missing translation for: ${original}`)
-        return 'T['+original+']'
+        return original
     } catch(error) {
         return original
     }
