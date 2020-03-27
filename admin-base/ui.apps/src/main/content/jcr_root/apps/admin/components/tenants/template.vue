@@ -25,19 +25,11 @@
     <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
         <div class="col s12 m6 l4 icon-action" v-for="child in children" v-bind:key="child.name">
             <div class="card blue-grey darken-3">
-                <div class="card-content white-text">
+                <div class="card-content white-text tenant-link" @click="selectTenant(child.name)">
                     <span class="card-title">{{child.title ? child.title : child.name}}</span>
                     <p>{{child.description}}</p>
                 </div>
                 <div class="card-action">
-                    <admin-components-action
-                        v-bind:model="{
-                            target: child.name,
-                            command: 'selectTenant',
-                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
-                        }">{{`${$i18n('edit')} '${child.title || child.name}'`}}
-                    </admin-components-action>
-
                     <admin-components-action
                         v-bind:model="{
                             target: { path: '/content', name: child.name },
@@ -121,7 +113,6 @@
 </template>
 
 <script>
-    import {set} from '../../../../../../js/utils';
     export default {
         props: ['model'],
         data(){
@@ -144,9 +135,9 @@
         created() {
         },
         methods: {
-            selectTenant(me, target) {
-                $perAdminApp.stateAction('setTenant', { name: target}).then( () => {
-                    $perAdminApp.loadContent('/content/admin/pages/welcome.html');
+            selectTenant(name) {
+                $perAdminApp.stateAction('setTenant', { name }).then( () => {
+                    $perAdminApp.loadContent('/content/admin/pages/welcome.html')
                 });
             },
 
@@ -162,7 +153,17 @@
 </script>
 
 <style scoped>
-fieldset {
-    border: none;
-}
+    fieldset {
+        border: none;
+    }
+
+    .tenant-link:hover {
+        background-color: rgba(255, 255, 255, .05);
+        cursor: pointer;
+    }
+
+    .card-action {
+        display: flex;
+        justify-content: space-between;
+    }
 </style>
