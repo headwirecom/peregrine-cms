@@ -55,7 +55,8 @@
                             <div ref="simpleInlineEdit"
                                 v-html="inline.content"
                                 contenteditable="true"
-                                @input="onInlineSimpleEditInput"></div>
+                                @input="onInlineSimpleEditInput">
+                            </div>
                         </div>
                     </div>
                     <div v-if="enableEditableFeatures" class="editable-actions">
@@ -506,6 +507,19 @@ export default {
                 }
 
                 this.editSelectedComponent()
+
+                if (inline) {
+                    setTimeout(this.focusInline, 0);
+                }
+            }
+        },
+
+        focusInline() {
+            if (this.inline.isRich) {
+                $('#inlineEditContainer textarea').focus()
+                $('#inlineEditContainer .trumbowyg-editor').focus()
+            } else {
+                this.$refs.simpleInlineEdit.focus()
             }
         },
 
