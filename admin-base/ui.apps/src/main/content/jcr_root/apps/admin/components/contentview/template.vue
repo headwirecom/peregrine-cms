@@ -119,6 +119,19 @@ function isClassInFocus(className) {
     return document.activeElement.className.toString().startsWith(className)
 }
 
+function isContainer(el) {
+    let subEl = el;
+    while (subEl && !subEl.getAttribute('data-per-path')) {
+        subEl = subEl.firstElementChild;
+    }
+
+    if (subEl && subEl.getAttribute('data-per-droptarget')) {
+        return true;
+    }
+
+    return false;
+}
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -481,7 +494,7 @@ export default {
             }
 
             const targetEl = target.el
-            if (this.isIgnoreContainersEnabled && this.isContainer(targetEl)) return;
+            if (this.isIgnoreContainersEnabled && isContainer(targetEl)) return;
 
             const node = target.node
             if (!node || node.fromTemplate) {
@@ -577,7 +590,7 @@ export default {
             }
 
             let targetEl = target.el
-            if (this.isIgnoreContainersEnabled && this.isContainer(targetEl)) return;
+            if (this.isIgnoreContainersEnabled && isContainer(targetEl)) return;
 
             if (targetEl.getAttribute('data-per-droptarget')) {
                 this.selected.el = targetEl.parentElement
@@ -767,19 +780,6 @@ export default {
 
         refreshEditor(me, target) {
             me.$refs['editview'].contentWindow.location.reload();
-        },
-
-        isContainer(el) {
-            let subEl = el;
-            while (subEl && !subEl.getAttribute('data-per-path')) {
-                subEl = subEl.firstElementChild;
-            }
-
-            if (subEl && subEl.getAttribute('data-per-droptarget')) {
-                return true;
-            }
-
-            return false;
         }
     }
 }
