@@ -119,6 +119,25 @@ function isClassInFocus(className) {
     return document.activeElement.className.toString().startsWith(className)
 }
 
+function getBoundingClientRect(e) {
+    const rect = e.getBoundingClientRect()
+    const margin = {
+        top: parseFloat(getElementStyle(e, 'margin-top')),
+        left: parseFloat(getElementStyle(e, 'margin-left')),
+        right: parseFloat(getElementStyle(e, 'margin-right')),
+        bottom: parseFloat(getElementStyle(e, 'margin-bottom'))
+    }
+    const result = {
+        left: rect.left - margin.left,
+        right: rect.right + margin.right,
+        top: rect.top - margin.top,
+        bottom: rect.bottom + margin.bottom,
+    }
+    result.width = result.right - result.left
+    result.height = result.bottom - result.top
+    return result
+}
+
 function getElementStyle(el, styleName) {
     const defaultView = document.defaultView
     if (defaultView && defaultView.getComputedStyle) {
@@ -405,38 +424,24 @@ export default {
         },
 
         getPosFromMouse(e) {
-            var elRect = this.getBoundingClientRect(this.$refs.editview)
-            if(e) {
-                var posX = e.clientX - elRect.left
-                var posY = e.clientY - elRect.top
-                return {x: posX, y: posY }
+            const rect = getBoundingClientRect(this.$refs.editview)
+            if (e) {
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                }
             }
-            else {
-                // fix for case where mouse event is not defined
-                return {x: -elRect.left, y: -elRect.top }
-            }
-        },
 
-        getBoundingClientRect(e) {
-            let rect = e.getBoundingClientRect()
-            let marginTop = parseFloat(getElementStyle(e, 'margin-top'))
-            let marginLeft = parseFloat(getElementStyle(e, 'margin-left'))
-            let marginRight = parseFloat(getElementStyle(e, 'margin-right'))
-            let marginBottom = parseFloat(getElementStyle(e, 'margin-bottom'))
-            let newRect = {
-                left: rect.left - marginLeft,
-                right: rect.right + marginRight,
-                top: rect.top - marginTop,
-                bottom: rect.bottom + marginBottom,
+            // fix for case where mouse event is not defined
+            return {
+                x: -rect.left,
+                y: -rect.top
             }
-            newRect.width = newRect.right - newRect.left
-            newRect.height = newRect.bottom - newRect.top
-            return newRect;
         },
 
         findIn(el, pos) {
             if(!el) return null
-            var rect = this.getBoundingClientRect(el)
+            var rect = getBoundingClientRect(el)
             var ret = null
             if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
                 ret = el
@@ -619,7 +624,7 @@ export default {
             if (target) {
                 const targetEl = target.el
                 const pos = this.getPosFromMouse(ev)
-                const targetBox = this.getBoundingClientRect(targetEl)
+                const targetBox = getBoundingClientRect(targetEl)
                 const isRoot = target.node.fromTemplate === true
                 if (target.isDropTarget) {
                     const dropLocation = targetEl.getAttribute('data-per-location')
@@ -746,7 +751,7 @@ export default {
                     editableClass += ' no-border'
                 }
 
-                const targetBox = this.getBoundingClientRect(target)
+                const targetBox = getBoundingClientRect(target)
                 this.setEditableStyle(targetBox, editableClass)
             }
         },
