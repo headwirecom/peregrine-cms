@@ -25,7 +25,7 @@
 <template>
 <div class="col s12 m6 l4 icon-action">
     <div class="card blue-grey darken-3">
-        <div class="card-content white-text">
+        <div class="card-content white-text action" @click="onCardContentClick">
             <span class="card-title">{{$exp(model, 'title')}}</span>
             <p>{{$exp(model,'description')}}</p>
         </div>
@@ -54,6 +54,9 @@
         methods: {
             internal(action, target) {
                 return !action.startsWith('http') && (target === undefined || target === null)
+            },
+            onCardContentClick() {
+                $perAdminApp.action(this, 'selectPath', this.model.action)
             }
         }
     }
@@ -63,5 +66,9 @@
 .card .card-content p {
     height: 100px;
 }
+    .card-content.action:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        cursor: pointer;
+    }
 </style>
 
