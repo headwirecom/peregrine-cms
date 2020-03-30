@@ -94,6 +94,7 @@
 <script>
 import { IgnoreContainers } from '../../../../../../js/constants.js';
 
+const KEY_ESC = 27
 const KEY_CTRL = 17
 const KEY_CMD = 91
 const KEY_C = 67
@@ -106,6 +107,10 @@ function hasCtrlKey(e) {
 function isInputInFocus() {
     const nodeName = document.activeElement.nodeName.toUpperCase()
     return nodeName === 'INPUT' || nodeName === 'TEXTAREA'
+}
+
+function isClassInFocus(className) {
+    return document.activeElement.className.toString().startsWith(className)
 }
 
 export default {
@@ -276,9 +281,8 @@ export default {
         /* Window/Document methods =================
         ============================================ */
         onKeyDown(ev) {
-            const className = document.activeElement.className.toString()
             /* check no field is currently in focus */
-            if (isInputInFocus() || className.startsWith('trumbowyg')) {
+            if (isInputInFocus() || isClassInFocus('trumbowyg')) {
                 return false
             }
 
@@ -288,9 +292,8 @@ export default {
         },
 
         onKeyUp(ev) {
-            const className = document.activeElement.className
             /* check no field is currently in focus */
-            if (isInputInFocus() || className === 'ql-editor') {
+            if (isInputInFocus() || isClassInFocus('ql-editor')) {
                 return false
             }
 
