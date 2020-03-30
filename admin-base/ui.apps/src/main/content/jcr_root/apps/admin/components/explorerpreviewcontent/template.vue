@@ -125,6 +125,7 @@
     <admin-components-pathbrowser
         v-if="isOpen"
         :isOpen="isOpen"
+        :header="`Move ${nodeName}`"
         :browserRoot="browserRoot"
         :browserType="nodeType"
         :currentPath="path.current"
@@ -173,6 +174,7 @@
     },
     data() {
       return {
+        console: console,
         Icon: Icon,
         Tab: Tab,
         SchemaKey: SchemaKey,
@@ -256,6 +258,13 @@
       },
       hasInfoView() {
         return [NodeType.ASSET].indexOf(this.nodeType) > -1;
+      },
+      nodeName() {
+        let nodeName = this.node.name;
+        if (this.nodeType === NodeType.OBJECT){
+          nodeName = this.node.path.split('/').slice(-1).pop()
+        }
+        return nodeName
       }
     },
     watch: {
@@ -338,11 +347,7 @@
         this.valid.errors = errors;
       },
       renameNode() {
-        let nodeName = this.node.name;
-        if (this.nodeType === NodeType.OBJECT){
-          nodeName = this.node.path.split('/').slice(-1).pop()
-        }
-        const newName = prompt(`new name for "${nodeName}"`)
+        const newName = prompt(`new name for "${this.nodeName}"`)
         if (newName) {
           const that = this;
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {

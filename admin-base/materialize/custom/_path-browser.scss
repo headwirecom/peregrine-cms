@@ -3,13 +3,26 @@
 		&.modal-container {
 			width: 80%;
 			max-width: 1200px;
-			padding-top: 48px;
+			padding-top: 80px;
 			background-color: #fff;
+			.modal-header {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 32px;
+				padding: 6px 10px;
+				font-size: 16px;
+				font-weight: bold;
+				background-color: #f5f5f5;
+				border-bottom: 1px solid #adadad;
+				text-align: center;
+			}
 			.pathbrowser-tabs {
 				margin: 0;
 				padding: 0;
 				position: absolute;
-				top: 0;
+				top: 32px;
 				left: 0;
 				right: 0;
 				background-color: transparent;
@@ -63,7 +76,7 @@
 			}
 			.pathbrowser-filter {
 				position: absolute;
-				top: 0;
+				top: 32px;
 				right: 0;
 				width: calc(100% - 144px);
 				padding-bottom: 1px;
@@ -78,7 +91,7 @@
 			.modal-content {
 				padding: 0;
 				position: absolute;
-				top: 48px;
+				top: 80px;
 				bottom: 56px;
 				left: 0;
 				right: 0;
