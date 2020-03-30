@@ -214,6 +214,7 @@ export default {
 
             eds.simple.blur(this.onInlineBlur)
             eds.rich.blur(this.onInlineBlur)
+            eds.html.blur(this.onInlineBlur)
         })
     },
 
@@ -274,7 +275,8 @@ export default {
                     simple: null,
                     rich: null,
                     html: null
-                }
+                },
+                isFresh: true
             }
         }
     },
@@ -370,6 +372,10 @@ export default {
         },
 
         onInlineBlur() {
+            if (this.inline.isFresh) {
+                return false;
+            }
+
             this.shiftFocusFromInlineToParent()
         },
 
@@ -565,6 +571,8 @@ export default {
             } else {
                 eds.simple.focus()
             }
+
+            this.inline.isFresh = false
         },
 
         editSelectedComponent() {
@@ -611,6 +619,7 @@ export default {
             this.inline.pathSegments = null
             this.inline.propertyName = null
             this.inline.isRich = false
+            this.inline.isFresh = true
         },
 
         mouseMove(e) {
