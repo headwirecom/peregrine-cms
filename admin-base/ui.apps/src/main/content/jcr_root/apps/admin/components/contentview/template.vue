@@ -211,6 +211,9 @@ export default {
             eds.simple = $(this.$refs.simpleInlineEdit)
             eds.rich = $('#inlineEditContainer .trumbowyg-editor')
             eds.html = $('#inlineEditContainer textarea')
+
+            eds.simple.blur(ethis.onInlineBlur)
+            eds.rich.blur(this.onInlineBlur)
         })
     },
 
@@ -364,6 +367,10 @@ export default {
         shiftFocusFromInlineToParent() {
             this.clearInline()
             this.editSelectedComponent()
+        },
+
+        onInlineBlur() {
+            this.shiftFocusFromInlineToParent()
         },
 
         /* Window/Document methods =================
