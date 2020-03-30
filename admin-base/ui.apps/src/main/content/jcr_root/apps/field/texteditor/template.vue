@@ -118,7 +118,7 @@
                                 let url = fields.url.value;
 
                                 self.browserType = isImage ? 'asset' : 'page';
-                                self.browserRoot = isImage ? `${getBasePath()}/assets` : `${getBasePath()}/pages`;
+                                self.browserRoot = isImage ? `${self.getBasePath()}/assets` : `${self.getBasePath()}/pages`;
                                 //Internal Link
                                 if( url && url.match(/^(https?:)?\/\//)) {
                                     self.currentPath = self.browserRoot;
@@ -199,12 +199,7 @@
         },
         methods: {
             getBasePath() {
-                const view = $perAdminApp.getView()
-                let tenant = { name: 'example' }
-                if (view.state && view.state.tenant) {
-                    tenant = view.state.tenant
-                }
-                return `/content/${tenant.name}`
+                return `/content/${$perAdminApp.getView().state.tenant.name}`
             },
             isArrayAndNotEmpty(p) {
                 return Array.isArray(p) && p.length > 0
