@@ -94,6 +94,11 @@
 <script>
 import { IgnoreContainers } from '../../../../../../js/constants.js';
 
+const KEY_CTRL = 17
+const KEY_CMD = 91
+const KEY_C = 67
+const KEY_V = 86
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -269,16 +274,12 @@ export default {
                 return false
             }
 
-            const ctrlKey = 17
-            const cmdKey = 91
-            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey) {
+            if (ev.keyCode == KEY_CTRL || ev.keyCode == KEY_CMD) {
                 this.ctrlDown = true
                 if (this.selectedNode) {
-                    const cKey = 67
-                    const vKey = 86
-                    if (ev.keyCode == cKey) {
+                    if (ev.keyCode == KEY_C) {
                         this.onCopy()
-                    } else if (ev.keyCode == vKey) {
+                    } else if (ev.keyCode == KEY_V) {
                         this.onPaste()
                     }
                 }
@@ -293,9 +294,7 @@ export default {
                 return false
             }
 
-            const ctrlKey = 17
-            const cmdKey = 91
-            if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey) {
+            if (ev.keyCode == KEY_CTRL || ev.keyCode == KEY_CMD) {
                 this.ctrlDown = false
             }
         },
@@ -495,7 +494,6 @@ export default {
             const style = window.getComputedStyle(this.inline.el)
             let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
             this.$refs.simpleInlineEdit.setAttribute('style', value)
-
             value = value.replace(/display.+?;/, '')
             $('#inlineEditContainer .trumbowyg-editor').attr('style', value)
             $('#inlineEditContainer textarea').attr('style', value)
