@@ -191,20 +191,26 @@ export default {
             /* is this a touch device */
             this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
             this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-            if(this.isTouch) {
+            if (this.isTouch) {
                 /* selected components are not immediatly draggable on touch devices */
                 this.selected.draggable = false
             }
+
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
 
             /* check if page has loaded */
-            var unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
-                if(pageView.status === 'loaded') {
+            const unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
+                if (pageView.status === 'loaded') {
                     this.updateOverlay()
                     unwatch() // we dont need to watch the pageView prop anymore
                 }
             }, {deep: true })
+
+            const eds = this.inline.editors;
+            eds.simple = $(this.$refs.simpleInlineEdit)
+            eds.rich = $('#inlineEditContainer .trumbowyg-editor')
+            eds.html = $('#inlineEditContainer textarea')
         })
     },
 
@@ -260,6 +266,11 @@ export default {
                         'orderedList',
                         'removeformat'
                     ]
+                },
+                editors: {
+                    simple: null,
+                    rich: null,
+                    html: null
                 }
             }
         }
@@ -350,6 +361,11 @@ export default {
             this.updateInlineText(event.target.innerHTML)
         },
 
+        shiftFocusFromInlineToParent() {
+            this.clearInline()
+            this.editSelectedComponent()
+        },
+
         /* Window/Document methods =================
         ============================================ */
         onKeyDown(ev) {
@@ -365,8 +381,7 @@ export default {
         onKeyUp(ev) {
             if (isInputInFocus()) {
                 if (ev.keyCode == KEY_ESC && this.inlineNode) {
-                    this.clearInline()
-                    this.editSelectedComponent()
+                    this.shiftFocusFromInlineToParent()
                 }
 
                 return false
@@ -535,11 +550,13 @@ export default {
         },
 
         focusInline() {
-            if (this.inline.isRich) {
-                $('#inlineEditContainer textarea').focus()
-                $('#inlineEditContainer .trumbowyg-editor').focus()
+            const inline = this.inline;
+            const eds = inline.editors;
+            if (inline.isRich) {
+                eds.html.focus()
+                eds.rich.focus()
             } else {
-                this.$refs.simpleInlineEdit.focus()
+                eds.simple.focus()
             }
         },
 
@@ -552,10 +569,11 @@ export default {
             // copy styles from original element into this one
             const style = window.getComputedStyle(this.inline.el)
             let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
-            this.$refs.simpleInlineEdit.setAttribute('style', value)
+            const eds = this.inline.editors
+            eds.simple.attr('style', value)
             value = value.replace(/display.+?;/, '')
-            $('#inlineEditContainer .trumbowyg-editor').attr('style', value)
-            $('#inlineEditContainer textarea').attr('style', value)
+            eds.rich.attr('style', value)
+            eds.html.attr('style', value)
         },
 
         leftOverlayArea(e) {
