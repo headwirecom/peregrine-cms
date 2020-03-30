@@ -155,6 +155,24 @@ function getElementStyle(el, styleName) {
     return ''
 }
 
+function findIn(el, pos) {
+    if (!el) return null
+    const rect = getBoundingClientRect(el)
+    let ret = null
+    if (pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
+        ret = el
+        for (let i = 0; i < el.children.length; i++) {
+            const child = findIn(el.children[i], pos)
+            if (child != null) {
+                ret = child
+                break
+            }
+        }
+    }
+
+    return ret
+}
+
 function isContainer(el) {
     let subEl = el;
     while (subEl && !subEl.getAttribute('data-per-path')) {
@@ -439,27 +457,10 @@ export default {
             }
         },
 
-        findIn(el, pos) {
-            if(!el) return null
-            var rect = getBoundingClientRect(el)
-            var ret = null
-            if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
-                ret = el
-                for(var i = 0; i < el.children.length; i++) {
-                    var child = this.findIn(el.children[i], pos)
-                    if(child != null) {
-                        ret = child
-                        break
-                    }
-                }
-            }
-            return ret
-        },
-
         getTarget(e) {
             const pos = this.getPosFromMouse(e)
             const editview = this.$refs.editview
-            let el = this.findIn(editview.contentWindow.document.body, pos)
+            let el = findIn(editview.contentWindow.document.body, pos)
             if (!el) return
 
             let path, inlineEl, inlineProp
