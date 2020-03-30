@@ -142,9 +142,18 @@
             $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
         },
         onDelete(e) {
+            const vm = this;
             var view = $perAdminApp.getView()
-            $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
+            $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
+                yesText: 'Yes',
+                noText: 'No',
+                yes() {
+                    $perAdminApp.action(vm, 'onEditorExitFullscreen')
+                    $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
+                },
+                no() {
+                }
+            })
         }
       }
 //      ,

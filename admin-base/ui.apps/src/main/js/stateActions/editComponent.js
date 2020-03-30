@@ -22,10 +22,10 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('editComponent').setLevelDebug()
+import {LoggerFactory} from '../logger'
+import {set} from '../utils'
 
-import { set } from '../utils'
+let log = LoggerFactory.logger('editComponent').setLevelDebug()
 
 function bringUpEditor(me, view, target) {
     log.fine('Bring Up Editor, ')
@@ -33,7 +33,7 @@ function bringUpEditor(me, view, target) {
     me.beforeStateAction( function(name) {
         return new Promise( (resolve, reject) => {
             const current = JSON.stringify(view.pageView.page, true, 2)
-            if(name !== 'savePageEdit') {
+            if(name !== 'savePageEdit' && name !== 'deletePageNode') {
                 if(current === view.state.editor.checksum) {
                     resolve(true)
                 } else {
