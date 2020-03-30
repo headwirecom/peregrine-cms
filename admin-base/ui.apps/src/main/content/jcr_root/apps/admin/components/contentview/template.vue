@@ -155,22 +155,21 @@ function getElementStyle(el, styleName) {
     return ''
 }
 
+function isInsideRect(pos, rect) {
+    return pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom
+}
+
 function findIn(el, pos) {
-    if (!el) return null
-    const rect = getBoundingClientRect(el)
-    let ret = null
-    if (pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
-        ret = el
-        for (let i = 0; i < el.children.length; i++) {
-            const child = findIn(el.children[i], pos)
-            if (child != null) {
-                ret = child
-                break
-            }
+    if (!el || !isInsideRect(pos, getBoundingClientRect(el))) return
+
+    for (let i = 0; i < el.children.length; i++) {
+        const child = findIn(el.children[i], pos)
+        if (child) {
+            return child
         }
     }
 
-    return ret
+    return el
 }
 
 function isContainer(el) {
