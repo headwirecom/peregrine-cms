@@ -99,6 +99,10 @@ const KEY_CMD = 91
 const KEY_C = 67
 const KEY_V = 86
 
+function hasCtrlKey(e) {
+    return e.keyCode == KEY_CTRL || e.keyCode == KEY_CMD
+}
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -274,7 +278,7 @@ export default {
                 return false
             }
 
-            if (ev.keyCode == KEY_CTRL || ev.keyCode == KEY_CMD) {
+            if (hasCtrlKey(ev)) {
                 this.ctrlDown = true
                 if (this.selectedNode) {
                     if (ev.keyCode == KEY_C) {
@@ -294,7 +298,7 @@ export default {
                 return false
             }
 
-            if (ev.keyCode == KEY_CTRL || ev.keyCode == KEY_CMD) {
+            if (hasCtrlKey(ev)) {
                 this.ctrlDown = false
             }
         },
