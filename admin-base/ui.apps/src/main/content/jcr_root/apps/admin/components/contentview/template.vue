@@ -105,8 +105,13 @@ function hasCtrlKey(e) {
 }
 
 function isInputInFocus() {
-    const nodeName = document.activeElement.nodeName.toUpperCase()
-    return nodeName === 'INPUT' || nodeName === 'TEXTAREA'
+    const node = document.activeElement;
+    const nodeName = node.nodeName.toUpperCase()
+    if (nodeName === 'INPUT' || nodeName === 'TEXTAREA') {
+        return true
+    }
+
+    return node.getAttribute('contenteditable') === 'true'
 }
 
 function isClassInFocus(className) {
@@ -281,7 +286,6 @@ export default {
         /* Window/Document methods =================
         ============================================ */
         onKeyDown(ev) {
-            /* check no field is currently in focus */
             if (isInputInFocus() || isClassInFocus('trumbowyg')) {
                 return false
             }
@@ -292,16 +296,22 @@ export default {
         },
 
         onKeyUp(ev) {
-            /* check no field is currently in focus */
-            if (isInputInFocus() || isClassInFocus('ql-editor')) {
+            if (isInputInFocus()) {
+                if (ev.keyCode == KEY_ESC && this.inlineNode) {
+                    this.clearInline()
+                    this.editSelectedComponent()
+                }
+
+                return false
+            }
+
+            if (isClassInFocus('ql-editor')) {
                 return false
             }
 
             if (hasCtrlKey(ev)) {
                 this.ctrlDown = false
-            }
-
-            if (this.selectedNode) {
+            } else if (this.selectedNode) {
                 if (ev.keyCode == KEY_C) {
                     this.onCopy()
                 } else if (ev.keyCode == KEY_V) {
@@ -495,9 +505,13 @@ export default {
                     this.clearInline()
                 }
 
-                this.setSelectedEditableStyle()
-                $perAdminApp.action(this, 'showComponentEdit', path)
+                this.editSelectedComponent()
             }
+        },
+
+        editSelectedComponent() {
+            this.setSelectedEditableStyle()
+            $perAdminApp.action(this, 'showComponentEdit', this.selected.path)
         },
 
         updateInlineStyle() {
