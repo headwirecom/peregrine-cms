@@ -280,13 +280,6 @@ export default {
 
             if (hasCtrlKey(ev)) {
                 this.ctrlDown = true
-                if (this.selectedNode) {
-                    if (ev.keyCode == KEY_C) {
-                        this.onCopy()
-                    } else if (ev.keyCode == KEY_V) {
-                        this.onPaste()
-                    }
-                }
             }
         },
 
@@ -300,6 +293,14 @@ export default {
 
             if (hasCtrlKey(ev)) {
                 this.ctrlDown = false
+            }
+
+            if (this.selectedNode) {
+                if (ev.keyCode == KEY_C) {
+                    this.onCopy()
+                } else if (ev.keyCode == KEY_V) {
+                    this.onPaste()
+                }
             }
         },
 
