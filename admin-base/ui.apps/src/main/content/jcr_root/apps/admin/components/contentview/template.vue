@@ -119,6 +119,23 @@ function isClassInFocus(className) {
     return document.activeElement.className.toString().startsWith(className)
 }
 
+function getElementStyle(el, styleName) {
+    const defaultView = document.defaultView
+    if (defaultView && defaultView.getComputedStyle) {
+        return defaultView.getComputedStyle(el, '').getPropertyValue(styleName)
+    } 
+
+    const currentStyle = el.currentStyle
+    if (currentStyle) {
+        const name = styleName.replace(/\-(\w)/g, function (strMatch, p) {
+            return p.toUpperCase()
+        });
+        return currentStyle[name]
+    }
+
+    return ''
+}
+
 function isContainer(el) {
     let subEl = el;
     while (subEl && !subEl.getAttribute('data-per-path')) {
@@ -400,27 +417,12 @@ export default {
             }
         },
 
-        getElementStyle(e, styleName) {
-            if (document.defaultView && document.defaultView.getComputedStyle) {
-                return document.defaultView.getComputedStyle(e, "").getPropertyValue(styleName);
-            } 
-            
-            if (e.currentStyle) {
-                const name = styleName.replace(/\-(\w)/g, function (strMatch, p1) {
-                    return p1.toUpperCase();
-                });
-                return e.currentStyle[name];
-            }
-
-            return ''
-        },
-
         getBoundingClientRect(e) {
             let rect = e.getBoundingClientRect()
-            let marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
-            let marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
-            let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
-            let marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
+            let marginTop = parseFloat(getElementStyle(e, 'margin-top'))
+            let marginLeft = parseFloat(getElementStyle(e, 'margin-left'))
+            let marginRight = parseFloat(getElementStyle(e, 'margin-right'))
+            let marginBottom = parseFloat(getElementStyle(e, 'margin-bottom'))
             let newRect = {
                 left: rect.left - marginLeft,
                 right: rect.right + marginRight,
