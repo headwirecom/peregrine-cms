@@ -111,7 +111,14 @@ nav {
     text-align: center;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+
+    &.navright {
+      justify-content: flex-end;
+    }
+
+    &.navcenter {
+      justify-content: center;
+    }
 
     > span {
       display: inline-block;

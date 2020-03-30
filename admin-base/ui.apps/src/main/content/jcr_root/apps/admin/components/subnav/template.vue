@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-    <div class="nav-content sub-nav">
+    <div class="nav-content sub-nav" :class="classes">
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
