@@ -119,9 +119,11 @@
                     //Use an object to easily merge back in deleted nodes
                     let targetNode = {}
                     //Insert deleted children
-                    for ( const j in _deleted[key]) {
-                        const deleted = _deleted[key][j]
-                        targetNode[deleted.name] = deleted;
+                    if(_deleted) {
+                        for ( const j in _deleted[key]) {
+                            const deleted = _deleted[key][j]
+                            targetNode[deleted.name] = deleted;
+                        }
                     }
                     //Insert children
                     for ( const i in node ) {
