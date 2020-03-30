@@ -212,7 +212,7 @@ export default {
             eds.rich = $('#inlineEditContainer .trumbowyg-editor')
             eds.html = $('#inlineEditContainer textarea')
 
-            eds.simple.blur(ethis.onInlineBlur)
+            eds.simple.blur(this.onInlineBlur)
             eds.rich.blur(this.onInlineBlur)
         })
     },
