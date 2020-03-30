@@ -103,6 +103,11 @@ function hasCtrlKey(e) {
     return e.keyCode == KEY_CTRL || e.keyCode == KEY_CMD
 }
 
+function isInputInFocus() {
+    const nodeName = document.activeElement.nodeName.toUpperCase()
+    return nodeName === 'INPUT' || nodeName === 'TEXTAREA'
+}
+
 export default {
     mounted() {
         this.$nextTick(function() {
@@ -271,10 +276,9 @@ export default {
         /* Window/Document methods =================
         ============================================ */
         onKeyDown(ev) {
-            const nodeName = document.activeElement.nodeName
             const className = document.activeElement.className.toString()
             /* check no field is currently in focus */
-            if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')) {
+            if (isInputInFocus() || className.startsWith('trumbowyg')) {
                 return false
             }
 
@@ -284,10 +288,9 @@ export default {
         },
 
         onKeyUp(ev) {
-            const nodeName = document.activeElement.nodeName
             const className = document.activeElement.className
             /* check no field is currently in focus */
-            if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor') {
+            if (isInputInFocus() || className === 'ql-editor') {
                 return false
             }
 
