@@ -26,6 +26,14 @@ import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
 let log = LoggerFactory.logger('configureSite').setLevelDebug()
 
+/**
+ * StateAction:configureSite
+ * 
+ * @module stateActions
+ * 
+ * @param {*} me a reference to the peregrine admin object
+ * @param {*} target root path of site to configure (path to the per:Site node)
+ */
 export default function(me, target) {
     log.fine('configureSite',target)
     var api = me.getApi()
