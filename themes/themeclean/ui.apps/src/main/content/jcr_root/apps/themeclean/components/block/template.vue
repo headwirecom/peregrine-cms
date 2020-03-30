@@ -22,7 +22,23 @@
           }
         },
         mounted() {
-          this.$emit('mounted', this.model.path)
+          // Add top margin to perApp to account for fixed header when sticky is true
+          if( this.model.sticky === 'true' && !$peregrineApp.isAuthorMode()) {
+            if( this.$refs.section.style.position === 'fixed' ){
+              const height = this.$refs.section.clientHeight
+              this.$refs.section.parentElement.style.marginTop = height + 'px';
+            }
+          }
+          //Offset height of anchor by height of the navbar and top padding
+          let navSection = document.querySelector('nav').parentElement.parentElement.parentElement
+          let navPosition = navSection.style.position
+          let navSticky = navPosition === "sticky" || navPosition === "fixed" 
+          let navOffset = navSticky ? navSection.clientHeight : 0
+
+          this.$refs.anchor.style.top = `0px`
+          this.$refs.anchor.style.marginTop = `-${navOffset}px`
+          this.$refs.anchor.style.paddingTop = `${navOffset}px`
+
         },
         computed: {          
           classes: function() {
@@ -71,7 +87,10 @@
 
                 case 'image':
                   const overlay = this.model.overlay === 'true' ? `${this.overlayStyle()},` : '' 
-                  return overlay + `url("${this.model.bgimage}") center center / cover no-repeat`
+                  if(this.model.bgimage) {
+                    return overlay + `url("${this.model.bgimage}") center center / cover no-repeat`
+                  } 
+                  return overlay;
 
                 case 'gradient':
                   return `linear-gradient(to right,${this.model.bgcolor},${this.model.color2})`
