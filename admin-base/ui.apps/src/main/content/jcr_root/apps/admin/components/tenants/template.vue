@@ -25,7 +25,7 @@
     <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
         <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
             <div class="card blue-grey darken-3">
-                <div class="card-content white-text tenant-link" @click="selectTenant(child.name)">
+                <div class="card-content white-text tenant-link" @click="onCardContentClick(child.name)">
                     <span class="card-title">{{child.title ? child.title : child.name}}</span>
                     <p>{{child.description}}</p>
                 </div>
@@ -146,7 +146,8 @@
         created() {
         },
         methods: {
-            selectTenant(name) {
+            selectTenant(vm, name) {
+                console.log('tenants.selectTeannt: ', name)
                 $perAdminApp.stateAction('setTenant', { name }).then( () => {
                     $perAdminApp.loadContent('/content/admin/pages/welcome.html')
                 });
@@ -158,6 +159,10 @@
                         $perAdminApp.stateAction('deleteSite', target)
                     }
                 })
+            },
+
+            onCardContentClick(name) {
+                this.selectTenant(this, name)
             },
 
             onCreateNewSiteClick() {
