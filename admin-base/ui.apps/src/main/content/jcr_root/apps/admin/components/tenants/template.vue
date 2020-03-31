@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
-            <div class="card blue-grey darken-3" :class="{'template-tenant': child.template}">
+            <div class="card blue-grey darken-3">
                 <div class="card-content white-text tenant-link" @click="onCardContentClick(child.name)">
                     <span class="card-title">{{child.title ? child.title : child.name}}</span>
                     <p>{{child.description}}</p>
@@ -233,9 +233,5 @@
     .tenant-tabs .tab:hover,
     .tenant-tabs .tab.active {
         background-color: rgba(0, 0, 0, .1);
-    }
-
-    .template-tenant {
-        opacity: .6;
     }
 </style>
