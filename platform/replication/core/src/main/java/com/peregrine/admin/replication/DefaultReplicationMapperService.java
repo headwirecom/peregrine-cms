@@ -133,7 +133,9 @@ public class DefaultReplicationMapperService
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);
-        if(temp.keySet().isEmpty()) { throw new IllegalArgumentException(NO_DEFAULT_MAPPING); }
+        if(temp.keySet().isEmpty()) {
+            throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
+        }
         Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
         defaultMapping = new DefaultReplicationConfig(entry.getKey(), entry.getValue());
         logger.trace("Final Default Mapping: '{}'", defaultMapping);
@@ -197,7 +199,9 @@ public class DefaultReplicationMapperService
         }
         for(Entry<DefaultReplicationConfig, List<Resource>> pot: resourceByReplication.entrySet()) {
             Replication replication = replications.get(pot.getKey().getServiceName());
-            if(replication == null) { throw new ReplicationException("Could not find replication with name: " + pot.getKey().getServiceName()); }
+            if(replication == null) {
+                throw new ReplicationException("Could not find replication with name: " + pot.getKey().getServiceName());
+            }
             logger.trace("Replicate with Replication: '{}' these resources: '{}'", replication.getName(), pot.getValue());
             for(Resource resource: pot.getValue()) {
                 logger.trace("DRH Replicate: '{}'", resource.getPath());
@@ -222,13 +226,17 @@ public class DefaultReplicationMapperService
         public DefaultReplicationConfig(String serviceName, Map<String, String> parameters) {
             if(isEmpty(serviceName)) { throw new IllegalArgumentException(REPLICATION_SERVICE_NAME_CANNOT_BE_NULL); }
             this.serviceName = serviceName;
-            if(parameters != null) { this.parameters.putAll(parameters); }
+            if(parameters != null) {
+                this.parameters.putAll(parameters);
+            }
         }
 
         /** Configuration for a single Path Mapping **/
         public DefaultReplicationConfig(String serviceName, String path, Map<String, String> parameters) {
             this(serviceName, parameters);
-            if(isEmpty(path)) { throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL); }
+            if(isEmpty(path)) {
+                throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL);
+            }
             this.path = path;
         }
 
@@ -244,18 +252,22 @@ public class DefaultReplicationMapperService
             boolean answer = false;
             String resourcePath = resource.getPath();
             if(path != null && !path.endsWith("/")) {
+                if (path.contains("_tenant_")) {
+                    String tenant = resourcePath.split("/")[2];
+                    path = path.replace("_tenant_", tenant);
+                }
                 if(resourcePath.startsWith(path)) {
                     if(resourcePath.equals(path)) {
                         answer = true;
                     } else {
                         char next = resourcePath.charAt(path.length());
-                        answer = next == '/';
+                        answer = (next == '/');
                     }
                 } else {
                     answer = false;
                 }
             } else {
-                answer = path == null || resource.getPath().startsWith(path);
+                answer = (path == null || resource.getPath().startsWith(path));
             }
             return answer;
         }

@@ -6,7 +6,7 @@
     <jcr:content
         jcr:lastModified="{Date}2017-11-20T11:55:02.725-08:00"
         jcr:lastModifiedBy="admin"
-        jcr:primaryType="nt:unstructured"
+        jcr:primaryType="per:PageContent"
         jcr:title="Site 1"
         sling:resourceType="themeclean/components/page"
         name="Site 1"

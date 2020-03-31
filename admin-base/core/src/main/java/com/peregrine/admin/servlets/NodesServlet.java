@@ -115,7 +115,10 @@ public class NodesServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
         if(path == null || path.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_PATH_PROVIDED).setRequestPath(path);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(NO_PATH_PROVIDED)
+                .setRequestPath(path);
         }
         String[] segments = path.split("/");
         logger.debug("lookup path {}, {}", path, segments.length);
@@ -245,7 +248,7 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, ALLOWED_OBJECTS, properties);
 
         // For the Replication data we need to obtain the content properties. If not found
-        // then we try with the resoure's properties for non jcr:content nodes
+        // then we try with the resource's properties for non jcr:content nodes
         ValueMap replicationProperties = getProperties(resource);
         if(replicationProperties == null) { replicationProperties = properties; }
         String replicationDate = writeIfFound(json, PER_REPLICATED, replicationProperties);
