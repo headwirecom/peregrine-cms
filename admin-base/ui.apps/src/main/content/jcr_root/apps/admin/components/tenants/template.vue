@@ -23,6 +23,13 @@
 <template>
 
     <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
+        <div class="tenant-filters">
+            <label> Show internal tenants </label>
+            <admin-components-materializeswitch
+                :on-label="$i18n('yes')"
+                :off-label="$i18n('no')"
+                @update="onShowInternalTenantsUpdate"/>
+        </div>
         <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
             <div class="card blue-grey darken-3">
                 <div class="card-content white-text tenant-link" @click="onCardContentClick(child.name)">
@@ -80,7 +87,7 @@
             </div>
         </div>
 
-        <!-- older variation 
+        <!-- older variation
         <p>
         <admin-components-action
             v-bind:model="{
@@ -131,14 +138,19 @@
                 isDraggingFile: false,
                 isDraggingUiEl: false,
                 isFileUploadVisible: false,
-                uploadProgress: 0
+                uploadProgress: 0,
+                showInternal: false
             }
         },
         computed: {
             children: function() {
-                const tenants = $perAdminApp.getNodeFrom($perAdminApp.getView(), '/admin/tenants');
+                const tenants = $perAdminApp.getNodeFrom($perAdminApp.getView(), '/admin/tenants')
                 if(tenants) {
-                    return tenants.filter( (t) => !t.template && !t.internal);
+                    if (this.showInternal) {
+                        return tenants.filter( (t) => !t.template)
+                    } else {
+                        return tenants.filter( (t) => !t.template && !t.internal)
+                    }
                 }
                 return [];
             }
@@ -166,6 +178,10 @@
 
             onCreateNewSiteClick() {
                 $perAdminApp.action(this, 'selectPath', '/content/admin/pages/pages/createsite')
+            },
+
+            onShowInternalTenantsUpdate(val) {
+                this.showInternal = val
             }
         }
     }
@@ -184,5 +200,15 @@
     .card-action {
         display: flex;
         justify-content: space-between;
+    }
+
+    .tenant-filters {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        background-color: #eeeeee;
+        border-bottom: 2px solid silver;
+        padding: 15px;
     }
 </style>
