@@ -153,7 +153,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
         mockResourceResolverCreate();
         disableCacheResolution();
         doThrow(PersistenceException.class).when(resourceResolver).commit();
-        assertNull(model.get(page));
+        assertNotNull(model.get(page));
     }
 
     private void disableCacheResolution() {
