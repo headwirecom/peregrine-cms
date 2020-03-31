@@ -24,14 +24,14 @@
 
     <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
         <div class="tenant-filters">
-            <label> Show internal tenants </label>
+            <label> Show template-tenants </label>
             <admin-components-materializeswitch
                 :on-label="$i18n('yes')"
                 :off-label="$i18n('no')"
-                @update="onShowInternalTenantsUpdate"/>
+                @update="onShowTemplateTenantsUpdate"/>
         </div>
         <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
-            <div class="card blue-grey darken-3">
+            <div class="card blue-grey darken-3" :class="{'template-tenant': child.template}">
                 <div class="card-content white-text tenant-link" @click="onCardContentClick(child.name)">
                     <span class="card-title">{{child.title ? child.title : child.name}}</span>
                     <p>{{child.description}}</p>
@@ -139,15 +139,15 @@
                 isDraggingUiEl: false,
                 isFileUploadVisible: false,
                 uploadProgress: 0,
-                showInternal: false
+                showTemplateTenants: false
             }
         },
         computed: {
             children: function() {
                 const tenants = $perAdminApp.getNodeFrom($perAdminApp.getView(), '/admin/tenants')
                 if(tenants) {
-                    if (this.showInternal) {
-                        return tenants.filter( (t) => !t.template)
+                    if (this.showTemplateTenants) {
+                        return tenants.filter( (t) => !t.internal)
                     } else {
                         return tenants.filter( (t) => !t.template && !t.internal)
                     }
@@ -180,8 +180,8 @@
                 $perAdminApp.action(this, 'selectPath', '/content/admin/pages/pages/createsite')
             },
 
-            onShowInternalTenantsUpdate(val) {
-                this.showInternal = val
+            onShowTemplateTenantsUpdate(val) {
+                this.showTemplateTenants = val
             }
         }
     }
@@ -210,5 +210,9 @@
         background-color: #eeeeee;
         border-bottom: 2px solid silver;
         padding: 15px;
+    }
+
+    .template-tenant {
+        opacity: .6;
     }
 </style>
