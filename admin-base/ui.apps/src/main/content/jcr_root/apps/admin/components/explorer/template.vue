@@ -193,7 +193,6 @@
 </template>
 
 <script>
-    import {set} from '../../../../../../js/utils';
 
     export default {
         props: ['model'],
@@ -242,18 +241,6 @@
                 return this.model.children && this.model.children[0]
             }
         },
-
-        created() {
-            $perAdminApp.eventBus.$on('tenants-update', (data) => {
-                const pathArr = this.path.split('/')
-                pathArr[2] = data.current.name
-                set($perAdminApp.getView(), this.model.dataFrom, pathArr.join('/'))
-                this.selectPath(this, {
-                    path: pathArr.join('/')
-                });
-            })
-        },
-
         methods: {
             getTenant() {
               return $perAdminApp.getView().state.tenant || {name: 'example'}
@@ -272,6 +259,7 @@
             },
 
             isTemplates(path) {
+
                 return path.startsWith(`/content/${this.getTenant().name}/templates`)
             },
 
