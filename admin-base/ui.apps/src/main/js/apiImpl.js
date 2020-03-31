@@ -43,7 +43,6 @@ function json(data) {
 }
 
 function fetch(path) {
-
   logger.fine('Fetch ', path)
   return axios.get(API_BASE + path).then((response) => {
     return new Promise((resolve, reject) => {
@@ -59,15 +58,13 @@ function fetch(path) {
       resolve(response.data)
     })
   }).catch((error) => {
-    logger.error('Fetch request to',
-        path, 'failed')
+    logger.error('Fetch request to', path, 'failed')
     throw error
   })
 
 }
 
 function update(path) {
-
   logger.fine('Update, path: ', path)
   return axios.post(API_BASE + path, null, postConfig)
   .then((response) => {
@@ -75,19 +72,17 @@ function update(path) {
     return response.data
   })
   .catch((error) => {
-    logger.error('Update request to', error.response.request.path, 'failed')
+    logger.error('Update request to', path, 'failed')
     throw error
   })
 }
 
 function updateWithForm(path, data) {
-
   logger.fine('Update with Form, path: ' + path + ', data: ' + data)
   return axios.post(API_BASE + path, data, postConfig)
   .then((response) => response.data)
   .catch((error) => {
-    logger.error('Update with Form request to', error.response.request.path,
-        'failed')
+    logger.error('Update with Form request to', path, 'failed')
     throw error
   })
 }
@@ -102,8 +97,7 @@ function updateWithFormAndConfig(path, data, config) {
     return response.data
   })
   .catch((error) => {
-    logger.error('Update with Form and Config request to',
-        error.response.request.path, 'failed')
+    logger.error('Update with Form and Config request to', error.response.request.path, 'failed')
     throw error
   })
 }
@@ -331,8 +325,7 @@ class PerAdminImpl {
                 }
 
               }).catch((error) => {
-                logger.error('missing node', data.model.fields[i].valuesFrom,
-                    'for list population in dialog', error)
+                logger.error('missing node', data.model.fields[i].valuesFrom, 'for list population in dialog', error)
               })
               promises.push(promise)
             }
