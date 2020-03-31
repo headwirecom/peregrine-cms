@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 
       Licensed to the Apache Software Foundation (ASF) under one
@@ -23,72 +24,209 @@
       xmlns="http://www.w3.org/1999/xhtml"
 >
 <head>
-   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
    <title>Login</title>
 
    <style type="text/css">
-   body {
-       font-family: Verdana, Arial, Helvetica, sans-serif;
-       font-size: 10px;
-       color: black;
-       background-color: white;
-   }
+      :root {
+         --peregrine-dark: #182022;
+         --peregrine-orange: #fe9701;
+         --peregrine-gray: #87959a;
+      }
 
-   #main {
-       border: 1px solid gray;
-       margin-top: 40vh;
-       margin-left: 40vw;
-       width: 400px;
-       padding: 10px;
-   }
+      *, *:before, *:after {
+         box-sizing: border-box;
+      }
 
-   #loginform {
-       padding: 0px;
-       margin: 0px;
-   }
+      html, body {
+         width: 100%;
+         height: 100%;
+         margin: 0;
+         padding: 0;
+      }
 
-   #err {
-       color: red;
-   }
+      body {
+         font-family: Verdana, Arial, Helvetica, sans-serif;
+         font-size: 10px;
+         color: black;
+         background-color: var(--peregrine-dark);
+      }
+
+      .top-bar {
+         position: absolute;
+         top: 0;
+         width: 100%;
+         padding: 15px;
+      }
+
+      #main {
+         width: 100%;
+         height: 100%;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         flex-direction: column;
+      }
+
+      .login-wrapper {
+         width: 85%;
+         border-radius: 15px;
+         background-color: #ffffff;
+         height: 500px;
+         display: flex;
+      }
+
+      .login-image {
+         width: 60%;
+         border-radius: 15px 0 0 15px;
+         background-image: url('${contextPath}/etc/felibs/admin/login-image.png');
+         background-size: cover;
+      }
+
+      .login-form-wrapper {
+         width: 40%;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+      }
+
+      #loginform {
+         width: 75%;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         flex-direction: column;
+      }
+
+      #loginform h3 {
+         font-size: 34px;
+         margin: 0;
+      }
+
+      #loginform .form-control {
+         padding: 5px;
+         width: 90%;
+      }
+
+      #loginform input[type="text"],
+      #loginform input[type="password"] {
+         border: 1px solid #e7e7e7;
+         border-radius: 15px;
+         padding: 10px 15px;
+         width: 100%;
+         height: 50px;
+         font-size: 16px;
+      }
+
+      #loginform input[type="text"]::placeholder,
+      #loginform input[type="password"]::placeholder {
+         color: silver
+      }
+
+      #loginform .remember-me-forgot-password {
+         display: flex;
+         justify-content: space-between;
+      }
+
+      #loginform .forgot-password {
+         color: var(--peregrine-orange);
+      }
+
+      #loginform #login {
+         color: #ffffff;
+         background-color: var(--peregrine-orange);
+         width: 100%;
+         padding: 20px;
+         border: none;
+         border-radius: 15px;
+         margin-top: 30px;
+      }
+
+      #err {
+         color: red;
+      }
+
+      .sign-up-wrapper a {
+         text-decoration: none;
+         color: var(--peregrine-orange)
+      }
+
+      .legal {
+         padding: 50px;
+         text-align: center;
+         width: 100%;
+      }
+
+      .legal a {
+         color: var(--peregrine-gray);
+         font-size: 16px;
+         text-decoration: none;
+      }
+
+      .legal .separator {
+         width: 0;
+         height: 5px;
+         border-left: 1px solid #ffffff;
+         margin: 0 10px;
+      }
+
    </style>
 
 </head>
 
 <body>
+<div class="top-bar">
+   <img border="0"
+        src="${contextPath}/etc/felibs/admin/peregrine-logo.png"
+        alt="Peregrine CMS Logo"/>
+</div>
 
-<div id="main"><!-- Login Form -->
-<img border="0" src="${contextPath}/etc/felibs/admin/peregrine-logo.png" alt="Peregrine CMS Logo"/>
-<!--<img src="http://sling.apache.org/site/media.data/logo.png" width="110" height="63" alt="Sling Logo">-->
-<h3>Peregrine CMS Login:</h3>
-<form id="loginform" method="POST" action="${requestContextPath}/j_security_check"
-        enctype="multipart/form-data" accept-charset="UTF-8">
+<div id="main">
+   <div class="login-wrapper">
+      <!--suppress CssUnknownTarget -->
+      <div class="login-image"></div>
+      <div class="login-form-wrapper">
+         <form id="loginform" method="POST" action="${requestContextPath}/j_security_check"
+               enctype="multipart/form-data" accept-charset="UTF-8">
 
-   <input type="hidden" name="_charset_" value="UTF-8" />
-   <input type="hidden" name="resource" value="${resource}" />
+            <input type="hidden" name="_charset_" value="UTF-8"/>
+            <input type="hidden" name="resource" value="${resource}"/>
 
-   <div id="err">
-      <p>${j_reason}</p>
+            <h3>Log In</h3>
+
+            <div id="err">
+               <p>${j_reason}</p>
+            </div>
+
+            <div class="form-control">
+               <input id="j_username" name="j_username" type="text" placeholder="Your email"/>
+            </div>
+
+
+            <div class="form-control">
+               <input id="j_password" name="j_password" type="password" placeholder="Password"/>
+            </div>
+
+            <div class="form-control remember-me-forgot-password">
+               <div class="remember-me">Remember me <input type="checkbox"/></div>
+               <div class="forgot-password">Forgot Password?</div>
+            </div>
+
+            <div class="buttongroup form-control">
+               <button id="login" accesskey="l" class="form-button" type="submit">Login</button>
+            </div>
+
+            <div class="sign-up-wrapper">
+               Don't have an account? <a href="#">Sign up now</a>
+            </div>
+         </form>
+      </div>
    </div>
-
-   <div>
-      <label for="j_username" accesskey="u">Username:</label>
+   <div class="legal">
+      <a href="#">Terms & Conditions</a>
+      <span class="separator"></span>
+      <a href="#">Privacy policy</a>
    </div>
-   <div>
-      <input id="j_username" name="j_username" type="text" />
-   </div>
-
-
-   <div>
-      <label for="j_password" accesskey="p">Password:</label>
-   </div>
-   <div>
-      <input id="j_password" name="j_password" type="password" />
-   </div>
-
-   <div class="buttongroup">
-      <button id="login" accesskey="l" class="form-button" type="submit">Login</button>
-   </div>
-</form>
 </div>
 
 </body>
