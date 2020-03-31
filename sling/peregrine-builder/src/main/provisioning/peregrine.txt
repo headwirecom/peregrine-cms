@@ -67,6 +67,9 @@
         allow jcr:all
     end
 
+# Create SSO group for Authentication Header Module
+
+    create group sso
 
 [configurations]
   org.apache.jackrabbit.oak.spi.security.authentication.external.impl.DefaultSyncHandler-HeaderLoginModule

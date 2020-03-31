@@ -15,5 +15,5 @@ echo "Removing old build artifacts..."
 rm files/*.zip files/*.xz files/*.jar
 
 ./fetchfiles.sh
-docker build --tag=peregrinecms/peregrine-cms .
+docker build --tag=peregrinecms/peregrine-cms:sso-develop-20200331r1 .
 
