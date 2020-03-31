@@ -23,12 +23,13 @@
 <template>
 
     <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
-        <div class="tenant-filters">
-            <label> Show template-tenants </label>
-            <admin-components-materializeswitch
-                :on-label="$i18n('yes')"
-                :off-label="$i18n('no')"
-                @update="onShowTemplateTenantsUpdate"/>
+        <div class="tenant-tabs">
+            <div v-for="(item, index) in tab.items"
+                 class="tab"
+                 :class="{active: tab.active === index}"
+                 @click="onTabClick(index)">
+                {{ item }}
+            </div>
         </div>
         <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
             <div class="card blue-grey darken-3" :class="{'template-tenant': child.template}">
@@ -139,15 +140,20 @@
                 isDraggingUiEl: false,
                 isFileUploadVisible: false,
                 uploadProgress: 0,
-                showTemplateTenants: false
+                tab: {
+                    active: 0,
+                    items: ['Tenants', 'Template Tenants', 'Internal Tenants']
+                }
             }
         },
         computed: {
             children: function() {
                 const tenants = $perAdminApp.getNodeFrom($perAdminApp.getView(), '/admin/tenants')
                 if(tenants) {
-                    if (this.showTemplateTenants) {
+                    if (this.tab.active === 1) {
                         return tenants.filter( (t) => !t.internal)
+                    } else if (this.tab.active === 2) {
+                        return tenants.filter( (t) => !t.template );
                     } else {
                         return tenants.filter( (t) => !t.template && !t.internal)
                     }
@@ -182,6 +188,10 @@
 
             onShowTemplateTenantsUpdate(val) {
                 this.showTemplateTenants = val
+            },
+
+            onTabClick(index) {
+                this.tab.active = index
             }
         }
     }
@@ -202,14 +212,27 @@
         justify-content: space-between;
     }
 
-    .tenant-filters {
+    .tenant-tabs {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
         height: 50px;
         background-color: #eeeeee;
         border-bottom: 2px solid silver;
-        padding: 15px;
+    }
+
+    .tenant-tabs .tab {
+        height: 100%;
+        width: 33.333333333%;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        cursor: pointer;
+    }
+
+    .tenant-tabs .tab:hover,
+    .tenant-tabs .tab.active {
+        background-color: rgba(0, 0, 0, .1);
     }
 
     .template-tenant {
