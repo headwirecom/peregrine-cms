@@ -43,6 +43,8 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import com.peregrine.commons.util.PerConstants;
@@ -57,17 +59,12 @@ import org.osgi.service.component.annotations.Component;
  * Provides the Component Definition of a Resource
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
+ * ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
-@Component(
-    service = Servlet.class,
-    property = {
+@Component(service = Servlet.class, property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Component Definition Servlet",
-        SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_COMPONENT_DEFINITION
-    }
-)
+        SERVICE_VENDOR + EQUALS + PER_VENDOR, SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_COMPONENT_DEFINITION })
 @SuppressWarnings("serial")
 public class ComponentDefinitionServlet extends AbstractBaseServlet {
 
@@ -80,39 +77,50 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         String path = request.getParameter(PATH);
         Resource resource = request.getResourceByPath(path);
         boolean page = false;
-        if(resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
+        if (resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
             page = true;
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
         String componentPath = "";
-        if(path.startsWith(APPS_ROOT + SLASH)) {
+        if (path.startsWith(APPS_ROOT + SLASH)) {
             componentPath = path;
         } else {
             componentPath = APPS_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
         }
         Resource component = request.getResourceByPath(componentPath);
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
-        if("/apps/admin/components/assetview".equals(path)) {
+        if ("/apps/admin/components/assetview".equals(path)) {
             page = true;
         }
         Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
-        if(dialog == null) {
+        if (dialog == null) {
             dialog = getDialogFromSuperType(component, page, false);
         }
         Resource ogTags = component.getChild(OG_TAG_DIALOG_JSON);
-        if(ogTags == null) {
-          ogTags = getDialogFromSuperType(component, page, true);
+        if (ogTags == null) {
+            ogTags = getDialogFromSuperType(component, page, true);
         }
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute(PATH, componentPath);
         answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentPath));
-        if(dialog != null) {
-            answer.writeAttributeRaw(MODEL, ServletHelper.asString(dialog.adaptTo(InputStream.class)).toString());
+        if (dialog != null) {
+            answer.writeAttributeRaw(MODEL, rewriteDialogToTenant(dialog));
         }
-        if(ogTags != null) {
-          answer.writeAttributeRaw(OG_TAGS, ServletHelper.asString(ogTags.adaptTo(InputStream.class)).toString());
+        if (ogTags != null) {
+            answer.writeAttributeRaw(OG_TAGS, rewriteDialogToTenant(ogTags));
         }
         return answer;
+    }
+
+    private String rewriteDialogToTenant(Resource dialog) throws IOException {
+        InputStream is = dialog.adaptTo(InputStream.class);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode dialogModel = mapper.readTree(is);
+        rewriteTenantRelatedProperties(dialogModel);
+        return mapper.writeValueAsString(dialogModel);
+    }
+
+    private void rewriteTenantRelatedProperties(JsonNode dialogModel) {
     }
 
     private Resource getDialogFromSuperType(Resource resource, boolean page, boolean isMetaTag) {
