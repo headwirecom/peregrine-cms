@@ -52,11 +52,29 @@
          background-color: var(--peregrine-dark);
       }
 
+      a {
+         text-decoration: none;
+      }
+
       .top-bar {
          position: absolute;
          top: 0;
          width: 100%;
          padding: 15px;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+      }
+
+      .top-bar a {
+         color: var(--peregrine-gray);
+      }
+
+      .top-bar .help {
+         color: var(--peregrine-gray);
+         font-size: 18px;
+         padding: 15px;
+         font-weight: 100;
       }
 
       #main {
@@ -70,21 +88,22 @@
 
       .login-wrapper {
          width: 85%;
+         min-width: 1000px;
          border-radius: 15px;
          background-color: #ffffff;
-         height: 500px;
+         height: 650px;
          display: flex;
       }
 
       .login-image {
-         width: 60%;
+         width: 55%;
          border-radius: 15px 0 0 15px;
          background-image: url('${contextPath}/etc/felibs/admin/login-image.png');
          background-size: cover;
       }
 
       .login-form-wrapper {
-         width: 40%;
+         width: 45%;
          display: flex;
          justify-content: center;
          align-items: center;
@@ -98,9 +117,9 @@
          flex-direction: column;
       }
 
-      #loginform h3 {
-         font-size: 34px;
-         margin: 0;
+      #loginform .title {
+         font-size: 32px;
+         margin: 0 0 10px;
       }
 
       #loginform .form-control {
@@ -111,11 +130,17 @@
       #loginform input[type="text"],
       #loginform input[type="password"] {
          border: 1px solid #e7e7e7;
-         border-radius: 15px;
+         border-radius: 7px;
          padding: 10px 15px;
          width: 100%;
          height: 50px;
          font-size: 16px;
+      }
+
+      #loginform input[type="text"]:focus,
+      #loginform input[type="password"]:focus {
+         outline: none;
+         border-color: #adadad;
       }
 
       #loginform input[type="text"]::placeholder,
@@ -126,28 +151,97 @@
       #loginform .remember-me-forgot-password {
          display: flex;
          justify-content: space-between;
+         height: 35px;
+         margin-top: 0;
+         padding-top: 0;
+         font-size: 14px;
+         font-weight: 500;
+      }
+
+
+      #loginform .remember-me {
+         position: relative;
+         height: 100%;
+         display: flex;
+         align-items: center;
+      }
+
+      #loginform .remember-me-forgot-password a {
+         color: var(--peregrine-orange);
+      }
+
+      #loginform .remember-me input[type="checkbox"] {
+         position: absolute;
+         top: 5px;
+         right: -29px;
+         opacity: 0;
+         width: 17px;
+         height: 17px;
+         z-index: 100;
+      }
+
+      #loginform .remember-me input[type="checkbox"]+span::after {
+         content: '';
+         position: absolute;
+         top: 4px;
+         right: -25px;
+         width: 17px;
+         height: 17px;
+         z-index: 0;
+         border: 1px solid var(--peregrine-orange);
+         border-radius: 5px;
+         margin-top: 3px;
+         -webkit-transition: .2s;
+         transition: .2s;
+      }
+
+      #loginform .remember-me input[type="checkbox"]:checked+span::after {
+         top: 3px;
+         right: -13px;
+         width: 10px;
+         height: 15px;
+         border-top: 2px solid transparent;
+         border-left: 2px solid transparent;
+         border-right: 2px solid var(--peregrine-orange);
+         border-bottom: 2px solid var(--peregrine-orange);
+         -webkit-transform: rotate(40deg);
+         transform: rotate(40deg);
+         -webkit-backface-visibility: hidden;
+         backface-visibility: hidden;
+         -webkit-transform-origin: 100% 100%;
+         transform-origin: 100% 100%;
+         border-radius: 3px;
       }
 
       #loginform .forgot-password {
-         color: var(--peregrine-orange);
+         display: flex;
+         align-items: center;
       }
 
       #loginform #login {
          color: #ffffff;
          background-color: var(--peregrine-orange);
          width: 100%;
-         padding: 20px;
+         padding: 12px 20px;
          border: none;
-         border-radius: 15px;
+         border-radius: 7px;
          margin-top: 30px;
+         font-weight: 600;
+         font-size: 18px;
       }
 
       #err {
          color: red;
       }
 
+      .sign-up-wrapper {
+         text-align: center;
+         margin-top: 40px;
+         font-size: 14px;
+         color: var(--peregrine-gray);
+      }
+
       .sign-up-wrapper a {
-         text-decoration: none;
          color: var(--peregrine-orange)
       }
 
@@ -160,7 +254,6 @@
       .legal a {
          color: var(--peregrine-gray);
          font-size: 16px;
-         text-decoration: none;
       }
 
       .legal .separator {
@@ -179,6 +272,7 @@
    <img border="0"
         src="${contextPath}/etc/felibs/admin/peregrine-logo.png"
         alt="Peregrine CMS Logo"/>
+   <a href="#help" class="help">Help</a>
 </div>
 
 <div id="main">
@@ -192,7 +286,7 @@
             <input type="hidden" name="_charset_" value="UTF-8"/>
             <input type="hidden" name="resource" value="${resource}"/>
 
-            <h3>Log In</h3>
+            <h3 class="title">Log In</h3>
 
             <div id="err">
                <p>${j_reason}</p>
@@ -208,24 +302,29 @@
             </div>
 
             <div class="form-control remember-me-forgot-password">
-               <div class="remember-me">Remember me <input type="checkbox"/></div>
-               <div class="forgot-password">Forgot Password?</div>
+               <div class="remember-me">
+                  <input type="checkbox"/>
+                  <span>Remember me</span>
+               </div>
+               <div class="forgot-password"><a href="#forgot-password">Forgot Password?</a></div>
             </div>
 
             <div class="buttongroup form-control">
-               <button id="login" accesskey="l" class="form-button" type="submit">Login</button>
+               <button id="login" accesskey="l" class="form-button" type="submit">
+                  Log In
+               </button>
             </div>
 
-            <div class="sign-up-wrapper">
-               Don't have an account? <a href="#">Sign up now</a>
+            <div class="sign-up-wrapper form-control">
+               Don't have an account? <a href="#sign-up">Sign up now</a>
             </div>
          </form>
       </div>
    </div>
    <div class="legal">
-      <a href="#">Terms & Conditions</a>
+      <a href="#terms-and-conditions">Terms & Conditions</a>
       <span class="separator"></span>
-      <a href="#">Privacy policy</a>
+      <a href="#privacy-policy">Privacy policy</a>
    </div>
 </div>
 
