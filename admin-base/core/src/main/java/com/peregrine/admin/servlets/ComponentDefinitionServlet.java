@@ -122,7 +122,6 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         String answer = ServletHelper.asString(is).toString();
         if(path != null && path.startsWith("/content/")) {
             String tenantPath = path.substring(0, path.indexOf('/', 10));
-            System.out.println(tenantPath);
             return answer.replaceAll("\"/content/.*/", "\"" + tenantPath + "/");
         } else {
             return answer;
