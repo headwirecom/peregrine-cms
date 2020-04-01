@@ -99,7 +99,7 @@
                 uploadProgress: 0,
                 tab: {
                     active: 0,
-                    items: ['Websites', 'Website Templates', 'Internal Websites']
+                    items: ['Websites', 'Website Themes', 'Internal Websites']
                 }
             }
         },
