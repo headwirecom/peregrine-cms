@@ -33,7 +33,7 @@
         </div>
         <div class="tenant-collection">
             <template v-if="children && children.length > 0">
-                <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
+                <div class="col s12 m6 l6 icon-action m-left-inherit" v-for="child in children" v-bind:key="child.name">
                     <div class="card blue-grey darken-3">
                         <div class="card-content white-text tenant-link" @click="onCardContentClick(child.name)">
                             <span class="card-title">{{child.title ? child.title : child.name}}</span>
@@ -234,6 +234,10 @@
         min-height: 250px;
     }
 
+    .tenant-collection .card .card-content {
+        min-height: 187px;
+    }
+
     .tenant-collection .no-websites-found {
         width: 100%;
         display: flex;
@@ -247,5 +251,9 @@
 
     .no-websites-found p {
         font-size: 20px;
+    }
+
+    .m-left-inherit {
+        margin-left: inherit !important;
     }
 </style>
