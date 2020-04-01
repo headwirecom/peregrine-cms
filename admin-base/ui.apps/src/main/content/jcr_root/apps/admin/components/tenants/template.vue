@@ -31,102 +31,59 @@
                 {{ item }}
             </div>
         </div>
-        <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
-            <div class="card blue-grey darken-3">
-                <div class="card-content white-text tenant-link" @click="onCardContentClick(child.name)">
-                    <span class="card-title">{{child.title ? child.title : child.name}}</span>
-                    <p>{{child.description}}</p>
-                </div>
-                <div class="card-action">
-                    <admin-components-action
-                        v-bind:model="{
-                            target: child.name,
-                            command: 'selectTenant',
-                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
-                        }">
-                        <i class="material-icons">edit</i>
-                    </admin-components-action>
+        <div class="tenant-collection">
+            <template v-if="children && children.length > 0">
+                <div class="col s12 m6 l6 icon-action" v-for="child in children" v-bind:key="child.name">
+                    <div class="card blue-grey darken-3">
+                        <div class="card-content white-text tenant-link" @click="onCardContentClick(child.name)">
+                            <span class="card-title">{{child.title ? child.title : child.name}}</span>
+                            <p>{{child.description}}</p>
+                        </div>
+                        <div class="card-action">
+                            <admin-components-action
+                                v-bind:model="{
+                                    target: child.name,
+                                    command: 'selectTenant',
+                                    tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                                }">
+                                <i class="material-icons">edit</i>
+                            </admin-components-action>
 
-                    <admin-components-action
-                        v-bind:model="{
-                            target: { path: '/content', name: child.name },
-                            command: 'configureSite',
-                            tooltipTitle: `${$i18n('configure')} '${child.title || child.name}'`
-                        }">
-                        <i class="material-icons">settings</i>
-                    </admin-components-action>
+                            <admin-components-action
+                                v-bind:model="{
+                                    target: { path: '/content', name: child.name },
+                                    command: 'configureSite',
+                                    tooltipTitle: `${$i18n('configure')} '${child.title || child.name}'`
+                                }">
+                                <i class="material-icons">settings</i>
+                            </admin-components-action>
 
 
-                    <admin-components-action
-                        v-bind:model="{
-                            target: { path: '/content', name: child.name },
-                            command: 'deleteSite',
-                            tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
-                        }">
-                        <i class="material-icons">delete</i>
-                    </admin-components-action>
-                </div>
-            </div>
-        </div>
-
-        <div class="col s12 m6 l6 icon-action">
-            <div class="card blue-grey darken-3">
-                <div class="card-content white-text tenant-link" @click="onCreateNewSiteClick">
-                    <span class="card-title">{{`${$i18n('create new site')}`}}</span>
-                    <p>Click to create your own website</p>
-                </div>
-                <div class="card-action">
-                    <admin-components-action
-                        v-bind:model="{
-                            target: '/content/admin/pages/pages/createsite',
-                            command: 'selectPath',
-                            tooltipTitle: $i18n('create tenant'),
-                        }">
-                        <i class="material-icons">note_add</i>
-                    </admin-components-action>
-                </div>
-            </div>
-        </div>
-
-        <!-- older variation
-        <p>
-        <admin-components-action
-            v-bind:model="{
-                target: '/content/admin/pages/pages/createsite',
-                command: 'selectPath',
-                tooltipTitle: $i18n('create tenant'),
-            }"><button>{{$i18n('create website')}}</button>
-        </admin-components-action>
-        </p>
-        <fieldset class="vue-form-generator" v-if="children.length > 0">
-            <div class="form-group required">
-                <div class="row">
-                    <div class="col m12">
-                        <label>Select Tenant</label>
-                        <ul class="collection">
-                            <li class="collection-item" v-for="child in children" v-bind:key="child.name">
-                                <admin-components-action
-                                    v-bind:model="{
-                                        target: child.name,
-                                        command: 'selectTenant',
-                                        tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
-                                    }">{{child.title ? child.title : child.name}}
-                                </admin-components-action>
-
-                                <admin-components-action
-                                    v-bind:model="{
-                                        target: { path: '/content', name: child.name },
-                                        command: 'deleteSite',
-                                        tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
-                                    }">
-                                    <i class="material-icons">delete</i>
-                                </admin-components-action>
-                           </li>
-                        </ul>
+                            <admin-components-action
+                                v-bind:model="{
+                                    target: { path: '/content', name: child.name },
+                                    command: 'deleteSite',
+                                    tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
+                                }">
+                                <i class="material-icons">delete</i>
+                            </admin-components-action>
+                        </div>
                     </div>
                 </div>
+            </template>
+            <template v-else>
+                <div class="no-websites-found">
+                    <p>No websites found</p>
+                    Start by creating a new one!
+                </div>
+            </template>
+        </div>
+        <div class="tenant-actions">
+            <div class="create-tenant action" @click="onCreateNewSiteClick">
+                <i class="material-icons">note_add</i>
+                Create new website
             </div>
-        </fieldset> -->
+        </div>
     </div>
 
 </template>
@@ -142,7 +99,7 @@
                 uploadProgress: 0,
                 tab: {
                     active: 0,
-                    items: ['Tenants', 'Template Tenants', 'Internal Tenants']
+                    items: ['Websites', 'Website Templates', 'Internal Websites']
                 }
             }
         },
@@ -151,9 +108,9 @@
                 const tenants = $perAdminApp.getNodeFrom($perAdminApp.getView(), '/admin/tenants')
                 if(tenants) {
                     if (this.tab.active === 1) {
-                        return tenants.filter( (t) => !t.internal)
+                        return tenants.filter( (t) => t.template)
                     } else if (this.tab.active === 2) {
-                        return tenants.filter( (t) => !t.template );
+                        return tenants.filter( (t) => t.internal );
                     } else {
                         return tenants.filter( (t) => !t.template && !t.internal)
                     }
@@ -212,12 +169,17 @@
         justify-content: space-between;
     }
 
-    .tenant-tabs {
+    .tenant-tabs,
+    .tenant-actions{
+        width: 100%;
         display: flex;
         justify-content: flex-start;
         align-items: center;
         height: 50px;
         background-color: #eeeeee;
+    }
+
+    .tenant-tabs {
         border-bottom: 2px solid silver;
     }
 
@@ -233,5 +195,57 @@
     .tenant-tabs .tab:hover,
     .tenant-tabs .tab.active {
         background-color: rgba(0, 0, 0, .1);
+    }
+
+    .tenant-actions {
+        border-top: 2px solid silver;
+        display: flex;
+        justify-content: center;
+    }
+
+    .tenant-actions .action {
+        width: 250px;
+        height: 90%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffff;
+        background-color: rgba(55, 71, 79, 1);
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+    .tenant-actions .action:hover {
+        background-color: rgba(55, 71, 79, .92);
+    }
+
+    .tenant-actions .action i.material-icons {
+        color: #ffab40;
+        margin-right: 10px;
+    }
+
+    .tenant-collection {
+        min-height: 272px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .tenant-collection .card {
+        min-height: 250px;
+    }
+
+    .tenant-collection .no-websites-found {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: #b4b4b4;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .no-websites-found p {
+        font-size: 20px;
     }
 </style>
