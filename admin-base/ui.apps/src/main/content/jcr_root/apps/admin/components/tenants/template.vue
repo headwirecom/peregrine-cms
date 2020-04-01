@@ -143,10 +143,6 @@
                 $perAdminApp.action(this, 'selectPath', '/content/admin/pages/pages/createsite')
             },
 
-            onShowTemplateTenantsUpdate(val) {
-                this.showTemplateTenants = val
-            },
-
             onTabClick(index) {
                 this.tab.active = index
             }
