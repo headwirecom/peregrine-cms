@@ -78,7 +78,7 @@
                 </div>
             </template>
         </div>
-        <div class="tenant-actions">
+        <div v-if="tab.active === 0" class="tenant-actions">
             <div class="create-tenant action" @click="onCreateNewSiteClick">
                 <i class="material-icons">note_add</i>
                 Create new website
