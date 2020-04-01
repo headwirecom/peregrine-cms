@@ -45,11 +45,15 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import com.peregrine.commons.util.PerConstants;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -104,23 +108,25 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         answer.writeAttribute(PATH, componentPath);
         answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentPath));
         if (dialog != null) {
-            answer.writeAttributeRaw(MODEL, rewriteDialogToTenant(dialog));
+            answer.writeAttributeRaw(MODEL, rewriteDialogToTenant(path, dialog));
         }
         if (ogTags != null) {
-            answer.writeAttributeRaw(OG_TAGS, rewriteDialogToTenant(ogTags));
+            answer.writeAttributeRaw(OG_TAGS, rewriteDialogToTenant(path, ogTags));
         }
         return answer;
     }
 
-    private String rewriteDialogToTenant(Resource dialog) throws IOException {
+    /* quick method to serialize the dialog and convert all template specific paths to tenant paths */
+    private String rewriteDialogToTenant(String path, Resource dialog) throws IOException {
         InputStream is = dialog.adaptTo(InputStream.class);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode dialogModel = mapper.readTree(is);
-        rewriteTenantRelatedProperties(dialogModel);
-        return mapper.writeValueAsString(dialogModel);
-    }
-
-    private void rewriteTenantRelatedProperties(JsonNode dialogModel) {
+        String answer = ServletHelper.asString(is).toString();
+        if(path != null && path.startsWith("/content/")) {
+            String tenantPath = path.substring(0, path.indexOf('/', 10));
+            System.out.println(tenantPath);
+            return answer.replaceAll("\"/content/.*/", "\"" + tenantPath + "/");
+        } else {
+            return answer;
+        }
     }
 
     private Resource getDialogFromSuperType(Resource resource, boolean page, boolean isMetaTag) {
