@@ -289,7 +289,7 @@
 	/* tablet styles */
 	@media #{$medium-and-up} {
 		position: absolute;
-		top: 112px;
+		top: 115px;
 		left: 0;
 		right: 0;
 		bottom: 0;
@@ -305,7 +305,7 @@
 				.explorer-preview {
 					height: 100%;
 					&.fullscreen {
-						top: 112px;
+						top: 115px;
 						padding-bottom: 112px;
 						.explorer-preview-content {
 							padding: 0 10%;

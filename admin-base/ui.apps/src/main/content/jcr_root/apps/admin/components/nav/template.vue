@@ -25,143 +25,90 @@
 <template>
   <nav v-bind:data-per-path="model.path" v-bind:class="isExtended ? 'nav-extended' : ''">
     <div class="nav-wrapper blue-grey darken-3">
-      <div class="col s12">
+      <div class="nav-left">
         <div class="brand-logo">
           <admin-components-action
               v-bind:model="{
-              command: 'selectPath', 
-              target: '/content/admin/pages/index',
-              classes: 'peregrine-logo',
-              tooltipTitle: $i18n('home')
-            }">
+                  command: 'selectPath',
+                  target: '/content/admin/pages/index',
+                  classes: 'peregrine-logo',
+                  tooltipTitle: $i18n('home')
+              }">
             <admin-components-logo/>
           </admin-components-action>
-
-          <!-- <template v-if="vueRoot.adminPage">
-            <template v-for="item in vueRoot.adminPage.breadcrumbs">
-              <admin-components-action
-                  v-bind:key="item.path"
-                  v-bind:model="{
-                command: 'selectPath',
-                title: $i18n(item.title),
-                target: item.path
-              }"></admin-components-action>
-            </template>
-          </template> -->
         </div>
-        <ul id="nav-mobile" class="right hide-on-small-and-down">
-
-          <li v-if="!model.hideTenants">
-
-            <span style="padding: 15px; padding-right: 0px; color: white;">{{$i18n('Website')}}:</span>
-
-          <admin-components-action 
-            v-bind:model="{
-            command: 'selectPath',
-            title: state.tenant ? state.tenant.name : 'unknown',
-            target: '/content/admin/pages/welcome'
-          }" :class="{'active-section': getActiveSection() === 'welcome'}"/>
-
-          <admin-components-action v-if="state.tenant"
-              v-bind:model="{
+        <template v-if="!model.hideTenants && state.tenant">
+          <div class="current-tenant-name">
+            {{ state.tenant.name }}
+          </div>
+        </template>
+      </div>
+      <div class="nav-center">
+        <template v-if="!model.hideTenants">
+          <ul class="hide-on-small-and-down nav-mobile">
+            <admin-components-action
+                v-for="section in sections"
+                :key="`section-${section.name}`"
+                tag="li"
+                :model="getSectionModel(section)"
+                :class="{active: getActiveSection() === section.name}"
+                class="nav-link"/>
+            <admin-components-action
+                v-if="state.tenant"
+                tag="li"
+                class="nav-link"
+                :class="{active: getActiveSection() === 'tenants'}"
+                :model="{
                   target: { path: '/content', name: state.tenant.name },
                   command: 'configureSite',
-                  title: 'settings',
+                  title: $i18n('Settings'),
                   tooltipTitle: `${$i18n('configure')} '${state.tenant.title || state.tenant.name}'`
-              }">
-          </admin-components-action>
-
-          <!-- <admin-components-action v-else
-              v-bind:model="{
-            command: 'selectPath',
-            title: $i18n('Tenants'),
-            target: '/content/admin/pages/index'
-          }"></admin-components-action> -->
-
-          <admin-components-separator />
-
-          <admin-components-action
-              v-bind:model="{
-            command: 'selectPath',
-            title: $i18n('Pages'),
-            target: '/content/admin/pages/pages'
-          }" :class="{'active-section': getActiveSection() === 'pages'}"/>
-
-          <admin-components-action
-              v-bind:model="{
-            command: 'selectPath',
-            title: $i18n('Assets'),
-            target: '/content/admin/pages/assets'
-          }" :class="{'active-section': getActiveSection() === 'assets'}"/>
-
-          <admin-components-action
-              v-bind:model="{
-            command: 'selectPath',
-            title: $i18n('Objects'),
-            target: '/content/admin/pages/objects'
-          }" :class="{'active-section': getActiveSection() === 'objects'}"/>
-
-          <admin-components-action
-              v-bind:model="{
-            command: 'selectPath',
-            title: $i18n('Templates'),
-            target: '/content/admin/pages/templates'
-          }" :class="{'active-section': getActiveSection() === 'templates'}"/>
-
-          <admin-components-separator />
-          </li>
-
-          
-
-          <!-- <li v-if="!model.hideTenants" class="tenant-select">
-            <vue-multiselect
-                v-model="state.tenant"
-                deselect-label=""
-                track-by="name"
-                label="name"
-                placeholder="Site"
-                :title="$i18n('tenantsSelect')"
-                :options="tenants"
-                :searchable="false"
-                :allow-empty="false"
-                @select="onSelectTenant"/>
-          </li> -->
-          <li v-if="this.$root.$data.state">
-            <a v-bind:title="$i18n('logout')" href="/system/sling/logout?resource=/index.html">
-              {{this.$root.$data.state.user}}
-            </a>
-          </li>
-          <li>
-            <a v-if="help" v-bind:title="$i18n('help')" href="#" v-on:click="onShowHelp">{{$i18n('help')}}</a>
-            <span v-else style="padding: 15px; color: silver;">{{$i18n('help')}}</span>
-          </li>
-          <li>
-            <a v-bind:title="$i18n('tutorials')" href="#" v-on:click="onShowTutorials">{{$i18n('tutorials')}}</a>
-          </li>
-          <li>
-            <a v-bind:title="$i18n('aboutNavBtn')" href="#" v-on:click="onShowAbout">{{$i18n('aboutNavBtn')}}</a>
-          </li>
-          <li>
-            <vue-multiselect
-                :value="language"
-                deselect-label=""
-                track-by="name"
-                label="name"
-                placeholder="Language"
-                :options="languages"
-                :searchable="false"
-                :allow-empty="false"
-                @select="onSelectLang"
-            ></vue-multiselect>
-          </li>
-        </ul>
+              }"/>
+          </ul>
+        </template>
       </div>
+      <ul class="nav-right hide-on-small-and-down nav-mobile">
+        <li class="nav-link">
+          <a :title="$i18n('help')" href="#" class="icon-link" :class="{disabled: !help}" @click="onHelpClick">
+            <i class="material-icons">help_outline</i>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a :title="$i18n('tutorials')" href="#" class="icon-link" @click="onTutorialsClick">
+            <i class="material-icons">book</i>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a :title="$i18n('aboutNavBtn')" href="#" class="icon-link" @click="onAboutClick">
+            <i class="material-icons">info</i>
+          </a>
+        </li>
+        <li class="nav-link">
+          <vue-multiselect
+              :value="language"
+              deselect-label=""
+              track-by="name"
+              label="name"
+              placeholder="Language"
+              :options="languages"
+              :searchable="false"
+              :allow-empty="false"
+              @select="onSelectLang"
+          ></vue-multiselect>
+        </li>
+        <li v-if="this.$root.$data.state" class="nav-link user-link">
+          <a :title="$i18n('logout') + ' ' + $root.$data.state.user"
+             class="user-icon"
+             href="/system/sling/logout?resource=/index.html">
+            {{$root.$data.state.user[0].toUpperCase()}}
+          </a>
+        </li>
+      </ul>
     </div>
     <template v-for="child in model.children">
       <component v-bind:is="child.component" v-bind:model="child"
                  v-bind:key="child.path"></component>
     </template>
-
   </nav>
 </template>
 
@@ -171,7 +118,15 @@
     data() {
       return {
         state: $perAdminApp.getView().state,
-        tenants: $perAdminApp.getView().admin.tenants || []
+        tenants: $perAdminApp.getView().admin.tenants || [],
+        sections: [
+          {name: 'welcome', title: 'Dashboard'},
+          {name: 'pages', title: 'Pages'},
+          {name: 'assets', title: 'Assets'},
+          {name: 'objects', title: 'Objects'},
+          {name: 'templates', title: 'Templates'}
+        ],
+        helpSelection: 'Help'
       }
     },
     computed: {
@@ -199,7 +154,17 @@
         this.refreshTenants()
       })
     },
+    mounted() {
+      $(this.$refs.ddToggle).dropdown()
+    },
     methods: {
+      getSectionModel(section) {
+        return {
+          command: 'selectPath',
+          title: this.$i18n(section.title),
+          target: `/content/admin/pages/${section.name}`
+        }
+      },
       onSelectLang({name}) {
         this.$i18nSetLanguage(name)
         $perAdminApp.forceFullRedraw()
@@ -207,13 +172,13 @@
       onSelectTenant(tenant) {
         $perAdminApp.stateAction('setTenant', tenant)
       },
-      onShowHelp() {
+      onHelpClick() {
         $perAdminApp.action(this, 'showTour', '')
       },
-      onShowTutorials() {
+      onTutorialsClick() {
         document.getElementById('peregrine-main').classList.toggle('tutorial-visible')
       },
-      onShowAbout() {
+      onAboutClick() {
         $('#aboutPeregrine').modal('open');
       },
       refreshTenants() {
@@ -226,13 +191,10 @@
           return breadcrumbs[0].path.split('/')[4]
         }
         return 'welcome'
+      },
+      onHelpSelect() {
+        console.log('BLA')
       }
     }
   }
 </script>
-
-<style>
-  .active-section a {
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-</style>

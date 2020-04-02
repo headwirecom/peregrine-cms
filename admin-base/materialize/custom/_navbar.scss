@@ -1,39 +1,128 @@
 nav {
-  ul a{
+  ul a {
     display: inline-block;
+    height: calc(100% - 2px);
   }
+
   &.nav-extended {
     position: relative;
     z-index: 1;
   }
+
   .nav-wrapper {
+    display: flex;
+    justify-content: center;
+
+    a {
+      display: block;
+    }
+
+    .nav-link {
+      border-bottom: 3px solid transparent;
+      background-color: transparent;
+      transition: border-color .35s ease-out, backgorund-color .35s ease-out;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      margin-right: auto;
+      padding-top: 3px;
+
+      .current-tenant-name {
+        font-weight: 800;
+        padding: 0 12rem 0 1rem;
+      }
+
+      .current-tenant-settings {
+        cursor: pointer;
+
+        &:hover {
+          color: var(--pcms-orange);
+        }
+
+      }
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      padding-top: 8px;
+
+      .nav-link.active {
+        border-bottom-color: var(--pcms-orange);
+
+        &:hover {
+          border-bottom-color: var(--pcms-orange-hover);
+        }
+      }
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+
+      .icon-link {
+        padding: 0 .5rem;
+      }
+
+      .user-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 0 5px;
+
+        .user-icon {
+          background-color: var(--pcms-orange);
+          border-radius: 100%;
+          width: 35px;
+          display: flex;
+          height: 35px;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+            background-color: var(--pcms-orange-hover);
+          }
+        }
+      }
+    }
+
     .brand-logo {
       font-weight: 300;
+
       > span {
         display: inline-block;
         padding: 0 0.75rem;
         vertical-align: top;
+
         &:before {
           content: '\00BB';
           margin-left: -0.75rem;
           margin-right: 0.75rem;
           display: inline;
         }
+
         &:first-child {
           &:before {
             content: '';
           }
         }
+
         > a {
           display: inline-block;
           line-height: 44px;
           text-decoration: none;
           transition: color .3s ease;
+
           &:hover,
           &:focus,
           &:active {
             color: #ffd8a6;
           }
+
           &.peregrine-logo {
             svg {
               pointer-events: none;
@@ -41,54 +130,72 @@ nav {
               height: 44px;
               position: relative;
               top: 6px;
-              .st0{
-                fill: color("orange", "accent-2");
+              fill: var(--pcms-orange);
+
+              .st0 {
                 transition: fill .3s ease;
               }
+
               &:hover {
-                .st0{
+                .st0 {
                   fill: #ffd8a6;
                 }
+              }
+            }
+
+            &:hover {
+              svg {
+                fill: var(--pcms-orange-hover);
               }
             }
           }
         }
       }
     }
+
     .multiselect {
       .multiselect__select {
         top: 26px;
         right: 15px;
         padding: 0 15px;
+
         &:before {
           color: #fff;
           font-size: 8px;
         }
       }
+
       .multiselect__tags {
         cursor: pointer;
         background: none;
         color: #fff;
         border: 0;
         padding-left: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
         &:hover,
         &:focus,
         &:active {
           background-color: rgba(0, 0, 0, 0.1);
         }
       }
+
       .multiselect__single {
         background: none;
         color: #fff;
         min-width: 30px;
       }
+
       &.multiselect--active {
         .multiselect__tags {
           background-color: rgba(0, 0, 0, 0.1);
         }
       }
     }
-    #nav-mobile {
+
+    .nav-mobile {
       .tenant-select {
         min-width: 150px;
       }
@@ -105,6 +212,7 @@ nav {
       }
     }
   }
+
   .sub-nav {
     min-height: 48px;
     padding: 4px 0;
@@ -124,23 +232,27 @@ nav {
       display: inline-block;
       padding-right: 10px;
       vertical-align: middle;
+
       > a.btn-floating {
         .material-icons {
           line-height: 40px;
           height: 100%;
         }
       }
+
       &:only-of-type {
         margin-left: 100px;
       }
     }
+
     .pathfield {
       text-align: left;
       padding-left: 0.75rem;
       line-height: 20px;
       vertical-align: middle;
       margin-right: auto;
-       > span {
+
+      > span {
         > a {
           &:hover,
           &:focus,
@@ -148,18 +260,17 @@ nav {
             text-decoration: underline;
           }
         }
-       }
+      }
     }
   }
 
-  @media(min-width: 601px){
+  @media(min-width: 601px) {
     .nav-wrapper {
       .brand-logo {
         > span {
           > a {
             &.peregrine-logo {
               svg {
-                top: 10px;
               }
             }
           }

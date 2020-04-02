@@ -201,7 +201,7 @@
 			width: 100% !important;
 			position: fixed;
 			z-index: 0;
-			top: 112px;
+			top: 115px;
 			bottom: 0;
 			left: 0;
 			right: 0;
@@ -211,7 +211,7 @@
 			#editview {
 				//width: 100%;
 				position: fixed;
-				top: 112px;
+				top: 115px;
 				padding-bottom: 112px;
 			}
 
@@ -315,6 +315,6 @@
 	}
 	/* tablet styles */
 	@media #{$medium-and-up} {
-		top: 112px;
+		top: 115px;
 	}
 }
