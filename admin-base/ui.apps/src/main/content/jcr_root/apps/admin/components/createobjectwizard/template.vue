@@ -25,7 +25,7 @@
 <template>
 <div class="container">
     <form-wizard v-bind:title="'create an object'" v-bind:subtitle="''" @on-complete="onComplete" color="#37474f">
-        <tab-content title="select template" :before-change="leaveTabOne">
+        <tab-content title="select object type" :before-change="leaveTabOne">
             <ul class="collection">
                 <li class="collection-item"
                     v-for="item in objects"
@@ -45,7 +45,8 @@
 
             </vue-form-generator>
         </tab-content>
-        <tab-content title="verify">
+        <tab-content title="values">
+            <div>Provide the values for this object</div>
             <vue-form-generator :model="formmodel"
                                 :schema="objectSchema"
                                 :options="formOptions"
@@ -96,8 +97,9 @@
                     const path = this.formmodel.objectPath.split('/')
                     const componentName = path.slice(2).join('-')
                     const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-                    if(definitions) {
-                        return $perAdminApp.getNodeFromView('/admin/componentDefinitions')[componentName]
+                    console.log(componentName, definitions)
+                    if(definitions &&  definitions[componentName]) {
+                        return definitions[componentName].model
                     }
                 }
             },
