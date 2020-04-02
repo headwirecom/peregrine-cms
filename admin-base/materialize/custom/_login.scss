@@ -10,7 +10,7 @@
     margin: 0;
     padding: 0;
     color: #000000;
-    background-color: var(--pcms-dark-blue);
+    background-color: var(--pcms-blue-grey-darken-3);
   }
 
   a {
@@ -61,6 +61,7 @@
       border-radius: 15px 0 0 15px;
       background-image: url('/etc/felibs/admin/login-image.png');
       background-size: cover;
+      background-position: center;
     }
 
     .login-form-wrapper {
@@ -195,6 +196,11 @@
         margin-top: 30px;
         font-weight: 600;
         font-size: 18px;
+        transition: background-color .35s ease-in;
+
+        &:hover {
+          background-color: var(--pcms-orange-hover);
+        }
       }
 
       #err {
