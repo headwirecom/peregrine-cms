@@ -186,6 +186,7 @@
         align-items: center;
         display: flex;
         cursor: pointer;
+        transition: background-color .35s ease-out;
     }
 
     .tenant-tabs .tab:hover,
