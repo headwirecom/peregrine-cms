@@ -29,6 +29,7 @@
             <ul class="collection">
                 <li class="collection-item"
                     v-for="item in objects"
+                    v-bind:key="item.path"
                     v-on:click.stop.prevent="selectItem(null, item.path)"
                     v-bind:class="isSelected(item.path) ? 'grey lighten-2' : ''">
                     <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path, title: item.name }"></admin-components-action>
@@ -114,12 +115,17 @@
                     }
                     return ret
                 }
-                return objects
+                const tenant = $perAdminApp.getView().state.tenant;
+                return objects.filter( object => { 
+                    return object.path.startsWith('/apps/admin/') || (tenant && object.path.startsWith(`/apps/${tenant.name}/`))
+                })
             }
         },
         created: function() {
             //By default select the first item in the list;
-            this.selectItem(null, this.objects[0].path)
+            if(this.objects.length > 0) {
+                this.selectItem(null, this.objects[0].path)
+            }
         },
         methods: {
             findAllowedObjects(path) {
