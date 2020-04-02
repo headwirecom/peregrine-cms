@@ -373,8 +373,15 @@ public class BreadcrumbModel extends AbstractComponent {
 		    String resourceType = props.get("jcr:primaryType", "type not found");
 		    // we only care about per:page child
 		    if(resourceType.equals("per:Page")){
-			    TextLink link = new TextLink(resource.getPath(), getPageTitle(resource.getPath()));
-			    links.add(0,link);
+          if(resource.getChild("index") != null) {
+            // if the page has a sub page called index use that one instead (takes care of the root)
+            Resource index = resource.getChild("index");
+            TextLink link = new TextLink(index.getPath(), getPageTitle(index.getPath()));
+            links.add(0,link);  
+          } else {
+            TextLink link = new TextLink(resource.getPath(), getPageTitle(resource.getPath()));
+            links.add(0,link);
+          }
 		    }
 		    // move on to its parent resource
 		    if(resource.getParent() != null && links.size() < Integer.parseInt(getLevel())) {
