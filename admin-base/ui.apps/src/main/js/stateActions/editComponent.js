@@ -23,7 +23,7 @@
  * #L%
  */
 import {LoggerFactory} from '../logger'
-import {set} from '../utils'
+import {set, jsonEqualizer} from '../utils'
 
 let log = LoggerFactory.logger('editComponent').setLevelDebug()
 
@@ -32,7 +32,7 @@ function bringUpEditor(me, view, target) {
 
     me.beforeStateAction( function(name) {
         return new Promise( (resolve, reject) => {
-            const current = JSON.stringify(view.pageView.page, true, 2)
+            const current = JSON.stringify(view.pageView.page, jsonEqualizer, 2)
             if(name !== 'savePageEdit' && name !== 'deletePageNode') {
                 if(current === view.state.editor.checksum) {
                     resolve(true)
@@ -66,7 +66,7 @@ function bringUpEditor(me, view, target) {
                 set(view, '/state/editor/path', target)
                 set(view, '/state/editorVisible', true)
                 set(view, '/state/rightPanelVisible', true)
-                set(view, '/state/editor/checksum', JSON.stringify(view.pageView.page, true, 2))
+                set(view, '/state/editor/checksum', JSON.stringify(view.pageView.page, jsonEqualizer, 2))
                 resolve()
             }
         ).catch( error => {
