@@ -55,7 +55,7 @@
             <admin-components-explorerpreviewnavitem
                 v-else
                 :icon="Icon.EDIT"
-                :title="`cancel edit`"
+                :title="`edit`"
                 @click="onEdit()">
             </admin-components-explorerpreviewnavitem>
           </template>

@@ -1035,7 +1035,10 @@ public class AdminResourceHandlerService
             final List<String> packagePaths = resourcesToPackage.stream()
                 .filter(Objects::nonNull)
                 .map(Resource::getPath)
+                .filter(path -> !path.startsWith(CONTENT_ROOT + SLASH))
                 .collect(Collectors.toList());
+
+                packagePaths.add(CONTENT_ROOT + SLASH + toName);         
             createSitePackage(resourceResolver, toName, packagePaths);
         } catch (PersistenceException e) {
             logger.error("Failed to create package for site " + toName, e);
