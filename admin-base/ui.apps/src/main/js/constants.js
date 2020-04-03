@@ -79,3 +79,10 @@ export const MimeType = {
     SVG: 'image/svg+xml'
   }
 }
+
+export const Admin = {
+  Page: {
+    EDIT: '/content/admin/pages/pages/edit.html',
+    PAGES: '/content/admin/pages/pages.html'
+  }
+}

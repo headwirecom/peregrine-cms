@@ -1,22 +1,63 @@
-.vue-form-wizard .wizard-btn,
-.vue-form-wizard .navbar .navbar-nav > li > a.wizard-btn {
-  box-sizing: border-box;
-  border: $button-border;
-  background-color: $button-raised-background !important;
-  font-size: $button-font-size;
-  padding: $button-padding;
-  border-radius: $button-radius;
-  height: $button-height;
-  color: $button-raised-color;
-  &:hover,
-  &:focus {
-    background-color: color("orange", "base") !important;
-  }
-}
-
 .vue-form-wizard {
-  .navbar .navbar-nav > li > a.wizard-btn.wizard-btn-wd,
+  .wizard-btn {
+    box-sizing: border-box;
+    border: $button-border;
+    background-color: $button-raised-background !important;
+    font-size: $button-font-size;
+    padding: $button-padding;
+    border-radius: $button-radius;
+    height: $button-height;
+    color: $button-raised-color;
+    transition: background-color .25s ease-out;
+
+    &:hover,
+    &:focus {
+      background-color: color("orange", "base") !important;
+    }
+
+    &.outline {
+      border: 1px solid $button-raised-background;
+      color: $button-raised-background;
+      background-color: $button-raised-color !important;
+
+      &:hover,
+      &:focus {
+        background-color: color("orange", "base") !important;
+      }
+    }
+
+    &.finish {
+      margin-left: 2rem;
+    }
+  }
+
   .wizard-btn-wd {
     min-width: 140px;
+  }
+
+  .navbar {
+    .navbar-nav {
+      > li {
+        > a.wizard-btn {
+          box-sizing: border-box;
+          border: $button-border;
+          background-color: $button-raised-background !important;
+          font-size: $button-font-size;
+          padding: $button-padding;
+          border-radius: $button-radius;
+          height: $button-height;
+          color: $button-raised-color;
+
+          &:hover,
+          &:focus {
+            background-color: color("orange", "base") !important;
+          }
+
+          &.wizard-btn-wd {
+            min-width: 140px;
+          }
+        }
+      }
+    }
   }
 }

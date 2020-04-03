@@ -24,8 +24,8 @@
   -->
 <template>
 <div class="container">
-    <form-wizard 
-      v-bind:title="'create a page'" 
+    <form-wizard
+      v-bind:title="'create a page'"
       v-bind:subtitle="''" @on-complete="onComplete"
       error-color="#d32f2f"
       color="#546e7a">
@@ -89,72 +89,82 @@
             <span v-if="formmodel.templatePath">template `{{formmodel.templatePath}}`</span>
             <span v-else-if="formmodel.skeletonPagePath">skeleton page `{{formmodel.skeletonPagePath}}`</span>
         </tab-content>
+        <span v-if="isLastStep" slot="custom-buttons-right" role="button">
+            <button type="button" class="wizard-btn outline" @click="onComplete(false)">
+                Finish
+           </button>
+        </span>
+        <span slot="finish" role="button" tabindex="0">
+            <button tabindex="-1" type="button" class="wizard-btn finish">
+            Finish and Edit!
+            </button>
+        </span>
     </form-wizard>
 </div>
 </template>
 
 <script>
+
     export default {
         props: ['model'],
-        data:
-            function() {
-                return {
-                    formErrors: {
-                        unselectedTemplateError: false
-                    },
-                    formmodel: {
-                        path: $perAdminApp.getNodeFromView('/state/tools/pages'),
-                        name: '',
-                        title: '',
-                        templatePath: '',
-                        skeletonPagePath: ''
-                    },
-                    formOptions: {
-                        validationErrorClass: "has-error",
-                        validationSuccessClass: "has-success",
-                        validateAfterChanged: true,
-                        focusFirstField: true
-                    },
-                    nameChanged: false,
-                    nameSchema: {
-                      fields: [
-                          {
-                              type: "input",
-                              inputType: "text",
-                              label: "Page Title",
-                              model: "title",
-                              required: true,
-                              onChanged: (model, newVal, oldVal, field) => {
-                                  if(!this.nameChanged) {
-                                      this.formmodel.name = $perAdminApp.normalizeString(newVal);
-                                  }
+        data() {
+            return {
+                formErrors: {
+                    unselectedTemplateError: false
+                },
+                formmodel: {
+                    path: $perAdminApp.getNodeFromView('/state/tools/pages'),
+                    name: '',
+                    title: '',
+                    templatePath: '',
+                    skeletonPagePath: ''
+                },
+                formOptions: {
+                    validationErrorClass: "has-error",
+                    validationSuccessClass: "has-success",
+                    validateAfterChanged: true,
+                    focusFirstField: true
+                },
+                nameChanged: false,
+                nameSchema: {
+                  fields: [
+                      {
+                          type: "input",
+                          inputType: "text",
+                          label: "Page Title",
+                          model: "title",
+                          required: true,
+                          onChanged: (model, newVal, oldVal, field) => {
+                              if(!this.nameChanged) {
+                                  this.formmodel.name = $perAdminApp.normalizeString(newVal);
                               }
-                          },
-                        {
-                            type: "input",
-                            inputType: "text",
-                            label: "Page Name",
-                            model: "name",
-                            required: true,
-                            onChanged: (model, newVal, oldVal, field) => {
-                                this.nameChanged = true;
-                            },
-                            validator: [this.nameAvailable, this.validPageName]
-                        }
-                      ]
+                          }
+                      },
+                    {
+                        type: "input",
+                        inputType: "text",
+                        label: "Page Name",
+                        model: "name",
+                        required: true,
+                        onChanged: (model, newVal, oldVal, field) => {
+                            this.nameChanged = true;
+                        },
+                        validator: [this.nameAvailable, this.validPageName]
                     }
-                }
-
+                  ]
+                },
+                isLastStep: false
+            }
         }
         ,
-        created: function() {
+        created() {
             //By default select the first item in the list;
             if(this.templates && this.templates.length > 0) {
                 this.selectTemplate(this, this.templates[0].path);
             }
         },
         computed: {
-            pageSchema: function() {
+            pageSchema() {
                 if(this.formmodel.templatePath !== '') {
                     const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
                     if(definitions) {
@@ -165,14 +175,14 @@
                     }
                 }
             },
-            templates: function() {
+            templates() {
                 const templates = $perAdminApp.getNodeFromViewOrNull('/admin/templates/data')
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 siteRootParts[3] = 'templates'
                 const siteRoot = siteRootParts.join('/')
                 return templates.filter( (item) => item.path.startsWith(siteRoot))
             },
-            skeletonPages: function() {
+            skeletonPages() {
                 const siteRoot = this.formmodel.path.split('/').slice(0,4).join('/') + '/skeleton-pages'
                 const skeletonPageRoot = $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, siteRoot)
                 if(skeletonPageRoot) {
@@ -183,35 +193,46 @@
         }
         ,
         methods: {
-            selectTemplate: function(me, target){
+            selectTemplate(me, target){
                 if(me === null) me = this
                 me.formmodel.templatePath = target
                 me.formmodel.skeletonPagePath = ''
                 this.validateTabOne(me);
             },
-            selectSkeletonPage: function(me, target){
+            selectSkeletonPage(me, target){
                 if(me === null) me = this
                 me.formmodel.skeletonPagePath = target
                 me.formmodel.templatePath = ''
                 this.validateTabOne(me);
             },
-            isSelected: function(target) {
+            isSelected(target) {
                 return this.formmodel.templatePath === target || this.formmodel.skeletonPagePath === target
             },
-            onComplete: function() {
-                if(this.formmodel.templatePath) {
-                    $perAdminApp.stateAction('createPage', { parent: this.formmodel.path, name: this.formmodel.name, template: this.formmodel.templatePath, data: this.formmodel })
+            onComplete(edit=true) {
+                const payload = {
+                    parent: this.formmodel.path,
+                    name: this.formmodel.name,
+                    template: this.formmodel.templatePath,
+                    data: this.formmodel,
+                    edit
                 }
-                else {
-                    $perAdminApp.stateAction('createPageFromSkeletonPage', { parent: this.formmodel.path, name: this.formmodel.name, skeletonPagePath: this.formmodel.skeletonPagePath, data: this.formmodel })
+
+                if(this.formmodel.templatePath) {
+                    payload.template = this.formmodel.templatePath
+                    $perAdminApp.stateAction('createPage', payload)
+                } else if (this.formmodel.skeletonPagePath) {
+                    payload.skeletonPagePath = this.formmodel.skeletonPagePath
+                    $perAdminApp.stateAction('createPageFromSkeletonPage', payload)
+                } else {
+                    throw 'error creating page: no template or skeleton page given!'
                 }
             },
-            validateTabOne: function(me) {
+            validateTabOne(me) {
                 me.formErrors.unselectedTemplateError = ('' === '' + me.formmodel.templatePath && '' === '' + me.formmodel.skeletonPagePath);
 
                 return !me.formErrors.unselectedTemplateError;
             },
-            leaveTabOne: function() {
+            leaveTabOne() {
                 if('' !== ''+this.formmodel.templatePath) {
                     $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.templatePath)
                 }
@@ -246,8 +267,12 @@
                 }
                 return [];
             },
-            leaveTabTwo: function() {
-                return this.$refs.nameTab.validate()
+            leaveTabTwo() {
+                const isValid = this.$refs.nameTab.validate()
+                if (isValid) {
+                    this.isLastStep = true
+                }
+                return isValid
             }
         }
     }

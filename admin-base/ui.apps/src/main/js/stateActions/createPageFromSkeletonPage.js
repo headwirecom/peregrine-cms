@@ -22,20 +22,29 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
+import {LoggerFactory} from '../logger'
+import {Admin, SUFFIX_PARAM_SEPARATOR} from '../constants';
+
 let log = LoggerFactory.logger('createPageFromSkeletonPage').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
-    var api = me.getApi()
+
+    const api = me.getApi()
+    let destination = Admin.Page.PAGES
+    let destinationPath = target.parent
+
+    if (target.edit) {
+        destination = Admin.Page.EDIT
+        destinationPath += '/' + target.name
+    }
+
     api.createPageFromSkeletonPage(target.parent, target.name, target.skeletonPagePath).then( () => {
         target.data.path = '/jcr:content'
         api.savePageEdit(target.parent + '/' + target.name, target.data).then( () => {
-            me.loadContent('/content/admin/pages.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
+            me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + destinationPath}`)
         })
-
     })
 
 }
