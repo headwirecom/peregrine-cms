@@ -39,7 +39,20 @@ done
 
 
 # Install themeclean-flex
-THEMECLEANFLEX_PKG=themecleanflex.ui.apps-1.0-SNAPSHOT.zip
-curl -L -o ${THEMECLEANFLEX_PKG} \
-  https://vagrant.headwire.com/peregrine/${THEMECLEANFLEX_PKG}
- npx @peregrinecms/slingpackager upload -i ${THEMECLEANFLEX_PKG}
+# We need to build Peregrine because themeclean-flex needs com.peregrine-cms:base.core:jar:1.0-SNAPSHOT.
+git clone https://github.com/headwirecom/peregrine-cms.git
+cd peregrine-cms
+git checkout issues/93
+mvn clean install
+cd ..
+rm -rf peregrine-cms
+
+# Now build themeclean-flex
+git clone https://github.com/headwirecom/themeclean-flex.git
+cd themeclean-flex
+git checkout feature/contentrestructure
+mvn clean package
+
+npx @peregrinecms/slingpackager upload -i ./ui.apps/target/themecleanflex.ui.apps-1.0-SNAPSHOT.zip
+cd ..
+rm -rf themeclean-flex
