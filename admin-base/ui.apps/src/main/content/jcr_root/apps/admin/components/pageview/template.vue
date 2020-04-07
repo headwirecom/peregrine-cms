@@ -25,9 +25,6 @@
         return this.model.path === '/jcr:content/workspace/right-panel'
       }
     },
-    mounted() {
-      console.log(this.model)
-    },
     methods: {
       getBasePath() {
         const view = $perAdminApp.getView()
