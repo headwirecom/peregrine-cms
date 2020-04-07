@@ -25,6 +25,11 @@
         return this.model.path === '/jcr:content/workspace/right-panel'
       }
     },
+    mounted() {
+      if (this.isEditPage) {
+        this.$root.$emit('explorerpreviewcontent-tab-update', 'components')
+      }
+    },
     methods: {
       getBasePath() {
         const view = $perAdminApp.getView()

@@ -291,6 +291,11 @@
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
       }
     },
+    created() {
+      this.$root.$on('explorerpreviewcontent-tab-update', (data) => {
+        this.setActiveTab(data)
+      });
+    },
     mounted() {
       this.path.selected = this.selectedPath
       this.path.current = this.currentPath
